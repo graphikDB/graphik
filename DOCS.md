@@ -16,6 +16,8 @@ type Attributer interface {
 	SetAttribute(key string, val interface{})
 	// GetAttribute returns the value if it exists or nil if it doesnt
 	GetAttribute(key string) interface{}
+	// Range iterates over the values. If false is returned, the range function will break.
+	Range(fn func(k string, v interface{}) bool)
 	// Attributer can marshal/unmarshal itself
 	Encoder
 	// returns a human readable string
@@ -57,10 +59,7 @@ Counter returns a count of something
 ```go
 type Edge interface {
 	Attributer
-	Relationship() string
-	From() Path
-	To() Path
-	Reversed() Edge
+	EdgePath
 }
 ```
 
@@ -69,7 +68,7 @@ Edge is the path from one node to another with a relationship and attributes
 #### func  NewEdge
 
 ```go
-func NewEdge(from Path, relationship string, to Path, attr Attributer) Edge
+func NewEdge(path EdgePath) Edge
 ```
 
 #### type EdgeConstraintFunc
@@ -88,6 +87,24 @@ type EdgeHandlerFunc func(g Graph, e Edge) error
 ```
 
 EdgeHandlerFunc that executes logic against an edge in a graph
+
+#### type EdgePath
+
+```go
+type EdgePath interface {
+	Relationship() string
+	From() Path
+	To() Path
+	PathString() string
+}
+```
+
+
+#### func  NewEdgePath
+
+```go
+func NewEdgePath(from Path, relationship string, to Path) EdgePath
+```
 
 #### type EdgeQuery
 
@@ -218,33 +235,24 @@ DefaultErrHandler simply logs the error
 ```go
 type Graph interface {
 	// AddNode adds a node to the graph
-	AddNode(n Node) error
+	AddNode(ctx context.Context, n Node) error
 	// QueryNodes executes the query against graph nodes
-	QueryNodes(query NodeQuery) error
+	QueryNodes(ctx context.Context, query NodeQuery) error
 	// DelNode deletes a node by path
-	DelNode(path Path) error
+	DelNode(ctx context.Context, path Path) error
 	// GetNode gets a node by path
-	GetNode(path Path) (Node, error)
-	// NodeConstraints adds the node constraints to the graph
-	NodeConstraints(constraints ...NodeConstraintFunc)
-	// NodeTriggers adds the triggers to the graph
-	NodeTriggers(triggers ...NodeTriggerFunc)
-
+	GetNode(ctx context.Context, path Path) (Node, error)
 	// AddEdge adds an edge to the graph
-	AddEdge(e Edge) error
+	AddEdge(ctx context.Context, e Edge) error
 	// GetEdge gets an edge from the graph
-	GetEdge(from Path, relationship string, to Path) (Edge, error)
+	GetEdge(ctx context.Context, path EdgePath) (Edge, error)
 	// QueryEdges executes the query against graph edges
-	QueryEdges(query EdgeQuery) error
+	QueryEdges(ctx context.Context, query EdgeQuery) error
 	// DelEdge deletes the edge by path
-	DelEdge(e Edge) error
-	// EdgeConstraints adds the edge constraints to the graph
-	EdgeConstraints(constraints ...EdgeConstraintFunc)
-	// NodeTriggers adds the node triggers to the graph
-	EdgeTriggers(triggers ...EdgeTriggerFunc)
+	DelEdge(ctx context.Context, e Edge) error
 
 	// Close closes the graph
-	Close() error
+	Close(ctx context.Context) error
 }
 ```
 
@@ -263,10 +271,18 @@ GraphOpenerFunc opens a Graph. Backends should export an opener method.
 ```go
 type Graphik interface {
 	Graph
-	StartWorkers()
+	// NodeConstraints adds the node constraints to the graph
+	NodeConstraints(constraints ...NodeConstraintFunc)
+	// NodeTriggers adds the triggers to the graph
+	NodeTriggers(triggers ...NodeTriggerFunc)
+	// EdgeConstraints adds the edge constraints to the graph
+	EdgeConstraints(constraints ...EdgeConstraintFunc)
+	// NodeTriggers adds the node triggers to the graph
+	EdgeTriggers(triggers ...EdgeTriggerFunc)
+	StartWorkers(ctx context.Context)
 	AddWorkers(workers ...Worker)
-	StopWorker(name string)
-	StopWorkers()
+	StopWorker(ctx context.Context, name string)
+	StopWorkers(ctx context.Context)
 }
 ```
 
@@ -295,7 +311,7 @@ Node is the path to a node + its own custom attributes
 #### func  NewNode
 
 ```go
-func NewNode(path Path, attr Attributer) Node
+func NewNode(path Path) Node
 ```
 
 #### type NodeConstraintFunc
@@ -395,6 +411,7 @@ error occurs, it will be returned but the node will still be added to the graph.
 type Path interface {
 	Type() string
 	Key() string
+	PathString() string
 }
 ```
 
@@ -419,8 +436,8 @@ WhereFunc is a WHERE clause that returns true/false based on it's implementation
 ```go
 type Worker interface {
 	Name() string
-	Stop()
-	Start(g Graphik)
+	Stop(ctx context.Context)
+	Start(ctx context.Context, g Graphik)
 }
 ```
 

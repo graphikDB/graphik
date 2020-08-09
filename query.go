@@ -231,13 +231,9 @@ func EdgeModRelationship(relationship string) EdgeQueryModFunc {
 			relationship: relationship,
 			toType:       query.ToType(),
 			toKey:        query.ToKey(),
+			where:        query.Where(),
+			handler:      query.Handler(),
 			limit:        query.Limit(),
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
 		}
 		return e
 	}
@@ -248,7 +244,8 @@ func EdgeModHandler(handler EdgeHandlerFunc) EdgeQueryModFunc {
 		e := &edgeQuery{
 			fromType:     query.FromType(),
 			fromKey:      query.FromKey(),
-			relationship: query.ToType(),
+			relationship: query.Relationship(),
+			where:        query.Where(),
 			handler:      handler,
 			toKey:        query.ToKey(),
 			toType:       query.ToType(),
@@ -266,16 +263,12 @@ func EdgeModToType(toType string) EdgeQueryModFunc {
 		e := &edgeQuery{
 			fromType:     query.FromType(),
 			fromKey:      query.FromKey(),
-			relationship: query.ToType(),
+			relationship: query.Relationship(),
 			toType:       toType,
 			toKey:        query.ToKey(),
 			limit:        query.Limit(),
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			where:        query.Where(),
+			handler:      query.Handler(),
 		}
 		return e
 	}
@@ -286,16 +279,12 @@ func EdgeModToKey(toKey string) EdgeQueryModFunc {
 		e := &edgeQuery{
 			fromType:     query.FromType(),
 			fromKey:      query.FromKey(),
-			relationship: query.ToType(),
+			relationship: query.Relationship(),
 			toType:       query.ToType(),
 			toKey:        toKey,
 			limit:        query.Limit(),
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			where:        query.Where(),
+			handler:      query.Handler(),
 		}
 		return e
 	}
@@ -306,16 +295,12 @@ func EdgeModLimit(limit int) EdgeQueryModFunc {
 		e := &edgeQuery{
 			fromType:     query.FromType(),
 			fromKey:      query.FromKey(),
-			relationship: query.ToType(),
+			relationship: query.Relationship(),
 			toType:       query.ToType(),
 			toKey:        query.ToKey(),
 			limit:        limit,
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			where:        query.Where(),
+			handler:      query.Handler(),
 		}
 		return e
 	}
@@ -331,9 +316,7 @@ func EdgeModWhere(where WhereFunc) EdgeQueryModFunc {
 			toKey:        query.ToKey(),
 			where:        where,
 			limit:        query.Limit(),
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			handler:      query.Handler(),
 		}
 		return e
 	}

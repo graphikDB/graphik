@@ -1,37 +1,17 @@
 package boltdb
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/autom8ter/graphik"
 	"go.etcd.io/bbolt"
 	"os"
-	"time"
 )
 
 type Graph struct {
-	path            string
-	db              *bbolt.DB
-	onNodeChange    []graphik.NodeTriggerFunc
-	onEdgeChange    []graphik.EdgeTriggerFunc
-	nodeConstraints []graphik.NodeConstraintFunc
-	edgeConstraints []graphik.EdgeConstraintFunc
-}
-
-func (g *Graph) EdgeTriggers(changeHandlers ...graphik.EdgeTriggerFunc) {
-	g.onEdgeChange = append(g.onEdgeChange, changeHandlers...)
-}
-
-func (g *Graph) NodeTriggers(changeHandlers ...graphik.NodeTriggerFunc) {
-	g.onNodeChange = append(g.onNodeChange, changeHandlers...)
-}
-
-func (g *Graph) EdgeConstraints(constraints ...graphik.EdgeConstraintFunc) {
-	g.edgeConstraints = append(g.edgeConstraints, constraints...)
-}
-
-func (g *Graph) NodeConstraints(constraints ...graphik.NodeConstraintFunc) {
-	g.nodeConstraints = append(g.nodeConstraints, constraints...)
+	path string
+	db   *bbolt.DB
 }
 
 const DefaultPath = "/tmp/graphik"
@@ -61,20 +41,14 @@ func (g *Graph) implements() graphik.Graph {
 	return g
 }
 
-func (g *Graph) Close() error {
+func (g *Graph) Close(ctx context.Context) error {
 	return g.db.Close()
 }
 
-func (g *Graph) AddNode(n graphik.Node) error {
+func (g *Graph) AddNode(ctx context.Context, n graphik.Node) error {
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		bucket, _ := tx.CreateBucketIfNotExists([]byte(n.Type()))
 		bucket, _ = bucket.CreateBucketIfNotExists([]byte(n.Key()))
-		n.SetAttribute("last_update", time.Now().Unix())
-		for _, fn := range g.nodeConstraints {
-			if err := fn(g, n, false); err != nil {
-				return err
-			}
-		}
 		bits, err := n.Marshal()
 		if err != nil {
 			return err
@@ -82,16 +56,11 @@ func (g *Graph) AddNode(n graphik.Node) error {
 		if err := bucket.Put([]byte("attributes"), bits); err != nil {
 			return err
 		}
-		for _, fn := range g.onNodeChange {
-			if err := fn(g, n, false); err != nil {
-				return err
-			}
-		}
 		return nil
 	})
 }
 
-func (g *Graph) QueryNodes(query graphik.NodeQuery) error {
+func (g *Graph) QueryNodes(ctx context.Context, query graphik.NodeQuery) error {
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		if query == nil {
 			query = graphik.NewNodeQuery()
@@ -110,7 +79,7 @@ func (g *Graph) QueryNodes(query graphik.NodeQuery) error {
 				if query.Limit() > 0 && count >= query.Limit() {
 					return nil
 				}
-				var n = graphik.NewNode(graphik.NewPath(fromTypes.key, fromKeys.key), nil)
+				var n = graphik.NewNode(graphik.NewPath(fromTypes.key, fromKeys.key))
 				res := fromKey.Get([]byte("attributes"))
 				if len(res) > 0 {
 					if err := n.Unmarshal(res); err != nil {
@@ -136,8 +105,8 @@ func (g *Graph) QueryNodes(query graphik.NodeQuery) error {
 	})
 }
 
-func (g *Graph) GetNode(path graphik.Path) (graphik.Node, error) {
-	var node = graphik.NewNode(path, nil)
+func (g *Graph) GetNode(ctx context.Context, path graphik.Path) (graphik.Node, error) {
+	var node = graphik.NewNode(path)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(path.Type()))
 		if bucket == nil {
@@ -158,37 +127,18 @@ func (g *Graph) GetNode(path graphik.Path) (graphik.Node, error) {
 	return node, nil
 }
 
-func (g *Graph) DelNode(path graphik.Path) error {
+func (g *Graph) DelNode(ctx context.Context, path graphik.Path) error {
 	return g.db.Update(func(tx *bbolt.Tx) error {
-		n, err := g.GetNode(path)
-		if err != nil {
-			return err
-		}
-		for _, fn := range g.nodeConstraints {
-			if err := fn(g, n, true); err != nil {
-				return err
-			}
-		}
 		bucket := tx.Bucket([]byte(path.Type()))
 		if err := bucket.Delete([]byte(path.Key())); err != nil {
 			return err
-		}
-		for _, fn := range g.onNodeChange {
-			if err := fn(g, n, true); err != nil {
-				return err
-			}
 		}
 		return nil
 	})
 }
 
-func (g *Graph) AddEdge(e graphik.Edge) error {
+func (g *Graph) AddEdge(ctx context.Context, e graphik.Edge) error {
 	return g.db.Update(func(tx *bbolt.Tx) error {
-		for _, fn := range g.edgeConstraints {
-			if err := fn(g, e, false); err != nil {
-				return err
-			}
-		}
 		bits, err := e.Marshal()
 		if err != nil {
 			return err
@@ -201,35 +151,30 @@ func (g *Graph) AddEdge(e graphik.Edge) error {
 		if err := bucket.Put([]byte("attributes"), bits); err != nil {
 			return err
 		}
-		for _, fn := range g.onEdgeChange {
-			if err := fn(g, e, false); err != nil {
-				return err
-			}
-		}
 		return nil
 	})
 }
 
-func (g *Graph) GetEdge(from graphik.Path, relationship string, to graphik.Path) (graphik.Edge, error) {
-	var e = graphik.NewEdge(from, relationship, to, nil)
+func (g *Graph) GetEdge(ctx context.Context, path graphik.EdgePath) (graphik.Edge, error) {
+	var e = graphik.NewEdge(path)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket([]byte(from.Type()))
+		bucket := tx.Bucket([]byte(path.From().Type()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
-		bucket = bucket.Bucket([]byte(from.Key()))
+		bucket = bucket.Bucket([]byte(path.From().Key()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
-		bucket = bucket.Bucket([]byte(relationship))
+		bucket = bucket.Bucket([]byte(path.Relationship()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
-		bucket = bucket.Bucket([]byte(to.Type()))
+		bucket = bucket.Bucket([]byte(path.To().Type()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
-		bucket = bucket.Bucket([]byte(to.Key()))
+		bucket = bucket.Bucket([]byte(path.To().Key()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
@@ -244,7 +189,7 @@ func (g *Graph) GetEdge(from graphik.Path, relationship string, to graphik.Path)
 	return e, nil
 }
 
-func (g *Graph) QueryEdges(q graphik.EdgeQuery) error {
+func (g *Graph) QueryEdges(ctx context.Context, q graphik.EdgeQuery) error {
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		if q == nil {
 			q = graphik.NewEdgeQuery()
@@ -281,7 +226,7 @@ func (g *Graph) QueryEdges(q graphik.EdgeQuery) error {
 							if q.Limit() != 0 && count >= q.Limit() {
 								return nil
 							}
-							var e = graphik.NewEdge(graphik.NewPath(fromTypes.key, fromKeys.key), rels.key, graphik.NewPath(toTypes.key, toKeys.key), nil)
+							var e = graphik.NewEdge(graphik.NewEdgePath(graphik.NewPath(fromTypes.key, fromKeys.key), rels.key, graphik.NewPath(toTypes.key, toKeys.key)))
 							res := toKey.Get([]byte("attributes"))
 							if len(res) > 0 {
 								if err := e.Unmarshal(res); err != nil {
@@ -310,13 +255,8 @@ func (g *Graph) QueryEdges(q graphik.EdgeQuery) error {
 	})
 }
 
-func (g *Graph) DelEdge(e graphik.Edge) error {
+func (g *Graph) DelEdge(ctx context.Context, e graphik.Edge) error {
 	return g.db.Update(func(tx *bbolt.Tx) error {
-		for _, fn := range g.edgeConstraints {
-			if err := fn(g, e, false); err != nil {
-				return err
-			}
-		}
 		bucket := tx.Bucket([]byte(e.From().Type()))
 		if bucket == nil {
 			return nil
@@ -335,11 +275,6 @@ func (g *Graph) DelEdge(e graphik.Edge) error {
 		}
 		if err := bucket.Delete([]byte(e.To().Key())); err != nil {
 			return err
-		}
-		for _, fn := range g.onEdgeChange {
-			if err := fn(g, e, true); err != nil {
-				return err
-			}
 		}
 		return nil
 	})

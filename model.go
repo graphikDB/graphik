@@ -1,15 +1,17 @@
 package graphik
 
 import (
+	"context"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
+	"strings"
 	"sync"
 	"time"
 )
 
 type attributer struct {
 	mu         *sync.RWMutex
-	attributes map[string]interface{}
+	attributes bson.M
 }
 
 func (a *attributer) init() {
@@ -112,26 +114,42 @@ func (p *path) Key() string {
 	return p.key
 }
 
+func (p *path) PathString() string {
+	return strings.Join([]string{p.typ, p.key}, ".")
+}
+
 func (p *path) implements() Path {
 	return p
 }
 
+type edgePath struct {
+	from         Path
+	relationship string
+	to           Path
+}
+
+func (e edgePath) Relationship() string {
+	return e.relationship
+}
+
+func (e edgePath) From() Path {
+	return e.from
+}
+
+func (e edgePath) To() Path {
+	return e.to
+}
+
+func (e edgePath) PathString() string {
+	return strings.Join([]string{e.from.PathString(), e.relationship, e.to.PathString()}, ".")
+}
+
+func NewEdgePath(from Path, relationship string, to Path) EdgePath {
+	return &edgePath{from: from, relationship: relationship, to: to}
+}
+
 type node struct {
 	Attributer
-}
-
-func NewNode(path Path, attr Attributer) Node {
-	if attr == nil {
-		attr = NewAttributer(map[string]interface{}{
-			"type": path.Type(),
-			"key":  path.Key(),
-		})
-	}
-	return &node{Attributer: attr}
-}
-
-func (n *node) implements() Node {
-	return n
 }
 
 func (n *node) Type() string {
@@ -142,34 +160,24 @@ func (n *node) Key() string {
 	return n.GetAttribute("key").(string)
 }
 
-// Edge is a simple graph edge.
+func (n *node) PathString() string {
+	return NewPath(n.Type(), n.Key()).PathString()
+}
+
+func NewNode(path Path) Node {
+	return &node{Attributer: NewAttributer(map[string]interface{}{
+		"_id":  path.PathString(),
+		"type": path.Type(),
+		"key":  path.Key(),
+	})}
+}
+
+func (n *node) implements() Node {
+	return n
+}
+
 type edge struct {
 	Attributer
-}
-
-func NewEdge(from Path, relationship string, to Path, attr Attributer) Edge {
-	if attr == nil {
-		attr = NewAttributer(map[string]interface{}{
-			"fromType":     from.Type(),
-			"fromKey":      from.Key(),
-			"relationship": relationship,
-			"toType":       to.Type(),
-			"toKey":        to.Key(),
-		})
-	}
-	return &edge{
-		Attributer: NewAttributer(map[string]interface{}{
-			"fromType":     from.Type(),
-			"fromKey":      from.Key(),
-			"relationship": relationship,
-			"toType":       to.Type(),
-			"toKey":        to.Key(),
-		}),
-	}
-}
-
-func (e *edge) implements() Edge {
-	return e
 }
 
 func (e *edge) Relationship() string {
@@ -177,21 +185,32 @@ func (e *edge) Relationship() string {
 }
 
 func (e *edge) From() Path {
-	return &path{
-		typ: e.GetAttribute("fromType").(string),
-		key: e.GetAttribute("fromKey").(string),
-	}
+	return NewPath(e.GetAttribute("fromType").(string), e.GetAttribute("fromKey").(string))
 }
 
 func (e *edge) To() Path {
-	return &path{
-		typ: e.GetAttribute("toType").(string),
-		key: e.GetAttribute("toKey").(string),
+	return NewPath(e.GetAttribute("toType").(string), e.GetAttribute("toKey").(string))
+}
+
+func (e *edge) PathString() string {
+	return NewEdgePath(e.From(), e.Relationship(), e.To()).PathString()
+}
+
+func NewEdge(path EdgePath) Edge {
+	return &edge{
+		Attributer: NewAttributer(map[string]interface{}{
+			"_id":          path.PathString(),
+			"fromType":     path.From().Type(),
+			"fromKey":      path.From().Key(),
+			"relationship": path.Relationship(),
+			"toType":       path.To().Type(),
+			"toKey":        path.To().Key(),
+		}),
 	}
 }
 
-func (e *edge) Reversed() Edge {
-	return NewEdge(e.To(), e.Relationship(), e.From(), e)
+func (e *edge) implements() Edge {
+	return e
 }
 
 type worker struct {
@@ -221,24 +240,22 @@ func (w *worker) HandleError(err error) {
 	w.errHandler(err)
 }
 
-func (w *worker) Start(g Graphik) {
+func (w *worker) Start(ctx context.Context, g Graphik) {
 	ticker := time.NewTicker(w.every)
 	w.wg.Add(1)
-
 	go func() {
 		defer ticker.Stop()
 		defer w.wg.Done()
 		for {
 			select {
 			case <-ticker.C:
-				w.wg.Add(1)
-				go func() {
-					defer w.wg.Done()
-					if err := w.worker(g); err != nil {
-						w.errHandler(err)
-					}
-				}()
+				if err := w.worker(g); err != nil {
+					w.errHandler(err)
+				}
 			case <-w.done:
+				return
+			case <-ctx.Done():
+				w.done <- struct{}{}
 				return
 			}
 		}
@@ -249,7 +266,7 @@ func (w *worker) Name() string {
 	return w.name
 }
 
-func (w *worker) Stop() {
+func (w *worker) Stop(ctx context.Context) {
 	w.done <- struct{}{}
 	w.wg.Wait()
 }

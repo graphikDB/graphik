@@ -2,6 +2,7 @@
 package graphik
 
 import (
+	"context"
 	"fmt"
 	"log"
 )
@@ -10,6 +11,14 @@ import (
 type Path interface {
 	Type() string
 	Key() string
+	PathString() string
+}
+
+type EdgePath interface {
+	Relationship() string
+	From() Path
+	To() Path
+	PathString() string
 }
 
 // Encoder can marshal to bytes and unmarshal itself from bytes
@@ -31,6 +40,8 @@ type Attributer interface {
 	SetAttribute(key string, val interface{})
 	// GetAttribute returns the value if it exists or nil if it doesnt
 	GetAttribute(key string) interface{}
+	// Range iterates over the values. If false is returned, the range function will break.
+	Range(fn func(k string, v interface{}) bool)
 	// Attributer can marshal/unmarshal itself
 	Encoder
 	// returns a human readable string
@@ -46,42 +57,30 @@ type Node interface {
 // Edge is the path from one node to another with a relationship and attributes
 type Edge interface {
 	Attributer
-	Relationship() string
-	From() Path
-	To() Path
-	Reversed() Edge
+	EdgePath
 }
 
 // Graph is a directed acyclic graph (DAG)
 type Graph interface {
 	// AddNode adds a node to the graph
-	AddNode(n Node) error
+	AddNode(ctx context.Context, n Node) error
 	// QueryNodes executes the query against graph nodes
-	QueryNodes(query NodeQuery) error
+	QueryNodes(ctx context.Context, query NodeQuery) error
 	// DelNode deletes a node by path
-	DelNode(path Path) error
+	DelNode(ctx context.Context, path Path) error
 	// GetNode gets a node by path
-	GetNode(path Path) (Node, error)
-	// NodeConstraints adds the node constraints to the graph
-	NodeConstraints(constraints ...NodeConstraintFunc)
-	// NodeTriggers adds the triggers to the graph
-	NodeTriggers(triggers ...NodeTriggerFunc)
-
+	GetNode(ctx context.Context, path Path) (Node, error)
 	// AddEdge adds an edge to the graph
-	AddEdge(e Edge) error
+	AddEdge(ctx context.Context, e Edge) error
 	// GetEdge gets an edge from the graph
-	GetEdge(from Path, relationship string, to Path) (Edge, error)
+	GetEdge(ctx context.Context, path EdgePath) (Edge, error)
 	// QueryEdges executes the query against graph edges
-	QueryEdges(query EdgeQuery) error
+	QueryEdges(ctx context.Context, query EdgeQuery) error
 	// DelEdge deletes the edge by path
-	DelEdge(e Edge) error
-	// EdgeConstraints adds the edge constraints to the graph
-	EdgeConstraints(constraints ...EdgeConstraintFunc)
-	// NodeTriggers adds the node triggers to the graph
-	EdgeTriggers(triggers ...EdgeTriggerFunc)
+	DelEdge(ctx context.Context, e Edge) error
 
 	// Close closes the graph
-	Close() error
+	Close(ctx context.Context) error
 }
 
 // BasicQuery is a WHERE and a LIMIT clause
@@ -165,10 +164,18 @@ type GraphOpenerFunc func() (Graph, error)
 // Graphik is a directed acyclic graph (DAG) that can run asynchronous workers against itself
 type Graphik interface {
 	Graph
-	StartWorkers()
+	// NodeConstraints adds the node constraints to the graph
+	NodeConstraints(constraints ...NodeConstraintFunc)
+	// NodeTriggers adds the triggers to the graph
+	NodeTriggers(triggers ...NodeTriggerFunc)
+	// EdgeConstraints adds the edge constraints to the graph
+	EdgeConstraints(constraints ...EdgeConstraintFunc)
+	// NodeTriggers adds the node triggers to the graph
+	EdgeTriggers(triggers ...EdgeTriggerFunc)
+	StartWorkers(ctx context.Context)
 	AddWorkers(workers ...Worker)
-	StopWorker(name string)
-	StopWorkers()
+	StopWorker(ctx context.Context, name string)
+	StopWorkers(ctx context.Context)
 }
 
 // WorkerFunc executes logic against a graphik instance
@@ -177,8 +184,8 @@ type WorkerFunc func(g Graphik) error
 // Worker is an asynchronous process that executes logic against a graphik instance. It can be stopped and started.
 type Worker interface {
 	Name() string
-	Stop()
-	Start(g Graphik)
+	Stop(ctx context.Context)
+	Start(ctx context.Context, g Graphik)
 }
 
 // ErrHandler executes a function against the input error
@@ -192,8 +199,120 @@ func DefaultErrHandler() ErrHandler {
 }
 
 type graphik struct {
-	Graph
-	workers map[string]Worker
+	graph           Graph
+	workers         map[string]Worker
+	nodeTriggers    []NodeTriggerFunc
+	edgeTriggers    []EdgeTriggerFunc
+	nodeConstraints []NodeConstraintFunc
+	edgeConstraints []EdgeConstraintFunc
+}
+
+func (g *graphik) AddNode(ctx context.Context, n Node) error {
+	for _, fn := range g.nodeConstraints {
+		if err := fn(g, n, false); err != nil {
+			return err
+		}
+	}
+	if err := g.graph.AddNode(ctx, n); err != nil {
+		return err
+	}
+	for _, fn := range g.nodeTriggers {
+		if err := fn(g, n, false); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (g *graphik) QueryNodes(ctx context.Context, query NodeQuery) error {
+	return g.graph.QueryNodes(ctx, query)
+}
+
+func (g *graphik) DelNode(ctx context.Context, path Path) error {
+	n, err := g.GetNode(ctx, path)
+	if err != nil {
+		return err
+	}
+	for _, fn := range g.nodeConstraints {
+		if err := fn(g, n, true); err != nil {
+			return err
+		}
+	}
+	if err := g.graph.DelNode(ctx, n); err != nil {
+		return err
+	}
+	for _, fn := range g.nodeTriggers {
+		if err := fn(g, n, true); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (g *graphik) GetNode(ctx context.Context, path Path) (Node, error) {
+	return g.graph.GetNode(ctx, path)
+}
+
+func (g *graphik) AddEdge(ctx context.Context, e Edge) error {
+	for _, fn := range g.edgeConstraints {
+		if err := fn(g, e, false); err != nil {
+			return err
+		}
+	}
+	if err := g.graph.AddEdge(ctx, e); err != nil {
+		return err
+	}
+	for _, fn := range g.edgeTriggers {
+		if err := fn(g, e, false); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (g *graphik) GetEdge(ctx context.Context, path EdgePath) (Edge, error) {
+	return g.graph.GetEdge(ctx, path)
+}
+
+func (g *graphik) QueryEdges(ctx context.Context, query EdgeQuery) error {
+	return g.graph.QueryEdges(ctx, query)
+}
+
+func (g *graphik) DelEdge(ctx context.Context, e Edge) error {
+	for _, fn := range g.edgeConstraints {
+		if err := fn(g, e, true); err != nil {
+			return err
+		}
+	}
+	if err := g.graph.DelEdge(ctx, e); err != nil {
+		return err
+	}
+	for _, fn := range g.edgeTriggers {
+		if err := fn(g, e, true); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (g *graphik) Close(ctx context.Context) error {
+	return g.graph.Close(ctx)
+}
+
+func (g *graphik) NodeConstraints(constraints ...NodeConstraintFunc) {
+	g.nodeConstraints = append(g.nodeConstraints, constraints...)
+}
+
+func (g *graphik) NodeTriggers(triggers ...NodeTriggerFunc) {
+	g.nodeTriggers = append(g.nodeTriggers, triggers...)
+}
+
+func (g *graphik) EdgeConstraints(constraints ...EdgeConstraintFunc) {
+	g.edgeConstraints = append(g.edgeConstraints, constraints...)
+}
+
+func (g *graphik) EdgeTriggers(triggers ...EdgeTriggerFunc) {
+	g.edgeTriggers = append(g.edgeTriggers, triggers...)
 }
 
 func (g *graphik) AddWorkers(workers ...Worker) {
@@ -202,21 +321,21 @@ func (g *graphik) AddWorkers(workers ...Worker) {
 	}
 }
 
-func (g *graphik) StartWorkers() {
+func (g *graphik) StartWorkers(ctx context.Context) {
 	for _, worker := range g.workers {
-		worker.Start(g)
+		worker.Start(ctx, g)
 	}
 }
 
-func (g *graphik) StopWorker(name string) {
+func (g *graphik) StopWorker(ctx context.Context, name string) {
 	if worker, ok := g.workers[name]; ok {
-		worker.Stop()
+		worker.Stop(ctx)
 	}
 }
 
-func (g *graphik) StopWorkers() {
+func (g *graphik) StopWorkers(ctx context.Context) {
 	for _, worker := range g.workers {
-		worker.Stop()
+		worker.Stop(ctx)
 	}
 }
 
@@ -227,7 +346,7 @@ func New(opener GraphOpenerFunc) (Graphik, error) {
 		return nil, err
 	}
 	return &graphik{
-		Graph:   g,
+		graph:   g,
 		workers: map[string]Worker{},
 	}, nil
 }
