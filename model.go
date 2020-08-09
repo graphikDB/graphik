@@ -115,7 +115,7 @@ func (p *path) Key() string {
 }
 
 func (p *path) PathString() string {
-	return strings.Join([]string{p.typ, p.key}, ".")
+	return strings.Join([]string{p.typ, p.key}, "/")
 }
 
 func (p *path) implements() Path {
@@ -141,7 +141,7 @@ func (e edgePath) To() Path {
 }
 
 func (e edgePath) PathString() string {
-	return strings.Join([]string{e.from.PathString(), e.relationship, e.to.PathString()}, ".")
+	return strings.Join([]string{e.from.PathString(), e.relationship, e.to.PathString()}, "/")
 }
 
 func NewEdgePath(from Path, relationship string, to Path) EdgePath {

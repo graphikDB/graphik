@@ -65,6 +65,9 @@ func (g *Graph) QueryNodes(ctx context.Context, query graphik.NodeQuery) error {
 		if query == nil {
 			query = graphik.NewNodeQuery()
 		}
+		if query.Closer() != nil {
+			defer query.Closer()
+		}
 		count := 0
 		fromTypes, err := fromTypeBuckets(tx, query.Type())
 		if err != nil {
@@ -193,6 +196,9 @@ func (g *Graph) QueryEdges(ctx context.Context, q graphik.EdgeQuery) error {
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		if q == nil {
 			q = graphik.NewEdgeQuery()
+		}
+		if q.Closer() != nil {
+			defer q.Closer()
 		}
 		count := 0
 		fromTypes, err := fromTypeBuckets(tx, q.FromType())

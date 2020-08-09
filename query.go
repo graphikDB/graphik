@@ -15,6 +15,7 @@ type nodeQuery struct {
 	key     string
 	where   WhereFunc
 	handler NodeHandlerFunc
+	closer  func() error
 	limit   int
 }
 
@@ -24,6 +25,10 @@ func (q *nodeQuery) Mod(fn NodeQueryModFunc) NodeQuery {
 
 func (q *nodeQuery) Handler() NodeHandlerFunc {
 	return q.handler
+}
+
+func (q *nodeQuery) Closer() func() error {
+	return q.closer
 }
 
 func (q *nodeQuery) Type() string {
@@ -52,15 +57,12 @@ func (q *nodeQuery) Validate() (NodeQuery, error) {
 func NodeModType(typ string) NodeQueryModFunc {
 	return func(query NodeQuery) NodeQuery {
 		e := &nodeQuery{
-			typ:   typ,
-			key:   query.Key(),
-			limit: query.Limit(),
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			typ:     typ,
+			key:     query.Key(),
+			limit:   query.Limit(),
+			where:   query.Where(),
+			handler: query.Handler(),
+			closer:  query.Closer(),
 		}
 		return e
 	}
@@ -69,15 +71,26 @@ func NodeModType(typ string) NodeQueryModFunc {
 func NodeModKey(key string) NodeQueryModFunc {
 	return func(query NodeQuery) NodeQuery {
 		e := &nodeQuery{
-			typ:   query.Type(),
-			key:   key,
-			limit: query.Limit(),
+			typ:     query.Type(),
+			key:     key,
+			limit:   query.Limit(),
+			where:   query.Where(),
+			handler: query.Handler(),
+			closer:  query.Closer(),
 		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+		return e
+	}
+}
+
+func NodeModCloser(closer func() error) NodeQueryModFunc {
+	return func(query NodeQuery) NodeQuery {
+		e := &nodeQuery{
+			typ:     query.Type(),
+			key:     query.Key(),
+			where:   query.Where(),
+			handler: query.Handler(),
+			closer:  closer,
+			limit:   query.Limit(),
 		}
 		return e
 	}
@@ -86,15 +99,12 @@ func NodeModKey(key string) NodeQueryModFunc {
 func NodeModLimit(limit int) NodeQueryModFunc {
 	return func(query NodeQuery) NodeQuery {
 		e := &nodeQuery{
-			typ:   query.Type(),
-			key:   query.Key(),
-			limit: limit,
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			typ:     query.Type(),
+			key:     query.Key(),
+			limit:   limit,
+			where:   query.Where(),
+			handler: query.Handler(),
+			closer:  query.Closer(),
 		}
 		return e
 	}
@@ -107,9 +117,8 @@ func NodeModHandler(handler NodeHandlerFunc) NodeQueryModFunc {
 			key:     query.Key(),
 			limit:   query.Limit(),
 			handler: handler,
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
+			closer:  query.Closer(),
+			where:   query.Where(),
 		}
 		return e
 	}
@@ -117,13 +126,12 @@ func NodeModHandler(handler NodeHandlerFunc) NodeQueryModFunc {
 func NodeModWhere(where WhereFunc) NodeQueryModFunc {
 	return func(query NodeQuery) NodeQuery {
 		e := &nodeQuery{
-			typ:   query.Type(),
-			key:   query.Key(),
-			where: where,
-			limit: query.Limit(),
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			typ:     query.Type(),
+			key:     query.Key(),
+			where:   where,
+			limit:   query.Limit(),
+			closer:  query.Closer(),
+			handler: query.Handler(),
 		}
 		return e
 	}
@@ -137,11 +145,16 @@ type edgeQuery struct {
 	toKey        string
 	where        WhereFunc
 	handler      EdgeHandlerFunc
+	closer       func() error
 	limit        int
 }
 
 func (q *edgeQuery) Mod(fn EdgeQueryModFunc) EdgeQuery {
 	return fn(q)
+}
+
+func (q *edgeQuery) Closer() func() error {
+	return q.closer
 }
 
 func (q *edgeQuery) FromType() string {
@@ -192,12 +205,9 @@ func EdgeModFromType(fromType string) EdgeQueryModFunc {
 			toType:       query.ToType(),
 			toKey:        query.ToKey(),
 			limit:        query.Limit(),
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			where:        query.Where(),
+			handler:      query.Handler(),
+			closer:       query.Closer(),
 		}
 		return e
 	}
@@ -212,12 +222,9 @@ func EdgeModFromKey(fromKey string) EdgeQueryModFunc {
 			toType:       query.ToType(),
 			toKey:        query.ToKey(),
 			limit:        query.Limit(),
-		}
-		if query.Where() != nil {
-			e.where = query.Where()
-		}
-		if query.Handler() != nil {
-			e.handler = query.Handler()
+			where:        query.Where(),
+			handler:      query.Handler(),
+			closer:       query.Closer(),
 		}
 		return e
 	}
@@ -234,6 +241,7 @@ func EdgeModRelationship(relationship string) EdgeQueryModFunc {
 			where:        query.Where(),
 			handler:      query.Handler(),
 			limit:        query.Limit(),
+			closer:       query.Closer(),
 		}
 		return e
 	}
@@ -250,6 +258,7 @@ func EdgeModHandler(handler EdgeHandlerFunc) EdgeQueryModFunc {
 			toKey:        query.ToKey(),
 			toType:       query.ToType(),
 			limit:        query.Limit(),
+			closer:       query.Closer(),
 		}
 		if query.Where() != nil {
 			e.where = query.Where()
@@ -269,6 +278,7 @@ func EdgeModToType(toType string) EdgeQueryModFunc {
 			limit:        query.Limit(),
 			where:        query.Where(),
 			handler:      query.Handler(),
+			closer:       query.Closer(),
 		}
 		return e
 	}
@@ -285,6 +295,7 @@ func EdgeModToKey(toKey string) EdgeQueryModFunc {
 			limit:        query.Limit(),
 			where:        query.Where(),
 			handler:      query.Handler(),
+			closer:       query.Closer(),
 		}
 		return e
 	}
@@ -301,6 +312,7 @@ func EdgeModLimit(limit int) EdgeQueryModFunc {
 			limit:        limit,
 			where:        query.Where(),
 			handler:      query.Handler(),
+			closer:       query.Closer(),
 		}
 		return e
 	}
@@ -317,6 +329,23 @@ func EdgeModWhere(where WhereFunc) EdgeQueryModFunc {
 			where:        where,
 			limit:        query.Limit(),
 			handler:      query.Handler(),
+			closer:       query.Closer(),
+		}
+		return e
+	}
+}
+func EdgeModCloser(closer func() error) EdgeQueryModFunc {
+	return func(query EdgeQuery) EdgeQuery {
+		e := &edgeQuery{
+			fromType:     query.FromType(),
+			fromKey:      query.FromKey(),
+			relationship: query.Relationship(),
+			toType:       query.ToType(),
+			toKey:        query.ToKey(),
+			where:        query.Where(),
+			limit:        query.Limit(),
+			handler:      query.Handler(),
+			closer:       closer,
 		}
 		return e
 	}

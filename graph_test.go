@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/autom8ter/graphik"
 	"github.com/autom8ter/graphik/backends/mongo"
+	"github.com/autom8ter/graphik/functions/queries"
+	"os"
 	"testing"
 	"time"
 )
@@ -51,6 +53,18 @@ func Test(t *testing.T) {
 	friendship := graphik.NewEdge(graphik.NewEdgePath(coleman, "friend", tyler))
 	friendship.SetAttribute("source", "school")
 	if err := graph.AddEdge(context.Background(), friendship); err != nil {
+		t.Fatal(err.Error())
+	}
+	f, _ := os.Create("graph.dot")
+	q, err := queries.DotFileQuery(
+		f,
+		graphik.EdgeModToType("user"),
+		graphik.EdgeModRelationship("friend"),
+	).Validate()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if err := graph.QueryEdges(context.Background(), q); err != nil {
 		t.Fatal(err.Error())
 	}
 	time.Sleep(5 * time.Second)

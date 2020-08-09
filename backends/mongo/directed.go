@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"github.com/autom8ter/graphik"
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -74,6 +75,9 @@ func (g *Graph) edgeRelationships(ctx context.Context) ([]string, error) {
 func (g *Graph) QueryNodes(ctx context.Context, query graphik.NodeQuery) error {
 	if query == nil {
 		query = graphik.NewNodeQuery()
+	}
+	if query.Closer() != nil {
+		defer query.Closer()
 	}
 	filter := []bson.E{}
 	if query.Type() != "" {
@@ -203,6 +207,9 @@ func (g *Graph) QueryEdges(ctx context.Context, query graphik.EdgeQuery) error {
 	if query == nil {
 		query = graphik.NewEdgeQuery()
 	}
+	if query.Closer() != nil {
+		defer query.Closer()()
+	}
 	filter := []bson.E{}
 	if query.FromType() != "" {
 		filter = append(filter, bson.E{
@@ -244,15 +251,14 @@ func (g *Graph) QueryEdges(ctx context.Context, query graphik.EdgeQuery) error {
 	}
 
 	for _, collection := range collections {
-
 		cursor, err := g.edges.Collection(collection).Find(ctx, filter)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "failed to find cursor")
 		}
 		defer cursor.Close(ctx)
 		//counter := 0
 		if err := cursor.Err(); err != nil {
-			return err
+			return errors.Wrap(err, "cursor error")
 		}
 		for cursor.Next(ctx) {
 			raw := cursor.Current
@@ -262,24 +268,22 @@ func (g *Graph) QueryEdges(ctx context.Context, query graphik.EdgeQuery) error {
 				graphik.NewPath(query.ToType(), query.ToKey()),
 			))
 			if err := e.Unmarshal(raw); err != nil {
-				return err
+				return errors.Wrap(err, "failed to marshal edge")
 			}
 			if query.Where() != nil {
 				if query.Where()(g, e) {
 					if err := query.Handler()(g, e); err != nil {
 						return err
 					}
-
 				}
 			} else {
 				if err := query.Handler()(g, e); err != nil {
 					return err
 				}
-
 			}
 		}
 		if err := cursor.Err(); err != nil {
-			return err
+			return errors.Wrap(err, "cursor error")
 		}
 	}
 	return nil

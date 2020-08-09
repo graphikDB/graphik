@@ -119,6 +119,7 @@ type EdgeQuery interface {
 	Handler() EdgeHandlerFunc
 	// Validate returns the query and an error if it's invalid
 	Validate() (EdgeQuery, error)
+	Closer() func() error
 }
 ```
 
@@ -137,6 +138,12 @@ type EdgeQueryModFunc func(query EdgeQuery) EdgeQuery
 ```
 
 EdgeQueryModFunc modifies an edge query
+
+#### func  EdgeModCloser
+
+```go
+func EdgeModCloser(closer func() error) EdgeQueryModFunc
+```
 
 #### func  EdgeModFromKey
 
@@ -333,6 +340,7 @@ type NodeQuery interface {
 	Handler() NodeHandlerFunc
 	// Validate returns the query and an error if it's invalid
 	Validate() (NodeQuery, error)
+	Closer() func() error
 }
 ```
 
@@ -351,6 +359,12 @@ type NodeQueryModFunc func(query NodeQuery) NodeQuery
 ```
 
 NodeQueryModFunc modifies anode query
+
+#### func  NodeModCloser
+
+```go
+func NodeModCloser(closer func() error) NodeQueryModFunc
+```
 
 #### func  NodeModHandler
 

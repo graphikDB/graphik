@@ -103,6 +103,7 @@ type NodeQuery interface {
 	Handler() NodeHandlerFunc
 	// Validate returns the query and an error if it's invalid
 	Validate() (NodeQuery, error)
+	Closer() func() error
 }
 
 // EdgeQuery is used to find edges and execute logic on them
@@ -125,6 +126,7 @@ type EdgeQuery interface {
 	Handler() EdgeHandlerFunc
 	// Validate returns the query and an error if it's invalid
 	Validate() (EdgeQuery, error)
+	Closer() func() error
 }
 
 // NodeTriggerFunc is a function runs after nodes are added to the graph. If an error occurs, it will be returned
