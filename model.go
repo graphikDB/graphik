@@ -1,6 +1,7 @@
 package graphik
 
 import (
+	"context"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
 	"strings"
@@ -10,7 +11,7 @@ import (
 
 type attributer struct {
 	mu         *sync.RWMutex
-	attributes map[string]interface{}
+	attributes bson.M
 }
 
 func (a *attributer) init() {
@@ -165,9 +166,9 @@ func (n *node) PathString() string {
 
 func NewNode(path Path) Node {
 	return &node{Attributer: NewAttributer(map[string]interface{}{
-		"fullPath": path.PathString(),
-		"type":     path.Type(),
-		"key":      path.Key(),
+		"_id":  path.PathString(),
+		"type": path.Type(),
+		"key":  path.Key(),
 	})}
 }
 
@@ -175,7 +176,6 @@ func (n *node) implements() Node {
 	return n
 }
 
-// Edge is a simple graph edge.
 type edge struct {
 	Attributer
 }
@@ -193,13 +193,13 @@ func (e *edge) To() Path {
 }
 
 func (e *edge) PathString() string {
-	panic("implement me")
+	return NewEdgePath(e.From(), e.Relationship(), e.To()).PathString()
 }
 
 func NewEdge(path EdgePath) Edge {
 	return &edge{
 		Attributer: NewAttributer(map[string]interface{}{
-			"fullPath":     path.PathString(),
+			"_id":          path.PathString(),
 			"fromType":     path.From().Type(),
 			"fromKey":      path.From().Key(),
 			"relationship": path.Relationship(),
@@ -240,24 +240,22 @@ func (w *worker) HandleError(err error) {
 	w.errHandler(err)
 }
 
-func (w *worker) Start(g Graphik) {
+func (w *worker) Start(ctx context.Context, g Graphik) {
 	ticker := time.NewTicker(w.every)
 	w.wg.Add(1)
-
 	go func() {
 		defer ticker.Stop()
 		defer w.wg.Done()
 		for {
 			select {
 			case <-ticker.C:
-				w.wg.Add(1)
-				go func() {
-					defer w.wg.Done()
-					if err := w.worker(g); err != nil {
-						w.errHandler(err)
-					}
-				}()
+				if err := w.worker(g); err != nil {
+					w.errHandler(err)
+				}
 			case <-w.done:
+				return
+			case <-ctx.Done():
+				w.done <- struct{}{}
 				return
 			}
 		}
@@ -268,7 +266,7 @@ func (w *worker) Name() string {
 	return w.name
 }
 
-func (w *worker) Stop() {
+func (w *worker) Stop(ctx context.Context) {
 	w.done <- struct{}{}
 	w.wg.Wait()
 }

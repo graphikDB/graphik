@@ -279,10 +279,10 @@ type Graphik interface {
 	EdgeConstraints(constraints ...EdgeConstraintFunc)
 	// NodeTriggers adds the node triggers to the graph
 	EdgeTriggers(triggers ...EdgeTriggerFunc)
-	StartWorkers()
+	StartWorkers(ctx context.Context)
 	AddWorkers(workers ...Worker)
-	StopWorker(name string)
-	StopWorkers()
+	StopWorker(ctx context.Context, name string)
+	StopWorkers(ctx context.Context)
 }
 ```
 
@@ -436,8 +436,8 @@ WhereFunc is a WHERE clause that returns true/false based on it's implementation
 ```go
 type Worker interface {
 	Name() string
-	Stop()
-	Start(g Graphik)
+	Stop(ctx context.Context)
+	Start(ctx context.Context, g Graphik)
 }
 ```
 

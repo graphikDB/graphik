@@ -172,10 +172,10 @@ type Graphik interface {
 	EdgeConstraints(constraints ...EdgeConstraintFunc)
 	// NodeTriggers adds the node triggers to the graph
 	EdgeTriggers(triggers ...EdgeTriggerFunc)
-	StartWorkers()
+	StartWorkers(ctx context.Context)
 	AddWorkers(workers ...Worker)
-	StopWorker(name string)
-	StopWorkers()
+	StopWorker(ctx context.Context, name string)
+	StopWorkers(ctx context.Context)
 }
 
 // WorkerFunc executes logic against a graphik instance
@@ -184,8 +184,8 @@ type WorkerFunc func(g Graphik) error
 // Worker is an asynchronous process that executes logic against a graphik instance. It can be stopped and started.
 type Worker interface {
 	Name() string
-	Stop()
-	Start(g Graphik)
+	Stop(ctx context.Context)
+	Start(ctx context.Context, g Graphik)
 }
 
 // ErrHandler executes a function against the input error
@@ -321,21 +321,21 @@ func (g *graphik) AddWorkers(workers ...Worker) {
 	}
 }
 
-func (g *graphik) StartWorkers() {
+func (g *graphik) StartWorkers(ctx context.Context) {
 	for _, worker := range g.workers {
-		worker.Start(g)
+		worker.Start(ctx, g)
 	}
 }
 
-func (g *graphik) StopWorker(name string) {
+func (g *graphik) StopWorker(ctx context.Context, name string) {
 	if worker, ok := g.workers[name]; ok {
-		worker.Stop()
+		worker.Stop(ctx)
 	}
 }
 
-func (g *graphik) StopWorkers() {
+func (g *graphik) StopWorkers(ctx context.Context) {
 	for _, worker := range g.workers {
-		worker.Stop()
+		worker.Stop(ctx)
 	}
 }
 

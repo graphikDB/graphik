@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func Test(t *testing.T) {
+func TestBolt(t *testing.T) {
 	os.RemoveAll("/tmp/graphik")
 	graph, err := graphik.New(boltdb.Open(boltdb.DefaultPath))
 	if err != nil {
@@ -45,7 +45,7 @@ func Test(t *testing.T) {
 	}
 }
 
-func Test2(t *testing.T) {
+func TestBolt2(t *testing.T) {
 	tmpdir, err := ioutil.TempDir("", "")
 	if err != nil {
 		t.Fatal(err.Error())
@@ -66,7 +66,7 @@ func Test2(t *testing.T) {
 	if err := graph.AddNode(context.Background(), node2); err != nil {
 		t.Fatal(err.Error())
 	}
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 5; i++ {
 		edge := graphik.NewEdge(graphik.NewEdgePath(node, "friends", node2))
 		edge.SetAttribute("testing", true)
 		if err := graph.AddEdge(context.Background(), edge); err != nil {

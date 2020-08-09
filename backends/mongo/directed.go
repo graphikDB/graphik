@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 type Graph struct {
@@ -17,7 +18,17 @@ type Graph struct {
 // Open returns a Graph.
 func Open(uri string) graphik.GraphOpenerFunc {
 	return func() (graphik.Graph, error) {
-		client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+		client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+		if err != nil {
+			return nil, err
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		err = client.Connect(ctx)
+		if err != nil {
+			return nil, err
+		}
+		err = client.Ping(ctx, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -38,8 +49,10 @@ func (g *Graph) AddNode(ctx context.Context, n graphik.Node) error {
 	vals := bson.M{}
 	n.Range(func(k string, v interface{}) bool {
 		vals[k] = v
+
 		return true
 	})
+
 	_, err := g.nodes.Collection(n.Type()).ReplaceOne(ctx, bson.D{{
 		Key:   "_id",
 		Value: n.PathString()},
@@ -134,7 +147,7 @@ func (g *Graph) DelNode(ctx context.Context, path graphik.Path) error {
 func (g *Graph) GetNode(ctx context.Context, path graphik.Path) (graphik.Node, error) {
 	res := g.nodes.Collection(path.Type()).FindOne(ctx, bson.D{{
 		Key:   "_id",
-		Value: path.Key()},
+		Value: path.PathString()},
 	})
 	if res.Err() != nil {
 		return nil, res.Err()
@@ -157,7 +170,7 @@ func (g *Graph) AddEdge(ctx context.Context, e graphik.Edge) error {
 		vals[k] = v
 		return true
 	})
-	_, err := g.nodes.Collection(e.Relationship()).ReplaceOne(ctx, bson.D{{
+	_, err := g.edges.Collection(e.Relationship()).ReplaceOne(ctx, bson.D{{
 		Key:   "_id",
 		Value: e.PathString()},
 	}, vals, opts)
@@ -229,14 +242,19 @@ func (g *Graph) QueryEdges(ctx context.Context, query graphik.EdgeQuery) error {
 	if lim == 0 {
 		lim = 1000
 	}
+
 	for _, collection := range collections {
-		cursor, err := g.nodes.Collection(collection).Find(ctx, filter)
+
+		cursor, err := g.edges.Collection(collection).Find(ctx, filter)
 		if err != nil {
 			return err
 		}
 		defer cursor.Close(ctx)
-		counter := 0
-		for cursor.Next(ctx) && counter < lim {
+		//counter := 0
+		if err := cursor.Err(); err != nil {
+			return err
+		}
+		for cursor.Next(ctx) {
 			raw := cursor.Current
 			var e = graphik.NewEdge(graphik.NewEdgePath(
 				graphik.NewPath(query.FromType(), query.FromKey()),
@@ -251,14 +269,17 @@ func (g *Graph) QueryEdges(ctx context.Context, query graphik.EdgeQuery) error {
 					if err := query.Handler()(g, e); err != nil {
 						return err
 					}
-					counter++
+
 				}
 			} else {
 				if err := query.Handler()(g, e); err != nil {
 					return err
 				}
-				counter++
+
 			}
+		}
+		if err := cursor.Err(); err != nil {
+			return err
 		}
 	}
 	return nil
