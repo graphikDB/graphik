@@ -13,5 +13,8 @@ lint:
 	@go vet ./...
 
 .PHONY: gen
-gen: lint
+gen: lint ## lint project
 	@go generate ./...
+
+test: gen ## run all tests
+	@go test -v ./...

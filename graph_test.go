@@ -1,6 +1,7 @@
 package graphik_test
 
 import (
+	"context"
 	"github.com/autom8ter/graphik"
 	"github.com/autom8ter/graphik/backends/boltdb"
 	"io/ioutil"
@@ -30,7 +31,7 @@ func Test(t *testing.T) {
 		if err != nil {
 			return err
 		}
-		if err := graph.QueryEdges(friendsFromSchool); err != nil {
+		if err := graph.QueryEdges(context.Background(), friendsFromSchool); err != nil {
 			return err
 		}
 		return nil
@@ -42,17 +43,17 @@ func Test(t *testing.T) {
 	defer graph.StopWorkers()
 	coleman := graphik.NewNode(graphik.NewPath("user", "cword3"), nil)
 	coleman.SetAttribute("name", "coleman")
-	if err := graph.AddNode(coleman); err != nil {
+	if err := graph.AddNode(context.Background(), coleman); err != nil {
 		t.Fatal(err.Error())
 	}
 	tyler := graphik.NewNode(graphik.NewPath("user", "tyler123"), nil)
 	tyler.SetAttribute("name", "tyler")
-	if err := graph.AddNode(tyler); err != nil {
+	if err := graph.AddNode(context.Background(), tyler); err != nil {
 		t.Fatal(err.Error())
 	}
 	friendship := graphik.NewEdge(coleman, "friends", tyler, nil)
 	friendship.SetAttribute("source", "school")
-	if err := graph.AddEdge(friendship); err != nil {
+	if err := graph.AddEdge(context.Background(), friendship); err != nil {
 		t.Fatal(err.Error())
 	}
 	time.Sleep(5 * time.Second)
