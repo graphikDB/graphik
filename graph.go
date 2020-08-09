@@ -135,19 +135,11 @@ type NodeTriggerFunc func(g Graph, node Node, deleted bool) error
 // but the edge will still be added to the graph.
 type EdgeTriggerFunc func(g Graph, edge Edge, deleted bool) error
 
-// EdgeConstraintFunc is a function run before edges are added to the graph. If an error occurs, it will be returned
-// and the edge will not be added to the graph
-type EdgeConstraintFunc func(g Graph, edge Edge, toDelete bool) error
-
 // EdgeHandlerFunc that executes logic against an edge in a graph
 type EdgeHandlerFunc func(g Graph, e Edge) error
 
 // NodeHandlerFunc that executes logic against a node in a graph
 type NodeHandlerFunc func(g Graph, n Node) error
-
-// NodeConstraintFunc is a function run before nodes are added to the database. If an error occurs, it will be returned
-// and the node will not be added to the graph
-type NodeConstraintFunc func(g Graph, node Node, toDelete bool) error
 
 // WhereFunc is a WHERE clause that returns true/false based on it's implementation
 type WhereFunc func(g Graph, a Attributer) bool
@@ -165,13 +157,17 @@ type GraphOpenerFunc func() (Graph, error)
 type Graphik interface {
 	Graph
 	// NodeConstraints adds the node constraints to the graph
-	NodeConstraints(constraints ...NodeConstraintFunc)
+	NodeConstraints(constraints ...NodeTriggerFunc)
 	// NodeTriggers adds the triggers to the graph
 	NodeTriggers(triggers ...NodeTriggerFunc)
+	NodeLabelers(labelers ...NodeTriggerFunc)
+
 	// EdgeConstraints adds the edge constraints to the graph
-	EdgeConstraints(constraints ...EdgeConstraintFunc)
+	EdgeConstraints(constraints ...EdgeTriggerFunc)
 	// NodeTriggers adds the node triggers to the graph
 	EdgeTriggers(triggers ...EdgeTriggerFunc)
+	EdgeLabelers(labelers ...EdgeTriggerFunc)
+
 	StartWorkers(ctx context.Context)
 	AddWorkers(workers ...Worker)
 	StopWorker(ctx context.Context, name string)
@@ -203,12 +199,19 @@ type graphik struct {
 	workers         map[string]Worker
 	nodeTriggers    []NodeTriggerFunc
 	edgeTriggers    []EdgeTriggerFunc
-	nodeConstraints []NodeConstraintFunc
-	edgeConstraints []EdgeConstraintFunc
+	nodeConstraints []NodeTriggerFunc
+	edgeConstraints []EdgeTriggerFunc
+	edgeLabelers    []EdgeTriggerFunc
+	nodeLabelers    []NodeTriggerFunc
 }
 
 func (g *graphik) AddNode(ctx context.Context, n Node) error {
 	for _, fn := range g.nodeConstraints {
+		if err := fn(g, n, false); err != nil {
+			return err
+		}
+	}
+	for _, fn := range g.nodeLabelers {
 		if err := fn(g, n, false); err != nil {
 			return err
 		}
@@ -238,6 +241,11 @@ func (g *graphik) DelNode(ctx context.Context, path Path) error {
 			return err
 		}
 	}
+	for _, fn := range g.nodeLabelers {
+		if err := fn(g, n, true); err != nil {
+			return err
+		}
+	}
 	if err := g.graph.DelNode(ctx, n); err != nil {
 		return err
 	}
@@ -255,6 +263,11 @@ func (g *graphik) GetNode(ctx context.Context, path Path) (Node, error) {
 
 func (g *graphik) AddEdge(ctx context.Context, e Edge) error {
 	for _, fn := range g.edgeConstraints {
+		if err := fn(g, e, false); err != nil {
+			return err
+		}
+	}
+	for _, fn := range g.edgeLabelers {
 		if err := fn(g, e, false); err != nil {
 			return err
 		}
@@ -284,6 +297,11 @@ func (g *graphik) DelEdge(ctx context.Context, e Edge) error {
 			return err
 		}
 	}
+	for _, fn := range g.edgeLabelers {
+		if err := fn(g, e, false); err != nil {
+			return err
+		}
+	}
 	if err := g.graph.DelEdge(ctx, e); err != nil {
 		return err
 	}
@@ -299,7 +317,7 @@ func (g *graphik) Close(ctx context.Context) error {
 	return g.graph.Close(ctx)
 }
 
-func (g *graphik) NodeConstraints(constraints ...NodeConstraintFunc) {
+func (g *graphik) NodeConstraints(constraints ...NodeTriggerFunc) {
 	g.nodeConstraints = append(g.nodeConstraints, constraints...)
 }
 
@@ -307,8 +325,16 @@ func (g *graphik) NodeTriggers(triggers ...NodeTriggerFunc) {
 	g.nodeTriggers = append(g.nodeTriggers, triggers...)
 }
 
-func (g *graphik) EdgeConstraints(constraints ...EdgeConstraintFunc) {
+func (g *graphik) NodeLabelers(labelers ...NodeTriggerFunc) {
+	g.nodeLabelers = append(g.nodeLabelers, labelers...)
+}
+
+func (g *graphik) EdgeConstraints(constraints ...EdgeTriggerFunc) {
 	g.edgeConstraints = append(g.edgeConstraints, constraints...)
+}
+
+func (g *graphik) EdgeLabelers(labelers ...EdgeTriggerFunc) {
+	g.edgeLabelers = append(g.edgeLabelers, labelers...)
 }
 
 func (g *graphik) EdgeTriggers(triggers ...EdgeTriggerFunc) {

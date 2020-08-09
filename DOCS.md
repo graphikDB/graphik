@@ -71,15 +71,6 @@ Edge is the path from one node to another with a relationship and attributes
 func NewEdge(path EdgePath) Edge
 ```
 
-#### type EdgeConstraintFunc
-
-```go
-type EdgeConstraintFunc func(g Graph, edge Edge, toDelete bool) error
-```
-
-EdgeConstraintFunc is a function run before edges are added to the graph. If an
-error occurs, it will be returned and the edge will not be added to the graph
-
 #### type EdgeHandlerFunc
 
 ```go
@@ -272,13 +263,17 @@ GraphOpenerFunc opens a Graph. Backends should export an opener method.
 type Graphik interface {
 	Graph
 	// NodeConstraints adds the node constraints to the graph
-	NodeConstraints(constraints ...NodeConstraintFunc)
+	NodeConstraints(constraints ...NodeTriggerFunc)
 	// NodeTriggers adds the triggers to the graph
 	NodeTriggers(triggers ...NodeTriggerFunc)
+	NodeLabelers(labelers ...NodeTriggerFunc)
+
 	// EdgeConstraints adds the edge constraints to the graph
-	EdgeConstraints(constraints ...EdgeConstraintFunc)
+	EdgeConstraints(constraints ...EdgeTriggerFunc)
 	// NodeTriggers adds the node triggers to the graph
 	EdgeTriggers(triggers ...EdgeTriggerFunc)
+	EdgeLabelers(labelers ...EdgeTriggerFunc)
+
 	StartWorkers(ctx context.Context)
 	AddWorkers(workers ...Worker)
 	StopWorker(ctx context.Context, name string)
@@ -313,15 +308,6 @@ Node is the path to a node + its own custom attributes
 ```go
 func NewNode(path Path) Node
 ```
-
-#### type NodeConstraintFunc
-
-```go
-type NodeConstraintFunc func(g Graph, node Node, toDelete bool) error
-```
-
-NodeConstraintFunc is a function run before nodes are added to the database. If
-an error occurs, it will be returned and the node will not be added to the graph
 
 #### type NodeHandlerFunc
 
