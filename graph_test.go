@@ -41,17 +41,17 @@ func Test(t *testing.T) {
 	graph.AddWorkers(testWorker)
 	graph.StartWorkers()
 	defer graph.StopWorkers()
-	coleman := graphik.NewNode(graphik.NewPath("user", "cword3"), nil)
+	coleman := graphik.NewNode(graphik.NewPath("user", "cword3"))
 	coleman.SetAttribute("name", "coleman")
 	if err := graph.AddNode(context.Background(), coleman); err != nil {
 		t.Fatal(err.Error())
 	}
-	tyler := graphik.NewNode(graphik.NewPath("user", "tyler123"), nil)
+	tyler := graphik.NewNode(graphik.NewPath("user", "tyler123"))
 	tyler.SetAttribute("name", "tyler")
 	if err := graph.AddNode(context.Background(), tyler); err != nil {
 		t.Fatal(err.Error())
 	}
-	friendship := graphik.NewEdge(coleman, "friends", tyler, nil)
+	friendship := graphik.NewEdge(graphik.NewEdgePath(coleman, "friends", tyler))
 	friendship.SetAttribute("source", "school")
 	if err := graph.AddEdge(context.Background(), friendship); err != nil {
 		t.Fatal(err.Error())

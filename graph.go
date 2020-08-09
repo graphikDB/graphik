@@ -11,7 +11,14 @@ import (
 type Path interface {
 	Type() string
 	Key() string
-	String() string
+	PathString() string
+}
+
+type EdgePath interface {
+	Relationship() string
+	From() Path
+	To() Path
+	PathString() string
 }
 
 // Encoder can marshal to bytes and unmarshal itself from bytes
@@ -50,10 +57,7 @@ type Node interface {
 // Edge is the path from one node to another with a relationship and attributes
 type Edge interface {
 	Attributer
-	Relationship() string
-	From() Path
-	To() Path
-	Reversed() Edge
+	EdgePath
 }
 
 // Graph is a directed acyclic graph (DAG)
@@ -69,7 +73,7 @@ type Graph interface {
 	// AddEdge adds an edge to the graph
 	AddEdge(ctx context.Context, e Edge) error
 	// GetEdge gets an edge from the graph
-	GetEdge(ctx context.Context, from Path, relationship string, to Path) (Edge, error)
+	GetEdge(ctx context.Context, path EdgePath) (Edge, error)
 	// QueryEdges executes the query against graph edges
 	QueryEdges(ctx context.Context, query EdgeQuery) error
 	// DelEdge deletes the edge by path
@@ -266,8 +270,8 @@ func (g *graphik) AddEdge(ctx context.Context, e Edge) error {
 	return nil
 }
 
-func (g *graphik) GetEdge(ctx context.Context, from Path, relationship string, to Path) (Edge, error) {
-	return g.graph.GetEdge(ctx, from, relationship, to)
+func (g *graphik) GetEdge(ctx context.Context, path EdgePath) (Edge, error) {
+	return g.graph.GetEdge(ctx, path)
 }
 
 func (g *graphik) QueryEdges(ctx context.Context, query EdgeQuery) error {

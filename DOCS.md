@@ -59,10 +59,7 @@ Counter returns a count of something
 ```go
 type Edge interface {
 	Attributer
-	Relationship() string
-	From() Path
-	To() Path
-	Reversed() Edge
+	EdgePath
 }
 ```
 
@@ -71,7 +68,7 @@ Edge is the path from one node to another with a relationship and attributes
 #### func  NewEdge
 
 ```go
-func NewEdge(from Path, relationship string, to Path, attr Attributer) Edge
+func NewEdge(path EdgePath) Edge
 ```
 
 #### type EdgeConstraintFunc
@@ -90,6 +87,24 @@ type EdgeHandlerFunc func(g Graph, e Edge) error
 ```
 
 EdgeHandlerFunc that executes logic against an edge in a graph
+
+#### type EdgePath
+
+```go
+type EdgePath interface {
+	Relationship() string
+	From() Path
+	To() Path
+	PathString() string
+}
+```
+
+
+#### func  NewEdgePath
+
+```go
+func NewEdgePath(from Path, relationship string, to Path) EdgePath
+```
 
 #### type EdgeQuery
 
@@ -230,7 +245,7 @@ type Graph interface {
 	// AddEdge adds an edge to the graph
 	AddEdge(ctx context.Context, e Edge) error
 	// GetEdge gets an edge from the graph
-	GetEdge(ctx context.Context, from Path, relationship string, to Path) (Edge, error)
+	GetEdge(ctx context.Context, path EdgePath) (Edge, error)
 	// QueryEdges executes the query against graph edges
 	QueryEdges(ctx context.Context, query EdgeQuery) error
 	// DelEdge deletes the edge by path
@@ -296,7 +311,7 @@ Node is the path to a node + its own custom attributes
 #### func  NewNode
 
 ```go
-func NewNode(path Path, attr Attributer) Node
+func NewNode(path Path) Node
 ```
 
 #### type NodeConstraintFunc
@@ -396,7 +411,7 @@ error occurs, it will be returned but the node will still be added to the graph.
 type Path interface {
 	Type() string
 	Key() string
-	String() string
+	PathString() string
 }
 ```
 

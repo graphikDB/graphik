@@ -113,7 +113,7 @@ func (p *path) Key() string {
 	return p.key
 }
 
-func (p *path) String() string {
+func (p *path) PathString() string {
 	return strings.Join([]string{p.typ, p.key}, ".")
 }
 
@@ -121,22 +121,34 @@ func (p *path) implements() Path {
 	return p
 }
 
+type edgePath struct {
+	from         Path
+	relationship string
+	to           Path
+}
+
+func (e edgePath) Relationship() string {
+	return e.relationship
+}
+
+func (e edgePath) From() Path {
+	return e.from
+}
+
+func (e edgePath) To() Path {
+	return e.to
+}
+
+func (e edgePath) PathString() string {
+	return strings.Join([]string{e.from.PathString(), e.relationship, e.to.PathString()}, ".")
+}
+
+func NewEdgePath(from Path, relationship string, to Path) EdgePath {
+	return &edgePath{from: from, relationship: relationship, to: to}
+}
+
 type node struct {
 	Attributer
-}
-
-func NewNode(path Path, attr Attributer) Node {
-	if attr == nil {
-		attr = NewAttributer(map[string]interface{}{
-			"type": path.Type(),
-			"key":  path.Key(),
-		})
-	}
-	return &node{Attributer: attr}
-}
-
-func (n *node) implements() Node {
-	return n
 }
 
 func (n *node) Type() string {
@@ -147,34 +159,25 @@ func (n *node) Key() string {
 	return n.GetAttribute("key").(string)
 }
 
+func (n *node) PathString() string {
+	return NewPath(n.Type(), n.Key()).PathString()
+}
+
+func NewNode(path Path) Node {
+	return &node{Attributer: NewAttributer(map[string]interface{}{
+		"fullPath": path.PathString(),
+		"type":     path.Type(),
+		"key":      path.Key(),
+	})}
+}
+
+func (n *node) implements() Node {
+	return n
+}
+
 // Edge is a simple graph edge.
 type edge struct {
 	Attributer
-}
-
-func NewEdge(from Path, relationship string, to Path, attr Attributer) Edge {
-	if attr == nil {
-		attr = NewAttributer(map[string]interface{}{
-			"fromType":     from.Type(),
-			"fromKey":      from.Key(),
-			"relationship": relationship,
-			"toType":       to.Type(),
-			"toKey":        to.Key(),
-		})
-	}
-	return &edge{
-		Attributer: NewAttributer(map[string]interface{}{
-			"fromType":     from.Type(),
-			"fromKey":      from.Key(),
-			"relationship": relationship,
-			"toType":       to.Type(),
-			"toKey":        to.Key(),
-		}),
-	}
-}
-
-func (e *edge) implements() Edge {
-	return e
 }
 
 func (e *edge) Relationship() string {
@@ -182,21 +185,32 @@ func (e *edge) Relationship() string {
 }
 
 func (e *edge) From() Path {
-	return &path{
-		typ: e.GetAttribute("fromType").(string),
-		key: e.GetAttribute("fromKey").(string),
-	}
+	return NewPath(e.GetAttribute("fromType").(string), e.GetAttribute("fromKey").(string))
 }
 
 func (e *edge) To() Path {
-	return &path{
-		typ: e.GetAttribute("toType").(string),
-		key: e.GetAttribute("toKey").(string),
+	return NewPath(e.GetAttribute("toType").(string), e.GetAttribute("toKey").(string))
+}
+
+func (e *edge) PathString() string {
+	panic("implement me")
+}
+
+func NewEdge(path EdgePath) Edge {
+	return &edge{
+		Attributer: NewAttributer(map[string]interface{}{
+			"fullPath":     path.PathString(),
+			"fromType":     path.From().Type(),
+			"fromKey":      path.From().Key(),
+			"relationship": path.Relationship(),
+			"toType":       path.To().Type(),
+			"toKey":        path.To().Key(),
+		}),
 	}
 }
 
-func (e *edge) Reversed() Edge {
-	return NewEdge(e.To(), e.Relationship(), e.From(), e)
+func (e *edge) implements() Edge {
+	return e
 }
 
 type worker struct {

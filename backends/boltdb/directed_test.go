@@ -20,24 +20,24 @@ func Test(t *testing.T) {
 	defer graph.Close(context.Background())
 
 	for i := 0; i < 10; i++ {
-		node := graphik.NewNode(graphik.NewPath("user", fmt.Sprintf("%s-%d", "cword3", time.Now().UnixNano())), nil)
+		node := graphik.NewNode(graphik.NewPath("user", fmt.Sprintf("%s-%d", "cword3", time.Now().UnixNano())))
 		node.SetAttribute("name", "coleman")
 		if err := graph.AddNode(context.Background(), node); err != nil {
 			t.Fatal(err.Error())
 		}
 		t.Log(node.String())
-		node2 := graphik.NewNode(graphik.NewPath("user", fmt.Sprintf("%s-%d", "twash2", time.Now().UnixNano())), nil)
+		node2 := graphik.NewNode(graphik.NewPath("user", fmt.Sprintf("%s-%d", "twash2", time.Now().UnixNano())))
 		node2.SetAttribute("name", "tyler")
 		if err := graph.AddNode(context.Background(), node2); err != nil {
 			t.Fatal(err.Error())
 		}
 		t.Log(node2.String())
-		edge := graphik.NewEdge(node, "friend", node2, nil)
+		edge := graphik.NewEdge(graphik.NewEdgePath(node, "friend", node2))
 		if err := graph.AddEdge(context.Background(), edge); err != nil {
 			t.Fatal(err.Error())
 		}
 		fmt.Println(edge.String())
-		edge2 := graphik.NewEdge(node, "groomsman", node2, nil)
+		edge2 := graphik.NewEdge(graphik.NewEdgePath(node, "groomsman", node2))
 		if err := graph.AddEdge(context.Background(), edge2); err != nil {
 			t.Fatal(err.Error())
 		}
@@ -56,18 +56,18 @@ func Test2(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 	defer graph.Close(context.Background())
-	node := graphik.NewNode(graphik.NewPath("user", fmt.Sprintf("%s-%d", "cword3", time.Now().UnixNano())), nil)
+	node := graphik.NewNode(graphik.NewPath("user", fmt.Sprintf("%s-%d", "cword3", time.Now().UnixNano())))
 	node.SetAttribute("name", "coleman")
 	if err := graph.AddNode(context.Background(), node); err != nil {
 		t.Fatal(err.Error())
 	}
-	node2 := graphik.NewNode(graphik.NewPath("user", fmt.Sprintf("%s-%d", "twash2", time.Now().UnixNano())), nil)
+	node2 := graphik.NewNode(graphik.NewPath("user", fmt.Sprintf("%s-%d", "twash2", time.Now().UnixNano())))
 	node2.SetAttribute("name", "tyler")
 	if err := graph.AddNode(context.Background(), node2); err != nil {
 		t.Fatal(err.Error())
 	}
 	for i := 0; i < 100; i++ {
-		edge := graphik.NewEdge(node, "friends", node2, nil)
+		edge := graphik.NewEdge(graphik.NewEdgePath(node, "friends", node2))
 		edge.SetAttribute("testing", true)
 		if err := graph.AddEdge(context.Background(), edge); err != nil {
 			t.Fatal(err.Error())

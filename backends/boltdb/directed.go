@@ -79,7 +79,7 @@ func (g *Graph) QueryNodes(ctx context.Context, query graphik.NodeQuery) error {
 				if query.Limit() > 0 && count >= query.Limit() {
 					return nil
 				}
-				var n = graphik.NewNode(graphik.NewPath(fromTypes.key, fromKeys.key), nil)
+				var n = graphik.NewNode(graphik.NewPath(fromTypes.key, fromKeys.key))
 				res := fromKey.Get([]byte("attributes"))
 				if len(res) > 0 {
 					if err := n.Unmarshal(res); err != nil {
@@ -106,7 +106,7 @@ func (g *Graph) QueryNodes(ctx context.Context, query graphik.NodeQuery) error {
 }
 
 func (g *Graph) GetNode(ctx context.Context, path graphik.Path) (graphik.Node, error) {
-	var node = graphik.NewNode(path, nil)
+	var node = graphik.NewNode(path)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket([]byte(path.Type()))
 		if bucket == nil {
@@ -155,26 +155,26 @@ func (g *Graph) AddEdge(ctx context.Context, e graphik.Edge) error {
 	})
 }
 
-func (g *Graph) GetEdge(ctx context.Context, from graphik.Path, relationship string, to graphik.Path) (graphik.Edge, error) {
-	var e = graphik.NewEdge(from, relationship, to, nil)
+func (g *Graph) GetEdge(ctx context.Context, path graphik.EdgePath) (graphik.Edge, error) {
+	var e = graphik.NewEdge(path)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket([]byte(from.Type()))
+		bucket := tx.Bucket([]byte(path.From().Type()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
-		bucket = bucket.Bucket([]byte(from.Key()))
+		bucket = bucket.Bucket([]byte(path.From().Key()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
-		bucket = bucket.Bucket([]byte(relationship))
+		bucket = bucket.Bucket([]byte(path.Relationship()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
-		bucket = bucket.Bucket([]byte(to.Type()))
+		bucket = bucket.Bucket([]byte(path.To().Type()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
-		bucket = bucket.Bucket([]byte(to.Key()))
+		bucket = bucket.Bucket([]byte(path.To().Key()))
 		if bucket == nil {
 			return errors.New("not found")
 		}
@@ -226,7 +226,7 @@ func (g *Graph) QueryEdges(ctx context.Context, q graphik.EdgeQuery) error {
 							if q.Limit() != 0 && count >= q.Limit() {
 								return nil
 							}
-							var e = graphik.NewEdge(graphik.NewPath(fromTypes.key, fromKeys.key), rels.key, graphik.NewPath(toTypes.key, toKeys.key), nil)
+							var e = graphik.NewEdge(graphik.NewEdgePath(graphik.NewPath(fromTypes.key, fromKeys.key), rels.key, graphik.NewPath(toTypes.key, toKeys.key)))
 							res := toKey.Get([]byte("attributes"))
 							if len(res) > 0 {
 								if err := e.Unmarshal(res); err != nil {
