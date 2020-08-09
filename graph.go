@@ -11,6 +11,7 @@ import (
 type Path interface {
 	Type() string
 	Key() string
+	String() string
 }
 
 // Encoder can marshal to bytes and unmarshal itself from bytes

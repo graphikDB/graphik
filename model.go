@@ -3,6 +3,7 @@ package graphik
 import (
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
+	"strings"
 	"sync"
 	"time"
 )
@@ -110,6 +111,10 @@ func (p *path) Type() string {
 
 func (p *path) Key() string {
 	return p.key
+}
+
+func (p *path) String() string {
+	return strings.Join([]string{p.typ, p.key}, ".")
 }
 
 func (p *path) implements() Path {

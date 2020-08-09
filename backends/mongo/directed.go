@@ -9,8 +9,9 @@ import (
 )
 
 type Graph struct {
-	db  *mongo.Database
-	uri string
+	client *mongo.Client
+	edges  *mongo.Database
+	uri    string
 }
 
 // Open returns a Graph.
@@ -21,8 +22,8 @@ func Open(uri string) graphik.GraphOpenerFunc {
 			return nil, err
 		}
 		return &Graph{
-			uri: uri,
-			db:  client.Database("graphik"),
+			uri:    uri,
+			client: client,
 		}, nil
 	}
 }
@@ -38,7 +39,7 @@ func (g *Graph) AddNode(ctx context.Context, n graphik.Node) error {
 		vals[k] = v
 		return true
 	})
-	_, err := g.db.Collection(n.Type()).ReplaceOne(ctx, bson.D{{
+	_, err := g.client.Database("nodes").Collection(n.Type()).ReplaceOne(ctx, bson.D{{
 		Key:   "_id",
 		Value: n.Key()},
 	}, vals, opts)
@@ -53,7 +54,7 @@ func (g *Graph) QueryNodes(ctx context.Context, query graphik.NodeQuery) error {
 }
 
 func (g *Graph) DelNode(ctx context.Context, path graphik.Path) error {
-	if err := g.db.Collection(path.Type()).FindOneAndDelete(ctx, bson.D{{
+	if err := g.client.Database("nodes").Collection(path.Type()).FindOneAndDelete(ctx, bson.D{{
 		Key:   "_id",
 		Value: path.Key()},
 	}).Err(); err != nil {
@@ -63,7 +64,7 @@ func (g *Graph) DelNode(ctx context.Context, path graphik.Path) error {
 }
 
 func (g *Graph) GetNode(ctx context.Context, path graphik.Path) (graphik.Node, error) {
-	res := g.db.Collection(path.Type()).FindOne(ctx, bson.D{{
+	res := g.client.Database("nodes").Collection(path.Type()).FindOne(ctx, bson.D{{
 		Key:   "_id",
 		Value: path.Key()},
 	})
@@ -82,11 +83,39 @@ func (g *Graph) GetNode(ctx context.Context, path graphik.Path) (graphik.Node, e
 }
 
 func (g *Graph) AddEdge(ctx context.Context, e graphik.Edge) error {
-	panic("implement me")
+	opts := options.Replace().SetUpsert(true)
+	vals := bson.M{}
+	e.Range(func(k string, v interface{}) bool {
+		vals[k] = v
+		return true
+	})
+	_, err := g.client.Database(e.From().String()).Collection(e.Relationship()).ReplaceOne(ctx, bson.D{{
+		Key:   "_id",
+		Value: e.To().String()},
+	}, vals, opts)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (g *Graph) GetEdge(ctx context.Context, from graphik.Path, relationship string, to graphik.Path) (graphik.Edge, error) {
-	panic("implement me")
+	res := g.client.Database(from.String()).Collection(relationship).FindOne(ctx, bson.D{{
+		Key:   "_id",
+		Value: to.String()},
+	})
+	if res.Err() != nil {
+		return nil, res.Err()
+	}
+	bits, err := res.DecodeBytes()
+	if err != nil {
+		return nil, err
+	}
+	e := graphik.NewEdge(from, relationship, to, nil)
+	if err := e.Unmarshal(bits); err != nil {
+		return nil, err
+	}
+	return e, nil
 }
 
 func (g *Graph) QueryEdges(ctx context.Context, query graphik.EdgeQuery) error {
@@ -94,9 +123,16 @@ func (g *Graph) QueryEdges(ctx context.Context, query graphik.EdgeQuery) error {
 }
 
 func (g *Graph) DelEdge(ctx context.Context, e graphik.Edge) error {
-	panic("implement me")
+	res := g.client.Database(e.From().String()).Collection(e.Relationship()).FindOne(ctx, bson.D{{
+		Key:   "_id",
+		Value: e.To().String()},
+	})
+	if res.Err() != nil {
+		return res.Err()
+	}
+	return nil
 }
 
 func (g *Graph) Close(ctx context.Context) error {
-	return g.db.Client().Disconnect(ctx)
+	return g.client.Disconnect(ctx)
 }

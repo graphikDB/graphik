@@ -396,6 +396,7 @@ error occurs, it will be returned but the node will still be added to the graph.
 type Path interface {
 	Type() string
 	Key() string
+	String() string
 }
 ```
 
