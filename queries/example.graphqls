@@ -1,0 +1,9 @@
+mutation createNode {
+    createNode(input:{type:"user", attributes: {
+        name: "coleman"
+    }}) {
+        id
+        type
+        attributes
+    }
+}

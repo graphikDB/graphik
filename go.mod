@@ -1,8 +1,9 @@
 module github.com/autom8ter/graphik
 
-go 1.14
+go 1.15
 
 require (
-	go.etcd.io/bbolt v1.3.5
-	go.mongodb.org/mongo-driver v1.4.0
+	github.com/99designs/gqlgen v0.13.0
+	github.com/autom8ter/dagger v0.8.1
+	github.com/vektah/gqlparser/v2 v2.1.0
 )
