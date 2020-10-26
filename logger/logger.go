@@ -1,10 +1,10 @@
 package logger
 
 import (
-"go.uber.org/zap"
-"go.uber.org/zap/zapcore"
-"os"
-"runtime"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"os"
+	"runtime"
 )
 
 var logger *zap.Logger
@@ -56,4 +56,3 @@ func Error(msg string, fields ...zap.Field) {
 	fields = append(fields, zap.Int("goroutines", runtime.NumGoroutine()))
 	Logger().Error(msg, fields...)
 }
-

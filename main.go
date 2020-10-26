@@ -22,6 +22,8 @@ import (
 	"time"
 )
 
+const version = "0.0.0"
+
 func init() {
 	viper.SetConfigFile("graphik.yaml")
 	viper.SetDefault("server.port", 8080)
@@ -61,7 +63,10 @@ func main() {
 			return
 		}
 		defer lis.Close()
-		logger.Info("starting graphql server", zap.Int("port", port))
+		logger.Info("starting graphql server",
+			zap.String("address", lis.Addr().String()),
+			zap.String("version", version),
+		)
 		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
 			logger.Error("server failure", zap.Error(err))
 		}

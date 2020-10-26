@@ -11,6 +11,7 @@ type Node {
 
 input QueryNodes {
   type: String!
+  limit: Int!
 }
 
 type Query {

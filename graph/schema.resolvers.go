@@ -5,9 +5,9 @@ package graph
 
 import (
 	"context"
-	"github.com/autom8ter/dagger/primitive"
 
 	"github.com/autom8ter/dagger"
+	"github.com/autom8ter/dagger/primitive"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
 )
@@ -29,7 +29,7 @@ func (r *queryResolver) Nodes(ctx context.Context, input model.QueryNodes) ([]*m
 			Type:       n.Type(),
 			Attributes: n.Raw(),
 		})
-		return true
+		return len(nodes) < input.Limit
 	})
 	return nodes, nil
 }

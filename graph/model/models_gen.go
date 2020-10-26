@@ -14,5 +14,6 @@ type Node struct {
 }
 
 type QueryNodes struct {
-	Type string `json:"type"`
+	Type  string `json:"type"`
+	Limit int    `json:"limit"`
 }
