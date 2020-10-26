@@ -9,7 +9,7 @@ mutation createNode {
 }
 
 query {
-    nodes(input:{type:"user"}) {
+    nodes(input:{type:"user" limit: 1}) {
         id
         type
         attributes
