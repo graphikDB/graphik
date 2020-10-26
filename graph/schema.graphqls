@@ -9,8 +9,12 @@ type Node {
   attributes: Map!
 }
 
+input QueryNodes {
+  type: String!
+}
+
 type Query {
-  nodes: [Node!]!
+  nodes(input: QueryNodes!): [Node!]!
 }
 
 input NewNode {

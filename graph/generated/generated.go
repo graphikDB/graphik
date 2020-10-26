@@ -54,7 +54,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Nodes func(childComplexity int) int
+		Nodes func(childComplexity int, input model.QueryNodes) int
 	}
 }
 
@@ -62,7 +62,7 @@ type MutationResolver interface {
 	CreateNode(ctx context.Context, input model.NewNode) (*model.Node, error)
 }
 type QueryResolver interface {
-	Nodes(ctx context.Context) ([]*model.Node, error)
+	Nodes(ctx context.Context, input model.QueryNodes) ([]*model.Node, error)
 }
 
 type executableSchema struct {
@@ -118,7 +118,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Query.Nodes(childComplexity), true
+		args, err := ec.field_Query_nodes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Nodes(childComplexity, args["input"].(model.QueryNodes)), true
 
 	}
 	return 0, false
@@ -195,8 +200,12 @@ type Node {
   attributes: Map!
 }
 
+input QueryNodes {
+  type: String!
+}
+
 type Query {
-  nodes: [Node!]!
+  nodes(input: QueryNodes!): [Node!]!
 }
 
 input NewNode {
@@ -241,6 +250,21 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.QueryNodes
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNQueryNodes2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐQueryNodes(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -445,9 +469,16 @@ func (ec *executionContext) _Query_nodes(ctx context.Context, field graphql.Coll
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_nodes_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Nodes(rctx)
+		return ec.resolvers.Query().Nodes(rctx, args["input"].(model.QueryNodes))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1650,6 +1681,26 @@ func (ec *executionContext) unmarshalInputNewNode(ctx context.Context, obj inter
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputQueryNodes(ctx context.Context, obj interface{}) (model.QueryNodes, error) {
+	var it model.QueryNodes
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -2120,6 +2171,11 @@ func (ec *executionContext) marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Node(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNQueryNodes2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐQueryNodes(ctx context.Context, v interface{}) (model.QueryNodes, error) {
+	res, err := ec.unmarshalInputQueryNodes(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

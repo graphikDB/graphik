@@ -12,3 +12,7 @@ type Node struct {
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 }
+
+type QueryNodes struct {
+	Type string `json:"type"`
+}

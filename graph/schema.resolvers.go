@@ -5,9 +5,11 @@ package graph
 
 import (
 	"context"
+	"github.com/autom8ter/dagger/primitive"
+
+	"github.com/autom8ter/dagger"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
-	"github.com/autom8ter/dagger"
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NewNode) (*model.Node, error) {
@@ -19,9 +21,9 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NewNode) 
 	}, nil
 }
 
-func (r *queryResolver) Nodes(ctx context.Context) ([]*model.Node, error) {
+func (r *queryResolver) Nodes(ctx context.Context, input model.QueryNodes) ([]*model.Node, error) {
 	var nodes []*model.Node
-	dagger.RangeNodes(func(n *dagger.Node) bool {
+	dagger.RangeNodeTypes(primitive.StringType(input.Type), func(n *dagger.Node) bool {
 		nodes = append(nodes, &model.Node{
 			ID:         n.ID(),
 			Type:       n.Type(),
