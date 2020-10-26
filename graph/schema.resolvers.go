@@ -24,11 +24,24 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NewNode) 
 func (r *queryResolver) Nodes(ctx context.Context, input model.QueryNodes) ([]*model.Node, error) {
 	var nodes []*model.Node
 	dagger.RangeNodeTypes(primitive.StringType(input.Type), func(n *dagger.Node) bool {
-		nodes = append(nodes, &model.Node{
+		for _, filter := range input.Filters {
+			if filter.Operator == "!=" {
+				if n.Get(filter.Key) == filter.Value {
+					return true
+				}
+			}
+			if filter.Operator == "==" {
+				if n.Get(filter.Key) != filter.Value {
+					return true
+				}
+			}
+		}
+		node := &model.Node{
 			ID:         n.ID(),
 			Type:       n.Type(),
 			Attributes: n.Raw(),
-		})
+		}
+		nodes = append(nodes, node)
 		return len(nodes) < input.Limit
 	})
 	return nodes, nil

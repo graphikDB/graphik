@@ -2,6 +2,7 @@
 #
 # https://gqlgen.com/getting-started/
 scalar Map
+scalar Any
 
 type Node {
   id: ID!
@@ -9,10 +10,18 @@ type Node {
   attributes: Map!
 }
 
+input Filter {
+  key: String!
+  operator: String!
+  value: Any!
+}
+
 input QueryNodes {
   type: String!
+  filters: [Filter]
   limit: Int!
 }
+
 
 type Query {
   nodes(input: QueryNodes!): [Node!]!

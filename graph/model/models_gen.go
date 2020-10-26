@@ -2,6 +2,12 @@
 
 package model
 
+type Filter struct {
+	Key      string      `json:"key"`
+	Operator string      `json:"operator"`
+	Value    interface{} `json:"value"`
+}
+
 type NewNode struct {
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
@@ -14,6 +20,7 @@ type Node struct {
 }
 
 type QueryNodes struct {
-	Type  string `json:"type"`
-	Limit int    `json:"limit"`
+	Type    string    `json:"type"`
+	Filters []*Filter `json:"filters"`
+	Limit   int       `json:"limit"`
 }
