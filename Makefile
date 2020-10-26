@@ -9,3 +9,9 @@ help:
 
 run:
 	@go run main.go
+
+docker-build:
+	@docker build -t colemanword/graphik
+
+docker-push:
+	@docker push colemanword/graphik
