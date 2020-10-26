@@ -2,6 +2,12 @@
 
 package model
 
+type Edge struct {
+	Node *Node `json:"node"`
+	From *Node `json:"from"`
+	To   *Node `json:"to"`
+}
+
 type Filter struct {
 	Key      string      `json:"key"`
 	Operator string      `json:"operator"`
@@ -17,6 +23,7 @@ type Node struct {
 	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
+	Edges      *Edge                  `json:"edges"`
 }
 
 type QueryNodes struct {

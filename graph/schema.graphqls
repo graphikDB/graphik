@@ -8,6 +8,13 @@ type Node {
   id: ID!
   type: String!
   attributes: Map!
+  edges(first: Int, after: ID): Edge!
+}
+
+type Edge {
+  node: Node!
+  from: Node!
+  to: Node!
 }
 
 input Filter {
@@ -18,7 +25,7 @@ input Filter {
 
 input QueryNodes {
   type: String!
-  filters: [Filter]
+  filters: [Filter!]
   limit: Int!
 }
 
