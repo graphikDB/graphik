@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	defaultAddr = "localhost:12000"
 	raftTimeout = 10 * time.Second
 	defaultDir = "/tmp/graphik"
 )
@@ -32,11 +31,8 @@ func New(opts ...Opt) (*Store, error) {
 	if options.localID == "" {
 		options.localID = primitive.RandomID().ID()
 	}
-	if options.bindAddr == "" {
-		options.bindAddr = defaultAddr
-	}
 	if options.raftDir == "" {
-		os.MkdirAll(defaultAddr, 0700)
+		os.MkdirAll(defaultDir, 0700)
 		options.raftDir = defaultDir
 	}
 	config := raft.DefaultConfig()
@@ -92,5 +88,9 @@ func (s *Store) Execute(cmd *command.Command) (interface{}, error) {
 		return nil, err
 	}
 	future := s.raft.ApplyLog(lg, raftTimeout)
-	return future.Response(), future.Error()
+	err = future.Error()
+	if err := future.Error(); err != nil {
+		return nil, err
+	}
+	return future.Response(), nil
 }

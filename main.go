@@ -11,7 +11,7 @@ import (
 	"github.com/autom8ter/graphik/store"
 	"github.com/autom8ter/machine"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/spf13/viper"
+	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"net"
 	"net/http"
@@ -25,15 +25,23 @@ import (
 const version = "0.0.0"
 
 func init() {
-	viper.SetConfigFile("graphik.yaml")
-	viper.SetDefault("server.port", 8080)
-	viper.SetDefault("database.path", "/tmp/graphik")
-	viper.AutomaticEnv()
-	viper.ReadInConfig()
+	pflag.CommandLine.StringVar(&dbPath, "path", "/tmp/graphik", "path to database folder")
+	pflag.CommandLine.IntVar(&port, "port", 8080, "port to serve on")
+	pflag.CommandLine.IntVar(&bind, "bind", 8081, "bind raft protocol to local port")
+	pflag.CommandLine.StringVarP(&join, "join", "j", "", "join raft cluster leader")
 }
 
+var (
+	port int
+	bind int
+	dbPath string
+	join string
+
+)
+
 func main() {
-	port := viper.GetInt("server.port")
+	pflag.Parse()
+	port := port
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
@@ -42,7 +50,11 @@ func main() {
 
 	mach := machine.New(ctx)
 	mux := http.NewServeMux()
-	stor, err := store.New(store.WithLeader(true))
+	stor, err := store.New(
+		store.WithLeader(join == ""),
+		store.WithBindAddr(fmt.Sprintf("localhost:%v", bind)),
+		store.WithRaftDir(dbPath),
+		)
 	if err != nil {
 		logger.Error("failed to create raft store", zap.Error(err))
 		return
@@ -92,9 +104,4 @@ func main() {
 
 	logger.Info("shutdown successful")
 	mach.Wait()
-}
-
-func getDBFile() (*os.File, error) {
-	os.MkdirAll("/tmp/graphik/", os.ModePerm)
-	return os.OpenFile(viper.GetString("database.path"), os.O_CREATE|os.O_RDWR, os.ModePerm)
 }
