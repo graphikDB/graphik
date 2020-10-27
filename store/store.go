@@ -2,7 +2,6 @@ package store
 
 import (
 	"fmt"
-	"github.com/autom8ter/dagger/primitive"
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/fsm"
 	"github.com/hashicorp/raft"
@@ -29,7 +28,8 @@ func New(opts ...Opt) (*Store, error) {
 		o(options)
 	}
 	if options.localID == "" {
-		options.localID = primitive.RandomID().ID()
+		id, _ := getID()
+		options.localID = id
 	}
 	if options.raftDir == "" {
 		os.MkdirAll(defaultDir, 0700)
@@ -93,4 +93,32 @@ func (s *Store) Execute(cmd *command.Command) (interface{}, error) {
 		return nil, err
 	}
 	return future.Response(), nil
+}
+
+func getID() (string, error) {
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+	var ip net.IP
+	// handle err
+	for _, i := range ifaces {
+		addrs, err := i.Addrs()
+		if err != nil {
+			return "", err
+		}
+		for _, addr := range addrs {
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			}
+		}
+	}
+	return ip.String(), nil
+}
+
+func (s *Store) Close() error {
+	return s.raft.Shutdown().Error()
 }

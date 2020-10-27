@@ -59,7 +59,8 @@ func main() {
 		logger.Error("failed to create raft store", zap.Error(err))
 		return
 	}
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver(mach, stor)}))
+	resolver := graph.NewResolver(mach, stor)
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	mux.Handle("/query", srv)
@@ -101,7 +102,7 @@ func main() {
 	defer shutdownCancel()
 
 	_ = server.Shutdown(shutdownCtx)
-
+	_ = resolver.Close()
 	logger.Info("shutdown successful")
 	mach.Wait()
 }
