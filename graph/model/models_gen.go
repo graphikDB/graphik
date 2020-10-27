@@ -8,16 +8,17 @@ type Edge struct {
 	To   *Node `json:"to"`
 }
 
-type EdgeInput struct {
-	Node *NodeInput     `json:"node"`
-	From *EdgeNodeInput `json:"from"`
-	To   *EdgeNodeInput `json:"to"`
+type EdgeConnection struct {
+	Cursor     string    `json:"cursor"`
+	TotalCount int       `json:"totalCount"`
+	Edge       []*Edge   `json:"edge"`
+	PageInfo   *PageInfo `json:"pageInfo"`
 }
 
-type EdgeNodeInput struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Attributes map[string]interface{} `json:"attributes"`
+type EdgeInput struct {
+	Node *NodeInput  `json:"node"`
+	From *ForeignKey `json:"from"`
+	To   *ForeignKey `json:"to"`
 }
 
 type Filter struct {
@@ -26,17 +27,28 @@ type Filter struct {
 	Value    interface{} `json:"value"`
 }
 
+type ForeignKey struct {
+	ID   string `json:"id"`
+	Type string `json:"type"`
+}
+
 type Node struct {
 	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
-	Edges      *Edge                  `json:"edges"`
+	Edges      *EdgeConnection        `json:"edges"`
 }
 
 type NodeInput struct {
 	ID         *string                `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
+}
+
+type PageInfo struct {
+	StartCursor string `json:"startCursor"`
+	EndCursor   string `json:"endCursor"`
+	HasNextPage bool   `json:"hasNextPage"`
 }
 
 type QueryEdges struct {

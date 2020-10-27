@@ -8,7 +8,7 @@ type Node {
   id: ID!
   type: String!
   attributes: Map!
-  edges(first: Int, after: ID): Edge!
+  edges(first: Int, after: ID): EdgeConnection!
 }
 
 type Edge {
@@ -60,4 +60,21 @@ input EdgeInput {
 type Mutation {
   createNode(input: NodeInput!): Node!
   createEdge(input: EdgeInput!): Edge!
+}
+
+type EdgeConnection {
+  # A cursor used for pagination
+  cursor: ID!
+  # The total number of friends
+  totalCount: Int!
+  edge: [Edge!]
+  # Information for paginating this connection
+  pageInfo: PageInfo!
+}
+
+# Information for paginating this connection
+type PageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean!
 }

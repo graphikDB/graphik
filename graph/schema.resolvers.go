@@ -6,11 +6,12 @@ package graph
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/autom8ter/dagger"
 	"github.com/autom8ter/dagger/primitive"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
-	"strings"
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeInput) (*model.Node, error) {
@@ -101,7 +102,7 @@ func (r *queryResolver) Edges(ctx context.Context, input model.QueryEdges) ([]*m
 						}
 					}
 				}
-			}else if strings.Contains(filter.Key, "to.") {
+			} else if strings.Contains(filter.Key, "to.") {
 				split := strings.Split(filter.Key, "to.")
 				if len(split) > 1 {
 					if filter.Operator == "!=" {
@@ -162,6 +163,12 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
 func nullString(str *string) string {
 	if str == nil {
 		return ""
