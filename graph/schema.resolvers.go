@@ -10,6 +10,7 @@ import (
 	"github.com/autom8ter/dagger/primitive"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
+	"strings"
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeInput) (*model.Node, error) {
@@ -85,6 +86,48 @@ func (r *queryResolver) Nodes(ctx context.Context, input model.QueryNodes) ([]*m
 func (r *queryResolver) Edges(ctx context.Context, input model.QueryEdges) ([]*model.Edge, error) {
 	var edges []*model.Edge
 	dagger.RangeEdgeTypes(primitive.StringType(input.Type), func(edge *dagger.Edge) bool {
+		for _, filter := range input.Filters {
+			if strings.Contains(filter.Key, "from.") {
+				split := strings.Split(filter.Key, "from.")
+				if len(split) > 1 {
+					if filter.Operator == "!=" {
+						if edge.From().Get(split[1]) == filter.Value {
+							return true
+						}
+					}
+					if filter.Operator == "==" {
+						if edge.From().Get(split[1]) != filter.Value {
+							return true
+						}
+					}
+				}
+			}else if strings.Contains(filter.Key, "to.") {
+				split := strings.Split(filter.Key, "to.")
+				if len(split) > 1 {
+					if filter.Operator == "!=" {
+						if edge.To().Get(split[1]) == filter.Value {
+							return true
+						}
+					}
+					if filter.Operator == "==" {
+						if edge.To().Get(split[1]) != filter.Value {
+							return true
+						}
+					}
+				}
+			} else {
+				if filter.Operator == "!=" {
+					if edge.Get(filter.Key) == filter.Value {
+						return true
+					}
+				}
+				if filter.Operator == "==" {
+					if edge.Get(filter.Key) != filter.Value {
+						return true
+					}
+				}
+			}
+		}
 		edges = append(edges, &model.Edge{
 			Node: &model.Node{
 				ID:         edge.ID(),

@@ -46,16 +46,15 @@ input NodeInput {
   attributes: Map
 }
 
-input EdgeNodeInput {
+input ForeignKey {
   id: ID!
   type: String!
-  attributes: Map
 }
 
 input EdgeInput {
   node: NodeInput
-  from: EdgeNodeInput!
-  to: EdgeNodeInput!
+  from: ForeignKey!
+  to: ForeignKey!
 }
 
 type Mutation {
