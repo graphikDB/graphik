@@ -98,7 +98,7 @@ func main() {
 		break
 	}
 	logger.Warn("shutdown signal received")
-	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
 
 	_ = server.Shutdown(shutdownCtx)

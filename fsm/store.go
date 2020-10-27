@@ -24,20 +24,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 	switch c.Op {
 	case command.SET_NODE:
 		input := c.Val.(map[string]interface {})
-		var node *dagger.Node
-		if input["id"] != nil {
-			if input["attributes"] != nil {
-				node = dagger.NewNode(input["type"].(string), input["id"].(string), input["attributes"].(map[string]interface{}))
-			} else {
-				node = dagger.NewNode(input["type"].(string), input["id"].(string), nil)
-			}
-		} else {
-			if input["attributes"] != nil {
-				node = dagger.NewNode(input["type"].(string), "", input["attributes"].(map[string]interface{}))
-			} else {
-				node = dagger.NewNode(input["type"].(string), "", nil)
-			}
-		}
+		node := dagger.NewNode(input["type"].(string), input["id"].(string), input["attributes"].(map[string]interface{}))
 		return &model.Node{
 			ID:         node.ID(),
 			Type:       node.Type(),

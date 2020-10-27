@@ -15,6 +15,13 @@ import (
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeInput) (*model.Node, error) {
+	if input.ID == nil {
+		random := primitive.RandomID().ID()
+		input.ID = &random
+	}
+	if input.Attributes == nil {
+		input.Attributes = map[string]interface{}{}
+	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.SET_NODE,
 		Val: input,
