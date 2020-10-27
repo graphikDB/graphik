@@ -338,7 +338,24 @@ type Edge {
   to: Node!
 }
 
-input Filter {
+type EdgeConnection {
+  # A cursor used for pagination
+  cursor: ID!
+  # The total number of friends
+  totalCount: Int!
+  edge: [Edge!]
+  # Information for paginating this connection
+  pageInfo: PageInfo!
+}
+
+# Information for paginating this connection
+type PageInfo {
+  startCursor: ID!
+  endCursor: ID!
+  hasNextPage: Boolean!
+}
+
+input Expression {
   key: String!
   operator: String!
   value: Any!
@@ -346,13 +363,13 @@ input Filter {
 
 input QueryNodes {
   type: String!
-  filters: [Filter!]
+  filter: [Expression!]
   limit: Int!
 }
 
 input QueryEdges {
   type: String!
-  filters: [Filter!]
+  filter: [Expression!]
   limit: Int!
 }
 
@@ -382,23 +399,7 @@ type Mutation {
   createNode(input: NodeInput!): Node!
   createEdge(input: EdgeInput!): Edge!
 }
-
-type EdgeConnection {
-  # A cursor used for pagination
-  cursor: ID!
-  # The total number of friends
-  totalCount: Int!
-  edge: [Edge!]
-  # Information for paginating this connection
-  pageInfo: PageInfo!
-}
-
-# Information for paginating this connection
-type PageInfo {
-  startCursor: ID!
-  endCursor: ID!
-  hasNextPage: Boolean!
-}`, BuiltIn: false},
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -2399,8 +2400,8 @@ func (ec *executionContext) unmarshalInputEdgeInput(ctx context.Context, obj int
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interface{}) (model.Filter, error) {
-	var it model.Filter
+func (ec *executionContext) unmarshalInputExpression(ctx context.Context, obj interface{}) (model.Expression, error) {
+	var it model.Expression
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -2513,11 +2514,11 @@ func (ec *executionContext) unmarshalInputQueryEdges(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
-		case "filters":
+		case "filter":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filters"))
-			it.Filters, err = ec.unmarshalOFilter2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilterᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+			it.Filter, err = ec.unmarshalOExpression2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpressionᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2549,11 +2550,11 @@ func (ec *executionContext) unmarshalInputQueryNodes(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
-		case "filters":
+		case "filter":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filters"))
-			it.Filters, err = ec.unmarshalOFilter2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilterᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+			it.Filter, err = ec.unmarshalOExpression2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpressionᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3175,8 +3176,8 @@ func (ec *executionContext) unmarshalNEdgeInput2githubᚗcomᚋautom8terᚋgraph
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx context.Context, v interface{}) (*model.Filter, error) {
-	res, err := ec.unmarshalInputFilter(ctx, v)
+func (ec *executionContext) unmarshalNExpression2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpression(ctx context.Context, v interface{}) (*model.Expression, error) {
+	res, err := ec.unmarshalInputExpression(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -3620,7 +3621,7 @@ func (ec *executionContext) marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphi
 	return ret
 }
 
-func (ec *executionContext) unmarshalOFilter2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilterᚄ(ctx context.Context, v interface{}) ([]*model.Filter, error) {
+func (ec *executionContext) unmarshalOExpression2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpressionᚄ(ctx context.Context, v interface{}) ([]*model.Expression, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -3633,10 +3634,10 @@ func (ec *executionContext) unmarshalOFilter2ᚕᚖgithubᚗcomᚋautom8terᚋgr
 		}
 	}
 	var err error
-	res := make([]*model.Filter, len(vSlice))
+	res := make([]*model.Expression, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNExpression2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpression(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}

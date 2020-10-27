@@ -21,7 +21,7 @@ type EdgeInput struct {
 	To   *ForeignKey `json:"to"`
 }
 
-type Filter struct {
+type Expression struct {
 	Key      string      `json:"key"`
 	Operator string      `json:"operator"`
 	Value    interface{} `json:"value"`
@@ -52,13 +52,13 @@ type PageInfo struct {
 }
 
 type QueryEdges struct {
-	Type    string    `json:"type"`
-	Filters []*Filter `json:"filters"`
-	Limit   int       `json:"limit"`
+	Type   string        `json:"type"`
+	Filter []*Expression `json:"filter"`
+	Limit  int           `json:"limit"`
 }
 
 type QueryNodes struct {
-	Type    string    `json:"type"`
-	Filters []*Filter `json:"filters"`
-	Limit   int       `json:"limit"`
+	Type   string        `json:"type"`
+	Filter []*Expression `json:"filter"`
+	Limit  int           `json:"limit"`
 }

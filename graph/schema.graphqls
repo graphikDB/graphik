@@ -34,7 +34,7 @@ type PageInfo {
   hasNextPage: Boolean!
 }
 
-input Filter {
+input Expression {
   key: String!
   operator: String!
   value: Any!
@@ -42,13 +42,13 @@ input Filter {
 
 input QueryNodes {
   type: String!
-  filters: [Filter!]
+  filter: [Expression!]
   limit: Int!
 }
 
 input QueryEdges {
   type: String!
-  filters: [Filter!]
+  filter: [Expression!]
   limit: Int!
 }
 
