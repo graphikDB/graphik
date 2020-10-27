@@ -8,15 +8,22 @@ type Edge struct {
 	To   *Node `json:"to"`
 }
 
+type EdgeInput struct {
+	Node *NodeInput     `json:"node"`
+	From *EdgeNodeInput `json:"from"`
+	To   *EdgeNodeInput `json:"to"`
+}
+
+type EdgeNodeInput struct {
+	ID         string                 `json:"id"`
+	Type       string                 `json:"type"`
+	Attributes map[string]interface{} `json:"attributes"`
+}
+
 type Filter struct {
 	Key      string      `json:"key"`
 	Operator string      `json:"operator"`
 	Value    interface{} `json:"value"`
-}
-
-type NewNode struct {
-	Type       string                 `json:"type"`
-	Attributes map[string]interface{} `json:"attributes"`
 }
 
 type Node struct {
@@ -24,6 +31,18 @@ type Node struct {
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 	Edges      *Edge                  `json:"edges"`
+}
+
+type NodeInput struct {
+	ID         *string                `json:"id"`
+	Type       string                 `json:"type"`
+	Attributes map[string]interface{} `json:"attributes"`
+}
+
+type QueryEdges struct {
+	Type    string    `json:"type"`
+	Filters []*Filter `json:"filters"`
+	Limit   int       `json:"limit"`
 }
 
 type QueryNodes struct {

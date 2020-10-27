@@ -114,7 +114,6 @@ func main() {
 	mach.Wait()
 }
 
-
 func getDBFile() (*os.File, error) {
 	os.MkdirAll("/tmp/graphik/", os.ModePerm)
 	return os.OpenFile(viper.GetString("database.path"), os.O_CREATE|os.O_RDWR, os.ModePerm)

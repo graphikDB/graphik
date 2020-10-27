@@ -5,19 +5,54 @@ package graph
 
 import (
 	"context"
-
+	"fmt"
 	"github.com/autom8ter/dagger"
 	"github.com/autom8ter/dagger/primitive"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
 )
 
-func (r *mutationResolver) CreateNode(ctx context.Context, input model.NewNode) (*model.Node, error) {
+func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeInput) (*model.Node, error) {
 	node := dagger.NewNode(input.Type, "", input.Attributes)
 	return &model.Node{
 		ID:         node.ID(),
 		Type:       node.Type(),
 		Attributes: node.Raw(),
+	}, nil
+}
+
+func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
+	from, ok := dagger.GetNode(dagger.ForeignKey(input.From.Type, input.From.ID))
+	if !ok {
+		return nil, fmt.Errorf("%s.%s does not exist", input.From.Type, input.From.ID)
+	}
+	to, ok := dagger.GetNode(dagger.ForeignKey(input.To.Type, input.To.ID))
+	if !ok {
+		return nil, fmt.Errorf("%s.%s does not exist", input.To.Type, input.To.ID)
+	}
+	edge, err := dagger.NewEdge(input.Node.Type, nullString(input.Node.ID), input.Node.Attributes, from, to)
+	if err != nil {
+		return nil, err
+	}
+	return &model.Edge{
+		Node: &model.Node{
+			ID:         edge.ID(),
+			Type:       edge.Type(),
+			Attributes: nil,
+			Edges:      nil,
+		},
+		From: &model.Node{
+			ID:         from.ID(),
+			Type:       from.Type(),
+			Attributes: from.Raw(),
+			Edges:      nil,
+		},
+		To: &model.Node{
+			ID:         to.ID(),
+			Type:       to.Type(),
+			Attributes: to.Raw(),
+			Edges:      nil,
+		},
 	}, nil
 }
 
@@ -47,6 +82,34 @@ func (r *queryResolver) Nodes(ctx context.Context, input model.QueryNodes) ([]*m
 	return nodes, nil
 }
 
+func (r *queryResolver) Edges(ctx context.Context, input model.QueryEdges) ([]*model.Edge, error) {
+	var edges []*model.Edge
+	dagger.RangeEdgeTypes(primitive.StringType(input.Type), func(edge *dagger.Edge) bool {
+		edges = append(edges, &model.Edge{
+			Node: &model.Node{
+				ID:         edge.ID(),
+				Type:       edge.Type(),
+				Attributes: nil,
+				Edges:      nil,
+			},
+			From: &model.Node{
+				ID:         edge.From().ID(),
+				Type:       edge.From().Type(),
+				Attributes: edge.From().Raw(),
+				Edges:      nil,
+			},
+			To: &model.Node{
+				ID:         edge.To().ID(),
+				Type:       edge.To().Type(),
+				Attributes: edge.To().Raw(),
+				Edges:      nil,
+			},
+		})
+		return len(edges) < input.Limit
+	})
+	return edges, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
@@ -55,3 +118,10 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+func nullString(str *string) string {
+	if str == nil {
+		return ""
+	}
+	return *str
+}

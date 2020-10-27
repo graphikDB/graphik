@@ -29,16 +29,36 @@ input QueryNodes {
   limit: Int!
 }
 
+input QueryEdges {
+  type: String!
+  filters: [Filter!]
+  limit: Int!
+}
 
 type Query {
   nodes(input: QueryNodes!): [Node!]!
+  edges(input: QueryEdges!): [Edge!]!
 }
 
-input NewNode {
+input NodeInput {
+  id: ID
   type: String!
-  attributes: Map!
+  attributes: Map
+}
+
+input EdgeNodeInput {
+  id: ID!
+  type: String!
+  attributes: Map
+}
+
+input EdgeInput {
+  node: NodeInput
+  from: EdgeNodeInput!
+  to: EdgeNodeInput!
 }
 
 type Mutation {
-  createNode(input: NewNode!): Node!
+  createNode(input: NodeInput!): Node!
+  createEdge(input: EdgeInput!): Edge!
 }
