@@ -23,7 +23,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 	}
 	switch c.Op {
 	case command.SET_NODE:
-		input := c.Val.(*model.NodeInput)
+		input := c.Val.(model.NodeInput)
 		if input.ID != nil {
 			node := dagger.NewNode(input.Type, *input.ID, input.Attributes)
 			return &model.Node{
@@ -43,7 +43,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		}
 
 	case command.SET_EDGE:
-		input := c.Val.(*model.EdgeInput)
+		input := c.Val.(model.EdgeInput)
 		from, ok := dagger.GetNode(dagger.ForeignKey(input.From.Type, input.From.ID))
 		if !ok {
 			return fmt.Errorf("%s.%s does not exist", input.From.Type, input.From.ID)
@@ -77,11 +77,11 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			},
 		}
 	case command.DELETE_NODE:
-		input := c.Val.(*model.ForeignKey)
+		input := c.Val.(model.ForeignKey)
 		dagger.DelNode(dagger.ForeignKey(input.Type, input.ID))
 		return nil
 	case command.DELETE_EDGE:
-		input := c.Val.(*model.ForeignKey)
+		input := c.Val.(model.ForeignKey)
 		dagger.DelEdge(dagger.ForeignKey(input.Type, input.ID))
 		return nil
 	default:

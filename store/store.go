@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	defaultAddr = ":6788"
+	defaultAddr = "localhost:12000"
 	raftTimeout = 10 * time.Second
+	defaultDir = "/tmp/graphik"
 )
 
 type Store struct {
@@ -35,7 +36,8 @@ func New(opts ...Opt) (*Store, error) {
 		options.bindAddr = defaultAddr
 	}
 	if options.raftDir == "" {
-		options.raftDir = "/tmp/graphik/raft"
+		os.MkdirAll(defaultAddr, 0700)
+		options.raftDir = defaultDir
 	}
 	config := raft.DefaultConfig()
 	config.LocalID = raft.ServerID(options.localID)
@@ -82,6 +84,9 @@ func New(opts ...Opt) (*Store, error) {
 }
 
 func (s *Store) Execute(cmd *command.Command) (interface{}, error) {
+	if state := s.raft.State(); state != raft.Leader {
+		return nil, fmt.Errorf("not leader: %s", state.String())
+	}
 	lg, err := cmd.Log()
 	if err != nil {
 		return nil, err

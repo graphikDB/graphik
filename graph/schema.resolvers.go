@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"github.com/autom8ter/graphik/command"
 	"strings"
 
 	"github.com/autom8ter/dagger"
@@ -14,11 +15,25 @@ import (
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeInput) (*model.Node, error) {
-	return nil, nil
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.SET_NODE,
+		Val: input,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return res.(*model.Node), nil
 }
 
 func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
-	return nil, nil
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.SET_EDGE,
+		Val: input,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return res.(*model.Edge), nil
 }
 
 func (r *queryResolver) Nodes(ctx context.Context, input model.QueryNodes) ([]*model.Node, error) {

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/autom8ter/dagger"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/graphik/store"
 	"github.com/autom8ter/machine"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
@@ -27,7 +27,7 @@ const version = "0.0.0"
 func init() {
 	viper.SetConfigFile("graphik.yaml")
 	viper.SetDefault("server.port", 8080)
-	viper.SetDefault("database.path", "/tmp/graphik/graphik.db")
+	viper.SetDefault("database.path", "/tmp/graphik")
 	viper.AutomaticEnv()
 	viper.ReadInConfig()
 }
@@ -40,22 +40,14 @@ func main() {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
 
-	{
-		f, err := getDBFile()
-		if err != nil {
-			logger.Error("failed to open database", zap.Error(err))
-			return
-		}
-		if err := dagger.ImportJSON(f); err != nil {
-			logger.Error("failed to import database", zap.Error(err))
-		}
-		logger.Info("node types", zap.Strings("types", dagger.NodeTypes()))
-	}
-
 	mach := machine.New(ctx)
 	mux := http.NewServeMux()
-
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver(mach)}))
+	stor, err := store.New(store.WithLeader(true))
+	if err != nil {
+		logger.Error("failed to create raft store", zap.Error(err))
+		return
+	}
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver(mach, stor)}))
 
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	mux.Handle("/query", srv)
@@ -98,18 +90,6 @@ func main() {
 
 	_ = server.Shutdown(shutdownCtx)
 
-	{
-		f, err := getDBFile()
-		if err != nil {
-			logger.Error("failed to open database", zap.Error(err))
-		}
-		if err := f.Truncate(0); err != nil {
-			logger.Error("failed to export graph", zap.Error(err))
-		}
-		if err := dagger.ExportJSON(f); err != nil {
-			logger.Error("failed to export graph", zap.Error(err))
-		}
-	}
 	logger.Info("shutdown successful")
 	mach.Wait()
 }
