@@ -2,6 +2,8 @@ package store
 
 import (
 	"fmt"
+	"github.com/autom8ter/dagger/primitive"
+	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/fsm"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
@@ -9,6 +11,11 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+)
+
+const (
+	defaultAddr = ":6788"
+	raftTimeout = 10 * time.Second
 )
 
 type Store struct {
@@ -21,6 +28,15 @@ func New(opts ...Opt) (*Store, error) {
 	for _, o := range opts {
 		o(options)
 	}
+	if options.localID == "" {
+		options.localID = primitive.RandomID().ID()
+	}
+	if options.bindAddr == "" {
+		options.bindAddr = defaultAddr
+	}
+	if options.raftDir == "" {
+		options.raftDir = "/tmp/graphik/raft"
+	}
 	config := raft.DefaultConfig()
 	config.LocalID = raft.ServerID(options.localID)
 	// Setup Raft communication.
@@ -28,7 +44,7 @@ func New(opts ...Opt) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	transport, err := raft.NewTCPTransport(options.bindAddr, addr, 3, 10*time.Second, os.Stderr)
+	transport, err := raft.NewTCPTransport(options.bindAddr, addr, 3, raftTimeout, os.Stderr)
 	if err != nil {
 		return nil, err
 	}
@@ -63,4 +79,13 @@ func New(opts ...Opt) (*Store, error) {
 		raft: rft,
 		opts: options,
 	}, nil
+}
+
+func (s *Store) Execute(cmd *command.Command) (interface{}, error) {
+	lg, err := cmd.Log()
+	if err != nil {
+		return nil, err
+	}
+	future := s.raft.ApplyLog(lg, raftTimeout)
+	return future.Response(), future.Error()
 }

@@ -19,12 +19,12 @@ type Command struct {
 	Val interface{}
 }
 
-func (c *Command) Log() (*raft.Log, error) {
+func (c *Command) Log() (raft.Log, error) {
 	bits, err := json.Marshal(c)
 	if err != nil {
-		return nil, err
+		return raft.Log{}, err
 	}
-	return &raft.Log{
+	return raft.Log{
 		Data: bits,
 	}, nil
 }
