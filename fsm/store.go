@@ -1,4 +1,4 @@
-package raft
+package fsm
 
 import (
 	"encoding/json"
@@ -7,59 +7,16 @@ import (
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/graph/model"
 	"github.com/hashicorp/raft"
-	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"io"
-	"net"
-	"os"
-	"path/filepath"
-	"time"
 )
 
-func NewRaft(localID string, raftDir, bindAddr string, leader bool) (*raft.Raft, error) {
-	config := raft.DefaultConfig()
-	config.LocalID = raft.ServerID(localID)
-	// Setup Raft communication.
-	addr, err := net.ResolveTCPAddr("tcp", bindAddr)
-	if err != nil {
-		return nil, err
-	}
-	transport, err := raft.NewTCPTransport(bindAddr, addr, 3, 10*time.Second, os.Stderr)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create the snapshot store. This allows the Raft to truncate the log.
-	snapshots, err := raft.NewFileSnapshotStore(raftDir, 2, os.Stderr)
-	if err != nil {
-		return nil, fmt.Errorf("file snapshot store: %s", err)
-	}
-	boltDB, err := raftboltdb.NewBoltStore(filepath.Join(raftDir, "raft.db"))
-	if err != nil {
-		return nil, fmt.Errorf("new bolt store: %s", err)
-	}
-	logStore := boltDB
-	stableStore := boltDB
-	rft, err := raft.NewRaft(config, nil, logStore, stableStore, snapshots, transport)
-	if err != nil {
-		return nil, fmt.Errorf("new raft: %s", err)
-	}
-	if leader {
-		configuration := raft.Configuration{
-			Servers: []raft.Server{
-				{
-					ID:      config.LocalID,
-					Address: transport.LocalAddr(),
-				},
-			},
-		}
-		rft.BootstrapCluster(configuration)
-	}
-	return rft, nil
+func New() *Store {
+	return &Store{}
 }
 
-type fsmStore struct{}
+type Store struct{}
 
-func (f fsmStore) Apply(log *raft.Log) interface{} {
+func (f *Store) Apply(log *raft.Log) interface{} {
 	var c command.Command
 	if err := json.Unmarshal(log.Data, &c); err != nil {
 		panic(fmt.Sprintf("failed to unmarshal command: %s", err.Error()))
@@ -84,10 +41,7 @@ func (f fsmStore) Apply(log *raft.Log) interface{} {
 				Edges:      nil,
 			}
 		}
-	case command.DELETE_NODE:
-		input := c.Val.(*model.ForeignKey)
-		dagger.DelNode(dagger.ForeignKey(input.Type, input.ID))
-		return nil
+
 	case command.SET_EDGE:
 		input := c.Val.(*model.EdgeInput)
 		from, ok := dagger.GetNode(dagger.ForeignKey(input.From.Type, input.From.ID))
@@ -122,19 +76,28 @@ func (f fsmStore) Apply(log *raft.Log) interface{} {
 				Edges:      nil,
 			},
 		}
+	case command.DELETE_NODE:
+		input := c.Val.(*model.ForeignKey)
+		dagger.DelNode(dagger.ForeignKey(input.Type, input.ID))
+		return nil
+	case command.DELETE_EDGE:
+		input := c.Val.(*model.ForeignKey)
+		dagger.DelEdge(dagger.ForeignKey(input.Type, input.ID))
+		return nil
+	default:
+		return fmt.Errorf("unsupported command: %v", c.Op)
 	}
-	return nil
 }
 
-func (f *fsmStore) Snapshot() (raft.FSMSnapshot, error) {
+func (f *Store) Snapshot() (raft.FSMSnapshot, error) {
 	return f, nil
 }
 
-func (f *fsmStore) Restore(closer io.ReadCloser) error {
+func (f *Store) Restore(closer io.ReadCloser) error {
 	return dagger.ImportJSON(closer)
 }
 
-func (f *fsmStore) Persist(sink raft.SnapshotSink) error {
+func (f *Store) Persist(sink raft.SnapshotSink) error {
 	if err := dagger.ExportJSON(sink); err != nil {
 		return err
 	}
@@ -145,7 +108,7 @@ func (f *fsmStore) Persist(sink raft.SnapshotSink) error {
 	return nil
 }
 
-func (f *fsmStore) Release() {}
+func (f *Store) Release() {}
 
 func nullString(str *string) string {
 	if str == nil {

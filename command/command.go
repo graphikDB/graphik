@@ -5,17 +5,17 @@ import (
 	"github.com/hashicorp/raft"
 )
 
-type Operation int
+type Op int
 
 const (
-	SET_NODE    Operation = 1
-	DELETE_NODE Operation = 3
-	SET_EDGE    Operation = 5
-	DELETE_EDGE Operation = 6
+	SET_NODE    Op = 1
+	DELETE_NODE Op = 3
+	SET_EDGE    Op = 5
+	DELETE_EDGE Op = 6
 )
 
 type Command struct {
-	Op  Operation
+	Op  Op
 	Val interface{}
 }
 
