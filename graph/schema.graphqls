@@ -8,6 +8,11 @@ type Counter {
   count: Int!
 }
 
+type ForeignKey {
+  _id: String!
+  _type: String!
+}
+
 type Node {
   attributes: Map!
   edges(first: Int, after: ID): EdgeConnection
@@ -51,10 +56,7 @@ input QueryEdges {
   limit: Int!
 }
 
-input ForeignKey {
-  _id: String!
-  _type: String!
-}
+
 
 input EdgeInput {
   node: Map

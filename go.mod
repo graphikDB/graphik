@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/99designs/gqlgen v0.13.0
-	github.com/autom8ter/dagger v0.11.1
+	github.com/autom8ter/dagger v0.12.0
 	github.com/autom8ter/machine v1.0.0
 	github.com/hashicorp/raft v1.2.0
 	github.com/hashicorp/raft-boltdb v0.0.0-20191021154308-4207f1bf0617
