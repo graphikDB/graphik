@@ -48,13 +48,13 @@ type PageInfo struct {
 }
 
 type QueryEdges struct {
-	Type   string        `json:"type"`
+	Type   string        `json:"_type"`
 	Filter []*Expression `json:"filter"`
 	Limit  int           `json:"limit"`
 }
 
 type QueryNodes struct {
-	Type   string        `json:"type"`
+	Type   string        `json:"_type"`
 	Filter []*Expression `json:"filter"`
 	Limit  int           `json:"limit"`
 }

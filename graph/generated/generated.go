@@ -440,13 +440,13 @@ input Expression {
 }
 
 input QueryNodes {
-  type: String!
+  _type: String!
   filter: [Expression!]
   limit: Int!
 }
 
 input QueryEdges {
-  type: String!
+  _type: String!
   filter: [Expression!]
   limit: Int!
 }
@@ -2844,10 +2844,10 @@ func (ec *executionContext) unmarshalInputQueryEdges(ctx context.Context, obj in
 
 	for k, v := range asMap {
 		switch k {
-		case "type":
+		case "_type":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_type"))
 			it.Type, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -2880,10 +2880,10 @@ func (ec *executionContext) unmarshalInputQueryNodes(ctx context.Context, obj in
 
 	for k, v := range asMap {
 		switch k {
-		case "type":
+		case "_type":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_type"))
 			it.Type, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err

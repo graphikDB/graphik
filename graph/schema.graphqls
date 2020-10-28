@@ -40,13 +40,13 @@ input Expression {
 }
 
 input QueryNodes {
-  type: String!
+  _type: String!
   filter: [Expression!]
   limit: Int!
 }
 
 input QueryEdges {
-  type: String!
+  _type: String!
   filter: [Expression!]
   limit: Int!
 }

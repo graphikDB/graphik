@@ -8,7 +8,7 @@ mutation createNode {
 }
 
 query {
-    nodes(input:{type:"user" limit: 1}) {
+    nodes(input:{_type:"user" limit: 1}) {
         attributes
     }
 }
