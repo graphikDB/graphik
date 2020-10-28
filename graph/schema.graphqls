@@ -10,7 +10,7 @@ type Counter {
 
 type Node {
   attributes: Map!
-  edges(first: Int, after: ID): EdgeConnection!
+  edges(first: Int, after: ID): EdgeConnection
 }
 
 type Edge {

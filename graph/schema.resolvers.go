@@ -94,12 +94,6 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput
 }
 
 func (r *mutationResolver) SetEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
-	if !dagger.HasEdge(&dagger.ForeignKey{
-		XID:   input.Node[primitive.ID_KEY].(string),
-		XType: input.Node[primitive.TYPE_KEY].(string),
-	}) {
-		return nil, errors.New("edge node does not exist")
-	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.SET_EDGE,
 		Val: input,

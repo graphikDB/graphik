@@ -410,7 +410,7 @@ type Counter {
 
 type Node {
   attributes: Map!
-  edges(first: Int, after: ID): EdgeConnection!
+  edges(first: Int, after: ID): EdgeConnection
 }
 
 type Edge {
@@ -1303,14 +1303,11 @@ func (ec *executionContext) _Node_edges(ctx context.Context, field graphql.Colle
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.EdgeConnection)
 	fc.Result = res
-	return ec.marshalNEdgeConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐEdgeConnection(ctx, field.Selections, res)
+	return ec.marshalOEdgeConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐEdgeConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *model.PageInfo) (ret graphql.Marshaler) {
@@ -3089,9 +3086,6 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "edges":
 			out.Values[i] = ec._Node_edges(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3550,16 +3544,6 @@ func (ec *executionContext) marshalNEdge2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Edge(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNEdgeConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐEdgeConnection(ctx context.Context, sel ast.SelectionSet, v *model.EdgeConnection) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._EdgeConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNEdgeInput2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐEdgeInput(ctx context.Context, v interface{}) (model.EdgeInput, error) {
@@ -4024,6 +4008,13 @@ func (ec *executionContext) marshalOEdge2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Edge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOEdgeConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐEdgeConnection(ctx context.Context, sel ast.SelectionSet, v *model.EdgeConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._EdgeConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOExpression2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpressionᚄ(ctx context.Context, v interface{}) ([]*model.Expression, error) {
