@@ -174,10 +174,7 @@ func (r *queryResolver) Edge(ctx context.Context, input model.ForeignKey) (*mode
 		return nil, fmt.Errorf("edge not found: %s", key.Path())
 	}
 	return &model.Edge{
-		Node: &model.Node{
-			Attributes: e.Node().Raw(),
-			Edges:      nil,
-		},
+		Node: e.Node().Raw(),
 		From: &model.Node{
 			Attributes: e.From().Raw(),
 			Edges:      nil,
@@ -236,10 +233,7 @@ func (r *queryResolver) Edges(ctx context.Context, input model.QueryEdges) ([]*m
 		}
 		n := dagger.NewNode(edge.ID(), edge.Type(), nil)
 		edges = append(edges, &model.Edge{
-			Node: &model.Node{
-				Attributes: n.Raw(),
-				Edges:      nil,
-			},
+			Node: n.Raw(),
 			From: &model.Node{
 				Attributes: edge.From().Raw(),
 				Edges:      nil,

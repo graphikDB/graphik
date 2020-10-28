@@ -414,7 +414,7 @@ type Node {
 }
 
 type Edge {
-  node: Node!
+  node: Map!
   from: Node!
   to: Node!
 }
@@ -778,9 +778,9 @@ func (ec *executionContext) _Edge_node(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Node)
+	res := resTmp.(map[string]interface{})
 	fc.Result = res
-	return ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐNode(ctx, field.Selections, res)
+	return ec.marshalNMap2map(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Edge_from(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {

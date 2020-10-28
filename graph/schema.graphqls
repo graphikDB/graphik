@@ -14,7 +14,7 @@ type Node {
 }
 
 type Edge {
-  node: Node!
+  node: Map!
   from: Node!
   to: Node!
 }
