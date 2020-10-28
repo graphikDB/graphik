@@ -231,9 +231,8 @@ func (r *queryResolver) Edges(ctx context.Context, input model.QueryEdges) ([]*m
 				}
 			}
 		}
-		n := dagger.NewNode(edge.ID(), edge.Type(), nil)
 		edges = append(edges, &model.Edge{
-			Node: n.Raw(),
+			Node: edge.Node().Raw(),
 			From: &model.Node{
 				Attributes: edge.From().Raw(),
 				Edges:      nil,
