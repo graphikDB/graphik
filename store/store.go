@@ -14,7 +14,7 @@ import (
 
 const (
 	raftTimeout = 10 * time.Second
-	defaultDir = "/tmp/graphik"
+	defaultDir  = "/tmp/graphik"
 )
 
 type Store struct {

@@ -32,11 +32,10 @@ func init() {
 }
 
 var (
-	port int
-	bind int
+	port   int
+	bind   int
 	dbPath string
-	join string
-
+	join   string
 )
 
 func main() {
@@ -54,7 +53,7 @@ func main() {
 		store.WithLeader(join == ""),
 		store.WithBindAddr(fmt.Sprintf("localhost:%v", bind)),
 		store.WithRaftDir(dbPath),
-		)
+	)
 	if err != nil {
 		logger.Error("failed to create raft store", zap.Error(err))
 		return

@@ -2,6 +2,10 @@
 
 package model
 
+type Counter struct {
+	Count int `json:"count"`
+}
+
 type Edge struct {
 	Node *Node `json:"node"`
 	From *Node `json:"from"`
@@ -16,9 +20,9 @@ type EdgeConnection struct {
 }
 
 type EdgeInput struct {
-	Node *NodeInput  `json:"node"`
-	From *ForeignKey `json:"from"`
-	To   *ForeignKey `json:"to"`
+	Node map[string]interface{} `json:"node"`
+	From *ForeignKey            `json:"from"`
+	To   *ForeignKey            `json:"to"`
 }
 
 type Expression struct {
@@ -33,16 +37,8 @@ type ForeignKey struct {
 }
 
 type Node struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 	Edges      *EdgeConnection        `json:"edges"`
-}
-
-type NodeInput struct {
-	ID         *string                `json:"id"`
-	Type       string                 `json:"type"`
-	Attributes map[string]interface{} `json:"attributes"`
 }
 
 type PageInfo struct {

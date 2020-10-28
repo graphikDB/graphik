@@ -20,3 +20,7 @@ func NewResolver(machine *machine.Machine, store *store.Store) *Resolver {
 		store:   store,
 	}
 }
+
+func (r *Resolver) Close() error {
+	return r.store.Close()
+}
