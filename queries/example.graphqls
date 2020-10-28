@@ -1,17 +1,23 @@
 mutation createNode {
-    createNode(input:{type:"user", attributes: {
+    createNode(input: {
+        _type: "user"
         name: "coleman"
-    }}) {
-        id
-        type
+    }) {
         attributes
     }
 }
 
 query {
     nodes(input:{type:"user" limit: 1}) {
-        id
-        type
         attributes
+    }
+}
+
+mutation delNode {
+    delNode(input: {
+        _id: "6e96b7c8-de83-1ca8-4673-8897ffce8602",
+        _type: "user"
+    }) {
+        count
     }
 }

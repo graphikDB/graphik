@@ -17,11 +17,11 @@ import (
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input map[string]interface{}) (*model.Node, error) {
-	if input["_id"] == nil {
-		input["_id"] = dagger.RandomID().ID()
+	if input[primitive.ID_KEY] == nil {
+		input[primitive.ID_KEY] = dagger.RandomID().ID()
 	}
-	if input["_type"] == nil {
-		input["_type"] = primitive.DefaultType
+	if input[primitive.TYPE_KEY] == nil {
+		input[primitive.TYPE_KEY] = primitive.DefaultType
 	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_NODE,
@@ -34,15 +34,15 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input map[string]inte
 }
 
 func (r *mutationResolver) SetNode(ctx context.Context, input map[string]interface{}) (*model.Node, error) {
-	if input["_id"] == nil {
+	if input[primitive.ID_KEY] == nil {
 		return nil, errors.New("emtpy node _id")
 	}
-	if input["_type"] == nil {
+	if input[primitive.TYPE_KEY] == nil {
 		return nil, errors.New("emtpy node _type")
 	}
 	if !dagger.HasNode(&dagger.ForeignKey{
-		XID:   input["_id"].(string),
-		XType: input["_type"].(string),
+		XID:   input[primitive.ID_KEY].(string),
+		XType: input[primitive.TYPE_KEY].(string),
 	}) {
 		return nil, errors.New("node does not exist")
 	}
@@ -77,11 +77,11 @@ func (r *mutationResolver) DelNode(ctx context.Context, input model.ForeignKey) 
 }
 
 func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
-	if input.Node["_id"] == nil {
-		input.Node["_id"] = dagger.RandomID().ID()
+	if input.Node[primitive.ID_KEY] == nil {
+		input.Node[primitive.ID_KEY] = dagger.RandomID().ID()
 	}
-	if input.Node["_type"] == nil {
-		input.Node["_type"] = primitive.DefaultType
+	if input.Node[primitive.TYPE_KEY] == nil {
+		input.Node[primitive.TYPE_KEY] = primitive.DefaultType
 	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_EDGE,
@@ -95,8 +95,8 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput
 
 func (r *mutationResolver) SetEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
 	if !dagger.HasEdge(&dagger.ForeignKey{
-		XID:   input.Node["_id"].(string),
-		XType: input.Node["_type"].(string),
+		XID:   input.Node[primitive.ID_KEY].(string),
+		XType: input.Node[primitive.TYPE_KEY].(string),
 	}) {
 		return nil, errors.New("edge node does not exist")
 	}

@@ -32,8 +32,8 @@ type Expression struct {
 }
 
 type ForeignKey struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
+	ID   string `json:"_id"`
+	Type string `json:"_type"`
 }
 
 type Node struct {

@@ -420,12 +420,9 @@ type Edge {
 }
 
 type EdgeConnection {
-  # A cursor used for pagination
   cursor: ID!
-  # The total number of friends
   totalCount: Int!
   edge: [Edge!]
-  # Information for paginating this connection
   pageInfo: PageInfo!
 }
 
@@ -455,8 +452,8 @@ input QueryEdges {
 }
 
 input ForeignKey {
-  id: ID!
-  type: String!
+  _id: String!
+  _type: String!
 }
 
 input EdgeInput {
@@ -476,6 +473,7 @@ type Mutation {
   createNode(input: Map!): Node!
   setNode(input: Map!): Node!
   delNode(input: ForeignKey!): Counter
+
   createEdge(input: EdgeInput!): Edge!
   setEdge(input: EdgeInput!): Edge!
   delEdge(input: ForeignKey!): Counter
@@ -2818,18 +2816,18 @@ func (ec *executionContext) unmarshalInputForeignKey(ctx context.Context, obj in
 
 	for k, v := range asMap {
 		switch k {
-		case "id":
+		case "_id":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_id"))
+			it.ID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "type":
+		case "_type":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_type"))
 			it.Type, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err

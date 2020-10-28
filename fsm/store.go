@@ -33,12 +33,13 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		}
 	case command.SET_NODE:
 		input := c.Val.(map[string]interface{})
-		node, ok := dagger.GetNode(&dagger.ForeignKey{
+		key := &dagger.ForeignKey{
 			XID:   input[primitive.ID_KEY].(string),
 			XType: input[primitive.TYPE_KEY].(string),
-		})
+		}
+		node, ok := dagger.GetNode(key)
 		if !ok {
-			return errors.New("")
+			return errors.Errorf("node %s does not exist", key.Path())
 		}
 		node.Patch(input)
 		return &model.Node{
@@ -81,17 +82,17 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			},
 		}
 	case command.DELETE_NODE:
-		input := c.Val.(model.ForeignKey)
+		input := c.Val.(map[string]interface{})
 		dagger.DelNode(&dagger.ForeignKey{
-			XID:   input.ID,
-			XType: input.Type,
+			XID:   input[primitive.ID_KEY].(string),
+			XType: input[primitive.TYPE_KEY].(string),
 		})
 		return nil
 	case command.DELETE_EDGE:
-		input := c.Val.(model.ForeignKey)
+		input := c.Val.(map[string]interface{})
 		dagger.DelEdge(&dagger.ForeignKey{
-			XID:   input.ID,
-			XType: input.Type,
+			XID:   input[primitive.ID_KEY].(string),
+			XType: input[primitive.TYPE_KEY].(string),
 		})
 		return nil
 	default:
