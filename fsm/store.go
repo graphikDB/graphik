@@ -82,37 +82,27 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			},
 		}
 	case command.SET_EDGE:
-		input := c.Val.(model.EdgeInput)
-		key := &dagger.ForeignKey{
-			XID:   input.From.ID,
-			XType: input.From.Type,
-		}
-		from, ok := dagger.GetNode(key)
-		if !ok {
-			return fmt.Errorf("%s does not exist", key.Path())
-		}
-		to, ok := dagger.GetNode(&dagger.ForeignKey{
-			XID:   input.To.ID,
-			XType: input.To.Type,
+		input := c.Val.(map[string]interface {})
+		nodeInput := input["node"].(map[string]interface {})
+		edge, ok := dagger.GetEdge( &dagger.ForeignKey{
+			XID:   nodeInput[primitive.ID_KEY].(string),
+			XType: nodeInput[primitive.TYPE_KEY].(string),
 		})
 		if !ok {
-			return fmt.Errorf("%s.%s does not exist", input.To.Type, input.To.ID)
+			return errors.Errorf("edge does not exist")
 		}
-		edge, err := dagger.NewEdge(input.Node[primitive.TYPE_KEY].(string), input.Node[primitive.ID_KEY].(string), input.Node, from, to)
-		if err != nil {
-			return err
-		}
+		edge.Patch(nodeInput)
 		return &model.Edge{
 			Node: &model.Node{
 				Attributes: edge.Node().Raw(),
 				Edges:      nil,
 			},
 			From: &model.Node{
-				Attributes: from.Raw(),
+				Attributes: edge.From().Raw(),
 				Edges:      nil,
 			},
 			To: &model.Node{
-				Attributes: to.Raw(),
+				Attributes: edge.To().Raw(),
 				Edges:      nil,
 			},
 		}
