@@ -50,7 +50,9 @@ type ComplexityRoot struct {
 	Edge struct {
 		Attributes func(childComplexity int) int
 		From       func(childComplexity int) int
+		ID         func(childComplexity int) int
 		To         func(childComplexity int) int
+		Type       func(childComplexity int) int
 	}
 
 	EdgeConnection struct {
@@ -72,6 +74,8 @@ type ComplexityRoot struct {
 	Node struct {
 		Attributes func(childComplexity int) int
 		Edges      func(childComplexity int, first *int, after *string) int
+		ID         func(childComplexity int) int
+		Type       func(childComplexity int) int
 	}
 
 	PageInfo struct {
@@ -139,12 +143,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Edge.From(childComplexity), true
 
+	case "Edge.id":
+		if e.complexity.Edge.ID == nil {
+			break
+		}
+
+		return e.complexity.Edge.ID(childComplexity), true
+
 	case "Edge.to":
 		if e.complexity.Edge.To == nil {
 			break
 		}
 
 		return e.complexity.Edge.To(childComplexity), true
+
+	case "Edge.type":
+		if e.complexity.Edge.Type == nil {
+			break
+		}
+
+		return e.complexity.Edge.Type(childComplexity), true
 
 	case "EdgeConnection.cursor":
 		if e.complexity.EdgeConnection.Cursor == nil {
@@ -264,6 +282,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Node.Edges(childComplexity, args["first"].(*int), args["after"].(*string)), true
+
+	case "Node.id":
+		if e.complexity.Node.ID == nil {
+			break
+		}
+
+		return e.complexity.Node.ID(childComplexity), true
+
+	case "Node.type":
+		if e.complexity.Node.Type == nil {
+			break
+		}
+
+		return e.complexity.Node.Type(childComplexity), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -409,11 +441,15 @@ type Counter {
 }
 
 type Node {
+  id: String!
+  type: String!
   attributes: Map!
   edges(first: Int, after: ID): EdgeConnection
 }
 
 type Edge {
+  id: String!
+  type: String!
   attributes: Map!
   from: Node!
   to: Node!
@@ -433,8 +469,8 @@ type PageInfo {
 }
 
 input ForeignKey {
-  _id: String!
-  _type: String!
+  id: String!
+  type: String!
 }
 
 input Expression {
@@ -745,6 +781,76 @@ func (ec *executionContext) _Counter_count(ctx context.Context, field graphql.Co
 	res := resTmp.(int)
 	fc.Result = res
 	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Edge_id(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Edge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Edge_type(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Edge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Edge_attributes(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {
@@ -1233,6 +1339,76 @@ func (ec *executionContext) _Mutation_delEdge(ctx context.Context, field graphql
 	res := resTmp.(*model.Counter)
 	fc.Result = res
 	return ec.marshalOCounter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐCounter(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Node_id(ctx context.Context, field graphql.CollectedField, obj *model.Node) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Node",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Node_type(ctx context.Context, field graphql.CollectedField, obj *model.Node) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Node",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Node_attributes(ctx context.Context, field graphql.CollectedField, obj *model.Node) (ret graphql.Marshaler) {
@@ -2812,18 +2988,18 @@ func (ec *executionContext) unmarshalInputForeignKey(ctx context.Context, obj in
 
 	for k, v := range asMap {
 		switch k {
-		case "_id":
+		case "id":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_id"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			it.ID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "_type":
+		case "type":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("_type"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			it.Type, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -2952,6 +3128,16 @@ func (ec *executionContext) _Edge(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Edge")
+		case "id":
+			out.Values[i] = ec._Edge_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "type":
+			out.Values[i] = ec._Edge_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "attributes":
 			out.Values[i] = ec._Edge_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -3078,6 +3264,16 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Node")
+		case "id":
+			out.Values[i] = ec._Node_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "type":
+			out.Values[i] = ec._Node_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "attributes":
 			out.Values[i] = ec._Node_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

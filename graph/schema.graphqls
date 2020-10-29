@@ -9,11 +9,15 @@ type Counter {
 }
 
 type Node {
+  id: String!
+  type: String!
   attributes: Map!
   edges(first: Int, after: ID): EdgeConnection
 }
 
 type Edge {
+  id: String!
+  type: String!
   attributes: Map!
   from: Node!
   to: Node!
@@ -33,8 +37,8 @@ type PageInfo {
 }
 
 input ForeignKey {
-  _id: String!
-  _type: String!
+  id: String!
+  type: String!
 }
 
 input Expression {

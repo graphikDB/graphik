@@ -10,13 +10,21 @@ import (
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"io"
+	"sync"
 )
 
 func New() *Store {
 	return &Store{}
 }
 
-type Store struct{}
+type Store struct{
+	mu sync.RWMutex
+	nodes map[string]map[string]*model.Node
+	edges map[string]map[string]*model.Edge
+	edgesFrom map[string]map[string]*model.Edge
+	edgesTo map[string]map[string]*model.Edge
+	close sync.Once
+}
 
 func (f *Store) Apply(log *raft.Log) interface{} {
 	var c command.Command
@@ -26,7 +34,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 	switch c.Op {
 	case command.CREATE_NODE:
 		input := c.Val.(map[string]interface{})
-		node := dagger.NewNode(input)
+
 		return &model.Node{
 			Attributes: node.Raw(),
 			Edges:      nil,

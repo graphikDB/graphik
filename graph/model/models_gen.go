@@ -7,6 +7,8 @@ type Counter struct {
 }
 
 type Edge struct {
+	ID         string                 `json:"id"`
+	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 	From       *Node                  `json:"from"`
 	To         *Node                  `json:"to"`
@@ -32,11 +34,13 @@ type Expression struct {
 }
 
 type ForeignKey struct {
-	ID   string `json:"_id"`
-	Type string `json:"_type"`
+	ID   string `json:"id"`
+	Type string `json:"type"`
 }
 
 type Node struct {
+	ID         string                 `json:"id"`
+	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 	Edges      *EdgeConnection        `json:"edges"`
 }
