@@ -3,8 +3,8 @@ package generic
 import "github.com/autom8ter/graphik/graph/model"
 
 type EdgeMap struct {
-	edges map[string]map[string]*model.Edge
-	edgesTo map[string]map[string][]*model.Edge
+	edges     map[string]map[string]*model.Edge
+	edgesTo   map[string]map[string][]*model.Edge
 	edgesFrom map[string]map[string][]*model.Edge
 }
 
@@ -85,7 +85,27 @@ func (n EdgeMap) Exists(edgeType string, id string) bool {
 	return ok
 }
 
-func (n EdgeMap) Filter(edgeType string, filter func(node *model.Edge) bool) []*model.Edge {
+func (e EdgeMap) EdgesFrom(nodeType, nodeID string) []*model.Edge {
+	if _, ok := e.edgesFrom[nodeType]; !ok {
+		return nil
+	}
+	if _, ok := e.edgesFrom[nodeType][nodeID]; !ok {
+		return nil
+	}
+	return e.edgesFrom[nodeType][nodeID]
+}
+
+func (e EdgeMap) EdgesTo(nodeType, nodeID string) []*model.Edge {
+	if _, ok := e.edgesTo[nodeType]; !ok {
+		return nil
+	}
+	if _, ok := e.edgesTo[nodeType][nodeID]; !ok {
+		return nil
+	}
+	return e.edgesTo[nodeType][nodeID]
+}
+
+func (n EdgeMap) Filter(edgeType string, filter func(edge *model.Edge) bool) []*model.Edge {
 	var filtered []*model.Edge
 	n.Range(edgeType, func(node *model.Edge) bool {
 		if filter(node) {
@@ -102,21 +122,27 @@ func (n EdgeMap) SetAll(edges ...*model.Edge) {
 	}
 }
 
+func (n EdgeMap) DeleteAll(edges ...*model.Edge) {
+	for _, edge := range edges {
+		n.Delete(edge.Type, edge.ID)
+	}
+}
+
 func (n EdgeMap) Clear(edgeType string) {
-	if cache, ok := n[edgeType]; ok {
-		for k, _ := range cache {
-			delete(cache, k)
+	if cache, ok := n.edges[edgeType]; ok {
+		for _, v := range cache {
+			n.Delete(v.Type, v.ID)
 		}
 	}
 }
 
 func (n EdgeMap) Close() {
-	for edgeType, _ := range n {
+	for _, edgeType := range n.Types() {
 		n.Clear(edgeType)
 	}
 }
 
-func removeEdge(id string, edges []*model.Edge) []*model.Edge{
+func removeEdge(id string, edges []*model.Edge) []*model.Edge {
 	var newEdges []*model.Edge
 	for _, edge := range edges {
 		if edge.ID != id {

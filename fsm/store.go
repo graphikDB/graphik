@@ -17,13 +17,13 @@ func New() *Store {
 	return &Store{}
 }
 
-type Store struct{
-	mu sync.RWMutex
-	nodes map[string]map[string]*model.Node
-	edges map[string]map[string]*model.Edge
+type Store struct {
+	mu        sync.RWMutex
+	nodes     map[string]map[string]*model.Node
+	edges     map[string]map[string]*model.Edge
 	edgesFrom map[string]map[string]*model.Edge
-	edgesTo map[string]map[string]*model.Edge
-	close sync.Once
+	edgesTo   map[string]map[string]*model.Edge
+	close     sync.Once
 }
 
 func (f *Store) Apply(log *raft.Log) interface{} {
