@@ -5,24 +5,16 @@ package graph
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/autom8ter/dagger"
-	"github.com/autom8ter/dagger/primitive"
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
 )
 
-func (r *mutationResolver) CreateNode(ctx context.Context, input map[string]interface{}) (*model.Node, error) {
-	if input[primitive.ID_KEY] == nil {
-		input[primitive.ID_KEY] = dagger.RandomID().ID()
-	}
-	if input[primitive.TYPE_KEY] == nil {
-		input[primitive.TYPE_KEY] = primitive.DefaultType
-	}
+func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConstructor) (*model.Node, error) {
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_NODE,
 		Val: input,
@@ -30,59 +22,41 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input map[string]inte
 	if err != nil {
 		return nil, err
 	}
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
 	return res.(*model.Node), nil
 }
 
-func (r *mutationResolver) SetNode(ctx context.Context, input map[string]interface{}) (*model.Node, error) {
-	if input[primitive.ID_KEY] == nil {
-		return nil, errors.New("emtpy node _id")
-	}
-	if input[primitive.TYPE_KEY] == nil {
-		return nil, errors.New("emtpy node _type")
-	}
-	if !dagger.HasNode(&dagger.ForeignKey{
-		XID:   input[primitive.ID_KEY].(string),
-		XType: input[primitive.TYPE_KEY].(string),
-	}) {
-		return nil, errors.New("node does not exist")
-	}
+func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*model.Node, error) {
 	res, err := r.store.Execute(&command.Command{
-		Op:  command.SET_NODE,
+		Op:  command.PATCH_NODE,
 		Val: input,
 	})
 	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
 		return nil, err
 	}
 	return res.(*model.Node), nil
 }
 
 func (r *mutationResolver) DelNode(ctx context.Context, input model.ForeignKey) (*model.Counter, error) {
-	key := &dagger.ForeignKey{
-		XID:   input.ID,
-		XType: input.Type,
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.DELETE_NODE,
+		Val: input,
+	})
+	if err != nil {
+		return nil, err
 	}
-	if dagger.HasNode(key) {
-		_, err := r.store.Execute(&command.Command{
-			Op:  command.DELETE_NODE,
-			Val: input,
-		})
-		if err != nil {
-			return nil, err
-		}
-		return &model.Counter{Count: 1}, nil
+	if err, ok := res.(error); ok {
+		return nil, err
 	}
-	return &model.Counter{
-		Count: 0,
-	}, nil
+	return res.(*model.Counter), nil
 }
 
-func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
-	if input.Attributes[primitive.ID_KEY] == nil {
-		input.Attributes[primitive.ID_KEY] = dagger.RandomID().ID()
-	}
-	if input.Attributes[primitive.TYPE_KEY] == nil {
-		input.Attributes[primitive.TYPE_KEY] = primitive.DefaultType
-	}
+func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConstructor) (*model.Edge, error) {
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_EDGE,
 		Val: input,
@@ -96,35 +70,32 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput
 	return res.(*model.Edge), nil
 }
 
-func (r *mutationResolver) SetEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
+func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*model.Edge, error) {
 	res, err := r.store.Execute(&command.Command{
-		Op:  command.SET_EDGE,
+		Op:  command.PATCH_EDGE,
 		Val: input,
 	})
 	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
 		return nil, err
 	}
 	return res.(*model.Edge), nil
 }
 
 func (r *mutationResolver) DelEdge(ctx context.Context, input model.ForeignKey) (*model.Counter, error) {
-	key := &dagger.ForeignKey{
-		XID:   input.ID,
-		XType: input.Type,
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.DELETE_EDGE,
+		Val: input,
+	})
+	if err != nil {
+		return nil, err
 	}
-	if dagger.HasEdge(key) {
-		_, err := r.store.Execute(&command.Command{
-			Op:  command.DELETE_EDGE,
-			Val: input,
-		})
-		if err != nil {
-			return nil, err
-		}
-		return &model.Counter{Count: 1}, nil
+	if err, ok := res.(error); ok {
+		return nil, err
 	}
-	return &model.Counter{
-		Count: 0,
-	}, nil
+	return res.(*model.Counter), nil
 }
 
 func (r *queryResolver) Node(ctx context.Context, input model.ForeignKey) (*model.Node, error) {
@@ -142,10 +113,10 @@ func (r *queryResolver) Node(ctx context.Context, input model.ForeignKey) (*mode
 	}, nil
 }
 
-func (r *queryResolver) Nodes(ctx context.Context, input model.QueryNodes) ([]*model.Node, error) {
+func (r *queryResolver) Nodes(ctx context.Context, input model.NodeFilter) ([]*model.Node, error) {
 	var nodes []*model.Node
 	dagger.RangeNodeTypes(dagger.StringType(input.Type), func(n *dagger.Node) bool {
-		for _, filter := range input.Filter {
+		for _, filter := range input.Expressions {
 			if filter.Operator == "!=" {
 				if n.Get(filter.Key) == filter.Value {
 					return true
@@ -189,10 +160,10 @@ func (r *queryResolver) Edge(ctx context.Context, input model.ForeignKey) (*mode
 	}, nil
 }
 
-func (r *queryResolver) Edges(ctx context.Context, input model.QueryEdges) ([]*model.Edge, error) {
+func (r *queryResolver) Edges(ctx context.Context, input model.EdgeFilter) ([]*model.Edge, error) {
 	var edges []*model.Edge
 	dagger.RangeEdgeTypes(dagger.StringType(input.Type), func(edge *dagger.Edge) bool {
-		for _, filter := range input.Filter {
+		for _, filter := range input.Expressions {
 			if strings.Contains(filter.Key, "from.") {
 				split := strings.Split(filter.Key, "from.")
 				if len(split) > 1 {

@@ -1,21 +1,31 @@
 package generic
 
-import "github.com/autom8ter/graphik/graph/model"
+import (
+	"github.com/autom8ter/graphik/graph/model"
+)
 
-type EdgeMap struct {
+type Edges struct {
 	edges     map[string]map[string]*model.Edge
 	edgesTo   map[string]map[string][]*model.Edge
 	edgesFrom map[string]map[string][]*model.Edge
 }
 
-func (n EdgeMap) Len(edgeType string) int {
+func NewEdges() *Edges {
+	return &Edges{
+		edges: map[string]map[string]*model.Edge{},
+		edgesTo: map[string]map[string][]*model.Edge{},
+		edgesFrom: map[string]map[string][]*model.Edge{},
+	}
+}
+
+func (n *Edges) Len(edgeType string) int {
 	if c, ok := n.edges[edgeType]; ok {
 		return len(c)
 	}
 	return 0
 }
 
-func (n EdgeMap) Types() []string {
+func (n *Edges) Types() []string {
 	var edgeTypes []string
 	for k, _ := range n.edges {
 		edgeTypes = append(edgeTypes, k)
@@ -23,15 +33,24 @@ func (n EdgeMap) Types() []string {
 	return edgeTypes
 }
 
-func (n EdgeMap) Get(edgeType string, id string) (*model.Edge, bool) {
-	if c, ok := n.edges[edgeType]; ok {
+func (n *Edges) All() []*model.Edge {
+	var edges []*model.Edge
+	n.Range(Any, func(edge *model.Edge) bool {
+		edges = append(edges, edge)
+		return true
+	})
+	return edges
+}
+
+func (n *Edges) Get(key *model.ForeignKey) (*model.Edge, bool) {
+	if c, ok := n.edges[key.Type]; ok {
 		node := c[id]
 		return c[id], node != nil
 	}
 	return nil, false
 }
 
-func (n EdgeMap) Set(value *model.Edge) {
+func (n *Edges) Set(value *model.Edge) {
 	if value.ID == "" {
 		value.ID = uuid()
 	}
@@ -49,7 +68,7 @@ func (n EdgeMap) Set(value *model.Edge) {
 	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], value)
 }
 
-func (n EdgeMap) Range(edgeType string, f func(node *model.Edge) bool) {
+func (n *Edges) Range(edgeType string, f func(edge *model.Edge) bool) {
 	if edgeType == Any {
 		for _, c := range n.edges {
 			for _, v := range c {
@@ -65,7 +84,7 @@ func (n EdgeMap) Range(edgeType string, f func(node *model.Edge) bool) {
 	}
 }
 
-func (n EdgeMap) Delete(edgeType string, id string) {
+func (n *Edges) Delete(edgeType string, id string) {
 	edge, ok := n.Get(edgeType, id)
 	if !ok {
 		return
@@ -83,50 +102,50 @@ func (n EdgeMap) Delete(edgeType string, id string) {
 	}
 }
 
-func (n EdgeMap) Exists(edgeType string, id string) bool {
+func (n *Edges) Exists(edgeType string, id string) bool {
 	_, ok := n.Get(edgeType, id)
 	return ok
 }
 
-func (e EdgeMap) RangeFrom(nodeType, nodeID string, fn func(e *model.Edge) bool) {
-	if _, ok := e.edgesFrom[nodeType]; !ok {
+func (e Edges) RangeFrom(node *model.Node, fn func(e *model.Edge) bool) {
+	if _, ok := e.edgesFrom[node.Type]; !ok {
 		return
 	}
-	if _, ok := e.edgesFrom[nodeType][nodeID]; !ok {
+	if _, ok := e.edgesFrom[node.Type][node.ID]; !ok {
 		return
 	}
-	for _, edge := range e.edgesFrom[nodeType][nodeID] {
+	for _, edge := range e.edgesFrom[node.Type][node.ID] {
 		if !fn(edge) {
 			break
 		}
 	}
 }
 
-func (e EdgeMap) RangeTo(nodeType, nodeID string, fn func(e *model.Edge) bool) {
-	if _, ok := e.edgesTo[nodeType]; !ok {
+func (e Edges) RangeTo(node *model.Node, fn func(e *model.Edge) bool) {
+	if _, ok := e.edgesTo[node.Type]; !ok {
 		return
 	}
-	if _, ok := e.edgesTo[nodeType][nodeID]; !ok {
+	if _, ok := e.edgesTo[node.Type][node.ID]; !ok {
 		return
 	}
-	for _, edge := range e.edgesTo[nodeType][nodeID] {
+	for _, edge := range e.edgesTo[node.Type][node.ID] {
 		if !fn(edge) {
 			break
 		}
 	}
 }
 
-func (e EdgeMap) EdgesFrom(nodeType, nodeID string) []*model.Edge {
-	if _, ok := e.edgesFrom[nodeType]; !ok {
+func (e Edges) EdgesFrom(node *model.Node) []*model.Edge {
+	if _, ok := e.edgesFrom[node.Type]; !ok {
 		return nil
 	}
-	if _, ok := e.edgesFrom[nodeType][nodeID]; !ok {
+	if _, ok := e.edgesFrom[node.Type][node.ID]; !ok {
 		return nil
 	}
-	return e.edgesFrom[nodeType][nodeID]
+	return e.edgesFrom[node.Type][node.ID]
 }
 
-func (e EdgeMap) EdgesTo(nodeType, nodeID string) []*model.Edge {
+func (e Edges) EdgesTo(nodeType, nodeID string) []*model.Edge {
 	if _, ok := e.edgesTo[nodeType]; !ok {
 		return nil
 	}
@@ -136,7 +155,7 @@ func (e EdgeMap) EdgesTo(nodeType, nodeID string) []*model.Edge {
 	return e.edgesTo[nodeType][nodeID]
 }
 
-func (n EdgeMap) Filter(edgeType string, filter func(edge *model.Edge) bool) []*model.Edge {
+func (n *Edges) Filter(edgeType string, filter func(edge *model.Edge) bool) []*model.Edge {
 	var filtered []*model.Edge
 	n.Range(edgeType, func(node *model.Edge) bool {
 		if filter(node) {
@@ -147,19 +166,19 @@ func (n EdgeMap) Filter(edgeType string, filter func(edge *model.Edge) bool) []*
 	return filtered
 }
 
-func (n EdgeMap) SetAll(edges ...*model.Edge) {
+func (n *Edges) SetAll(edges ...*model.Edge) {
 	for _, edge := range edges {
 		n.Set(edge)
 	}
 }
 
-func (n EdgeMap) DeleteAll(edges ...*model.Edge) {
+func (n *Edges) DeleteAll(edges ...*model.Edge) {
 	for _, edge := range edges {
 		n.Delete(edge.Type, edge.ID)
 	}
 }
 
-func (n EdgeMap) Clear(edgeType string) {
+func (n *Edges) Clear(edgeType string) {
 	if cache, ok := n.edges[edgeType]; ok {
 		for _, v := range cache {
 			n.Delete(v.Type, v.ID)
@@ -167,7 +186,7 @@ func (n EdgeMap) Clear(edgeType string) {
 	}
 }
 
-func (n EdgeMap) Close() {
+func (n *Edges) Close() {
 	for _, edgeType := range n.Types() {
 		n.Clear(edgeType)
 	}

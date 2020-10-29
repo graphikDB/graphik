@@ -9,10 +9,10 @@ type Op int
 
 const (
 	CREATE_NODE Op = 1
-	SET_NODE    Op = 2
+	PATCH_NODE    Op = 2
 	DELETE_NODE Op = 3
 	CREATE_EDGE Op = 4
-	SET_EDGE    Op = 5
+	PATCH_EDGE    Op = 5
 	DELETE_EDGE Op = 6
 )
 

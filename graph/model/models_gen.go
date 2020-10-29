@@ -2,6 +2,10 @@
 
 package model
 
+type Object interface {
+	IsObject()
+}
+
 type Counter struct {
 	Count int `json:"count"`
 }
@@ -14,17 +18,19 @@ type Edge struct {
 	To         *Node                  `json:"to"`
 }
 
-type EdgeConnection struct {
-	Cursor     string    `json:"cursor"`
-	TotalCount int       `json:"totalCount"`
-	Edge       []*Edge   `json:"edge"`
-	PageInfo   *PageInfo `json:"pageInfo"`
-}
+func (Edge) IsObject() {}
 
-type EdgeInput struct {
+type EdgeConstructor struct {
+	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 	From       *ForeignKey            `json:"from"`
 	To         *ForeignKey            `json:"to"`
+}
+
+type EdgeFilter struct {
+	Type        string        `json:"type"`
+	Expressions []*Expression `json:"expressions"`
+	Limit       int           `json:"limit"`
 }
 
 type Expression struct {
@@ -42,23 +48,24 @@ type Node struct {
 	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
-	Edges      *EdgeConnection        `json:"edges"`
+	Edges      []*Edge                `json:"edges"`
 }
 
-type PageInfo struct {
-	StartCursor string `json:"startCursor"`
-	EndCursor   string `json:"endCursor"`
-	HasNextPage bool   `json:"hasNextPage"`
+func (Node) IsObject() {}
+
+type NodeConstructor struct {
+	Type       string                 `json:"type"`
+	Attribuges map[string]interface{} `json:"attribuges"`
 }
 
-type QueryEdges struct {
-	Type   string        `json:"_type"`
-	Filter []*Expression `json:"filter"`
-	Limit  int           `json:"limit"`
+type NodeFilter struct {
+	Type        string        `json:"type"`
+	Expressions []*Expression `json:"expressions"`
+	Limit       int           `json:"limit"`
 }
 
-type QueryNodes struct {
-	Type   string        `json:"_type"`
-	Filter []*Expression `json:"filter"`
-	Limit  int           `json:"limit"`
+type Patch struct {
+	Type  string                 `json:"type"`
+	ID    string                 `json:"id"`
+	Patch map[string]interface{} `json:"patch"`
 }

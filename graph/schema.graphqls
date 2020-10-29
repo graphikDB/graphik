@@ -8,37 +8,25 @@ type Counter {
   count: Int!
 }
 
-type Node {
+interface Object {
   id: String!
   type: String!
-  attributes: Map!
-  edges(first: Int, after: ID): EdgeConnection
+  attributes: Map
 }
 
-type Edge {
+type Node implements Object {
   id: String!
   type: String!
-  attributes: Map!
+  attributes: Map
+  edges: [Edge!]
+}
+
+type Edge implements Object {
+  id: String!
+  type: String!
+  attributes: Map
   from: Node!
   to: Node!
-}
-
-type EdgeConnection {
-  cursor: ID!
-  totalCount: Int!
-  edge: [Edge!]
-  pageInfo: PageInfo!
-}
-
-type PageInfo {
-  startCursor: ID!
-  endCursor: ID!
-  hasNextPage: Boolean!
-}
-
-input ForeignKey {
-  id: String!
-  type: String!
 }
 
 input Expression {
@@ -47,37 +35,54 @@ input Expression {
   value: Any!
 }
 
-input QueryNodes {
-  _type: String!
-  filter: [Expression!]
+input NodeFilter {
+  type: String!
+  expressions: [Expression!]
   limit: Int!
 }
 
-input QueryEdges {
-  _type: String!
-  filter: [Expression!]
+input EdgeFilter {
+  type: String!
+  expressions: [Expression!]
   limit: Int!
 }
 
-input EdgeInput {
-  attributes: Map!
+input ForeignKey {
+  id: String!
+  type: String!
+}
+
+input EdgeConstructor {
+  type: String!
+  attributes: Map
   from: ForeignKey!
   to: ForeignKey!
 }
 
+input NodeConstructor {
+  type: String!
+  attribuges: Map
+}
+
+input Patch {
+  type: String!
+  id: String!
+  patch: Map!
+}
+
 type Query {
   node(input: ForeignKey!): Node
-  nodes(input: QueryNodes!): [Node!]!
+  nodes(input: NodeFilter!): [Node!]!
   edge(input: ForeignKey!): Edge
-  edges(input: QueryEdges!): [Edge!]!
+  edges(input: EdgeFilter!): [Edge!]!
 }
 
 type Mutation {
-  createNode(input: Map!): Node!
-  setNode(input: Map!): Node!
+  createNode(input: NodeConstructor!): Node!
+  patchNode(input: Patch): Node!
   delNode(input: ForeignKey!): Counter
 
-  createEdge(input: EdgeInput!): Edge!
-  setEdge(input: EdgeInput!): Edge!
+  createEdge(input: EdgeConstructor!): Edge!
+  patchEdge(input: Patch!): Edge!
   delEdge(input: ForeignKey!): Counter
 }
