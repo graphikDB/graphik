@@ -32,6 +32,9 @@ func (n EdgeMap) Get(edgeType string, id string) (*model.Edge, bool) {
 }
 
 func (n EdgeMap) Set(value *model.Edge) {
+	if value.ID == "" {
+		value.ID = uuid()
+	}
 	if _, ok := n.edges[value.Type]; !ok {
 		n.edges[value.Type] = map[string]*model.Edge{}
 	}
@@ -83,6 +86,34 @@ func (n EdgeMap) Delete(edgeType string, id string) {
 func (n EdgeMap) Exists(edgeType string, id string) bool {
 	_, ok := n.Get(edgeType, id)
 	return ok
+}
+
+func (e EdgeMap) RangeFrom(nodeType, nodeID string, fn func(e *model.Edge) bool) {
+	if _, ok := e.edgesFrom[nodeType]; !ok {
+		return
+	}
+	if _, ok := e.edgesFrom[nodeType][nodeID]; !ok {
+		return
+	}
+	for _, edge := range e.edgesFrom[nodeType][nodeID] {
+		if !fn(edge) {
+			break
+		}
+	}
+}
+
+func (e EdgeMap) RangeTo(nodeType, nodeID string, fn func(e *model.Edge) bool) {
+	if _, ok := e.edgesTo[nodeType]; !ok {
+		return
+	}
+	if _, ok := e.edgesTo[nodeType][nodeID]; !ok {
+		return
+	}
+	for _, edge := range e.edgesTo[nodeType][nodeID] {
+		if !fn(edge) {
+			break
+		}
+	}
 }
 
 func (e EdgeMap) EdgesFrom(nodeType, nodeID string) []*model.Edge {

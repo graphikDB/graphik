@@ -21,19 +21,22 @@ func (n NodeMap) Types() []string {
 	return nodeTypes
 }
 
-func (n NodeMap) Get(nodeType string, key string) (*model.Node, bool) {
+func (n NodeMap) Get(nodeType string, id string) (*model.Node, bool) {
 	if c, ok := n[nodeType]; ok {
-		node := c[key]
-		return c[key], node != nil
+		node := c[id]
+		return c[id], node != nil
 	}
 	return nil, false
 }
 
-func (n NodeMap) Set(nodeType string, key string, value *model.Node) {
-	if _, ok := n[nodeType]; !ok {
-		n[nodeType] = map[string]*model.Node{}
+func (n NodeMap) Set(value *model.Node) {
+	if value.ID == "" {
+		value.ID = uuid()
 	}
-	n[nodeType][key] = value
+	if _, ok := n[value.Type]; !ok {
+		n[value.Type] = map[string]*model.Node{}
+	}
+	n[value.Type][value.ID] = value
 }
 
 func (n NodeMap) Range(nodeType string, f func(node *model.Node) bool) {
@@ -52,14 +55,14 @@ func (n NodeMap) Range(nodeType string, f func(node *model.Node) bool) {
 	}
 }
 
-func (n NodeMap) Delete(nodeType string, key string) {
+func (n NodeMap) Delete(nodeType string, id string) {
 	if c, ok := n[nodeType]; ok {
-		delete(c, key)
+		delete(c, id)
 	}
 }
 
-func (n NodeMap) Exists(nodeType string, key string) bool {
-	_, ok := n.Get(nodeType, key)
+func (n NodeMap) Exists(nodeType string, id string) bool {
+	_, ok := n.Get(nodeType, id)
 	return ok
 }
 
@@ -80,6 +83,12 @@ func (n NodeMap) SetAll(nodes ...*model.Node) {
 			n[node.Type] = map[string]*model.Node{}
 		}
 		n[node.Type][node.ID] = node
+	}
+}
+
+func (n NodeMap) DeleteAll(nodes ...*model.Node) {
+	for _, node := range nodes {
+		n.Delete(node.Type, node.ID)
 	}
 }
 
