@@ -48,9 +48,9 @@ type ComplexityRoot struct {
 	}
 
 	Edge struct {
-		From func(childComplexity int) int
-		Node func(childComplexity int) int
-		To   func(childComplexity int) int
+		Attributes func(childComplexity int) int
+		From       func(childComplexity int) int
+		To         func(childComplexity int) int
 	}
 
 	EdgeConnection struct {
@@ -125,19 +125,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Counter.Count(childComplexity), true
 
+	case "Edge.attributes":
+		if e.complexity.Edge.Attributes == nil {
+			break
+		}
+
+		return e.complexity.Edge.Attributes(childComplexity), true
+
 	case "Edge.from":
 		if e.complexity.Edge.From == nil {
 			break
 		}
 
 		return e.complexity.Edge.From(childComplexity), true
-
-	case "Edge.node":
-		if e.complexity.Edge.Node == nil {
-			break
-		}
-
-		return e.complexity.Edge.Node(childComplexity), true
 
 	case "Edge.to":
 		if e.complexity.Edge.To == nil {
@@ -414,7 +414,7 @@ type Node {
 }
 
 type Edge {
-  node: Map!
+  attributes: Map!
   from: Node!
   to: Node!
 }
@@ -426,11 +426,15 @@ type EdgeConnection {
   pageInfo: PageInfo!
 }
 
-# Information for paginating this connection
 type PageInfo {
   startCursor: ID!
   endCursor: ID!
   hasNextPage: Boolean!
+}
+
+input ForeignKey {
+  _id: String!
+  _type: String!
 }
 
 input Expression {
@@ -451,13 +455,8 @@ input QueryEdges {
   limit: Int!
 }
 
-input ForeignKey {
-  _id: String!
-  _type: String!
-}
-
 input EdgeInput {
-  node: Map
+  attributes: Map!
   from: ForeignKey!
   to: ForeignKey!
 }
@@ -748,7 +747,7 @@ func (ec *executionContext) _Counter_count(ctx context.Context, field graphql.Co
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Edge_node(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {
+func (ec *executionContext) _Edge_attributes(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -766,7 +765,7 @@ func (ec *executionContext) _Edge_node(ctx context.Context, field graphql.Collec
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Node, nil
+		return obj.Attributes, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2741,11 +2740,11 @@ func (ec *executionContext) unmarshalInputEdgeInput(ctx context.Context, obj int
 
 	for k, v := range asMap {
 		switch k {
-		case "node":
+		case "attributes":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("node"))
-			it.Node, err = ec.unmarshalOMap2map(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+			it.Attributes, err = ec.unmarshalNMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2953,8 +2952,8 @@ func (ec *executionContext) _Edge(ctx context.Context, sel ast.SelectionSet, obj
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Edge")
-		case "node":
-			out.Values[i] = ec._Edge_node(ctx, field, obj)
+		case "attributes":
+			out.Values[i] = ec._Edge_attributes(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4069,21 +4068,6 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return graphql.MarshalInt(*v)
-}
-
-func (ec *executionContext) unmarshalOMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalMap(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]interface{}) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalMap(v)
 }
 
 func (ec *executionContext) marshalONode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v *model.Node) graphql.Marshaler {

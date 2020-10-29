@@ -47,6 +47,8 @@ github.com/autom8ter/dagger v0.11.1 h1:kJD2vyciG5K1LNiOUA2nZcF02Gm1sVm8hNswPTKuA
 github.com/autom8ter/dagger v0.11.1/go.mod h1:asg7HPk+oMpvi9lu9I+IHGlz8FKSxjf61PwKe+CfVeA=
 github.com/autom8ter/dagger v0.12.0 h1:eBtRL2+yqee9lEj0c2+6qtbCSveJZKnhYLlM9zRu17o=
 github.com/autom8ter/dagger v0.12.0/go.mod h1:asg7HPk+oMpvi9lu9I+IHGlz8FKSxjf61PwKe+CfVeA=
+github.com/autom8ter/dagger v0.13.0 h1:OaMxwjos95jWcBV8fKPGZq+BSXBT7tPgcsXYVt8n8Dg=
+github.com/autom8ter/dagger v0.13.0/go.mod h1:asg7HPk+oMpvi9lu9I+IHGlz8FKSxjf61PwKe+CfVeA=
 github.com/autom8ter/machine v1.0.0 h1:iAtxpexi2tPNanpoCHPYfKkNaRyJyO/nUZxawnqaXeI=
 github.com/autom8ter/machine v1.0.0/go.mod h1:rZXVWB7cfadu8ORTW7RfXYMTnXNxfEJk3C8M6Pu3g6I=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=

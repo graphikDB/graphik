@@ -8,18 +8,13 @@ type Counter {
   count: Int!
 }
 
-type ForeignKey {
-  _id: String!
-  _type: String!
-}
-
 type Node {
   attributes: Map!
   edges(first: Int, after: ID): EdgeConnection
 }
 
 type Edge {
-  node: Map!
+  attributes: Map!
   from: Node!
   to: Node!
 }
@@ -31,11 +26,15 @@ type EdgeConnection {
   pageInfo: PageInfo!
 }
 
-# Information for paginating this connection
 type PageInfo {
   startCursor: ID!
   endCursor: ID!
   hasNextPage: Boolean!
+}
+
+input ForeignKey {
+  _id: String!
+  _type: String!
 }
 
 input Expression {
@@ -56,10 +55,8 @@ input QueryEdges {
   limit: Int!
 }
 
-
-
 input EdgeInput {
-  node: Map
+  attributes: Map!
   from: ForeignKey!
   to: ForeignKey!
 }

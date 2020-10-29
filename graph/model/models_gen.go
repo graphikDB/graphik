@@ -7,9 +7,9 @@ type Counter struct {
 }
 
 type Edge struct {
-	Node map[string]interface{} `json:"node"`
-	From *Node                  `json:"from"`
-	To   *Node                  `json:"to"`
+	Attributes map[string]interface{} `json:"attributes"`
+	From       *Node                  `json:"from"`
+	To         *Node                  `json:"to"`
 }
 
 type EdgeConnection struct {
@@ -20,9 +20,9 @@ type EdgeConnection struct {
 }
 
 type EdgeInput struct {
-	Node map[string]interface{} `json:"node"`
-	From *ForeignKey            `json:"from"`
-	To   *ForeignKey            `json:"to"`
+	Attributes map[string]interface{} `json:"attributes"`
+	From       *ForeignKey            `json:"from"`
+	To         *ForeignKey            `json:"to"`
 }
 
 type Expression struct {

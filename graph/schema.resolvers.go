@@ -77,17 +77,20 @@ func (r *mutationResolver) DelNode(ctx context.Context, input model.ForeignKey) 
 }
 
 func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
-	if input.Node[primitive.ID_KEY] == nil {
-		input.Node[primitive.ID_KEY] = dagger.RandomID().ID()
+	if input.Attributes[primitive.ID_KEY] == nil {
+		input.Attributes[primitive.ID_KEY] = dagger.RandomID().ID()
 	}
-	if input.Node[primitive.TYPE_KEY] == nil {
-		input.Node[primitive.TYPE_KEY] = primitive.DefaultType
+	if input.Attributes[primitive.TYPE_KEY] == nil {
+		input.Attributes[primitive.TYPE_KEY] = primitive.DefaultType
 	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_EDGE,
 		Val: input,
 	})
 	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
 		return nil, err
 	}
 	return res.(*model.Edge), nil
@@ -174,7 +177,7 @@ func (r *queryResolver) Edge(ctx context.Context, input model.ForeignKey) (*mode
 		return nil, fmt.Errorf("edge not found: %s", key.Path())
 	}
 	return &model.Edge{
-		Node: e.Node().Raw(),
+		Attributes: e.Node().Raw(),
 		From: &model.Node{
 			Attributes: e.From().Raw(),
 			Edges:      nil,
@@ -232,7 +235,7 @@ func (r *queryResolver) Edges(ctx context.Context, input model.QueryEdges) ([]*m
 			}
 		}
 		edges = append(edges, &model.Edge{
-			Node: edge.Node().Raw(),
+			Attributes: edge.Node().Raw(),
 			From: &model.Node{
 				Attributes: edge.From().Raw(),
 				Edges:      nil,
