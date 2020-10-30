@@ -9,25 +9,33 @@ type Counter {
   count: Int!
 }
 
-interface Object {
+type Node {
   id: String!
   type: String!
   attributes: Map
+  edgesFrom: [Connection!]
+  edgesTo: [Connection!]
   createdAt: Time!
-  updatedAt: Time
+  updatedAt: Time!
 }
 
-type Node implements Object {
+type Connection {
+  type: String!
+  edges: [EdgeP!]
+  count: Int!
+}
+
+type EdgeP {
   id: String!
   type: String!
   attributes: Map
-  edgesFrom: [Edge!]
-  edgesTo: [Edge!]
+  mutual: Boolean
+  node: Node!
   createdAt: Time!
-  updatedAt: Time
+  updatedAt: Time!
 }
 
-type Edge implements Object {
+type Edge {
   id: String!
   type: String!
   attributes: Map
@@ -35,7 +43,7 @@ type Edge implements Object {
   to: Node!
   mutual: Boolean
   createdAt: Time!
-  updatedAt: Time
+  updatedAt: Time!
 }
 
 type Export {
@@ -101,7 +109,6 @@ input Search {
   search: String!
   type: String!
 }
-
 
 type Query {
   # node returns a node using a foreign key

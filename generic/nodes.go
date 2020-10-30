@@ -46,10 +46,6 @@ func (n *Nodes) All() []*model.Node {
 func (n *Nodes) Get(key model.ForeignKey) (*model.Node, bool) {
 	if c, ok := n.nodes[key.Type]; ok {
 		node := c[key.ID]
-		if node != nil {
-			node.EdgesFrom = n.edges.EdgesFrom(node)
-			node.EdgesTo = n.edges.EdgesTo(node)
-		}
 		return node, node != nil
 	}
 	return nil, false
@@ -74,9 +70,7 @@ func (n *Nodes) Patch(updatedAt time.Time, value *model.Patch) *model.Node {
 	for k, v := range value.Patch {
 		node.Attributes[k] = v
 	}
-	node.UpdatedAt = &updatedAt
-	node.EdgesFrom = n.edges.EdgesFrom(node)
-	node.EdgesTo = n.edges.EdgesTo(node)
+	node.UpdatedAt = updatedAt
 	return node
 }
 
@@ -84,16 +78,12 @@ func (n *Nodes) Range(nodeType string, f func(node *model.Node) bool) {
 	if nodeType == Any {
 		for _, c := range n.nodes {
 			for _, node := range c {
-				node.EdgesFrom = n.edges.EdgesFrom(node)
-				node.EdgesTo = n.edges.EdgesTo(node)
 				f(node)
 			}
 		}
 	} else {
 		if c, ok := n.nodes[nodeType]; ok {
 			for _, node := range c {
-				node.EdgesFrom = n.edges.EdgesFrom(node)
-				node.EdgesTo = n.edges.EdgesTo(node)
 				f(node)
 			}
 		}
@@ -142,15 +132,10 @@ func (n *Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*m
 	return filtered
 }
 
-func (n *Nodes) SetAll(nodes ...*model.Node) []*model.Node {
-	var created []*model.Node
+func (n *Nodes) SetAll(nodes ...*model.Node) {
 	for _, node := range nodes {
-		node = n.Set(node)
-		node.EdgesFrom = n.edges.EdgesFrom(node)
-		node.EdgesTo = n.edges.EdgesTo(node)
-		created = append(created, node)
+		n.Set(node)
 	}
-	return created
 }
 
 func (n *Nodes) DeleteAll(Nodes ...*model.Node) {

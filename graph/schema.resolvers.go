@@ -6,9 +6,9 @@ package graph
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/generic"
 
 	"github.com/autom8ter/graphik/command"
+	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
 )

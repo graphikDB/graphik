@@ -9,8 +9,10 @@ import (
 	"time"
 )
 
-type Object interface {
-	IsObject()
+type Connection struct {
+	Type  string   `json:"type"`
+	Edges []*EdgeP `json:"edges"`
+	Count *Counter `json:"count"`
 }
 
 type Counter struct {
@@ -25,10 +27,8 @@ type Edge struct {
 	To         *Node                  `json:"to"`
 	Mutual     *bool                  `json:"mutual"`
 	CreatedAt  time.Time              `json:"createdAt"`
-	UpdatedAt  *time.Time             `json:"updatedAt"`
+	UpdatedAt  time.Time              `json:"updatedAt"`
 }
-
-func (Edge) IsObject() {}
 
 type EdgeConstructor struct {
 	ID         *string                `json:"id"`
@@ -37,6 +37,16 @@ type EdgeConstructor struct {
 	From       *ForeignKey            `json:"from"`
 	To         *ForeignKey            `json:"to"`
 	Mutual     *bool                  `json:"mutual"`
+}
+
+type EdgeP struct {
+	ID         string                 `json:"id"`
+	Type       string                 `json:"type"`
+	Attributes map[string]interface{} `json:"attributes"`
+	Mutual     *bool                  `json:"mutual"`
+	Node       *Node                  `json:"node"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  time.Time              `json:"updatedAt"`
 }
 
 type Export struct {
@@ -59,13 +69,11 @@ type Node struct {
 	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
-	EdgesFrom  []*Edge                `json:"edgesFrom"`
-	EdgesTo    []*Edge                `json:"edgesTo"`
+	EdgesFrom  []*Connection          `json:"edgesFrom"`
+	EdgesTo    []*Connection          `json:"edgesTo"`
 	CreatedAt  time.Time              `json:"createdAt"`
-	UpdatedAt  *time.Time             `json:"updatedAt"`
+	UpdatedAt  time.Time              `json:"updatedAt"`
 }
-
-func (Node) IsObject() {}
 
 type NodeConstructor struct {
 	ID         *string                `json:"id"`

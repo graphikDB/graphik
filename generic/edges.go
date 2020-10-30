@@ -8,15 +8,15 @@ import (
 
 type Edges struct {
 	edges     map[string]map[string]*model.Edge
-	edgesTo   map[string]map[string][]*model.Edge
-	edgesFrom map[string]map[string][]*model.Edge
+	edgesTo   map[string]map[string][]*model.ForeignKey
+	edgesFrom map[string]map[string][]*model.ForeignKey
 }
 
 func NewEdges() *Edges {
 	return &Edges{
 		edges:     map[string]map[string]*model.Edge{},
-		edgesTo:   map[string]map[string][]*model.Edge{},
-		edgesFrom: map[string]map[string][]*model.Edge{},
+		edgesTo:   map[string]map[string][]*model.ForeignKey{},
+		edgesFrom: map[string]map[string][]*model.ForeignKey{},
 	}
 }
 
@@ -61,14 +61,20 @@ func (n *Edges) set(value *model.Edge) *model.Edge {
 		n.edges[value.Type] = map[string]*model.Edge{}
 	}
 	if _, ok := n.edges[value.From.Type]; !ok {
-		n.edgesFrom[value.From.Type] = map[string][]*model.Edge{}
+		n.edgesFrom[value.From.Type] = map[string][]*model.ForeignKey{}
 	}
 	if _, ok := n.edges[value.To.Type]; !ok {
-		n.edgesTo[value.To.Type] = map[string][]*model.Edge{}
+		n.edgesTo[value.To.Type] = map[string][]*model.ForeignKey{}
 	}
 	n.edges[value.Type][value.ID] = value
-	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], value)
-	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], value)
+	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], &model.ForeignKey{
+		ID:   value.ID,
+		Type: value.Type,
+	})
+	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], &model.ForeignKey{
+		ID:   value.ID,
+		Type: value.Type,
+	})
 	return value
 }
 
@@ -110,10 +116,10 @@ func (n *Edges) Delete(key model.ForeignKey) {
 		return
 	}
 	if edges, ok := n.edgesFrom[edge.From.Type][edge.From.ID]; ok {
-		n.edgesFrom[edge.From.Type][edge.From.ID] = removeEdge(edge.ID, edges)
+		n.edgesFrom[edge.From.Type][edge.From.ID] = removeKey(edge.ID, edges)
 	}
 	if edges, ok := n.edgesTo[edge.To.Type][edge.To.ID]; ok {
-		n.edgesTo[edge.To.Type][edge.To.ID] = removeEdge(edge.ID, edges)
+		n.edgesTo[edge.To.Type][edge.To.ID] = removeKey(edge.ID, edges)
 	}
 	if c, ok := n.edges[key.Type]; ok {
 		delete(c, key.ID)
@@ -132,7 +138,11 @@ func (e Edges) RangeFrom(node *model.Node, fn func(e *model.Edge) bool) {
 	if _, ok := e.edgesFrom[node.Type][node.ID]; !ok {
 		return
 	}
-	for _, edge := range e.edgesFrom[node.Type][node.ID] {
+	for _, fkey := range e.edgesFrom[node.Type][node.ID] {
+		edge, ok := e.Get(*fkey)
+		if !ok {
+			continue
+		}
 		if !fn(edge) {
 			break
 		}
@@ -146,35 +156,18 @@ func (e Edges) RangeTo(node *model.Node, fn func(e *model.Edge) bool) {
 	if _, ok := e.edgesTo[node.Type][node.ID]; !ok {
 		return
 	}
-	for _, edge := range e.edgesTo[node.Type][node.ID] {
+	for _, fkey := range e.edgesTo[node.Type][node.ID] {
+		if fkey == nil {
+			continue
+		}
+		edge, ok := e.Get(*fkey)
+		if !ok {
+			continue
+		}
 		if !fn(edge) {
 			break
 		}
 	}
-}
-
-func (e Edges) EdgesFrom(node *model.Node) []*model.Edge {
-	if _, ok := e.edgesFrom[node.Type]; !ok {
-		return nil
-	}
-	if _, ok := e.edgesFrom[node.Type][node.ID]; !ok {
-		return nil
-	}
-	edges := e.edgesFrom[node.Type][node.ID]
-	EdgeList(edges).Sort()
-	return edges
-}
-
-func (e Edges) EdgesTo(node *model.Node) []*model.Edge {
-	if _, ok := e.edgesTo[node.Type]; !ok {
-		return nil
-	}
-	if _, ok := e.edgesTo[node.Type][node.ID]; !ok {
-		return nil
-	}
-	edges := e.edgesTo[node.Type][node.ID]
-	EdgeList(edges).Sort()
-	return edges
 }
 
 func (n *Edges) Filter(edgeType string, filter func(edge *model.Edge) bool) []*model.Edge {
@@ -228,7 +221,7 @@ func (e *Edges) Patch(updatedAt time.Time, value *model.Patch) *model.Edge {
 	for k, v := range value.Patch {
 		e.edges[value.Type][value.ID].Attributes[k] = v
 	}
-	e.edges[value.Type][value.ID].UpdatedAt = &updatedAt
+	e.edges[value.Type][value.ID].UpdatedAt = updatedAt
 	return e.edges[value.Type][value.ID]
 }
 
@@ -277,8 +270,8 @@ func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {
 	return edges, nil
 }
 
-func removeEdge(id string, edges []*model.Edge) []*model.Edge {
-	var newEdges []*model.Edge
+func removeKey(id string, edges []*model.ForeignKey) []*model.ForeignKey {
+	var newEdges []*model.ForeignKey
 	for _, edge := range edges {
 		if edge.ID != id {
 			newEdges = append(newEdges, edge)
