@@ -161,12 +161,11 @@ func (n *Nodes) Search(expression, nodeType string) (*model.SearchResults, error
 	return results, nil
 }
 
-
 func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
 	var nodes []*model.Node
 	n.Range(filter.Type, func(node *model.Node) bool {
-		for _, exp := range filter.Expressions {
-			val, _ := jmespath.Search(exp.Key, node)
+		for _, exp := range filter.Statements {
+			val, _ := jmespath.Search(exp.Expression, node)
 			if exp.Operator == model.OperatorNeq {
 				if val == exp.Value {
 					return true
@@ -181,5 +180,26 @@ func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
 		nodes = append(nodes, node)
 		return len(nodes) < filter.Limit
 	})
+	sorter := Interface{
+		LenFunc: func() int {
+			if nodes == nil {
+				return 0
+			}
+			return len(nodes)
+		},
+		LessFunc: func(i, j int) bool {
+			if nodes == nil {
+				return false
+			}
+			return nodes[i].UpdatedAt.UnixNano() > nodes[j].UpdatedAt.UnixNano()
+		},
+		SwapFunc: func(i, j int) {
+			if nodes == nil {
+				return
+			}
+			nodes[i], nodes[j] = nodes[j], nodes[i]
+		},
+	}
+	sorter.Sort()
 	return nodes, nil
 }

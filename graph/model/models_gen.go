@@ -43,16 +43,10 @@ type Export struct {
 	Edges []*Edge `json:"edges"`
 }
 
-type Expression struct {
-	Key      string      `json:"key"`
-	Operator Operator    `json:"operator"`
-	Value    interface{} `json:"value"`
-}
-
 type Filter struct {
-	Type        string        `json:"type"`
-	Expressions []*Expression `json:"expressions"`
-	Limit       int           `json:"limit"`
+	Type       string       `json:"type"`
+	Statements []*Statement `json:"statements"`
+	Limit      int          `json:"limit"`
 }
 
 type ForeignKey struct {
@@ -96,6 +90,12 @@ type SearchResult struct {
 type SearchResults struct {
 	Search  string          `json:"search"`
 	Results []*SearchResult `json:"results"`
+}
+
+type Statement struct {
+	Expression string      `json:"expression"`
+	Operator   Operator    `json:"operator"`
+	Value      interface{} `json:"value"`
 }
 
 type Operator string

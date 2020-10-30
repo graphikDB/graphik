@@ -117,7 +117,7 @@ func (r *queryResolver) Edges(ctx context.Context, input model.Filter) ([]*model
 }
 
 func (r *queryResolver) SearchEdges(ctx context.Context, input model.Search) (*model.SearchResults, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.store.SearchEdges(ctx, input)
 }
 
 // Mutation returns generated.MutationResolver implementation.

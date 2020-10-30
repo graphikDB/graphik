@@ -28,6 +28,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			Type:       val.Type,
 			Attributes: val.Attributes,
 			CreatedAt:  c.Timestamp,
+			UpdatedAt:  &c.Timestamp,
 		})
 	case command.PATCH_NODE:
 		var val model.Patch
@@ -76,11 +77,11 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		}
 		from, ok := f.nodes.Get(*val.From)
 		if !ok {
-			return errors.Errorf("from node %s.%s does not exist", from.Type, from.ID)
+			return errors.Errorf("from node %s.%s does not exist", val.From.Type, val.From.ID)
 		}
 		to, ok := f.nodes.Get(*val.To)
 		if !ok {
-			return errors.Errorf("to node %s.%s does not exist", to.Type, to.ID)
+			return errors.Errorf("to node %s.%s does not exist", val.To.Type, val.To.ID)
 		}
 		return f.edges.Set(&model.Edge{
 			Type:       val.Type,
@@ -88,6 +89,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			From:       from,
 			To:         to,
 			CreatedAt:  c.Timestamp,
+			UpdatedAt:  &c.Timestamp,
 			Mutual:     val.Mutual,
 		})
 	case command.PATCH_EDGE:

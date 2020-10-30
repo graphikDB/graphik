@@ -251,8 +251,8 @@ func (e *Edges) Search(expression, nodeType string) (*model.SearchResults, error
 func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {
 	var edges []*model.Edge
 	e.Range(filter.Type, func(edge *model.Edge) bool {
-		for _, exp := range filter.Expressions {
-			val, _ := jmespath.Search(exp.Key, edge)
+		for _, exp := range filter.Statements {
+			val, _ := jmespath.Search(exp.Expression, edge)
 			if exp.Operator == model.OperatorNeq {
 				if val == exp.Value {
 					return true
@@ -267,6 +267,27 @@ func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {
 		edges = append(edges, edge)
 		return len(edges) < filter.Limit
 	})
+	sorter := Interface{
+		LenFunc: func() int {
+			if edges == nil {
+				return 0
+			}
+			return len(edges)
+		},
+		LessFunc: func(i, j int) bool {
+			if edges == nil {
+				return false
+			}
+			return edges[i].UpdatedAt.UnixNano() < edges[j].UpdatedAt.UnixNano()
+		},
+		SwapFunc: func(i, j int) {
+			if edges == nil {
+				return
+			}
+			edges[i], edges[j] = edges[j], edges[i]
+		},
+	}
+	sorter.Sort()
 	return edges, nil
 }
 

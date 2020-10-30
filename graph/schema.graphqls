@@ -58,15 +58,15 @@ enum Operator {
   EQ
 }
 
-input Expression {
-  key: String!
+input Statement {
+  expression: String!
   operator: Operator!
   value: Any!
 }
 
 input Filter {
   type: String!
-  expressions: [Expression!]
+  statements: [Statement!]
   limit: Int!
 }
 
@@ -101,11 +101,15 @@ input Search {
 
 
 type Query {
+  # node returns a node using a foreign key
   node(input: ForeignKey!): Node
   nodes(input: Filter!): [Node!]!
   searchNodes(input: Search!): SearchResults!
+  # edge returns an edge using a foreign key
   edge(input: ForeignKey!): Edge
+  # edges traverses the graph and returns edges that pass the given filter
   edges(input: Filter!): [Edge!]!
+  # searchEdges traverses the graph and returns edges that pass the given filter
   searchEdges(input: Search!): SearchResults!
 }
 

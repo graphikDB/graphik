@@ -558,15 +558,15 @@ enum Operator {
   EQ
 }
 
-input Expression {
-  key: String!
+input Statement {
+  expression: String!
   operator: Operator!
   value: Any!
 }
 
 input Filter {
   type: String!
-  expressions: [Expression!]
+  statements: [Statement!]
   limit: Int!
 }
 
@@ -601,11 +601,15 @@ input Search {
 
 
 type Query {
+  # node returns a node using a foreign key
   node(input: ForeignKey!): Node
   nodes(input: Filter!): [Node!]!
   searchNodes(input: Search!): SearchResults!
+  # edge returns an edge using a foreign key
   edge(input: ForeignKey!): Edge
+  # edges traverses the graph and returns edges that pass the given filter
   edges(input: Filter!): [Edge!]!
+  # searchEdges traverses the graph and returns edges that pass the given filter
   searchEdges(input: Search!): SearchResults!
 }
 
@@ -3301,42 +3305,6 @@ func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputExpression(ctx context.Context, obj interface{}) (model.Expression, error) {
-	var it model.Expression
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "key":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
-			it.Key, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "operator":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("operator"))
-			it.Operator, err = ec.unmarshalNOperator2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐOperator(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "value":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
-			it.Value, err = ec.unmarshalNAny2interface(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interface{}) (model.Filter, error) {
 	var it model.Filter
 	var asMap = obj.(map[string]interface{})
@@ -3351,11 +3319,11 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 			if err != nil {
 				return it, err
 			}
-		case "expressions":
+		case "statements":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
-			it.Expressions, err = ec.unmarshalOExpression2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpressionᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statements"))
+			it.Statements, err = ec.unmarshalOStatement2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatementᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3484,6 +3452,42 @@ func (ec *executionContext) unmarshalInputSearch(ctx context.Context, obj interf
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputStatement(ctx context.Context, obj interface{}) (model.Statement, error) {
+	var it model.Statement
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "operator":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("operator"))
+			it.Operator, err = ec.unmarshalNOperator2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐOperator(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "value":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
+			it.Value, err = ec.unmarshalNAny2interface(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4231,11 +4235,6 @@ func (ec *executionContext) unmarshalNEdgeConstructor2githubᚗcomᚋautom8ter�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNExpression2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpression(ctx context.Context, v interface{}) (*model.Expression, error) {
-	res, err := ec.unmarshalInputExpression(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx context.Context, v interface{}) (model.Filter, error) {
 	res, err := ec.unmarshalInputFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4385,6 +4384,11 @@ func (ec *executionContext) marshalNSearchResults2ᚖgithubᚗcomᚋautom8terᚋ
 		return graphql.Null
 	}
 	return ec._SearchResults(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNStatement2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatement(ctx context.Context, v interface{}) (*model.Statement, error) {
+	res, err := ec.unmarshalInputStatement(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -4779,30 +4783,6 @@ func (ec *executionContext) marshalOEdge2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 	return ec._Edge(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOExpression2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpressionᚄ(ctx context.Context, v interface{}) ([]*model.Expression, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]*model.Expression, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNExpression2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐExpression(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
 func (ec *executionContext) unmarshalOMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
 	if v == nil {
 		return nil, nil
@@ -4911,6 +4891,30 @@ func (ec *executionContext) marshalOSearchResult2ᚕᚖgithubᚗcomᚋautom8ter�
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalOStatement2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatementᚄ(ctx context.Context, v interface{}) ([]*model.Statement, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.Statement, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNStatement2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatement(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
