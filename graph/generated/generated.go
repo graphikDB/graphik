@@ -92,13 +92,13 @@ type ComplexityRoot struct {
 		SearchNodes func(childComplexity int, input model.Search) int
 	}
 
-	Result struct {
+	SearchResult struct {
 		ID   func(childComplexity int) int
 		Type func(childComplexity int) int
 		Val  func(childComplexity int) int
 	}
 
-	Results struct {
+	SearchResults struct {
 		Results func(childComplexity int) int
 		Search  func(childComplexity int) int
 	}
@@ -115,10 +115,10 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Node(ctx context.Context, input model.ForeignKey) (*model.Node, error)
 	Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error)
-	SearchNodes(ctx context.Context, input model.Search) (*model.Results, error)
+	SearchNodes(ctx context.Context, input model.Search) (*model.SearchResults, error)
 	Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, error)
 	Edges(ctx context.Context, input model.Filter) ([]*model.Edge, error)
-	SearchEdges(ctx context.Context, input model.Search) (*model.Results, error)
+	SearchEdges(ctx context.Context, input model.Search) (*model.SearchResults, error)
 }
 
 type executableSchema struct {
@@ -399,40 +399,40 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.SearchNodes(childComplexity, args["input"].(model.Search)), true
 
-	case "Result.id":
-		if e.complexity.Result.ID == nil {
+	case "SearchResult.id":
+		if e.complexity.SearchResult.ID == nil {
 			break
 		}
 
-		return e.complexity.Result.ID(childComplexity), true
+		return e.complexity.SearchResult.ID(childComplexity), true
 
-	case "Result.type":
-		if e.complexity.Result.Type == nil {
+	case "SearchResult.type":
+		if e.complexity.SearchResult.Type == nil {
 			break
 		}
 
-		return e.complexity.Result.Type(childComplexity), true
+		return e.complexity.SearchResult.Type(childComplexity), true
 
-	case "Result.val":
-		if e.complexity.Result.Val == nil {
+	case "SearchResult.val":
+		if e.complexity.SearchResult.Val == nil {
 			break
 		}
 
-		return e.complexity.Result.Val(childComplexity), true
+		return e.complexity.SearchResult.Val(childComplexity), true
 
-	case "Results.results":
-		if e.complexity.Results.Results == nil {
+	case "SearchResults.results":
+		if e.complexity.SearchResults.Results == nil {
 			break
 		}
 
-		return e.complexity.Results.Results(childComplexity), true
+		return e.complexity.SearchResults.Results(childComplexity), true
 
-	case "Results.search":
-		if e.complexity.Results.Search == nil {
+	case "SearchResults.search":
+		if e.complexity.SearchResults.Search == nil {
 			break
 		}
 
-		return e.complexity.Results.Search(childComplexity), true
+		return e.complexity.SearchResults.Search(childComplexity), true
 
 	}
 	return 0, false
@@ -542,16 +542,15 @@ type Export {
   edges: [Edge]
 }
 
-
-type Result {
+type SearchResult {
   id: String!
   type: String!
   val: Any
 }
 
-type Results {
+type SearchResults {
   search: String!
-  results: [Result!]
+  results: [SearchResult!]
 }
 
 enum Operator {
@@ -604,10 +603,10 @@ input Search {
 type Query {
   node(input: ForeignKey!): Node
   nodes(input: Filter!): [Node!]!
-  searchNodes(input: Search!): Results!
+  searchNodes(input: Search!): SearchResults!
   edge(input: ForeignKey!): Edge
   edges(input: Filter!): [Edge!]!
-  searchEdges(input: Search!): Results!
+  searchEdges(input: Search!): SearchResults!
 }
 
 type Mutation {
@@ -1795,9 +1794,9 @@ func (ec *executionContext) _Query_searchNodes(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Results)
+	res := resTmp.(*model.SearchResults)
 	fc.Result = res
-	return ec.marshalNResults2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐResults(ctx, field.Selections, res)
+	return ec.marshalNSearchResults2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResults(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_edge(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1918,9 +1917,9 @@ func (ec *executionContext) _Query_searchEdges(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Results)
+	res := resTmp.(*model.SearchResults)
 	fc.Result = res
-	return ec.marshalNResults2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐResults(ctx, field.Selections, res)
+	return ec.marshalNSearchResults2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResults(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1994,7 +1993,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Result_id(ctx context.Context, field graphql.CollectedField, obj *model.Result) (ret graphql.Marshaler) {
+func (ec *executionContext) _SearchResult_id(ctx context.Context, field graphql.CollectedField, obj *model.SearchResult) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2002,7 +2001,7 @@ func (ec *executionContext) _Result_id(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Result",
+		Object:     "SearchResult",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2029,7 +2028,7 @@ func (ec *executionContext) _Result_id(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Result_type(ctx context.Context, field graphql.CollectedField, obj *model.Result) (ret graphql.Marshaler) {
+func (ec *executionContext) _SearchResult_type(ctx context.Context, field graphql.CollectedField, obj *model.SearchResult) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2037,7 +2036,7 @@ func (ec *executionContext) _Result_type(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Result",
+		Object:     "SearchResult",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2064,7 +2063,7 @@ func (ec *executionContext) _Result_type(ctx context.Context, field graphql.Coll
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Result_val(ctx context.Context, field graphql.CollectedField, obj *model.Result) (ret graphql.Marshaler) {
+func (ec *executionContext) _SearchResult_val(ctx context.Context, field graphql.CollectedField, obj *model.SearchResult) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2072,7 +2071,7 @@ func (ec *executionContext) _Result_val(ctx context.Context, field graphql.Colle
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Result",
+		Object:     "SearchResult",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2096,7 +2095,7 @@ func (ec *executionContext) _Result_val(ctx context.Context, field graphql.Colle
 	return ec.marshalOAny2interface(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Results_search(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+func (ec *executionContext) _SearchResults_search(ctx context.Context, field graphql.CollectedField, obj *model.SearchResults) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2104,7 +2103,7 @@ func (ec *executionContext) _Results_search(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Results",
+		Object:     "SearchResults",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2131,7 +2130,7 @@ func (ec *executionContext) _Results_search(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Results_results(ctx context.Context, field graphql.CollectedField, obj *model.Results) (ret graphql.Marshaler) {
+func (ec *executionContext) _SearchResults_results(ctx context.Context, field graphql.CollectedField, obj *model.SearchResults) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2139,7 +2138,7 @@ func (ec *executionContext) _Results_results(ctx context.Context, field graphql.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Results",
+		Object:     "SearchResults",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2158,9 +2157,9 @@ func (ec *executionContext) _Results_results(ctx context.Context, field graphql.
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Result)
+	res := resTmp.([]*model.SearchResult)
 	fc.Result = res
-	return ec.marshalOResult2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐResultᚄ(ctx, field.Selections, res)
+	return ec.marshalOSearchResult2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResultᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -3832,29 +3831,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
-var resultImplementors = []string{"Result"}
+var searchResultImplementors = []string{"SearchResult"}
 
-func (ec *executionContext) _Result(ctx context.Context, sel ast.SelectionSet, obj *model.Result) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, resultImplementors)
+func (ec *executionContext) _SearchResult(ctx context.Context, sel ast.SelectionSet, obj *model.SearchResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, searchResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Result")
+			out.Values[i] = graphql.MarshalString("SearchResult")
 		case "id":
-			out.Values[i] = ec._Result_id(ctx, field, obj)
+			out.Values[i] = ec._SearchResult_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "type":
-			out.Values[i] = ec._Result_type(ctx, field, obj)
+			out.Values[i] = ec._SearchResult_type(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "val":
-			out.Values[i] = ec._Result_val(ctx, field, obj)
+			out.Values[i] = ec._SearchResult_val(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3866,24 +3865,24 @@ func (ec *executionContext) _Result(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
-var resultsImplementors = []string{"Results"}
+var searchResultsImplementors = []string{"SearchResults"}
 
-func (ec *executionContext) _Results(ctx context.Context, sel ast.SelectionSet, obj *model.Results) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, resultsImplementors)
+func (ec *executionContext) _SearchResults(ctx context.Context, sel ast.SelectionSet, obj *model.SearchResults) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, searchResultsImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Results")
+			out.Values[i] = graphql.MarshalString("SearchResults")
 		case "search":
-			out.Values[i] = ec._Results_search(ctx, field, obj)
+			out.Values[i] = ec._SearchResults_search(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "results":
-			out.Values[i] = ec._Results_results(ctx, field, obj)
+			out.Values[i] = ec._SearchResults_results(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4359,33 +4358,33 @@ func (ec *executionContext) unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphik�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNResult2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐResult(ctx context.Context, sel ast.SelectionSet, v *model.Result) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Result(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNResults2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐResults(ctx context.Context, sel ast.SelectionSet, v model.Results) graphql.Marshaler {
-	return ec._Results(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNResults2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐResults(ctx context.Context, sel ast.SelectionSet, v *model.Results) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Results(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNSearch2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearch(ctx context.Context, v interface{}) (model.Search, error) {
 	res, err := ec.unmarshalInputSearch(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSearchResult2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResult(ctx context.Context, sel ast.SelectionSet, v *model.SearchResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._SearchResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSearchResults2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResults(ctx context.Context, sel ast.SelectionSet, v model.SearchResults) graphql.Marshaler {
+	return ec._SearchResults(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSearchResults2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResults(ctx context.Context, sel ast.SelectionSet, v *model.SearchResults) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._SearchResults(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -4874,7 +4873,7 @@ func (ec *executionContext) unmarshalOPatch2ᚖgithubᚗcomᚋautom8terᚋgraphi
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOResult2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐResultᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Result) graphql.Marshaler {
+func (ec *executionContext) marshalOSearchResult2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResultᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SearchResult) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4901,7 +4900,7 @@ func (ec *executionContext) marshalOResult2ᚕᚖgithubᚗcomᚋautom8terᚋgrap
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNResult2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐResult(ctx, sel, v[i])
+			ret[i] = ec.marshalNSearchResult2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResult(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

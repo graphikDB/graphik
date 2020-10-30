@@ -82,20 +82,20 @@ type Patch struct {
 	Patch map[string]interface{} `json:"patch"`
 }
 
-type Result struct {
+type Search struct {
+	Search string `json:"search"`
+	Type   string `json:"type"`
+}
+
+type SearchResult struct {
 	ID   string      `json:"id"`
 	Type string      `json:"type"`
 	Val  interface{} `json:"val"`
 }
 
-type Results struct {
-	Search  string    `json:"search"`
-	Results []*Result `json:"results"`
-}
-
-type Search struct {
-	Search string `json:"search"`
-	Type   string `json:"type"`
+type SearchResults struct {
+	Search  string          `json:"search"`
+	Results []*SearchResult `json:"results"`
 }
 
 type Operator string

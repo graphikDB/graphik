@@ -226,8 +226,8 @@ func (e *Edges) Patch(updatedAt time.Time, value *model.Patch) *model.Edge {
 	return e.edges[value.Type][value.ID]
 }
 
-func (e *Edges) Search(expression, nodeType string) (*model.Results, error) {
-	results := &model.Results{
+func (e *Edges) Search(expression, nodeType string) (*model.SearchResults, error) {
+	results := &model.SearchResults{
 		Search: expression,
 	}
 	exp, err := jmespath.Compile(expression)
@@ -237,7 +237,7 @@ func (e *Edges) Search(expression, nodeType string) (*model.Results, error) {
 	e.Range(nodeType, func(edge *model.Edge) bool {
 		val, _ := exp.Search(edge)
 		if val != nil {
-			results.Results = append(results.Results, &model.Result{
+			results.Results = append(results.Results, &model.SearchResult{
 				ID:   edge.ID,
 				Type: edge.Type,
 				Val:  val,

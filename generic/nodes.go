@@ -139,8 +139,8 @@ func (n *Nodes) Close() {
 	}
 }
 
-func (n *Nodes) Search(expression, nodeType string) (*model.Results, error) {
-	results := &model.Results{
+func (n *Nodes) Search(expression, nodeType string) (*model.SearchResults, error) {
+	results := &model.SearchResults{
 		Search: expression,
 	}
 	exp, err := jmespath.Compile(expression)
@@ -150,7 +150,7 @@ func (n *Nodes) Search(expression, nodeType string) (*model.Results, error) {
 	n.Range(nodeType, func(node *model.Node) bool {
 		val, _ := exp.Search(node)
 		if val != nil {
-			results.Results = append(results.Results, &model.Result{
+			results.Results = append(results.Results, &model.SearchResult{
 				ID:   node.ID,
 				Type: node.Type,
 				Val:  val,

@@ -104,7 +104,7 @@ func (r *queryResolver) Nodes(ctx context.Context, input model.Filter) ([]*model
 	return r.store.Nodes(ctx, input)
 }
 
-func (r *queryResolver) SearchNodes(ctx context.Context, input model.Search) (*model.Results, error) {
+func (r *queryResolver) SearchNodes(ctx context.Context, input model.Search) (*model.SearchResults, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
@@ -116,7 +116,7 @@ func (r *queryResolver) Edges(ctx context.Context, input model.Filter) ([]*model
 	return r.store.Edges(ctx, input)
 }
 
-func (r *queryResolver) SearchEdges(ctx context.Context, input model.Search) (*model.Results, error) {
+func (r *queryResolver) SearchEdges(ctx context.Context, input model.Search) (*model.SearchResults, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
