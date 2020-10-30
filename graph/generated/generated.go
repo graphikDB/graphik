@@ -77,7 +77,8 @@ type ComplexityRoot struct {
 	Node struct {
 		Attributes func(childComplexity int) int
 		CreatedAt  func(childComplexity int) int
-		Edges      func(childComplexity int) int
+		EdgesFrom  func(childComplexity int) int
+		EdgesTo    func(childComplexity int) int
 		ID         func(childComplexity int) int
 		Type       func(childComplexity int) int
 		UpdatedAt  func(childComplexity int) int
@@ -299,12 +300,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Node.CreatedAt(childComplexity), true
 
-	case "Node.edges":
-		if e.complexity.Node.Edges == nil {
+	case "Node.edgesFrom":
+		if e.complexity.Node.EdgesFrom == nil {
 			break
 		}
 
-		return e.complexity.Node.Edges(childComplexity), true
+		return e.complexity.Node.EdgesFrom(childComplexity), true
+
+	case "Node.edgesTo":
+		if e.complexity.Node.EdgesTo == nil {
+			break
+		}
+
+		return e.complexity.Node.EdgesTo(childComplexity), true
 
 	case "Node.id":
 		if e.complexity.Node.ID == nil {
@@ -521,7 +529,8 @@ type Node implements Object {
   id: String!
   type: String!
   attributes: Map
-  edges: [Edge!]
+  edgesFrom: [Edge!]
+  edgesTo: [Edge!]
   createdAt: Time!
   updatedAt: Time
 }
@@ -576,6 +585,7 @@ input ForeignKey {
 }
 
 input EdgeConstructor {
+  id: String
   type: String!
   attributes: Map
   from: ForeignKey!
@@ -584,6 +594,7 @@ input EdgeConstructor {
 }
 
 input NodeConstructor {
+  id: String
   type: String!
   attributes: Map
 }
@@ -1581,7 +1592,7 @@ func (ec *executionContext) _Node_attributes(ctx context.Context, field graphql.
 	return ec.marshalOMap2map(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Node_edges(ctx context.Context, field graphql.CollectedField, obj *model.Node) (ret graphql.Marshaler) {
+func (ec *executionContext) _Node_edgesFrom(ctx context.Context, field graphql.CollectedField, obj *model.Node) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1599,7 +1610,39 @@ func (ec *executionContext) _Node_edges(ctx context.Context, field graphql.Colle
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
+		return obj.EdgesFrom, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Edge)
+	fc.Result = res
+	return ec.marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐEdgeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Node_edgesTo(ctx context.Context, field graphql.CollectedField, obj *model.Node) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Node",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EdgesTo, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3259,6 +3302,14 @@ func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, o
 
 	for k, v := range asMap {
 		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "type":
 			var err error
 
@@ -3375,6 +3426,14 @@ func (ec *executionContext) unmarshalInputNodeConstructor(ctx context.Context, o
 
 	for k, v := range asMap {
 		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "type":
 			var err error
 
@@ -3707,8 +3766,10 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "attributes":
 			out.Values[i] = ec._Node_attributes(ctx, field, obj)
-		case "edges":
-			out.Values[i] = ec._Node_edges(ctx, field, obj)
+		case "edgesFrom":
+			out.Values[i] = ec._Node_edgesFrom(ctx, field, obj)
+		case "edgesTo":
+			out.Values[i] = ec._Node_edgesTo(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._Node_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

@@ -31,6 +31,7 @@ type Edge struct {
 func (Edge) IsObject() {}
 
 type EdgeConstructor struct {
+	ID         *string                `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 	From       *ForeignKey            `json:"from"`
@@ -58,7 +59,8 @@ type Node struct {
 	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
-	Edges      []*Edge                `json:"edges"`
+	EdgesFrom  []*Edge                `json:"edgesFrom"`
+	EdgesTo    []*Edge                `json:"edgesTo"`
 	CreatedAt  time.Time              `json:"createdAt"`
 	UpdatedAt  *time.Time             `json:"updatedAt"`
 }
@@ -66,6 +68,7 @@ type Node struct {
 func (Node) IsObject() {}
 
 type NodeConstructor struct {
+	ID         *string                `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 }

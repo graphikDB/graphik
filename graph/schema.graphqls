@@ -21,7 +21,8 @@ type Node implements Object {
   id: String!
   type: String!
   attributes: Map
-  edges: [Edge!]
+  edgesFrom: [Edge!]
+  edgesTo: [Edge!]
   createdAt: Time!
   updatedAt: Time
 }
@@ -76,6 +77,7 @@ input ForeignKey {
 }
 
 input EdgeConstructor {
+  id: String
   type: String!
   attributes: Map
   from: ForeignKey!
@@ -84,6 +86,7 @@ input EdgeConstructor {
 }
 
 input NodeConstructor {
+  id: String
   type: String!
   attributes: Map
 }

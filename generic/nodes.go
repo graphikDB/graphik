@@ -8,11 +8,13 @@ import (
 
 type Nodes struct {
 	nodes map[string]map[string]*model.Node
+	edges *Edges
 }
 
-func NewNodes() *Nodes {
+func NewNodes(edges *Edges) *Nodes {
 	return &Nodes{
 		nodes: map[string]map[string]*model.Node{},
+		edges: edges,
 	}
 }
 
@@ -44,14 +46,18 @@ func (n *Nodes) All() []*model.Node {
 func (n *Nodes) Get(key model.ForeignKey) (*model.Node, bool) {
 	if c, ok := n.nodes[key.Type]; ok {
 		node := c[key.ID]
-		return c[key.ID], node != nil
+		if node != nil {
+			node.EdgesFrom = n.edges.EdgesFrom(node)
+			node.EdgesTo = n.edges.EdgesTo(node)
+		}
+		return node, node != nil
 	}
 	return nil, false
 }
 
 func (n *Nodes) Set(value *model.Node) *model.Node {
 	if value.ID == "" {
-		value.ID = uuid()
+		value.ID = UUID()
 	}
 	if _, ok := n.nodes[value.Type]; !ok {
 		n.nodes[value.Type] = map[string]*model.Node{}
@@ -64,33 +70,59 @@ func (n *Nodes) Patch(updatedAt time.Time, value *model.Patch) *model.Node {
 	if _, ok := n.nodes[value.Type]; !ok {
 		return nil
 	}
+	node := n.nodes[value.Type][value.ID]
 	for k, v := range value.Patch {
-		n.nodes[value.Type][value.ID].Attributes[k] = v
+		node.Attributes[k] = v
 	}
-	n.nodes[value.Type][value.ID].UpdatedAt = &updatedAt
-	return n.nodes[value.Type][value.ID]
+	node.UpdatedAt = &updatedAt
+	node.EdgesFrom = n.edges.EdgesFrom(node)
+	node.EdgesTo = n.edges.EdgesTo(node)
+	return node
 }
 
 func (n *Nodes) Range(nodeType string, f func(node *model.Node) bool) {
 	if nodeType == Any {
 		for _, c := range n.nodes {
-			for _, v := range c {
-				f(v)
+			for _, node := range c {
+				node.EdgesFrom = n.edges.EdgesFrom(node)
+				node.EdgesTo = n.edges.EdgesTo(node)
+				f(node)
 			}
 		}
 	} else {
 		if c, ok := n.nodes[nodeType]; ok {
-			for _, v := range c {
-				f(v)
+			for _, node := range c {
+				node.EdgesFrom = n.edges.EdgesFrom(node)
+				node.EdgesTo = n.edges.EdgesTo(node)
+				f(node)
 			}
 		}
 	}
 }
 
-func (n *Nodes) Delete(key model.ForeignKey) {
+func (n *Nodes) Delete(key model.ForeignKey) bool {
+	node, ok := n.Get(key)
+	if !ok {
+		return false
+	}
+	n.edges.RangeFrom(node, func(e *model.Edge) bool {
+		n.edges.Delete(model.ForeignKey{
+			ID:   e.ID,
+			Type: e.Type,
+		})
+		return true
+	})
+	n.edges.RangeTo(node, func(e *model.Edge) bool {
+		n.edges.Delete(model.ForeignKey{
+			ID:   e.ID,
+			Type: e.Type,
+		})
+		return true
+	})
 	if c, ok := n.nodes[key.Type]; ok {
 		delete(c, key.ID)
 	}
+	return true
 }
 
 func (n *Nodes) Exists(key model.ForeignKey) bool {
@@ -113,7 +145,10 @@ func (n *Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*m
 func (n *Nodes) SetAll(nodes ...*model.Node) []*model.Node {
 	var created []*model.Node
 	for _, node := range nodes {
-		created = append(created, n.Set(node))
+		node = n.Set(node)
+		node.EdgesFrom = n.edges.EdgesFrom(node)
+		node.EdgesTo = n.edges.EdgesTo(node)
+		created = append(created, node)
 	}
 	return created
 }

@@ -47,29 +47,10 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode foreign key")
 		}
-		node, ok := f.nodes.Get(val)
-		if !ok {
-			return &model.Counter{Count: 0}
+		if f.nodes.Delete(val) {
+			return &model.Counter{Count: 1}
 		}
-		f.edges.RangeFrom(node, func(e *model.Edge) bool {
-			f.edges.Delete(model.ForeignKey{
-				ID:   e.ID,
-				Type: e.Type,
-			})
-			return true
-		})
-		f.edges.RangeTo(node, func(e *model.Edge) bool {
-			f.edges.Delete(model.ForeignKey{
-				ID:   e.ID,
-				Type: e.Type,
-			})
-			return true
-		})
-		f.nodes.Delete(model.ForeignKey{
-			ID:   node.ID,
-			Type: node.Type,
-		})
-		return &model.Counter{Count: 1}
+		return &model.Counter{Count: 0}
 	case command.CREATE_EDGE:
 		var val model.EdgeConstructor
 		if err := f.decode(c.Val, &val); err != nil {

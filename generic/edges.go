@@ -55,7 +55,7 @@ func (n *Edges) Get(key model.ForeignKey) (*model.Edge, bool) {
 
 func (n *Edges) set(value *model.Edge) *model.Edge {
 	if value.ID == "" {
-		value.ID = uuid()
+		value.ID = UUID()
 	}
 	if _, ok := n.edges[value.Type]; !ok {
 		n.edges[value.Type] = map[string]*model.Edge{}
@@ -165,14 +165,14 @@ func (e Edges) EdgesFrom(node *model.Node) []*model.Edge {
 	return edges
 }
 
-func (e Edges) EdgesTo(nodeType, nodeID string) []*model.Edge {
-	if _, ok := e.edgesTo[nodeType]; !ok {
+func (e Edges) EdgesTo(node *model.Node) []*model.Edge {
+	if _, ok := e.edgesTo[node.Type]; !ok {
 		return nil
 	}
-	if _, ok := e.edgesTo[nodeType][nodeID]; !ok {
+	if _, ok := e.edgesTo[node.Type][node.ID]; !ok {
 		return nil
 	}
-	edges := e.edgesTo[nodeType][nodeID]
+	edges := e.edgesTo[node.Type][node.ID]
 	EdgeList(edges).Sort()
 	return edges
 }
@@ -286,7 +286,6 @@ func removeEdge(id string, edges []*model.Edge) []*model.Edge {
 	}
 	return newEdges
 }
-
 
 type EdgeList []*model.Edge
 

@@ -19,13 +19,6 @@ func (f *Store) Node(ctx context.Context, input model.ForeignKey) (*model.Node, 
 func (f *Store) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	nodes, err := f.nodes.FilterSearch(input)
-	if err != nil {
-		return nil, err
-	}
-	for _, n := range nodes {
-		n.Edges = f.edges.EdgesFrom(n)
-	}
 	return f.nodes.FilterSearch(input)
 }
 

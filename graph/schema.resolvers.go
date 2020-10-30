@@ -6,6 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"github.com/autom8ter/graphik/generic"
 
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/graph/generated"
@@ -13,6 +14,10 @@ import (
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConstructor) (*model.Node, error) {
+	if input.ID == nil {
+		random := generic.UUID()
+		input.ID = &random
+	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_NODE,
 		Val: input,
@@ -55,6 +60,10 @@ func (r *mutationResolver) DelNode(ctx context.Context, input model.ForeignKey) 
 }
 
 func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConstructor) (*model.Edge, error) {
+	if input.ID == nil {
+		random := generic.UUID()
+		input.ID = &random
+	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_EDGE,
 		Val: input,
