@@ -55,7 +55,7 @@ func (Node) IsObject() {}
 
 type NodeConstructor struct {
 	Type       string                 `json:"type"`
-	Attribuges map[string]interface{} `json:"attribuges"`
+	Attributes map[string]interface{} `json:"attributes"`
 }
 
 type NodeFilter struct {

@@ -61,7 +61,7 @@ input EdgeConstructor {
 
 input NodeConstructor {
   type: String!
-  attribuges: Map
+  attributes: Map
 }
 
 input Patch {

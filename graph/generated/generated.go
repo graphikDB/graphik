@@ -427,7 +427,7 @@ input EdgeConstructor {
 
 input NodeConstructor {
   type: String!
-  attribuges: Map
+  attributes: Map
 }
 
 input Patch {
@@ -2728,11 +2728,11 @@ func (ec *executionContext) unmarshalInputNodeConstructor(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
-		case "attribuges":
+		case "attributes":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attribuges"))
-			it.Attribuges, err = ec.unmarshalOMap2map(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+			it.Attributes, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}

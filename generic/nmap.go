@@ -38,15 +38,15 @@ func (n Nodes) All() []*model.Node {
 	return nodes
 }
 
-func (n Nodes) Get(nodeType string, id string) (*model.Node, bool) {
-	if c, ok := n.nodes[nodeType]; ok {
-		node := c[id]
-		return c[id], node != nil
+func (n Nodes) Get(key *model.ForeignKey) (*model.Node, bool) {
+	if c, ok := n.nodes[key.Type]; ok {
+		node := c[key.ID]
+		return c[key.ID], node != nil
 	}
 	return nil, false
 }
 
-func (n Nodes) Set(value *model.Node) {
+func (n Nodes) Set(value *model.Node) *model.Node {
 	if value.ID == "" {
 		value.ID = uuid()
 	}
@@ -54,6 +54,17 @@ func (n Nodes) Set(value *model.Node) {
 		n.nodes[value.Type] = map[string]*model.Node{}
 	}
 	n.nodes[value.Type][value.ID] = value
+	return value
+}
+
+func (n Nodes) Patch(value *model.Patch) *model.Node {
+	if _, ok := n.nodes[value.Type]; !ok {
+		return nil
+	}
+	for k, v := range value.Patch {
+		n.nodes[value.Type][value.ID].Attributes[k] = v
+	}
+	return n.nodes[value.Type][value.ID]
 }
 
 func (n Nodes) Range(nodeType string, f func(node *model.Node) bool) {
@@ -72,14 +83,14 @@ func (n Nodes) Range(nodeType string, f func(node *model.Node) bool) {
 	}
 }
 
-func (n Nodes) Delete(nodeType string, id string) {
-	if c, ok := n.nodes[nodeType]; ok {
-		delete(c, id)
+func (n Nodes) Delete(key *model.ForeignKey) {
+	if c, ok := n.nodes[key.Type]; ok {
+		delete(c, key.ID)
 	}
 }
 
-func (n Nodes) Exists(nodeType string, id string) bool {
-	_, ok := n.Get(nodeType, id)
+func (n Nodes) Exists(key *model.ForeignKey) bool {
+	_, ok := n.Get(key)
 	return ok
 }
 
@@ -94,18 +105,19 @@ func (n Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*mo
 	return filtered
 }
 
-func (n Nodes) SetAll(Nodes ...*model.Node) {
-	for _, node := range Nodes {
-		if _, ok := n.nodes[node.Type]; !ok {
-			n.nodes[node.Type] = map[string]*model.Node{}
-		}
-		n.nodes[node.Type][node.ID] = node
+func (n Nodes) SetAll(nodes ...*model.Node) []*model.Node {
+	for _, node := range nodes {
+		n.Set(node)
 	}
+	return nodes
 }
 
 func (n Nodes) DeleteAll(Nodes ...*model.Node) {
 	for _, node := range Nodes {
-		n.Delete(node.Type, node.ID)
+		n.Delete(&model.ForeignKey{
+			ID:   node.ID,
+			Type: node.Type,
+		})
 	}
 }
 

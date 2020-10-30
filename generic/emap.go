@@ -50,7 +50,7 @@ func (n *Edges) Get(key *model.ForeignKey) (*model.Edge, bool) {
 	return nil, false
 }
 
-func (n *Edges) Set(value *model.Edge) {
+func (n *Edges) Set(value *model.Edge) *model.Edge {
 	if value.ID == "" {
 		value.ID = uuid()
 	}
@@ -66,6 +66,7 @@ func (n *Edges) Set(value *model.Edge) {
 	n.edges[value.Type][value.ID] = value
 	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], value)
 	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], value)
+	return value
 }
 
 func (n *Edges) Range(edgeType string, f func(edge *model.Edge) bool) {
@@ -194,6 +195,16 @@ func (n *Edges) Close() {
 	for _, edgeType := range n.Types() {
 		n.Clear(edgeType)
 	}
+}
+
+func (e Edges) Patch(value *model.Patch) *model.Edge {
+	if _, ok := e.edges[value.Type]; !ok {
+		return nil
+	}
+	for k, v := range value.Patch {
+		e.edges[value.Type][value.ID].Attributes[k] = v
+	}
+	return e.edges[value.Type][value.ID]
 }
 
 func removeEdge(id string, edges []*model.Edge) []*model.Edge {
