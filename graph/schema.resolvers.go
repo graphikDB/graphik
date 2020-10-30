@@ -5,10 +5,7 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
-	"github.com/autom8ter/dagger"
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
@@ -99,126 +96,19 @@ func (r *mutationResolver) DelEdge(ctx context.Context, input model.ForeignKey) 
 }
 
 func (r *queryResolver) Node(ctx context.Context, input model.ForeignKey) (*model.Node, error) {
-	key := &dagger.ForeignKey{
-		XID:   input.ID,
-		XType: input.Type,
-	}
-	n, ok := dagger.GetNode(key)
-	if !ok {
-		return nil, fmt.Errorf("node not found: %s", key.Path())
-	}
-	return &model.Node{
-		Attributes: n.Raw(),
-		Edges:      nil,
-	}, nil
+	return r.store.Node(ctx, input)
 }
 
 func (r *queryResolver) Nodes(ctx context.Context, input model.NodeFilter) ([]*model.Node, error) {
-	var nodes []*model.Node
-	dagger.RangeNodeTypes(dagger.StringType(input.Type), func(n *dagger.Node) bool {
-		for _, filter := range input.Expressions {
-			if filter.Operator == "!=" {
-				if n.Get(filter.Key) == filter.Value {
-					return true
-				}
-			}
-			if filter.Operator == "==" {
-				if n.Get(filter.Key) != filter.Value {
-					return true
-				}
-			}
-		}
-		node := &model.Node{
-			Attributes: n.Raw(),
-			Edges:      nil,
-		}
-		nodes = append(nodes, node)
-		return len(nodes) < input.Limit
-	})
-	return nodes, nil
+	return r.store.Nodes(ctx, input)
 }
 
 func (r *queryResolver) Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, error) {
-	key := &dagger.ForeignKey{
-		XID:   input.ID,
-		XType: input.Type,
-	}
-	e, ok := dagger.GetEdge(key)
-	if !ok {
-		return nil, fmt.Errorf("edge not found: %s", key.Path())
-	}
-	return &model.Edge{
-		Attributes: e.Node().Raw(),
-		From: &model.Node{
-			Attributes: e.From().Raw(),
-			Edges:      nil,
-		},
-		To: &model.Node{
-			Attributes: e.To().Raw(),
-			Edges:      nil,
-		},
-	}, nil
+	return r.store.Edge(ctx, input)
 }
 
 func (r *queryResolver) Edges(ctx context.Context, input model.EdgeFilter) ([]*model.Edge, error) {
-	var edges []*model.Edge
-	dagger.RangeEdgeTypes(dagger.StringType(input.Type), func(edge *dagger.Edge) bool {
-		for _, filter := range input.Expressions {
-			if strings.Contains(filter.Key, "from.") {
-				split := strings.Split(filter.Key, "from.")
-				if len(split) > 1 {
-					if filter.Operator == "!=" {
-						if edge.From().Get(split[1]) == filter.Value {
-							return true
-						}
-					}
-					if filter.Operator == "==" {
-						if edge.From().Get(split[1]) != filter.Value {
-							return true
-						}
-					}
-				}
-			} else if strings.Contains(filter.Key, "to.") {
-				split := strings.Split(filter.Key, "to.")
-				if len(split) > 1 {
-					if filter.Operator == "!=" {
-						if edge.To().Get(split[1]) == filter.Value {
-							return true
-						}
-					}
-					if filter.Operator == "==" {
-						if edge.To().Get(split[1]) != filter.Value {
-							return true
-						}
-					}
-				}
-			} else {
-				if filter.Operator == "!=" {
-					if edge.Get(filter.Key) == filter.Value {
-						return true
-					}
-				}
-				if filter.Operator == "==" {
-					if edge.Get(filter.Key) != filter.Value {
-						return true
-					}
-				}
-			}
-		}
-		edges = append(edges, &model.Edge{
-			Attributes: edge.Node().Raw(),
-			From: &model.Node{
-				Attributes: edge.From().Raw(),
-				Edges:      nil,
-			},
-			To: &model.Node{
-				Attributes: edge.To().Raw(),
-				Edges:      nil,
-			},
-		})
-		return len(edges) < input.Limit
-	})
-	return edges, nil
+	return r.store.Edges(ctx, input)
 }
 
 // Mutation returns generated.MutationResolver implementation.

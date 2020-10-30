@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	"time"
+)
+
 type Object interface {
 	IsObject()
 }
@@ -16,6 +20,9 @@ type Edge struct {
 	Attributes map[string]interface{} `json:"attributes"`
 	From       *Node                  `json:"from"`
 	To         *Node                  `json:"to"`
+	Mutual     *bool                  `json:"mutual"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  *time.Time             `json:"updatedAt"`
 }
 
 func (Edge) IsObject() {}
@@ -25,12 +32,18 @@ type EdgeConstructor struct {
 	Attributes map[string]interface{} `json:"attributes"`
 	From       *ForeignKey            `json:"from"`
 	To         *ForeignKey            `json:"to"`
+	Mutual     *bool                  `json:"mutual"`
 }
 
 type EdgeFilter struct {
 	Type        string        `json:"type"`
 	Expressions []*Expression `json:"expressions"`
 	Limit       int           `json:"limit"`
+}
+
+type Export struct {
+	Nodes []*Node `json:"nodes"`
+	Edges []*Edge `json:"edges"`
 }
 
 type Expression struct {
@@ -49,6 +62,8 @@ type Node struct {
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 	Edges      []*Edge                `json:"edges"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  *time.Time             `json:"updatedAt"`
 }
 
 func (Node) IsObject() {}

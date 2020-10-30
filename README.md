@@ -8,9 +8,13 @@ A persistant labelled property graph database written in 100% Go
 ```graphql
 mutation createNode {
     createNode(input: {
-        _type: "user"
-        name: "coleman"
+        type: "user"
+        attributes: {
+          name: "coleman"
+        }
     }) {
+        id
+    		type
         attributes
     }
 }
@@ -20,8 +24,12 @@ mutation createNode {
 
 ```graphql
 query {
-    nodes(input:{_type:"user" limit: 5}) {
+    nodes(input:{type:"user" limit: 5}) {
+    	  id
+        type
         attributes
+    		createdAt
+        updatedAt
     }
 }
 ```
@@ -31,10 +39,10 @@ query {
 ```graphql
 mutation delNode {
     delNode(input: {
-        _id: "1a502cc8-3db5-76bb-9548-7ad5d97057bb",
-        _type: "user"
+        id: "3cd440ba-136d-d99f-facc-51ac2a06b53a",
+        type: "user"
     }) {
-        count
+      count  
     }
 }
 ```

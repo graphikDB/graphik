@@ -3,6 +3,7 @@
 # https://gqlgen.com/getting-started/
 scalar Map
 scalar Any
+scalar Time
 
 type Counter {
   count: Int!
@@ -12,6 +13,8 @@ interface Object {
   id: String!
   type: String!
   attributes: Map
+  createdAt: Time!
+  updatedAt: Time
 }
 
 type Node implements Object {
@@ -19,6 +22,8 @@ type Node implements Object {
   type: String!
   attributes: Map
   edges: [Edge!]
+  createdAt: Time!
+  updatedAt: Time
 }
 
 type Edge implements Object {
@@ -27,6 +32,14 @@ type Edge implements Object {
   attributes: Map
   from: Node!
   to: Node!
+  mutual: Boolean
+  createdAt: Time!
+  updatedAt: Time
+}
+
+type Export {
+  nodes: [Node]
+  edges: [Edge]
 }
 
 input Expression {
@@ -57,6 +70,7 @@ input EdgeConstructor {
   attributes: Map
   from: ForeignKey!
   to: ForeignKey!
+  mutual: Boolean
 }
 
 input NodeConstructor {

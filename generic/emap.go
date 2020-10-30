@@ -2,6 +2,7 @@ package generic
 
 import (
 	"github.com/autom8ter/graphik/graph/model"
+	"time"
 )
 
 type Edges struct {
@@ -42,7 +43,7 @@ func (n *Edges) All() []*model.Edge {
 	return edges
 }
 
-func (n *Edges) Get(key *model.ForeignKey) (*model.Edge, bool) {
+func (n *Edges) Get(key model.ForeignKey) (*model.Edge, bool) {
 	if c, ok := n.edges[key.Type]; ok {
 		node := c[key.ID]
 		return c[key.ID], node != nil
@@ -50,7 +51,7 @@ func (n *Edges) Get(key *model.ForeignKey) (*model.Edge, bool) {
 	return nil, false
 }
 
-func (n *Edges) Set(value *model.Edge) *model.Edge {
+func (n *Edges) set(value *model.Edge) *model.Edge {
 	if value.ID == "" {
 		value.ID = uuid()
 	}
@@ -69,6 +70,22 @@ func (n *Edges) Set(value *model.Edge) *model.Edge {
 	return value
 }
 
+func (n *Edges) Set(value *model.Edge) *model.Edge {
+	e  := n.set(value)
+	if value.Mutual != nil && *value.Mutual {
+		n.set(&model.Edge{
+			Type:       value.Type,
+			Attributes: value.Attributes,
+			From:       value.To,
+			To:         value.From,
+			Mutual:     value.Mutual,
+			CreatedAt:  e.CreatedAt,
+			UpdatedAt:  e.UpdatedAt,
+		})
+	}
+	return e
+}
+
 func (n *Edges) Range(edgeType string, f func(edge *model.Edge) bool) {
 	if edgeType == Any {
 		for _, c := range n.edges {
@@ -85,7 +102,7 @@ func (n *Edges) Range(edgeType string, f func(edge *model.Edge) bool) {
 	}
 }
 
-func (n *Edges) Delete(key *model.ForeignKey) {
+func (n *Edges) Delete(key model.ForeignKey) {
 	edge, ok := n.Get(key)
 	if !ok {
 		return
@@ -101,7 +118,7 @@ func (n *Edges) Delete(key *model.ForeignKey) {
 	}
 }
 
-func (n *Edges) Exists(key *model.ForeignKey) bool {
+func (n *Edges) Exists(key model.ForeignKey) bool {
 	_, ok := n.Get(key)
 	return ok
 }
@@ -173,7 +190,7 @@ func (n *Edges) SetAll(edges ...*model.Edge) {
 
 func (n *Edges) DeleteAll(edges ...*model.Edge) {
 	for _, edge := range edges {
-		n.Delete(&model.ForeignKey{
+		n.Delete(model.ForeignKey{
 			ID:   edge.ID,
 			Type: edge.Type,
 		})
@@ -183,7 +200,7 @@ func (n *Edges) DeleteAll(edges ...*model.Edge) {
 func (n *Edges) Clear(edgeType string) {
 	if cache, ok := n.edges[edgeType]; ok {
 		for _, v := range cache {
-			n.Delete(&model.ForeignKey{
+			n.Delete(model.ForeignKey{
 				ID:   v.ID,
 				Type: v.Type,
 			})
@@ -197,13 +214,14 @@ func (n *Edges) Close() {
 	}
 }
 
-func (e Edges) Patch(value *model.Patch) *model.Edge {
+func (e Edges) Patch(updatedAt time.Time, value *model.Patch) *model.Edge {
 	if _, ok := e.edges[value.Type]; !ok {
 		return nil
 	}
 	for k, v := range value.Patch {
 		e.edges[value.Type][value.ID].Attributes[k] = v
 	}
+	e.edges[value.Type][value.ID].UpdatedAt = &updatedAt
 	return e.edges[value.Type][value.ID]
 }
 

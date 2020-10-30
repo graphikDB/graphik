@@ -2,6 +2,7 @@ package generic
 
 import (
 	"github.com/autom8ter/graphik/graph/model"
+	"time"
 )
 
 type Nodes struct {
@@ -38,7 +39,7 @@ func (n Nodes) All() []*model.Node {
 	return nodes
 }
 
-func (n Nodes) Get(key *model.ForeignKey) (*model.Node, bool) {
+func (n Nodes) Get(key model.ForeignKey) (*model.Node, bool) {
 	if c, ok := n.nodes[key.Type]; ok {
 		node := c[key.ID]
 		return c[key.ID], node != nil
@@ -57,13 +58,14 @@ func (n Nodes) Set(value *model.Node) *model.Node {
 	return value
 }
 
-func (n Nodes) Patch(value *model.Patch) *model.Node {
+func (n Nodes) Patch(updatedAt time.Time, value *model.Patch) *model.Node {
 	if _, ok := n.nodes[value.Type]; !ok {
 		return nil
 	}
 	for k, v := range value.Patch {
 		n.nodes[value.Type][value.ID].Attributes[k] = v
 	}
+	n.nodes[value.Type][value.ID].UpdatedAt = &updatedAt
 	return n.nodes[value.Type][value.ID]
 }
 
@@ -83,13 +85,13 @@ func (n Nodes) Range(nodeType string, f func(node *model.Node) bool) {
 	}
 }
 
-func (n Nodes) Delete(key *model.ForeignKey) {
+func (n Nodes) Delete(key model.ForeignKey) {
 	if c, ok := n.nodes[key.Type]; ok {
 		delete(c, key.ID)
 	}
 }
 
-func (n Nodes) Exists(key *model.ForeignKey) bool {
+func (n Nodes) Exists(key model.ForeignKey) bool {
 	_, ok := n.Get(key)
 	return ok
 }
@@ -114,7 +116,7 @@ func (n Nodes) SetAll(nodes ...*model.Node) []*model.Node {
 
 func (n Nodes) DeleteAll(Nodes ...*model.Node) {
 	for _, node := range Nodes {
-		n.Delete(&model.ForeignKey{
+		n.Delete(model.ForeignKey{
 			ID:   node.ID,
 			Type: node.Type,
 		})

@@ -3,6 +3,7 @@ package command
 import (
 	"encoding/json"
 	"github.com/hashicorp/raft"
+	"time"
 )
 
 type Op int
@@ -19,9 +20,11 @@ const (
 type Command struct {
 	Op  Op
 	Val interface{}
+	Timestamp time.Time
 }
 
 func (c *Command) Log() (raft.Log, error) {
+	c.Timestamp = time.Now()
 	bits, err := json.Marshal(c)
 	if err != nil {
 		return raft.Log{}, err
