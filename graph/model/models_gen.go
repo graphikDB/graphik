@@ -2,26 +2,51 @@
 
 package model
 
+import (
+	"time"
+)
+
+type Object interface {
+	IsObject()
+}
+
+type Counter struct {
+	Count int `json:"count"`
+}
+
 type Edge struct {
-	Node *Node `json:"node"`
-	From *Node `json:"from"`
-	To   *Node `json:"to"`
+	ID         string                 `json:"id"`
+	Type       string                 `json:"type"`
+	Attributes map[string]interface{} `json:"attributes"`
+	From       *Node                  `json:"from"`
+	To         *Node                  `json:"to"`
+	Mutual     *bool                  `json:"mutual"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  *time.Time             `json:"updatedAt"`
 }
 
-type EdgeConnection struct {
-	Cursor     string    `json:"cursor"`
-	TotalCount int       `json:"totalCount"`
-	Edge       []*Edge   `json:"edge"`
-	PageInfo   *PageInfo `json:"pageInfo"`
+func (Edge) IsObject() {}
+
+type EdgeConstructor struct {
+	Type       string                 `json:"type"`
+	Attributes map[string]interface{} `json:"attributes"`
+	From       *ForeignKey            `json:"from"`
+	To         *ForeignKey            `json:"to"`
+	Mutual     *bool                  `json:"mutual"`
 }
 
-type EdgeInput struct {
-	Node *NodeInput  `json:"node"`
-	From *ForeignKey `json:"from"`
-	To   *ForeignKey `json:"to"`
+type EdgeFilter struct {
+	Type        string        `json:"type"`
+	Expressions []*Expression `json:"expressions"`
+	Limit       int           `json:"limit"`
 }
 
-type Filter struct {
+type Export struct {
+	Nodes []*Node `json:"nodes"`
+	Edges []*Edge `json:"edges"`
+}
+
+type Expression struct {
 	Key      string      `json:"key"`
 	Operator string      `json:"operator"`
 	Value    interface{} `json:"value"`
@@ -36,29 +61,26 @@ type Node struct {
 	ID         string                 `json:"id"`
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
-	Edges      *EdgeConnection        `json:"edges"`
+	Edges      []*Edge                `json:"edges"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  *time.Time             `json:"updatedAt"`
 }
 
-type NodeInput struct {
-	ID         *string                `json:"id"`
+func (Node) IsObject() {}
+
+type NodeConstructor struct {
 	Type       string                 `json:"type"`
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
-type PageInfo struct {
-	StartCursor string `json:"startCursor"`
-	EndCursor   string `json:"endCursor"`
-	HasNextPage bool   `json:"hasNextPage"`
+type NodeFilter struct {
+	Type        string        `json:"type"`
+	Expressions []*Expression `json:"expressions"`
+	Limit       int           `json:"limit"`
 }
 
-type QueryEdges struct {
-	Type    string    `json:"type"`
-	Filters []*Filter `json:"filters"`
-	Limit   int       `json:"limit"`
-}
-
-type QueryNodes struct {
-	Type    string    `json:"type"`
-	Filters []*Filter `json:"filters"`
-	Limit   int       `json:"limit"`
+type Patch struct {
+	Type  string                 `json:"type"`
+	ID    string                 `json:"id"`
+	Patch map[string]interface{} `json:"patch"`
 }

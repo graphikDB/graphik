@@ -3,78 +3,100 @@
 # https://gqlgen.com/getting-started/
 scalar Map
 scalar Any
+scalar Time
 
-type Node {
-  id: ID!
-  type: String!
-  attributes: Map!
-  edges(first: Int, after: ID): EdgeConnection!
+type Counter {
+  count: Int!
 }
 
-type Edge {
-  node: Node!
+interface Object {
+  id: String!
+  type: String!
+  attributes: Map
+  createdAt: Time!
+  updatedAt: Time
+}
+
+type Node implements Object {
+  id: String!
+  type: String!
+  attributes: Map
+  edges: [Edge!]
+  createdAt: Time!
+  updatedAt: Time
+}
+
+type Edge implements Object {
+  id: String!
+  type: String!
+  attributes: Map
   from: Node!
   to: Node!
+  mutual: Boolean
+  createdAt: Time!
+  updatedAt: Time
 }
 
-type EdgeConnection {
-  # A cursor used for pagination
-  cursor: ID!
-  # The total number of friends
-  totalCount: Int!
-  edge: [Edge!]
-  # Information for paginating this connection
-  pageInfo: PageInfo!
+type Export {
+  nodes: [Node]
+  edges: [Edge]
 }
 
-# Information for paginating this connection
-type PageInfo {
-  startCursor: ID!
-  endCursor: ID!
-  hasNextPage: Boolean!
-}
-
-input Filter {
+input Expression {
   key: String!
   operator: String!
   value: Any!
 }
 
-input QueryNodes {
+input NodeFilter {
   type: String!
-  filters: [Filter!]
+  expressions: [Expression!]
   limit: Int!
 }
 
-input QueryEdges {
+input EdgeFilter {
   type: String!
-  filters: [Filter!]
+  expressions: [Expression!]
   limit: Int!
 }
 
-type Query {
-  nodes(input: QueryNodes!): [Node!]!
-  edges(input: QueryEdges!): [Edge!]!
+input ForeignKey {
+  id: String!
+  type: String!
 }
 
-input NodeInput {
-  id: ID
+input EdgeConstructor {
+  type: String!
+  attributes: Map
+  from: ForeignKey!
+  to: ForeignKey!
+  mutual: Boolean
+}
+
+input NodeConstructor {
   type: String!
   attributes: Map
 }
 
-input ForeignKey {
-  id: ID!
+input Patch {
   type: String!
+  id: String!
+  patch: Map!
 }
 
-input EdgeInput {
-  node: NodeInput
-  from: ForeignKey!
-  to: ForeignKey!
+type Query {
+  node(input: ForeignKey!): Node
+  nodes(input: NodeFilter!): [Node!]!
+  edge(input: ForeignKey!): Edge
+  edges(input: EdgeFilter!): [Edge!]!
 }
 
 type Mutation {
-  createNode(input: NodeInput!): Node!
-  createEdge(input: EdgeInput!): Edge!
+  createNode(input: NodeConstructor!): Node!
+  patchNode(input: Patch): Node!
+  delNode(input: ForeignKey!): Counter
+
+  createEdge(input: EdgeConstructor!): Edge!
+  patchEdge(input: Patch!): Edge!
+  delEdge(input: ForeignKey!): Counter
 }

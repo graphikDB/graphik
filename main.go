@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/autom8ter/dagger"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/graphik/store"
 	"github.com/autom8ter/machine"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/spf13/viper"
+	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"net"
 	"net/http"
@@ -25,37 +25,41 @@ import (
 const version = "0.0.0"
 
 func init() {
-	viper.SetConfigFile("graphik.yaml")
-	viper.SetDefault("server.port", 8080)
-	viper.SetDefault("database.path", "/tmp/graphik/graphik.db")
-	viper.AutomaticEnv()
-	viper.ReadInConfig()
+	pflag.CommandLine.StringVar(&dbPath, "path", "/tmp/graphik", "path to database folder")
+	pflag.CommandLine.IntVar(&port, "port", 8080, "port to serve on")
+	pflag.CommandLine.IntVar(&bind, "bind", 8081, "bind raft protocol to local port")
+	pflag.CommandLine.StringVarP(&join, "join", "j", "", "join raft cluster leader")
 }
 
+var (
+	port   int
+	bind   int
+	dbPath string
+	join   string
+)
+
 func main() {
-	port := viper.GetInt("server.port")
+	pflag.Parse()
+	port := port
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
 
-	{
-		f, err := getDBFile()
-		if err != nil {
-			logger.Error("failed to open database", zap.Error(err))
-			return
-		}
-		if err := dagger.ImportJSON(f); err != nil {
-			logger.Error("failed to import database", zap.Error(err))
-		}
-		logger.Info("node types", zap.Strings("types", dagger.NodeTypes()))
-	}
-
 	mach := machine.New(ctx)
 	mux := http.NewServeMux()
-
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver(mach)}))
+	stor, err := store.New(
+		store.WithLeader(join == ""),
+		store.WithBindAddr(fmt.Sprintf("localhost:%v", bind)),
+		store.WithRaftDir(dbPath),
+	)
+	if err != nil {
+		logger.Error("failed to create raft store", zap.Error(err))
+		return
+	}
+	resolver := graph.NewResolver(mach, stor)
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	mux.Handle("/query", srv)
@@ -93,28 +97,11 @@ func main() {
 		break
 	}
 	logger.Warn("shutdown signal received")
-	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
 
 	_ = server.Shutdown(shutdownCtx)
-
-	{
-		f, err := getDBFile()
-		if err != nil {
-			logger.Error("failed to open database", zap.Error(err))
-		}
-		if err := f.Truncate(0); err != nil {
-			logger.Error("failed to export graph", zap.Error(err))
-		}
-		if err := dagger.ExportJSON(f); err != nil {
-			logger.Error("failed to export graph", zap.Error(err))
-		}
-	}
+	_ = resolver.Close()
 	logger.Info("shutdown successful")
 	mach.Wait()
-}
-
-func getDBFile() (*os.File, error) {
-	os.MkdirAll("/tmp/graphik/", os.ModePerm)
-	return os.OpenFile(viper.GetString("database.path"), os.O_CREATE|os.O_RDWR, os.ModePerm)
 }

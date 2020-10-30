@@ -5,153 +5,110 @@ package graph
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
-	"github.com/autom8ter/dagger"
-	"github.com/autom8ter/dagger/primitive"
+	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
 )
 
-func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeInput) (*model.Node, error) {
-	node := dagger.NewNode(input.Type, "", input.Attributes)
-	return &model.Node{
-		ID:         node.ID(),
-		Type:       node.Type(),
-		Attributes: node.Raw(),
-	}, nil
-}
-
-func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeInput) (*model.Edge, error) {
-	from, ok := dagger.GetNode(dagger.ForeignKey(input.From.Type, input.From.ID))
-	if !ok {
-		return nil, fmt.Errorf("%s.%s does not exist", input.From.Type, input.From.ID)
-	}
-	to, ok := dagger.GetNode(dagger.ForeignKey(input.To.Type, input.To.ID))
-	if !ok {
-		return nil, fmt.Errorf("%s.%s does not exist", input.To.Type, input.To.ID)
-	}
-	edge, err := dagger.NewEdge(input.Node.Type, nullString(input.Node.ID), input.Node.Attributes, from, to)
+func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConstructor) (*model.Node, error) {
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.CREATE_NODE,
+		Val: input,
+	})
 	if err != nil {
 		return nil, err
 	}
-	return &model.Edge{
-		Node: &model.Node{
-			ID:         edge.ID(),
-			Type:       edge.Type(),
-			Attributes: nil,
-			Edges:      nil,
-		},
-		From: &model.Node{
-			ID:         from.ID(),
-			Type:       from.Type(),
-			Attributes: from.Raw(),
-			Edges:      nil,
-		},
-		To: &model.Node{
-			ID:         to.ID(),
-			Type:       to.Type(),
-			Attributes: to.Raw(),
-			Edges:      nil,
-		},
-	}, nil
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res.(*model.Node), nil
 }
 
-func (r *queryResolver) Nodes(ctx context.Context, input model.QueryNodes) ([]*model.Node, error) {
-	var nodes []*model.Node
-	dagger.RangeNodeTypes(primitive.StringType(input.Type), func(n *dagger.Node) bool {
-		for _, filter := range input.Filters {
-			if filter.Operator == "!=" {
-				if n.Get(filter.Key) == filter.Value {
-					return true
-				}
-			}
-			if filter.Operator == "==" {
-				if n.Get(filter.Key) != filter.Value {
-					return true
-				}
-			}
-		}
-		node := &model.Node{
-			ID:         n.ID(),
-			Type:       n.Type(),
-			Attributes: n.Raw(),
-		}
-		nodes = append(nodes, node)
-		return len(nodes) < input.Limit
+func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*model.Node, error) {
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.PATCH_NODE,
+		Val: input,
 	})
-	return nodes, nil
+	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res.(*model.Node), nil
 }
 
-func (r *queryResolver) Edges(ctx context.Context, input model.QueryEdges) ([]*model.Edge, error) {
-	var edges []*model.Edge
-	dagger.RangeEdgeTypes(primitive.StringType(input.Type), func(edge *dagger.Edge) bool {
-		for _, filter := range input.Filters {
-			if strings.Contains(filter.Key, "from.") {
-				split := strings.Split(filter.Key, "from.")
-				if len(split) > 1 {
-					if filter.Operator == "!=" {
-						if edge.From().Get(split[1]) == filter.Value {
-							return true
-						}
-					}
-					if filter.Operator == "==" {
-						if edge.From().Get(split[1]) != filter.Value {
-							return true
-						}
-					}
-				}
-			} else if strings.Contains(filter.Key, "to.") {
-				split := strings.Split(filter.Key, "to.")
-				if len(split) > 1 {
-					if filter.Operator == "!=" {
-						if edge.To().Get(split[1]) == filter.Value {
-							return true
-						}
-					}
-					if filter.Operator == "==" {
-						if edge.To().Get(split[1]) != filter.Value {
-							return true
-						}
-					}
-				}
-			} else {
-				if filter.Operator == "!=" {
-					if edge.Get(filter.Key) == filter.Value {
-						return true
-					}
-				}
-				if filter.Operator == "==" {
-					if edge.Get(filter.Key) != filter.Value {
-						return true
-					}
-				}
-			}
-		}
-		edges = append(edges, &model.Edge{
-			Node: &model.Node{
-				ID:         edge.ID(),
-				Type:       edge.Type(),
-				Attributes: nil,
-				Edges:      nil,
-			},
-			From: &model.Node{
-				ID:         edge.From().ID(),
-				Type:       edge.From().Type(),
-				Attributes: edge.From().Raw(),
-				Edges:      nil,
-			},
-			To: &model.Node{
-				ID:         edge.To().ID(),
-				Type:       edge.To().Type(),
-				Attributes: edge.To().Raw(),
-				Edges:      nil,
-			},
-		})
-		return len(edges) < input.Limit
+func (r *mutationResolver) DelNode(ctx context.Context, input model.ForeignKey) (*model.Counter, error) {
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.DELETE_NODE,
+		Val: input,
 	})
-	return edges, nil
+	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res.(*model.Counter), nil
+}
+
+func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConstructor) (*model.Edge, error) {
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.CREATE_EDGE,
+		Val: input,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res.(*model.Edge), nil
+}
+
+func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*model.Edge, error) {
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.PATCH_EDGE,
+		Val: input,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res.(*model.Edge), nil
+}
+
+func (r *mutationResolver) DelEdge(ctx context.Context, input model.ForeignKey) (*model.Counter, error) {
+	res, err := r.store.Execute(&command.Command{
+		Op:  command.DELETE_EDGE,
+		Val: input,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res.(*model.Counter), nil
+}
+
+func (r *queryResolver) Node(ctx context.Context, input model.ForeignKey) (*model.Node, error) {
+	return r.store.Node(ctx, input)
+}
+
+func (r *queryResolver) Nodes(ctx context.Context, input model.NodeFilter) ([]*model.Node, error) {
+	return r.store.Nodes(ctx, input)
+}
+
+func (r *queryResolver) Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, error) {
+	return r.store.Edge(ctx, input)
+}
+
+func (r *queryResolver) Edges(ctx context.Context, input model.EdgeFilter) ([]*model.Edge, error) {
+	return r.store.Edges(ctx, input)
 }
 
 // Mutation returns generated.MutationResolver implementation.
@@ -162,16 +119,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func nullString(str *string) string {
-	if str == nil {
-		return ""
-	}
-	return *str
-}
