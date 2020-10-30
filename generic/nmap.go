@@ -8,7 +8,6 @@ type Nodes struct {
 	nodes map[string]map[string]*model.Node
 }
 
-
 func NewNodes() *Nodes {
 	return &Nodes{
 		nodes: map[string]map[string]*model.Node{},

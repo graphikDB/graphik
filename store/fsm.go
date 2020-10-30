@@ -1,31 +1,13 @@
-package fsm
+package store
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/autom8ter/dagger"
 	"github.com/autom8ter/graphik/command"
-	"github.com/autom8ter/graphik/generic"
 	"github.com/hashicorp/raft"
 	"io"
-	"sync"
 )
-
-func New() *Store {
-	return &Store{
-		mu:    sync.RWMutex{},
-		nodes: generic.NewNodes(),
-		edges: generic.NewEdges(),
-		close: sync.Once{},
-	}
-}
-
-type Store struct {
-	mu        sync.RWMutex
-	nodes     *generic.Nodes
-	edges     *generic.Edges
-	close     sync.Once
-}
 
 func (f *Store) Apply(log *raft.Log) interface{} {
 	var c command.Command

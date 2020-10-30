@@ -12,8 +12,8 @@ type Edges struct {
 
 func NewEdges() *Edges {
 	return &Edges{
-		edges: map[string]map[string]*model.Edge{},
-		edgesTo: map[string]map[string][]*model.Edge{},
+		edges:     map[string]map[string]*model.Edge{},
+		edgesTo:   map[string]map[string][]*model.Edge{},
 		edgesFrom: map[string]map[string][]*model.Edge{},
 	}
 }
@@ -44,8 +44,8 @@ func (n *Edges) All() []*model.Edge {
 
 func (n *Edges) Get(key *model.ForeignKey) (*model.Edge, bool) {
 	if c, ok := n.edges[key.Type]; ok {
-		node := c[id]
-		return c[id], node != nil
+		node := c[key.ID]
+		return c[key.ID], node != nil
 	}
 	return nil, false
 }
@@ -84,26 +84,24 @@ func (n *Edges) Range(edgeType string, f func(edge *model.Edge) bool) {
 	}
 }
 
-func (n *Edges) Delete(edgeType string, id string) {
-	edge, ok := n.Get(edgeType, id)
+func (n *Edges) Delete(key *model.ForeignKey) {
+	edge, ok := n.Get(key)
 	if !ok {
 		return
 	}
 	if edges, ok := n.edgesFrom[edge.From.Type][edge.From.ID]; ok {
-		edges = removeEdge(edge.ID, edges)
-		n.edgesFrom[edge.From.Type][edge.From.ID] = edges
+		n.edgesFrom[edge.From.Type][edge.From.ID] = removeEdge(edge.ID, edges)
 	}
 	if edges, ok := n.edgesTo[edge.To.Type][edge.To.ID]; ok {
-		edges = removeEdge(edge.ID, edges)
-		n.edgesTo[edge.To.Type][edge.To.ID] = edges
+		n.edgesTo[edge.To.Type][edge.To.ID] = removeEdge(edge.ID, edges)
 	}
-	if c, ok := n.edges[edgeType]; ok {
-		delete(c, id)
+	if c, ok := n.edges[key.Type]; ok {
+		delete(c, key.ID)
 	}
 }
 
-func (n *Edges) Exists(edgeType string, id string) bool {
-	_, ok := n.Get(edgeType, id)
+func (n *Edges) Exists(key *model.ForeignKey) bool {
+	_, ok := n.Get(key)
 	return ok
 }
 
@@ -174,14 +172,20 @@ func (n *Edges) SetAll(edges ...*model.Edge) {
 
 func (n *Edges) DeleteAll(edges ...*model.Edge) {
 	for _, edge := range edges {
-		n.Delete(edge.Type, edge.ID)
+		n.Delete(&model.ForeignKey{
+			ID:   edge.ID,
+			Type: edge.Type,
+		})
 	}
 }
 
 func (n *Edges) Clear(edgeType string) {
 	if cache, ok := n.edges[edgeType]; ok {
 		for _, v := range cache {
-			n.Delete(v.Type, v.ID)
+			n.Delete(&model.ForeignKey{
+				ID:   v.ID,
+				Type: v.Type,
+			})
 		}
 	}
 }

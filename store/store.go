@@ -3,12 +3,13 @@ package store
 import (
 	"fmt"
 	"github.com/autom8ter/graphik/command"
-	"github.com/autom8ter/graphik/fsm"
+	"github.com/autom8ter/graphik/generic"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"net"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 )
 
@@ -18,8 +19,12 @@ const (
 )
 
 type Store struct {
-	opts *Opts
-	raft *raft.Raft
+	opts  *Opts
+	raft  *raft.Raft
+	mu    sync.RWMutex
+	nodes *generic.Nodes
+	edges *generic.Edges
+	close sync.Once
 }
 
 func New(opts ...Opt) (*Store, error) {
@@ -58,7 +63,14 @@ func New(opts ...Opt) (*Store, error) {
 	}
 	logStore := boltDB
 	stableStore := boltDB
-	rft, err := raft.NewRaft(config, fsm.New(), logStore, stableStore, snapshots, transport)
+	s := &Store{
+		opts:  options,
+		mu:    sync.RWMutex{},
+		nodes: generic.NewNodes(),
+		edges: generic.NewEdges(),
+		close: sync.Once{},
+	}
+	rft, err := raft.NewRaft(config, s, logStore, stableStore, snapshots, transport)
 	if err != nil {
 		return nil, fmt.Errorf("new raft: %s", err)
 	}
@@ -73,10 +85,8 @@ func New(opts ...Opt) (*Store, error) {
 		}
 		rft.BootstrapCluster(configuration)
 	}
-	return &Store{
-		raft: rft,
-		opts: options,
-	}, nil
+	s.raft = rft
+	return s, nil
 }
 
 func (s *Store) Execute(cmd *command.Command) (interface{}, error) {
