@@ -109,10 +109,11 @@ func (n *Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*m
 }
 
 func (n *Nodes) SetAll(nodes ...*model.Node) []*model.Node {
+	var created []*model.Node
 	for _, node := range nodes {
-		n.Set(node)
+		created = append(created, n.Set(node))
 	}
-	return nodes
+	return created
 }
 
 func (n *Nodes) DeleteAll(Nodes ...*model.Node) {
@@ -158,4 +159,27 @@ func (n *Nodes) Search(expression, nodeType string) (*model.Results, error) {
 		return true
 	})
 	return results, nil
+}
+
+
+func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
+	var nodes []*model.Node
+	n.Range(filter.Type, func(node *model.Node) bool {
+		for _, exp := range filter.Expressions {
+			val, _ := jmespath.Search(exp.Key, node)
+			if exp.Operator == model.OperatorNeq {
+				if val == exp.Value {
+					return true
+				}
+			}
+			if exp.Operator == model.OperatorEq {
+				if val != exp.Value {
+					return true
+				}
+			}
+		}
+		nodes = append(nodes, node)
+		return len(nodes) < filter.Limit
+	})
+	return nodes, nil
 }
