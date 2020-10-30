@@ -14,7 +14,7 @@ mutation createNode {
         }
     }) {
         id
-    		type
+    	type
         attributes
     }
 }
@@ -25,11 +25,31 @@ mutation createNode {
 ```graphql
 query {
     nodes(input:{type:"user" limit: 5}) {
-    	  id
+    	id
         type
         attributes
-    		createdAt
+    	createdAt
         updatedAt
+    }
+}
+```
+
+### patch node
+
+```graphql
+mutation patchNode {
+    patchNode(input: {
+        id: "4d26e673-906e-4e7a-acef-19250d2b0b15"
+        type: "user"
+        patch: {
+          name: "Coleman Word"
+          email: "colemanword@gmail.com"
+          gender: "male"
+        }
+    }) {
+        id
+    	type
+        attributes
     }
 }
 ```
@@ -52,25 +72,25 @@ mutation delNode {
 ```graphql
 mutation createEdge {
     createEdge(input: {
-        attributes: {
-            _type: "fiance"
-            _mutual: true
-        }
+      	type: "fiance"
+      	mutual: true
         from: {
-            _id: "b7b38163-28dd-5cca-3a20-9503b9d19bfe"
-            _type: "user"
+          id: "4d26e673-906e-4e7a-acef-19250d2b0b15"
+          type: "user"
         }
         to: {
-            _id: "fb98b4d0-a3bb-592c-6a41-8c8fc7ff3306"
-            _type: "user"
+          id: "68f06b51-f8b0-04e9-485a-3e6005a9728d"
+          type: "user"
         }
     }) {
+        id
+        type
         attributes
-        from {
-            attributes
+    	from {
+          attributes
         }
         to {
-            attributes
+          attributes
         }
     }
 }
@@ -80,24 +100,26 @@ mutation createEdge {
 
 ```graphql
 query {
-    edges(input:{_type:"fiance" limit: 10 filter: [
-        {
-            key: "_mutual"
-            operator: "=="
-            value: true
-        },
-        {
-            key: "from.name"
-            operator: "!="
-            value: "coleman"
-        }
+    edges(input:{type:"fiance" limit: 10 expressions: [
+      {
+      	key: "from.attributes.name"
+      	operator: NEQ
+      	value: "coleman"
+      },
+      {
+      	key: "to.attributes.name"
+      	operator: NEQ
+      	value: "coleman"
+      },
     ]}) {
+        id
+        type
         attributes
-        from {
-            attributes
+    	from {
+          attributes
         }
-        to {
-            attributes
+    	to {
+          attributes
         }
     }
 }
@@ -107,13 +129,15 @@ query {
 
 ```graphql
 query {
-    edge(input:{_type:"fiance" _id: "5705ddfc-081f-bd4f-5d5d-1be4ab446867"}) {
-        attributes
-        from {
-            attributes
+    edge(input:{type:"fiance" id: "43d442c6-f129-9c42-3e7f-4ef160a7a079"}) {
+        id
+    	type
+    	attributes
+    	from {
+          attributes
         }
-        to {
-            attributes
+    	to {
+          attributes
         }
     }
 }
