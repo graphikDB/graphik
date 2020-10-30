@@ -2,6 +2,7 @@ package generic
 
 import (
 	"github.com/autom8ter/graphik/graph/model"
+	"github.com/jmespath/go-jmespath"
 	"time"
 )
 
@@ -71,7 +72,7 @@ func (n *Edges) set(value *model.Edge) *model.Edge {
 }
 
 func (n *Edges) Set(value *model.Edge) *model.Edge {
-	e  := n.set(value)
+	e := n.set(value)
 	if value.Mutual != nil && *value.Mutual {
 		n.set(&model.Edge{
 			Type:       value.Type,
@@ -214,7 +215,7 @@ func (n *Edges) Close() {
 	}
 }
 
-func (e Edges) Patch(updatedAt time.Time, value *model.Patch) *model.Edge {
+func (e *Edges) Patch(updatedAt time.Time, value *model.Patch) *model.Edge {
 	if _, ok := e.edges[value.Type]; !ok {
 		return nil
 	}
@@ -223,6 +224,28 @@ func (e Edges) Patch(updatedAt time.Time, value *model.Patch) *model.Edge {
 	}
 	e.edges[value.Type][value.ID].UpdatedAt = &updatedAt
 	return e.edges[value.Type][value.ID]
+}
+
+func (e *Edges) Search(expression, nodeType string) (*model.Results, error) {
+	results := &model.Results{
+		Search: expression,
+	}
+	exp, err := jmespath.Compile(expression)
+	if err != nil {
+		return nil, err
+	}
+	e.Range(nodeType, func(edge *model.Edge) bool {
+		val, _ := exp.Search(edge)
+		if val != nil {
+			results.Results = append(results.Results, &model.Result{
+				ID:   edge.ID,
+				Type: edge.Type,
+				Val:  val,
+			})
+		}
+		return true
+	})
+	return results, nil
 }
 
 func removeEdge(id string, edges []*model.Edge) []*model.Edge {

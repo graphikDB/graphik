@@ -17,18 +17,18 @@ func (f *Store) Node(ctx context.Context, input model.ForeignKey) (*model.Node, 
 	return node, nil
 }
 
-func (f *Store) Nodes(ctx context.Context, input model.NodeFilter) ([]*model.Node, error) {
+func (f *Store) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	var nodes []*model.Node
 	f.nodes.Range(input.Type, func(n *model.Node) bool {
 		for _, filter := range input.Expressions {
-			if filter.Operator == "!=" {
+			if filter.Operator == model.OperatorNeq {
 				if n.Attributes[filter.Key] == filter.Value {
 					return true
 				}
 			}
-			if filter.Operator == "==" {
+			if filter.Operator == model.OperatorEq {
 				if n.Attributes[filter.Key] != filter.Value {
 					return true
 				}
@@ -50,7 +50,7 @@ func (f *Store) Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, 
 	return edge, nil
 }
 
-func (f *Store) Edges(ctx context.Context, input model.EdgeFilter) ([]*model.Edge, error) {
+func (f *Store) Edges(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	var edges []*model.Edge
@@ -59,12 +59,12 @@ func (f *Store) Edges(ctx context.Context, input model.EdgeFilter) ([]*model.Edg
 			if strings.Contains(filter.Key, "from.") {
 				split := strings.Split(filter.Key, "from.")
 				if len(split) > 1 {
-					if filter.Operator == "!=" {
+					if filter.Operator == model.OperatorNeq {
 						if edge.From.Attributes[split[1]] == filter.Value {
 							return true
 						}
 					}
-					if filter.Operator == "==" {
+					if filter.Operator == model.OperatorEq {
 						if edge.From.Attributes[split[1]] != filter.Value {
 							return true
 						}
@@ -73,24 +73,24 @@ func (f *Store) Edges(ctx context.Context, input model.EdgeFilter) ([]*model.Edg
 			} else if strings.Contains(filter.Key, "to.") {
 				split := strings.Split(filter.Key, "to.")
 				if len(split) > 1 {
-					if filter.Operator == "!=" {
+					if filter.Operator == model.OperatorNeq {
 						if edge.To.Attributes[split[1]] == filter.Value {
 							return true
 						}
 					}
-					if filter.Operator == "==" {
+					if filter.Operator == model.OperatorEq {
 						if edge.To.Attributes[split[1]] != filter.Value {
 							return true
 						}
 					}
 				}
 			} else {
-				if filter.Operator == "!=" {
+				if filter.Operator == model.OperatorNeq {
 					if edge.Attributes[filter.Key] == filter.Value {
 						return true
 					}
 				}
-				if filter.Operator == "==" {
+				if filter.Operator == model.OperatorEq {
 					if edge.Attributes[filter.Key] != filter.Value {
 						return true
 					}
@@ -101,4 +101,12 @@ func (f *Store) Edges(ctx context.Context, input model.EdgeFilter) ([]*model.Edg
 		return len(edges) < input.Limit
 	})
 	return edges, nil
+}
+
+func (f *Store) SearchNodes(ctx context.Context, input model.Search) (*model.Results, error) {
+	return f.nodes.Search(input.Search, input.Type)
+}
+
+func (f *Store) SearchEdges(ctx context.Context, input model.Search) (*model.Results, error) {
+	return f.edges.Search(input.Search, input.Type)
 }

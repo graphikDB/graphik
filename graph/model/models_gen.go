@@ -3,6 +3,9 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 )
 
@@ -35,12 +38,6 @@ type EdgeConstructor struct {
 	Mutual     *bool                  `json:"mutual"`
 }
 
-type EdgeFilter struct {
-	Type        string        `json:"type"`
-	Expressions []*Expression `json:"expressions"`
-	Limit       int           `json:"limit"`
-}
-
 type Export struct {
 	Nodes []*Node `json:"nodes"`
 	Edges []*Edge `json:"edges"`
@@ -48,8 +45,14 @@ type Export struct {
 
 type Expression struct {
 	Key      string      `json:"key"`
-	Operator string      `json:"operator"`
+	Operator Operator    `json:"operator"`
 	Value    interface{} `json:"value"`
+}
+
+type Filter struct {
+	Type        string        `json:"type"`
+	Expressions []*Expression `json:"expressions"`
+	Limit       int           `json:"limit"`
 }
 
 type ForeignKey struct {
@@ -73,14 +76,65 @@ type NodeConstructor struct {
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
-type NodeFilter struct {
-	Type        string        `json:"type"`
-	Expressions []*Expression `json:"expressions"`
-	Limit       int           `json:"limit"`
-}
-
 type Patch struct {
 	Type  string                 `json:"type"`
 	ID    string                 `json:"id"`
 	Patch map[string]interface{} `json:"patch"`
+}
+
+type Result struct {
+	ID   string      `json:"id"`
+	Type string      `json:"type"`
+	Val  interface{} `json:"val"`
+}
+
+type Results struct {
+	Search  string    `json:"search"`
+	Results []*Result `json:"results"`
+}
+
+type Search struct {
+	Search string `json:"search"`
+	Type   string `json:"type"`
+}
+
+type Operator string
+
+const (
+	OperatorNeq Operator = "NEQ"
+	OperatorEq  Operator = "EQ"
+)
+
+var AllOperator = []Operator{
+	OperatorNeq,
+	OperatorEq,
+}
+
+func (e Operator) IsValid() bool {
+	switch e {
+	case OperatorNeq, OperatorEq:
+		return true
+	}
+	return false
+}
+
+func (e Operator) String() string {
+	return string(e)
+}
+
+func (e *Operator) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Operator(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Operator", str)
+	}
+	return nil
+}
+
+func (e Operator) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

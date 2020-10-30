@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/graph/generated"
@@ -99,16 +100,24 @@ func (r *queryResolver) Node(ctx context.Context, input model.ForeignKey) (*mode
 	return r.store.Node(ctx, input)
 }
 
-func (r *queryResolver) Nodes(ctx context.Context, input model.NodeFilter) ([]*model.Node, error) {
+func (r *queryResolver) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error) {
 	return r.store.Nodes(ctx, input)
+}
+
+func (r *queryResolver) SearchNodes(ctx context.Context, input model.Search) (*model.Results, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, error) {
 	return r.store.Edge(ctx, input)
 }
 
-func (r *queryResolver) Edges(ctx context.Context, input model.EdgeFilter) ([]*model.Edge, error) {
+func (r *queryResolver) Edges(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
 	return r.store.Edges(ctx, input)
+}
+
+func (r *queryResolver) SearchEdges(ctx context.Context, input model.Search) (*model.Results, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.

@@ -42,19 +42,30 @@ type Export {
   edges: [Edge]
 }
 
+
+type Result {
+  id: String!
+  type: String!
+  val: Any
+}
+
+type Results {
+  search: String!
+  results: [Result!]
+}
+
+enum Operator {
+  NEQ
+  EQ
+}
+
 input Expression {
   key: String!
-  operator: String!
+  operator: Operator!
   value: Any!
 }
 
-input NodeFilter {
-  type: String!
-  expressions: [Expression!]
-  limit: Int!
-}
-
-input EdgeFilter {
+input Filter {
   type: String!
   expressions: [Expression!]
   limit: Int!
@@ -84,11 +95,19 @@ input Patch {
   patch: Map!
 }
 
+input Search {
+  search: String!
+  type: String!
+}
+
+
 type Query {
   node(input: ForeignKey!): Node
-  nodes(input: NodeFilter!): [Node!]!
+  nodes(input: Filter!): [Node!]!
+  searchNodes(input: Search!): Results!
   edge(input: ForeignKey!): Edge
-  edges(input: EdgeFilter!): [Edge!]!
+  edges(input: Filter!): [Edge!]!
+  searchEdges(input: Search!): Results!
 }
 
 type Mutation {

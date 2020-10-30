@@ -18,8 +18,8 @@ const (
 )
 
 type Command struct {
-	Op  Op
-	Val interface{}
+	Op        Op
+	Val       interface{}
 	Timestamp time.Time
 }
 

@@ -27,7 +27,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		return f.nodes.Set(&model.Node{
 			Type:       val.Type,
 			Attributes: val.Attributes,
-			CreatedAt: c.Timestamp,
+			CreatedAt:  c.Timestamp,
 		})
 	case command.PATCH_NODE:
 		var val model.Patch
@@ -88,7 +88,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			From:       from,
 			To:         to,
 			CreatedAt:  c.Timestamp,
-			Mutual: val.Mutual,
+			Mutual:     val.Mutual,
 		})
 	case command.PATCH_EDGE:
 		var val model.Patch

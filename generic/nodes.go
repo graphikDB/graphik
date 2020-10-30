@@ -2,6 +2,7 @@ package generic
 
 import (
 	"github.com/autom8ter/graphik/graph/model"
+	"github.com/jmespath/go-jmespath"
 	"time"
 )
 
@@ -15,14 +16,14 @@ func NewNodes() *Nodes {
 	}
 }
 
-func (n Nodes) Len(nodeType string) int {
+func (n *Nodes) Len(nodeType string) int {
 	if c, ok := n.nodes[nodeType]; ok {
 		return len(c)
 	}
 	return 0
 }
 
-func (n Nodes) Types() []string {
+func (n *Nodes) Types() []string {
 	var nodeTypes []string
 	for k, _ := range n.nodes {
 		nodeTypes = append(nodeTypes, k)
@@ -30,7 +31,7 @@ func (n Nodes) Types() []string {
 	return nodeTypes
 }
 
-func (n Nodes) All() []*model.Node {
+func (n *Nodes) All() []*model.Node {
 	var nodes []*model.Node
 	n.Range(Any, func(node *model.Node) bool {
 		nodes = append(nodes, node)
@@ -39,7 +40,7 @@ func (n Nodes) All() []*model.Node {
 	return nodes
 }
 
-func (n Nodes) Get(key model.ForeignKey) (*model.Node, bool) {
+func (n *Nodes) Get(key model.ForeignKey) (*model.Node, bool) {
 	if c, ok := n.nodes[key.Type]; ok {
 		node := c[key.ID]
 		return c[key.ID], node != nil
@@ -47,7 +48,7 @@ func (n Nodes) Get(key model.ForeignKey) (*model.Node, bool) {
 	return nil, false
 }
 
-func (n Nodes) Set(value *model.Node) *model.Node {
+func (n *Nodes) Set(value *model.Node) *model.Node {
 	if value.ID == "" {
 		value.ID = uuid()
 	}
@@ -58,7 +59,7 @@ func (n Nodes) Set(value *model.Node) *model.Node {
 	return value
 }
 
-func (n Nodes) Patch(updatedAt time.Time, value *model.Patch) *model.Node {
+func (n *Nodes) Patch(updatedAt time.Time, value *model.Patch) *model.Node {
 	if _, ok := n.nodes[value.Type]; !ok {
 		return nil
 	}
@@ -69,7 +70,7 @@ func (n Nodes) Patch(updatedAt time.Time, value *model.Patch) *model.Node {
 	return n.nodes[value.Type][value.ID]
 }
 
-func (n Nodes) Range(nodeType string, f func(node *model.Node) bool) {
+func (n *Nodes) Range(nodeType string, f func(node *model.Node) bool) {
 	if nodeType == Any {
 		for _, c := range n.nodes {
 			for _, v := range c {
@@ -85,18 +86,18 @@ func (n Nodes) Range(nodeType string, f func(node *model.Node) bool) {
 	}
 }
 
-func (n Nodes) Delete(key model.ForeignKey) {
+func (n *Nodes) Delete(key model.ForeignKey) {
 	if c, ok := n.nodes[key.Type]; ok {
 		delete(c, key.ID)
 	}
 }
 
-func (n Nodes) Exists(key model.ForeignKey) bool {
+func (n *Nodes) Exists(key model.ForeignKey) bool {
 	_, ok := n.Get(key)
 	return ok
 }
 
-func (n Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*model.Node {
+func (n *Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*model.Node {
 	var filtered []*model.Node
 	n.Range(nodeType, func(node *model.Node) bool {
 		if filter(node) {
@@ -107,14 +108,14 @@ func (n Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*mo
 	return filtered
 }
 
-func (n Nodes) SetAll(nodes ...*model.Node) []*model.Node {
+func (n *Nodes) SetAll(nodes ...*model.Node) []*model.Node {
 	for _, node := range nodes {
 		n.Set(node)
 	}
 	return nodes
 }
 
-func (n Nodes) DeleteAll(Nodes ...*model.Node) {
+func (n *Nodes) DeleteAll(Nodes ...*model.Node) {
 	for _, node := range Nodes {
 		n.Delete(model.ForeignKey{
 			ID:   node.ID,
@@ -123,7 +124,7 @@ func (n Nodes) DeleteAll(Nodes ...*model.Node) {
 	}
 }
 
-func (n Nodes) Clear(nodeType string) {
+func (n *Nodes) Clear(nodeType string) {
 	if cache, ok := n.nodes[nodeType]; ok {
 		for k, _ := range cache {
 			delete(cache, k)
@@ -131,8 +132,30 @@ func (n Nodes) Clear(nodeType string) {
 	}
 }
 
-func (n Nodes) Close() {
+func (n *Nodes) Close() {
 	for nodeType, _ := range n.nodes {
 		n.Clear(nodeType)
 	}
+}
+
+func (n *Nodes) Search(expression, nodeType string) (*model.Results, error) {
+	results := &model.Results{
+		Search: expression,
+	}
+	exp, err := jmespath.Compile(expression)
+	if err != nil {
+		return nil, err
+	}
+	n.Range(nodeType, func(node *model.Node) bool {
+		val, _ := exp.Search(node)
+		if val != nil {
+			results.Results = append(results.Results, &model.Result{
+				ID:   node.ID,
+				Type: node.Type,
+				Val:  val,
+			})
+		}
+		return true
+	})
+	return results, nil
 }
