@@ -27,11 +27,29 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		return f.nodes.Patch(c.Val.(*model.Patch))
 	case command.DELETE_NODE:
 		val := c.Val.(*model.ForeignKey)
-		if f.nodes.Exists(val) {
-			f.nodes.Delete(val)
-			return &model.Counter{Count: 1}
+		node, ok := f.nodes.Get(val)
+		if !ok {
+			return &model.Counter{Count: 0}
 		}
-		return &model.Counter{Count: 0}
+		f.edges.RangeFrom(node, func(e *model.Edge) bool {
+			f.edges.Delete(&model.ForeignKey{
+				ID:   e.ID,
+				Type: e.Type,
+			})
+			return true
+		})
+		f.edges.RangeTo(node, func(e *model.Edge) bool {
+			f.edges.Delete(&model.ForeignKey{
+				ID:   e.ID,
+				Type: e.Type,
+			})
+			return true
+		})
+		f.nodes.Delete(&model.ForeignKey{
+			ID:   node.ID,
+			Type: node.Type,
+		})
+		return &model.Counter{Count: 1}
 	case command.CREATE_EDGE:
 		val := c.Val.(*model.EdgeConstructor)
 		from, ok := f.nodes.Get(val.From)
