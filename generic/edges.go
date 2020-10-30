@@ -41,6 +41,7 @@ func (n *Edges) All() []*model.Edge {
 		edges = append(edges, edge)
 		return true
 	})
+	EdgeList(edges).Sort()
 	return edges
 }
 
@@ -159,7 +160,9 @@ func (e Edges) EdgesFrom(node *model.Node) []*model.Edge {
 	if _, ok := e.edgesFrom[node.Type][node.ID]; !ok {
 		return nil
 	}
-	return e.edgesFrom[node.Type][node.ID]
+	edges := e.edgesFrom[node.Type][node.ID]
+	EdgeList(edges).Sort()
+	return edges
 }
 
 func (e Edges) EdgesTo(nodeType, nodeID string) []*model.Edge {
@@ -169,7 +172,9 @@ func (e Edges) EdgesTo(nodeType, nodeID string) []*model.Edge {
 	if _, ok := e.edgesTo[nodeType][nodeID]; !ok {
 		return nil
 	}
-	return e.edgesTo[nodeType][nodeID]
+	edges := e.edgesTo[nodeType][nodeID]
+	EdgeList(edges).Sort()
+	return edges
 }
 
 func (n *Edges) Filter(edgeType string, filter func(edge *model.Edge) bool) []*model.Edge {
@@ -180,6 +185,7 @@ func (n *Edges) Filter(edgeType string, filter func(edge *model.Edge) bool) []*m
 		}
 		return true
 	})
+	EdgeList(filtered).Sort()
 	return filtered
 }
 
@@ -267,27 +273,7 @@ func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {
 		edges = append(edges, edge)
 		return len(edges) < filter.Limit
 	})
-	sorter := Interface{
-		LenFunc: func() int {
-			if edges == nil {
-				return 0
-			}
-			return len(edges)
-		},
-		LessFunc: func(i, j int) bool {
-			if edges == nil {
-				return false
-			}
-			return edges[i].UpdatedAt.UnixNano() < edges[j].UpdatedAt.UnixNano()
-		},
-		SwapFunc: func(i, j int) {
-			if edges == nil {
-				return
-			}
-			edges[i], edges[j] = edges[j], edges[i]
-		},
-	}
-	sorter.Sort()
+	EdgeList(edges).Sort()
 	return edges, nil
 }
 
@@ -299,4 +285,31 @@ func removeEdge(id string, edges []*model.Edge) []*model.Edge {
 		}
 	}
 	return newEdges
+}
+
+
+type EdgeList []*model.Edge
+
+func (n EdgeList) Sort() {
+	sorter := Interface{
+		LenFunc: func() int {
+			if n == nil {
+				return 0
+			}
+			return len(n)
+		},
+		LessFunc: func(i, j int) bool {
+			if n == nil {
+				return false
+			}
+			return n[i].UpdatedAt.UnixNano() > n[j].UpdatedAt.UnixNano()
+		},
+		SwapFunc: func(i, j int) {
+			if n == nil {
+				return
+			}
+			n[i], n[j] = n[j], n[i]
+		},
+	}
+	sorter.Sort()
 }

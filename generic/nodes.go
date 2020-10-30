@@ -37,6 +37,7 @@ func (n *Nodes) All() []*model.Node {
 		nodes = append(nodes, node)
 		return true
 	})
+	NodeList(nodes).Sort()
 	return nodes
 }
 
@@ -105,6 +106,7 @@ func (n *Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*m
 		}
 		return true
 	})
+	NodeList(filtered).Sort()
 	return filtered
 }
 
@@ -180,26 +182,32 @@ func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
 		nodes = append(nodes, node)
 		return len(nodes) < filter.Limit
 	})
+	NodeList(nodes).Sort()
+	return nodes, nil
+}
+
+type NodeList []*model.Node
+
+func (n NodeList) Sort() {
 	sorter := Interface{
 		LenFunc: func() int {
-			if nodes == nil {
+			if n == nil {
 				return 0
 			}
-			return len(nodes)
+			return len(n)
 		},
 		LessFunc: func(i, j int) bool {
-			if nodes == nil {
+			if n == nil {
 				return false
 			}
-			return nodes[i].UpdatedAt.UnixNano() > nodes[j].UpdatedAt.UnixNano()
+			return n[i].UpdatedAt.UnixNano() > n[j].UpdatedAt.UnixNano()
 		},
 		SwapFunc: func(i, j int) {
-			if nodes == nil {
+			if n == nil {
 				return
 			}
-			nodes[i], nodes[j] = nodes[j], nodes[i]
+			n[i], n[j] = n[j], n[i]
 		},
 	}
 	sorter.Sort()
-	return nodes, nil
 }
