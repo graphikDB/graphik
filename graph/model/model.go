@@ -16,6 +16,19 @@ func (p *Path) String() string {
 	return fmt.Sprintf("%s/%s", p.Type, p.ID)
 }
 
+func PathFromString(path string) Path {
+	parts := strings.Split(path, "/")
+	if len(parts) == 2 {
+		return Path{
+			ID:   parts[1],
+			Type: parts[0],
+		}
+	}
+	return Path{
+		Type: parts[0],
+	}
+}
+
 func (p *Path) UnmarshalGQL(v interface{}) error {
 	pointStr, ok := v.(string)
 	if !ok {
