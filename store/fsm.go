@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/autom8ter/graphik/command"
+	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/model"
 	"github.com/hashicorp/raft"
 	"github.com/mitchellh/mapstructure"
@@ -25,88 +26,75 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			return errors.Wrap(err, "failed to decode node constructor")
 		}
 		return f.nodes.Set(&model.Node{
-			Type:       val.Type,
+			Path:       val.Path,
 			Attributes: val.Attributes,
 			CreatedAt:  c.Timestamp,
+			UpdatedAt:  c.Timestamp,
 		})
 	case command.PATCH_NODE:
 		var val model.Patch
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode node patch")
 		}
-		if !f.nodes.Exists(model.ForeignKey{
-			ID:   val.ID,
-			Type: val.Type,
-		}) {
-			return errors.Errorf("node %s.%s does not exist", val.Type, val.ID)
+		if !f.nodes.Exists(val.Path) {
+			return errors.Errorf("node %s does not exist", val.Path.String())
 		}
 		return f.nodes.Patch(c.Timestamp, &val)
 	case command.DELETE_NODE:
-		var val model.ForeignKey
+		var val model.Path
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode foreign key")
 		}
-		node, ok := f.nodes.Get(val)
-		if !ok {
-			return &model.Counter{Count: 0}
+		deleted := 0
+		if val.ID == generic.Any {
+			f.nodes.Range(val.Type, func(node *model.Node) bool {
+				if f.nodes.Delete(node.Path) {
+					deleted += 1
+				}
+				return true
+			})
+		} else {
+			if f.nodes.Delete(val) {
+				deleted += 1
+			}
 		}
-		f.edges.RangeFrom(node, func(e *model.Edge) bool {
-			f.edges.Delete(model.ForeignKey{
-				ID:   e.ID,
-				Type: e.Type,
-			})
-			return true
-		})
-		f.edges.RangeTo(node, func(e *model.Edge) bool {
-			f.edges.Delete(model.ForeignKey{
-				ID:   e.ID,
-				Type: e.Type,
-			})
-			return true
-		})
-		f.nodes.Delete(model.ForeignKey{
-			ID:   node.ID,
-			Type: node.Type,
-		})
-		return &model.Counter{Count: 1}
+		return &model.Counter{Count: deleted}
 	case command.CREATE_EDGE:
 		var val model.EdgeConstructor
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode edge constructor")
 		}
-		from, ok := f.nodes.Get(*val.From)
+		from, ok := f.nodes.Get(val.From)
 		if !ok {
-			return errors.Errorf("from node %s.%s does not exist", from.Type, from.ID)
+			return errors.Errorf("from node %s does not exist", (val.From.String()))
 		}
-		to, ok := f.nodes.Get(*val.To)
+		to, ok := f.nodes.Get(val.To)
 		if !ok {
-			return errors.Errorf("to node %s.%s does not exist", to.Type, to.ID)
+			return errors.Errorf("to node %s does not exist", val.To.String())
 		}
 		return f.edges.Set(&model.Edge{
-			Type:       val.Type,
+			Path:       val.Path,
+			Mutual:  	val.Mutual,
 			Attributes: val.Attributes,
-			From:       from,
-			To:         to,
+			From:       from.Path,
+			To:         to.Path,
 			CreatedAt:  c.Timestamp,
-			Mutual:     val.Mutual,
+			UpdatedAt:  c.Timestamp,
 		})
 	case command.PATCH_EDGE:
 		var val model.Patch
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode edge patch")
 		}
-		if !f.edges.Exists(model.ForeignKey{
-			ID:   val.ID,
-			Type: val.Type,
-		}) {
-			return errors.Errorf("edge %s.%s does not exist", val.Type, val.ID)
+		if !f.edges.Exists(val.Path) {
+			return errors.Errorf("edge %s does not exist", val.Path.String())
 		}
 		return f.edges.Patch(c.Timestamp, &val)
 
 	case command.DELETE_EDGE:
-		var val model.ForeignKey
+		var val model.Path
 		if err := f.decode(c.Val, &val); err != nil {
-			return errors.Wrap(err, "failed to decode foreign key")
+			return errors.Wrap(err, "failed to decode path")
 		}
 		if f.edges.Exists(val) {
 			f.edges.Delete(val)

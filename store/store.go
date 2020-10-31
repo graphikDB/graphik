@@ -63,11 +63,13 @@ func New(opts ...Opt) (*Store, error) {
 	}
 	logStore := boltDB
 	stableStore := boltDB
+	edges := generic.NewEdges()
+	nodes := generic.NewNodes(edges)
 	s := &Store{
 		opts:  options,
 		mu:    sync.RWMutex{},
-		nodes: generic.NewNodes(),
-		edges: generic.NewEdges(),
+		nodes: nodes,
+		edges: edges,
 		close: sync.Once{},
 	}
 	rft, err := raft.NewRaft(config, s, logStore, stableStore, snapshots, transport)

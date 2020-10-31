@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/autom8ter/graphik/graph/model"
-	"strings"
 )
 
-func (f *Store) Node(ctx context.Context, input model.ForeignKey) (*model.Node, error) {
+func (f *Store) Node(ctx context.Context, input model.Path) (*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	node, ok := f.nodes.Get(input)
@@ -20,27 +19,36 @@ func (f *Store) Node(ctx context.Context, input model.ForeignKey) (*model.Node, 
 func (f *Store) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
+	return f.nodes.FilterSearch(input)
+}
+
+func (f *Store) DepthTo(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
 	var nodes []*model.Node
-	f.nodes.Range(input.Type, func(n *model.Node) bool {
-		for _, filter := range input.Expressions {
-			if filter.Operator == model.OperatorNeq {
-				if n.Attributes[filter.Key] == filter.Value {
-					return true
-				}
-			}
-			if filter.Operator == model.OperatorEq {
-				if n.Attributes[filter.Key] != filter.Value {
-					return true
-				}
-			}
-		}
-		nodes = append(nodes, n)
+	if err := f.nodes.RangeToDepth(input, func(node *model.Node) bool {
+		nodes = append(nodes, node)
 		return len(nodes) < input.Limit
-	})
+	}); err != nil {
+		return nil, err
+	}
 	return nodes, nil
 }
 
-func (f *Store) Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, error) {
+func (f *Store) DepthFrom(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+	var nodes []*model.Node
+	if err := f.nodes.RangeFromDepth(input, func(node *model.Node) bool {
+		nodes = append(nodes, node)
+		return len(nodes) < input.Limit
+	}); err != nil {
+		return nil, err
+	}
+	return nodes, nil
+}
+
+func (f *Store) Edge(ctx context.Context, input model.Path) (*model.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edge, ok := f.edges.Get(input)
@@ -53,60 +61,13 @@ func (f *Store) Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, 
 func (f *Store) Edges(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	var edges []*model.Edge
-	f.edges.Range(input.Type, func(edge *model.Edge) bool {
-		for _, filter := range input.Expressions {
-			if strings.Contains(filter.Key, "from.") {
-				split := strings.Split(filter.Key, "from.")
-				if len(split) > 1 {
-					if filter.Operator == model.OperatorNeq {
-						if edge.From.Attributes[split[1]] == filter.Value {
-							return true
-						}
-					}
-					if filter.Operator == model.OperatorEq {
-						if edge.From.Attributes[split[1]] != filter.Value {
-							return true
-						}
-					}
-				}
-			} else if strings.Contains(filter.Key, "to.") {
-				split := strings.Split(filter.Key, "to.")
-				if len(split) > 1 {
-					if filter.Operator == model.OperatorNeq {
-						if edge.To.Attributes[split[1]] == filter.Value {
-							return true
-						}
-					}
-					if filter.Operator == model.OperatorEq {
-						if edge.To.Attributes[split[1]] != filter.Value {
-							return true
-						}
-					}
-				}
-			} else {
-				if filter.Operator == model.OperatorNeq {
-					if edge.Attributes[filter.Key] == filter.Value {
-						return true
-					}
-				}
-				if filter.Operator == model.OperatorEq {
-					if edge.Attributes[filter.Key] != filter.Value {
-						return true
-					}
-				}
-			}
-		}
-		edges = append(edges, edge)
-		return len(edges) < input.Limit
-	})
-	return edges, nil
+	return f.edges.FilterSearch(input)
 }
 
-func (f *Store) SearchNodes(ctx context.Context, input model.Search) (*model.Results, error) {
+func (f *Store) SearchNodes(ctx context.Context, input model.Search) (*model.SearchResults, error) {
 	return f.nodes.Search(input.Search, input.Type)
 }
 
-func (f *Store) SearchEdges(ctx context.Context, input model.Search) (*model.Results, error) {
+func (f *Store) SearchEdges(ctx context.Context, input model.Search) (*model.SearchResults, error) {
 	return f.edges.Search(input.Search, input.Type)
 }

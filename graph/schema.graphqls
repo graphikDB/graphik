@@ -4,37 +4,32 @@
 scalar Map
 scalar Any
 scalar Time
+scalar Path
+
+enum Operator {
+  NEQ
+  EQ
+}
 
 type Counter {
   count: Int!
 }
 
-interface Object {
-  id: String!
-  type: String!
+type Node {
+  path: Path!
   attributes: Map
   createdAt: Time!
-  updatedAt: Time
+  updatedAt: Time!
 }
 
-type Node implements Object {
-  id: String!
-  type: String!
+type Edge {
+  path: Path!
+  mutual: Boolean!
   attributes: Map
-  edges: [Edge!]
+  from: Path!
+  to: Path!
   createdAt: Time!
-  updatedAt: Time
-}
-
-type Edge implements Object {
-  id: String!
-  type: String!
-  attributes: Map
-  from: Node!
-  to: Node!
-  mutual: Boolean
-  createdAt: Time!
-  updatedAt: Time
+  updatedAt: Time!
 }
 
 type Export {
@@ -42,80 +37,79 @@ type Export {
   edges: [Edge]
 }
 
-
-type Result {
-  id: String!
-  type: String!
+type SearchResult {
+  path: Path!
   val: Any
 }
 
-type Results {
+type SearchResults {
   search: String!
-  results: [Result!]
+  results: [SearchResult!]
 }
 
-enum Operator {
-  NEQ
-  EQ
-}
-
-input Expression {
-  key: String!
+input Statement {
+  expression: String!
   operator: Operator!
   value: Any!
 }
 
 input Filter {
   type: String!
-  expressions: [Expression!]
+  statements: [Statement!]
   limit: Int!
 }
 
-input ForeignKey {
-  id: String!
-  type: String!
-}
-
 input EdgeConstructor {
-  type: String!
+  path: Path!
+  mutual: Boolean!
   attributes: Map
-  from: ForeignKey!
-  to: ForeignKey!
-  mutual: Boolean
+  from: Path!
+  to: Path!
 }
 
 input NodeConstructor {
-  type: String!
+  path: Path!
   attributes: Map
 }
 
 input Patch {
-  type: String!
-  id: String!
+  path: Path!
   patch: Map!
 }
 
 input Search {
   search: String!
   type: String!
+  limit: Int!
 }
 
+input DepthFilter {
+  depth: Int!
+  path: Path!
+  edgeType: String!
+  reverse: Boolean
+  statements: [Statement!]
+  limit: Int!
+}
 
 type Query {
-  node(input: ForeignKey!): Node
-  nodes(input: Filter!): [Node!]!
-  searchNodes(input: Search!): Results!
-  edge(input: ForeignKey!): Edge
-  edges(input: Filter!): [Edge!]!
-  searchEdges(input: Search!): Results!
+  # node returns a node using a foreign key
+  node(input: Path!): Node
+  getNodes(input: Filter!): [Node!]!
+  depthSearch(input: DepthFilter!): [Node!]!
+  # edge returns an edge using a foreign key
+  getEdge(input: Path!): Edge
+  # edges traverses the graph and returns edges that pass the given filter
+  getEdges(input: Filter!): [Edge!]!
 }
 
 type Mutation {
   createNode(input: NodeConstructor!): Node!
   patchNode(input: Patch): Node!
-  delNode(input: ForeignKey!): Counter
+  delNode(input: Path!): Counter
 
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
-  delEdge(input: ForeignKey!): Counter
+  delEdge(input: Path!): Counter
+
 }

@@ -9,33 +9,35 @@ import (
 	"time"
 )
 
-type Object interface {
-	IsObject()
-}
-
 type Counter struct {
 	Count int `json:"count"`
 }
 
-type Edge struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Attributes map[string]interface{} `json:"attributes"`
-	From       *Node                  `json:"from"`
-	To         *Node                  `json:"to"`
-	Mutual     *bool                  `json:"mutual"`
-	CreatedAt  time.Time              `json:"createdAt"`
-	UpdatedAt  *time.Time             `json:"updatedAt"`
+type DepthFilter struct {
+	Depth      int          `json:"depth"`
+	Path       Path         `json:"path"`
+	EdgeType   string       `json:"edgeType"`
+	Reverse    *bool        `json:"reverse"`
+	Statements []*Statement `json:"statements"`
+	Limit      int          `json:"limit"`
 }
 
-func (Edge) IsObject() {}
+type Edge struct {
+	Path       Path                   `json:"path"`
+	Mutual     bool                   `json:"mutual"`
+	Attributes map[string]interface{} `json:"attributes"`
+	From       Path                   `json:"from"`
+	To         Path                   `json:"to"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  time.Time              `json:"updatedAt"`
+}
 
 type EdgeConstructor struct {
-	Type       string                 `json:"type"`
+	Path       Path                   `json:"path"`
+	Mutual     bool                   `json:"mutual"`
 	Attributes map[string]interface{} `json:"attributes"`
-	From       *ForeignKey            `json:"from"`
-	To         *ForeignKey            `json:"to"`
-	Mutual     *bool                  `json:"mutual"`
+	From       Path                   `json:"from"`
+	To         Path                   `json:"to"`
 }
 
 type Export struct {
@@ -43,59 +45,49 @@ type Export struct {
 	Edges []*Edge `json:"edges"`
 }
 
-type Expression struct {
-	Key      string      `json:"key"`
-	Operator Operator    `json:"operator"`
-	Value    interface{} `json:"value"`
-}
-
 type Filter struct {
-	Type        string        `json:"type"`
-	Expressions []*Expression `json:"expressions"`
-	Limit       int           `json:"limit"`
-}
-
-type ForeignKey struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
+	Type       string       `json:"type"`
+	Statements []*Statement `json:"statements"`
+	Limit      int          `json:"limit"`
 }
 
 type Node struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
+	Path       Path                   `json:"path"`
 	Attributes map[string]interface{} `json:"attributes"`
-	Edges      []*Edge                `json:"edges"`
 	CreatedAt  time.Time              `json:"createdAt"`
-	UpdatedAt  *time.Time             `json:"updatedAt"`
+	UpdatedAt  time.Time              `json:"updatedAt"`
 }
 
-func (Node) IsObject() {}
-
 type NodeConstructor struct {
-	Type       string                 `json:"type"`
+	Path       Path                   `json:"path"`
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
 type Patch struct {
-	Type  string                 `json:"type"`
-	ID    string                 `json:"id"`
+	Path  Path                   `json:"path"`
 	Patch map[string]interface{} `json:"patch"`
-}
-
-type Result struct {
-	ID   string      `json:"id"`
-	Type string      `json:"type"`
-	Val  interface{} `json:"val"`
-}
-
-type Results struct {
-	Search  string    `json:"search"`
-	Results []*Result `json:"results"`
 }
 
 type Search struct {
 	Search string `json:"search"`
 	Type   string `json:"type"`
+	Limit  int    `json:"limit"`
+}
+
+type SearchResult struct {
+	Path Path        `json:"path"`
+	Val  interface{} `json:"val"`
+}
+
+type SearchResults struct {
+	Search  string          `json:"search"`
+	Results []*SearchResult `json:"results"`
+}
+
+type Statement struct {
+	Expression string      `json:"expression"`
+	Operator   Operator    `json:"operator"`
+	Value      interface{} `json:"value"`
 }
 
 type Operator string

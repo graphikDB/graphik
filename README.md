@@ -8,13 +8,12 @@ A persistant labelled property graph database written in 100% Go
 ```graphql
 mutation createNode {
     createNode(input: {
-        type: "user"
+        path: "user"
         attributes: {
           name: "coleman"
         }
     }) {
-        id
-    		type
+        path
         attributes
     }
 }
@@ -24,12 +23,29 @@ mutation createNode {
 
 ```graphql
 query {
-    nodes(input:{type:"user" limit: 5}) {
-    	  id
-        type
+    nodes(input:{type:"user" limit: 100}) {
+    	path
         attributes
-    		createdAt
+    	createdAt
         updatedAt
+    }
+}
+```
+
+### patch node
+
+```graphql
+mutation patchNode {
+    patchNode(input: {
+        path: "user/cac3b142-0e52-2e24-388c-79a9bd50c35f"
+        patch: {
+          name: "Coleman Word"
+          email: "colemanword@gmail.com"
+          gender: "male"
+        }
+    }) {
+        path
+        attributes
     }
 }
 ```
@@ -38,11 +54,27 @@ query {
 
 ```graphql
 mutation delNode {
-    delNode(input: {
-        id: "3cd440ba-136d-d99f-facc-51ac2a06b53a",
-        type: "user"
-    }) {
+    delNode(input: "user/abd70fc5-2520-28c4-6f17-ef3bd5ae6073") {
       count  
+    }
+}
+```
+
+### depthSearch
+
+```graphql
+query {
+    depthSearch(input:{
+      path:"user/9e02d1c2-719a-9770-9b41-024c6a90db41" 
+      edgeType: "friend" 
+      reverse: false
+      depth: 1
+      limit: 6
+    }) {
+    	path
+        updatedAt
+    	createdAt
+        attributes
     }
 }
 ```
@@ -52,26 +84,16 @@ mutation delNode {
 ```graphql
 mutation createEdge {
     createEdge(input: {
-        attributes: {
-            _type: "fiance"
-            _mutual: true
-        }
-        from: {
-            _id: "b7b38163-28dd-5cca-3a20-9503b9d19bfe"
-            _type: "user"
-        }
-        to: {
-            _id: "fb98b4d0-a3bb-592c-6a41-8c8fc7ff3306"
-            _type: "user"
-        }
+      	path: "friend"
+      	mutual: true
+        from: "user/9e02d1c2-719a-9770-9b41-024c6a90db41"
+        to: "user/49bbc52e-f5ab-7f8a-81e8-913e380c51b7"
     }) {
+        path
         attributes
-        from {
-            attributes
-        }
-        to {
-            attributes
-        }
+    	
+    		from
+        to
     }
 }
 ```
@@ -80,25 +102,13 @@ mutation createEdge {
 
 ```graphql
 query {
-    edges(input:{_type:"fiance" limit: 10 filter: [
-        {
-            key: "_mutual"
-            operator: "=="
-            value: true
-        },
-        {
-            key: "from.name"
-            operator: "!="
-            value: "coleman"
-        }
-    ]}) {
+    getEdges(input:{type:"friend" limit: 10}) {
+    	path
+        updatedAt
         attributes
-        from {
-            attributes
-        }
-        to {
-            attributes
-        }
+    	mutual
+    	from
+    	to
     }
 }
 ```
@@ -107,14 +117,13 @@ query {
 
 ```graphql
 query {
-    edge(input:{_type:"fiance" _id: "5705ddfc-081f-bd4f-5d5d-1be4ab446867"}) {
+    getEdge(input: "friend/8516e0d3-03c0-5b2c-e5b5-fba631c6c1b4") {
+        path
         attributes
-        from {
-            attributes
-        }
-        to {
-            attributes
-        }
+        from
+        to
+        createdAt
     }
 }
 ```
+
