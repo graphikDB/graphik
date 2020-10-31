@@ -13,9 +13,12 @@ import (
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConstructor) (*model.Node, error) {
-	if input.ID == nil {
+	if input.Path.ID == "" {
 		random := generic.UUID()
-		input.ID = &random
+		input.Path.ID = random
+	}
+	if input.Path.Type == "" {
+		input.Path.Type = generic.Default
 	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_NODE,
@@ -59,9 +62,12 @@ func (r *mutationResolver) DelNode(ctx context.Context, input model.Path) (*mode
 }
 
 func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConstructor) (*model.Edge, error) {
-	if input.ID == nil {
+	if input.Path.ID == "" {
 		random := generic.UUID()
-		input.ID = &random
+		input.Path.ID = random
+	}
+	if input.Path.Type == "" {
+		input.Path.Type = generic.Default
 	}
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.CREATE_EDGE,

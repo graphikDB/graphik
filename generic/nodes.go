@@ -96,11 +96,11 @@ func (n *Nodes) Delete(key model.Path) bool {
 		return false
 	}
 	n.edges.RangeFrom(node, func(e *model.Edge) bool {
-		n.edges.Delete(*e.Path)
+		n.edges.Delete(e.Path)
 		return true
 	})
 	n.edges.RangeTo(node, func(e *model.Edge) bool {
-		n.edges.Delete(*e.Path)
+		n.edges.Delete(e.Path)
 		return true
 	})
 	if c, ok := n.nodes[key.Type]; ok {
@@ -134,7 +134,7 @@ func (n *Nodes) SetAll(nodes ...*model.Node) {
 
 func (n *Nodes) DeleteAll(Nodes ...*model.Node) {
 	for _, node := range Nodes {
-		n.Delete(*node.Path)
+		n.Delete(node.Path)
 	}
 }
 

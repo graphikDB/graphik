@@ -54,27 +54,30 @@ func (n *Edges) Get(key model.Path) (*model.Edge, bool) {
 }
 
 func (n *Edges) Set(value *model.Edge) *model.Edge {
-	if value.Path == nil {
-		value.Path = &model.Path{}
-	}
-	if value.Path.ID == "" {
-		value.Path.ID = UUID()
-	}
-	if value.Path.Type == "" {
-		value.Path.Type = Default
-	}
 	if _, ok := n.edges[value.Path.Type]; !ok {
 		n.edges[value.Path.Type] = map[string]*model.Edge{}
 	}
-	if _, ok := n.edges[value.From.Type]; !ok {
+	if _, ok := n.edgesFrom[value.From.Type]; !ok {
 		n.edgesFrom[value.From.Type] = map[string][]*model.Path{}
 	}
-	if _, ok := n.edges[value.To.Type]; !ok {
+	if _, ok := n.edgesTo[value.To.Type]; !ok {
 		n.edgesTo[value.To.Type] = map[string][]*model.Path{}
 	}
 	n.edges[value.Path.Type][value.Path.ID] = value
-	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], value.Path)
-	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], value.Path)
+	path := &value.Path
+	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], path)
+	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], path)
+
+	if value.Direction == model.DirectionUndirected {
+		if _, ok := n.edges[value.To.Type]; !ok {
+			n.edgesFrom[value.To.Type] = map[string][]*model.Path{}
+		}
+		if _, ok := n.edges[value.From.Type]; !ok {
+			n.edgesTo[value.From.Type] = map[string][]*model.Path{}
+		}
+		n.edgesTo[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], path)
+		n.edgesFrom[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], path)
+	}
 	return value
 }
 
@@ -100,10 +103,10 @@ func (n *Edges) Delete(key model.Path) {
 		return
 	}
 	if edges, ok := n.edgesFrom[edge.From.Type][edge.From.ID]; ok {
-		n.edgesFrom[edge.From.Type][edge.From.ID] = removePath(edge.Path, edges)
+		n.edgesFrom[edge.From.Type][edge.From.ID] = removePath(&edge.Path, edges)
 	}
 	if edges, ok := n.edgesTo[edge.To.Type][edge.To.ID]; ok {
-		n.edgesTo[edge.To.Type][edge.To.ID] = removePath(edge.Path, edges)
+		n.edgesTo[edge.To.Type][edge.To.ID] = removePath(&edge.Path, edges)
 	}
 	if c, ok := n.edges[key.Type]; ok {
 		delete(c, key.ID)

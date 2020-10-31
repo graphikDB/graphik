@@ -14,22 +14,21 @@ type Counter struct {
 }
 
 type Edge struct {
-	Path       *Path                  `json:"path"`
+	Path       Path                   `json:"path"`
 	Direction  Direction              `json:"direction"`
 	Attributes map[string]interface{} `json:"attributes"`
-	From       *Path                  `json:"from"`
-	To         *Path                  `json:"to"`
+	From       Path                   `json:"from"`
+	To         Path                   `json:"to"`
 	CreatedAt  time.Time              `json:"createdAt"`
 	UpdatedAt  time.Time              `json:"updatedAt"`
 }
 
 type EdgeConstructor struct {
-	ID         *string                `json:"id"`
-	Type       string                 `json:"type"`
+	Path       Path                   `json:"path"`
 	Direction  Direction              `json:"direction"`
 	Attributes map[string]interface{} `json:"attributes"`
-	From       *Path                  `json:"from"`
-	To         *Path                  `json:"to"`
+	From       Path                   `json:"from"`
+	To         Path                   `json:"to"`
 }
 
 type Export struct {
@@ -44,20 +43,19 @@ type Filter struct {
 }
 
 type Node struct {
-	Path       *Path                  `json:"path"`
+	Path       Path                   `json:"path"`
 	Attributes map[string]interface{} `json:"attributes"`
 	CreatedAt  time.Time              `json:"createdAt"`
 	UpdatedAt  time.Time              `json:"updatedAt"`
 }
 
 type NodeConstructor struct {
-	ID         *string                `json:"id"`
-	Type       string                 `json:"type"`
+	Path       Path                   `json:"path"`
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
 type Patch struct {
-	Path  *Path                  `json:"path"`
+	Path  Path                   `json:"path"`
 	Patch map[string]interface{} `json:"patch"`
 }
 
@@ -67,7 +65,7 @@ type Search struct {
 }
 
 type SearchResult struct {
-	Path *Path       `json:"path"`
+	Path Path        `json:"path"`
 	Val  interface{} `json:"val"`
 }
 

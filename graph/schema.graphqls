@@ -4,6 +4,7 @@
 scalar Map
 scalar Any
 scalar Time
+scalar Path
 
 enum Operator {
   NEQ
@@ -17,11 +18,6 @@ enum Direction {
 
 type Counter {
   count: Int!
-}
-
-type Path {
-  id: ID!
-  type: String!
 }
 
 type Node {
@@ -69,22 +65,20 @@ input Filter {
 }
 
 input EdgeConstructor {
-  id: ID
-  type: String!
+  path: Path!
   direction: Direction!
   attributes: Map
-  from: ForeignKey!
-  to: ForeignKey!
+  from: Path!
+  to: Path!
 }
 
 input NodeConstructor {
-  id: String
-  type: String!
+  path: Path!
   attributes: Map
 }
 
 input Patch {
-  path: ForeignKey!
+  path: Path!
   patch: Map!
 }
 
@@ -93,18 +87,13 @@ input Search {
   type: String!
 }
 
-input ForeignKey {
-  id: ID!
-  type: String!
-}
-
 type Query {
   # node returns a node using a foreign key
-  node(input: ForeignKey!): Node
+  node(input: Path!): Node
   nodes(input: Filter!): [Node!]!
   searchNodes(input: Search!): SearchResults!
   # edge returns an edge using a foreign key
-  edge(input: ForeignKey!): Edge
+  edge(input: Path!): Edge
   # edges traverses the graph and returns edges that pass the given filter
   edges(input: Filter!): [Edge!]!
   # searchEdges traverses the graph and returns edges that pass the given filter
@@ -114,9 +103,10 @@ type Query {
 type Mutation {
   createNode(input: NodeConstructor!): Node!
   patchNode(input: Patch): Node!
-  delNode(input: ForeignKey!): Counter
+  delNode(input: Path!): Counter
 
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
-  delEdge(input: ForeignKey!): Counter
+  delEdge(input: Path!): Counter
+
 }

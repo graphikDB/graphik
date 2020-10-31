@@ -79,11 +79,6 @@ type ComplexityRoot struct {
 		UpdatedAt  func(childComplexity int) int
 	}
 
-	Path struct {
-		ID   func(childComplexity int) int
-		Type func(childComplexity int) int
-	}
-
 	Query struct {
 		Edge        func(childComplexity int, input model.Path) int
 		Edges       func(childComplexity int, input model.Filter) int
@@ -306,20 +301,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Node.UpdatedAt(childComplexity), true
 
-	case "Path.id":
-		if e.complexity.Path.ID == nil {
-			break
-		}
-
-		return e.complexity.Path.ID(childComplexity), true
-
-	case "Path.type":
-		if e.complexity.Path.Type == nil {
-			break
-		}
-
-		return e.complexity.Path.Type(childComplexity), true
-
 	case "Query.edge":
 		if e.complexity.Query.Edge == nil {
 			break
@@ -490,6 +471,7 @@ var sources = []*ast.Source{
 scalar Map
 scalar Any
 scalar Time
+scalar Path
 
 enum Operator {
   NEQ
@@ -503,11 +485,6 @@ enum Direction {
 
 type Counter {
   count: Int!
-}
-
-type Path {
-  id: ID!
-  type: String!
 }
 
 type Node {
@@ -555,22 +532,20 @@ input Filter {
 }
 
 input EdgeConstructor {
-  id: ID
-  type: String!
+  path: Path!
   direction: Direction!
   attributes: Map
-  from: ForeignKey!
-  to: ForeignKey!
+  from: Path!
+  to: Path!
 }
 
 input NodeConstructor {
-  id: String
-  type: String!
+  path: Path!
   attributes: Map
 }
 
 input Patch {
-  path: ForeignKey!
+  path: Path!
   patch: Map!
 }
 
@@ -579,18 +554,13 @@ input Search {
   type: String!
 }
 
-input ForeignKey {
-  id: ID!
-  type: String!
-}
-
 type Query {
   # node returns a node using a foreign key
-  node(input: ForeignKey!): Node
+  node(input: Path!): Node
   nodes(input: Filter!): [Node!]!
   searchNodes(input: Search!): SearchResults!
   # edge returns an edge using a foreign key
-  edge(input: ForeignKey!): Edge
+  edge(input: Path!): Edge
   # edges traverses the graph and returns edges that pass the given filter
   edges(input: Filter!): [Edge!]!
   # searchEdges traverses the graph and returns edges that pass the given filter
@@ -600,11 +570,12 @@ type Query {
 type Mutation {
   createNode(input: NodeConstructor!): Node!
   patchNode(input: Patch): Node!
-  delNode(input: ForeignKey!): Counter
+  delNode(input: Path!): Counter
 
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
-  delEdge(input: ForeignKey!): Counter
+  delEdge(input: Path!): Counter
+
 }
 `, BuiltIn: false},
 }
@@ -650,7 +621,7 @@ func (ec *executionContext) field_Mutation_delEdge_args(ctx context.Context, raw
 	var arg0 model.Path
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNForeignKey2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
+		arg0, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -665,7 +636,7 @@ func (ec *executionContext) field_Mutation_delNode_args(ctx context.Context, raw
 	var arg0 model.Path
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNForeignKey2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
+		arg0, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -725,7 +696,7 @@ func (ec *executionContext) field_Query_edge_args(ctx context.Context, rawArgs m
 	var arg0 model.Path
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNForeignKey2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
+		arg0, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -755,7 +726,7 @@ func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs m
 	var arg0 model.Path
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNForeignKey2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
+		arg0, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -912,9 +883,9 @@ func (ec *executionContext) _Edge_path(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Path)
+	res := resTmp.(model.Path)
 	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
+	return ec.marshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Edge_direction(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {
@@ -1014,9 +985,9 @@ func (ec *executionContext) _Edge_from(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Path)
+	res := resTmp.(model.Path)
 	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
+	return ec.marshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Edge_to(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {
@@ -1049,9 +1020,9 @@ func (ec *executionContext) _Edge_to(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Path)
+	res := resTmp.(model.Path)
 	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
+	return ec.marshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Edge_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Edge) (ret graphql.Marshaler) {
@@ -1464,9 +1435,9 @@ func (ec *executionContext) _Node_path(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Path)
+	res := resTmp.(model.Path)
 	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
+	return ec.marshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Node_attributes(ctx context.Context, field graphql.CollectedField, obj *model.Node) (ret graphql.Marshaler) {
@@ -1569,76 +1540,6 @@ func (ec *executionContext) _Node_updatedAt(ctx context.Context, field graphql.C
 	res := resTmp.(time.Time)
 	fc.Result = res
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Path_id(ctx context.Context, field graphql.CollectedField, obj *model.Path) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Path",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Path_type(ctx context.Context, field graphql.CollectedField, obj *model.Path) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Path",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Type, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_node(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1988,9 +1889,9 @@ func (ec *executionContext) _SearchResult_path(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Path)
+	res := resTmp.(model.Path)
 	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
+	return ec.marshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _SearchResult_val(ctx context.Context, field graphql.CollectedField, obj *model.SearchResult) (ret graphql.Marshaler) {
@@ -3185,19 +3086,11 @@ func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, o
 
 	for k, v := range asMap {
 		switch k {
-		case "id":
+		case "path":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "type":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
-			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
+			it.Path, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3221,7 +3114,7 @@ func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
-			it.From, err = ec.unmarshalNForeignKey2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
+			it.From, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3229,7 +3122,7 @@ func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
-			it.To, err = ec.unmarshalNForeignKey2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
+			it.To, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3275,53 +3168,17 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputForeignKey(ctx context.Context, obj interface{}) (model.Path, error) {
-	var it model.Path
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "id":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "type":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
-			it.Type, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputNodeConstructor(ctx context.Context, obj interface{}) (model.NodeConstructor, error) {
 	var it model.NodeConstructor
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "id":
+		case "path":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "type":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
-			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
+			it.Path, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3349,7 +3206,7 @@ func (ec *executionContext) unmarshalInputPatch(ctx context.Context, obj interfa
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
-			it.Path, err = ec.unmarshalNForeignKey2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
+			it.Path, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3621,38 +3478,6 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Node_updatedAt(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var pathImplementors = []string{"Path"}
-
-func (ec *executionContext) _Path(ctx context.Context, sel ast.SelectionSet, obj *model.Path) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, pathImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Path")
-		case "id":
-			out.Values[i] = ec._Path_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "type":
-			out.Values[i] = ec._Path_type(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4185,31 +4010,6 @@ func (ec *executionContext) unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphik�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNForeignKey2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx context.Context, v interface{}) (model.Path, error) {
-	res, err := ec.unmarshalInputForeignKey(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNForeignKey2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx context.Context, v interface{}) (*model.Path, error) {
-	res, err := ec.unmarshalInputForeignKey(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalID(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4317,14 +4117,14 @@ func (ec *executionContext) unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphik�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx context.Context, sel ast.SelectionSet, v *model.Path) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Path(ctx, sel, v)
+func (ec *executionContext) unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx context.Context, v interface{}) (model.Path, error) {
+	var res model.Path
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx context.Context, sel ast.SelectionSet, v model.Path) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNSearch2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearch(ctx context.Context, v interface{}) (model.Search, error) {
@@ -4711,21 +4511,6 @@ func (ec *executionContext) marshalOEdge2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Edge(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalID(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalID(*v)
 }
 
 func (ec *executionContext) unmarshalOMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
