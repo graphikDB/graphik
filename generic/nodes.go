@@ -1,6 +1,7 @@
 package generic
 
 import (
+	"fmt"
 	"github.com/autom8ter/graphik/graph/model"
 	"github.com/jmespath/go-jmespath"
 	"time"
@@ -196,34 +197,49 @@ func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
 	return nodes, nil
 }
 
-func (n *Nodes) RangeFromDepth(depth int, path model.Path, edgeType string, fn func(node *model.Node) bool) {
-	node, ok := n.Get(path)
+func (n *Nodes) RangeFromDepth(filter model.DepthFilter, fn func(node *model.Node) bool) error {
+	node, ok := n.Get(filter.Path)
 	if !ok {
-		return
+		return fmt.Errorf("%s does not exist", filter.Path.String())
 	}
-	walker := n.recurseFrom(edgeType, 0, depth, fn)
+	walker := n.recurseFrom(0, filter, fn)
 	walker(node)
+	return nil
 }
 
-func (n *Nodes) RangeToDepth(maxDepth int, path model.Path, edgeType string, fn func(node *model.Node) bool) {
-	node, ok := n.Get(path)
+func (n *Nodes) RangeToDepth(filter model.DepthFilter, fn func(node *model.Node) bool) error {
+	node, ok := n.Get(filter.Path)
 	if !ok {
-		return
+		return fmt.Errorf("%s does not exist", filter.Path.String())
 	}
-	walker := n.recurseTo(edgeType, 0, maxDepth, fn)
+	walker := n.recurseTo(0, filter, fn)
 	walker(node)
+	return nil
 }
 
-func (n *Nodes) ascendFrom(seen map[string]struct{}, edgeType string, fn func(node *model.Node) bool) func(node *model.Node) bool {
+func (n *Nodes) ascendFrom(seen map[string]struct{}, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
 	return func(node *model.Node) bool {
 		n.edges.RangeFrom(node.Path, func(e *model.Edge) bool {
-			if e.Path.Type != edgeType {
+			if e.Path.Type != filter.EdgeType {
 				return true
 			}
 			node, ok := n.Get(e.To)
 			if ok {
 				if _, ok := seen[node.Path.String()]; !ok {
 					seen[node.Path.String()] = struct{}{}
+					for _, exp := range filter.Statements {
+						val, _ := jmespath.Search(exp.Expression, node)
+						if exp.Operator == model.OperatorNeq {
+							if val == exp.Value {
+								return true
+							}
+						}
+						if exp.Operator == model.OperatorEq {
+							if val != exp.Value {
+								return true
+							}
+						}
+					}
 					return fn(node)
 				}
 			}
@@ -233,16 +249,29 @@ func (n *Nodes) ascendFrom(seen map[string]struct{}, edgeType string, fn func(no
 	}
 }
 
-func (n *Nodes) ascendTo(seen map[string]struct{}, edgeType string, fn func(node *model.Node) bool) func(node *model.Node) bool {
+func (n *Nodes) ascendTo(seen map[string]struct{}, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
 	return func(node *model.Node) bool {
 		n.edges.RangeTo(node.Path, func(e *model.Edge) bool {
-			if e.Path.Type != edgeType {
+			if e.Path.Type != filter.EdgeType {
 				return true
 			}
 			node, ok := n.Get(e.From)
 			if ok {
 				if _, ok := seen[node.Path.String()]; !ok {
 					seen[node.Path.String()] = struct{}{}
+					for _, exp := range filter.Statements {
+						val, _ := jmespath.Search(exp.Expression, node)
+						if exp.Operator == model.OperatorNeq {
+							if val == exp.Value {
+								return true
+							}
+						}
+						if exp.Operator == model.OperatorEq {
+							if val != exp.Value {
+								return true
+							}
+						}
+					}
 					return fn(node)
 				}
 			}
@@ -252,20 +281,20 @@ func (n *Nodes) ascendTo(seen map[string]struct{}, edgeType string, fn func(node
 	}
 }
 
-func (n *Nodes) recurseFrom(edgeType string, depth, max int, fn func(node *model.Node) bool) func(node *model.Node) bool {
-	if depth > max {
+func (n *Nodes) recurseFrom(depth int, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
+	if depth > filter.Depth {
 		return fn
 	}
 	depth += 1
-	return n.recurseFrom(edgeType, depth, max, n.ascendFrom(map[string]struct{}{}, edgeType, fn))
+	return n.recurseFrom(depth, filter, n.ascendFrom(map[string]struct{}{}, filter, fn))
 }
 
-func (n *Nodes) recurseTo(edgeType string, depth, max int, fn func(node *model.Node) bool) func(node *model.Node) bool {
-	if depth > max {
+func (n *Nodes) recurseTo(depth int, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
+	if depth > filter.Depth {
 		return fn
 	}
 	depth += 1
-	return n.recurseTo(edgeType, depth, max, n.ascendTo(map[string]struct{}{}, edgeType, fn))
+	return n.recurseTo(depth, filter, n.ascendTo(map[string]struct{}{}, filter, fn))
 }
 
 type NodeList []*model.Node

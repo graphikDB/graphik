@@ -9,20 +9,31 @@ import (
 	"time"
 )
 
+type BreadthFilter struct {
+	Depth      int          `json:"depth"`
+	Path       Path         `json:"path"`
+	EdgeType   string       `json:"edgeType"`
+	Reverse    *bool        `json:"reverse"`
+	Statements []*Statement `json:"statements"`
+	Limit      int          `json:"limit"`
+}
+
 type Counter struct {
 	Count int `json:"count"`
 }
 
-type DepthSearch struct {
-	Depth    int    `json:"depth"`
-	Path     Path   `json:"path"`
-	EdgeType string `json:"edgeType"`
-	Limit    int    `json:"limit"`
+type DepthFilter struct {
+	Depth      int          `json:"depth"`
+	Path       Path         `json:"path"`
+	EdgeType   string       `json:"edgeType"`
+	Reverse    *bool        `json:"reverse"`
+	Statements []*Statement `json:"statements"`
+	Limit      int          `json:"limit"`
 }
 
 type Edge struct {
 	Path       Path                   `json:"path"`
-	Direction  Direction              `json:"direction"`
+	Mutual     bool                   `json:"mutual"`
 	Attributes map[string]interface{} `json:"attributes"`
 	From       Path                   `json:"from"`
 	To         Path                   `json:"to"`
@@ -32,7 +43,7 @@ type Edge struct {
 
 type EdgeConstructor struct {
 	Path       Path                   `json:"path"`
-	Direction  Direction              `json:"direction"`
+	Mutual     bool                   `json:"mutual"`
 	Attributes map[string]interface{} `json:"attributes"`
 	From       Path                   `json:"from"`
 	To         Path                   `json:"to"`
@@ -86,47 +97,6 @@ type Statement struct {
 	Expression string      `json:"expression"`
 	Operator   Operator    `json:"operator"`
 	Value      interface{} `json:"value"`
-}
-
-type Direction string
-
-const (
-	DirectionDirected   Direction = "DIRECTED"
-	DirectionUndirected Direction = "UNDIRECTED"
-)
-
-var AllDirection = []Direction{
-	DirectionDirected,
-	DirectionUndirected,
-}
-
-func (e Direction) IsValid() bool {
-	switch e {
-	case DirectionDirected, DirectionUndirected:
-		return true
-	}
-	return false
-}
-
-func (e Direction) String() string {
-	return string(e)
-}
-
-func (e *Direction) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = Direction(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid Direction", str)
-	}
-	return nil
-}
-
-func (e Direction) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Operator string

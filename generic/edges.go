@@ -59,12 +59,15 @@ func (n *Edges) Set(value *model.Edge) *model.Edge {
 	}
 
 	n.edges[value.Path.Type][value.Path.ID] = value
-	n.edgesFrom[value.From.String()] = append(n.edgesFrom[value.From.String()], value.Path.String())
-	n.edgesTo[value.To.String()] = append(n.edgesTo[value.To.String()], value.Path.String())
 
-	if value.Direction == model.DirectionUndirected {
-		n.edgesTo[value.From.String()] = append(n.edgesTo[value.From.String()], value.Path.String())
-		n.edgesFrom[value.To.String()] = append(n.edgesFrom[value.To.String()], value.Path.String())
+	path := value.Path.String()
+
+	n.edgesFrom[value.From.String()] = append(n.edgesFrom[value.From.String()], path)
+	n.edgesTo[value.To.String()] = append(n.edgesTo[value.To.String()], path)
+
+	if value.Mutual {
+		n.edgesTo[value.From.String()] = append(n.edgesTo[value.From.String()], path)
+		n.edgesFrom[value.To.String()] = append(n.edgesFrom[value.To.String()], path)
 	}
 	return value
 }

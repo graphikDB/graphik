@@ -22,25 +22,29 @@ func (f *Store) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, e
 	return f.nodes.FilterSearch(input)
 }
 
-func (f *Store) DepthTo(ctx context.Context, input model.DepthSearch) ([]*model.Node, error) {
+func (f *Store) DepthTo(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	var nodes []*model.Node
-	f.nodes.RangeToDepth(input.Depth, input.Path, input.EdgeType, func(node *model.Node) bool {
+	if err := f.nodes.RangeToDepth(input, func(node *model.Node) bool {
 		nodes = append(nodes, node)
 		return len(nodes) < input.Limit
-	})
+	}); err != nil {
+		return nil, err
+	}
 	return nodes, nil
 }
 
-func (f *Store) DepthFrom(ctx context.Context, input model.DepthSearch) ([]*model.Node, error) {
+func (f *Store) DepthFrom(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	var nodes []*model.Node
-	f.nodes.RangeFromDepth(input.Depth, input.Path, input.EdgeType, func(node *model.Node) bool {
+	if err := f.nodes.RangeFromDepth(input, func(node *model.Node) bool {
 		nodes = append(nodes, node)
 		return len(nodes) < input.Limit
-	})
+	}); err != nil {
+		return nil, err
+	}
 	return nodes, nil
 }
 

@@ -11,11 +11,6 @@ enum Operator {
   EQ
 }
 
-enum Direction {
-  DIRECTED
-  UNDIRECTED
-}
-
 type Counter {
   count: Int!
 }
@@ -29,7 +24,7 @@ type Node {
 
 type Edge {
   path: Path!
-  direction: Direction!
+  mutual: Boolean!
   attributes: Map
   from: Path!
   to: Path!
@@ -66,7 +61,7 @@ input Filter {
 
 input EdgeConstructor {
   path: Path!
-  direction: Direction!
+  mutual: Boolean!
   attributes: Map
   from: Path!
   to: Path!
@@ -88,26 +83,33 @@ input Search {
   limit: Int!
 }
 
-input DepthSearch {
+input DepthFilter {
   depth: Int!
   path: Path!
   edgeType: String!
+  reverse: Boolean
+  statements: [Statement!]
+  limit: Int!
+}
+
+input BreadthFilter {
+  depth: Int!
+  path: Path!
+  edgeType: String!
+  reverse: Boolean
+  statements: [Statement!]
   limit: Int!
 }
 
 type Query {
   # node returns a node using a foreign key
   node(input: Path!): Node
-  nodes(input: Filter!): [Node!]!
-  depthFrom(input: DepthSearch!): [Node!]!
-  depthTo(input: DepthSearch!): [Node!]!
-  searchNodes(input: Search!): SearchResults!
+  getNodes(input: Filter!): [Node!]!
+  depthSearch(input: DepthFilter!): [Node!]!
   # edge returns an edge using a foreign key
-  edge(input: Path!): Edge
+  getEdge(input: Path!): Edge
   # edges traverses the graph and returns edges that pass the given filter
-  edges(input: Filter!): [Edge!]!
-  # searchEdges traverses the graph and returns edges that pass the given filter
-  searchEdges(input: Search!): SearchResults!
+  getEdges(input: Filter!): [Edge!]!
 }
 
 type Mutation {

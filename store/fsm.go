@@ -74,7 +74,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		}
 		return f.edges.Set(&model.Edge{
 			Path:       val.Path,
-			Direction:  val.Direction,
+			Mutual:  	val.Mutual,
 			Attributes: val.Attributes,
 			From:       from.Path,
 			To:         to.Path,
