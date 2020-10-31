@@ -201,7 +201,7 @@ func (n *Nodes) RangeFromDepth(depth int, path model.Path, edgeType string, fn f
 	if !ok {
 		return
 	}
-	walker := n.recurseFrom(map[string]struct{}{}, edgeType, 0, depth, fn)
+	walker := n.recurseFrom(edgeType, 0, depth, fn)
 	walker(node)
 }
 
@@ -210,7 +210,7 @@ func (n *Nodes) RangeToDepth(maxDepth int, path model.Path, edgeType string, fn 
 	if !ok {
 		return
 	}
-	walker := n.recurseTo(map[string]struct{}{}, edgeType, 0, maxDepth, fn)
+	walker := n.recurseTo(edgeType, 0, maxDepth, fn)
 	walker(node)
 }
 
@@ -222,7 +222,10 @@ func (n *Nodes) ascendFrom(seen map[string]struct{}, edgeType string, fn func(no
 			}
 			node, ok := n.Get(e.To)
 			if ok {
-				return fn(node)
+				if _, ok := seen[node.Path.String()]; !ok {
+					seen[node.Path.String()] = struct{}{}
+					return fn(node)
+				}
 			}
 			return true
 		})
@@ -238,11 +241,10 @@ func (n *Nodes) ascendTo(seen map[string]struct{}, edgeType string, fn func(node
 			}
 			node, ok := n.Get(e.From)
 			if ok {
-				//if _, ok := seen[node.Path.String()]; !ok {
-				//	seen[node.Path.String()] = struct{}{}
-				//	return fn(node)
-				//}
-				return fn(node)
+				if _, ok := seen[node.Path.String()]; !ok {
+					seen[node.Path.String()] = struct{}{}
+					return fn(node)
+				}
 			}
 			return true
 		})
@@ -250,20 +252,20 @@ func (n *Nodes) ascendTo(seen map[string]struct{}, edgeType string, fn func(node
 	}
 }
 
-func (n *Nodes) recurseFrom(seen map[string]struct{}, edgeType string, depth, max int, fn func(node *model.Node) bool) func(node *model.Node) bool {
+func (n *Nodes) recurseFrom(edgeType string, depth, max int, fn func(node *model.Node) bool) func(node *model.Node) bool {
 	if depth > max {
 		return fn
 	}
 	depth += 1
-	return n.recurseFrom(seen, edgeType, depth, max, n.ascendFrom(seen, edgeType, fn))
+	return n.recurseFrom(edgeType, depth, max, n.ascendFrom(map[string]struct{}{}, edgeType, fn))
 }
 
-func (n *Nodes) recurseTo(seen map[string]struct{}, edgeType string, depth, max int, fn func(node *model.Node) bool) func(node *model.Node) bool {
+func (n *Nodes) recurseTo(edgeType string, depth, max int, fn func(node *model.Node) bool) func(node *model.Node) bool {
 	if depth > max {
 		return fn
 	}
 	depth += 1
-	return n.recurseTo(seen, edgeType, depth, max, n.ascendTo(seen, edgeType, fn))
+	return n.recurseTo(edgeType, depth, max, n.ascendTo(map[string]struct{}{}, edgeType, fn))
 }
 
 type NodeList []*model.Node
