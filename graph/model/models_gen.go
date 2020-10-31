@@ -13,6 +13,13 @@ type Counter struct {
 	Count int `json:"count"`
 }
 
+type DepthSearch struct {
+	Depth    int    `json:"depth"`
+	Path     Path   `json:"path"`
+	EdgeType string `json:"edgeType"`
+	Limit    int    `json:"limit"`
+}
+
 type Edge struct {
 	Path       Path                   `json:"path"`
 	Direction  Direction              `json:"direction"`
@@ -62,6 +69,7 @@ type Patch struct {
 type Search struct {
 	Search string `json:"search"`
 	Type   string `json:"type"`
+	Limit  int    `json:"limit"`
 }
 
 type SearchResult struct {

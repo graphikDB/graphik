@@ -85,12 +85,22 @@ input Patch {
 input Search {
   search: String!
   type: String!
+  limit: Int!
+}
+
+input DepthSearch {
+  depth: Int!
+  path: Path!
+  edgeType: String!
+  limit: Int!
 }
 
 type Query {
   # node returns a node using a foreign key
   node(input: Path!): Node
   nodes(input: Filter!): [Node!]!
+  depthFrom(input: DepthSearch!): [Node!]!
+  depthTo(input: DepthSearch!): [Node!]!
   searchNodes(input: Search!): SearchResults!
   # edge returns an edge using a foreign key
   edge(input: Path!): Edge

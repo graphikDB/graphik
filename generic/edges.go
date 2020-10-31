@@ -8,15 +8,15 @@ import (
 
 type Edges struct {
 	edges     map[string]map[string]*model.Edge
-	edgesTo   map[string]map[string][]*model.Path
-	edgesFrom map[string]map[string][]*model.Path
+	edgesTo   map[string]map[string][]*model.Edge
+	edgesFrom map[string]map[string][]*model.Edge
 }
 
 func NewEdges() *Edges {
 	return &Edges{
 		edges:     map[string]map[string]*model.Edge{},
-		edgesTo:   map[string]map[string][]*model.Path{},
-		edgesFrom: map[string]map[string][]*model.Path{},
+		edgesTo:   map[string]map[string][]*model.Edge{},
+		edgesFrom: map[string]map[string][]*model.Edge{},
 	}
 }
 
@@ -58,25 +58,24 @@ func (n *Edges) Set(value *model.Edge) *model.Edge {
 		n.edges[value.Path.Type] = map[string]*model.Edge{}
 	}
 	if _, ok := n.edgesFrom[value.From.Type]; !ok {
-		n.edgesFrom[value.From.Type] = map[string][]*model.Path{}
+		n.edgesFrom[value.From.Type] = map[string][]*model.Edge{}
 	}
 	if _, ok := n.edgesTo[value.To.Type]; !ok {
-		n.edgesTo[value.To.Type] = map[string][]*model.Path{}
+		n.edgesTo[value.To.Type] = map[string][]*model.Edge{}
 	}
 	n.edges[value.Path.Type][value.Path.ID] = value
-	path := &value.Path
-	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], path)
-	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], path)
+	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], value)
+	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], value)
 
 	if value.Direction == model.DirectionUndirected {
-		if _, ok := n.edges[value.To.Type]; !ok {
-			n.edgesFrom[value.To.Type] = map[string][]*model.Path{}
+		if _, ok := n.edgesFrom[value.To.Type]; !ok {
+			n.edgesFrom[value.To.Type] = map[string][]*model.Edge{}
 		}
-		if _, ok := n.edges[value.From.Type]; !ok {
-			n.edgesTo[value.From.Type] = map[string][]*model.Path{}
+		if _, ok := n.edgesTo[value.From.Type]; !ok {
+			n.edgesTo[value.From.Type] = map[string][]*model.Edge{}
 		}
-		n.edgesTo[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], path)
-		n.edgesFrom[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], path)
+		n.edgesTo[value.From.Type][value.From.ID] = append(n.edgesTo[value.From.Type][value.From.ID], value)
+		n.edgesFrom[value.To.Type][value.To.ID] = append(n.edgesFrom[value.To.Type][value.To.ID], value)
 	}
 	return value
 }
@@ -103,14 +102,20 @@ func (n *Edges) Delete(key model.Path) {
 		return
 	}
 	if edges, ok := n.edgesFrom[edge.From.Type][edge.From.ID]; ok {
-		n.edgesFrom[edge.From.Type][edge.From.ID] = removePath(&edge.Path, edges)
+		n.edgesFrom[edge.From.Type][edge.From.ID] = removeEdge(edge, edges)
 	}
 	if edges, ok := n.edgesTo[edge.To.Type][edge.To.ID]; ok {
-		n.edgesTo[edge.To.Type][edge.To.ID] = removePath(&edge.Path, edges)
+		n.edgesTo[edge.To.Type][edge.To.ID] = removeEdge(edge, edges)
 	}
-	if c, ok := n.edges[key.Type]; ok {
-		delete(c, key.ID)
+	if edge.Direction == model.DirectionUndirected {
+		if edges, ok := n.edgesFrom[edge.To.Type][edge.To.ID]; ok {
+			n.edgesFrom[edge.To.Type][edge.To.ID] = removeEdge(edge, edges)
+		}
+		if edges, ok := n.edgesTo[edge.From.Type][edge.From.ID]; ok {
+			n.edgesTo[edge.From.Type][edge.From.ID] = removeEdge(edge, edges)
+		}
 	}
+	delete(n.edges[key.Type], key.ID)
 }
 
 func (n *Edges) Exists(key model.Path) bool {
@@ -118,40 +123,29 @@ func (n *Edges) Exists(key model.Path) bool {
 	return ok
 }
 
-func (e Edges) RangeFrom(node *model.Node, fn func(e *model.Edge) bool) {
-	if _, ok := e.edgesFrom[node.Path.Type]; !ok {
+func (e Edges) RangeFrom(path model.Path, fn func(e *model.Edge) bool) {
+	if _, ok := e.edgesFrom[path.Type]; !ok {
 		return
 	}
-	if _, ok := e.edgesFrom[node.Path.Type][node.Path.ID]; !ok {
+	if _, ok := e.edgesFrom[path.Type][path.ID]; !ok {
 		return
 	}
-	for _, fkey := range e.edgesFrom[node.Path.Type][node.Path.ID] {
-		edge, ok := e.Get(*fkey)
-		if !ok {
-			continue
-		}
+	for _, edge := range e.edgesFrom[path.Type][path.ID] {
 		if !fn(edge) {
 			break
 		}
 	}
 }
 
-func (e Edges) RangeTo(node *model.Node, fn func(e *model.Edge) bool) {
-	if _, ok := e.edgesTo[node.Path.Type]; !ok {
+func (e Edges) RangeTo(path model.Path, fn func(e *model.Edge) bool) {
+	if _, ok := e.edgesTo[path.Type]; !ok {
 		return
 	}
-	if _, ok := e.edgesTo[node.Path.Type][node.Path.ID]; !ok {
+	if _, ok := e.edgesTo[path.Type][path.ID]; !ok {
 		return
 	}
-	for _, path := range e.edgesTo[node.Path.Type][node.Path.ID] {
-		if path == nil {
-			continue
-		}
-		edge, ok := e.Get(model.Path{
-			ID:   path.ID,
-			Type: path.Type,
-		})
-		if !ok {
+	for _, edge := range e.edgesTo[path.Type][path.ID] {
+		if edge == nil {
 			continue
 		}
 		if !fn(edge) {
@@ -259,8 +253,8 @@ func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {
 	return edges, nil
 }
 
-func removePath(path *model.Path, paths []*model.Path) []*model.Path {
-	var newPaths []*model.Path
+func removeEdge(path *model.Edge, paths []*model.Edge) []*model.Edge {
+	var newPaths []*model.Edge
 	for _, p := range paths {
 		if p != path {
 			newPaths = append(newPaths, p)

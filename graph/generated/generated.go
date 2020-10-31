@@ -80,6 +80,8 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		DepthFrom   func(childComplexity int, input model.DepthSearch) int
+		DepthTo     func(childComplexity int, input model.DepthSearch) int
 		Edge        func(childComplexity int, input model.Path) int
 		Edges       func(childComplexity int, input model.Filter) int
 		Node        func(childComplexity int, input model.Path) int
@@ -110,6 +112,8 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Node(ctx context.Context, input model.Path) (*model.Node, error)
 	Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error)
+	DepthFrom(ctx context.Context, input model.DepthSearch) ([]*model.Node, error)
+	DepthTo(ctx context.Context, input model.DepthSearch) ([]*model.Node, error)
 	SearchNodes(ctx context.Context, input model.Search) (*model.SearchResults, error)
 	Edge(ctx context.Context, input model.Path) (*model.Edge, error)
 	Edges(ctx context.Context, input model.Filter) ([]*model.Edge, error)
@@ -300,6 +304,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Node.UpdatedAt(childComplexity), true
+
+	case "Query.depthFrom":
+		if e.complexity.Query.DepthFrom == nil {
+			break
+		}
+
+		args, err := ec.field_Query_depthFrom_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DepthFrom(childComplexity, args["input"].(model.DepthSearch)), true
+
+	case "Query.depthTo":
+		if e.complexity.Query.DepthTo == nil {
+			break
+		}
+
+		args, err := ec.field_Query_depthTo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DepthTo(childComplexity, args["input"].(model.DepthSearch)), true
 
 	case "Query.edge":
 		if e.complexity.Query.Edge == nil {
@@ -552,12 +580,22 @@ input Patch {
 input Search {
   search: String!
   type: String!
+  limit: Int!
+}
+
+input DepthSearch {
+  depth: Int!
+  path: Path!
+  edgeType: String!
+  limit: Int!
 }
 
 type Query {
   # node returns a node using a foreign key
   node(input: Path!): Node
   nodes(input: Filter!): [Node!]!
+  depthFrom(input: DepthSearch!): [Node!]!
+  depthTo(input: DepthSearch!): [Node!]!
   searchNodes(input: Search!): SearchResults!
   # edge returns an edge using a foreign key
   edge(input: Path!): Edge
@@ -687,6 +725,36 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_depthFrom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DepthSearch
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDepthSearch2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐDepthSearch(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_depthTo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DepthSearch
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDepthSearch2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐDepthSearch(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -1607,6 +1675,90 @@ func (ec *executionContext) _Query_nodes(ctx context.Context, field graphql.Coll
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Query().Nodes(rctx, args["input"].(model.Filter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Node)
+	fc.Result = res
+	return ec.marshalNNode2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐNodeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_depthFrom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_depthFrom_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DepthFrom(rctx, args["input"].(model.DepthSearch))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Node)
+	fc.Result = res
+	return ec.marshalNNode2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐNodeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_depthTo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_depthTo_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DepthTo(rctx, args["input"].(model.DepthSearch))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3080,6 +3232,50 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputDepthSearch(ctx context.Context, obj interface{}) (model.DepthSearch, error) {
+	var it model.DepthSearch
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "depth":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("depth"))
+			it.Depth, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "path":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
+			it.Path, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "edgeType":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("edgeType"))
+			it.EdgeType, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "limit":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			it.Limit, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, obj interface{}) (model.EdgeConstructor, error) {
 	var it model.EdgeConstructor
 	var asMap = obj.(map[string]interface{})
@@ -3243,6 +3439,14 @@ func (ec *executionContext) unmarshalInputSearch(ctx context.Context, obj interf
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "limit":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			it.Limit, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3527,6 +3731,34 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_nodes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "depthFrom":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_depthFrom(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "depthTo":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_depthTo(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -3937,6 +4169,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNDepthSearch2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐDepthSearch(ctx context.Context, v interface{}) (model.DepthSearch, error) {
+	res, err := ec.unmarshalInputDepthSearch(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNDirection2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐDirection(ctx context.Context, v interface{}) (model.Direction, error) {

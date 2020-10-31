@@ -118,6 +118,14 @@ func (r *queryResolver) Nodes(ctx context.Context, input model.Filter) ([]*model
 	return r.store.Nodes(ctx, input)
 }
 
+func (r *queryResolver) DepthFrom(ctx context.Context, input model.DepthSearch) ([]*model.Node, error) {
+	return r.store.DepthFrom(ctx, input)
+}
+
+func (r *queryResolver) DepthTo(ctx context.Context, input model.DepthSearch) ([]*model.Node, error) {
+	return r.store.DepthTo(ctx, input)
+}
+
 func (r *queryResolver) SearchNodes(ctx context.Context, input model.Search) (*model.SearchResults, error) {
 	return r.store.SearchNodes(ctx, input)
 }
