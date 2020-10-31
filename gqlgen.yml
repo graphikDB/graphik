@@ -54,3 +54,5 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+  ForeignKey:
+    model: github.com/autom8ter/graphik/graph/model.Path

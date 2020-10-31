@@ -8,15 +8,15 @@ import (
 
 type Edges struct {
 	edges     map[string]map[string]*model.Edge
-	edgesTo   map[string]map[string][]*model.ForeignKey
-	edgesFrom map[string]map[string][]*model.ForeignKey
+	edgesTo   map[string]map[string][]*model.Path
+	edgesFrom map[string]map[string][]*model.Path
 }
 
 func NewEdges() *Edges {
 	return &Edges{
 		edges:     map[string]map[string]*model.Edge{},
-		edgesTo:   map[string]map[string][]*model.ForeignKey{},
-		edgesFrom: map[string]map[string][]*model.ForeignKey{},
+		edgesTo:   map[string]map[string][]*model.Path{},
+		edgesFrom: map[string]map[string][]*model.Path{},
 	}
 }
 
@@ -45,7 +45,7 @@ func (n *Edges) All() []*model.Edge {
 	return edges
 }
 
-func (n *Edges) Get(key model.ForeignKey) (*model.Edge, bool) {
+func (n *Edges) Get(key model.Path) (*model.Edge, bool) {
 	if c, ok := n.edges[key.Type]; ok {
 		node := c[key.ID]
 		return c[key.ID], node != nil
@@ -53,45 +53,29 @@ func (n *Edges) Get(key model.ForeignKey) (*model.Edge, bool) {
 	return nil, false
 }
 
-func (n *Edges) set(value *model.Edge) *model.Edge {
-	if value.ID == "" {
-		value.ID = UUID()
+func (n *Edges) Set(value *model.Edge) *model.Edge {
+	if value.Path == nil {
+		value.Path = &model.Path{}
 	}
-	if _, ok := n.edges[value.Type]; !ok {
-		n.edges[value.Type] = map[string]*model.Edge{}
+	if value.Path.ID == "" {
+		value.Path.ID = UUID()
+	}
+	if value.Path.Type == "" {
+		value.Path.Type = Default
+	}
+	if _, ok := n.edges[value.Path.Type]; !ok {
+		n.edges[value.Path.Type] = map[string]*model.Edge{}
 	}
 	if _, ok := n.edges[value.From.Type]; !ok {
-		n.edgesFrom[value.From.Type] = map[string][]*model.ForeignKey{}
+		n.edgesFrom[value.From.Type] = map[string][]*model.Path{}
 	}
 	if _, ok := n.edges[value.To.Type]; !ok {
-		n.edgesTo[value.To.Type] = map[string][]*model.ForeignKey{}
+		n.edgesTo[value.To.Type] = map[string][]*model.Path{}
 	}
-	n.edges[value.Type][value.ID] = value
-	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], &model.ForeignKey{
-		ID:   value.ID,
-		Type: value.Type,
-	})
-	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], &model.ForeignKey{
-		ID:   value.ID,
-		Type: value.Type,
-	})
+	n.edges[value.Path.Type][value.Path.ID] = value
+	n.edgesFrom[value.From.Type][value.From.ID] = append(n.edgesFrom[value.From.Type][value.From.ID], value.Path)
+	n.edgesTo[value.To.Type][value.To.ID] = append(n.edgesTo[value.To.Type][value.To.ID], value.Path)
 	return value
-}
-
-func (n *Edges) Set(value *model.Edge) *model.Edge {
-	e := n.set(value)
-	if value.Mutual != nil && *value.Mutual {
-		n.set(&model.Edge{
-			Type:       value.Type,
-			Attributes: value.Attributes,
-			From:       value.To,
-			To:         value.From,
-			Mutual:     value.Mutual,
-			CreatedAt:  e.CreatedAt,
-			UpdatedAt:  e.UpdatedAt,
-		})
-	}
-	return e
 }
 
 func (n *Edges) Range(edgeType string, f func(edge *model.Edge) bool) {
@@ -110,35 +94,35 @@ func (n *Edges) Range(edgeType string, f func(edge *model.Edge) bool) {
 	}
 }
 
-func (n *Edges) Delete(key model.ForeignKey) {
+func (n *Edges) Delete(key model.Path) {
 	edge, ok := n.Get(key)
 	if !ok {
 		return
 	}
 	if edges, ok := n.edgesFrom[edge.From.Type][edge.From.ID]; ok {
-		n.edgesFrom[edge.From.Type][edge.From.ID] = removeKey(edge.ID, edges)
+		n.edgesFrom[edge.From.Type][edge.From.ID] = removePath(edge.Path, edges)
 	}
 	if edges, ok := n.edgesTo[edge.To.Type][edge.To.ID]; ok {
-		n.edgesTo[edge.To.Type][edge.To.ID] = removeKey(edge.ID, edges)
+		n.edgesTo[edge.To.Type][edge.To.ID] = removePath(edge.Path, edges)
 	}
 	if c, ok := n.edges[key.Type]; ok {
 		delete(c, key.ID)
 	}
 }
 
-func (n *Edges) Exists(key model.ForeignKey) bool {
+func (n *Edges) Exists(key model.Path) bool {
 	_, ok := n.Get(key)
 	return ok
 }
 
 func (e Edges) RangeFrom(node *model.Node, fn func(e *model.Edge) bool) {
-	if _, ok := e.edgesFrom[node.Type]; !ok {
+	if _, ok := e.edgesFrom[node.Path.Type]; !ok {
 		return
 	}
-	if _, ok := e.edgesFrom[node.Type][node.ID]; !ok {
+	if _, ok := e.edgesFrom[node.Path.Type][node.Path.ID]; !ok {
 		return
 	}
-	for _, fkey := range e.edgesFrom[node.Type][node.ID] {
+	for _, fkey := range e.edgesFrom[node.Path.Type][node.Path.ID] {
 		edge, ok := e.Get(*fkey)
 		if !ok {
 			continue
@@ -150,17 +134,20 @@ func (e Edges) RangeFrom(node *model.Node, fn func(e *model.Edge) bool) {
 }
 
 func (e Edges) RangeTo(node *model.Node, fn func(e *model.Edge) bool) {
-	if _, ok := e.edgesTo[node.Type]; !ok {
+	if _, ok := e.edgesTo[node.Path.Type]; !ok {
 		return
 	}
-	if _, ok := e.edgesTo[node.Type][node.ID]; !ok {
+	if _, ok := e.edgesTo[node.Path.Type][node.Path.ID]; !ok {
 		return
 	}
-	for _, fkey := range e.edgesTo[node.Type][node.ID] {
-		if fkey == nil {
+	for _, path := range e.edgesTo[node.Path.Type][node.Path.ID] {
+		if path == nil {
 			continue
 		}
-		edge, ok := e.Get(*fkey)
+		edge, ok := e.Get(model.Path{
+			ID:   path.ID,
+			Type: path.Type,
+		})
 		if !ok {
 			continue
 		}
@@ -190,9 +177,9 @@ func (n *Edges) SetAll(edges ...*model.Edge) {
 
 func (n *Edges) DeleteAll(edges ...*model.Edge) {
 	for _, edge := range edges {
-		n.Delete(model.ForeignKey{
-			ID:   edge.ID,
-			Type: edge.Type,
+		n.Delete(model.Path{
+			ID:   edge.Path.ID,
+			Type: edge.Path.Type,
 		})
 	}
 }
@@ -200,9 +187,9 @@ func (n *Edges) DeleteAll(edges ...*model.Edge) {
 func (n *Edges) Clear(edgeType string) {
 	if cache, ok := n.edges[edgeType]; ok {
 		for _, v := range cache {
-			n.Delete(model.ForeignKey{
-				ID:   v.ID,
-				Type: v.Type,
+			n.Delete(model.Path{
+				ID:   v.Path.ID,
+				Type: v.Path.Type,
 			})
 		}
 	}
@@ -215,14 +202,14 @@ func (n *Edges) Close() {
 }
 
 func (e *Edges) Patch(updatedAt time.Time, value *model.Patch) *model.Edge {
-	if _, ok := e.edges[value.Type]; !ok {
+	if _, ok := e.edges[value.Path.Type]; !ok {
 		return nil
 	}
 	for k, v := range value.Patch {
-		e.edges[value.Type][value.ID].Attributes[k] = v
+		e.edges[value.Path.Type][value.Path.ID].Attributes[k] = v
 	}
-	e.edges[value.Type][value.ID].UpdatedAt = updatedAt
-	return e.edges[value.Type][value.ID]
+	e.edges[value.Path.Type][value.Path.ID].UpdatedAt = updatedAt
+	return e.edges[value.Path.Type][value.Path.ID]
 }
 
 func (e *Edges) Search(expression, nodeType string) (*model.SearchResults, error) {
@@ -237,8 +224,7 @@ func (e *Edges) Search(expression, nodeType string) (*model.SearchResults, error
 		val, _ := exp.Search(edge)
 		if val != nil {
 			results.Results = append(results.Results, &model.SearchResult{
-				ID:   edge.ID,
-				Type: edge.Type,
+				Path: edge.Path,
 				Val:  val,
 			})
 		}
@@ -270,14 +256,14 @@ func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {
 	return edges, nil
 }
 
-func removeKey(id string, edges []*model.ForeignKey) []*model.ForeignKey {
-	var newEdges []*model.ForeignKey
-	for _, edge := range edges {
-		if edge.ID != id {
-			newEdges = append(newEdges, edge)
+func removePath(path *model.Path, paths []*model.Path) []*model.Path {
+	var newPaths []*model.Path
+	for _, p := range paths {
+		if p != path {
+			newPaths = append(newPaths, p)
 		}
 	}
-	return newEdges
+	return newPaths
 }
 
 type EdgeList []*model.Edge

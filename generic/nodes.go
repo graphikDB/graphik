@@ -43,7 +43,7 @@ func (n *Nodes) All() []*model.Node {
 	return nodes
 }
 
-func (n *Nodes) Get(key model.ForeignKey) (*model.Node, bool) {
+func (n *Nodes) Get(key model.Path) (*model.Node, bool) {
 	if c, ok := n.nodes[key.Type]; ok {
 		node := c[key.ID]
 		return node, node != nil
@@ -52,21 +52,21 @@ func (n *Nodes) Get(key model.ForeignKey) (*model.Node, bool) {
 }
 
 func (n *Nodes) Set(value *model.Node) *model.Node {
-	if value.ID == "" {
-		value.ID = UUID()
+	if value.Path.ID == "" {
+		value.Path.ID = UUID()
 	}
-	if _, ok := n.nodes[value.Type]; !ok {
-		n.nodes[value.Type] = map[string]*model.Node{}
+	if _, ok := n.nodes[value.Path.Type]; !ok {
+		n.nodes[value.Path.Type] = map[string]*model.Node{}
 	}
-	n.nodes[value.Type][value.ID] = value
+	n.nodes[value.Path.Type][value.Path.ID] = value
 	return value
 }
 
 func (n *Nodes) Patch(updatedAt time.Time, value *model.Patch) *model.Node {
-	if _, ok := n.nodes[value.Type]; !ok {
+	if _, ok := n.nodes[value.Path.Type]; !ok {
 		return nil
 	}
-	node := n.nodes[value.Type][value.ID]
+	node := n.nodes[value.Path.Type][value.Path.ID]
 	for k, v := range value.Patch {
 		node.Attributes[k] = v
 	}
@@ -90,23 +90,17 @@ func (n *Nodes) Range(nodeType string, f func(node *model.Node) bool) {
 	}
 }
 
-func (n *Nodes) Delete(key model.ForeignKey) bool {
+func (n *Nodes) Delete(key model.Path) bool {
 	node, ok := n.Get(key)
 	if !ok {
 		return false
 	}
 	n.edges.RangeFrom(node, func(e *model.Edge) bool {
-		n.edges.Delete(model.ForeignKey{
-			ID:   e.ID,
-			Type: e.Type,
-		})
+		n.edges.Delete(*e.Path)
 		return true
 	})
 	n.edges.RangeTo(node, func(e *model.Edge) bool {
-		n.edges.Delete(model.ForeignKey{
-			ID:   e.ID,
-			Type: e.Type,
-		})
+		n.edges.Delete(*e.Path)
 		return true
 	})
 	if c, ok := n.nodes[key.Type]; ok {
@@ -115,7 +109,7 @@ func (n *Nodes) Delete(key model.ForeignKey) bool {
 	return true
 }
 
-func (n *Nodes) Exists(key model.ForeignKey) bool {
+func (n *Nodes) Exists(key model.Path) bool {
 	_, ok := n.Get(key)
 	return ok
 }
@@ -140,10 +134,7 @@ func (n *Nodes) SetAll(nodes ...*model.Node) {
 
 func (n *Nodes) DeleteAll(Nodes ...*model.Node) {
 	for _, node := range Nodes {
-		n.Delete(model.ForeignKey{
-			ID:   node.ID,
-			Type: node.Type,
-		})
+		n.Delete(*node.Path)
 	}
 }
 
@@ -173,8 +164,7 @@ func (n *Nodes) Search(expression, nodeType string) (*model.SearchResults, error
 		val, _ := exp.Search(node)
 		if val != nil {
 			results.Results = append(results.Results, &model.SearchResult{
-				ID:   node.ID,
-				Type: node.Type,
+				Path: node.Path,
 				Val:  val,
 			})
 		}

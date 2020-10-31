@@ -9,23 +9,16 @@ import (
 	"time"
 )
 
-type Connection struct {
-	Type  string   `json:"type"`
-	Edges []*EdgeP `json:"edges"`
-	Count *Counter `json:"count"`
-}
-
 type Counter struct {
 	Count int `json:"count"`
 }
 
 type Edge struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
+	Path       *Path                  `json:"path"`
+	Direction  Direction              `json:"direction"`
 	Attributes map[string]interface{} `json:"attributes"`
-	From       *Node                  `json:"from"`
-	To         *Node                  `json:"to"`
-	Mutual     *bool                  `json:"mutual"`
+	From       *Path                  `json:"from"`
+	To         *Path                  `json:"to"`
 	CreatedAt  time.Time              `json:"createdAt"`
 	UpdatedAt  time.Time              `json:"updatedAt"`
 }
@@ -33,20 +26,10 @@ type Edge struct {
 type EdgeConstructor struct {
 	ID         *string                `json:"id"`
 	Type       string                 `json:"type"`
+	Direction  Direction              `json:"direction"`
 	Attributes map[string]interface{} `json:"attributes"`
-	From       *ForeignKey            `json:"from"`
-	To         *ForeignKey            `json:"to"`
-	Mutual     *bool                  `json:"mutual"`
-}
-
-type EdgeP struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
-	Attributes map[string]interface{} `json:"attributes"`
-	Mutual     *bool                  `json:"mutual"`
-	Node       *Node                  `json:"node"`
-	CreatedAt  time.Time              `json:"createdAt"`
-	UpdatedAt  time.Time              `json:"updatedAt"`
+	From       *Path                  `json:"from"`
+	To         *Path                  `json:"to"`
 }
 
 type Export struct {
@@ -60,17 +43,9 @@ type Filter struct {
 	Limit      int          `json:"limit"`
 }
 
-type ForeignKey struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
-}
-
 type Node struct {
-	ID         string                 `json:"id"`
-	Type       string                 `json:"type"`
+	Path       *Path                  `json:"path"`
 	Attributes map[string]interface{} `json:"attributes"`
-	EdgesFrom  []*Connection          `json:"edgesFrom"`
-	EdgesTo    []*Connection          `json:"edgesTo"`
 	CreatedAt  time.Time              `json:"createdAt"`
 	UpdatedAt  time.Time              `json:"updatedAt"`
 }
@@ -82,8 +57,7 @@ type NodeConstructor struct {
 }
 
 type Patch struct {
-	Type  string                 `json:"type"`
-	ID    string                 `json:"id"`
+	Path  *Path                  `json:"path"`
 	Patch map[string]interface{} `json:"patch"`
 }
 
@@ -93,8 +67,7 @@ type Search struct {
 }
 
 type SearchResult struct {
-	ID   string      `json:"id"`
-	Type string      `json:"type"`
+	Path *Path       `json:"path"`
 	Val  interface{} `json:"val"`
 }
 
@@ -107,6 +80,47 @@ type Statement struct {
 	Expression string      `json:"expression"`
 	Operator   Operator    `json:"operator"`
 	Value      interface{} `json:"value"`
+}
+
+type Direction string
+
+const (
+	DirectionDirected   Direction = "DIRECTED"
+	DirectionUndirected Direction = "UNDIRECTED"
+)
+
+var AllDirection = []Direction{
+	DirectionDirected,
+	DirectionUndirected,
+}
+
+func (e Direction) IsValid() bool {
+	switch e {
+	case DirectionDirected, DirectionUndirected:
+		return true
+	}
+	return false
+}
+
+func (e Direction) String() string {
+	return string(e)
+}
+
+func (e *Direction) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Direction(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Direction", str)
+	}
+	return nil
+}
+
+func (e Direction) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Operator string

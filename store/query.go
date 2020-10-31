@@ -6,7 +6,7 @@ import (
 	"github.com/autom8ter/graphik/graph/model"
 )
 
-func (f *Store) Node(ctx context.Context, input model.ForeignKey) (*model.Node, error) {
+func (f *Store) Node(ctx context.Context, input model.Path) (*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	node, ok := f.nodes.Get(input)
@@ -22,7 +22,7 @@ func (f *Store) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, e
 	return f.nodes.FilterSearch(input)
 }
 
-func (f *Store) Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, error) {
+func (f *Store) Edge(ctx context.Context, input model.Path) (*model.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edge, ok := f.edges.Get(input)

@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/generic"
@@ -45,7 +44,7 @@ func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*
 	return res.(*model.Node), nil
 }
 
-func (r *mutationResolver) DelNode(ctx context.Context, input model.ForeignKey) (*model.Counter, error) {
+func (r *mutationResolver) DelNode(ctx context.Context, input model.Path) (*model.Counter, error) {
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.DELETE_NODE,
 		Val: input,
@@ -91,7 +90,7 @@ func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*m
 	return res.(*model.Edge), nil
 }
 
-func (r *mutationResolver) DelEdge(ctx context.Context, input model.ForeignKey) (*model.Counter, error) {
+func (r *mutationResolver) DelEdge(ctx context.Context, input model.Path) (*model.Counter, error) {
 	res, err := r.store.Execute(&command.Command{
 		Op:  command.DELETE_EDGE,
 		Val: input,
@@ -105,7 +104,7 @@ func (r *mutationResolver) DelEdge(ctx context.Context, input model.ForeignKey) 
 	return res.(*model.Counter), nil
 }
 
-func (r *queryResolver) Node(ctx context.Context, input model.ForeignKey) (*model.Node, error) {
+func (r *queryResolver) Node(ctx context.Context, input model.Path) (*model.Node, error) {
 	return r.store.Node(ctx, input)
 }
 
@@ -114,10 +113,10 @@ func (r *queryResolver) Nodes(ctx context.Context, input model.Filter) ([]*model
 }
 
 func (r *queryResolver) SearchNodes(ctx context.Context, input model.Search) (*model.SearchResults, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.store.SearchNodes(ctx, input)
 }
 
-func (r *queryResolver) Edge(ctx context.Context, input model.ForeignKey) (*model.Edge, error) {
+func (r *queryResolver) Edge(ctx context.Context, input model.Path) (*model.Edge, error) {
 	return r.store.Edge(ctx, input)
 }
 
