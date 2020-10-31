@@ -24,9 +24,9 @@ mutation createNode {
 ```graphql
 query {
     nodes(input:{type:"user" limit: 100}) {
-    	  path
+    	path
         attributes
-    		createdAt
+    	createdAt
         updatedAt
     }
 }
@@ -60,18 +60,38 @@ mutation delNode {
 }
 ```
 
+### depthSearch
+
+```graphql
+query {
+    depthSearch(input:{
+      path:"user/9e02d1c2-719a-9770-9b41-024c6a90db41" 
+      edgeType: "friend" 
+      reverse: false
+      depth: 1
+      limit: 6
+    }) {
+    	path
+        updatedAt
+    	createdAt
+        attributes
+    }
+}
+```
+
 ### createEdge
 
 ```graphql
 mutation createEdge {
     createEdge(input: {
       	path: "friend"
-      	direction: UNDIRECTED
-        from: "user/cac3b142-0e52-2e24-388c-79a9bd50c35f"
-        to: "user/152ceaf3-1f14-898d-efd6-54b18f207386"
+      	mutual: true
+        from: "user/9e02d1c2-719a-9770-9b41-024c6a90db41"
+        to: "user/49bbc52e-f5ab-7f8a-81e8-913e380c51b7"
     }) {
         path
         attributes
+    	
     		from
         to
     }
@@ -82,12 +102,13 @@ mutation createEdge {
 
 ```graphql
 query {
-    edges(input:{type:"*" limit: 10}) {
-    		path
+    getEdges(input:{type:"friend" limit: 10}) {
+    	path
         updatedAt
         attributes
-    		from
-    		to
+    	mutual
+    	from
+    	to
     }
 }
 ```
@@ -96,12 +117,13 @@ query {
 
 ```graphql
 query {
-    edge(input: "friend/43a00c20-88e3-8b84-2145-853d59be2456") {
-       	path
-    		attributes
-    		from
-    		to
-    		createdAt
+    getEdge(input: "friend/8516e0d3-03c0-5b2c-e5b5-fba631c6c1b4") {
+        path
+        attributes
+        from
+        to
+        createdAt
     }
 }
 ```
+
