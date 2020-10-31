@@ -9,15 +9,6 @@ import (
 	"time"
 )
 
-type BreadthFilter struct {
-	Depth      int          `json:"depth"`
-	Path       Path         `json:"path"`
-	EdgeType   string       `json:"edgeType"`
-	Reverse    *bool        `json:"reverse"`
-	Statements []*Statement `json:"statements"`
-	Limit      int          `json:"limit"`
-}
-
 type Counter struct {
 	Count int `json:"count"`
 }

@@ -92,15 +92,6 @@ input DepthFilter {
   limit: Int!
 }
 
-input BreadthFilter {
-  depth: Int!
-  path: Path!
-  edgeType: String!
-  reverse: Boolean
-  statements: [Statement!]
-  limit: Int!
-}
-
 type Query {
   # node returns a node using a foreign key
   node(input: Path!): Node

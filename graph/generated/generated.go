@@ -545,15 +545,6 @@ input DepthFilter {
   limit: Int!
 }
 
-input BreadthFilter {
-  depth: Int!
-  path: Path!
-  edgeType: String!
-  reverse: Boolean
-  statements: [Statement!]
-  limit: Int!
-}
-
 type Query {
   # node returns a node using a foreign key
   node(input: Path!): Node
@@ -3020,66 +3011,6 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
-
-func (ec *executionContext) unmarshalInputBreadthFilter(ctx context.Context, obj interface{}) (model.BreadthFilter, error) {
-	var it model.BreadthFilter
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "depth":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("depth"))
-			it.Depth, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "path":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
-			it.Path, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "edgeType":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("edgeType"))
-			it.EdgeType, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "reverse":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reverse"))
-			it.Reverse, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "statements":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statements"))
-			it.Statements, err = ec.unmarshalOStatement2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatementᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "limit":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-			it.Limit, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
 
 func (ec *executionContext) unmarshalInputDepthFilter(ctx context.Context, obj interface{}) (model.DepthFilter, error) {
 	var it model.DepthFilter
