@@ -94,7 +94,7 @@ input DepthFilter {
 
 type Query {
   # node returns a node using a foreign key
-  node(input: Path!): Node
+  getNode(input: Path!): Node
   getNodes(input: Filter!): [Node!]!
   depthSearch(input: DepthFilter!): [Node!]!
   # edge returns an edge using a foreign key

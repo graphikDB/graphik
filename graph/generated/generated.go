@@ -83,8 +83,8 @@ type ComplexityRoot struct {
 		DepthSearch func(childComplexity int, input model.DepthFilter) int
 		GetEdge     func(childComplexity int, input model.Path) int
 		GetEdges    func(childComplexity int, input model.Filter) int
+		GetNode     func(childComplexity int, input model.Path) int
 		GetNodes    func(childComplexity int, input model.Filter) int
-		Node        func(childComplexity int, input model.Path) int
 	}
 
 	SearchResult struct {
@@ -107,7 +107,7 @@ type MutationResolver interface {
 	DelEdge(ctx context.Context, input model.Path) (*model.Counter, error)
 }
 type QueryResolver interface {
-	Node(ctx context.Context, input model.Path) (*model.Node, error)
+	GetNode(ctx context.Context, input model.Path) (*model.Node, error)
 	GetNodes(ctx context.Context, input model.Filter) ([]*model.Node, error)
 	DepthSearch(ctx context.Context, input model.DepthFilter) ([]*model.Node, error)
 	GetEdge(ctx context.Context, input model.Path) (*model.Edge, error)
@@ -335,6 +335,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetEdges(childComplexity, args["input"].(model.Filter)), true
 
+	case "Query.getNode":
+		if e.complexity.Query.GetNode == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getNode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetNode(childComplexity, args["input"].(model.Path)), true
+
 	case "Query.getNodes":
 		if e.complexity.Query.GetNodes == nil {
 			break
@@ -346,18 +358,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.GetNodes(childComplexity, args["input"].(model.Filter)), true
-
-	case "Query.node":
-		if e.complexity.Query.Node == nil {
-			break
-		}
-
-		args, err := ec.field_Query_node_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Node(childComplexity, args["input"].(model.Path)), true
 
 	case "SearchResult.path":
 		if e.complexity.SearchResult.Path == nil {
@@ -547,7 +547,7 @@ input DepthFilter {
 
 type Query {
   # node returns a node using a foreign key
-  node(input: Path!): Node
+  getNode(input: Path!): Node
   getNodes(input: Filter!): [Node!]!
   depthSearch(input: DepthFilter!): [Node!]!
   # edge returns an edge using a foreign key
@@ -724,13 +724,13 @@ func (ec *executionContext) field_Query_getEdges_args(ctx context.Context, rawAr
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getNodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getNode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.Filter
+	var arg0 model.Path
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -739,13 +739,13 @@ func (ec *executionContext) field_Query_getNodes_args(ctx context.Context, rawAr
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getNodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.Path
+	var arg0 model.Filter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNPath2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPath(ctx, tmp)
+		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1516,7 +1516,7 @@ func (ec *executionContext) _Node_updatedAt(ctx context.Context, field graphql.C
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_node(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getNode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1533,7 +1533,7 @@ func (ec *executionContext) _Query_node(ctx context.Context, field graphql.Colle
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_node_args(ctx, rawArgs)
+	args, err := ec.field_Query_getNode_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1541,7 +1541,7 @@ func (ec *executionContext) _Query_node(ctx context.Context, field graphql.Colle
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Node(rctx, args["input"].(model.Path))
+		return ec.resolvers.Query().GetNode(rctx, args["input"].(model.Path))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3507,7 +3507,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "node":
+		case "getNode":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -3515,7 +3515,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_node(ctx, field)
+				res = ec._Query_getNode(ctx, field)
 				return res
 			})
 		case "getNodes":
