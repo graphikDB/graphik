@@ -2,6 +2,29 @@
 
 A persistant labelled property graph database written in 100% Go
 
+- [x] 100% Go
+- [x] Directed edge Support
+- [x] UnDirected Edge Support
+- [x] Graphql Support
+- [x] Persistant
+- [x] Horizontally Scaleable
+- [x] Loosely typed
+- [ ] Prometheus Metrics
+- [x] Pprof Metrics
+- [ ] E2E Tests
+- [ ] Benchmarks Against Other Graph Databases
+- [ ] Graphql Over gRPC
+- [ ] OAuth2 Client-Credentials Based Auth
+- [ ] Bulk Export
+- [ ] Bulk Import
+- [ ] Change Stream Subscriptions
+- [ ] Channel Based PubSub
+- [ ] Common Expression Language Query Filtering
+- [ ] Common Expression Language Based JWT Authorization
+- [ ] Kubernetes Operator
+
+
+
 ## Example Queries
 
 ### create a node
