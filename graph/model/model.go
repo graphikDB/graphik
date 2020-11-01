@@ -3,6 +3,9 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/checker/decls"
+	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"io"
 	"strings"
 	"time"
@@ -64,6 +67,18 @@ type Node struct {
 	UpdatedAt  time.Time              `json:"updatedAt"`
 }
 
+func (n *Node) Map() map[string]interface{} {
+	return map[string]interface{}{
+		"path": map[string]interface{}{
+			"id":   n.Path.ID,
+			"type": n.Path.Type,
+		},
+		"attributes": n.Attributes,
+		"createdAt": n.CreatedAt,
+		"updatedAt": n.UpdatedAt,
+	}
+}
+
 type Edge struct {
 	Path       Path                   `json:"path"`
 	Mutual     bool                   `json:"mutual"`
@@ -72,4 +87,87 @@ type Edge struct {
 	To         Path                   `json:"to"`
 	CreatedAt  time.Time              `json:"createdAt"`
 	UpdatedAt  time.Time              `json:"updatedAt"`
+}
+
+func (e *Edge) Map() map[string]interface{} {
+	return map[string]interface{}{
+		"path": map[string]interface{}{
+			"id": e.Path.ID,
+			"type": e.Path.Type,
+		},
+		"attributes": e.Attributes,
+		"mutual": e.Mutual,
+		"from": map[string]interface{}{
+			"id": e.From.ID,
+			"type": e.From.Type,
+		},
+		"to": map[string]interface{}{
+			"id": e.To.ID,
+			"type": e.To.Type,
+		},
+		"createdAt": e.CreatedAt,
+		"updatedAt": e.UpdatedAt,
+	}
+}
+
+
+func nodeDeclarations() []*exprpb.Decl {
+	return []*exprpb.Decl{
+		decls.NewVar("path", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("attributes", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("createdAt", decls.Timestamp),
+		decls.NewVar("updatedAt", decls.Timestamp),
+	}
+}
+
+
+func NodeExpression(expressions []string) ([]cel.Program, error) {
+	env, err := cel.NewEnv(cel.Declarations(nodeDeclarations()...))
+	if err != nil {
+		return nil, err
+	}
+	var programs []cel.Program
+	for _, exp := range expressions {
+		ast, iss := env.Compile(exp)
+		if iss.Err() != nil {
+			return nil, err
+		}
+		prgm, err := env.Program(ast)
+		if err != nil {
+			return nil, err
+		}
+		programs = append(programs, prgm)
+	}
+	return programs, nil
+}
+
+
+func edgeDeclarations() []*exprpb.Decl {
+	n := nodeDeclarations()
+	n = append(n,
+		decls.NewVar("mutual", decls.Bool),
+		decls.NewVar("from", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("to", decls.NewMapType(decls.String, decls.Any)),
+	)
+	return n
+}
+
+func EdgeExpression(expressions []string) ([]cel.Program, error) {
+	env, err := cel.NewEnv(cel.Declarations(edgeDeclarations()...))
+	if err != nil {
+		return nil, err
+	}
+	var programs []cel.Program
+	for _, exp := range expressions {
+		ast, iss := env.Compile(exp)
+		if iss.Err() != nil {
+			return nil, err
+		}
+		prgm, err := env.Program(ast)
+		if err != nil {
+			return nil, err
+		}
+		programs = append(programs, prgm)
+	}
+	return programs, nil
 }

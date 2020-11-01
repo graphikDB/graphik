@@ -176,6 +176,10 @@ func (n *Nodes) Search(expression, nodeType string) (*model.SearchResults, error
 
 func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
 	var nodes []*model.Node
+	programs, err := filterNodePrograms(filter.Expressions)
+	if err != nil {
+		return nil, err
+	}
 	n.Range(filter.Type, func(node *model.Node) bool {
 		for _, exp := range filter.Statements {
 			val, _ := jmespath.Search(exp.Expression, node)
