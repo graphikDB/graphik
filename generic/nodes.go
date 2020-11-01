@@ -3,7 +3,6 @@ package generic
 import (
 	"fmt"
 	"github.com/autom8ter/graphik/graph/model"
-	"github.com/jmespath/go-jmespath"
 	"time"
 )
 
@@ -151,27 +150,6 @@ func (n *Nodes) Close() {
 	for nodeType, _ := range n.nodes {
 		n.Clear(nodeType)
 	}
-}
-
-func (n *Nodes) Search(expression, nodeType string) (*model.SearchResults, error) {
-	results := &model.SearchResults{
-		Search: expression,
-	}
-	exp, err := jmespath.Compile(expression)
-	if err != nil {
-		return nil, err
-	}
-	n.Range(nodeType, func(node *model.Node) bool {
-		val, _ := exp.Search(node)
-		if val != nil {
-			results.Results = append(results.Results, &model.SearchResult{
-				Path: node.Path,
-				Val:  val,
-			})
-		}
-		return true
-	})
-	return results, nil
 }
 
 func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {

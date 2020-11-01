@@ -2,7 +2,6 @@ package generic
 
 import (
 	"github.com/autom8ter/graphik/graph/model"
-	"github.com/jmespath/go-jmespath"
 	"time"
 )
 
@@ -174,27 +173,6 @@ func (e *Edges) Patch(updatedAt time.Time, value *model.Patch) *model.Edge {
 	}
 	e.edges[value.Path.Type][value.Path.ID].UpdatedAt = updatedAt
 	return e.edges[value.Path.Type][value.Path.ID]
-}
-
-func (e *Edges) Search(expression, nodeType string) (*model.SearchResults, error) {
-	results := &model.SearchResults{
-		Search: expression,
-	}
-	exp, err := jmespath.Compile(expression)
-	if err != nil {
-		return nil, err
-	}
-	e.Range(nodeType, func(edge *model.Edge) bool {
-		val, _ := exp.Search(edge)
-		if val != nil {
-			results.Results = append(results.Results, &model.SearchResult{
-				Path: edge.Path,
-				Val:  val,
-			})
-		}
-		return true
-	})
-	return results, nil
 }
 
 func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {

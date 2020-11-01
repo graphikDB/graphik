@@ -63,11 +63,3 @@ func (f *Store) Edges(ctx context.Context, input model.Filter) ([]*model.Edge, e
 	defer f.mu.RUnlock()
 	return f.edges.FilterSearch(input)
 }
-
-func (f *Store) SearchNodes(ctx context.Context, input model.Search) (*model.SearchResults, error) {
-	return f.nodes.Search(input.Search, input.Type)
-}
-
-func (f *Store) SearchEdges(ctx context.Context, input model.Search) (*model.SearchResults, error) {
-	return f.edges.Search(input.Search, input.Type)
-}
