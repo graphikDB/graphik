@@ -47,15 +47,9 @@ type SearchResults {
   results: [SearchResult!]
 }
 
-input Statement {
-  expression: String!
-  operator: Operator!
-  value: Any!
-}
-
 input Filter {
   type: String!
-  statements: [Statement!]
+  expressions: [String!]
   limit: Int!
 }
 
@@ -88,7 +82,7 @@ input DepthFilter {
   path: Path!
   edgeType: String!
   reverse: Boolean
-  statements: [Statement!]
+  expressions: [String!]
   limit: Int!
 }
 

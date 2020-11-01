@@ -500,15 +500,9 @@ type SearchResults {
   results: [SearchResult!]
 }
 
-input Statement {
-  expression: String!
-  operator: Operator!
-  value: Any!
-}
-
 input Filter {
   type: String!
-  statements: [Statement!]
+  expressions: [String!]
   limit: Int!
 }
 
@@ -541,7 +535,7 @@ input DepthFilter {
   path: Path!
   edgeType: String!
   reverse: Boolean
-  statements: [Statement!]
+  expressions: [String!]
   limit: Int!
 }
 
@@ -3050,11 +3044,11 @@ func (ec *executionContext) unmarshalInputDepthFilter(ctx context.Context, obj i
 			if err != nil {
 				return it, err
 			}
-		case "statements":
+		case "expressions":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statements"))
-			it.Statements, err = ec.unmarshalOStatement2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatementᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
+			it.Expressions, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3138,11 +3132,11 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 			if err != nil {
 				return it, err
 			}
-		case "statements":
+		case "expressions":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statements"))
-			it.Statements, err = ec.unmarshalOStatement2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatementᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
+			it.Expressions, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3243,42 +3237,6 @@ func (ec *executionContext) unmarshalInputSearch(ctx context.Context, obj interf
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
 			it.Limit, err = ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputStatement(ctx context.Context, obj interface{}) (model.Statement, error) {
-	var it model.Statement
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "expression":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
-			it.Expression, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "operator":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("operator"))
-			it.Operator, err = ec.unmarshalNOperator2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐOperator(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "value":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
-			it.Value, err = ec.unmarshalNAny2interface(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3889,27 +3847,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNAny2interface(ctx context.Context, v interface{}) (interface{}, error) {
-	res, err := graphql.UnmarshalAny(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNAny2interface(ctx context.Context, sel ast.SelectionSet, v interface{}) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := graphql.MarshalAny(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4083,16 +4020,6 @@ func (ec *executionContext) unmarshalNNodeConstructor2githubᚗcomᚋautom8ter�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNOperator2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐOperator(ctx context.Context, v interface{}) (model.Operator, error) {
-	var res model.Operator
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNOperator2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐOperator(ctx context.Context, sel ast.SelectionSet, v model.Operator) graphql.Marshaler {
-	return v
-}
-
 func (ec *executionContext) unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPatch(ctx context.Context, v interface{}) (model.Patch, error) {
 	res, err := ec.unmarshalInputPatch(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4116,11 +4043,6 @@ func (ec *executionContext) marshalNSearchResult2ᚖgithubᚗcomᚋautom8terᚋg
 		return graphql.Null
 	}
 	return ec._SearchResult(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNStatement2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatement(ctx context.Context, v interface{}) (*model.Statement, error) {
-	res, err := ec.unmarshalInputStatement(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -4585,7 +4507,16 @@ func (ec *executionContext) marshalOSearchResult2ᚕᚖgithubᚗcomᚋautom8ter�
 	return ret
 }
 
-func (ec *executionContext) unmarshalOStatement2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatementᚄ(ctx context.Context, v interface{}) ([]*model.Statement, error) {
+func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	return graphql.MarshalString(v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -4598,10 +4529,10 @@ func (ec *executionContext) unmarshalOStatement2ᚕᚖgithubᚗcomᚋautom8ter�
 		}
 	}
 	var err error
-	res := make([]*model.Statement, len(vSlice))
+	res := make([]string, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNStatement2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐStatement(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -4609,13 +4540,16 @@ func (ec *executionContext) unmarshalOStatement2ᚕᚖgithubᚗcomᚋautom8ter�
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalString(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
+func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
 
-func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	return graphql.MarshalString(v)
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

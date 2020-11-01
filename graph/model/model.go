@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 )
 
 type Path struct {
@@ -54,4 +55,21 @@ func (p *Path) UnmarshalGQL(v interface{}) error {
 // MarshalGQL implements the graphql.Marshaler interface
 func (p Path) MarshalGQL(w io.Writer) {
 	json.NewEncoder(w).Encode(p.String())
+}
+
+type Node struct {
+	Path       Path                   `json:"path"`
+	Attributes map[string]interface{} `json:"attributes"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  time.Time              `json:"updatedAt"`
+}
+
+type Edge struct {
+	Path       Path                   `json:"path"`
+	Mutual     bool                   `json:"mutual"`
+	Attributes map[string]interface{} `json:"attributes"`
+	From       Path                   `json:"from"`
+	To         Path                   `json:"to"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  time.Time              `json:"updatedAt"`
 }

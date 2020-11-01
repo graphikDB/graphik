@@ -3,6 +3,7 @@
 A persistant labelled property graph database written in 100% Go
 
 - [x] 100% Go
+- [x] Containerized
 - [x] Directed edge Support
 - [x] UnDirected Edge Support
 - [x] Graphql Support
@@ -22,7 +23,7 @@ A persistant labelled property graph database written in 100% Go
 - [ ] Common Expression Language Query Filtering
 - [ ] Common Expression Language Based JWT Authorization
 - [ ] Kubernetes Operator
-
+- [ ] Helm Chart
 
 
 ## Example Queries

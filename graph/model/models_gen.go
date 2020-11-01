@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"strconv"
-	"time"
 )
 
 type Counter struct {
@@ -14,22 +13,12 @@ type Counter struct {
 }
 
 type DepthFilter struct {
-	Depth      int          `json:"depth"`
-	Path       Path         `json:"path"`
-	EdgeType   string       `json:"edgeType"`
-	Reverse    *bool        `json:"reverse"`
-	Statements []*Statement `json:"statements"`
-	Limit      int          `json:"limit"`
-}
-
-type Edge struct {
-	Path       Path                   `json:"path"`
-	Mutual     bool                   `json:"mutual"`
-	Attributes map[string]interface{} `json:"attributes"`
-	From       Path                   `json:"from"`
-	To         Path                   `json:"to"`
-	CreatedAt  time.Time              `json:"createdAt"`
-	UpdatedAt  time.Time              `json:"updatedAt"`
+	Depth       int      `json:"depth"`
+	Path        Path     `json:"path"`
+	EdgeType    string   `json:"edgeType"`
+	Reverse     *bool    `json:"reverse"`
+	Expressions []string `json:"expressions"`
+	Limit       int      `json:"limit"`
 }
 
 type EdgeConstructor struct {
@@ -46,16 +35,9 @@ type Export struct {
 }
 
 type Filter struct {
-	Type       string       `json:"type"`
-	Statements []*Statement `json:"statements"`
-	Limit      int          `json:"limit"`
-}
-
-type Node struct {
-	Path       Path                   `json:"path"`
-	Attributes map[string]interface{} `json:"attributes"`
-	CreatedAt  time.Time              `json:"createdAt"`
-	UpdatedAt  time.Time              `json:"updatedAt"`
+	Type        string   `json:"type"`
+	Expressions []string `json:"expressions"`
+	Limit       int      `json:"limit"`
 }
 
 type NodeConstructor struct {
@@ -82,12 +64,6 @@ type SearchResult struct {
 type SearchResults struct {
 	Search  string          `json:"search"`
 	Results []*SearchResult `json:"results"`
-}
-
-type Statement struct {
-	Expression string      `json:"expression"`
-	Operator   Operator    `json:"operator"`
-	Value      interface{} `json:"value"`
 }
 
 type Operator string

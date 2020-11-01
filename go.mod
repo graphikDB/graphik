@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/autom8ter/machine v1.0.0
-	github.com/golang/protobuf v1.3.2 // indirect
+	github.com/google/cel-go v0.6.0
 	github.com/hashicorp/go-uuid v1.0.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/hashicorp/raft v1.2.0
