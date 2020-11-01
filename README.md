@@ -19,11 +19,24 @@ mutation createNode {
 }
 ```
 
+### get single node
+
+```graphql
+query {
+    getNode(input: "user/8516e0d3-03c0-5b2c-e5b5-fba631c6c1b4") {
+        path
+        attributes
+        createdAt
+        updatedAt
+    }
+}
+```
+
 ### get nodes
 
 ```graphql
 query {
-    nodes(input:{type:"user" limit: 100}) {
+    getNodes(input:{type:"user" limit: 100}) {
     	path
         attributes
     	createdAt
