@@ -12,13 +12,6 @@ type Counter struct {
 	Count int `json:"count"`
 }
 
-type DepthFilter struct {
-	Depth   int     `json:"depth"`
-	Path    Path    `json:"path"`
-	Filter  *Filter `json:"filter"`
-	Reverse *bool   `json:"reverse"`
-}
-
 type EdgeConstructor struct {
 	Path       Path                   `json:"path"`
 	Mutual     bool                   `json:"mutual"`
@@ -56,6 +49,51 @@ type SearchResult struct {
 type SearchResults struct {
 	Search  string          `json:"search"`
 	Results []*SearchResult `json:"results"`
+}
+
+type Change string
+
+const (
+	ChangeAll    Change = "ALL"
+	ChangeCreate Change = "CREATE"
+	ChangePatch  Change = "PATCH"
+	ChangeDelete Change = "DELETE"
+)
+
+var AllChange = []Change{
+	ChangeAll,
+	ChangeCreate,
+	ChangePatch,
+	ChangeDelete,
+}
+
+func (e Change) IsValid() bool {
+	switch e {
+	case ChangeAll, ChangeCreate, ChangePatch, ChangeDelete:
+		return true
+	}
+	return false
+}
+
+func (e Change) String() string {
+	return string(e)
+}
+
+func (e *Change) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Change(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Change", str)
+	}
+	return nil
+}
+
+func (e Change) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Operator string

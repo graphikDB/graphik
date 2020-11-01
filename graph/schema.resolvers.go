@@ -5,11 +5,11 @@ package graph
 
 import (
 	"context"
-
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
+	"github.com/autom8ter/machine"
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConstructor) (*model.Node, error) {
@@ -133,11 +133,73 @@ func (r *queryResolver) GetEdges(ctx context.Context, input model.Filter) ([]*mo
 	return r.store.Edges(ctx, input)
 }
 
+func (r *subscriptionResolver) NodeChange(ctx context.Context, typeArg model.ChangeFilter) (<-chan *model.Node, error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	filter := func(obj interface{}) bool {
+		node, ok := obj.(*model.Node)
+		if !ok {
+			return false
+		}
+		pass, _ := model.Evaluate(typeArg.Expressions, node)
+		return pass
+	}
+	ch := make(chan *model.Node)
+	r.machine.Go(func(routine machine.Routine) {
+		routine.SubscribeFilter(typeArg.Type, filter, func(msg interface{}) {
+			for {
+				select {
+				case <-routine.Context().Done():
+					return
+				case <-ctx.Done():
+					return
+				default:
+					ch <- msg.(*model.Node)
+				}
+			}
+		})
+	})
+	return ch, nil
+}
+
+func (r *subscriptionResolver) EdgeChange(ctx context.Context, typeArg model.ChangeFilter) (<-chan *model.Edge, error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	filter := func(obj interface{}) bool {
+		edge, ok := obj.(*model.Edge)
+		if !ok {
+			return false
+		}
+		pass, _ := model.Evaluate(typeArg.Expressions, edge)
+		return pass
+	}
+	ch := make(chan *model.Edge)
+	r.machine.Go(func(routine machine.Routine) {
+		routine.SubscribeFilter(typeArg.Type, filter, func(msg interface{}) {
+			for {
+				select {
+				case <-routine.Context().Done():
+					return
+				case <-ctx.Done():
+					return
+				default:
+					ch <- msg.(*model.Edge)
+				}
+			}
+		})
+	})
+	return ch, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// Subscription returns generated.SubscriptionResolver implementation.
+func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }

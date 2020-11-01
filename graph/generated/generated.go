@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -38,6 +39,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Subscription() SubscriptionResolver
 }
 
 type DirectiveRoot struct {
@@ -96,6 +98,11 @@ type ComplexityRoot struct {
 		Results func(childComplexity int) int
 		Search  func(childComplexity int) int
 	}
+
+	Subscription struct {
+		EdgeChange func(childComplexity int, typeArg model.ChangeFilter) int
+		NodeChange func(childComplexity int, typeArg model.ChangeFilter) int
+	}
 }
 
 type MutationResolver interface {
@@ -112,6 +119,10 @@ type QueryResolver interface {
 	DepthSearch(ctx context.Context, input model.DepthFilter) ([]*model.Node, error)
 	GetEdge(ctx context.Context, input model.Path) (*model.Edge, error)
 	GetEdges(ctx context.Context, input model.Filter) ([]*model.Edge, error)
+}
+type SubscriptionResolver interface {
+	NodeChange(ctx context.Context, typeArg model.ChangeFilter) (<-chan *model.Node, error)
+	EdgeChange(ctx context.Context, typeArg model.ChangeFilter) (<-chan *model.Edge, error)
 }
 
 type executableSchema struct {
@@ -387,6 +398,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.SearchResults.Search(childComplexity), true
 
+	case "Subscription.edgeChange":
+		if e.complexity.Subscription.EdgeChange == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_edgeChange_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.EdgeChange(childComplexity, args["type"].(model.ChangeFilter)), true
+
+	case "Subscription.nodeChange":
+		if e.complexity.Subscription.NodeChange == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_nodeChange_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.NodeChange(childComplexity, args["type"].(model.ChangeFilter)), true
+
 	}
 	return 0, false
 }
@@ -419,6 +454,23 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			first = false
 			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
 			var buf bytes.Buffer
+			data.MarshalGQL(&buf)
+
+			return &graphql.Response{
+				Data: buf.Bytes(),
+			}
+		}
+	case ast.Subscription:
+		next := ec._Subscription(ctx, rc.Operation.SelectionSet)
+
+		var buf bytes.Buffer
+		return func(ctx context.Context) *graphql.Response {
+			buf.Reset()
+			data := next()
+
+			if data == nil {
+				return nil
+			}
 			data.MarshalGQL(&buf)
 
 			return &graphql.Response{
@@ -462,6 +514,13 @@ scalar Path
 enum Operator {
   NEQ
   EQ
+}
+
+enum Change {
+  ALL
+  CREATE
+  PATCH
+  DELETE
 }
 
 type Counter {
@@ -533,8 +592,15 @@ input Search {
 input DepthFilter {
   depth: Int!
   path: Path!
-  filter: Filter!
+  expressions: [String!]
+  limit: Int!
   reverse: Boolean
+}
+
+input ChangeFilter {
+  change: Change!
+  type: String!
+  expressions: [String!]
 }
 
 type Query {
@@ -558,7 +624,11 @@ type Mutation {
   delEdge(input: Path!): Counter
 
 }
-`, BuiltIn: false},
+
+type Subscription {
+  nodeChange(type: ChangeFilter!): Node!
+  edgeChange(type: ChangeFilter!): Edge!
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -743,6 +813,36 @@ func (ec *executionContext) field_Query_getNodes_args(ctx context.Context, rawAr
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_edgeChange_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.ChangeFilter
+	if tmp, ok := rawArgs["type"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+		arg0, err = ec.unmarshalNChangeFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChangeFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["type"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_nodeChange_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.ChangeFilter
+	if tmp, ok := rawArgs["type"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+		arg0, err = ec.unmarshalNChangeFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChangeFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["type"] = arg0
 	return args, nil
 }
 
@@ -1917,6 +2017,110 @@ func (ec *executionContext) _SearchResults_results(ctx context.Context, field gr
 	return ec.marshalOSearchResult2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐSearchResultᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Subscription_nodeChange(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_nodeChange_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().NodeChange(rctx, args["type"].(model.ChangeFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *model.Node)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐNode(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_edgeChange(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_edgeChange_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().EdgeChange(rctx, args["type"].(model.ChangeFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *model.Edge)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐEdge(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3004,6 +3208,42 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputChangeFilter(ctx context.Context, obj interface{}) (model.ChangeFilter, error) {
+	var it model.ChangeFilter
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "change":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("change"))
+			it.Change, err = ec.unmarshalNChange2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChange(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "expressions":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
+			it.Expressions, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputDepthFilter(ctx context.Context, obj interface{}) (model.DepthFilter, error) {
 	var it model.DepthFilter
 	var asMap = obj.(map[string]interface{})
@@ -3026,11 +3266,19 @@ func (ec *executionContext) unmarshalInputDepthFilter(ctx context.Context, obj i
 			if err != nil {
 				return it, err
 			}
-		case "filter":
+		case "expressions":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
+			it.Expressions, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "limit":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			it.Limit, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3584,6 +3832,28 @@ func (ec *executionContext) _SearchResults(ctx context.Context, sel ast.Selectio
 	return out
 }
 
+var subscriptionImplementors = []string{"Subscription"}
+
+func (ec *executionContext) _Subscription(ctx context.Context, sel ast.SelectionSet) func() graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, subscriptionImplementors)
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Subscription",
+	})
+	if len(fields) != 1 {
+		ec.Errorf(ctx, "must subscribe to exactly one stream")
+		return nil
+	}
+
+	switch fields[0].Name {
+	case "nodeChange":
+		return ec._Subscription_nodeChange(ctx, fields[0])
+	case "edgeChange":
+		return ec._Subscription_edgeChange(ctx, fields[0])
+	default:
+		panic("unknown field " + strconv.Quote(fields[0].Name))
+	}
+}
+
 var __DirectiveImplementors = []string{"__Directive"}
 
 func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionSet, obj *introspection.Directive) graphql.Marshaler {
@@ -3844,6 +4114,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNChange2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChange(ctx context.Context, v interface{}) (model.Change, error) {
+	var res model.Change
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNChange2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChange(ctx context.Context, sel ast.SelectionSet, v model.Change) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNChangeFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChangeFilter(ctx context.Context, v interface{}) (model.ChangeFilter, error) {
+	res, err := ec.unmarshalInputChangeFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNDepthFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐDepthFilter(ctx context.Context, v interface{}) (model.DepthFilter, error) {
 	res, err := ec.unmarshalInputDepthFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3908,11 +4193,6 @@ func (ec *executionContext) unmarshalNEdgeConstructor2githubᚗcomᚋautom8ter�
 func (ec *executionContext) unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx context.Context, v interface{}) (model.Filter, error) {
 	res, err := ec.unmarshalInputFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx context.Context, v interface{}) (*model.Filter, error) {
-	res, err := ec.unmarshalInputFilter(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {

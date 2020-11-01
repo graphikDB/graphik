@@ -11,6 +11,13 @@ enum Operator {
   EQ
 }
 
+enum Change {
+  ALL
+  CREATE
+  PATCH
+  DELETE
+}
+
 type Counter {
   count: Int!
 }
@@ -80,8 +87,15 @@ input Search {
 input DepthFilter {
   depth: Int!
   path: Path!
-  filter: Filter!
+  expressions: [String!]
+  limit: Int!
   reverse: Boolean
+}
+
+input ChangeFilter {
+  change: Change!
+  type: String!
+  expressions: [String!]
 }
 
 type Query {
@@ -104,4 +118,9 @@ type Mutation {
   patchEdge(input: Patch!): Edge!
   delEdge(input: Path!): Counter
 
+}
+
+type Subscription {
+  nodeChange(type: ChangeFilter!): Node!
+  edgeChange(type: ChangeFilter!): Edge!
 }

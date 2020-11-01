@@ -129,13 +129,44 @@ func nodeDeclarations() []*exprpb.Decl {
 	}
 }
 
-func (f *Filter) Evaluate(mapper Mapper) (bool, error) {
-	env, err := cel.NewEnv(cel.Declarations(nodeDeclarations()...))
+func edgeDeclarations() []*exprpb.Decl {
+	n := nodeDeclarations()
+	n = append(n,
+		decls.NewVar("mutual", decls.Bool),
+		decls.NewVar("from", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("to", decls.NewMapType(decls.String, decls.Any)),
+	)
+	return n
+}
+
+type DepthFilter struct {
+	Depth       int      `json:"depth"`
+	Path        Path     `json:"path"`
+	Expressions []string `json:"expressions"`
+	Limit       int      `json:"limit"`
+	Reverse     *bool    `json:"reverse"`
+}
+
+type ChangeFilter struct {
+	Change      Change   `json:"change"`
+	Type        string   `json:"type"`
+	Expressions []string `json:"expressions"`
+}
+
+func Evaluate(expressions []string, mapper Mapper) (bool, error) {
+	var declarations []*exprpb.Decl
+	if _, ok := mapper.(*Node); ok {
+		declarations = nodeDeclarations()
+	}
+	if _, ok := mapper.(*Edge); ok {
+		declarations = edgeDeclarations()
+	}
+	env, err := cel.NewEnv(cel.Declarations(declarations...))
 	if err != nil {
 		return false, err
 	}
 	var programs []cel.Program
-	for _, exp := range f.Expressions {
+	for _, exp := range expressions {
 		ast, iss := env.Compile(exp)
 		if iss.Err() != nil {
 			return false, err
@@ -157,34 +188,4 @@ func (f *Filter) Evaluate(mapper Mapper) (bool, error) {
 		}
 	}
 	return passes, nil
-}
-
-func edgeDeclarations() []*exprpb.Decl {
-	n := nodeDeclarations()
-	n = append(n,
-		decls.NewVar("mutual", decls.Bool),
-		decls.NewVar("from", decls.NewMapType(decls.String, decls.Any)),
-		decls.NewVar("to", decls.NewMapType(decls.String, decls.Any)),
-	)
-	return n
-}
-
-func (f *Filter) EdgeExpression(expressions []string) ([]cel.Program, error) {
-	env, err := cel.NewEnv(cel.Declarations(edgeDeclarations()...))
-	if err != nil {
-		return nil, err
-	}
-	var programs []cel.Program
-	for _, exp := range expressions {
-		ast, iss := env.Compile(exp)
-		if iss.Err() != nil {
-			return nil, err
-		}
-		prgm, err := env.Program(ast)
-		if err != nil {
-			return nil, err
-		}
-		programs = append(programs, prgm)
-	}
-	return programs, nil
 }

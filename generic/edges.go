@@ -180,7 +180,7 @@ func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {
 	var err error
 	var pass bool
 	e.Range(filter.Type, func(edge *model.Edge) bool {
-		pass, err = filter.Evaluate(edge)
+		pass, err = model.Evaluate(filter.Expressions, edge)
 		if err != nil {
 			return false
 		}

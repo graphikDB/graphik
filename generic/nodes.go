@@ -157,7 +157,7 @@ func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
 	var err error
 	var pass bool
 	n.Range(filter.Type, func(node *model.Node) bool {
-		pass, err = filter.Evaluate(node)
+		pass, err = model.Evaluate(filter.Expressions, node)
 		if err != nil {
 			return false
 		}
@@ -193,14 +193,14 @@ func (n *Nodes) RangeToDepth(filter model.DepthFilter, fn func(node *model.Node)
 func (n *Nodes) ascendFrom(seen map[string]struct{}, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
 	return func(node *model.Node) bool {
 		n.edges.RangeFrom(node.Path, func(e *model.Edge) bool {
-			if e.Path.Type != filter.Filter.Type {
+			if e.Path.Type != filter.Path.Type {
 				return true
 			}
 			node, ok := n.Get(e.To)
 			if ok {
 				if _, ok := seen[node.Path.String()]; !ok {
 					seen[node.Path.String()] = struct{}{}
-					pass, err := filter.Filter.Evaluate(node)
+					pass, err := model.Evaluate(filter.Expressions, node)
 					if err != nil {
 						return true
 					}
@@ -218,7 +218,7 @@ func (n *Nodes) ascendFrom(seen map[string]struct{}, filter model.DepthFilter, f
 func (n *Nodes) ascendTo(seen map[string]struct{}, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
 	return func(node *model.Node) bool {
 		n.edges.RangeTo(node.Path, func(e *model.Edge) bool {
-			if e.Path.Type != filter.Filter.Type {
+			if e.Path.Type != filter.Path.Type {
 				return true
 			}
 			node, ok := n.Get(e.From)
@@ -227,7 +227,7 @@ func (n *Nodes) ascendTo(seen map[string]struct{}, filter model.DepthFilter, fn 
 					seen[node.Path.String()] = struct{}{}
 					if _, ok := seen[node.Path.String()]; !ok {
 						seen[node.Path.String()] = struct{}{}
-						pass, err := filter.Filter.Evaluate(node)
+						pass, err := model.Evaluate(filter.Expressions, node)
 						if err != nil {
 							return true
 						}
