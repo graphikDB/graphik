@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/generic"
@@ -146,8 +147,9 @@ func (r *subscriptionResolver) NodeChange(ctx context.Context, typeArg model.Cha
 		return pass
 	}
 	ch := make(chan *model.Node)
+	channel := fmt.Sprintf("nodes.%s", typeArg.Type)
 	r.machine.Go(func(routine machine.Routine) {
-		routine.SubscribeFilter(typeArg.Type, filter, func(msg interface{}) {
+		routine.SubscribeFilter(channel, filter, func(msg interface{}) {
 			for {
 				select {
 				case <-routine.Context().Done():
@@ -175,8 +177,9 @@ func (r *subscriptionResolver) EdgeChange(ctx context.Context, typeArg model.Cha
 		return pass
 	}
 	ch := make(chan *model.Edge)
+	channel := fmt.Sprintf("edges.%s", typeArg.Type)
 	r.machine.Go(func(routine machine.Routine) {
-		routine.SubscribeFilter(typeArg.Type, filter, func(msg interface{}) {
+		routine.SubscribeFilter(channel, filter, func(msg interface{}) {
 			for {
 				select {
 				case <-routine.Context().Done():

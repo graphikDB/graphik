@@ -6,9 +6,12 @@ import (
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/model"
+	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"io"
 )
 
@@ -25,12 +28,19 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode node constructor")
 		}
-		return f.nodes.Set(&model.Node{
+		n := f.nodes.Set(&model.Node{
 			Path:       val.Path,
 			Attributes: val.Attributes,
 			CreatedAt:  c.Timestamp,
 			UpdatedAt:  c.Timestamp,
 		})
+		channel := fmt.Sprintf("nodes.%s", n.Path.Type)
+		f.opts.machine.Go(func(routine machine.Routine) {
+			if err := routine.Publish(channel, n); err != nil {
+				logger.Error("failed to publish message", zap.String("channel", channel))
+			}
+		})
+		return n
 	case model.OpPatchNode:
 		var val model.Patch
 		if err := f.decode(c.Val, &val); err != nil {
@@ -39,7 +49,14 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		if !f.nodes.Exists(val.Path) {
 			return errors.Errorf("node %s does not exist", val.Path.String())
 		}
-		return f.nodes.Patch(c.Timestamp, &val)
+		n := f.nodes.Patch(c.Timestamp, &val)
+		channel := fmt.Sprintf("nodes.%s", n.Path.Type)
+		f.opts.machine.Go(func(routine machine.Routine) {
+			if err := routine.Publish(channel, n); err != nil {
+				logger.Error("failed to publish message", zap.String("channel", channel))
+			}
+		})
+		return n
 	case model.OpDeleteNode:
 		var val model.Path
 		if err := f.decode(c.Val, &val); err != nil {
@@ -72,7 +89,8 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		if !ok {
 			return errors.Errorf("to node %s does not exist", val.To.String())
 		}
-		return f.edges.Set(&model.Edge{
+
+		e := f.edges.Set(&model.Edge{
 			Path:       val.Path,
 			Mutual:     val.Mutual,
 			Attributes: val.Attributes,
@@ -81,6 +99,13 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			CreatedAt:  c.Timestamp,
 			UpdatedAt:  c.Timestamp,
 		})
+		channel := fmt.Sprintf("edges.%s", e.Path.Type)
+		f.opts.machine.Go(func(routine machine.Routine) {
+			if err := routine.Publish(channel, e); err != nil {
+				logger.Error("failed to publish edge", zap.String("channel", channel))
+			}
+		})
+		return e
 	case model.OpPatchEdge:
 		var val model.Patch
 		if err := f.decode(c.Val, &val); err != nil {
@@ -89,7 +114,14 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		if !f.edges.Exists(val.Path) {
 			return errors.Errorf("edge %s does not exist", val.Path.String())
 		}
-		return f.edges.Patch(c.Timestamp, &val)
+		e := f.edges.Patch(c.Timestamp, &val)
+		channel := fmt.Sprintf("edges.%s", e.Path.Type)
+		f.opts.machine.Go(func(routine machine.Routine) {
+			if err := routine.Publish(channel, e); err != nil {
+				logger.Error("failed to publish edge", zap.String("channel", channel))
+			}
+		})
+		return e
 
 	case model.OpDeleteEdge:
 		var val model.Path

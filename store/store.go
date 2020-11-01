@@ -1,9 +1,11 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/generic"
+	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"net"
@@ -39,6 +41,9 @@ func New(opts ...Opt) (*Store, error) {
 	if options.raftDir == "" {
 		os.MkdirAll(defaultDir, 0700)
 		options.raftDir = defaultDir
+	}
+	if options.machine == nil {
+		options.machine = machine.New(context.Background())
 	}
 	config := raft.DefaultConfig()
 	config.LocalID = raft.ServerID(options.localID)
