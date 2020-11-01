@@ -8,8 +8,22 @@ import (
 	"strconv"
 )
 
+type ChangeFilter struct {
+	Op          Op       `json:"op"`
+	Type        string   `json:"type"`
+	Expressions []string `json:"expressions"`
+}
+
 type Counter struct {
 	Count int `json:"count"`
+}
+
+type DepthFilter struct {
+	Depth       int      `json:"depth"`
+	Path        Path     `json:"path"`
+	Expressions []string `json:"expressions"`
+	Limit       int      `json:"limit"`
+	Reverse     *bool    `json:"reverse"`
 }
 
 type EdgeConstructor struct {
@@ -23,6 +37,12 @@ type EdgeConstructor struct {
 type Export struct {
 	Nodes []*Node `json:"nodes"`
 	Edges []*Edge `json:"edges"`
+}
+
+type Filter struct {
+	Type        string   `json:"type"`
+	Expressions []string `json:"expressions"`
+	Limit       int      `json:"limit"`
 }
 
 type NodeConstructor struct {
@@ -51,48 +71,52 @@ type SearchResults struct {
 	Results []*SearchResult `json:"results"`
 }
 
-type Change string
+type Op string
 
 const (
-	ChangeAll    Change = "ALL"
-	ChangeCreate Change = "CREATE"
-	ChangePatch  Change = "PATCH"
-	ChangeDelete Change = "DELETE"
+	OpCreateNode Op = "CREATE_NODE"
+	OpPatchNode  Op = "PATCH_NODE"
+	OpDeleteNode Op = "DELETE_NODE"
+	OpCreateEdge Op = "CREATE_EDGE"
+	OpPatchEdge  Op = "PATCH_EDGE"
+	OpDeleteEdge Op = "DELETE_EDGE"
 )
 
-var AllChange = []Change{
-	ChangeAll,
-	ChangeCreate,
-	ChangePatch,
-	ChangeDelete,
+var AllOp = []Op{
+	OpCreateNode,
+	OpPatchNode,
+	OpDeleteNode,
+	OpCreateEdge,
+	OpPatchEdge,
+	OpDeleteEdge,
 }
 
-func (e Change) IsValid() bool {
+func (e Op) IsValid() bool {
 	switch e {
-	case ChangeAll, ChangeCreate, ChangePatch, ChangeDelete:
+	case OpCreateNode, OpPatchNode, OpDeleteNode, OpCreateEdge, OpPatchEdge, OpDeleteEdge:
 		return true
 	}
 	return false
 }
 
-func (e Change) String() string {
+func (e Op) String() string {
 	return string(e)
 }
 
-func (e *Change) UnmarshalGQL(v interface{}) error {
+func (e *Op) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = Change(str)
+	*e = Op(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid Change", str)
+		return fmt.Errorf("%s is not a valid Op", str)
 	}
 	return nil
 }
 
-func (e Change) MarshalGQL(w io.Writer) {
+func (e Op) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

@@ -114,12 +114,6 @@ type Mapper interface {
 	Map() map[string]interface{}
 }
 
-type Filter struct {
-	Type        string   `json:"type"`
-	Expressions []string `json:"expressions"`
-	Limit       int      `json:"limit"`
-}
-
 func nodeDeclarations() []*exprpb.Decl {
 	return []*exprpb.Decl{
 		decls.NewVar("path", decls.NewMapType(decls.String, decls.Any)),
@@ -137,20 +131,6 @@ func edgeDeclarations() []*exprpb.Decl {
 		decls.NewVar("to", decls.NewMapType(decls.String, decls.Any)),
 	)
 	return n
-}
-
-type DepthFilter struct {
-	Depth       int      `json:"depth"`
-	Path        Path     `json:"path"`
-	Expressions []string `json:"expressions"`
-	Limit       int      `json:"limit"`
-	Reverse     *bool    `json:"reverse"`
-}
-
-type ChangeFilter struct {
-	Change      Change   `json:"change"`
-	Type        string   `json:"type"`
-	Expressions []string `json:"expressions"`
 }
 
 func Evaluate(expressions []string, mapper Mapper) (bool, error) {

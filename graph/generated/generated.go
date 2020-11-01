@@ -516,11 +516,13 @@ enum Operator {
   EQ
 }
 
-enum Change {
-  ALL
-  CREATE
-  PATCH
-  DELETE
+enum Op {
+  CREATE_NODE
+  PATCH_NODE
+  DELETE_NODE
+  CREATE_EDGE
+  PATCH_EDGE
+  DELETE_EDGE
 }
 
 type Counter {
@@ -598,7 +600,7 @@ input DepthFilter {
 }
 
 input ChangeFilter {
-  change: Change!
+  op: Op!
   type: String!
   expressions: [String!]
 }
@@ -3214,11 +3216,11 @@ func (ec *executionContext) unmarshalInputChangeFilter(ctx context.Context, obj 
 
 	for k, v := range asMap {
 		switch k {
-		case "change":
+		case "op":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("change"))
-			it.Change, err = ec.unmarshalNChange2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChange(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("op"))
+			it.Op, err = ec.unmarshalNOp2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐOp(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4114,16 +4116,6 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNChange2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChange(ctx context.Context, v interface{}) (model.Change, error) {
-	var res model.Change
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNChange2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChange(ctx context.Context, sel ast.SelectionSet, v model.Change) graphql.Marshaler {
-	return v
-}
-
 func (ec *executionContext) unmarshalNChangeFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐChangeFilter(ctx context.Context, v interface{}) (model.ChangeFilter, error) {
 	res, err := ec.unmarshalInputChangeFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4285,6 +4277,16 @@ func (ec *executionContext) marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 func (ec *executionContext) unmarshalNNodeConstructor2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐNodeConstructor(ctx context.Context, v interface{}) (model.NodeConstructor, error) {
 	res, err := ec.unmarshalInputNodeConstructor(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNOp2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐOp(ctx context.Context, v interface{}) (model.Op, error) {
+	var res model.Op
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNOp2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐOp(ctx context.Context, sel ast.SelectionSet, v model.Op) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPatch(ctx context.Context, v interface{}) (model.Patch, error) {

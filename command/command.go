@@ -2,6 +2,7 @@ package command
 
 import (
 	"encoding/json"
+	"github.com/autom8ter/graphik/graph/model"
 	"github.com/hashicorp/raft"
 	"time"
 )
@@ -18,7 +19,7 @@ const (
 )
 
 type Command struct {
-	Op        Op
+	Op        model.Op
 	Val       interface{}
 	Timestamp time.Time
 }

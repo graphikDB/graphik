@@ -11,11 +11,13 @@ enum Operator {
   EQ
 }
 
-enum Change {
-  ALL
-  CREATE
-  PATCH
-  DELETE
+enum Op {
+  CREATE_NODE
+  PATCH_NODE
+  DELETE_NODE
+  CREATE_EDGE
+  PATCH_EDGE
+  DELETE_EDGE
 }
 
 type Counter {
@@ -93,7 +95,7 @@ input DepthFilter {
 }
 
 input ChangeFilter {
-  change: Change!
+  op: Op!
   type: String!
   expressions: [String!]
 }

@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+
 	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/generated"
@@ -21,7 +22,7 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConst
 		input.Path.Type = generic.Default
 	}
 	res, err := r.store.Execute(&command.Command{
-		Op:  command.CREATE_NODE,
+		Op:  model.OpCreateNode,
 		Val: input,
 	})
 	if err != nil {
@@ -35,7 +36,7 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConst
 
 func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*model.Node, error) {
 	res, err := r.store.Execute(&command.Command{
-		Op:  command.PATCH_NODE,
+		Op:  model.OpPatchNode,
 		Val: input,
 	})
 	if err != nil {
@@ -49,7 +50,7 @@ func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*
 
 func (r *mutationResolver) DelNode(ctx context.Context, input model.Path) (*model.Counter, error) {
 	res, err := r.store.Execute(&command.Command{
-		Op:  command.DELETE_NODE,
+		Op:  model.OpDeleteNode,
 		Val: input,
 	})
 	if err != nil {
@@ -70,7 +71,7 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConst
 		input.Path.Type = generic.Default
 	}
 	res, err := r.store.Execute(&command.Command{
-		Op:  command.CREATE_EDGE,
+		Op:  model.OpCreateEdge,
 		Val: input,
 	})
 	if err != nil {
@@ -84,7 +85,7 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConst
 
 func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*model.Edge, error) {
 	res, err := r.store.Execute(&command.Command{
-		Op:  command.PATCH_EDGE,
+		Op:  model.OpPatchEdge,
 		Val: input,
 	})
 	if err != nil {
@@ -98,7 +99,7 @@ func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*m
 
 func (r *mutationResolver) DelEdge(ctx context.Context, input model.Path) (*model.Counter, error) {
 	res, err := r.store.Execute(&command.Command{
-		Op:  command.DELETE_EDGE,
+		Op:  model.OpDeleteEdge,
 		Val: input,
 	})
 	if err != nil {

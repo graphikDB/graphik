@@ -20,7 +20,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	switch c.Op {
-	case command.CREATE_NODE:
+	case model.OpCreateNode:
 		var val model.NodeConstructor
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode node constructor")
@@ -31,7 +31,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			CreatedAt:  c.Timestamp,
 			UpdatedAt:  c.Timestamp,
 		})
-	case command.PATCH_NODE:
+	case model.OpPatchNode:
 		var val model.Patch
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode node patch")
@@ -40,7 +40,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			return errors.Errorf("node %s does not exist", val.Path.String())
 		}
 		return f.nodes.Patch(c.Timestamp, &val)
-	case command.DELETE_NODE:
+	case model.OpDeleteNode:
 		var val model.Path
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode foreign key")
@@ -59,7 +59,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			}
 		}
 		return &model.Counter{Count: deleted}
-	case command.CREATE_EDGE:
+	case model.OpCreateEdge:
 		var val model.EdgeConstructor
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode edge constructor")
@@ -81,7 +81,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 			CreatedAt:  c.Timestamp,
 			UpdatedAt:  c.Timestamp,
 		})
-	case command.PATCH_EDGE:
+	case model.OpPatchEdge:
 		var val model.Patch
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode edge patch")
@@ -91,7 +91,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		}
 		return f.edges.Patch(c.Timestamp, &val)
 
-	case command.DELETE_EDGE:
+	case model.OpDeleteEdge:
 		var val model.Path
 		if err := f.decode(c.Val, &val); err != nil {
 			return errors.Wrap(err, "failed to decode path")
