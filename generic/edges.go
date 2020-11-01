@@ -2,10 +2,7 @@ package generic
 
 import (
 	"github.com/autom8ter/graphik/graph/model"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/checker/decls"
 	"github.com/jmespath/go-jmespath"
-	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"time"
 )
 
@@ -200,44 +197,22 @@ func (e *Edges) Search(expression, nodeType string) (*model.SearchResults, error
 	return results, nil
 }
 
-
 func (e *Edges) FilterSearch(filter model.Filter) ([]*model.Edge, error) {
 	var edges []*model.Edge
-	programs, err := filterEdgePrograms(filter.Expressions)
-	if err != nil {
-		return nil, err
-	}
+	var err error
+	var pass bool
 	e.Range(filter.Type, func(edge *model.Edge) bool {
-		for _, program := range programs {
-			out, _, err := program.Eval(map[string]interface{}{
-				"path": map[string]interface{}{
-					"id": edge.Path.ID,
-					"type": edge.Path.Type,
-				},
-				"attributes": edge.Attributes,
-				"mutual": edge.Mutual,
-				"from": map[string]interface{}{
-					"id": edge.From.ID,
-					"type": edge.From.Type,
-				},
-				"to": map[string]interface{}{
-					"id": edge.To.ID,
-					"type": edge.To.Type,
-				},
-				"createdAt": edge.CreatedAt,
-				"updatedAt": edge.UpdatedAt,
-			})
-			if err != nil {
-				panic(err)
-			}
-			if val, ok := out.Value().(bool); ok && val {
-				edges = append(edges, edge)
-			}
+		pass, err = filter.Evaluate(edge)
+		if err != nil {
+			return false
+		}
+		if pass {
+			edges = append(edges, edge)
 		}
 		return len(edges) < filter.Limit
 	})
 	EdgeList(edges).Sort()
-	return edges, nil
+	return edges, err
 }
 
 func removeEdge(path string, paths []string) []string {

@@ -80,10 +80,8 @@ input Search {
 input DepthFilter {
   depth: Int!
   path: Path!
-  edgeType: String!
+  filter: Filter!
   reverse: Boolean
-  expressions: [String!]
-  limit: Int!
 }
 
 type Query {

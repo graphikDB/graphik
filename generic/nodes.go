@@ -176,29 +176,20 @@ func (n *Nodes) Search(expression, nodeType string) (*model.SearchResults, error
 
 func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
 	var nodes []*model.Node
-	programs, err := filterNodePrograms(filter.Expressions)
-	if err != nil {
-		return nil, err
-	}
+	var err error
+	var pass bool
 	n.Range(filter.Type, func(node *model.Node) bool {
-		for _, exp := range filter.Statements {
-			val, _ := jmespath.Search(exp.Expression, node)
-			if exp.Operator == model.OperatorNeq {
-				if val == exp.Value {
-					return true
-				}
-			}
-			if exp.Operator == model.OperatorEq {
-				if val != exp.Value {
-					return true
-				}
-			}
+		pass, err = filter.Evaluate(node)
+		if err != nil {
+			return false
 		}
-		nodes = append(nodes, node)
+		if pass {
+			nodes = append(nodes, node)
+		}
 		return len(nodes) < filter.Limit
 	})
 	NodeList(nodes).Sort()
-	return nodes, nil
+	return nodes, err
 }
 
 func (n *Nodes) RangeFromDepth(filter model.DepthFilter, fn func(node *model.Node) bool) error {
@@ -224,27 +215,20 @@ func (n *Nodes) RangeToDepth(filter model.DepthFilter, fn func(node *model.Node)
 func (n *Nodes) ascendFrom(seen map[string]struct{}, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
 	return func(node *model.Node) bool {
 		n.edges.RangeFrom(node.Path, func(e *model.Edge) bool {
-			if e.Path.Type != filter.EdgeType {
+			if e.Path.Type != filter.Filter.Type {
 				return true
 			}
 			node, ok := n.Get(e.To)
 			if ok {
 				if _, ok := seen[node.Path.String()]; !ok {
 					seen[node.Path.String()] = struct{}{}
-					for _, exp := range filter.Statements {
-						val, _ := jmespath.Search(exp.Expression, node)
-						if exp.Operator == model.OperatorNeq {
-							if val == exp.Value {
-								return true
-							}
-						}
-						if exp.Operator == model.OperatorEq {
-							if val != exp.Value {
-								return true
-							}
-						}
+					pass, err := filter.Filter.Evaluate(node)
+					if err != nil {
+						return true
 					}
-					return fn(node)
+					if pass {
+						return fn(node)
+					}
 				}
 			}
 			return true
@@ -256,27 +240,23 @@ func (n *Nodes) ascendFrom(seen map[string]struct{}, filter model.DepthFilter, f
 func (n *Nodes) ascendTo(seen map[string]struct{}, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
 	return func(node *model.Node) bool {
 		n.edges.RangeTo(node.Path, func(e *model.Edge) bool {
-			if e.Path.Type != filter.EdgeType {
+			if e.Path.Type != filter.Filter.Type {
 				return true
 			}
 			node, ok := n.Get(e.From)
 			if ok {
 				if _, ok := seen[node.Path.String()]; !ok {
 					seen[node.Path.String()] = struct{}{}
-					for _, exp := range filter.Statements {
-						val, _ := jmespath.Search(exp.Expression, node)
-						if exp.Operator == model.OperatorNeq {
-							if val == exp.Value {
-								return true
-							}
+					if _, ok := seen[node.Path.String()]; !ok {
+						seen[node.Path.String()] = struct{}{}
+						pass, err := filter.Filter.Evaluate(node)
+						if err != nil {
+							return true
 						}
-						if exp.Operator == model.OperatorEq {
-							if val != exp.Value {
-								return true
-							}
+						if pass {
+							return fn(node)
 						}
 					}
-					return fn(node)
 				}
 			}
 			return true

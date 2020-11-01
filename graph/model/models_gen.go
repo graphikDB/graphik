@@ -13,12 +13,10 @@ type Counter struct {
 }
 
 type DepthFilter struct {
-	Depth       int      `json:"depth"`
-	Path        Path     `json:"path"`
-	EdgeType    string   `json:"edgeType"`
-	Reverse     *bool    `json:"reverse"`
-	Expressions []string `json:"expressions"`
-	Limit       int      `json:"limit"`
+	Depth   int     `json:"depth"`
+	Path    Path    `json:"path"`
+	Filter  *Filter `json:"filter"`
+	Reverse *bool   `json:"reverse"`
 }
 
 type EdgeConstructor struct {
@@ -32,12 +30,6 @@ type EdgeConstructor struct {
 type Export struct {
 	Nodes []*Node `json:"nodes"`
 	Edges []*Edge `json:"edges"`
-}
-
-type Filter struct {
-	Type        string   `json:"type"`
-	Expressions []string `json:"expressions"`
-	Limit       int      `json:"limit"`
 }
 
 type NodeConstructor struct {

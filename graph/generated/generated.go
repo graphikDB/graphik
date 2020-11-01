@@ -533,10 +533,8 @@ input Search {
 input DepthFilter {
   depth: Int!
   path: Path!
-  edgeType: String!
+  filter: Filter!
   reverse: Boolean
-  expressions: [String!]
-  limit: Int!
 }
 
 type Query {
@@ -3028,11 +3026,11 @@ func (ec *executionContext) unmarshalInputDepthFilter(ctx context.Context, obj i
 			if err != nil {
 				return it, err
 			}
-		case "edgeType":
+		case "filter":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("edgeType"))
-			it.EdgeType, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3041,22 +3039,6 @@ func (ec *executionContext) unmarshalInputDepthFilter(ctx context.Context, obj i
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reverse"))
 			it.Reverse, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "expressions":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
-			it.Expressions, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "limit":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-			it.Limit, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3926,6 +3908,11 @@ func (ec *executionContext) unmarshalNEdgeConstructor2githubᚗcomᚋautom8ter�
 func (ec *executionContext) unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx context.Context, v interface{}) (model.Filter, error) {
 	res, err := ec.unmarshalInputFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐFilter(ctx context.Context, v interface{}) (*model.Filter, error) {
+	res, err := ec.unmarshalInputFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {

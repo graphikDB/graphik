@@ -28,7 +28,7 @@ func (f *Store) DepthTo(ctx context.Context, input model.DepthFilter) ([]*model.
 	var nodes []*model.Node
 	if err := f.nodes.RangeToDepth(input, func(node *model.Node) bool {
 		nodes = append(nodes, node)
-		return len(nodes) < input.Limit
+		return len(nodes) < input.Filter.Limit
 	}); err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (f *Store) DepthFrom(ctx context.Context, input model.DepthFilter) ([]*mode
 	var nodes []*model.Node
 	if err := f.nodes.RangeFromDepth(input, func(node *model.Node) bool {
 		nodes = append(nodes, node)
-		return len(nodes) < input.Limit
+		return len(nodes) < input.Filter.Limit
 	}); err != nil {
 		return nil, err
 	}

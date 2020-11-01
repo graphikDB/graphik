@@ -74,8 +74,8 @@ func (n *Node) Map() map[string]interface{} {
 			"type": n.Path.Type,
 		},
 		"attributes": n.Attributes,
-		"createdAt": n.CreatedAt,
-		"updatedAt": n.UpdatedAt,
+		"createdAt":  n.CreatedAt,
+		"updatedAt":  n.UpdatedAt,
 	}
 }
 
@@ -92,17 +92,17 @@ type Edge struct {
 func (e *Edge) Map() map[string]interface{} {
 	return map[string]interface{}{
 		"path": map[string]interface{}{
-			"id": e.Path.ID,
+			"id":   e.Path.ID,
 			"type": e.Path.Type,
 		},
 		"attributes": e.Attributes,
-		"mutual": e.Mutual,
+		"mutual":     e.Mutual,
 		"from": map[string]interface{}{
-			"id": e.From.ID,
+			"id":   e.From.ID,
 			"type": e.From.Type,
 		},
 		"to": map[string]interface{}{
-			"id": e.To.ID,
+			"id":   e.To.ID,
 			"type": e.To.Type,
 		},
 		"createdAt": e.CreatedAt,
@@ -110,6 +110,15 @@ func (e *Edge) Map() map[string]interface{} {
 	}
 }
 
+type Mapper interface {
+	Map() map[string]interface{}
+}
+
+type Filter struct {
+	Type        string   `json:"type"`
+	Expressions []string `json:"expressions"`
+	Limit       int      `json:"limit"`
+}
 
 func nodeDeclarations() []*exprpb.Decl {
 	return []*exprpb.Decl{
@@ -120,27 +129,35 @@ func nodeDeclarations() []*exprpb.Decl {
 	}
 }
 
-
-func NodeExpression(expressions []string) ([]cel.Program, error) {
+func (f *Filter) Evaluate(mapper Mapper) (bool, error) {
 	env, err := cel.NewEnv(cel.Declarations(nodeDeclarations()...))
 	if err != nil {
-		return nil, err
+		return false, err
 	}
 	var programs []cel.Program
-	for _, exp := range expressions {
+	for _, exp := range f.Expressions {
 		ast, iss := env.Compile(exp)
 		if iss.Err() != nil {
-			return nil, err
+			return false, err
 		}
 		prgm, err := env.Program(ast)
 		if err != nil {
-			return nil, err
+			return false, err
 		}
 		programs = append(programs, prgm)
 	}
-	return programs, nil
+	var passes = true
+	for _, program := range programs {
+		out, _, err := program.Eval(mapper)
+		if err != nil {
+			return false, err
+		}
+		if val, ok := out.Value().(bool); !ok || !val {
+			passes = false
+		}
+	}
+	return passes, nil
 }
-
 
 func edgeDeclarations() []*exprpb.Decl {
 	n := nodeDeclarations()
@@ -152,7 +169,7 @@ func edgeDeclarations() []*exprpb.Decl {
 	return n
 }
 
-func EdgeExpression(expressions []string) ([]cel.Program, error) {
+func (f *Filter) EdgeExpression(expressions []string) ([]cel.Program, error) {
 	env, err := cel.NewEnv(cel.Declarations(edgeDeclarations()...))
 	if err != nil {
 		return nil, err
