@@ -7,9 +7,9 @@ A persistant labelled property graph database written in 100% Go
 - [x] Directed edge Support
 - [x] UnDirected Edge Support
 - [x] Graphql Support
-- [x] Persistant
-- [x] Horizontally Scaleable
-- [x] Loosely typed
+- [x] Persistant (Raft)
+- [x] Horizontally Scaleable (Raft)
+- [x] Loosely typed(mongo-esque)
 - [ ] Prometheus Metrics
 - [x] Pprof Metrics
 - [ ] E2E Tests
@@ -20,11 +20,16 @@ A persistant labelled property graph database written in 100% Go
 - [ ] Bulk Import
 - [ ] Change Stream Subscriptions
 - [ ] Channel Based PubSub
-- [ ] Common Expression Language Query Filtering
-- [ ] Common Expression Language Based JWT Authorization
+- [x] [Common Expression Language](https://github.com/google/cel-go) Query Filtering
+- [ ] [Common Expression Language](https://github.com/google/cel-go) Based Business Rules
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
+## Key Dependencies
+
+- github.com/99designs/gqlgen
+- github.com/hashicorp/raft
+- github.com/autom8ter/machine
 
 ## Example Queries
 
