@@ -23,6 +23,6 @@ type Auth struct {
 	// the OAuth flow, after the resource owner's URLs.
 	RedirectURL string `json:"redirect_url" yaml:"redirect_url"`
 	// Scope specifies optional requested permissions.
-	Scopes []string `json:"scopes" yaml:"scopes"`
-	SessionSecret string `json:"session_secret"`
+	Scopes        []string `json:"scopes" yaml:"scopes"`
+	SessionSecret string   `json:"session_secret"`
 }

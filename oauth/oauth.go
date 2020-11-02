@@ -3,14 +3,16 @@ package oauth
 import (
 	"context"
 	"encoding/json"
-	"github.com/gorilla/sessions"
+	"errors"
 	"github.com/autom8ter/graphik/config"
+	"github.com/gorilla/sessions"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jws"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 )
 
@@ -54,7 +56,7 @@ func New(config *config.Auth) (*Auth, error) {
 		set:      set,
 		metadata: &md,
 		mu:       sync.RWMutex{},
-		store: sessions.NewCookieStore([]byte(config.SessionSecret)),
+		store:    sessions.NewCookieStore([]byte(config.SessionSecret)),
 	}, nil
 }
 
@@ -63,7 +65,7 @@ type Auth struct {
 	oauth    *oauth2.Config
 	set      *jwk.Set
 	metadata *Metadata
-	store *sessions.CookieStore
+	store    *sessions.CookieStore
 }
 
 func (a *Auth) VerifyJWT(token string) ([]byte, error) {
@@ -118,5 +120,43 @@ func (a *Auth) Session(r *http.Request, w http.ResponseWriter, fn func(sess *ses
 	if err := fn(sess); err != nil {
 		return err
 	}
-	return sessions.Save(r,w)
+	return sessions.Save(r, w)
+}
+
+func (a *Auth) Middleware() func(handler http.HandlerFunc) http.HandlerFunc {
+	return func(handler http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			auth := r.Header.Get("Authorization")
+			tokenSplit := strings.Split(auth, "Bearer ")
+			if len(tokenSplit) == 2 {
+				payload, err := a.VerifyJWT(tokenSplit[1])
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusUnauthorized)
+					return
+				}
+				a.Session(r, w, func(sess *sessions.Session) error {
+					sess.Values["token"] = tokenSplit[1]
+					sess.Values["payload"] = string(payload)
+					return nil
+				})
+				handler.ServeHTTP(w, r)
+			} else {
+				if err := a.Session(r, w, func(sess *sessions.Session) error {
+					if token := sess.Values["token"]; token == nil {
+						return errors.New("session token not found")
+					} else {
+						_, err := a.VerifyJWT(token.(string))
+						if err != nil {
+							return err
+						}
+					}
+					return nil
+				}); err != nil {
+					http.Error(w, err.Error(), http.StatusUnauthorized)
+					return
+				}
+				handler.ServeHTTP(w, r)
+			}
+		}
+	}
 }
