@@ -6,12 +6,19 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
 
 type ChangeFilter struct {
 	Op          Op       `json:"op"`
 	Type        string   `json:"type"`
 	Expressions []string `json:"expressions"`
+}
+
+type Command struct {
+	Op        Op          `json:"op"`
+	Value     interface{} `json:"value"`
+	Timestamp time.Time   `json:"timestamp"`
 }
 
 type Counter struct {
@@ -53,22 +60,6 @@ type NodeConstructor struct {
 type Patch struct {
 	Path  Path                   `json:"path"`
 	Patch map[string]interface{} `json:"patch"`
-}
-
-type Search struct {
-	Search string `json:"search"`
-	Type   string `json:"type"`
-	Limit  int    `json:"limit"`
-}
-
-type SearchResult struct {
-	Path Path        `json:"path"`
-	Val  interface{} `json:"val"`
-}
-
-type SearchResults struct {
-	Search  string          `json:"search"`
-	Results []*SearchResult `json:"results"`
 }
 
 type Op string

@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/model"
@@ -100,7 +101,7 @@ func (s *Store) Execute(cmd *model.Command) (interface{}, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
-	lg, err := cmd.Log()
+	lg, err := logCmd(cmd)
 	if err != nil {
 		return nil, err
 	}
@@ -138,4 +139,15 @@ func getID() (string, error) {
 
 func (s *Store) Close() error {
 	return s.raft.Shutdown().Error()
+}
+
+func logCmd(cmd *model.Command) (raft.Log, error) {
+	cmd.Timestamp = time.Now()
+	bits, err := json.Marshal(cmd)
+	if err != nil {
+		return raft.Log{}, err
+	}
+	return raft.Log{
+		Data: bits,
+	}, nil
 }
