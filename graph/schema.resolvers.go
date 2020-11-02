@@ -111,6 +111,13 @@ func (r *mutationResolver) DelEdge(ctx context.Context, input model.Path) (*mode
 	return res.(*model.Counter), nil
 }
 
+func (r *mutationResolver) Publish(ctx context.Context, input model.Message) (*model.Counter, error) {
+	r.machine.Go(func(routine machine.Routine) {
+		routine.Publish(input.Channel, input)
+	})
+	return &model.Counter{Count: 1}, nil
+}
+
 func (r *queryResolver) GetNode(ctx context.Context, input model.Path) (*model.Node, error) {
 	return r.store.Node(ctx, input)
 }
@@ -132,6 +139,27 @@ func (r *queryResolver) GetEdge(ctx context.Context, input model.Path) (*model.E
 
 func (r *queryResolver) GetEdges(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
 	return r.store.Edges(ctx, input)
+}
+
+func (r *subscriptionResolver) Subscribe(ctx context.Context, channel string) (<-chan *model.Message, error) {
+	ch := make(chan *model.Message)
+	r.machine.Go(func(routine machine.Routine) {
+		routine.Subscribe(channel, func(obj interface{}) {
+			for {
+				select {
+				case <-routine.Context().Done():
+					return
+				case <-ctx.Done():
+					return
+				default:
+					if msg, ok := obj.(*model.Message); ok {
+						ch <- msg
+					}
+				}
+			}
+		})
+	})
+	return ch, nil
 }
 
 func (r *subscriptionResolver) NodeChange(ctx context.Context, typeArg model.ChangeFilter) (<-chan *model.Node, error) {

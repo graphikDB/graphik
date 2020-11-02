@@ -78,6 +78,7 @@ type ComplexityRoot struct {
 		DelNode    func(childComplexity int, input model.Path) int
 		PatchEdge  func(childComplexity int, input model.Patch) int
 		PatchNode  func(childComplexity int, input *model.Patch) int
+		Publish    func(childComplexity int, input model.Message) int
 	}
 
 	Node struct {
@@ -98,6 +99,7 @@ type ComplexityRoot struct {
 	Subscription struct {
 		EdgeChange func(childComplexity int, typeArg model.ChangeFilter) int
 		NodeChange func(childComplexity int, typeArg model.ChangeFilter) int
+		Subscribe  func(childComplexity int, channel string) int
 	}
 }
 
@@ -108,6 +110,7 @@ type MutationResolver interface {
 	CreateEdge(ctx context.Context, input model.EdgeConstructor) (*model.Edge, error)
 	PatchEdge(ctx context.Context, input model.Patch) (*model.Edge, error)
 	DelEdge(ctx context.Context, input model.Path) (*model.Counter, error)
+	Publish(ctx context.Context, input model.Message) (*model.Counter, error)
 }
 type QueryResolver interface {
 	GetNode(ctx context.Context, input model.Path) (*model.Node, error)
@@ -117,6 +120,7 @@ type QueryResolver interface {
 	GetEdges(ctx context.Context, input model.Filter) ([]*model.Edge, error)
 }
 type SubscriptionResolver interface {
+	Subscribe(ctx context.Context, channel string) (<-chan *model.Message, error)
 	NodeChange(ctx context.Context, typeArg model.ChangeFilter) (<-chan *model.Node, error)
 	EdgeChange(ctx context.Context, typeArg model.ChangeFilter) (<-chan *model.Edge, error)
 }
@@ -299,6 +303,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.PatchNode(childComplexity, args["input"].(*model.Patch)), true
 
+	case "Mutation.publish":
+		if e.complexity.Mutation.Publish == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_publish_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Publish(childComplexity, args["input"].(model.Message)), true
+
 	case "Node.attributes":
 		if e.complexity.Node.Attributes == nil {
 			break
@@ -411,6 +427,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.NodeChange(childComplexity, args["type"].(model.ChangeFilter)), true
 
+	case "Subscription.subscribe":
+		if e.complexity.Subscription.Subscribe == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_subscribe_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.Subscribe(childComplexity, args["channel"].(string)), true
+
 	}
 	return 0, false
 }
@@ -499,6 +527,7 @@ scalar Map
 scalar Any
 scalar Time
 scalar Path
+scalar Message
 
 enum Operator {
   NEQ
@@ -603,10 +632,12 @@ type Mutation {
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
   delEdge(input: Path!): Counter
-
+  publish(input: Message!): Counter!
 }
 
+
 type Subscription {
+  subscribe(channel: String!): Message!
   nodeChange(type: ChangeFilter!): Node!
   edgeChange(type: ChangeFilter!): Edge!
 }`, BuiltIn: false},
@@ -699,6 +730,21 @@ func (ec *executionContext) field_Mutation_patchNode_args(ctx context.Context, r
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOPatch2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐPatch(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.Message
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNMessage2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐMessage(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -824,6 +870,21 @@ func (ec *executionContext) field_Subscription_nodeChange_args(ctx context.Conte
 		}
 	}
 	args["type"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_subscribe_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["channel"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["channel"] = arg0
 	return args, nil
 }
 
@@ -1557,6 +1618,48 @@ func (ec *executionContext) _Mutation_delEdge(ctx context.Context, field graphql
 	return ec.marshalOCounter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐCounter(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_publish_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Publish(rctx, args["input"].(model.Message))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Counter)
+	fc.Result = res
+	return ec.marshalNCounter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐCounter(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Node_path(ctx context.Context, field graphql.CollectedField, obj *model.Node) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1967,6 +2070,58 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_subscribe_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().Subscribe(rctx, args["channel"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *model.Message)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐMessage(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
 }
 
 func (ec *executionContext) _Subscription_nodeChange(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
@@ -3583,6 +3738,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "delEdge":
 			out.Values[i] = ec._Mutation_delEdge(ctx, field)
+		case "publish":
+			out.Values[i] = ec._Mutation_publish(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3740,6 +3900,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 	}
 
 	switch fields[0].Name {
+	case "subscribe":
+		return ec._Subscription_subscribe(ctx, fields[0])
 	case "nodeChange":
 		return ec._Subscription_nodeChange(ctx, fields[0])
 	case "edgeChange":
@@ -4035,6 +4197,20 @@ func (ec *executionContext) unmarshalNChangeFilter2githubᚗcomᚋautom8terᚋgr
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNCounter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐCounter(ctx context.Context, sel ast.SelectionSet, v model.Counter) graphql.Marshaler {
+	return ec._Counter(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCounter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐCounter(ctx context.Context, sel ast.SelectionSet, v *model.Counter) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Counter(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNDepthFilter2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐDepthFilter(ctx context.Context, v interface{}) (model.DepthFilter, error) {
 	res, err := ec.unmarshalInputDepthFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4135,6 +4311,32 @@ func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.Selecti
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNMessage2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐMessage(ctx context.Context, v interface{}) (model.Message, error) {
+	var res model.Message
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMessage2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐMessage(ctx context.Context, sel ast.SelectionSet, v model.Message) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐMessage(ctx context.Context, v interface{}) (*model.Message, error) {
+	var res = new(model.Message)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐMessage(ctx context.Context, sel ast.SelectionSet, v *model.Message) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalNNode2githubᚗcomᚋautom8terᚋgraphikᚋgraphᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v model.Node) graphql.Marshaler {

@@ -5,6 +5,7 @@ scalar Map
 scalar Any
 scalar Time
 scalar Path
+scalar Message
 
 enum Operator {
   NEQ
@@ -109,10 +110,12 @@ type Mutation {
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
   delEdge(input: Path!): Counter
-
+  publish(input: Message!): Counter!
 }
 
+
 type Subscription {
+  subscribe(channel: String!): Message!
   nodeChange(type: ChangeFilter!): Node!
   edgeChange(type: ChangeFilter!): Edge!
 }

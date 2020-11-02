@@ -5,11 +5,16 @@ import (
 	"fmt"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"github.com/mitchellh/mapstructure"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"io"
 	"strings"
 	"time"
 )
+
+func Decode(input, output interface{}) error {
+	return mapstructure.Decode(input, output)
+}
 
 type Path struct {
 	ID   string `json:"id"`
@@ -162,4 +167,19 @@ func Evaluate(expressions []string, mapper Mapper) (bool, error) {
 		}
 	}
 	return passes, nil
+}
+
+type Message struct {
+	Channel string                 `json:"channel"`
+	Type    string                 `json:"type"`
+	Data    map[string]interface{} `json:"data"`
+}
+
+func (m *Message) UnmarshalGQL(v interface{}) error {
+	return Decode(v, m)
+}
+
+// MarshalGQL implements the graphql.Marshaler interface
+func (m Message) MarshalGQL(w io.Writer) {
+	json.NewEncoder(w).Encode(&m)
 }
