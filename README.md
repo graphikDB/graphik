@@ -22,7 +22,7 @@ A persistant labelled property graph database written in 100% Go
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Business Rules
-[ ] [Common Expression Language](https://opensource.google/projects/cel) Based Constraints
+- [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Constraints
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 

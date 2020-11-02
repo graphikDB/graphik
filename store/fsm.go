@@ -169,18 +169,18 @@ func (f *Store) Persist(sink raft.SnapshotSink) error {
 	}
 	return nil
 }
-func (s *Store) Export()  http.HandlerFunc {
+func (s *Store) Export() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.mu.RLock()
 		defer s.mu.RUnlock()
 		json.NewEncoder(w).Encode(&model.Export{
 			Nodes: s.nodes.All(),
 			Edges: s.edges.All(),
-		});
+		})
 	}
 }
 
-func (s *Store) Import()  http.HandlerFunc {
+func (s *Store) Import() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		export := &model.Export{}
 		if err := json.NewDecoder(r.Body).Decode(export); err != nil {

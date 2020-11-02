@@ -16,6 +16,7 @@ require (
 	github.com/spf13/pflag v1.0.3
 	github.com/vektah/gqlparser/v2 v2.1.0
 	go.uber.org/zap v1.16.0
+	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
 	google.golang.org/genproto v0.0.0-20200416231807-8751e049a2a0
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )

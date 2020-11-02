@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/autom8ter/graphik/config"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/logger"
@@ -27,24 +28,29 @@ import (
 const version = "0.0.0"
 
 func init() {
-	pflag.CommandLine.StringVar(&dbPath, "path", "/tmp/graphik", "path to database folder")
-	pflag.CommandLine.IntVar(&port, "port", 8080, "port to serve on")
-	pflag.CommandLine.IntVar(&bind, "bind", 8081, "bind raft protocol to local port")
-	pflag.CommandLine.StringVar(&join, "join", "", "join raft cluster leader")
-	pflag.CommandLine.StringVar(&nodeID, "node-id", "main", "unique raft node id")
+	pflag.CommandLine.IntVar(&cfg.Port, "port", 8080, "port to serve on")
+	pflag.CommandLine.StringVar(&cfg.Raft.DBPath, "raft.path", "/tmp/graphik", "path to database folder")
+	pflag.CommandLine.IntVar(&cfg.Raft.Bind, "raft.bind", 8081, "bind raft protocol to local port")
+	pflag.CommandLine.StringVar(&cfg.Raft.Join, "raft.join", "", "join raft cluster leader")
+	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.node-id", "main", "unique raft node id")
+
+	pflag.CommandLine.StringVar(&cfg.Auth.RedirectURL, "auth.redirect", "", "oauth2 redirect")
+	pflag.CommandLine.StringVar(&cfg.Auth.ClientID, "auth.client_id", "", "oauth2 client id")
+	pflag.CommandLine.StringVar(&cfg.Auth.ClientSecret, "auth.client_secret", "", "oauth2 client secret")
+	pflag.CommandLine.StringVar(&cfg.Auth.DiscoveryUrl, "auth.discovery_url", "", "openId connect discovery url")
+	pflag.CommandLine.StringSliceVar(&cfg.Auth.Scopes, "auth.scopes", nil, "oauth2 scopes")
+
 }
 
 var (
-	port   int
-	bind   int
-	dbPath string
-	join   string
-	nodeID string
+	cfg = &config.Config{
+		Raft: &config.Raft{},
+		Auth: &config.Auth{},
+	}
 )
 
 func main() {
 	pflag.Parse()
-	port := port
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
@@ -54,17 +60,17 @@ func main() {
 	mach := machine.New(ctx)
 	mux := http.NewServeMux()
 	stor, err := store.New(
-		store.WithLeader(join == ""),
-		store.WithID(nodeID),
-		store.WithBindAddr(fmt.Sprintf("localhost:%v", bind)),
-		store.WithRaftDir(dbPath),
+		store.WithLeader(cfg.Raft.Join == ""),
+		store.WithID(cfg.Raft.NodeID),
+		store.WithBindAddr(fmt.Sprintf("localhost:%v", cfg.Raft.Bind)),
+		store.WithRaftDir(cfg.Raft.DBPath),
 	)
 	if err != nil {
 		logger.Error("failed to create raft store", zap.Error(err))
 		return
 	}
-	if join != "" {
-		if err := joinRaft(join, fmt.Sprintf("localhost:%v", bind), nodeID); err != nil {
+	if cfg.Raft.Join != "" {
+		if err := joinRaft(cfg.Raft.Join, fmt.Sprintf("localhost:%v", cfg.Raft.Bind), cfg.Raft.NodeID); err != nil {
 			logger.Error("failed to join cluster", zap.Error(err))
 			return
 		}
@@ -103,7 +109,7 @@ func main() {
 		Handler: mux,
 	}
 	mach.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", fmt.Sprintf(":%v", port))
+		lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))
 		if err != nil {
 			logger.Error("failed to create server listener", zap.Error(err))
 			return
