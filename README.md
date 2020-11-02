@@ -18,7 +18,7 @@ A persistant labelled property graph database written in 100% Go
 - [ ] OAuth2 Client-Credentials Based Auth
 - [ ] Bulk Export
 - [ ] Bulk Import
-- [ ] Change Stream Subscriptions
+- [x] Change Stream Subscriptions
 - [ ] Channel Based PubSub
 - [x] [Common Expression Language](https://github.com/google/cel-go) Query Filtering
 - [ ] [Common Expression Language](https://github.com/google/cel-go) Based Business Rules

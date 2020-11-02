@@ -3,7 +3,6 @@ package store
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/model"
 	"github.com/autom8ter/graphik/logger"
@@ -16,7 +15,7 @@ import (
 )
 
 func (f *Store) Apply(log *raft.Log) interface{} {
-	var c command.Command
+	var c model.Command
 	if err := json.Unmarshal(log.Data, &c); err != nil {
 		return fmt.Errorf("failed to unmarshal command: %s", err.Error())
 	}
@@ -25,7 +24,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 	switch c.Op {
 	case model.OpCreateNode:
 		var val model.NodeConstructor
-		if err := f.decode(c.Val, &val); err != nil {
+		if err := f.decode(c.Value, &val); err != nil {
 			return errors.Wrap(err, "failed to decode node constructor")
 		}
 		n := f.nodes.Set(&model.Node{
@@ -43,7 +42,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		return n
 	case model.OpPatchNode:
 		var val model.Patch
-		if err := f.decode(c.Val, &val); err != nil {
+		if err := f.decode(c.Value, &val); err != nil {
 			return errors.Wrap(err, "failed to decode node patch")
 		}
 		if !f.nodes.Exists(val.Path) {
@@ -59,7 +58,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		return n
 	case model.OpDeleteNode:
 		var val model.Path
-		if err := f.decode(c.Val, &val); err != nil {
+		if err := f.decode(c.Value, &val); err != nil {
 			return errors.Wrap(err, "failed to decode foreign key")
 		}
 		deleted := 0
@@ -78,7 +77,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		return &model.Counter{Count: deleted}
 	case model.OpCreateEdge:
 		var val model.EdgeConstructor
-		if err := f.decode(c.Val, &val); err != nil {
+		if err := f.decode(c.Value, &val); err != nil {
 			return errors.Wrap(err, "failed to decode edge constructor")
 		}
 		from, ok := f.nodes.Get(val.From)
@@ -108,7 +107,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 		return e
 	case model.OpPatchEdge:
 		var val model.Patch
-		if err := f.decode(c.Val, &val); err != nil {
+		if err := f.decode(c.Value, &val); err != nil {
 			return errors.Wrap(err, "failed to decode edge patch")
 		}
 		if !f.edges.Exists(val.Path) {
@@ -125,7 +124,7 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 
 	case model.OpDeleteEdge:
 		var val model.Path
-		if err := f.decode(c.Val, &val); err != nil {
+		if err := f.decode(c.Value, &val); err != nil {
 			return errors.Wrap(err, "failed to decode path")
 		}
 		if f.edges.Exists(val) {

@@ -20,6 +20,12 @@ enum Op {
   DELETE_EDGE
 }
 
+type Command {
+  op: Op!
+  value: Any!
+  timestamp: Time!
+}
+
 type Counter {
   count: Int!
 }

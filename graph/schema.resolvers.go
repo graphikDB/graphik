@@ -6,8 +6,7 @@ package graph
 import (
 	"context"
 	"fmt"
-
-	"github.com/autom8ter/graphik/command"
+	
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/graph/model"
@@ -22,9 +21,9 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConst
 	if input.Path.Type == "" {
 		input.Path.Type = generic.Default
 	}
-	res, err := r.store.Execute(&command.Command{
+	res, err := r.store.Execute(&model.Command{
 		Op:  model.OpCreateNode,
-		Val: input,
+		Value: input,
 	})
 	if err != nil {
 		return nil, err
@@ -36,9 +35,9 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConst
 }
 
 func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*model.Node, error) {
-	res, err := r.store.Execute(&command.Command{
+	res, err := r.store.Execute(&model.Command{
 		Op:  model.OpPatchNode,
-		Val: input,
+		Value: input,
 	})
 	if err != nil {
 		return nil, err
@@ -50,9 +49,9 @@ func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*
 }
 
 func (r *mutationResolver) DelNode(ctx context.Context, input model.Path) (*model.Counter, error) {
-	res, err := r.store.Execute(&command.Command{
+	res, err := r.store.Execute(&model.Command{
 		Op:  model.OpDeleteNode,
-		Val: input,
+		Value: input,
 	})
 	if err != nil {
 		return nil, err
@@ -71,9 +70,9 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConst
 	if input.Path.Type == "" {
 		input.Path.Type = generic.Default
 	}
-	res, err := r.store.Execute(&command.Command{
+	res, err := r.store.Execute(&model.Command{
 		Op:  model.OpCreateEdge,
-		Val: input,
+		Value: input,
 	})
 	if err != nil {
 		return nil, err
@@ -85,9 +84,9 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConst
 }
 
 func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*model.Edge, error) {
-	res, err := r.store.Execute(&command.Command{
+	res, err := r.store.Execute(&model.Command{
 		Op:  model.OpPatchEdge,
-		Val: input,
+		Value: input,
 	})
 	if err != nil {
 		return nil, err
@@ -99,9 +98,9 @@ func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*m
 }
 
 func (r *mutationResolver) DelEdge(ctx context.Context, input model.Path) (*model.Counter, error) {
-	res, err := r.store.Execute(&command.Command{
+	res, err := r.store.Execute(&model.Command{
 		Op:  model.OpDeleteEdge,
-		Val: input,
+		Value: input,
 	})
 	if err != nil {
 		return nil, err

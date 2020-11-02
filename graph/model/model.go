@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"github.com/hashicorp/raft"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"io"
 	"strings"
@@ -168,4 +169,21 @@ func Evaluate(expressions []string, mapper Mapper) (bool, error) {
 		}
 	}
 	return passes, nil
+}
+
+type Command struct {
+	Op        Op          `json:"op"`
+	Value     interface{} `json:"value"`
+	Timestamp time.Time   `json:"timestamp"`
+}
+
+func (c *Command) Log() (raft.Log, error) {
+	c.Timestamp = time.Now()
+	bits, err := json.Marshal(c)
+	if err != nil {
+		return raft.Log{}, err
+	}
+	return raft.Log{
+		Data: bits,
+	}, nil
 }

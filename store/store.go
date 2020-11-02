@@ -3,8 +3,8 @@ package store
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/command"
 	"github.com/autom8ter/graphik/generic"
+	"github.com/autom8ter/graphik/graph/model"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
@@ -96,7 +96,7 @@ func New(opts ...Opt) (*Store, error) {
 	return s, nil
 }
 
-func (s *Store) Execute(cmd *command.Command) (interface{}, error) {
+func (s *Store) Execute(cmd *model.Command) (interface{}, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
