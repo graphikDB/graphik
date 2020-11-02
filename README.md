@@ -19,7 +19,7 @@ A persistant labelled property graph database written in 100% Go
 - [ ] Bulk Export
 - [ ] Bulk Import
 - [x] Change Stream Subscriptions
-- [ ] Channel Based PubSub
+- [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Business Rules
 - [ ] Kubernetes Operator
