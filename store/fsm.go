@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"io"
+	"net/http"
 )
 
 func (f *Store) Apply(log *raft.Log) interface{} {
@@ -155,18 +156,42 @@ func (f *Store) Restore(closer io.ReadCloser) error {
 
 func (f *Store) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
+	defer f.mu.RUnlock()
 	if err := json.NewEncoder(sink).Encode(&model.Export{
 		Nodes: f.nodes.All(),
 		Edges: f.edges.All(),
 	}); err != nil {
 		return err
 	}
-	f.mu.RUnlock()
 	if err := sink.Close(); err != nil {
 		sink.Cancel()
 		return err
 	}
 	return nil
+}
+func (s *Store) Export()  http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.mu.RLock()
+		defer s.mu.RUnlock()
+		json.NewEncoder(w).Encode(&model.Export{
+			Nodes: s.nodes.All(),
+			Edges: s.edges.All(),
+		});
+	}
+}
+
+func (s *Store) Import()  http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		export := &model.Export{}
+		if err := json.NewDecoder(r.Body).Decode(export); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		s.mu.Lock()
+		defer s.mu.Unlock()
+		s.nodes.SetAll(export.Nodes...)
+		s.edges.SetAll(export.Edges...)
+	}
 }
 
 func (f *Store) Release() {}

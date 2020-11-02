@@ -82,6 +82,8 @@ func main() {
 	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	mux.HandleFunc("/join", stor.Join())
+	mux.HandleFunc("/export", stor.Export())
+	mux.HandleFunc("/import", stor.Import())
 	logger.Info("registered endpoints", zap.Strings("endpoints",
 		[]string{
 			"/",
@@ -92,6 +94,8 @@ func main() {
 			"/debug/pprof/symbol",
 			"/debug/pprof/trace",
 			"/join",
+			"/export",
+			"/import",
 		},
 	))
 
