@@ -16,12 +16,13 @@ A persistant labelled property graph database written in 100% Go
 - [ ] Benchmarks Against Other Graph Databases
 - [ ] Graphql Over gRPC
 - [ ] OAuth2 Client-Credentials Based Auth
-- [ ] Bulk Export
-- [ ] Bulk Import
+- [x] Bulk Export
+- [x] Bulk Import
 - [x] Change Stream Subscriptions
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Business Rules
+[ ] [Common Expression Language](https://opensource.google/projects/cel) Based Constraints
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
