@@ -120,7 +120,7 @@ func (a *Auth) Session(r *http.Request, w http.ResponseWriter, fn func(sess *ses
 	if err := fn(sess); err != nil {
 		return err
 	}
-	return sessions.Save(r, w)
+	return sess.Save(r, w)
 }
 
 func (a *Auth) Middleware() func(handler http.HandlerFunc) http.HandlerFunc {
@@ -134,11 +134,14 @@ func (a *Auth) Middleware() func(handler http.HandlerFunc) http.HandlerFunc {
 					http.Error(w, err.Error(), http.StatusUnauthorized)
 					return
 				}
-				a.Session(r, w, func(sess *sessions.Session) error {
+				if err := a.Session(r, w, func(sess *sessions.Session) error {
 					sess.Values["token"] = tokenSplit[1]
 					sess.Values["payload"] = string(payload)
 					return nil
-				})
+				}); err != nil {
+					http.Error(w, err.Error(), http.StatusUnauthorized)
+					return
+				}
 				handler.ServeHTTP(w, r)
 			} else {
 				if err := a.Session(r, w, func(sess *sessions.Session) error {
