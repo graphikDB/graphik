@@ -69,7 +69,7 @@ type Node struct {
 
 func (n *Node) Map() map[string]interface{} {
 	return map[string]interface{}{
-		"path": n.Path.String(),
+		"path":       n.Path.String(),
 		"attributes": n.Attributes,
 		"createdAt":  n.CreatedAt,
 		"updatedAt":  n.UpdatedAt,
@@ -88,7 +88,7 @@ type Edge struct {
 
 func (e *Edge) Map() map[string]interface{} {
 	return map[string]interface{}{
-		"path": e.Path.String(),
+		"path":       e.Path.String(),
 		"attributes": e.Attributes,
 		"mutual":     e.Mutual,
 		"from": map[string]interface{}{

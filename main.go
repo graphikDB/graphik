@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -28,7 +30,8 @@ func init() {
 	pflag.CommandLine.StringVar(&dbPath, "path", "/tmp/graphik", "path to database folder")
 	pflag.CommandLine.IntVar(&port, "port", 8080, "port to serve on")
 	pflag.CommandLine.IntVar(&bind, "bind", 8081, "bind raft protocol to local port")
-	pflag.CommandLine.StringVarP(&join, "join", "j", "", "join raft cluster leader")
+	pflag.CommandLine.StringVar(&join, "join", "", "join raft cluster leader")
+	pflag.CommandLine.StringVar(&nodeID, "node-id", "main", "unique raft node id")
 }
 
 var (
@@ -36,6 +39,7 @@ var (
 	bind   int
 	dbPath string
 	join   string
+	nodeID string
 )
 
 func main() {
@@ -51,6 +55,7 @@ func main() {
 	mux := http.NewServeMux()
 	stor, err := store.New(
 		store.WithLeader(join == ""),
+		store.WithID(nodeID),
 		store.WithBindAddr(fmt.Sprintf("localhost:%v", bind)),
 		store.WithRaftDir(dbPath),
 	)
@@ -58,6 +63,13 @@ func main() {
 		logger.Error("failed to create raft store", zap.Error(err))
 		return
 	}
+	if join != "" {
+		if err := joinRaft(join, fmt.Sprintf("localhost:%v", bind), nodeID); err != nil {
+			logger.Error("failed to join cluster", zap.Error(err))
+			return
+		}
+	}
+
 	resolver := graph.NewResolver(mach, stor)
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
@@ -69,11 +81,24 @@ func main() {
 	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
 	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	mux.HandleFunc("/join", stor.Join())
+	logger.Info("registered endpoints", zap.Strings("endpoints",
+		[]string{
+			"/",
+			"/query",
+			"/metrics",
+			"/debug/pprof/",
+			"/debug/pprof/profile",
+			"/debug/pprof/symbol",
+			"/debug/pprof/trace",
+			"/join",
+		},
+	))
+
 	server := &http.Server{
 		Handler: mux,
 	}
 	mach.Go(func(routine machine.Routine) {
-
 		lis, err := net.Listen("tcp", fmt.Sprintf(":%v", port))
 		if err != nil {
 			logger.Error("failed to create server listener", zap.Error(err))
@@ -104,4 +129,18 @@ func main() {
 	_ = resolver.Close()
 	logger.Info("shutdown successful")
 	mach.Wait()
+}
+
+func joinRaft(joinAddr, raftAddr, nodeID string) error {
+	b, err := json.Marshal(map[string]string{"addr": raftAddr, "id": nodeID})
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post(fmt.Sprintf("http://%s/join", joinAddr), "application-type/json", bytes.NewReader(b))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return nil
 }
