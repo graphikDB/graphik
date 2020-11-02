@@ -32,7 +32,7 @@ func init() {
 	pflag.CommandLine.StringVar(&cfg.Raft.DBPath, "raft.path", "/tmp/graphik", "path to database folder")
 	pflag.CommandLine.IntVar(&cfg.Raft.Bind, "raft.bind", 8081, "bind raft protocol to local port")
 	pflag.CommandLine.StringVar(&cfg.Raft.Join, "raft.join", "", "join raft cluster leader")
-	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.node-id", "main", "unique raft node id")
+	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.id", "main", "unique raft node id")
 
 	pflag.CommandLine.StringVar(&cfg.Auth.RedirectURL, "auth.redirect", "", "oauth2 redirect")
 	pflag.CommandLine.StringVar(&cfg.Auth.ClientID, "auth.client_id", "", "oauth2 client id")
