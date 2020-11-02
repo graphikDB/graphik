@@ -24,4 +24,5 @@ type Auth struct {
 	RedirectURL string `json:"redirect_url" yaml:"redirect_url"`
 	// Scope specifies optional requested permissions.
 	Scopes []string `json:"scopes" yaml:"scopes"`
+	SessionSecret string `json:"session_secret"`
 }

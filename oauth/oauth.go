@@ -1,13 +1,21 @@
 package oauth
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/gorilla/sessions"
 	"github.com/autom8ter/graphik/config"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jws"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 	"net/http"
+	"net/url"
 	"sync"
+)
+
+const (
+	sessionName = "x-graphik-session"
 )
 
 type Metadata struct {
@@ -46,6 +54,7 @@ func New(config *config.Auth) (*Auth, error) {
 		set:      set,
 		metadata: &md,
 		mu:       sync.RWMutex{},
+		store: sessions.NewCookieStore([]byte(config.SessionSecret)),
 	}, nil
 }
 
@@ -54,6 +63,7 @@ type Auth struct {
 	oauth    *oauth2.Config
 	set      *jwk.Set
 	metadata *Metadata
+	store *sessions.CookieStore
 }
 
 func (a *Auth) VerifyJWT(token string) ([]byte, error) {
@@ -75,4 +85,38 @@ func (a *Auth) Refresh() error {
 	}
 	a.set = set
 	return nil
+}
+
+func (a *Auth) ClientCredentials(ctx context.Context, values url.Values) oauth2.TokenSource {
+	c := clientcredentials.Config{
+		ClientID:       a.oauth.ClientID,
+		ClientSecret:   a.oauth.ClientSecret,
+		TokenURL:       a.metadata.TokenEndpoint,
+		Scopes:         a.oauth.Scopes,
+		EndpointParams: values,
+	}
+	return c.TokenSource(ctx)
+}
+
+func (a *Auth) AuthorizationCode(ctx context.Context, code string) (oauth2.TokenSource, error) {
+	token, err := a.oauth.Exchange(ctx, code)
+	if err != nil {
+		return nil, err
+	}
+	return a.oauth.TokenSource(ctx, token), nil
+}
+
+func (a *Auth) Client(ctx context.Context, source oauth2.TokenSource) *http.Client {
+	return oauth2.NewClient(ctx, source)
+}
+
+func (a *Auth) Session(r *http.Request, w http.ResponseWriter, fn func(sess *sessions.Session) error) error {
+	sess, err := a.store.Get(r, sessionName)
+	if err != nil {
+		return err
+	}
+	if err := fn(sess); err != nil {
+		return err
+	}
+	return sessions.Save(r,w)
 }

@@ -6,6 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/autom8ter/machine v1.0.0
 	github.com/google/cel-go v0.6.0
+	github.com/gorilla/sessions v1.2.1
 	github.com/hashicorp/go-uuid v1.0.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/hashicorp/raft v1.2.0
