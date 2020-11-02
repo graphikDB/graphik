@@ -20,8 +20,8 @@ A persistant labelled property graph database written in 100% Go
 - [ ] Bulk Import
 - [x] Change Stream Subscriptions
 - [ ] Channel Based PubSub
-- [x] [Common Expression Language](https://github.com/google/cel-go) Query Filtering
-- [ ] [Common Expression Language](https://github.com/google/cel-go) Based Business Rules
+- [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
+- [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Business Rules
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
@@ -65,15 +65,32 @@ query {
 
 ```graphql
 query {
-    getNodes(input:{type:"user" limit: 100}) {
-    	path
+    getNodes(input:{type:"user" limit: 100 expressions: ["attributes.name.startsWith(\"cole\")"]}) {
+    	  path
         attributes
-    	createdAt
+    		createdAt
         updatedAt
     }
 }
+
 ```
 
+```json
+{
+  "data": {
+    "getNodes": [
+      {
+        "path": "user/4ab07cba-6e9f-ed0b-e101-d1a704edcd2d",
+        "attributes": {
+          "name": "coleman"
+        },
+        "createdAt": "2020-11-01T20:17:01-07:00",
+        "updatedAt": "2020-11-01T20:17:01-07:00"
+      }
+    ]
+  }
+}
+```
 ### patch node
 
 ```graphql

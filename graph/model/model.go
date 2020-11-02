@@ -69,10 +69,7 @@ type Node struct {
 
 func (n *Node) Map() map[string]interface{} {
 	return map[string]interface{}{
-		"path": map[string]interface{}{
-			"id":   n.Path.ID,
-			"type": n.Path.Type,
-		},
+		"path": n.Path.String(),
 		"attributes": n.Attributes,
 		"createdAt":  n.CreatedAt,
 		"updatedAt":  n.UpdatedAt,
@@ -91,10 +88,7 @@ type Edge struct {
 
 func (e *Edge) Map() map[string]interface{} {
 	return map[string]interface{}{
-		"path": map[string]interface{}{
-			"id":   e.Path.ID,
-			"type": e.Path.Type,
-		},
+		"path": e.Path.String(),
 		"attributes": e.Attributes,
 		"mutual":     e.Mutual,
 		"from": map[string]interface{}{
@@ -159,7 +153,7 @@ func Evaluate(expressions []string, mapper Mapper) (bool, error) {
 	}
 	var passes = true
 	for _, program := range programs {
-		out, _, err := program.Eval(mapper)
+		out, _, err := program.Eval(mapper.Map())
 		if err != nil {
 			return false, err
 		}
