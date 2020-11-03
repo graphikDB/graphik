@@ -1,6 +1,9 @@
-package store
+package runtime
 
-import "github.com/autom8ter/machine"
+import (
+	"github.com/autom8ter/graphik/jwks"
+	"github.com/autom8ter/machine"
+)
 
 type Opts struct {
 	localID  string
@@ -8,6 +11,7 @@ type Opts struct {
 	bindAddr string
 	leader   bool
 	machine  *machine.Machine
+	jwks     *jwks.Auth
 }
 
 type Opt func(s *Opts)
@@ -39,5 +43,12 @@ func WithLeader(leader bool) Opt {
 func WithMachine(machine *machine.Machine) Opt {
 	return func(s *Opts) {
 		s.machine = machine
+	}
+}
+
+
+func WithJWKS(jwks *jwks.Auth) Opt {
+	return func(s *Opts) {
+		s.jwks = jwks
 	}
 }

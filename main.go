@@ -12,7 +12,7 @@ import (
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/store"
+	"github.com/autom8ter/graphik/runtime"
 	"github.com/autom8ter/machine"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -45,6 +45,7 @@ func init() {
 var (
 	cfg = &config.Config{
 		Raft: &config.Raft{},
+		Cors: &config.Cors{},
 	}
 )
 
@@ -58,11 +59,11 @@ func main() {
 
 	mach := machine.New(ctx)
 	router := mux.NewRouter()
-	stor, err := store.New(
-		store.WithLeader(cfg.Raft.Join == ""),
-		store.WithID(cfg.Raft.NodeID),
-		store.WithBindAddr(fmt.Sprintf("localhost:%v", cfg.Raft.Bind)),
-		store.WithRaftDir(cfg.Raft.DBPath),
+	stor, err := runtime.New(
+		runtime.WithLeader(cfg.Raft.Join == ""),
+		runtime.WithID(cfg.Raft.NodeID),
+		runtime.WithBindAddr(fmt.Sprintf("localhost:%v", cfg.Raft.Bind)),
+		runtime.WithRaftDir(cfg.Raft.DBPath),
 	)
 	if err != nil {
 		logger.Error("failed to create raft store", zap.Error(err))
@@ -82,7 +83,6 @@ func main() {
 		AllowedMethods:   cfg.Cors.AllowedMethods,
 		AllowedHeaders:   cfg.Cors.AllowedHeaders,
 		AllowCredentials: true,
-		Debug:            true,
 	}).Handler)
 	a, err := jwks.New(cfg.JWKs)
 	if err != nil {

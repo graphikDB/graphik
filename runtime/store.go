@@ -1,4 +1,4 @@
-package store
+package runtime
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/model"
+	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
@@ -31,6 +32,7 @@ type Store struct {
 	nodes *generic.Nodes
 	edges *generic.Edges
 	close sync.Once
+	jwks *jwks.Auth
 }
 
 func New(opts ...Opt) (*Store, error) {

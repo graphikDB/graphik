@@ -1,7 +1,6 @@
 package jwks
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/autom8ter/graphik/logger"
@@ -10,14 +9,7 @@ import (
 	"github.com/lestrrat-go/jwx/jws"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"net/http"
-	"strings"
 	"sync"
-	"time"
-)
-
-const (
-	authCtxKey = "x-graphik-auth-ctx"
 )
 
 func New(jwks []string) (*Auth, error) {
@@ -95,72 +87,27 @@ func (a *Auth) RefreshKeys() error {
 	return nil
 }
 
-func (a *Auth) Middleware() func(handler http.Handler) http.HandlerFunc {
-	return func(handler http.Handler) http.HandlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			tokenString := strings.Replace(authHeader, "Bearer ", "", -1)
-			if tokenString == "" {
-				http.Error(w, "empty authorization header", http.StatusUnauthorized)
-				return
-			}
-			payload, err := a.VerifyJWT(tokenString)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusUnauthorized)
-				return
-			}
-			if exp, ok := payload["exp"].(int64); ok {
-				if exp < time.Now().Unix() {
-					http.Error(w, "token expired", http.StatusUnauthorized)
-					return
-				}
-			}
-			if exp, ok := payload["exp"].(int); ok {
-				if int64(exp) < time.Now().Unix() {
-					http.Error(w, "token expired", http.StatusUnauthorized)
-					return
-				}
-			}
-			handler.ServeHTTP(w, a.toContext(r, payload))
+func (a *Auth) Override(uris []string) error {
+	sets := map[string]*jwk.Set{}
+	for _, uri := range uris {
+		set, err := jwk.Fetch(uri)
+		if err != nil {
+			return err
 		}
+		sets[uri] = set
 	}
+	a.mu.Lock()
+	a.set = sets
+	a.mu.Unlock()
+	return nil
 }
 
-func (a *Auth) toContext(r *http.Request, payload map[string]interface{}) *http.Request {
-	return r.WithContext(context.WithValue(r.Context(), authCtxKey, payload))
-}
-
-func (a *Auth) Claims(r *http.Request) map[string]interface{} {
-	val, ok := r.Context().Value(authCtxKey).(map[string]interface{})
-	if !ok {
-		return map[string]interface{}{}
+func (a *Auth) List() []string {
+	var list []string
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	for key, _ := range a.set {
+		list = append(list, key)
 	}
-	return val
-}
-
-func (a *Auth) PutJWKS() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var jwks []string
-		json.NewDecoder(r.Body).Decode(&jwks)
-		for _, uri := range jwks {
-			set, err := jwk.Fetch(uri)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			a.mu.Lock()
-			a.set[uri] = set
-			a.mu.Unlock()
-		}
-	}
-}
-
-func (a *Auth) GetJWKS() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var jwks []string
-		for uri, _ := range a.set {
-			jwks = append(jwks, uri)
-		}
-		json.NewEncoder(w).Encode(&jwks)
-	}
+	return list
 }

@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/autom8ter/graphik/store"
+	"github.com/autom8ter/graphik/runtime"
 	"github.com/autom8ter/machine"
 )
 
@@ -11,10 +11,10 @@ import (
 
 type Resolver struct {
 	machine *machine.Machine
-	store   *store.Store
+	store   *runtime.Store
 }
 
-func NewResolver(machine *machine.Machine, store *store.Store) *Resolver {
+func NewResolver(machine *machine.Machine, store *runtime.Store) *Resolver {
 	return &Resolver{
 		machine: machine,
 		store:   store,
