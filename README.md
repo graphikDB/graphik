@@ -6,12 +6,17 @@ A persistant labelled property graph database written in 100% Go
 - [x] Containerized
 - [x] Directed edge Support
 - [x] UnDirected Edge Support
+- [ ] Depth First Traversal
+- [ ] Breadth First Traversal
 - [x] Graphql Support
 - [x] Persistant (Raft)
 - [x] Horizontally Scaleable (Raft)
+- [ ] Auto redirect mutations to Raft leader
 - [x] Loosely typed(mongo-esque)
-- [ ] Prometheus Metrics
+- [x] Prometheus Metrics
 - [x] Pprof Metrics
+- [ ] Live config update
+- [ ] Cloud Storage(file upload)
 - [ ] E2E Tests
 - [ ] Benchmarks Against Other Graph Databases
 - [x] Secure JWT based auth with remote JWKS support
@@ -20,7 +25,7 @@ A persistant labelled property graph database written in 100% Go
 - [x] Change Stream Subscriptions
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
-- [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Authorization
+- [x] [Common Expression Language](https://opensource.google/projects/cel) Based Authorization
 - [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Constraints
 - [ ] Graphql Over gRPC
 - [ ] Graphql Over websockets
