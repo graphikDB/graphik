@@ -1,4 +1,4 @@
-package graph
+package resolver
 
 import (
 	"github.com/autom8ter/graphik/runtime"

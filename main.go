@@ -8,10 +8,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/autom8ter/graphik/config"
-	"github.com/autom8ter/graphik/graph"
-	"github.com/autom8ter/graphik/graph/generated"
+	"github.com/autom8ter/graphik/generated"
 	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
+	resolver2 "github.com/autom8ter/graphik/resolver"
 	"github.com/autom8ter/graphik/runtime"
 	"github.com/autom8ter/machine"
 	"github.com/gorilla/mux"
@@ -82,7 +82,7 @@ func main() {
 			return
 		}
 	}
-	resolver := graph.NewResolver(mach, stor)
+	resolver := resolver2.NewResolver(mach, stor)
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 	router.Handle("/", playground.Handler("GraphQL playground", "/api/query"))
 	router.Use(cors.New(cors.Options{
@@ -94,6 +94,7 @@ func main() {
 
 
 	middleware := stor.AuthMiddleware()
+
 	router.Handle("/api/query", middleware(srv))
 	router.Handle("/api/join", middleware(stor.Join())).Methods(http.MethodPost)
 	router.Handle("/api/export", middleware(stor.Export())).Methods(http.MethodGet)

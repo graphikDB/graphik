@@ -2,7 +2,7 @@ package runtime
 
 import (
 	"context"
-	"github.com/autom8ter/graphik/graph/model"
+	"github.com/autom8ter/graphik/model"
 	"net/http"
 )
 
