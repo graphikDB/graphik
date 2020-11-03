@@ -14,8 +14,9 @@ import (
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/store"
 	"github.com/autom8ter/machine"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/cors"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"net"
@@ -36,7 +37,9 @@ func init() {
 	pflag.CommandLine.StringVar(&cfg.Raft.Join, "raft.join", "", "join raft cluster leader")
 	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.id", "main", "unique raft node id")
 	pflag.CommandLine.StringSliceVar(&cfg.JWKs, "jwks", nil, "remote json web key set(s)")
-
+	pflag.CommandLine.StringSliceVar(&cfg.Cors.AllowedHeaders, "cors.headers", nil, "allowed cors headers")
+	pflag.CommandLine.StringSliceVar(&cfg.Cors.AllowedMethods, "cors.methods", nil, "allowed cors methods")
+	pflag.CommandLine.StringSliceVar(&cfg.Cors.AllowedOrigins, "cors.origins", nil, "allowed cors origins")
 }
 
 var (
@@ -73,8 +76,14 @@ func main() {
 	}
 	resolver := graph.NewResolver(mach, stor)
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
-
 	router.Handle("/", playground.Handler("GraphQL playground", "/api/query"))
+	router.Use(cors.New(cors.Options{
+		AllowedOrigins:   cfg.Cors.AllowedOrigins,
+		AllowedMethods:   cfg.Cors.AllowedMethods,
+		AllowedHeaders:   cfg.Cors.AllowedHeaders,
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler)
 	a, err := jwks.New(cfg.JWKs)
 	if err != nil {
 		logger.Error("failed to fetch jwks", zap.Error(err))

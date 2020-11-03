@@ -164,4 +164,3 @@ func (a *Auth) GetJWKS() http.HandlerFunc {
 		json.NewEncoder(w).Encode(&jwks)
 	}
 }
-
