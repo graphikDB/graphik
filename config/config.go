@@ -1,9 +1,9 @@
 package config
 
 type Config struct {
-	Port    int    `json:"port"`
+	Port int      `json:"port"`
 	JWKs []string `json:"jwks"`
-	Raft    *Raft  `json:"raft"`
+	Raft *Raft    `json:"raft"`
 }
 
 type Raft struct {

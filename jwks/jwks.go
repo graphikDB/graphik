@@ -137,3 +137,31 @@ func (a *Auth) Claims(r *http.Request) map[string]interface{} {
 	}
 	return val
 }
+
+func (a *Auth) PutJWKS() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var jwks []string
+		json.NewDecoder(r.Body).Decode(&jwks)
+		for _, uri := range jwks {
+			set, err := jwk.Fetch(uri)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			a.mu.Lock()
+			a.set[uri] = set
+			a.mu.Unlock()
+		}
+	}
+}
+
+func (a *Auth) GetJWKS() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var jwks []string
+		for uri, _ := range a.set {
+			jwks = append(jwks, uri)
+		}
+		json.NewEncoder(w).Encode(&jwks)
+	}
+}
+

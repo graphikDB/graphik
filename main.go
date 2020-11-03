@@ -15,6 +15,7 @@ import (
 	"github.com/autom8ter/graphik/store"
 	"github.com/autom8ter/machine"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/gorilla/mux"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"net"
@@ -53,7 +54,7 @@ func main() {
 	defer signal.Stop(interrupt)
 
 	mach := machine.New(ctx)
-	mux := http.NewServeMux()
+	router := mux.NewRouter()
 	stor, err := store.New(
 		store.WithLeader(cfg.Raft.Join == ""),
 		store.WithID(cfg.Raft.NodeID),
@@ -70,54 +71,39 @@ func main() {
 			return
 		}
 	}
-
 	resolver := graph.NewResolver(mach, stor)
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
-	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	if len(cfg.JWKs) > 0 {
-		a, err := jwks.New(cfg.JWKs)
-		if err != nil {
-			logger.Error("failed to fetch jwks", zap.Error(err))
-			return
-		}
-		mux.Handle("/query", a.Middleware()(srv))
-		mach.Go(func(routine machine.Routine) {
-			logger.Info("refreshing jwks")
-			if err := a.RefreshKeys(); err != nil {
-				logger.Error("failed to refresh keys", zap.Error(err))
-			}
-		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-	} else {
-		mux.Handle("/query", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/api/query"))
+	a, err := jwks.New(cfg.JWKs)
+	if err != nil {
+		logger.Error("failed to fetch jwks", zap.Error(err))
+		return
 	}
+	mach.Go(func(routine machine.Routine) {
+		logger.Info("refreshing jwks")
+		if err := a.RefreshKeys(); err != nil {
+			logger.Error("failed to refresh keys", zap.Error(err))
+		}
+	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 
-	mux.Handle("/metrics", promhttp.Handler())
-	mux.HandleFunc("/debug/pprof/", pprof.Index)
-	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
-	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
-	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
-	mux.HandleFunc("/join", stor.Join())
-	mux.HandleFunc("/export", stor.Export())
-	mux.HandleFunc("/import", stor.Import())
-	logger.Info("registered endpoints", zap.Strings("endpoints",
-		[]string{
-			"/",
-			"/query",
-			"/metrics",
-			"/debug/pprof/",
-			"/debug/pprof/profile",
-			"/debug/pprof/symbol",
-			"/debug/pprof/trace",
-			"/join",
-			"/export",
-			"/import",
-		},
-	))
+	middleware := a.Middleware()
+	router.Handle("/api/query", middleware(srv))
+	router.Handle("/api/join", middleware(stor.Join())).Methods(http.MethodPost)
+	router.Handle("/api/export", middleware(stor.Export())).Methods(http.MethodGet)
+	router.Handle("/api/import", middleware(stor.Import())).Methods(http.MethodPost)
+	router.Handle("/api/jwks", middleware(a.GetJWKS())).Methods(http.MethodGet)
+	router.Handle("/api/jwks", middleware(a.PutJWKS())).Methods(http.MethodPut)
+
+	router.Handle("/metrics", promhttp.Handler()).Methods(http.MethodGet)
+	router.HandleFunc("/debug/pprof/", pprof.Index).Methods(http.MethodGet)
+	router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline).Methods(http.MethodGet)
+	router.HandleFunc("/debug/pprof/profile", pprof.Profile).Methods(http.MethodGet)
+	router.HandleFunc("/debug/pprof/symbol", pprof.Symbol).Methods(http.MethodGet)
+	router.HandleFunc("/debug/pprof/trace", pprof.Trace).Methods(http.MethodGet)
 
 	server := &http.Server{
-		Handler: mux,
+		Handler: router,
 	}
 	mach.Go(func(routine machine.Routine) {
 		lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))
@@ -157,11 +143,10 @@ func joinRaft(joinAddr, raftAddr, nodeID string) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post(fmt.Sprintf("http://%s/join", joinAddr), "application-type/json", bytes.NewReader(b))
+	resp, err := http.Post(fmt.Sprintf("http://%s/api/join", joinAddr), "application-type/json", bytes.NewReader(b))
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-
 	return nil
 }
