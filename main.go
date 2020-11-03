@@ -11,6 +11,7 @@ import (
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/graph/generated"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/graphik/oauth"
 	"github.com/autom8ter/graphik/store"
 	"github.com/autom8ter/machine"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -33,19 +34,13 @@ func init() {
 	pflag.CommandLine.IntVar(&cfg.Raft.Bind, "raft.bind", 8081, "bind raft protocol to local port")
 	pflag.CommandLine.StringVar(&cfg.Raft.Join, "raft.join", "", "join raft cluster leader")
 	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.id", "main", "unique raft node id")
-
-	pflag.CommandLine.StringVar(&cfg.Auth.RedirectURL, "auth.redirect", "", "oauth2 redirect")
-	pflag.CommandLine.StringVar(&cfg.Auth.ClientID, "auth.client_id", "", "oauth2 client id")
-	pflag.CommandLine.StringVar(&cfg.Auth.ClientSecret, "auth.client_secret", "", "oauth2 client secret")
-	pflag.CommandLine.StringVar(&cfg.Auth.DiscoveryUrl, "auth.discovery_url", "", "openId connect discovery url")
-	pflag.CommandLine.StringSliceVar(&cfg.Auth.Scopes, "auth.scopes", nil, "oauth2 scopes")
+	pflag.CommandLine.StringVar(&cfg.JWKsURL, "jwks", "", "remote json web key set")
 
 }
 
 var (
 	cfg = &config.Config{
 		Raft: &config.Raft{},
-		Auth: &config.Auth{},
 	}
 )
 
@@ -80,7 +75,17 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	mux.Handle("/query", srv)
+	if cfg.JWKsURL != "" {
+		a, err := oauth.New(cfg.JWKsURL)
+		if err != nil {
+			logger.Error("failed to fetch jwks", zap.Error(err))
+			return
+		}
+		mux.Handle("/query", a.Middleware()(srv))
+	} else {
+		mux.Handle("/query", srv)
+	}
+
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.HandleFunc("/debug/pprof/", pprof.Index)
 	mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
