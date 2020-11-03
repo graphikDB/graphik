@@ -10,8 +10,8 @@ import (
 	"github.com/autom8ter/graphik/config"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/graph/generated"
+	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/oauth"
 	"github.com/autom8ter/graphik/store"
 	"github.com/autom8ter/machine"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -34,7 +34,7 @@ func init() {
 	pflag.CommandLine.IntVar(&cfg.Raft.Bind, "raft.bind", 8081, "bind raft protocol to local port")
 	pflag.CommandLine.StringVar(&cfg.Raft.Join, "raft.join", "", "join raft cluster leader")
 	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.id", "main", "unique raft node id")
-	pflag.CommandLine.StringVar(&cfg.JWKsURL, "jwks", "", "remote json web key set")
+	pflag.CommandLine.StringSliceVar(&cfg.JWKs, "jwks", nil, "remote json web key set(s)")
 
 }
 
@@ -75,13 +75,19 @@ func main() {
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 
 	mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	if cfg.JWKsURL != "" {
-		a, err := oauth.New(cfg.JWKsURL)
+	if len(cfg.JWKs) > 0 {
+		a, err := jwks.New(cfg.JWKs)
 		if err != nil {
 			logger.Error("failed to fetch jwks", zap.Error(err))
 			return
 		}
 		mux.Handle("/query", a.Middleware()(srv))
+		mach.Go(func(routine machine.Routine) {
+			logger.Info("refreshing jwks")
+			if err := a.RefreshKeys(); err != nil {
+				logger.Error("failed to refresh keys", zap.Error(err))
+			}
+		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 	} else {
 		mux.Handle("/query", srv)
 	}

@@ -2,7 +2,7 @@ package config
 
 type Config struct {
 	Port    int    `json:"port"`
-	JWKsURL string `json:"jwks_url"`
+	JWKs []string `json:"jwks"`
 	Raft    *Raft  `json:"raft"`
 }
 

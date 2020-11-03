@@ -1,13 +1,15 @@
-package oauth
+package jwks
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/autom8ter/graphik/logger"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jws"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"net/http"
 	"strings"
 	"sync"
@@ -18,27 +20,28 @@ const (
 	authCtxKey = "x-graphik-auth-ctx"
 )
 
-func New(jwks string) (*Auth, error) {
-	set, err := jwk.Fetch(jwks)
-	if err != nil {
-		return nil, err
+func New(jwks []string) (*Auth, error) {
+	sets := map[string]*jwk.Set{}
+	for _, uri := range jwks {
+		set, err := jwk.Fetch(uri)
+		if err != nil {
+			return nil, err
+		}
+		sets[uri] = set
 	}
+
 	return &Auth{
-		set:     set,
-		mu:      sync.RWMutex{},
-		jwksUri: jwks,
+		set: sets,
+		mu:  sync.RWMutex{},
 	}, nil
 }
 
 type Auth struct {
-	mu      sync.RWMutex
-	set     *jwk.Set
-	jwksUri string
+	mu  sync.RWMutex
+	set map[string]*jwk.Set
 }
 
 func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
 	message, err := jws.ParseString(token)
 	if err != nil {
 		return nil, err
@@ -55,31 +58,40 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	if !ok {
 		return nil, fmt.Errorf("alg type cast error")
 	}
-	keys := a.set.LookupKeyID(kid.(string))
-	if len(keys) == 0 {
-		return nil, fmt.Errorf("kid %v has zero keys", kid)
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	for uri, set := range a.set {
+		keys := set.LookupKeyID(kid.(string))
+		if len(keys) == 0 {
+			continue
+		}
+		var key interface{}
+		if err := keys[0].Raw(&key); err != nil {
+			logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(err))
+			continue
+		}
+		payload, err := jws.Verify([]byte(token), alg, key)
+		if err != nil {
+			logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(err))
+			continue
+		}
+		data := map[string]interface{}{}
+		return data, json.Unmarshal(payload, &data)
 	}
-	var key interface{}
-	if err := keys[0].Raw(&key); err != nil {
-		return nil, err
-	}
-
-	payload, err := jws.Verify([]byte(token), alg, key)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to verify message")
-	}
-	data := map[string]interface{}{}
-	return data, json.Unmarshal(payload, &data)
+	return nil, errors.New("zero jwks matches")
 }
 
 func (a *Auth) RefreshKeys() error {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	set, err := jwk.Fetch(a.jwksUri)
-	if err != nil {
-		return err
+	sets := map[string]*jwk.Set{}
+	for uri, _ := range a.set {
+		set, err := jwk.Fetch(uri)
+		if err != nil {
+			return err
+		}
+		a.mu.Lock()
+		sets[uri] = set
+		a.mu.Unlock()
 	}
-	a.set = set
 	return nil
 }
 
