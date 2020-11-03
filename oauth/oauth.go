@@ -3,17 +3,20 @@ package oauth
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"github.com/autom8ter/graphik/config"
 	"github.com/gorilla/sessions"
+	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jws"
+	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -68,10 +71,40 @@ type Auth struct {
 	store    *sessions.CookieStore
 }
 
-func (a *Auth) VerifyJWT(token string) ([]byte, error) {
+func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	return jws.VerifyWithJWKSet([]byte(token), a.set, nil)
+	message, err := jws.ParseString(token)
+	if err != nil {
+		return nil, err
+	}
+	kid, ok := message.Signatures()[0].ProtectedHeaders().Get("kid")
+	if !ok {
+		return nil, fmt.Errorf("kid not found")
+	}
+	algI, ok := message.Signatures()[0].ProtectedHeaders().Get("alg")
+	if !ok {
+		return nil, fmt.Errorf("alg not found")
+	}
+	alg, ok := algI.(jwa.SignatureAlgorithm)
+	if !ok {
+		return nil, fmt.Errorf("alg type cast error")
+	}
+	keys := a.set.LookupKeyID(kid.(string))
+	if len(keys) == 0 {
+		return nil, fmt.Errorf("kid %v has zero keys", kid)
+	}
+	var key interface{}
+	if err := keys[0].Raw(&key); err != nil {
+		return nil, err
+	}
+
+	payload, err := jws.Verify([]byte(token), alg, key)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to verify message")
+	}
+	data := map[string]interface{}{}
+	return data, json.Unmarshal(payload, &data)
 }
 
 func (a *Auth) ParseJWT(token string) (*jws.Message, error) {
@@ -126,17 +159,32 @@ func (a *Auth) Session(r *http.Request, w http.ResponseWriter, fn func(sess *ses
 func (a *Auth) Middleware() func(handler http.HandlerFunc) http.HandlerFunc {
 	return func(handler http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
-			auth := r.Header.Get("Authorization")
-			tokenSplit := strings.Split(auth, "Bearer ")
-			if len(tokenSplit) == 2 {
-				payload, err := a.VerifyJWT(tokenSplit[1])
+
+			authHeader := r.Header.Get("Authorization")
+			tokenString := strings.Replace(authHeader, "Bearer ", "", -1)
+
+			if tokenString != "" {
+				payload, err := a.VerifyJWT(tokenString)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusUnauthorized)
 					return
 				}
+				if exp, ok := payload["exp"].(int64); ok {
+					if exp < time.Now().Unix() {
+						http.Error(w, "token expired", http.StatusUnauthorized)
+						return
+					}
+				}
+				if exp, ok := payload["exp"].(int); ok {
+					if int64(exp) < time.Now().Unix() {
+						http.Error(w, "token expired", http.StatusUnauthorized)
+						return
+					}
+				}
 				if err := a.Session(r, w, func(sess *sessions.Session) error {
-					sess.Values["token"] = tokenSplit[1]
-					sess.Values["payload"] = string(payload)
+					for k, v := range payload {
+						sess.Values[k] = v
+					}
 					return nil
 				}); err != nil {
 					http.Error(w, err.Error(), http.StatusUnauthorized)
@@ -145,12 +193,17 @@ func (a *Auth) Middleware() func(handler http.HandlerFunc) http.HandlerFunc {
 				handler.ServeHTTP(w, r)
 			} else {
 				if err := a.Session(r, w, func(sess *sessions.Session) error {
-					if token := sess.Values["token"]; token == nil {
-						return errors.New("session token not found")
-					} else {
-						_, err := a.VerifyJWT(token.(string))
-						if err != nil {
-							return err
+					if len(sess.Values) == 0 {
+						return errors.New("empty session")
+					}
+					if exp, ok := sess.Values["exp"].(int64); ok {
+						if exp < time.Now().Unix() {
+							return errors.New("session expired")
+						}
+					}
+					if exp, ok := sess.Values["exp"].(int); ok {
+						if int64(exp) < time.Now().Unix() {
+							return errors.New("session expired")
 						}
 					}
 					return nil
