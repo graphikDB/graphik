@@ -59,11 +59,18 @@ func main() {
 
 	mach := machine.New(ctx)
 	router := mux.NewRouter()
+	j, err := jwks.New(cfg.JWKs)
+	if err != nil {
+		logger.Error("failed to fetch jwks", zap.Error(err))
+		return
+	}
 	stor, err := runtime.New(
 		runtime.WithLeader(cfg.Raft.Join == ""),
 		runtime.WithID(cfg.Raft.NodeID),
 		runtime.WithBindAddr(fmt.Sprintf("localhost:%v", cfg.Raft.Bind)),
 		runtime.WithRaftDir(cfg.Raft.DBPath),
+		runtime.WithJWKS(j),
+		runtime.WithMachine(mach),
 	)
 	if err != nil {
 		logger.Error("failed to create raft store", zap.Error(err))
@@ -84,25 +91,15 @@ func main() {
 		AllowedHeaders:   cfg.Cors.AllowedHeaders,
 		AllowCredentials: true,
 	}).Handler)
-	a, err := jwks.New(cfg.JWKs)
-	if err != nil {
-		logger.Error("failed to fetch jwks", zap.Error(err))
-		return
-	}
-	mach.Go(func(routine machine.Routine) {
-		logger.Info("refreshing jwks")
-		if err := a.RefreshKeys(); err != nil {
-			logger.Error("failed to refresh keys", zap.Error(err))
-		}
-	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 
-	middleware := a.Middleware()
+
+	middleware := stor.AuthMiddleware()
 	router.Handle("/api/query", middleware(srv))
 	router.Handle("/api/join", middleware(stor.Join())).Methods(http.MethodPost)
 	router.Handle("/api/export", middleware(stor.Export())).Methods(http.MethodGet)
 	router.Handle("/api/import", middleware(stor.Import())).Methods(http.MethodPost)
-	router.Handle("/api/jwks", middleware(a.GetJWKS())).Methods(http.MethodGet)
-	router.Handle("/api/jwks", middleware(a.PutJWKS())).Methods(http.MethodPut)
+	router.Handle("/api/jwks", middleware(stor.GetJWKS())).Methods(http.MethodGet)
+	router.Handle("/api/jwks", middleware(stor.PutJWKS())).Methods(http.MethodPut)
 
 	router.Handle("/metrics", promhttp.Handler()).Methods(http.MethodGet)
 	router.HandleFunc("/debug/pprof/", pprof.Index).Methods(http.MethodGet)

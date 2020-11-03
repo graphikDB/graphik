@@ -6,14 +6,12 @@ import (
 	"fmt"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/graph/model"
-	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"go.uber.org/zap"
 	"net"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -32,13 +30,15 @@ type Store struct {
 	nodes *generic.Nodes
 	edges *generic.Edges
 	close sync.Once
-	jwks *jwks.Auth
 }
 
 func New(opts ...Opt) (*Store, error) {
 	options := &Opts{}
 	for _, o := range opts {
 		o(options)
+	}
+	if options.jwks == nil || len(options.jwks.List()) == 0 {
+		return nil, fmt.Errorf("empty jwks")
 	}
 	if options.localID == "" {
 		options.localID = "default"
@@ -98,6 +98,12 @@ func New(opts ...Opt) (*Store, error) {
 		rft.BootstrapCluster(configuration)
 	}
 	s.raft = rft
+	s.opts.machine.Go(func(routine machine.Routine) {
+		logger.Info("refreshing jwks")
+		if err := s.opts.jwks.RefreshKeys(); err != nil {
+			logger.Error("failed to refresh keys", zap.Error(err))
+		}
+	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 	return s, nil
 }
 
@@ -171,36 +177,4 @@ func (s *Store) join(nodeID, addr string) error {
 		zap.String("address", addr),
 	)
 	return nil
-}
-
-func (s *Store) Join() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		m := map[string]string{}
-		if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		if len(m) != 2 {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		remoteAddr, ok := m["addr"]
-		if !ok {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		nodeID, ok := m["id"]
-		if !ok {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		if err := s.join(nodeID, remoteAddr); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-	}
 }

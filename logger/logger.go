@@ -10,6 +10,7 @@ import (
 var logger *zap.Logger
 
 func Logger(withFields ...zap.Field) *zap.Logger {
+	withFields = append(withFields, zap.String("service", "graphik"))
 	if logger == nil {
 		zap.NewDevelopmentConfig()
 		jsonEncoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
