@@ -66,11 +66,53 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.Connectio
 }
 
 func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*model.Edge, error) {
-	panic(fmt.Errorf("not implemented"))
+	n := r.runtime.GetNode(ctx)
+	if n == nil {
+		return nil, errors.New("non-existant node")
+	}
+	edge, err := r.runtime.Edge(ctx, input.Path)
+	if err != nil {
+		return nil, err
+	}
+	if edge.From != n.Path && edge.To != n.Path {
+		return nil, fmt.Errorf("%s is not involved with edge %s", n.Path.String(), input.Path.String())
+	}
+	res, err := r.runtime.Execute(&model.Command{
+		Op:    model.OpPatchEdge,
+		Value: input,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res.(*model.Edge), nil
 }
 
 func (r *mutationResolver) DelEdge(ctx context.Context, input model.Path) (*model.Counter, error) {
-	panic(fmt.Errorf("not implemented"))
+	n := r.runtime.GetNode(ctx)
+	if n == nil {
+		return nil, errors.New("non-existant node")
+	}
+	edge, err := r.runtime.Edge(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	if edge.From != n.Path && edge.To != n.Path {
+		return nil, fmt.Errorf("%s is not involved with edge %s", n.Path.String(), input.String())
+	}
+	res, err := r.runtime.Execute(&model.Command{
+		Op:    model.OpDeleteEdge,
+		Value: input,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err, ok := res.(error); ok {
+		return nil, err
+	}
+	return res.(*model.Counter), nil
 }
 
 func (r *queryResolver) Me(ctx context.Context, input *model.Empty) (*model.Node, error) {

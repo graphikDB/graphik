@@ -11,7 +11,7 @@ type Query {
 
 type Mutation {
   createNode(input: NodeConstructor!): Node!
-  patchNode(input: Patch): Node!
+  patchNode(input: Patch!): Node!
   delNode(input: Path!): Counter
 
   createEdge(input: EdgeConstructor!): Edge!

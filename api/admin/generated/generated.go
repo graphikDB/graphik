@@ -77,7 +77,7 @@ type ComplexityRoot struct {
 		DelEdge    func(childComplexity int, input model.Path) int
 		DelNode    func(childComplexity int, input model.Path) int
 		PatchEdge  func(childComplexity int, input model.Patch) int
-		PatchNode  func(childComplexity int, input *model.Patch) int
+		PatchNode  func(childComplexity int, input model.Patch) int
 		Publish    func(childComplexity int, input model.Message) int
 	}
 
@@ -105,7 +105,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateNode(ctx context.Context, input model.NodeConstructor) (*model.Node, error)
-	PatchNode(ctx context.Context, input *model.Patch) (*model.Node, error)
+	PatchNode(ctx context.Context, input model.Patch) (*model.Node, error)
 	DelNode(ctx context.Context, input model.Path) (*model.Counter, error)
 	CreateEdge(ctx context.Context, input model.EdgeConstructor) (*model.Edge, error)
 	PatchEdge(ctx context.Context, input model.Patch) (*model.Edge, error)
@@ -301,7 +301,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchNode(childComplexity, args["input"].(*model.Patch)), true
+		return e.complexity.Mutation.PatchNode(childComplexity, args["input"].(model.Patch)), true
 
 	case "Mutation.publish":
 		if e.complexity.Mutation.Publish == nil {
@@ -533,7 +533,7 @@ var sources = []*ast.Source{
 
 type Mutation {
   createNode(input: NodeConstructor!): Node!
-  patchNode(input: Patch): Node!
+  patchNode(input: Patch!): Node!
   delNode(input: Path!): Counter
 
   createEdge(input: EdgeConstructor!): Edge!
@@ -738,10 +738,10 @@ func (ec *executionContext) field_Mutation_patchEdge_args(ctx context.Context, r
 func (ec *executionContext) field_Mutation_patchNode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.Patch
+	var arg0 model.Patch
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOPatch2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋlibᚋmodelᚐPatch(ctx, tmp)
+		arg0, err = ec.unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphikᚋlibᚋmodelᚐPatch(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1451,7 +1451,7 @@ func (ec *executionContext) _Mutation_patchNode(ctx context.Context, field graph
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchNode(rctx, args["input"].(*model.Patch))
+		return ec.resolvers.Mutation().PatchNode(rctx, args["input"].(model.Patch))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4950,14 +4950,6 @@ func (ec *executionContext) marshalONode2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Node(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOPatch2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋlibᚋmodelᚐPatch(ctx context.Context, v interface{}) (*model.Patch, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputPatch(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

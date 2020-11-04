@@ -34,7 +34,7 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConst
 	return res.(*model.Node), nil
 }
 
-func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*model.Node, error) {
+func (r *mutationResolver) PatchNode(ctx context.Context, input model.Patch) (*model.Node, error) {
 	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpPatchNode,
 		Value: input,
