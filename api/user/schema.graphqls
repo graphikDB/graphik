@@ -1,0 +1,16 @@
+
+type Query {
+  me(input: Empty): Node!
+}
+
+#
+#type Mutation {
+#
+#}
+#
+#
+#type Subscription {
+#  subscribe(channel: String!): Message!
+#  nodeChange(type: ChangeFilter!): Node!
+#  edgeChange(type: ChangeFilter!): Edge!
+#}

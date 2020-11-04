@@ -327,3 +327,7 @@ func (e *Operator) UnmarshalGQL(v interface{}) error {
 func (e Operator) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
+
+type Empty struct {
+	Ignore string `json:"ignore,omitempty"`
+}

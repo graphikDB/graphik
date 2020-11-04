@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/autom8ter/graphik/api/admin/generated"
+	generated2 "github.com/autom8ter/graphik/api/admin/generated"
 	resolver2 "github.com/autom8ter/graphik/api/admin/resolver"
+	"github.com/autom8ter/graphik/api/user/generated"
+	"github.com/autom8ter/graphik/api/user/resolver"
 	"github.com/autom8ter/graphik/config"
 	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
@@ -82,9 +84,9 @@ func main() {
 			return
 		}
 	}
-	resolver := resolver2.NewResolver(stor)
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
-	router.Handle("/", playground.Handler("GraphQL playground", "/api/query"))
+	adminSrv := handler.NewDefaultServer(generated2.NewExecutableSchema(generated2.Config{Resolvers: resolver2.NewResolver(stor)}))
+	userSrv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver.NewResolver(stor)}))
+	router.Handle("/", playground.Handler("GraphQL playground", "/api/admin/query"))
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   cfg.Cors.AllowedOrigins,
 		AllowedMethods:   cfg.Cors.AllowedMethods,
@@ -94,7 +96,8 @@ func main() {
 
 	middleware := stor.AuthMiddleware()
 
-	router.Handle("/api/query", middleware(srv))
+	router.Handle("/api/admin/query", middleware(adminSrv))
+	router.Handle("/api/user/query", middleware(userSrv))
 	router.Handle("/api/join", middleware(stor.Join())).Methods(http.MethodPost)
 	router.Handle("/api/export", middleware(stor.Export())).Methods(http.MethodGet)
 	router.Handle("/api/import", middleware(stor.Import())).Methods(http.MethodPost)
@@ -139,7 +142,7 @@ func main() {
 	defer shutdownCancel()
 
 	_ = server.Shutdown(shutdownCtx)
-	_ = resolver.Close()
+	_ = stor.Close()
 	logger.Info("shutdown successful")
 	mach.Wait()
 }

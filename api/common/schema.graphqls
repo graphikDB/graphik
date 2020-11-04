@@ -87,3 +87,7 @@ input ChangeFilter {
   type: String!
   expressions: [String!]
 }
+
+input Empty {
+  ignore: String
+}
