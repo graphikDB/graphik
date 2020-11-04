@@ -86,7 +86,7 @@ func main() {
 	}
 	adminSrv := handler.NewDefaultServer(generated2.NewExecutableSchema(generated2.Config{Resolvers: resolver2.NewResolver(stor)}))
 	userSrv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver.NewResolver(stor)}))
-	router.Handle("/", playground.Handler("GraphQL playground", "/api/admin/query"))
+
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   cfg.Cors.AllowedOrigins,
 		AllowedMethods:   cfg.Cors.AllowedMethods,
