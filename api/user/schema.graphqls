@@ -1,14 +1,17 @@
-
 type Query {
   me(input: Empty): Node!
   edgesFrom(input: Filter!): [Edge]
   edgesTo(input: Filter!): [Edge]
 }
 
-#
-#type Mutation {
-#
-#}
+
+type Mutation {
+  patch(input: Map!): Node!
+  createEdge(input: Connection!): Edge!
+  patchEdge(input: Patch!): Edge!
+  delEdge(input: Path!): Counter!
+}
+
 #
 #
 #type Subscription {

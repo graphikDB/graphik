@@ -1,7 +1,7 @@
 package resolver
 
 import (
-	"github.com/autom8ter/graphik/runtime"
+	"github.com/autom8ter/graphik/lib/runtime"
 )
 
 // This file will not be regenerated automatically.

@@ -56,6 +56,13 @@ input Filter {
   limit: Int!
 }
 
+input Connection {
+  path: Path!
+  mutual: Boolean!
+  attributes: Map
+  to: Path!
+}
+
 input EdgeConstructor {
   path: Path!
   mutual: Boolean!

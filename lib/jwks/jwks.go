@@ -3,7 +3,7 @@ package jwks
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/graphik/lib/logger"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jws"

@@ -345,3 +345,10 @@ type NodeDetail struct {
 	EdgesFrom  []*Edge                `json:"edgesFrom"`
 	EdgesTo    []*Edge                `json:"edgesTo"`
 }
+
+type Connection struct {
+	Path       Path                   `json:"path"`
+	Mutual     bool                   `json:"mutual"`
+	Attributes map[string]interface{} `json:"attributes"`
+	To         Path                   `json:"to"`
+}

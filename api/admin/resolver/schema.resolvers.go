@@ -8,22 +8,22 @@ import (
 	"fmt"
 
 	generated1 "github.com/autom8ter/graphik/api/admin/generated"
-	"github.com/autom8ter/graphik/api/model"
-	"github.com/autom8ter/graphik/generic"
+	"github.com/autom8ter/graphik/lib/generic"
+	"github.com/autom8ter/graphik/lib/model"
 	"github.com/autom8ter/machine"
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConstructor) (*model.Node, error) {
-	if input.Path.ID == "" {
-		random := generic.UUID()
-		input.Path.ID = random
+	i := &input
+	if i.Path.ID == "" {
+		i.Path.ID = generic.UUID()
 	}
-	if input.Path.Type == "" {
-		input.Path.Type = generic.Default
+	if i.Path.Type == "" {
+		i.Path.Type = generic.Default
 	}
 	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpCreateNode,
-		Value: input,
+		Value: *i,
 	})
 	if err != nil {
 		return nil, err
@@ -63,16 +63,16 @@ func (r *mutationResolver) DelNode(ctx context.Context, input model.Path) (*mode
 }
 
 func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConstructor) (*model.Edge, error) {
-	if input.Path.ID == "" {
-		random := generic.UUID()
-		input.Path.ID = random
+	i := &input
+	if i.Path.ID == "" {
+		i.Path.ID = generic.UUID()
 	}
-	if input.Path.Type == "" {
-		input.Path.Type = generic.Default
+	if i.Path.Type == "" {
+		i.Path.Type = generic.Default
 	}
 	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpCreateEdge,
-		Value: input,
+		Value: *i,
 	})
 	if err != nil {
 		return nil, err

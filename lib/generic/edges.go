@@ -1,7 +1,7 @@
 package generic
 
 import (
-	"github.com/autom8ter/graphik/api/model"
+	"github.com/autom8ter/graphik/lib/model"
 	"time"
 )
 
