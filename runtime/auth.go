@@ -12,7 +12,7 @@ const (
 
 func (a *Runtime) toContext(r *http.Request, payload map[string]interface{}) *http.Request {
 	path := model.Path{
-		Type: "subject",
+		Type: "user",
 		ID:   payload["sub"].(string),
 	}
 	n, ok := a.nodes.Get(path)
@@ -25,8 +25,8 @@ func (a *Runtime) toContext(r *http.Request, payload map[string]interface{}) *ht
 	return r.WithContext(context.WithValue(r.Context(), authCtxKey, n))
 }
 
-func (s *Runtime) GetNode(r *http.Request) *model.Node {
-	val, ok := r.Context().Value(authCtxKey).(*model.Node)
+func (s *Runtime) GetNode(ctx context.Context) *model.Node {
+	val, ok := ctx.Value(authCtxKey).(*model.Node)
 	if !ok {
 		return nil
 	}

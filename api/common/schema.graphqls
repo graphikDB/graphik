@@ -88,6 +88,11 @@ input ChangeFilter {
   expressions: [String!]
 }
 
+input EdgeFilters {
+  edgesFrom: [Filter!]
+  edgesTo: [Filter!]
+}
+
 input Empty {
   ignore: String
 }

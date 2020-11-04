@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	generated2 "github.com/autom8ter/graphik/api/admin/generated"
 	resolver2 "github.com/autom8ter/graphik/api/admin/resolver"
 	"github.com/autom8ter/graphik/api/user/generated"

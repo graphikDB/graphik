@@ -5,14 +5,34 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/autom8ter/graphik/api/model"
 	"github.com/autom8ter/graphik/api/user/generated"
 )
 
 func (r *queryResolver) Me(ctx context.Context, input *model.Empty) (*model.Node, error) {
-	panic(fmt.Errorf("not implemented"))
+	n := r.runtime.GetNode(ctx)
+	if n == nil {
+		return nil, errors.New("nonexistant node")
+	}
+	return n, nil
+}
+
+func (r *queryResolver) EdgesFrom(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
+	n := r.runtime.GetNode(ctx)
+	if n == nil {
+		return nil, errors.New("nonexistant node")
+	}
+	return r.runtime.EdgesFrom(ctx, n.Path, input)
+}
+
+func (r *queryResolver) EdgesTo(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
+	n := r.runtime.GetNode(ctx)
+	if n == nil {
+		return nil, errors.New("nonexistant node")
+	}
+	return r.runtime.EdgesTo(ctx, n.Path, input)
 }
 
 // Query returns generated.QueryResolver implementation.

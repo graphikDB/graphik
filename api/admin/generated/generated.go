@@ -638,6 +638,11 @@ input ChangeFilter {
   expressions: [String!]
 }
 
+input EdgeFilters {
+  edgesFrom: [Filter!]
+  edgesTo: [Filter!]
+}
+
 input Empty {
   ignore: String
 }`, BuiltIn: false},
@@ -3455,6 +3460,34 @@ func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputEdgeFilters(ctx context.Context, obj interface{}) (model.EdgeFilters, error) {
+	var it model.EdgeFilters
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "edgesFrom":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("edgesFrom"))
+			it.EdgesFrom, err = ec.unmarshalOFilter2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚋmodelᚐFilterᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "edgesTo":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("edgesTo"))
+			it.EdgesTo, err = ec.unmarshalOFilter2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚋmodelᚐFilterᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputEmpty(ctx context.Context, obj interface{}) (model.Empty, error) {
 	var it model.Empty
 	var asMap = obj.(map[string]interface{})
@@ -4297,6 +4330,11 @@ func (ec *executionContext) unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphik�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚋmodelᚐFilter(ctx context.Context, v interface{}) (*model.Filter, error) {
+	res, err := ec.unmarshalInputFilter(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4775,6 +4813,30 @@ func (ec *executionContext) marshalOEdge2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Edge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOFilter2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚋmodelᚐFilterᚄ(ctx context.Context, v interface{}) ([]*model.Filter, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.Filter, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚋmodelᚐFilter(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
 
 func (ec *executionContext) unmarshalOMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {

@@ -63,3 +63,15 @@ func (f *Runtime) Edges(ctx context.Context, input model.Filter) ([]*model.Edge,
 	defer f.mu.RUnlock()
 	return f.edges.FilterSearch(input)
 }
+
+func (f *Runtime) EdgesFrom(ctx context.Context, path model.Path, filter model.Filter) ([]*model.Edge, error) {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+	return f.edges.RangeFilterFrom(path, filter), nil
+}
+
+func (f *Runtime) EdgesTo(ctx context.Context, path model.Path, filter model.Filter) ([]*model.Edge, error) {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+	return f.edges.RangeFilterTo(path, filter), nil
+}

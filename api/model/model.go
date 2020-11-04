@@ -331,3 +331,17 @@ func (e Operator) MarshalGQL(w io.Writer) {
 type Empty struct {
 	Ignore string `json:"ignore,omitempty"`
 }
+
+type EdgeFilters struct {
+	EdgesFrom []*Filter `json:"edgesFrom"`
+	EdgesTo   []*Filter `json:"edgesTo"`
+}
+
+type NodeDetail struct {
+	Path       Path                   `json:"path"`
+	Attributes map[string]interface{} `json:"attributes"`
+	CreatedAt  time.Time              `json:"createdAt"`
+	UpdatedAt  time.Time              `json:"updatedAt"`
+	EdgesFrom  []*Edge                `json:"edgesFrom"`
+	EdgesTo    []*Edge                `json:"edgesTo"`
+}

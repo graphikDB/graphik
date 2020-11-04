@@ -126,6 +126,36 @@ func (e Edges) RangeTo(path model.Path, fn func(e *model.Edge) bool) {
 	}
 }
 
+func (e Edges) RangeFilterFrom(path model.Path, filter model.Filter) []*model.Edge {
+	var edges []*model.Edge
+	e.RangeFrom(path, func(e *model.Edge) bool {
+		if e.Path.Type != filter.Type {
+			return true
+		}
+		pass, _ := model.Evaluate(filter.Expressions, e)
+		if pass {
+			edges = append(edges, e)
+		}
+		return len(edges) < filter.Limit
+	})
+	return edges
+}
+
+func (e Edges) RangeFilterTo(path model.Path, filter model.Filter) []*model.Edge {
+	var edges []*model.Edge
+	e.RangeTo(path, func(e *model.Edge) bool {
+		if e.Path.Type != filter.Type {
+			return true
+		}
+		pass, _ := model.Evaluate(filter.Expressions, e)
+		if pass {
+			edges = append(edges, e)
+		}
+		return len(edges) < filter.Limit
+	})
+	return edges
+}
+
 func (n *Edges) Filter(edgeType string, filter func(edge *model.Edge) bool) []*model.Edge {
 	var filtered []*model.Edge
 	n.Range(edgeType, func(node *model.Edge) bool {

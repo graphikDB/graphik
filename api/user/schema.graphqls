@@ -1,6 +1,8 @@
 
 type Query {
   me(input: Empty): Node!
+  edgesFrom(input: Filter!): [Edge]
+  edgesTo(input: Filter!): [Edge]
 }
 
 #
