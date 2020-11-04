@@ -7,9 +7,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/autom8ter/graphik/generated"
+	"github.com/autom8ter/graphik/api/model"
+	generated1 "github.com/autom8ter/graphik/api/private/generated"
 	"github.com/autom8ter/graphik/generic"
-	"github.com/autom8ter/graphik/model"
 	"github.com/autom8ter/machine"
 )
 
@@ -222,14 +222,14 @@ func (r *subscriptionResolver) EdgeChange(ctx context.Context, typeArg model.Cha
 	return ch, nil
 }
 
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+// Mutation returns generated1.MutationResolver implementation.
+func (r *Resolver) Mutation() generated1.MutationResolver { return &mutationResolver{r} }
 
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+// Query returns generated1.QueryResolver implementation.
+func (r *Resolver) Query() generated1.QueryResolver { return &queryResolver{r} }
 
-// Subscription returns generated.SubscriptionResolver implementation.
-func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
+// Subscription returns generated1.SubscriptionResolver implementation.
+func (r *Resolver) Subscription() generated1.SubscriptionResolver { return &subscriptionResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

@@ -1,6 +1,3 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
 scalar Map
 scalar Any
 scalar Time
@@ -89,33 +86,4 @@ input ChangeFilter {
   op: Op!
   type: String!
   expressions: [String!]
-}
-
-type Query {
-  # node returns a node using a foreign key
-  getNode(input: Path!): Node
-  getNodes(input: Filter!): [Node!]!
-  depthSearch(input: DepthFilter!): [Node!]!
-  # edge returns an edge using a foreign key
-  getEdge(input: Path!): Edge
-  # edges traverses the graph and returns edges that pass the given filter
-  getEdges(input: Filter!): [Edge!]!
-}
-
-type Mutation {
-  createNode(input: NodeConstructor!): Node!
-  patchNode(input: Patch): Node!
-  delNode(input: Path!): Counter
-
-  createEdge(input: EdgeConstructor!): Edge!
-  patchEdge(input: Patch!): Edge!
-  delEdge(input: Path!): Counter
-  publish(input: Message!): Counter!
-}
-
-
-type Subscription {
-  subscribe(channel: String!): Message!
-  nodeChange(type: ChangeFilter!): Node!
-  edgeChange(type: ChangeFilter!): Edge!
 }

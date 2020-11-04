@@ -3,7 +3,7 @@ package runtime
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/model"
+	"github.com/autom8ter/graphik/api/model"
 )
 
 func (f *Runtime) Node(ctx context.Context, input model.Path) (*model.Node, error) {

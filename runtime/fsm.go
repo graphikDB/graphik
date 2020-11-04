@@ -3,9 +3,9 @@ package runtime
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/autom8ter/graphik/api/model"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/model"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
 	"github.com/mitchellh/mapstructure"
