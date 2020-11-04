@@ -16,7 +16,7 @@ exec:
 # Where should any generated models go?
 model:
   filename: models_gen.go
-  package: private
+  package: admin
 
 # Where should the resolver implementations go?
 resolver:

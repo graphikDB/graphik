@@ -13,7 +13,7 @@ run:
 	@go run main.go
 
 gen:
-	@gqlgen generate
+	@go generate ./...
 
 patch: ## bump version by 1 patch
 	bumpversion patch --allow-dirty
