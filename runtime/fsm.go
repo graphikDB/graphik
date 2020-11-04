@@ -15,7 +15,7 @@ import (
 	"net/http"
 )
 
-func (f *Store) Apply(log *raft.Log) interface{} {
+func (f *Runtime) Apply(log *raft.Log) interface{} {
 	var c model.Command
 	if err := json.Unmarshal(log.Data, &c); err != nil {
 		return fmt.Errorf("failed to unmarshal command: %s", err.Error())
@@ -138,11 +138,11 @@ func (f *Store) Apply(log *raft.Log) interface{} {
 	}
 }
 
-func (f *Store) Snapshot() (raft.FSMSnapshot, error) {
+func (f *Runtime) Snapshot() (raft.FSMSnapshot, error) {
 	return f, nil
 }
 
-func (f *Store) Restore(closer io.ReadCloser) error {
+func (f *Runtime) Restore(closer io.ReadCloser) error {
 	export := &model.Export{}
 	if err := json.NewDecoder(closer).Decode(export); err != nil {
 		return err
@@ -154,7 +154,7 @@ func (f *Store) Restore(closer io.ReadCloser) error {
 	return nil
 }
 
-func (f *Store) Persist(sink raft.SnapshotSink) error {
+func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	if err := json.NewEncoder(sink).Encode(&model.Export{
@@ -169,7 +169,7 @@ func (f *Store) Persist(sink raft.SnapshotSink) error {
 	}
 	return nil
 }
-func (s *Store) Export() http.HandlerFunc {
+func (s *Runtime) Export() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.mu.RLock()
 		defer s.mu.RUnlock()
@@ -180,7 +180,7 @@ func (s *Store) Export() http.HandlerFunc {
 	}
 }
 
-func (s *Store) Import() http.HandlerFunc {
+func (s *Runtime) Import() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		export := &model.Export{}
 		if err := json.NewDecoder(r.Body).Decode(export); err != nil {
@@ -194,8 +194,8 @@ func (s *Store) Import() http.HandlerFunc {
 	}
 }
 
-func (f *Store) Release() {}
+func (f *Runtime) Release() {}
 
-func (f *Store) decode(input, output interface{}) error {
+func (f *Runtime) decode(input, output interface{}) error {
 	return mapstructure.Decode(input, output)
 }

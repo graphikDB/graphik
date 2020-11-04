@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (s *Store) Join() http.HandlerFunc {
+func (s *Runtime) Join() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m := map[string]string{}
 		if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
@@ -37,8 +37,7 @@ func (s *Store) Join() http.HandlerFunc {
 	}
 }
 
-
-func (a *Store) PutJWKS() http.HandlerFunc {
+func (a *Runtime) PutJWKS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var uris []string
 		json.NewDecoder(r.Body).Decode(&uris)
@@ -49,10 +48,9 @@ func (a *Store) PutJWKS() http.HandlerFunc {
 	}
 }
 
-func (a *Store) GetJWKS() http.HandlerFunc {
+func (a *Runtime) GetJWKS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jwks := a.opts.jwks.List()
 		json.NewEncoder(w).Encode(&jwks)
 	}
 }
-

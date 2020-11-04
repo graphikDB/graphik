@@ -23,7 +23,7 @@ const (
 	defaultDir  = "/tmp/graphik"
 )
 
-type Store struct {
+type Runtime struct {
 	opts  *Opts
 	raft  *raft.Raft
 	mu    sync.RWMutex
@@ -32,7 +32,7 @@ type Store struct {
 	close sync.Once
 }
 
-func New(opts ...Opt) (*Store, error) {
+func New(opts ...Opt) (*Runtime, error) {
 	options := &Opts{}
 	for _, o := range opts {
 		o(options)
@@ -75,7 +75,7 @@ func New(opts ...Opt) (*Store, error) {
 	stableStore := boltDB
 	edges := generic.NewEdges()
 	nodes := generic.NewNodes(edges)
-	s := &Store{
+	s := &Runtime{
 		opts:  options,
 		mu:    sync.RWMutex{},
 		nodes: nodes,
@@ -107,7 +107,7 @@ func New(opts ...Opt) (*Store, error) {
 	return s, nil
 }
 
-func (s *Store) Execute(cmd *model.Command) (interface{}, error) {
+func (s *Runtime) Execute(cmd *model.Command) (interface{}, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
@@ -123,8 +123,12 @@ func (s *Store) Execute(cmd *model.Command) (interface{}, error) {
 	return future.Response(), nil
 }
 
-func (s *Store) Close() error {
+func (s *Runtime) Close() error {
 	return s.raft.Shutdown().Error()
+}
+
+func (s *Runtime) Machine() *machine.Machine {
+	return s.opts.machine
 }
 
 func logCmd(cmd *model.Command) (raft.Log, error) {
@@ -138,7 +142,7 @@ func logCmd(cmd *model.Command) (raft.Log, error) {
 	}, nil
 }
 
-func (s *Store) join(nodeID, addr string) error {
+func (s *Runtime) join(nodeID, addr string) error {
 	logger.Info("received join request for remote node",
 		zap.String("node", nodeID),
 		zap.String("address", addr),

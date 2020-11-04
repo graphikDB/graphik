@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func (a *Store) AuthMiddleware() func(handler http.Handler) http.HandlerFunc {
+func (a *Runtime) AuthMiddleware() func(handler http.Handler) http.HandlerFunc {
 	return func(handler http.Handler) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")

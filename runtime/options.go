@@ -46,7 +46,6 @@ func WithMachine(machine *machine.Machine) Opt {
 	}
 }
 
-
 func WithJWKS(jwks *jwks.Auth) Opt {
 	return func(s *Opts) {
 		s.jwks = jwks

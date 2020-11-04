@@ -82,7 +82,7 @@ func main() {
 			return
 		}
 	}
-	resolver := resolver2.NewResolver(mach, stor)
+	resolver := resolver2.NewResolver(stor)
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
 	router.Handle("/", playground.Handler("GraphQL playground", "/api/query"))
 	router.Use(cors.New(cors.Options{
@@ -91,7 +91,6 @@ func main() {
 		AllowedHeaders:   cfg.Cors.AllowedHeaders,
 		AllowCredentials: true,
 	}).Handler)
-
 
 	middleware := stor.AuthMiddleware()
 

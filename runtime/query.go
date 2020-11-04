@@ -6,7 +6,7 @@ import (
 	"github.com/autom8ter/graphik/model"
 )
 
-func (f *Store) Node(ctx context.Context, input model.Path) (*model.Node, error) {
+func (f *Runtime) Node(ctx context.Context, input model.Path) (*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	node, ok := f.nodes.Get(input)
@@ -16,13 +16,13 @@ func (f *Store) Node(ctx context.Context, input model.Path) (*model.Node, error)
 	return node, nil
 }
 
-func (f *Store) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error) {
+func (f *Runtime) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.nodes.FilterSearch(input)
 }
 
-func (f *Store) DepthTo(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
+func (f *Runtime) DepthTo(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	var nodes []*model.Node
@@ -35,7 +35,7 @@ func (f *Store) DepthTo(ctx context.Context, input model.DepthFilter) ([]*model.
 	return nodes, nil
 }
 
-func (f *Store) DepthFrom(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
+func (f *Runtime) DepthFrom(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	var nodes []*model.Node
@@ -48,7 +48,7 @@ func (f *Store) DepthFrom(ctx context.Context, input model.DepthFilter) ([]*mode
 	return nodes, nil
 }
 
-func (f *Store) Edge(ctx context.Context, input model.Path) (*model.Edge, error) {
+func (f *Runtime) Edge(ctx context.Context, input model.Path) (*model.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edge, ok := f.edges.Get(input)
@@ -58,7 +58,7 @@ func (f *Store) Edge(ctx context.Context, input model.Path) (*model.Edge, error)
 	return edge, nil
 }
 
-func (f *Store) Edges(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
+func (f *Runtime) Edges(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.edges.FilterSearch(input)

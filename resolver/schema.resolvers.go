@@ -21,7 +21,7 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConst
 	if input.Path.Type == "" {
 		input.Path.Type = generic.Default
 	}
-	res, err := r.store.Execute(&model.Command{
+	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpCreateNode,
 		Value: input,
 	})
@@ -35,7 +35,7 @@ func (r *mutationResolver) CreateNode(ctx context.Context, input model.NodeConst
 }
 
 func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*model.Node, error) {
-	res, err := r.store.Execute(&model.Command{
+	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpPatchNode,
 		Value: input,
 	})
@@ -49,7 +49,7 @@ func (r *mutationResolver) PatchNode(ctx context.Context, input *model.Patch) (*
 }
 
 func (r *mutationResolver) DelNode(ctx context.Context, input model.Path) (*model.Counter, error) {
-	res, err := r.store.Execute(&model.Command{
+	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpDeleteNode,
 		Value: input,
 	})
@@ -70,7 +70,7 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConst
 	if input.Path.Type == "" {
 		input.Path.Type = generic.Default
 	}
-	res, err := r.store.Execute(&model.Command{
+	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpCreateEdge,
 		Value: input,
 	})
@@ -84,7 +84,7 @@ func (r *mutationResolver) CreateEdge(ctx context.Context, input model.EdgeConst
 }
 
 func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*model.Edge, error) {
-	res, err := r.store.Execute(&model.Command{
+	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpPatchEdge,
 		Value: input,
 	})
@@ -98,7 +98,7 @@ func (r *mutationResolver) PatchEdge(ctx context.Context, input model.Patch) (*m
 }
 
 func (r *mutationResolver) DelEdge(ctx context.Context, input model.Path) (*model.Counter, error) {
-	res, err := r.store.Execute(&model.Command{
+	res, err := r.runtime.Execute(&model.Command{
 		Op:    model.OpDeleteEdge,
 		Value: input,
 	})
@@ -112,38 +112,38 @@ func (r *mutationResolver) DelEdge(ctx context.Context, input model.Path) (*mode
 }
 
 func (r *mutationResolver) Publish(ctx context.Context, input model.Message) (*model.Counter, error) {
-	r.machine.Go(func(routine machine.Routine) {
+	r.runtime.Machine().Go(func(routine machine.Routine) {
 		routine.Publish(input.Channel, input)
 	})
 	return &model.Counter{Count: 1}, nil
 }
 
 func (r *queryResolver) GetNode(ctx context.Context, input model.Path) (*model.Node, error) {
-	return r.store.Node(ctx, input)
+	return r.runtime.Node(ctx, input)
 }
 
 func (r *queryResolver) GetNodes(ctx context.Context, input model.Filter) ([]*model.Node, error) {
-	return r.store.Nodes(ctx, input)
+	return r.runtime.Nodes(ctx, input)
 }
 
 func (r *queryResolver) DepthSearch(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
 	if input.Reverse != nil && *input.Reverse {
-		return r.store.DepthTo(ctx, input)
+		return r.runtime.DepthTo(ctx, input)
 	}
-	return r.store.DepthFrom(ctx, input)
+	return r.runtime.DepthFrom(ctx, input)
 }
 
 func (r *queryResolver) GetEdge(ctx context.Context, input model.Path) (*model.Edge, error) {
-	return r.store.Edge(ctx, input)
+	return r.runtime.Edge(ctx, input)
 }
 
 func (r *queryResolver) GetEdges(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
-	return r.store.Edges(ctx, input)
+	return r.runtime.Edges(ctx, input)
 }
 
 func (r *subscriptionResolver) Subscribe(ctx context.Context, channel string) (<-chan *model.Message, error) {
 	ch := make(chan *model.Message)
-	r.machine.Go(func(routine machine.Routine) {
+	r.runtime.Machine().Go(func(routine machine.Routine) {
 		routine.Subscribe(channel, func(obj interface{}) {
 			for {
 				select {
@@ -175,7 +175,7 @@ func (r *subscriptionResolver) NodeChange(ctx context.Context, typeArg model.Cha
 	}
 	ch := make(chan *model.Node)
 	channel := fmt.Sprintf("nodes.%s", typeArg.Type)
-	r.machine.Go(func(routine machine.Routine) {
+	r.runtime.Machine().Go(func(routine machine.Routine) {
 		routine.SubscribeFilter(channel, filter, func(msg interface{}) {
 			for {
 				select {
@@ -205,7 +205,7 @@ func (r *subscriptionResolver) EdgeChange(ctx context.Context, typeArg model.Cha
 	}
 	ch := make(chan *model.Edge)
 	channel := fmt.Sprintf("edges.%s", typeArg.Type)
-	r.machine.Go(func(routine machine.Routine) {
+	r.runtime.Machine().Go(func(routine machine.Routine) {
 		routine.SubscribeFilter(channel, filter, func(msg interface{}) {
 			for {
 				select {
