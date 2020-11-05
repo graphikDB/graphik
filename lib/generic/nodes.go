@@ -3,7 +3,6 @@ package generic
 import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"time"
 )
 
 type Nodes struct {
@@ -53,7 +52,7 @@ func (n *Nodes) Get(path *apipb.Path) (*apipb.Node, bool) {
 
 func (n *Nodes) Set(value *apipb.Node) *apipb.Node {
 	if value.Path.ID == "" {
-		value.Path.ID = UUID()
+		value.Path.ID = apipb.UUID()
 	}
 	if _, ok := n.nodes[value.Path.Type]; !ok {
 		n.nodes[value.Path.Type] = map[string]*apipb.Node{}
@@ -152,7 +151,7 @@ func (n *Nodes) Close() {
 	}
 }
 
-func (n *Nodes) FilterSearch(filter apipb.Filter) ([]*apipb.Node, error) {
+func (n *Nodes) FilterSearch(filter *apipb.Filter) ([]*apipb.Node, error) {
 	var nodes []*apipb.Node
 	var err error
 	var pass bool

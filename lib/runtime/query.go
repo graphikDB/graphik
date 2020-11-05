@@ -3,10 +3,10 @@ package runtime
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/lib/model"
+	apipb "github.com/autom8ter/graphik/api"
 )
 
-func (f *Runtime) Node(ctx context.Context, input model.Path) (*model.Node, error) {
+func (f *Runtime) Node(ctx context.Context, input *apipb.Path) (*apipb.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	node, ok := f.nodes.Get(input)
@@ -16,39 +16,13 @@ func (f *Runtime) Node(ctx context.Context, input model.Path) (*model.Node, erro
 	return node, nil
 }
 
-func (f *Runtime) Nodes(ctx context.Context, input model.Filter) ([]*model.Node, error) {
+func (f *Runtime) Nodes(ctx context.Context, input *apipb.Filter) ([]*apipb.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.nodes.FilterSearch(input)
 }
 
-func (f *Runtime) DepthTo(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
-	f.mu.RLock()
-	defer f.mu.RUnlock()
-	var nodes []*model.Node
-	if err := f.nodes.RangeToDepth(input, func(node *model.Node) bool {
-		nodes = append(nodes, node)
-		return len(nodes) < input.Limit
-	}); err != nil {
-		return nil, err
-	}
-	return nodes, nil
-}
-
-func (f *Runtime) DepthFrom(ctx context.Context, input model.DepthFilter) ([]*model.Node, error) {
-	f.mu.RLock()
-	defer f.mu.RUnlock()
-	var nodes []*model.Node
-	if err := f.nodes.RangeFromDepth(input, func(node *model.Node) bool {
-		nodes = append(nodes, node)
-		return len(nodes) < input.Limit
-	}); err != nil {
-		return nil, err
-	}
-	return nodes, nil
-}
-
-func (f *Runtime) Edge(ctx context.Context, input model.Path) (*model.Edge, error) {
+func (f *Runtime) Edge(ctx context.Context, input *apipb.Path) (*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edge, ok := f.edges.Get(input)
@@ -58,19 +32,19 @@ func (f *Runtime) Edge(ctx context.Context, input model.Path) (*model.Edge, erro
 	return edge, nil
 }
 
-func (f *Runtime) Edges(ctx context.Context, input model.Filter) ([]*model.Edge, error) {
+func (f *Runtime) Edges(ctx context.Context, input *apipb.Filter) ([]*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.edges.FilterSearch(input)
 }
 
-func (f *Runtime) EdgesFrom(ctx context.Context, path model.Path, filter model.Filter) ([]*model.Edge, error) {
+func (f *Runtime) EdgesFrom(ctx context.Context, path *apipb.Path, filter *apipb.Filter) ([]*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.edges.RangeFilterFrom(path, filter), nil
 }
 
-func (f *Runtime) EdgesTo(ctx context.Context, path model.Path, filter model.Filter) ([]*model.Edge, error) {
+func (f *Runtime) EdgesTo(ctx context.Context, path *apipb.Path, filter *apipb.Filter) ([]*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.edges.RangeFilterTo(path, filter), nil

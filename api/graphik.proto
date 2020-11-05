@@ -80,3 +80,48 @@ message EdgeFilters {
   repeated Filter edges_from =1;
   repeated Filter edges_to =2;
 }
+
+message RaftJoinRequest {
+  string node_id =1;
+  string address =2;
+}
+
+message RaftJoinResponse {}
+
+message GetJWKSRequest {}
+
+message GetJWKSResponse {
+  map<string, string> jwks =1;
+}
+
+message UpdateJWKSRequest {
+  map<string, string> jwks =1;
+}
+
+message UpdateJWKSResponse {
+  map<string, string> jwks =1;
+}
+
+message SearchNodesRequest {
+    Filter filter =1;
+}
+
+message SearchNodesResponse {
+  repeated Node nodes = 1;
+}
+
+message SearchEdgesRequest {
+  Filter filter =1;
+}
+
+message SearchEdgesResponse {
+  repeated Edge edges = 1;
+}
+
+service AdminService {
+  rpc RaftJoin(RaftJoinRequest) returns(RaftJoinResponse) {}
+  rpc GetJWKS(GetJWKSRequest) returns (GetJWKSResponse){}
+  rpc UpdateJWKS(UpdateJWKSRequest) returns(UpdateJWKSResponse){}
+  rpc SearchNodes(SearchNodesRequest) returns (SearchNodesResponse){}
+  rpc SearchEdges(SearchEdgesRequest) returns (SearchEdgesResponse){}
+}

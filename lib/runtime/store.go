@@ -2,11 +2,10 @@ package runtime
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/lib/generic"
 	"github.com/autom8ter/graphik/lib/logger"
-	"github.com/autom8ter/graphik/lib/model"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
@@ -107,16 +106,11 @@ func New(opts ...Opt) (*Runtime, error) {
 	return s, nil
 }
 
-func (s *Runtime) Execute(cmd *model.Command) (interface{}, error) {
+func (s *Runtime) Execute(cmd *apipb.Command) (interface{}, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
-	lg, err := logCmd(cmd)
-	if err != nil {
-		return nil, err
-	}
-	future := s.raft.ApplyLog(lg, raftTimeout)
-	err = future.Error()
+	future := s.raft.ApplyLog(cmd.Log(), raftTimeout)
 	if err := future.Error(); err != nil {
 		return nil, err
 	}
@@ -129,17 +123,6 @@ func (s *Runtime) Close() error {
 
 func (s *Runtime) Machine() *machine.Machine {
 	return s.opts.machine
-}
-
-func logCmd(cmd *model.Command) (raft.Log, error) {
-	cmd.Timestamp = time.Now()
-	bits, err := json.Marshal(cmd)
-	if err != nil {
-		return raft.Log{}, err
-	}
-	return raft.Log{
-		Data: bits,
-	}, nil
 }
 
 func (s *Runtime) join(nodeID, addr string) error {

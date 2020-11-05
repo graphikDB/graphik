@@ -9,7 +9,7 @@ type Config struct {
 
 type Raft struct {
 	DBPath string `json:"dbPath"`
-	Bind   int    `json:"bind"`
+	Bind   string `json:"bind"`
 	Join   string `json:"join"`
 	NodeID string `json:"nodeID"`
 }

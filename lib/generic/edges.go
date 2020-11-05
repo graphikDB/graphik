@@ -126,7 +126,7 @@ func (e Edges) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 	}
 }
 
-func (e Edges) RangeFilterFrom(path *apipb.Path, filter apipb.Filter) []*apipb.Edge {
+func (e Edges) RangeFilterFrom(path *apipb.Path, filter *apipb.Filter) []*apipb.Edge {
 	var edges []*apipb.Edge
 	e.RangeFrom(path, func(e *apipb.Edge) bool {
 		if e.Path.Type != filter.Type {
@@ -141,7 +141,7 @@ func (e Edges) RangeFilterFrom(path *apipb.Path, filter apipb.Filter) []*apipb.E
 	return edges
 }
 
-func (e Edges) RangeFilterTo(path *apipb.Path, filter apipb.Filter) []*apipb.Edge {
+func (e Edges) RangeFilterTo(path *apipb.Path, filter *apipb.Filter) []*apipb.Edge {
 	var edges []*apipb.Edge
 	e.RangeTo(path, func(e *apipb.Edge) bool {
 		if e.Path.Type != filter.Type {
@@ -205,7 +205,7 @@ func (e *Edges) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb
 	return e.edges[value.Path.Type][value.Path.ID]
 }
 
-func (e *Edges) FilterSearch(filter apipb.Filter) ([]*apipb.Edge, error) {
+func (e *Edges) FilterSearch(filter *apipb.Filter) ([]*apipb.Edge, error) {
 	var edges []*apipb.Edge
 	var err error
 	var pass bool

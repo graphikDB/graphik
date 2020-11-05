@@ -9,7 +9,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/hashicorp/raft"
-	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"io"
@@ -207,29 +206,27 @@ func (s *Runtime) Import() http.HandlerFunc {
 		}
 		for _, n := range export.Nodes {
 			any, _ := ptypes.MarshalAny(n)
-			s.Apply(apipb.Command{
-				Op:                   apipb.Op_CREATE_NODE,
-				Val:                  any,
-				Timestamp:            &timestamp.Timestamp{
-					Seconds:              time.Now().Unix(),
+			log := apipb.Command{
+				Op:  apipb.Op_CREATE_NODE,
+				Val: any,
+				Timestamp: &timestamp.Timestamp{
+					Seconds: time.Now().Unix(),
 				},
-			}.Log())
+			}.Log()
+			s.Apply(&log)
 		}
 		for _, e := range export.Edges {
 			any, _ := ptypes.MarshalAny(e)
-			s.Apply(apipb.Command{
-				Op:                   apipb.Op_CREATE_EDGE,
-				Val:                  any,
-				Timestamp:            &timestamp.Timestamp{
-					Seconds:              time.Now().Unix(),
+			log := apipb.Command{
+				Op:  apipb.Op_CREATE_EDGE,
+				Val: any,
+				Timestamp: &timestamp.Timestamp{
+					Seconds: time.Now().Unix(),
 				},
-			}.Log())
+			}.Log()
+			s.Apply(&log)
 		}
 	}
 }
 
 func (f *Runtime) Release() {}
-
-func (f *Runtime) decode(input, output interface{}) error {
-	return mapstructure.Decode(input, output)
-}

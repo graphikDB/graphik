@@ -2,9 +2,7 @@ package helpers
 
 import (
 	"fmt"
-	"github.com/autom8ter/graphik/lib/model"
 	"github.com/golang/protobuf/ptypes/struct"
-	"github.com/google/cel-go/cel"
 	"reflect"
 )
 
@@ -217,12 +215,5 @@ func toValue(v reflect.Value) *structpb.Value {
 				StringValue: fmt.Sprint(v),
 			},
 		}
-	}
-}
-
-func Evaluate() {
-	env, err := cel.NewEnv(cel.Types(&model.Node{}, &model.Edge{}))
-	if err != nil {
-		panic(err)
 	}
 }

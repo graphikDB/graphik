@@ -1,38 +1,37 @@
 package runtime
 
 import (
-	"net/http"
-	"strings"
+	"context"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"time"
 )
 
-func (a *Runtime) AuthMiddleware() func(handler http.Handler) http.HandlerFunc {
-	return func(handler http.Handler) http.HandlerFunc {
-		return func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			tokenString := strings.Replace(authHeader, "Bearer ", "", -1)
-			if tokenString == "" {
-				http.Error(w, "empty authorization header", http.StatusUnauthorized)
-				return
-			}
-			payload, err := a.opts.jwks.VerifyJWT(tokenString)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusUnauthorized)
-				return
-			}
-			if exp, ok := payload["exp"].(int64); ok {
-				if exp < time.Now().Unix() {
-					http.Error(w, "token expired", http.StatusUnauthorized)
-					return
-				}
-			}
-			if exp, ok := payload["exp"].(int); ok {
-				if int64(exp) < time.Now().Unix() {
-					http.Error(w, "token expired", http.StatusUnauthorized)
-					return
-				}
-			}
-			handler.ServeHTTP(w, a.toContext(r, payload))
+func (a *Runtime) AuthMiddleware() grpc_auth.AuthFunc {
+	return func(ctx context.Context) (context.Context, error) {
+		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
+		if err != nil {
+			return nil, err
 		}
+		payload, err := a.opts.jwks.VerifyJWT(token)
+		if err != nil {
+			return nil, status.Errorf(codes.Unauthenticated, err.Error())
+		}
+		if exp, ok := payload["exp"].(int64); ok {
+			if exp < time.Now().Unix() {
+				return nil, status.Errorf(codes.Unauthenticated, "token expired")
+			}
+		}
+		if exp, ok := payload["exp"].(int); ok {
+			if int64(exp) < time.Now().Unix() {
+				return nil, status.Errorf(codes.Unauthenticated, "token expired")
+			}
+		}
+		ctx, err = a.toContext(ctx, payload)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, err.Error())
+		}
+		return ctx, nil
 	}
 }
