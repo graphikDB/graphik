@@ -184,6 +184,24 @@ message DelEdgesResponse {
   Counter counter =1;
 }
 
+message EdgesFromRequest {
+  Path path =1;
+  Filter filter =2;
+}
+
+message EdgesFromResponse {
+  repeated Edge edges =1;
+}
+
+message EdgesToRequest {
+  Path path =1;
+  Filter filter =2;
+}
+
+message EdgesToResponse {
+  repeated Edge edges =1;
+}
+
 service PrivateService {
   rpc JoinCluster(JoinClusterRequest) returns(JoinClusterResponse) {}
   rpc GetJWKS(GetJWKSRequest) returns (GetJWKSResponse){}
@@ -198,4 +216,7 @@ service PrivateService {
   rpc SearchEdges(SearchEdgesRequest) returns (SearchEdgesResponse){}
   rpc PatchEdges(PatchEdgesRequest) returns(PatchEdgesResponse){}
   rpc DelEdges(DelEdgesRequest) returns(DelEdgesResponse){}
+
+  rpc EdgesFrom(EdgesFromRequest) returns(EdgesFromResponse){}
+  rpc EdgesTo(EdgesToRequest) returns(EdgesToResponse){}
 }

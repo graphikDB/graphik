@@ -186,3 +186,23 @@ func (s *Service) DelEdges(ctx context.Context, request *apipb.DelEdgesRequest) 
 		Counter: counter,
 	}, nil
 }
+
+func (s *Service) EdgesFrom(ctx context.Context, request *apipb.EdgesFromRequest) (*apipb.EdgesFromResponse, error) {
+	edges, err := s.runtime.EdgesFrom(request.Path, request.Filter)
+	if err != nil {
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+	return &apipb.EdgesFromResponse{
+		Edges: edges,
+	}, nil
+}
+
+func (s *Service) EdgesTo(ctx context.Context, request *apipb.EdgesToRequest) (*apipb.EdgesToResponse, error) {
+	edges, err := s.runtime.EdgesTo(request.Path, request.Filter)
+	if err != nil {
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+	return &apipb.EdgesToResponse{
+		Edges: edges,
+	}, nil
+}
