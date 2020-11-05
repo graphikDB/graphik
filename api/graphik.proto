@@ -9,12 +9,12 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 
 enum Op {
-  CREATE_NODE =0;
-  PATCH_NODE =1;
-  DELETE_NODE =2;
-  CREATE_EDGE =3;
-  PATCH_EDGE =4;
-  DELETE_EDGE =5;
+  CREATE_NODES =0;
+  PATCH_NODES =1;
+  DELETE_NODES =2;
+  CREATE_EDGES =3;
+  PATCH_EDGES =4;
+  DELETE_EDGES =5;
 }
 
 enum Keyword {
@@ -49,6 +49,10 @@ message Node {
   google.protobuf.Timestamp updated_at =4;
 }
 
+message Nodes {
+  repeated Node nodes =1;
+}
+
 message Message {
   string channel =1;
   string type = 2;
@@ -71,6 +75,10 @@ message Patch {
   google.protobuf.Struct patch = 2;
 }
 
+message Patches {
+  repeated Patch patches =1;
+}
+
 message EdgeConstructor {
   Path path =1;
   bool mutual =2;
@@ -87,6 +95,10 @@ message Edge {
   Path to =5;
   google.protobuf.Timestamp created_at =6;
   google.protobuf.Timestamp updated_at =7;
+}
+
+message Edges {
+  repeated Edge edges =1;
 }
 
 message EdgeFilters {

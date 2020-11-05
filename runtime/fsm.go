@@ -25,41 +25,35 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	switch c.Op {
-	case apipb.Op_CREATE_NODE:
-		var val = &apipb.Node{}
-		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
-			return errors.Wrap(err, "failed to decode node")
+	case apipb.Op_CREATE_NODES:
+		var values = &apipb.Nodes{}
+		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
+			return errors.Wrap(err, "failed to decode nodes")
 		}
-		n := f.nodes.Set(&apipb.Node{
-			Path:       val.Path,
-			Attributes: val.Attributes,
-			CreatedAt:  c.Timestamp,
-			UpdatedAt:  c.Timestamp,
-		})
-		channel := fmt.Sprintf("nodes.%s", n.Path.Type)
-		f.machine.Go(func(routine machine.Routine) {
-			if err := routine.Publish(channel, n); err != nil {
-				logger.Error("failed to publish message", zap.String("channel", channel))
-			}
-		})
-		return n
-	case apipb.Op_PATCH_NODE:
-		var val = &apipb.Patch{}
+		for _, val := range values.Nodes {
+			f.nodes.Set(&apipb.Node{
+				Path:       val.Path,
+				Attributes: val.Attributes,
+				CreatedAt:  c.Timestamp,
+				UpdatedAt:  c.Timestamp,
+			})
+		}
+		return values
+	case apipb.Op_PATCH_NODES:
+		var values = &apipb.Patches{}
 		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
 			return errors.Wrap(err, "failed to decode node patch")
 		}
-		if !f.nodes.Exists(val.Path) {
-			return errors.Errorf("node %s does not exist", val.Path.String())
-		}
-		n := f.nodes.Patch(c.Timestamp, val)
-		channel := fmt.Sprintf("nodes.%s", n.Path.Type)
-		f.machine.Go(func(routine machine.Routine) {
-			if err := routine.Publish(channel, n); err != nil {
-				logger.Error("failed to publish message", zap.String("channel", channel))
+		var nodes = &apipb.Nodes{}
+		for _, val := range values.Patches {
+			if !f.nodes.Exists(val.Path) {
+				return errors.Errorf("node %s does not exist", val.Path.String())
 			}
-		})
-		return n
-	case apipb.Op_DELETE_NODE:
+			n := f.nodes.Patch(c.Timestamp, val)
+			nodes.Nodes = append(nodes.Nodes, n)
+		}
+		return nodes
+	case apipb.Op_DELETE_NODES:
 		var val = &apipb.Path{}
 		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
 			return errors.Wrap(err, "failed to decode node path")
