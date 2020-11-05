@@ -3,7 +3,7 @@ package admin
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/lib/runtime"
+	"github.com/autom8ter/graphik/runtime"
 )
 
 type Service struct {

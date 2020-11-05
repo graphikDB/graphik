@@ -3,7 +3,7 @@ package runtime
 import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/lib/logger"
+	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"

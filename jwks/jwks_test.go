@@ -1,7 +1,7 @@
 package jwks_test
 
 import (
-	"github.com/autom8ter/graphik/lib/jwks"
+	"github.com/autom8ter/graphik/jwks"
 	"testing"
 )
 

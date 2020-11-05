@@ -1,7 +1,7 @@
 package runtime
 
 import (
-	"github.com/autom8ter/graphik/lib/jwks"
+	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/machine"
 )
 
