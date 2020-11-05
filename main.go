@@ -29,7 +29,7 @@ const version = "0.0.0"
 func init() {
 	pflag.CommandLine.IntVar(&cfg.Port, "port", 8080, "port to serve on")
 	pflag.CommandLine.StringVar(&cfg.Raft.DBPath, "raft.path", "/tmp/graphik", "path to database folder")
-	pflag.CommandLine.StringVar(&cfg.Raft.Bind, "raft.bind", ":8081", "bind raft protocol to local port")
+	pflag.CommandLine.StringVar(&cfg.Raft.Bind, "raft.bind", "localhost:8081", "bind raft protocol to local port")
 	pflag.CommandLine.StringVar(&cfg.Raft.Join, "raft.join", "", "join raft cluster leader")
 	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.id", "main", "unique raft node id")
 	pflag.CommandLine.StringSliceVar(&cfg.JWKs, "jwks", nil, "remote json web key set(s)")
