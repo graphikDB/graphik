@@ -71,7 +71,7 @@ func (n *Nodes) Patch(updatedAt time.Time, value *apipb.Patch) *apipb.Node {
 		node.Attributes.Fields[k] = v
 	}
 	node.UpdatedAt = &timestamp.Timestamp{
-		Seconds:              updatedAt.Unix(),
+		Seconds: updatedAt.Unix(),
 	}
 	return node
 }

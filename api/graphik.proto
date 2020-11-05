@@ -16,6 +16,11 @@ enum Op {
   DELETE_EDGE =5;
 }
 
+enum Keyword {
+  ANY =0;
+  DEFAULT =1;
+}
+
 message Path {
   string Type =1;
   string ID =2;

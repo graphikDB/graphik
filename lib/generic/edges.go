@@ -37,7 +37,7 @@ func (n *Edges) Types() []string {
 
 func (n *Edges) All() []*apipb.Edge {
 	var edges []*apipb.Edge
-	n.Range(Any, func(edge *apipb.Edge) bool {
+	n.Range(apipb.Keyword_ANY.String(), func(edge *apipb.Edge) bool {
 		edges = append(edges, edge)
 		return true
 	})
@@ -60,20 +60,20 @@ func (n *Edges) Set(value *apipb.Edge) *apipb.Edge {
 
 	n.edges[value.Path.Type][value.Path.ID] = value
 
-	path := value.Path.String()
+	path := value.Path.PathString()
 
-	n.edgesFrom[value.From.String()] = append(n.edgesFrom[value.From.String()], path)
-	n.edgesTo[value.To.String()] = append(n.edgesTo[value.To.String()], path)
+	n.edgesFrom[value.From.PathString()] = append(n.edgesFrom[value.From.PathString()], path)
+	n.edgesTo[value.To.PathString()] = append(n.edgesTo[value.To.PathString()], path)
 
 	if value.Mutual {
-		n.edgesTo[value.From.String()] = append(n.edgesTo[value.From.String()], path)
-		n.edgesFrom[value.To.String()] = append(n.edgesFrom[value.To.String()], path)
+		n.edgesTo[value.From.PathString()] = append(n.edgesTo[value.From.PathString()], path)
+		n.edgesFrom[value.To.PathString()] = append(n.edgesFrom[value.To.PathString()], path)
 	}
 	return value
 }
 
 func (n *Edges) Range(edgeType string, f func(edge *apipb.Edge) bool) {
-	if edgeType == Any {
+	if edgeType == apipb.Keyword_ANY.String() {
 		for _, c := range n.edges {
 			for _, v := range c {
 				f(v)
@@ -93,10 +93,10 @@ func (n *Edges) Delete(path *apipb.Path) {
 	if !ok {
 		return
 	}
-	n.edgesFrom[edge.From.String()] = removeEdge(edge.Path.String(), n.edgesFrom[edge.From.String()])
-	n.edgesTo[edge.From.String()] = removeEdge(edge.Path.String(), n.edgesTo[edge.From.String()])
-	n.edgesFrom[edge.To.String()] = removeEdge(edge.Path.String(), n.edgesFrom[edge.To.String()])
-	n.edgesTo[edge.To.String()] = removeEdge(edge.Path.String(), n.edgesTo[edge.To.String()])
+	n.edgesFrom[edge.From.PathString()] = removeEdge(edge.Path.PathString(), n.edgesFrom[edge.From.PathString()])
+	n.edgesTo[edge.From.PathString()] = removeEdge(edge.Path.PathString(), n.edgesTo[edge.From.PathString()])
+	n.edgesFrom[edge.To.PathString()] = removeEdge(edge.Path.PathString(), n.edgesFrom[edge.To.PathString()])
+	n.edgesTo[edge.To.PathString()] = removeEdge(edge.Path.PathString(), n.edgesTo[edge.To.PathString()])
 	delete(n.edges[path.Type], path.ID)
 }
 
@@ -106,7 +106,7 @@ func (n *Edges) Exists(path *apipb.Path) bool {
 }
 
 func (e Edges) RangeFrom(path *apipb.Path, fn func(e *apipb.Edge) bool) {
-	for _, edge := range e.edgesFrom[path.String()] {
+	for _, edge := range e.edgesFrom[path.PathString()] {
 		e, ok := e.Get(apipb.PathFromString(edge))
 		if ok {
 			if !fn(e) {
@@ -117,7 +117,7 @@ func (e Edges) RangeFrom(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 }
 
 func (e Edges) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
-	for _, edge := range e.edgesTo[path.String()] {
+	for _, edge := range e.edgesTo[path.PathString()] {
 		e, ok := e.Get(apipb.PathFromString(edge))
 		if ok {
 			if !fn(e) {
@@ -133,7 +133,7 @@ func (e Edges) RangeFilterFrom(path *apipb.Path, filter apipb.Filter) []*apipb.E
 		if e.Path.Type != filter.Type {
 			return true
 		}
-		pass, _ := apipb.Evaluate(filter.Expressions, e)
+		pass, _ := apipb.EvaluateExpressions(filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -148,7 +148,7 @@ func (e Edges) RangeFilterTo(path *apipb.Path, filter apipb.Filter) []*apipb.Edg
 		if e.Path.Type != filter.Type {
 			return true
 		}
-		pass, _ := apipb.Evaluate(filter.Expressions, e)
+		pass, _ := apipb.EvaluateExpressions(filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -203,7 +203,7 @@ func (e *Edges) Patch(updatedAt time.Time, value *apipb.Patch) *apipb.Edge {
 		e.edges[value.Path.Type][value.Path.ID].Attributes.Fields[k] = v
 	}
 	e.edges[value.Path.Type][value.Path.ID].UpdatedAt = &timestamp.Timestamp{
-		Seconds:              updatedAt.Unix(),
+		Seconds: updatedAt.Unix(),
 	}
 	return e.edges[value.Path.Type][value.Path.ID]
 }
@@ -213,7 +213,7 @@ func (e *Edges) FilterSearch(filter apipb.Filter) ([]*apipb.Edge, error) {
 	var err error
 	var pass bool
 	e.Range(filter.Type, func(edge *apipb.Edge) bool {
-		pass, err = apipb.Evaluate(filter.Expressions, edge)
+		pass, err = apipb.EvaluateExpressions(filter.Expressions, edge)
 		if err != nil {
 			return false
 		}
