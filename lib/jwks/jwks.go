@@ -12,25 +12,34 @@ import (
 	"sync"
 )
 
-func New(jwks []string) (*Auth, error) {
-	sets := map[string]*jwk.Set{}
-	for _, uri := range jwks {
+func New(jwks map[string]string) (*Auth, error) {
+	var sets = map[string]*Set{}
+	for uri, issuer := range jwks {
 		set, err := jwk.Fetch(uri)
 		if err != nil {
 			return nil, err
 		}
-		sets[uri] = set
+		sets[uri] = &Set{
+			URI:    uri,
+			Issuer: issuer,
+			Set:    set,
+		}
 	}
-
 	return &Auth{
 		set: sets,
 		mu:  sync.RWMutex{},
 	}, nil
 }
 
+type Set struct {
+	URI    string
+	Issuer string
+	Set    *jwk.Set
+}
+
 type Auth struct {
 	mu  sync.RWMutex
-	set map[string]*jwk.Set
+	set map[string]*Set
 }
 
 func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
@@ -52,19 +61,19 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	}
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for uri, set := range a.set {
-		keys := set.LookupKeyID(kid.(string))
+	for _, set := range a.set {
+		keys := set.Set.LookupKeyID(kid.(string))
 		if len(keys) == 0 {
 			continue
 		}
 		var key interface{}
 		if err := keys[0].Raw(&key); err != nil {
-			logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(err))
+			logger.Error("jwks validation failure", zap.String("uri", set.URI), zap.Error(err))
 			continue
 		}
 		payload, err := jws.Verify([]byte(token), alg, key)
 		if err != nil {
-			logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(err))
+			logger.Error("jwks validation failure", zap.String("uri", set.URI), zap.Error(err))
 			continue
 		}
 		data := map[string]interface{}{}
@@ -74,40 +83,45 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 }
 
 func (a *Auth) RefreshKeys() error {
-	sets := map[string]*jwk.Set{}
-	for uri, _ := range a.set {
+	for uri, s := range a.set {
 		set, err := jwk.Fetch(uri)
 		if err != nil {
 			return err
 		}
 		a.mu.Lock()
-		sets[uri] = set
+		a.set[uri] = &Set{
+			URI:    uri,
+			Issuer: s.Issuer,
+			Set:    set,
+		}
 		a.mu.Unlock()
 	}
 	return nil
 }
 
-func (a *Auth) Override(uris []string) error {
-	sets := map[string]*jwk.Set{}
-	for _, uri := range uris {
+func (a *Auth) Override(uris map[string]string) error {
+	for uri, issuer := range uris {
 		set, err := jwk.Fetch(uri)
 		if err != nil {
 			return err
 		}
-		sets[uri] = set
+		a.mu.Lock()
+		a.set[uri] = &Set{
+			URI:    uri,
+			Issuer: issuer,
+			Set:    set,
+		}
+		a.mu.Unlock()
 	}
-	a.mu.Lock()
-	a.set = sets
-	a.mu.Unlock()
 	return nil
 }
 
-func (a *Auth) List() []string {
-	var list []string
+func (a *Auth) List() map[string]string {
+	var list = map[string]string{}
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for key, _ := range a.set {
-		list = append(list, key)
+	for uri, s := range a.set {
+		list[uri] = s.Issuer
 	}
 	return list
 }

@@ -1,10 +1,10 @@
 package config
 
 type Config struct {
-	Port int      `json:"port"`
-	JWKs []string `json:"jwks"`
-	Cors *Cors    `json:"cors"`
-	Raft *Raft    `json:"raft"`
+	Port int               `json:"port"`
+	JWKs map[string]string `json:"jwks"`
+	Cors *Cors             `json:"cors"`
+	Raft *Raft             `json:"raft"`
 }
 
 type Raft struct {
