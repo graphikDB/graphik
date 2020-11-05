@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package graphik;
+
+option go_package = "graphikpb";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+enum Op {
+  CREATE_NODE =0;
+  PATCH_NODE =1;
+  DELETE_NODE =2;
+  CREATE_EDGE =3;
+  PATCH_EDGE =4;
+  DELETE_EDGE =5;
+}
+
+message Path {
+  string Type =1;
+  string ID =2;
+}
+
+message Node {
+  Path path =1;
+  google.protobuf.Value attributes = 2;
+  google.protobuf.Timestamp created_at =3;
+  google.protobuf.Timestamp updated_at =4;
+}
+
+message Message {
+  string channel =1;
+  string type = 2;
+  google.protobuf.Value attributes = 3;
+}
+
+message Filter {
+  string type =1;
+  repeated string expressions =2;
+  int32 limit =3;
+}
+
+message Export {
+  repeated Node nodes =1;
+  repeated Edge edges =2;
+}
+
+message Patch {
+  Path path =1;
+  google.protobuf.Value patch = 2;
+}
+
+message Edge {
+  Path path =1;
+  bool mutual =2;
+  google.protobuf.Value attributes = 3;
+  Path from =4;
+  Path to =5;
+  google.protobuf.Timestamp created_at =6;
+  google.protobuf.Timestamp updated_at =7;
+}
+
+message EdgeFilters {
+  repeated Filter edges_from =1;
+  repeated Filter edges_to =2;
+}

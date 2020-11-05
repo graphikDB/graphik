@@ -29,3 +29,10 @@ docker-build:
 
 docker-push:
 	@docker push colemanword/graphik:v$(version)
+
+.PHONY: proto
+proto: ## regenerate gRPC code
+	@echo "generating protobuf code..."
+	@rm -rf gen
+	@docker run -v `pwd`:/tmp colemanword/prototool:latest prototool generate
+	@go fmt ./...
