@@ -134,6 +134,12 @@ func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
 	if edge.Path.Type == "" {
 		edge.Path.Type = apipb.Keyword_DEFAULT.String()
 	}
+	edge.CreatedAt = &timestamp.Timestamp{
+		Seconds: time.Now().Unix(),
+	}
+	edge.UpdatedAt = &timestamp.Timestamp{
+		Seconds: time.Now().Unix(),
+	}
 	any, err := ptypes.MarshalAny(edge)
 	if err != nil {
 

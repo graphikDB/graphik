@@ -99,20 +99,25 @@ message JoinClusterRequest {
   string address =2;
 }
 
+message JWKSSource {
+  string uri =1;
+  string issuer =2;
+}
+
 message JoinClusterResponse {}
 
 message GetJWKSRequest {}
 
 message GetJWKSResponse {
-  map<string, string> jwks =1;
+  repeated JWKSSource sources =1;
 }
 
 message UpdateJWKSRequest {
-  map<string, string> jwks =1;
+  repeated JWKSSource sources =1;
 }
 
 message UpdateJWKSResponse {
-  map<string, string> jwks =1;
+  repeated JWKSSource sources =1;
 }
 
 message CreateNodesRequest {
@@ -136,7 +141,7 @@ message PatchNodesRequest {
 }
 
 message PatchNodesResponse {
-  repeated Node node =1;
+  repeated Node nodes =1;
 }
 
 message DelNodesRequest {
@@ -148,11 +153,11 @@ message DelNodesResponse {
 }
 
 message CreateEdgesRequest {
-  repeated NodeConstructor nodes =1;
+  repeated EdgeConstructor edges =1;
 }
 
 message CreateEdgesResponse {
-  repeated Node nodes =1;
+  repeated Edge edges =1;
 }
 
 message SearchEdgesRequest {
@@ -168,7 +173,7 @@ message PatchEdgesRequest {
 }
 
 message PatchEdgesResponse {
-  repeated Node node =1;
+  repeated Edge edges =1;
 }
 
 message DelEdgesRequest {

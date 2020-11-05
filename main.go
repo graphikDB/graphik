@@ -80,7 +80,7 @@ func main() {
 			return
 		}
 		client := apipb.NewPrivateServiceClient(conn)
-		_, err = client.RaftJoin(ctx, &apipb.RaftJoinRequest{
+		_, err = client.JoinCluster(ctx, &apipb.JoinClusterRequest{
 			NodeId:  cfg.Raft.NodeID,
 			Address: cfg.Raft.Bind,
 		})
