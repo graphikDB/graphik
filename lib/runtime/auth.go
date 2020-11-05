@@ -3,9 +3,6 @@ package runtime
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
-	"time"
 )
 
 const (
@@ -19,21 +16,14 @@ func (a *Runtime) toContext(ctx context.Context, payload map[string]interface{})
 	}
 	n, ok := a.nodes.Get(path)
 	if !ok {
-		any, _ := ptypes.MarshalAny(&apipb.Node{
+		newNode, err := a.CreateNode(&apipb.Node{
 			Path:       path,
 			Attributes: n.Attributes,
-		})
-		val, err := a.Execute(&apipb.Command{
-			Op:  apipb.Op_CREATE_NODE,
-			Val: any,
-			Timestamp: &timestamp.Timestamp{
-				Seconds: time.Now().Unix(),
-			},
 		})
 		if err != nil {
 			return nil, err
 		}
-		n = val.(*apipb.Node)
+		n = newNode
 	}
 	return context.WithValue(ctx, authCtxKey, n), nil
 }

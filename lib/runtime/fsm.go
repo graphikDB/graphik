@@ -206,25 +206,25 @@ func (s *Runtime) Import() http.HandlerFunc {
 		}
 		for _, n := range export.Nodes {
 			any, _ := ptypes.MarshalAny(n)
-			log := apipb.Command{
+			cmd := &apipb.Command{
 				Op:  apipb.Op_CREATE_NODE,
 				Val: any,
 				Timestamp: &timestamp.Timestamp{
 					Seconds: time.Now().Unix(),
 				},
-			}.Log()
-			s.Apply(&log)
+			}
+			s.Apply(cmd.Log())
 		}
 		for _, e := range export.Edges {
 			any, _ := ptypes.MarshalAny(e)
-			log := apipb.Command{
+			cmd := apipb.Command{
 				Op:  apipb.Op_CREATE_EDGE,
 				Val: any,
 				Timestamp: &timestamp.Timestamp{
 					Seconds: time.Now().Unix(),
 				},
-			}.Log()
-			s.Apply(&log)
+			}
+			s.Apply(cmd.Log())
 		}
 	}
 }

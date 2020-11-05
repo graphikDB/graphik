@@ -106,11 +106,11 @@ func New(opts ...Opt) (*Runtime, error) {
 	return s, nil
 }
 
-func (s *Runtime) Execute(cmd *apipb.Command) (interface{}, error) {
+func (s *Runtime) execute(cmd *apipb.Command) (interface{}, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
-	future := s.raft.ApplyLog(cmd.Log(), raftTimeout)
+	future := s.raft.ApplyLog(*cmd.Log(), raftTimeout)
 	if err := future.Error(); err != nil {
 		return nil, err
 	}
