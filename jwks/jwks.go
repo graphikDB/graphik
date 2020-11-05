@@ -77,7 +77,13 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 			continue
 		}
 		data := map[string]interface{}{}
-		return data, json.Unmarshal(payload, &data)
+		if err := json.Unmarshal(payload, &data); err != nil {
+			return nil, err
+		}
+		if issuer := data["iss"].(string); issuer != set.Issuer {
+			continue
+		}
+		return data, nil
 	}
 	return nil, errors.New("zero jwks matches")
 }

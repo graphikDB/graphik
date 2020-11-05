@@ -5,6 +5,7 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/generic"
+	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
@@ -23,12 +24,13 @@ const (
 )
 
 type Runtime struct {
-	opts  *Opts
-	raft  *raft.Raft
-	mu    sync.RWMutex
-	nodes *generic.Nodes
-	edges *generic.Edges
-	close sync.Once
+	machine *machine.Machine
+	jwks    *jwks.Auth
+	raft    *raft.Raft
+	mu      sync.RWMutex
+	nodes   *generic.Nodes
+	edges   *generic.Edges
+	close   sync.Once
 }
 
 func New(opts ...Opt) (*Runtime, error) {
@@ -75,11 +77,13 @@ func New(opts ...Opt) (*Runtime, error) {
 	edges := generic.NewEdges()
 	nodes := generic.NewNodes(edges)
 	s := &Runtime{
-		opts:  options,
-		mu:    sync.RWMutex{},
-		nodes: nodes,
-		edges: edges,
-		close: sync.Once{},
+		machine: options.machine,
+		jwks:    options.jwks,
+		raft:    nil,
+		mu:      sync.RWMutex{},
+		nodes:   nodes,
+		edges:   edges,
+		close:   sync.Once{},
 	}
 	rft, err := raft.NewRaft(config, s, logStore, stableStore, snapshots, transport)
 	if err != nil {
@@ -97,9 +101,9 @@ func New(opts ...Opt) (*Runtime, error) {
 		rft.BootstrapCluster(configuration)
 	}
 	s.raft = rft
-	s.opts.machine.Go(func(routine machine.Routine) {
+	s.machine.Go(func(routine machine.Routine) {
 		logger.Info("refreshing jwks")
-		if err := s.opts.jwks.RefreshKeys(); err != nil {
+		if err := s.jwks.RefreshKeys(); err != nil {
 			logger.Error("failed to refresh keys", zap.Error(err))
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
@@ -122,10 +126,14 @@ func (s *Runtime) Close() error {
 }
 
 func (s *Runtime) Machine() *machine.Machine {
-	return s.opts.machine
+	return s.machine
 }
 
-func (s *Runtime) join(nodeID, addr string) error {
+func (s *Runtime) JWKS() *jwks.Auth {
+	return s.jwks
+}
+
+func (s *Runtime) JoinNode(nodeID, addr string) error {
 	logger.Info("received join request for remote node",
 		zap.String("node", nodeID),
 		zap.String("address", addr),

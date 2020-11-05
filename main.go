@@ -7,7 +7,7 @@ import (
 	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
-	"github.com/autom8ter/graphik/service/admin"
+	"github.com/autom8ter/graphik/service/private"
 	"github.com/autom8ter/machine"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
@@ -79,7 +79,7 @@ func main() {
 			logger.Error("failed to join raft cluster", zap.Error(err))
 			return
 		}
-		client := apipb.NewAdminServiceClient(conn)
+		client := apipb.NewPrivateServiceClient(conn)
 		_, err = client.RaftJoin(ctx, &apipb.RaftJoinRequest{
 			NodeId:  cfg.Raft.NodeID,
 			Address: cfg.Raft.Bind,
@@ -132,8 +132,8 @@ func main() {
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
-	adminService := admin.NewService(runt)
-	apipb.RegisterAdminServiceServer(gserver, adminService)
+	privateService := private.NewService(runt)
+	apipb.RegisterPrivateServiceServer(gserver, privateService)
 	grpc_prometheus.Register(gserver)
 
 	mach.Go(func(routine machine.Routine) {

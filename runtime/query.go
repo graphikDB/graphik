@@ -59,6 +59,12 @@ func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
 	if node.Path.Type == "" {
 		node.Path.Type = apipb.Keyword_DEFAULT.String()
 	}
+	node.CreatedAt = &timestamp.Timestamp{
+		Seconds: time.Now().Unix(),
+	}
+	node.UpdatedAt = &timestamp.Timestamp{
+		Seconds: time.Now().Unix(),
+	}
 	any, err := ptypes.MarshalAny(node)
 	if err != nil {
 

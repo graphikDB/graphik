@@ -14,7 +14,7 @@ func (a *Runtime) AuthMiddleware() grpc_auth.AuthFunc {
 		if err != nil {
 			return nil, err
 		}
-		payload, err := a.opts.jwks.VerifyJWT(token)
+		payload, err := a.jwks.VerifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}

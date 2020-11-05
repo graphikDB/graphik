@@ -37,7 +37,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 			UpdatedAt:  c.Timestamp,
 		})
 		channel := fmt.Sprintf("nodes.%s", n.Path.Type)
-		f.opts.machine.Go(func(routine machine.Routine) {
+		f.machine.Go(func(routine machine.Routine) {
 			if err := routine.Publish(channel, n); err != nil {
 				logger.Error("failed to publish message", zap.String("channel", channel))
 			}
@@ -53,7 +53,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		n := f.nodes.Patch(c.Timestamp, val)
 		channel := fmt.Sprintf("nodes.%s", n.Path.Type)
-		f.opts.machine.Go(func(routine machine.Routine) {
+		f.machine.Go(func(routine machine.Routine) {
 			if err := routine.Publish(channel, n); err != nil {
 				logger.Error("failed to publish message", zap.String("channel", channel))
 			}
@@ -95,7 +95,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		val.UpdatedAt = c.Timestamp
 		e := f.edges.Set(val)
 		channel := fmt.Sprintf("edges.%s", e.Path.Type)
-		f.opts.machine.Go(func(routine machine.Routine) {
+		f.machine.Go(func(routine machine.Routine) {
 			if err := routine.Publish(channel, e); err != nil {
 				logger.Error("failed to publish edge", zap.String("channel", channel))
 			}
@@ -111,7 +111,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		e := f.edges.Patch(c.Timestamp, val)
 		channel := fmt.Sprintf("edges.%s", e.Path.Type)
-		f.opts.machine.Go(func(routine machine.Routine) {
+		f.machine.Go(func(routine machine.Routine) {
 			if err := routine.Publish(channel, e); err != nil {
 				logger.Error("failed to publish edge", zap.String("channel", channel))
 			}

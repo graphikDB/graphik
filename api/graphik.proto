@@ -37,6 +37,11 @@ message Path {
   string ID =2;
 }
 
+message NodeConstructor {
+  Path path =1;
+  google.protobuf.Struct attributes = 2;
+}
+
 message Node {
   Path path =1;
   google.protobuf.Struct attributes = 2;
@@ -66,6 +71,14 @@ message Patch {
   google.protobuf.Struct patch = 2;
 }
 
+message EdgeConstructor {
+  Path path =1;
+  bool mutual =2;
+  google.protobuf.Struct attributes = 3;
+  Path from =4;
+  Path to =5;
+}
+
 message Edge {
   Path path =1;
   bool mutual =2;
@@ -81,12 +94,12 @@ message EdgeFilters {
   repeated Filter edges_to =2;
 }
 
-message RaftJoinRequest {
+message JoinClusterRequest {
   string node_id =1;
   string address =2;
 }
 
-message RaftJoinResponse {}
+message JoinClusterResponse {}
 
 message GetJWKSRequest {}
 
@@ -102,12 +115,44 @@ message UpdateJWKSResponse {
   map<string, string> jwks =1;
 }
 
+message CreateNodesRequest {
+  repeated NodeConstructor nodes =1;
+}
+
+message CreateNodesResponse {
+  repeated Node nodes =1;
+}
+
 message SearchNodesRequest {
     Filter filter =1;
 }
 
 message SearchNodesResponse {
   repeated Node nodes = 1;
+}
+
+message PatchNodesRequest {
+  repeated Patch patches =1;
+}
+
+message PatchNodesResponse {
+  repeated Node node =1;
+}
+
+message DelNodesRequest {
+  repeated Path paths =1;
+}
+
+message DelNodesResponse {
+  Counter counter =1;
+}
+
+message CreateEdgesRequest {
+  repeated NodeConstructor nodes =1;
+}
+
+message CreateEdgesResponse {
+  repeated Node nodes =1;
 }
 
 message SearchEdgesRequest {
@@ -118,10 +163,34 @@ message SearchEdgesResponse {
   repeated Edge edges = 1;
 }
 
-service AdminService {
-  rpc RaftJoin(RaftJoinRequest) returns(RaftJoinResponse) {}
+message PatchEdgesRequest {
+  repeated Patch patches =1;
+}
+
+message PatchEdgesResponse {
+  repeated Node node =1;
+}
+
+message DelEdgesRequest {
+  repeated Path paths =1;
+}
+
+message DelEdgesResponse {
+  Counter counter =1;
+}
+
+service PrivateService {
+  rpc JoinCluster(JoinClusterRequest) returns(JoinClusterResponse) {}
   rpc GetJWKS(GetJWKSRequest) returns (GetJWKSResponse){}
   rpc UpdateJWKS(UpdateJWKSRequest) returns(UpdateJWKSResponse){}
+
+  rpc CreateNodes(CreateNodesRequest) returns(CreateNodesResponse){}
   rpc SearchNodes(SearchNodesRequest) returns (SearchNodesResponse){}
+  rpc PatchNodes(PatchNodesRequest) returns(PatchNodesResponse){}
+  rpc DelNodes(DelNodesRequest) returns(DelNodesResponse){}
+
+  rpc CreateEdges(CreateEdgesRequest) returns(CreateEdgesResponse){}
   rpc SearchEdges(SearchEdgesRequest) returns (SearchEdgesResponse){}
+  rpc PatchEdges(PatchEdgesRequest) returns(PatchEdgesResponse){}
+  rpc DelEdges(DelEdgesRequest) returns(DelEdgesResponse){}
 }
