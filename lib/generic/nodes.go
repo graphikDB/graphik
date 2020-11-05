@@ -1,19 +1,19 @@
 package generic
 
 import (
-	"fmt"
-	"github.com/autom8ter/graphik/lib/model"
+	apipb "github.com/autom8ter/graphik/api"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"time"
 )
 
 type Nodes struct {
-	nodes map[string]map[string]*model.Node
+	nodes map[string]map[string]*apipb.Node
 	edges *Edges
 }
 
 func NewNodes(edges *Edges) *Nodes {
 	return &Nodes{
-		nodes: map[string]map[string]*model.Node{},
+		nodes: map[string]map[string]*apipb.Node{},
 		edges: edges,
 	}
 }
@@ -33,9 +33,9 @@ func (n *Nodes) Types() []string {
 	return nodeTypes
 }
 
-func (n *Nodes) All() []*model.Node {
-	var nodes []*model.Node
-	n.Range(Any, func(node *model.Node) bool {
+func (n *Nodes) All() []*apipb.Node {
+	var nodes []*apipb.Node
+	n.Range(Any, func(node *apipb.Node) bool {
 		nodes = append(nodes, node)
 		return true
 	})
@@ -43,38 +43,40 @@ func (n *Nodes) All() []*model.Node {
 	return nodes
 }
 
-func (n *Nodes) Get(key model.Path) (*model.Node, bool) {
-	if c, ok := n.nodes[key.Type]; ok {
-		node := c[key.ID]
+func (n *Nodes) Get(path *apipb.Path) (*apipb.Node, bool) {
+	if c, ok := n.nodes[path.Type]; ok {
+		node := c[path.ID]
 		return node, node != nil
 	}
 	return nil, false
 }
 
-func (n *Nodes) Set(value *model.Node) *model.Node {
+func (n *Nodes) Set(value *apipb.Node) *apipb.Node {
 	if value.Path.ID == "" {
 		value.Path.ID = UUID()
 	}
 	if _, ok := n.nodes[value.Path.Type]; !ok {
-		n.nodes[value.Path.Type] = map[string]*model.Node{}
+		n.nodes[value.Path.Type] = map[string]*apipb.Node{}
 	}
 	n.nodes[value.Path.Type][value.Path.ID] = value
 	return value
 }
 
-func (n *Nodes) Patch(updatedAt time.Time, value *model.Patch) *model.Node {
+func (n *Nodes) Patch(updatedAt time.Time, value *apipb.Patch) *apipb.Node {
 	if _, ok := n.nodes[value.Path.Type]; !ok {
 		return nil
 	}
 	node := n.nodes[value.Path.Type][value.Path.ID]
-	for k, v := range value.Patch {
-		node.Attributes[k] = v
+	for k, v := range value.Patch.Fields {
+		node.Attributes.Fields[k] = v
 	}
-	node.UpdatedAt = updatedAt
+	node.UpdatedAt = &timestamp.Timestamp{
+		Seconds:              updatedAt.Unix(),
+	}
 	return node
 }
 
-func (n *Nodes) Range(nodeType string, f func(node *model.Node) bool) {
+func (n *Nodes) Range(nodeType string, f func(node *apipb.Node) bool) {
 	if nodeType == Any {
 		for _, c := range n.nodes {
 			for _, node := range c {
@@ -90,33 +92,33 @@ func (n *Nodes) Range(nodeType string, f func(node *model.Node) bool) {
 	}
 }
 
-func (n *Nodes) Delete(key model.Path) bool {
-	node, ok := n.Get(key)
+func (n *Nodes) Delete(path *apipb.Path) bool {
+	node, ok := n.Get(path)
 	if !ok {
 		return false
 	}
-	n.edges.RangeFrom(node.Path, func(e *model.Edge) bool {
+	n.edges.RangeFrom(node.Path, func(e *apipb.Edge) bool {
 		n.edges.Delete(e.Path)
 		return true
 	})
-	n.edges.RangeTo(node.Path, func(e *model.Edge) bool {
+	n.edges.RangeTo(node.Path, func(e *apipb.Edge) bool {
 		n.edges.Delete(e.Path)
 		return true
 	})
-	if c, ok := n.nodes[key.Type]; ok {
-		delete(c, key.ID)
+	if c, ok := n.nodes[path.Type]; ok {
+		delete(c, path.ID)
 	}
 	return true
 }
 
-func (n *Nodes) Exists(key model.Path) bool {
-	_, ok := n.Get(key)
+func (n *Nodes) Exists(path *apipb.Path) bool {
+	_, ok := n.Get(path)
 	return ok
 }
 
-func (n *Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*model.Node {
-	var filtered []*model.Node
-	n.Range(nodeType, func(node *model.Node) bool {
+func (n *Nodes) Filter(nodeType string, filter func(node *apipb.Node) bool) []*apipb.Node {
+	var filtered []*apipb.Node
+	n.Range(nodeType, func(node *apipb.Node) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
@@ -126,13 +128,13 @@ func (n *Nodes) Filter(nodeType string, filter func(node *model.Node) bool) []*m
 	return filtered
 }
 
-func (n *Nodes) SetAll(nodes ...*model.Node) {
+func (n *Nodes) SetAll(nodes ...*apipb.Node) {
 	for _, node := range nodes {
 		n.Set(node)
 	}
 }
 
-func (n *Nodes) DeleteAll(Nodes ...*model.Node) {
+func (n *Nodes) DeleteAll(Nodes ...*apipb.Node) {
 	for _, node := range Nodes {
 		n.Delete(node.Path)
 	}
@@ -152,114 +154,25 @@ func (n *Nodes) Close() {
 	}
 }
 
-func (n *Nodes) FilterSearch(filter model.Filter) ([]*model.Node, error) {
-	var nodes []*model.Node
+func (n *Nodes) FilterSearch(filter apipb.Filter) ([]*apipb.Node, error) {
+	var nodes []*apipb.Node
 	var err error
 	var pass bool
-	n.Range(filter.Type, func(node *model.Node) bool {
-		pass, err = model.Evaluate(filter.Expressions, node)
+	n.Range(filter.Type, func(node *apipb.Node) bool {
+		pass, err = apipb.Evaluate(filter.Expressions, node)
 		if err != nil {
 			return false
 		}
 		if pass {
 			nodes = append(nodes, node)
 		}
-		return len(nodes) < filter.Limit
+		return len(nodes) < int(filter.Limit)
 	})
 	NodeList(nodes).Sort()
 	return nodes, err
 }
 
-func (n *Nodes) RangeFromDepth(filter model.DepthFilter, fn func(node *model.Node) bool) error {
-	node, ok := n.Get(filter.Path)
-	if !ok {
-		return fmt.Errorf("%s does not exist", filter.Path.String())
-	}
-	walker := n.recurseFrom(0, filter, fn)
-	walker(node)
-	return nil
-}
-
-func (n *Nodes) RangeToDepth(filter model.DepthFilter, fn func(node *model.Node) bool) error {
-	node, ok := n.Get(filter.Path)
-	if !ok {
-		return fmt.Errorf("%s does not exist", filter.Path.String())
-	}
-	walker := n.recurseTo(0, filter, fn)
-	walker(node)
-	return nil
-}
-
-func (n *Nodes) ascendFrom(seen map[string]struct{}, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
-	return func(node *model.Node) bool {
-		n.edges.RangeFrom(node.Path, func(e *model.Edge) bool {
-			if e.Path.Type != filter.Path.Type {
-				return true
-			}
-			node, ok := n.Get(e.To)
-			if ok {
-				if _, ok := seen[node.Path.String()]; !ok {
-					seen[node.Path.String()] = struct{}{}
-					pass, err := model.Evaluate(filter.Expressions, node)
-					if err != nil {
-						return true
-					}
-					if pass {
-						return fn(node)
-					}
-				}
-			}
-			return true
-		})
-		return true
-	}
-}
-
-func (n *Nodes) ascendTo(seen map[string]struct{}, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
-	return func(node *model.Node) bool {
-		n.edges.RangeTo(node.Path, func(e *model.Edge) bool {
-			if e.Path.Type != filter.Path.Type {
-				return true
-			}
-			node, ok := n.Get(e.From)
-			if ok {
-				if _, ok := seen[node.Path.String()]; !ok {
-					seen[node.Path.String()] = struct{}{}
-					if _, ok := seen[node.Path.String()]; !ok {
-						seen[node.Path.String()] = struct{}{}
-						pass, err := model.Evaluate(filter.Expressions, node)
-						if err != nil {
-							return true
-						}
-						if pass {
-							return fn(node)
-						}
-					}
-				}
-			}
-			return true
-		})
-		return true
-	}
-}
-
-func (n *Nodes) recurseFrom(depth int, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
-	if depth > filter.Depth {
-		return fn
-	}
-	depth += 1
-	return n.recurseFrom(depth, filter, n.ascendFrom(map[string]struct{}{}, filter, fn))
-}
-
-func (n *Nodes) recurseTo(depth int, filter model.DepthFilter, fn func(node *model.Node) bool) func(node *model.Node) bool {
-	if depth > filter.Depth {
-		return fn
-	}
-	depth += 1
-	return n.recurseTo(depth, filter, n.ascendTo(map[string]struct{}{}, filter, fn))
-}
-
-type NodeList []*model.Node
+type NodeList []*apipb.Node
 
 func (n NodeList) Sort() {
 	sorter := Interface{
@@ -273,7 +186,7 @@ func (n NodeList) Sort() {
 			if n == nil {
 				return false
 			}
-			return n[i].UpdatedAt.UnixNano() > n[j].UpdatedAt.UnixNano()
+			return n[i].UpdatedAt.Nanos > n[j].UpdatedAt.Nanos
 		},
 		SwapFunc: func(i, j int) {
 			if n == nil {
