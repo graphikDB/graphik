@@ -2,16 +2,18 @@ package main
 
 import (
 	"context"
-	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/lib/config"
 	"github.com/autom8ter/graphik/lib/jwks"
 	"github.com/autom8ter/graphik/lib/logger"
 	"github.com/autom8ter/graphik/lib/runtime"
+	"github.com/autom8ter/graphik/service/admin"
 	"github.com/autom8ter/machine"
-	"github.com/gorilla/mux"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rs/cors"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -27,15 +29,13 @@ import (
 const version = "0.0.0"
 
 func init() {
-	pflag.CommandLine.IntVar(&cfg.Port, "port", 8080, "port to serve on")
+	pflag.CommandLine.StringVar(&cfg.GrpcBind, "grpc.bind", ":7686", "bind local port to gRPC server")
+	pflag.CommandLine.StringVar(&cfg.HTTPBind, "http.bind", ":7687", "bind local port to http server")
 	pflag.CommandLine.StringVar(&cfg.Raft.DBPath, "raft.path", "/tmp/graphik", "path to database folder")
-	pflag.CommandLine.StringVar(&cfg.Raft.Bind, "raft.bind", "localhost:8081", "bind raft protocol to local port")
+	pflag.CommandLine.StringVar(&cfg.Raft.Bind, "raft.bind", "localhost:8090", "bind raft protocol to local port")
 	pflag.CommandLine.StringVar(&cfg.Raft.Join, "raft.join", "", "join raft cluster leader")
 	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.id", "main", "unique raft node id")
 	pflag.CommandLine.StringToStringVar(&cfg.JWKs, "jwks", nil, "remote json web key set(s)")
-	pflag.CommandLine.StringSliceVar(&cfg.Cors.AllowedHeaders, "cors.headers", nil, "allowed cors headers")
-	pflag.CommandLine.StringSliceVar(&cfg.Cors.AllowedMethods, "cors.methods", nil, "allowed cors methods")
-	pflag.CommandLine.StringSliceVar(&cfg.Cors.AllowedOrigins, "cors.origins", nil, "allowed cors origins")
 }
 
 var (
@@ -54,13 +54,12 @@ func main() {
 	defer signal.Stop(interrupt)
 
 	mach := machine.New(ctx)
-	router := mux.NewRouter()
 	j, err := jwks.New(cfg.JWKs)
 	if err != nil {
 		logger.Error("failed to fetch jwks", zap.Error(err))
 		return
 	}
-	stor, err := runtime.New(
+	runt, err := runtime.New(
 		runtime.WithLeader(cfg.Raft.Join == ""),
 		runtime.WithID(cfg.Raft.NodeID),
 		runtime.WithBindAddr(cfg.Raft.Bind),
@@ -90,36 +89,66 @@ func main() {
 			return
 		}
 	}
-	router.Use(cors.New(cors.Options{
-		AllowedOrigins:   cfg.Cors.AllowedOrigins,
-		AllowedMethods:   cfg.Cors.AllowedMethods,
-		AllowedHeaders:   cfg.Cors.AllowedHeaders,
-		AllowCredentials: true,
-	}).Handler)
 
-	router.Handle("/metrics", promhttp.Handler()).Methods(http.MethodGet)
-	router.HandleFunc("/debug/pprof/", pprof.Index).Methods(http.MethodGet)
-	router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline).Methods(http.MethodGet)
-	router.HandleFunc("/debug/pprof/profile", pprof.Profile).Methods(http.MethodGet)
-	router.HandleFunc("/debug/pprof/symbol", pprof.Symbol).Methods(http.MethodGet)
-	router.HandleFunc("/debug/pprof/trace", pprof.Trace).Methods(http.MethodGet)
+	router := http.NewServeMux()
+	router.Handle("/metrics", promhttp.Handler())
+	router.HandleFunc("/debug/pprof/", pprof.Index)
+	router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	router.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 
 	server := &http.Server{
 		Handler: router,
 	}
+
 	mach.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", fmt.Sprintf(":%v", cfg.Port))
+		lis, err := net.Listen("tcp", cfg.HTTPBind)
 		if err != nil {
-			logger.Error("failed to create server listener", zap.Error(err))
+			logger.Error("failed to create http server listener", zap.Error(err))
 			return
 		}
 		defer lis.Close()
-		logger.Info("starting graphql server",
+		logger.Info("starting http server",
 			zap.String("address", lis.Addr().String()),
 			zap.String("version", version),
 		)
 		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
-			logger.Error("server failure", zap.Error(err))
+			logger.Error("http server failure", zap.Error(err))
+		}
+	})
+
+	gserver := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			grpc_prometheus.UnaryServerInterceptor,
+			grpc_zap.UnaryServerInterceptor(logger.Logger()),
+			grpc_auth.UnaryServerInterceptor(runt.AuthMiddleware()),
+			grpc_recovery.UnaryServerInterceptor(),
+		),
+		grpc.ChainStreamInterceptor(
+			grpc_prometheus.StreamServerInterceptor,
+			grpc_zap.StreamServerInterceptor(logger.Logger()),
+			grpc_auth.StreamServerInterceptor(runt.AuthMiddleware()),
+			grpc_recovery.StreamServerInterceptor(),
+		),
+	)
+	adminService := admin.NewService(runt)
+	apipb.RegisterAdminServiceServer(gserver, adminService)
+	grpc_prometheus.Register(gserver)
+
+	mach.Go(func(routine machine.Routine) {
+		lis, err := net.Listen("tcp", cfg.GrpcBind)
+		if err != nil {
+			logger.Error("failed to create gRPC server listener", zap.Error(err))
+			return
+		}
+		defer lis.Close()
+		logger.Info("starting gRPC server",
+			zap.String("address", lis.Addr().String()),
+			zap.String("version", version),
+		)
+		if err := gserver.Serve(lis); err != nil && err != http.ErrServerClosed {
+			logger.Error("gRPC server failure", zap.Error(err))
 		}
 	})
 	select {
@@ -135,7 +164,19 @@ func main() {
 	defer shutdownCancel()
 
 	_ = server.Shutdown(shutdownCtx)
-	_ = stor.Close()
+	stopped := make(chan struct{})
+	go func() {
+		gserver.GracefulStop()
+		close(stopped)
+	}()
+	t := time.NewTimer(5 * time.Second)
+	select {
+	case <-t.C:
+		gserver.Stop()
+	case <-stopped:
+		t.Stop()
+	}
+	_ = runt.Close()
 	logger.Info("shutdown successful")
 	mach.Wait()
 }
