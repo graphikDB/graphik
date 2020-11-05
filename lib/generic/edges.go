@@ -3,7 +3,6 @@ package generic
 import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"time"
 )
 
 type Edges struct {
@@ -195,16 +194,14 @@ func (n *Edges) Close() {
 	}
 }
 
-func (e *Edges) Patch(updatedAt time.Time, value *apipb.Patch) *apipb.Edge {
+func (e *Edges) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb.Edge {
 	if _, ok := e.edges[value.Path.Type]; !ok {
 		return nil
 	}
 	for k, v := range value.Patch.Fields {
 		e.edges[value.Path.Type][value.Path.ID].Attributes.Fields[k] = v
 	}
-	e.edges[value.Path.Type][value.Path.ID].UpdatedAt = &timestamp.Timestamp{
-		Seconds: updatedAt.Unix(),
-	}
+	e.edges[value.Path.Type][value.Path.ID].UpdatedAt = updatedAt
 	return e.edges[value.Path.Type][value.Path.ID]
 }
 

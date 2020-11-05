@@ -35,7 +35,7 @@ func (n *Nodes) Types() []string {
 
 func (n *Nodes) All() []*apipb.Node {
 	var nodes []*apipb.Node
-	n.Range(Any, func(node *apipb.Node) bool {
+	n.Range(apipb.Keyword_ANY.String(), func(node *apipb.Node) bool {
 		nodes = append(nodes, node)
 		return true
 	})
@@ -62,7 +62,7 @@ func (n *Nodes) Set(value *apipb.Node) *apipb.Node {
 	return value
 }
 
-func (n *Nodes) Patch(updatedAt time.Time, value *apipb.Patch) *apipb.Node {
+func (n *Nodes) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb.Node {
 	if _, ok := n.nodes[value.Path.Type]; !ok {
 		return nil
 	}
@@ -70,14 +70,12 @@ func (n *Nodes) Patch(updatedAt time.Time, value *apipb.Patch) *apipb.Node {
 	for k, v := range value.Patch.Fields {
 		node.Attributes.Fields[k] = v
 	}
-	node.UpdatedAt = &timestamp.Timestamp{
-		Seconds: updatedAt.Unix(),
-	}
+	node.UpdatedAt = updatedAt
 	return node
 }
 
 func (n *Nodes) Range(nodeType string, f func(node *apipb.Node) bool) {
-	if nodeType == Any {
+	if nodeType == apipb.Keyword_ANY.String() {
 		for _, c := range n.nodes {
 			for _, node := range c {
 				f(node)
@@ -159,7 +157,7 @@ func (n *Nodes) FilterSearch(filter apipb.Filter) ([]*apipb.Node, error) {
 	var err error
 	var pass bool
 	n.Range(filter.Type, func(node *apipb.Node) bool {
-		pass, err = apipb.Evaluate(filter.Expressions, node)
+		pass, err = apipb.EvaluateExpressions(filter.Expressions, node)
 		if err != nil {
 			return false
 		}

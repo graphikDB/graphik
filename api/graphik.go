@@ -1,8 +1,11 @@
 package apipb
 
 import (
+	"crypto/rand"
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"github.com/google/cel-go/cel"
+	"github.com/hashicorp/raft"
 	"strings"
 )
 
@@ -59,5 +62,18 @@ func PathFromString(path string) *Path {
 	}
 	return &Path{
 		Type: parts[0],
+	}
+}
+
+func UUID() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+}
+
+func (c Command) Log() *raft.Log {
+	bits, _ := proto.Marshal(&c)
+	return &raft.Log{
+		Data:       bits,
 	}
 }

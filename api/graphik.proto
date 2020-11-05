@@ -6,6 +6,7 @@ option go_package = "apipb";
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
 
 enum Op {
   CREATE_NODE =0;
@@ -19,6 +20,16 @@ enum Op {
 enum Keyword {
   ANY =0;
   DEFAULT =1;
+}
+
+message Command {
+  Op op =1;
+  google.protobuf.Any val =2;
+  google.protobuf.Timestamp timestamp =3;
+}
+
+message Counter {
+  int64 count =1;
 }
 
 message Path {
