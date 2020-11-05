@@ -74,39 +74,27 @@ func (s *Service) SearchEdges(ctx context.Context, request *apipb.SearchEdgesReq
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+	edges.Sort()
 	return &apipb.SearchEdgesResponse{
 		Edges: edges,
 	}, nil
 }
 
 func (s *Service) CreateNodes(ctx context.Context, request *apipb.CreateNodesRequest) (*apipb.CreateNodesResponse, error) {
-	var nodes []*apipb.Node
-	for _, n := range request.Nodes {
-		node, err := s.runtime.CreateNode(&apipb.Node{
-			Path:       n.Path,
-			Attributes: n.Attributes,
-		})
-		if err != nil {
-			return nil, err
-		}
-		nodes = append(nodes, node)
+	nodes, err := s.runtime.CreateNodes(request.Nodes)
+	if err != nil {
+		return nil, err
 	}
+	nodes.Sort()
 	return &apipb.CreateNodesResponse{
 		Nodes: nodes,
 	}, nil
 }
 
 func (s *Service) PatchNodes(ctx context.Context, request *apipb.PatchNodesRequest) (*apipb.PatchNodesResponse, error) {
-	var nodes []*apipb.Node
-	for _, n := range request.Patches {
-		node, err := s.runtime.PatchNode(&apipb.Patch{
-			Path:  n.Path,
-			Patch: n.Patch,
-		})
-		if err != nil {
-			return nil, err
-		}
-		nodes = append(nodes, node)
+	nodes, err := s.runtime.PatchNodes(request.Patches)
+	if err != nil {
+		return nil, err
 	}
 	return &apipb.PatchNodesResponse{
 		Nodes: nodes,
@@ -114,17 +102,9 @@ func (s *Service) PatchNodes(ctx context.Context, request *apipb.PatchNodesReque
 }
 
 func (s *Service) DelNodes(ctx context.Context, request *apipb.DelNodesRequest) (*apipb.DelNodesResponse, error) {
-	counter := &apipb.Counter{
-		Count: 0,
-	}
-	for _, path := range request.Paths {
-		count, err := s.runtime.DelNode(path)
-		if err != nil {
-			return &apipb.DelNodesResponse{
-				Counter: counter,
-			}, nil
-		}
-		counter.Count += count.Count
+	counter, err := s.runtime.DelNodes(request.Paths)
+	if err != nil {
+		return nil, err
 	}
 	return &apipb.DelNodesResponse{
 		Counter: counter,
@@ -132,21 +112,9 @@ func (s *Service) DelNodes(ctx context.Context, request *apipb.DelNodesRequest) 
 }
 
 func (s *Service) CreateEdges(ctx context.Context, request *apipb.CreateEdgesRequest) (*apipb.CreateEdgesResponse, error) {
-	var edges []*apipb.Edge
-	for _, edge := range request.Edges {
-		e, err := s.runtime.CreateEdge(&apipb.Edge{
-			Path:       edge.Path,
-			Mutual:     edge.Mutual,
-			Attributes: edge.Attributes,
-			From:       edge.From,
-			To:         edge.To,
-		})
-		if err != nil {
-			return &apipb.CreateEdgesResponse{
-				Edges: edges,
-			}, status.Error(codes.Internal, err.Error())
-		}
-		edges = append(edges, e)
+	edges, err := s.runtime.CreateEdges(request.Edges)
+	if err != nil {
+		return nil, err
 	}
 	return &apipb.CreateEdgesResponse{
 		Edges: edges,
@@ -154,15 +122,9 @@ func (s *Service) CreateEdges(ctx context.Context, request *apipb.CreateEdgesReq
 }
 
 func (s *Service) PatchEdges(ctx context.Context, request *apipb.PatchEdgesRequest) (*apipb.PatchEdgesResponse, error) {
-	var edges []*apipb.Edge
-	for _, patch := range request.Patches {
-		e, err := s.runtime.PatchEdge(patch)
-		if err != nil {
-			return &apipb.PatchEdgesResponse{
-				Edges: edges,
-			}, status.Error(codes.Internal, err.Error())
-		}
-		edges = append(edges, e)
+	edges, err := s.runtime.PatchEdges(request.Patches)
+	if err != nil {
+		return nil, err
 	}
 	return &apipb.PatchEdgesResponse{
 		Edges: edges,
@@ -170,17 +132,9 @@ func (s *Service) PatchEdges(ctx context.Context, request *apipb.PatchEdgesReque
 }
 
 func (s *Service) DelEdges(ctx context.Context, request *apipb.DelEdgesRequest) (*apipb.DelEdgesResponse, error) {
-	var counter = &apipb.Counter{
-		Count: 0,
-	}
-	for _, path := range request.Paths {
-		count, err := s.runtime.DelEdge(path)
-		if err != nil {
-			return &apipb.DelEdgesResponse{
-				Counter: counter,
-			}, status.Error(codes.Internal, err.Error())
-		}
-		counter.Count += count.Count
+	counter, err := s.runtime.DelEdges(request.Paths)
+	if err != nil {
+		return nil, err
 	}
 	return &apipb.DelEdgesResponse{
 		Counter: counter,

@@ -16,14 +16,18 @@ func (a *Runtime) toContext(ctx context.Context, payload map[string]interface{})
 	}
 	n, ok := a.nodes.Get(path)
 	if !ok {
-		newNode, err := a.CreateNode(&apipb.Node{
-			Path:       path,
-			Attributes: n.Attributes,
+		newNode, err := a.CreateNodes(&apipb.Nodes{
+			Nodes: []*apipb.Node{
+				{
+					Path:       path,
+					Attributes: n.Attributes,
+				},
+			},
 		})
 		if err != nil {
 			return nil, err
 		}
-		n = newNode
+		n = newNode.Nodes[0]
 	}
 	return context.WithValue(ctx, authCtxKey, n), nil
 }

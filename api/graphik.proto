@@ -18,7 +18,7 @@ enum Op {
 }
 
 enum Keyword {
-  ANY =0;
+  ANY = 0;
   DEFAULT =1;
 }
 
@@ -37,9 +37,8 @@ message Path {
   string ID =2;
 }
 
-message NodeConstructor {
-  Path path =1;
-  google.protobuf.Struct attributes = 2;
+message Paths {
+  repeated Path paths =1;
 }
 
 message Node {
@@ -66,8 +65,8 @@ message Filter {
 }
 
 message Export {
-  repeated Node nodes =1;
-  repeated Edge edges =2;
+  Nodes nodes =1;
+  Edges edges =2;
 }
 
 message Patch {
@@ -77,14 +76,6 @@ message Patch {
 
 message Patches {
   repeated Patch patches =1;
-}
-
-message EdgeConstructor {
-  Path path =1;
-  bool mutual =2;
-  google.protobuf.Struct attributes = 3;
-  Path from =4;
-  Path to =5;
 }
 
 message Edge {
@@ -133,11 +124,11 @@ message UpdateJWKSResponse {
 }
 
 message CreateNodesRequest {
-  repeated NodeConstructor nodes =1;
+  Nodes nodes =1;
 }
 
 message CreateNodesResponse {
-  repeated Node nodes =1;
+  Nodes nodes =1;
 }
 
 message SearchNodesRequest {
@@ -145,19 +136,19 @@ message SearchNodesRequest {
 }
 
 message SearchNodesResponse {
-  repeated Node nodes = 1;
+  Nodes nodes = 1;
 }
 
 message PatchNodesRequest {
-  repeated Patch patches =1;
+  Patches patches =1;
 }
 
 message PatchNodesResponse {
-  repeated Node nodes =1;
+  Nodes nodes =1;
 }
 
 message DelNodesRequest {
-  repeated Path paths =1;
+  Paths paths =1;
 }
 
 message DelNodesResponse {
@@ -165,11 +156,11 @@ message DelNodesResponse {
 }
 
 message CreateEdgesRequest {
-  repeated EdgeConstructor edges =1;
+  Edges edges =1;
 }
 
 message CreateEdgesResponse {
-  repeated Edge edges =1;
+  Edges edges =1;
 }
 
 message SearchEdgesRequest {
@@ -177,19 +168,19 @@ message SearchEdgesRequest {
 }
 
 message SearchEdgesResponse {
-  repeated Edge edges = 1;
+  Edges edges = 1;
 }
 
 message PatchEdgesRequest {
-  repeated Patch patches =1;
+  Patches patches =1;
 }
 
 message PatchEdgesResponse {
-  repeated Edge edges =1;
+  Edges edges =1;
 }
 
 message DelEdgesRequest {
-  repeated Path paths =1;
+  Paths paths =1;
 }
 
 message DelEdgesResponse {
@@ -202,7 +193,7 @@ message EdgesFromRequest {
 }
 
 message EdgesFromResponse {
-  repeated Edge edges =1;
+  Edges edges =1;
 }
 
 message EdgesToRequest {
@@ -211,7 +202,7 @@ message EdgesToRequest {
 }
 
 message EdgesToResponse {
-  repeated Edge edges =1;
+  Edges edges =1;
 }
 
 service PrivateService {

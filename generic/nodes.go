@@ -32,14 +32,15 @@ func (n *Nodes) Types() []string {
 	return nodeTypes
 }
 
-func (n *Nodes) All() []*apipb.Node {
+func (n *Nodes) All() *apipb.Nodes {
 	var nodes []*apipb.Node
 	n.Range(apipb.Keyword_ANY.String(), func(node *apipb.Node) bool {
 		nodes = append(nodes, node)
 		return true
 	})
-	NodeList(nodes).Sort()
-	return nodes
+	return &apipb.Nodes{
+		Nodes: nodes,
+	}
 }
 
 func (n *Nodes) Get(path *apipb.Path) (*apipb.Node, bool) {
@@ -113,7 +114,7 @@ func (n *Nodes) Exists(path *apipb.Path) bool {
 	return ok
 }
 
-func (n *Nodes) Filter(nodeType string, filter func(node *apipb.Node) bool) []*apipb.Node {
+func (n *Nodes) Filter(nodeType string, filter func(node *apipb.Node) bool) *apipb.Nodes {
 	var filtered []*apipb.Node
 	n.Range(nodeType, func(node *apipb.Node) bool {
 		if filter(node) {
@@ -121,18 +122,19 @@ func (n *Nodes) Filter(nodeType string, filter func(node *apipb.Node) bool) []*a
 		}
 		return true
 	})
-	NodeList(filtered).Sort()
-	return filtered
+	return &apipb.Nodes{
+		Nodes: filtered,
+	}
 }
 
-func (n *Nodes) SetAll(nodes ...*apipb.Node) {
-	for _, node := range nodes {
+func (n *Nodes) SetAll(nodes *apipb.Nodes) {
+	for _, node := range nodes.Nodes {
 		n.Set(node)
 	}
 }
 
-func (n *Nodes) DeleteAll(Nodes ...*apipb.Node) {
-	for _, node := range Nodes {
+func (n *Nodes) DeleteAll(nodes *apipb.Nodes) {
+	for _, node := range nodes.Nodes {
 		n.Delete(node.Path)
 	}
 }
@@ -151,7 +153,7 @@ func (n *Nodes) Close() {
 	}
 }
 
-func (n *Nodes) FilterSearch(filter *apipb.Filter) ([]*apipb.Node, error) {
+func (n *Nodes) FilterSearch(filter *apipb.Filter) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
 	var err error
 	var pass bool
@@ -165,32 +167,7 @@ func (n *Nodes) FilterSearch(filter *apipb.Filter) ([]*apipb.Node, error) {
 		}
 		return len(nodes) < int(filter.Limit)
 	})
-	NodeList(nodes).Sort()
-	return nodes, err
-}
-
-type NodeList []*apipb.Node
-
-func (n NodeList) Sort() {
-	sorter := Interface{
-		LenFunc: func() int {
-			if n == nil {
-				return 0
-			}
-			return len(n)
-		},
-		LessFunc: func(i, j int) bool {
-			if n == nil {
-				return false
-			}
-			return n[i].UpdatedAt.Nanos > n[j].UpdatedAt.Nanos
-		},
-		SwapFunc: func(i, j int) {
-			if n == nil {
-				return
-			}
-			n[i], n[j] = n[j], n[i]
-		},
-	}
-	sorter.Sort()
+	return &apipb.Nodes{
+		Nodes: nodes,
+	}, err
 }

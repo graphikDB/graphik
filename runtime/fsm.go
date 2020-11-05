@@ -3,18 +3,13 @@ package runtime
 import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {
@@ -41,8 +36,8 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		return values
 	case apipb.Op_PATCH_NODES:
 		var values = &apipb.Patches{}
-		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
-			return errors.Wrap(err, "failed to decode node patch")
+		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
+			return errors.Wrap(err, "failed to decode node patches")
 		}
 		var nodes = &apipb.Nodes{}
 		for _, val := range values.Patches {
@@ -54,74 +49,63 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		return nodes
 	case apipb.Op_DELETE_NODES:
-		var val = &apipb.Path{}
-		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
-			return errors.Wrap(err, "failed to decode node path")
+		var values = &apipb.Paths{}
+		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
+			return errors.Wrap(err, "failed to decode node paths")
 		}
 		deleted := 0
-		if val.ID == apipb.Keyword_ANY.String() {
-			f.nodes.Range(val.Type, func(node *apipb.Node) bool {
-				if f.nodes.Delete(node.Path) {
-					deleted += 1
-				}
-				return true
-			})
-		} else {
+		for _, val := range values.Paths {
 			if f.nodes.Delete(val) {
 				deleted += 1
 			}
 		}
 		return &apipb.Counter{Count: int64(deleted)}
-	case apipb.Op_CREATE_EDGE:
-		var val = &apipb.Edge{}
-		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
+	case apipb.Op_CREATE_EDGES:
+		var values = &apipb.Edges{}
+		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
 			return errors.Wrap(err, "failed to decode edge")
 		}
-		_, ok := f.nodes.Get(val.From)
-		if !ok {
-			return errors.Errorf("from node %s does not exist", (val.From.String()))
-		}
-		_, ok = f.nodes.Get(val.To)
-		if !ok {
-			return errors.Errorf("to node %s does not exist", val.To.String())
-		}
-		val.CreatedAt = c.Timestamp
-		val.UpdatedAt = c.Timestamp
-		e := f.edges.Set(val)
-		channel := fmt.Sprintf("edges.%s", e.Path.Type)
-		f.machine.Go(func(routine machine.Routine) {
-			if err := routine.Publish(channel, e); err != nil {
-				logger.Error("failed to publish edge", zap.String("channel", channel))
+		for _, val := range values.Edges {
+			_, ok := f.nodes.Get(val.From)
+			if !ok {
+				return errors.Errorf("from node %s does not exist", (val.From.String()))
 			}
-		})
-		return e
-	case apipb.Op_PATCH_EDGE:
-		var val = &apipb.Patch{}
+			_, ok = f.nodes.Get(val.To)
+			if !ok {
+				return errors.Errorf("to node %s does not exist", val.To.String())
+			}
+			val.CreatedAt = c.Timestamp
+			val.UpdatedAt = c.Timestamp
+			f.edges.Set(val)
+		}
+		return values
+	case apipb.Op_PATCH_EDGES:
+		var val = &apipb.Patches{}
 		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
 			return errors.Wrap(err, "failed to decode edge patch")
 		}
-		if !f.edges.Exists(val.Path) {
-			return errors.Errorf("edge %s does not exist", val.Path.String())
-		}
-		e := f.edges.Patch(c.Timestamp, val)
-		channel := fmt.Sprintf("edges.%s", e.Path.Type)
-		f.machine.Go(func(routine machine.Routine) {
-			if err := routine.Publish(channel, e); err != nil {
-				logger.Error("failed to publish edge", zap.String("channel", channel))
+		var edges = &apipb.Edges{}
+		for _, val := range val.Patches {
+			if !f.edges.Exists(val.Path) {
+				return errors.Errorf("edge %s does not exist", val.Path.String())
 			}
-		})
-		return e
+			edges.Edges = append(edges.Edges, f.edges.Patch(c.Timestamp, val))
+		}
+		return edges
 
-	case apipb.Op_DELETE_EDGE:
-		var val = &apipb.Path{}
-		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
+	case apipb.Op_DELETE_EDGES:
+		var values = &apipb.Paths{}
+		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
 			return errors.Wrap(err, "failed to decode edge path")
 		}
-		if f.edges.Exists(val) {
-			f.edges.Delete(val)
-			return &apipb.Counter{Count: 1}
+		deleted := 0
+		for _, val := range values.Paths {
+			if f.edges.Exists(val) {
+				f.edges.Delete(val)
+				deleted += 1
+			}
 		}
-		return &apipb.Counter{Count: 0}
+		return &apipb.Counter{Count: int64(deleted)}
 	default:
 		return fmt.Errorf("unsupported command: %v", c.Op)
 	}
@@ -142,8 +126,8 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	f.nodes.SetAll(export.Nodes...)
-	f.edges.SetAll(export.Edges...)
+	f.nodes.SetAll(export.Nodes)
+	f.edges.SetAll(export.Edges)
 	return nil
 }
 
@@ -198,27 +182,15 @@ func (s *Runtime) Import() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		for _, n := range export.Nodes {
-			any, _ := ptypes.MarshalAny(n)
-			cmd := &apipb.Command{
-				Op:  apipb.Op_CREATE_NODE,
-				Val: any,
-				Timestamp: &timestamp.Timestamp{
-					Seconds: time.Now().Unix(),
-				},
-			}
-			s.Apply(cmd.Log())
+		_, err = s.CreateNodes(export.Nodes)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
-		for _, e := range export.Edges {
-			any, _ := ptypes.MarshalAny(e)
-			cmd := apipb.Command{
-				Op:  apipb.Op_CREATE_EDGE,
-				Val: any,
-				Timestamp: &timestamp.Timestamp{
-					Seconds: time.Now().Unix(),
-				},
-			}
-			s.Apply(cmd.Log())
+		_, err = s.CreateEdges(export.Edges)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 	}
 }

@@ -34,14 +34,15 @@ func (n *Edges) Types() []string {
 	return edgeTypes
 }
 
-func (n *Edges) All() []*apipb.Edge {
+func (n *Edges) All() *apipb.Edges {
 	var edges []*apipb.Edge
 	n.Range(apipb.Keyword_ANY.String(), func(edge *apipb.Edge) bool {
 		edges = append(edges, edge)
 		return true
 	})
-	EdgeList(edges).Sort()
-	return edges
+	return &apipb.Edges{
+		Edges: edges,
+	}
 }
 
 func (n *Edges) Get(path *apipb.Path) (*apipb.Edge, bool) {
@@ -126,7 +127,7 @@ func (e Edges) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 	}
 }
 
-func (e Edges) RangeFilterFrom(path *apipb.Path, filter *apipb.Filter) []*apipb.Edge {
+func (e Edges) RangeFilterFrom(path *apipb.Path, filter *apipb.Filter) *apipb.Edges {
 	var edges []*apipb.Edge
 	e.RangeFrom(path, func(e *apipb.Edge) bool {
 		if e.Path.Type != filter.Type {
@@ -138,10 +139,12 @@ func (e Edges) RangeFilterFrom(path *apipb.Path, filter *apipb.Filter) []*apipb.
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	return edges
+	return &apipb.Edges{
+		Edges: edges,
+	}
 }
 
-func (e Edges) RangeFilterTo(path *apipb.Path, filter *apipb.Filter) []*apipb.Edge {
+func (e Edges) RangeFilterTo(path *apipb.Path, filter *apipb.Filter) *apipb.Edges {
 	var edges []*apipb.Edge
 	e.RangeTo(path, func(e *apipb.Edge) bool {
 		if e.Path.Type != filter.Type {
@@ -153,10 +156,12 @@ func (e Edges) RangeFilterTo(path *apipb.Path, filter *apipb.Filter) []*apipb.Ed
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	return edges
+	return &apipb.Edges{
+		Edges: edges,
+	}
 }
 
-func (n *Edges) Filter(edgeType string, filter func(edge *apipb.Edge) bool) []*apipb.Edge {
+func (n *Edges) Filter(edgeType string, filter func(edge *apipb.Edge) bool) *apipb.Edges {
 	var filtered []*apipb.Edge
 	n.Range(edgeType, func(node *apipb.Edge) bool {
 		if filter(node) {
@@ -164,18 +169,19 @@ func (n *Edges) Filter(edgeType string, filter func(edge *apipb.Edge) bool) []*a
 		}
 		return true
 	})
-	EdgeList(filtered).Sort()
-	return filtered
+	return &apipb.Edges{
+		Edges: filtered,
+	}
 }
 
-func (n *Edges) SetAll(edges ...*apipb.Edge) {
-	for _, edge := range edges {
+func (n *Edges) SetAll(edges *apipb.Edges) {
+	for _, edge := range edges.Edges {
 		n.Set(edge)
 	}
 }
 
-func (n *Edges) DeleteAll(edges ...*apipb.Edge) {
-	for _, edge := range edges {
+func (n *Edges) DeleteAll(edges *apipb.Edges) {
+	for _, edge := range edges.Edges {
 		n.Delete(edge.Path)
 	}
 }
@@ -205,7 +211,7 @@ func (e *Edges) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb
 	return e.edges[value.Path.Type][value.Path.ID]
 }
 
-func (e *Edges) FilterSearch(filter *apipb.Filter) ([]*apipb.Edge, error) {
+func (e *Edges) FilterSearch(filter *apipb.Filter) (*apipb.Edges, error) {
 	var edges []*apipb.Edge
 	var err error
 	var pass bool
@@ -219,8 +225,9 @@ func (e *Edges) FilterSearch(filter *apipb.Filter) ([]*apipb.Edge, error) {
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	EdgeList(edges).Sort()
-	return edges, err
+	return &apipb.Edges{
+		Edges: edges,
+	}, err
 }
 
 func removeEdge(path string, paths []string) []string {
@@ -231,30 +238,4 @@ func removeEdge(path string, paths []string) []string {
 		}
 	}
 	return newPaths
-}
-
-type EdgeList []*apipb.Edge
-
-func (n EdgeList) Sort() {
-	sorter := Interface{
-		LenFunc: func() int {
-			if n == nil {
-				return 0
-			}
-			return len(n)
-		},
-		LessFunc: func(i, j int) bool {
-			if n == nil {
-				return false
-			}
-			return n[i].UpdatedAt.Nanos > n[j].UpdatedAt.Nanos
-		},
-		SwapFunc: func(i, j int) {
-			if n == nil {
-				return
-			}
-			n[i], n[j] = n[j], n[i]
-		},
-	}
-	sorter.Sort()
 }

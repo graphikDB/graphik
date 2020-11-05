@@ -77,3 +77,51 @@ func (c *Command) Log() *raft.Log {
 		Data: bits,
 	}
 }
+
+func (e *Edges) Sort() {
+	sorter := Interface{
+		LenFunc: func() int {
+			if e == nil {
+				return 0
+			}
+			return len(e.Edges)
+		},
+		LessFunc: func(i, j int) bool {
+			if e == nil {
+				return false
+			}
+			return e.Edges[i].UpdatedAt.Nanos > e.Edges[j].UpdatedAt.Nanos
+		},
+		SwapFunc: func(i, j int) {
+			if e == nil {
+				return
+			}
+			e.Edges[i], e.Edges[j] = e.Edges[j], e.Edges[i]
+		},
+	}
+	sorter.Sort()
+}
+
+func (n *Nodes) Sort() {
+	sorter := Interface{
+		LenFunc: func() int {
+			if n == nil {
+				return 0
+			}
+			return len(n.Nodes)
+		},
+		LessFunc: func(i, j int) bool {
+			if n == nil {
+				return false
+			}
+			return n.Nodes[i].UpdatedAt.Nanos > n.Nodes[j].UpdatedAt.Nanos
+		},
+		SwapFunc: func(i, j int) {
+			if n == nil {
+				return
+			}
+			n.Nodes[i], n.Nodes[j] = n.Nodes[j], n.Nodes[i]
+		},
+	}
+	sorter.Sort()
+}
