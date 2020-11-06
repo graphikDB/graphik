@@ -103,54 +103,50 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 func populate(req interface{}, intercept *apipb.RequestIntercept) {
 	switch r := req.(type) {
 	case *apipb.SetAuthRequest:
-		intercept.Request = &apipb.RequestIntercept_SetAuth{SetAuth: r}
+		intercept.Request = &apipb.RequestIntercept_Auth{Auth: r.GetAuth()}
 	case *apipb.SearchNodesRequest:
-		intercept.Request = &apipb.RequestIntercept_SearchNodes{
-			SearchNodes: r,
+		intercept.Request = &apipb.RequestIntercept_Filter{
+			Filter: r.GetFilter(),
 		}
 	case *apipb.SearchEdgesRequest:
-		intercept.Request = &apipb.RequestIntercept_SearchEdges{
-			SearchEdges: r,
+		intercept.Request = &apipb.RequestIntercept_Filter{
+			Filter: r.GetFilter(),
 		}
 	case *apipb.PatchNodesRequest:
-		intercept.Request = &apipb.RequestIntercept_PatchNodes{
-			PatchNodes: r,
+		intercept.Request = &apipb.RequestIntercept_Patches{
+			Patches: r.GetPatches(),
 		}
 	case *apipb.PatchEdgesRequest:
-		intercept.Request = &apipb.RequestIntercept_PatchEdges{
-			PatchEdges: r,
+		intercept.Request = &apipb.RequestIntercept_Patches{
+			Patches: r.GetPatches(),
 		}
 	case *apipb.EdgesToRequest:
-		intercept.Request = &apipb.RequestIntercept_EdgesTo{
-			EdgesTo: r,
+		intercept.Request = &apipb.RequestIntercept_PathFilter{
+			PathFilter: r.GetFilter(),
 		}
 	case *apipb.EdgesFromRequest:
-		intercept.Request = &apipb.RequestIntercept_EdgesFrom{
-			EdgesFrom: r,
+		intercept.Request = &apipb.RequestIntercept_PathFilter{
+			PathFilter: r.GetFilter(),
 		}
 	case *apipb.DelNodesRequest:
-		intercept.Request = &apipb.RequestIntercept_DelNodes{
-			DelNodes: r,
+		intercept.Request = &apipb.RequestIntercept_Paths{
+			Paths: r.GetPaths(),
 		}
 	case *apipb.DelEdgesRequest:
-		intercept.Request = &apipb.RequestIntercept_DelEdges{
-			DelEdges: r,
+		intercept.Request = &apipb.RequestIntercept_Paths{
+			Paths: r.GetPaths(),
 		}
 	case *apipb.CreateNodesRequest:
-		intercept.Request = &apipb.RequestIntercept_CreateNodes{
-			CreateNodes: r,
+		intercept.Request = &apipb.RequestIntercept_Nodes{
+			Nodes: r.GetNodes(),
 		}
 	case *apipb.CreateEdgesRequest:
-		intercept.Request = &apipb.RequestIntercept_CreateEdges{
-			CreateEdges: r,
+		intercept.Request = &apipb.RequestIntercept_Edges{
+			Edges: r.GetEdges(),
 		}
 	case *apipb.JoinClusterRequest:
-		intercept.Request = &apipb.RequestIntercept_JoinCluster{
-			JoinCluster: r,
-		}
-	case *apipb.GetAuthRequest:
-		intercept.Request = &apipb.RequestIntercept_GetAuth{
-			GetAuth: r,
+		intercept.Request = &apipb.RequestIntercept_Raft{
+			Raft: r.GetRaftNode(),
 		}
 	}
 }

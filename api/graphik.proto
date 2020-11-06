@@ -7,6 +7,7 @@ option go_package = "apipb";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
 
 enum Op {
   CREATE_NODES =0;
@@ -66,6 +67,11 @@ message Filter {
   int32 limit =3;
 }
 
+message PathFilter {
+  Path path =1;
+  Filter filter =2;
+}
+
 message Export {
   Nodes nodes =1;
   Edges edges =2;
@@ -94,14 +100,13 @@ message Edges {
   repeated Edge edges =1;
 }
 
-message EdgeFilters {
-  repeated Filter edges_from =1;
-  repeated Filter edges_to =2;
+message RaftNode {
+  string node_id =1;
+  string address =2;
 }
 
 message JoinClusterRequest {
-  string node_id =1;
-  string address =2;
+  RaftNode raft_node =1;
 }
 
 message JWKSSource {
@@ -137,10 +142,6 @@ message Config {
   GRPCConfig grpc =2;
   RaftConfig raft =3;
 }
-
-message JoinClusterResponse {}
-
-message GetAuthRequest {}
 
 message GetAuthResponse {
   Auth auth =1;
@@ -219,8 +220,7 @@ message DelEdgesResponse {
 }
 
 message EdgesFromRequest {
-  Path path =1;
-  Filter filter =2;
+  PathFilter filter =1;
 }
 
 message EdgesFromResponse {
@@ -228,17 +228,32 @@ message EdgesFromResponse {
 }
 
 message EdgesToRequest {
-  Path path =1;
-  Filter filter =2;
+  PathFilter filter =1;
 }
 
 message EdgesToResponse {
   Edges edges =1;
 }
 
+message RequestIntercept {
+  string request_path =1;
+  oneof request {
+    google.protobuf.Empty empty =2;
+    Patches patches =3;
+    Paths paths =5;
+    Nodes nodes =6;
+    Edges edges =7;
+    Filter filter =8;
+    Auth  auth =9;
+    RaftNode raft =10;
+    PathFilter path_filter =11;
+  }
+  Node user =99;
+}
+
 service PrivateService {
-  rpc JoinCluster(JoinClusterRequest) returns(JoinClusterResponse) {}
-  rpc GetAuth(GetAuthRequest) returns(GetAuthResponse){}
+  rpc JoinCluster(JoinClusterRequest) returns(google.protobuf.Empty) {}
+  rpc GetAuth(google.protobuf.Empty) returns(GetAuthResponse){}
   rpc SetAuth(SetAuthRequest) returns(SetAuthResponse){}
 
   rpc CreateNodes(CreateNodesRequest) returns(CreateNodesResponse){}
@@ -253,25 +268,4 @@ service PrivateService {
 
   rpc EdgesFrom(EdgesFromRequest) returns(EdgesFromResponse){}
   rpc EdgesTo(EdgesToRequest) returns(EdgesToResponse){}
-}
-
-
-message RequestIntercept {
-  string request_path =1;
-  oneof request {
-    JoinClusterRequest join_cluster =2;
-    GetAuthRequest get_auth =3;
-    SetAuthRequest set_auth =4;
-    CreateNodesRequest create_nodes =5;
-    SearchNodesRequest search_nodes =6;
-    PatchNodesRequest patch_nodes =7;
-    DelNodesRequest del_nodes =8;
-    CreateEdgesRequest create_edges =9;
-    SearchEdgesRequest search_edges =10;
-    PatchEdgesRequest patch_edges =11;
-    DelEdgesRequest  del_edges =12;
-    EdgesFromRequest edges_from =13;
-    EdgesToRequest edges_to =14;
-  }
-  Node user =99;
 }

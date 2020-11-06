@@ -4,6 +4,7 @@ import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/runtime"
+	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -20,11 +21,14 @@ func (s *Service) implements() apipb.PrivateServiceServer {
 	return s
 }
 
-func (s *Service) JoinCluster(ctx context.Context, request *apipb.JoinClusterRequest) (*apipb.JoinClusterResponse, error) {
-	return &apipb.JoinClusterResponse{}, s.runtime.JoinNode(request.NodeId, request.Address)
+func (s *Service) JoinCluster(ctx context.Context, request *apipb.JoinClusterRequest) (*empty.Empty, error) {
+	if err := s.runtime.JoinNode(request.GetRaftNode().GetNodeId(), request.GetRaftNode().GetAddress()); err != nil {
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+	return &empty.Empty{}, nil
 }
 
-func (s *Service) GetAuth(ctx context.Context, request *apipb.GetAuthRequest) (*apipb.GetAuthResponse, error) {
+func (s *Service) GetAuth(ctx context.Context, empty *empty.Empty) (*apipb.GetAuthResponse, error) {
 	return &apipb.GetAuthResponse{
 		Auth: s.runtime.Auth().Raw(),
 	}, nil
@@ -124,7 +128,7 @@ func (s *Service) DelEdges(ctx context.Context, request *apipb.DelEdgesRequest) 
 }
 
 func (s *Service) EdgesFrom(ctx context.Context, request *apipb.EdgesFromRequest) (*apipb.EdgesFromResponse, error) {
-	edges, err := s.runtime.EdgesFrom(request.Path, request.Filter)
+	edges, err := s.runtime.EdgesFrom(request.GetFilter().GetPath(), request.GetFilter().GetFilter())
 	if err != nil {
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
@@ -134,7 +138,7 @@ func (s *Service) EdgesFrom(ctx context.Context, request *apipb.EdgesFromRequest
 }
 
 func (s *Service) EdgesTo(ctx context.Context, request *apipb.EdgesToRequest) (*apipb.EdgesToResponse, error) {
-	edges, err := s.runtime.EdgesTo(request.Path, request.Filter)
+	edges, err := s.runtime.EdgesTo(request.GetFilter().GetPath(), request.GetFilter().GetFilter())
 	if err != nil {
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}

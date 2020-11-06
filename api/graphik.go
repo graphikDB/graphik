@@ -21,8 +21,11 @@ func init() {
 			&Edges{},
 			&Nodes{},
 			&JWKSSource{},
-			&JWKSSource{},
+			&RaftNode{},
+			&Auth{},
+			&Filter{},
 			&RequestIntercept{},
+			&PathFilter{},
 		))
 	if err != nil {
 		panic(err)
