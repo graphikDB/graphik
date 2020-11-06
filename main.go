@@ -12,6 +12,7 @@ import (
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
@@ -26,6 +27,7 @@ import (
 )
 
 func init() {
+	godotenv.Load()
 	pflag.CommandLine.StringVar(&configFile, "config", "./graphik.json", "path to json config")
 }
 
