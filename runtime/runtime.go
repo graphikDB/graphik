@@ -108,7 +108,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 		if len(s.jwks.List().GetSources()) > 0 {
 			logger.Info("refreshing jwks")
 			if err := s.jwks.RefreshKeys(); err != nil {
-				logger.Error("failed to refresh keys", zap.Error(err))
+				logger.Error("failed to refresh keys", zap.Error(errors.WithStack(err)))
 			}
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))

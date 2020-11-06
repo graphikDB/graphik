@@ -57,12 +57,12 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 		}
 		var key interface{}
 		if err := keys[0].Raw(&key); err != nil {
-			logger.Error("jwks validation failure", zap.String("uri", set.URI), zap.Error(err))
+			logger.Error("jwks validation failure", zap.String("uri", set.URI), zap.Error(errors.WithStack(err)))
 			continue
 		}
 		payload, err := jws.Verify([]byte(token), alg, key)
 		if err != nil {
-			logger.Error("jwks validation failure", zap.String("uri", set.URI), zap.Error(err))
+			logger.Error("jwks validation failure", zap.String("uri", set.URI), zap.Error(errors.WithStack(err)))
 			continue
 		}
 		data := map[string]interface{}{}
