@@ -25,8 +25,6 @@ import (
 	"time"
 )
 
-const version = "0.0.0"
-
 func init() {
 	pflag.CommandLine.StringVar(&configFile, "config", "./graphik.json", "path to json config")
 }
@@ -43,15 +41,14 @@ var (
 func main() {
 	pflag.Parse()
 	f, err := os.Open(configFile)
-	if err != nil {
-		logger.Error("failed to read config file", zap.Error(err))
-		return
+	if err == nil {
+		if err := helpers.JSONDecode(f, cfg); err != nil {
+			logger.Error("failed to decode config", zap.Error(err))
+			return
+		}
+		f.Close()
 	}
-	defer f.Close()
-	if err := helpers.JSONDecode(f, cfg); err != nil {
-		logger.Error("failed to decode config", zap.Error(err))
-		return
-	}
+
 	cfg.SetDefaults()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -60,7 +57,7 @@ func main() {
 	defer signal.Stop(interrupt)
 	runt, err := runtime.New(ctx, cfg)
 	if err != nil {
-		logger.Error("failed to create raft store", zap.Error(err))
+		logger.Error("failed to create runtime", zap.Error(err))
 		return
 	}
 	router := http.NewServeMux()
@@ -84,7 +81,6 @@ func main() {
 		defer lis.Close()
 		logger.Info("starting http server",
 			zap.String("address", lis.Addr().String()),
-			zap.String("version", version),
 		)
 		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
 			logger.Error("http server failure", zap.Error(err))
@@ -105,6 +101,7 @@ func main() {
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
+
 	privateService := private.NewService(runt)
 	apipb.RegisterPrivateServiceServer(gserver, privateService)
 	grpc_prometheus.Register(gserver)
@@ -118,7 +115,6 @@ func main() {
 		defer lis.Close()
 		logger.Info("starting gRPC server",
 			zap.String("address", lis.Addr().String()),
-			zap.String("version", version),
 		)
 		if err := gserver.Serve(lis); err != nil && err != http.ErrServerClosed {
 			logger.Error("gRPC server failure", zap.Error(err))

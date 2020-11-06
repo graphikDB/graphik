@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"github.com/autom8ter/graphik/version"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -11,6 +12,7 @@ var logger *zap.Logger
 
 func Logger(withFields ...zap.Field) *zap.Logger {
 	withFields = append(withFields, zap.String("service", "graphik"))
+	withFields = append(withFields, zap.String("version", version.Version))
 	if logger == nil {
 		zap.NewDevelopmentConfig()
 		jsonEncoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
@@ -33,27 +35,36 @@ func Logger(withFields ...zap.Field) *zap.Logger {
 	return logger
 }
 
-func Info(msg string, fields ...zap.Field) {
+func appendFields(fields ...zap.Field) {
 	fields = append(fields, zap.Int("goroutines", runtime.NumGoroutine()))
+	_, file, ln, ok := runtime.Caller(1)
+	if ok {
+		fields = append(fields, zap.String("file", file))
+		fields = append(fields, zap.Int("line", ln))
+	}
+}
+
+func Info(msg string, fields ...zap.Field) {
+	appendFields(fields...)
 	Logger().Info(msg, fields...)
 }
 
 func Fatal(msg string, fields ...zap.Field) {
-	fields = append(fields, zap.Int("goroutines", runtime.NumGoroutine()))
+	appendFields(fields...)
 	Logger().Fatal(msg, fields...)
 }
 
 func Warn(msg string, fields ...zap.Field) {
-	fields = append(fields, zap.Int("goroutines", runtime.NumGoroutine()))
+	appendFields(fields...)
 	Logger().Warn(msg, fields...)
 }
 
 func Debug(msg string, fields ...zap.Field) {
-	fields = append(fields, zap.Int("goroutines", runtime.NumGoroutine()))
+	appendFields(fields...)
 	Logger().Debug(msg, fields...)
 }
 
 func Error(msg string, fields ...zap.Field) {
-	fields = append(fields, zap.Int("goroutines", runtime.NumGoroutine()))
+	appendFields(fields...)
 	Logger().Error(msg, fields...)
 }
