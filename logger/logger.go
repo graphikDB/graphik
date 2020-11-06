@@ -31,10 +31,7 @@ func Logger(withFields ...zap.Field) *zap.Logger {
 		})
 		fn := zap.LevelEnablerFunc(func(zapcore.Level) bool { return true })
 		core := zapcore.NewCore(jsonEncoder, os.Stdout, fn)
-		logger = zap.New(core).WithOptions(
-			zap.AddCaller(),
-			zap.AddStacktrace(fn),
-			).With(withFields...)
+		logger = zap.New(core).With(withFields...)
 	}
 	return logger
 }

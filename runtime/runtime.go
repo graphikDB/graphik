@@ -127,7 +127,11 @@ func (s *Runtime) execute(cmd *apipb.Command) (interface{}, error) {
 }
 
 func (s *Runtime) Close() error {
-	return s.raft.Shutdown().Error()
+	defer s.machine.Close()
+	if err :=  s.raft.Shutdown().Error(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *Runtime) Machine() *machine.Machine {

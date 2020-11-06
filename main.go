@@ -4,11 +4,11 @@ import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/helpers"
+	"github.com/autom8ter/graphik/interceptors"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
 	"github.com/autom8ter/graphik/service/private"
 	"github.com/autom8ter/machine"
-	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
@@ -55,7 +55,7 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
-	runt, err := runtime.New(ctx, cfg)
+	runtim, err := runtime.New(ctx, cfg)
 	if err != nil {
 		logger.Error("failed to create runtime", zap.Error(err))
 		return
@@ -72,7 +72,7 @@ func main() {
 		Handler: router,
 	}
 
-	runt.Go(func(routine machine.Routine) {
+	runtim.Go(func(routine machine.Routine) {
 		lis, err := net.Listen("tcp", cfg.GetHttp().GetBind())
 		if err != nil {
 			logger.Error("failed to create http server listener", zap.Error(err))
@@ -91,22 +91,23 @@ func main() {
 		grpc.ChainUnaryInterceptor(
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger.Logger()),
-			grpc_auth.UnaryServerInterceptor(runt.JWTMiddleware()),
+			interceptors.UnaryAuth(runtim),
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(logger.Logger()),
-			grpc_auth.StreamServerInterceptor(runt.JWTMiddleware()),
+			interceptors.StreamAuth(runtim),
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
 
-	privateService := private.NewService(runt)
+	privateService := private.NewService(runtim)
+
 	apipb.RegisterPrivateServiceServer(gserver, privateService)
 	grpc_prometheus.Register(gserver)
 
-	runt.Go(func(routine machine.Routine) {
+	runtim.Go(func(routine machine.Routine) {
 		lis, err := net.Listen("tcp", cfg.GetGrpc().GetBind())
 		if err != nil {
 			logger.Error("failed to create gRPC server listener", zap.Error(err))
@@ -122,10 +123,10 @@ func main() {
 	})
 	select {
 	case <-interrupt:
-		runt.Cancel()
+		runtim.Cancel()
 		break
 	case <-ctx.Done():
-		runt.Cancel()
+		runtim.Cancel()
 		break
 	}
 
@@ -148,7 +149,7 @@ func main() {
 	case <-stopped:
 		t.Stop()
 	}
-	_ = runt.Close()
+	_ = runtim.Close()
 	logger.Info("shutdown successful")
-	runt.Wait()
+	runtim.Wait()
 }
