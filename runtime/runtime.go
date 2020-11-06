@@ -42,21 +42,21 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	// Setup Raft communication.
 	addr, err := net.ResolveTCPAddr("tcp", cfg.GetRaft().GetBind())
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to resolve raft bind address")
 	}
 	transport, err := raft.NewTCPTransport(cfg.GetRaft().GetBind(), addr, 3, raftTimeout, os.Stderr)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to create raft transport")
 	}
 
 	// Create the snapshot store. This allows the Raft to truncate the log.
 	snapshots, err := raft.NewFileSnapshotStore(cfg.GetRaft().GetStoragePath(), 2, os.Stderr)
 	if err != nil {
-		return nil, fmt.Errorf("file snapshot store: %s", err)
+		return nil, errors.Wrap(err, "failed to create snapshot store")
 	}
 	boltDB, err := raftboltdb.NewBoltStore(filepath.Join(cfg.GetRaft().GetStoragePath(), "raft.db"))
 	if err != nil {
-		return nil, fmt.Errorf("new bolt store: %s", err)
+		return nil, errors.Wrap(err, "failed to create bolt store")
 	}
 	logStore := boltDB
 	stableStore := boltDB
@@ -74,7 +74,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	}
 	rft, err := raft.NewRaft(config, s, logStore, stableStore, snapshots, transport)
 	if err != nil {
-		return nil, fmt.Errorf("new raft: %s", err)
+		return nil, errors.Wrap(err, "failed to create raft")
 	}
 	s.raft = rft
 	if cfg.GetRaft().GetJoin() == "" {

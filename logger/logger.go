@@ -16,55 +16,50 @@ func Logger(withFields ...zap.Field) *zap.Logger {
 	if logger == nil {
 		zap.NewDevelopmentConfig()
 		jsonEncoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
-			TimeKey:        "ts",
-			LevelKey:       "level",
-			NameKey:        "logger",
-			CallerKey:      "caller",
-			MessageKey:     "msg",
-			StacktraceKey:  "stacktrace",
-			EncodeLevel:    zapcore.LowercaseLevelEncoder,
-			EncodeTime:     zapcore.EpochTimeEncoder,
-			EncodeDuration: zapcore.SecondsDurationEncoder,
+			MessageKey:       "msg",
+			LevelKey:         "level",
+			TimeKey:          "ts",
+			NameKey:          "logger",
+			CallerKey:        "caller",
+			FunctionKey:      "function",
+			StacktraceKey:    "stacktrace",
+			EncodeLevel:      zapcore.LowercaseLevelEncoder,
+			EncodeTime:       zapcore.EpochTimeEncoder,
+			EncodeDuration:   zapcore.SecondsDurationEncoder,
+			EncodeCaller:     zapcore.FullCallerEncoder,
+			EncodeName:       zapcore.FullNameEncoder,
 		})
-		core := zapcore.NewCore(jsonEncoder, os.Stdout, zap.LevelEnablerFunc(func(zapcore.Level) bool { return true }))
-		logger = zap.New(core)
-		if len(withFields) > 0 {
-			logger = logger.With(withFields...)
-		}
+		fn := zap.LevelEnablerFunc(func(zapcore.Level) bool { return true })
+		core := zapcore.NewCore(jsonEncoder, os.Stdout, fn)
+		logger = zap.New(core).WithOptions(
+			zap.AddCaller(),
+			zap.AddStacktrace(fn),
+			).With(withFields...)
 	}
 	return logger
 }
 
-func appendFields(fields ...zap.Field) {
+func appendFields(fields ...zap.Field) []zap.Field {
 	fields = append(fields, zap.Int("goroutines", runtime.NumGoroutine()))
-	_, file, ln, ok := runtime.Caller(1)
-	if ok {
-		fields = append(fields, zap.String("file", file))
-		fields = append(fields, zap.Int("line", ln))
-	}
+	return fields
 }
 
 func Info(msg string, fields ...zap.Field) {
-	appendFields(fields...)
-	Logger().Info(msg, fields...)
+	Logger().Info(msg, appendFields(fields...)...)
 }
 
 func Fatal(msg string, fields ...zap.Field) {
-	appendFields(fields...)
-	Logger().Fatal(msg, fields...)
+	Logger().Fatal(msg, appendFields(fields...)...)
 }
 
 func Warn(msg string, fields ...zap.Field) {
-	appendFields(fields...)
-	Logger().Warn(msg, fields...)
+	Logger().Warn(msg, appendFields(fields...)...)
 }
 
 func Debug(msg string, fields ...zap.Field) {
-	appendFields(fields...)
-	Logger().Debug(msg, fields...)
+	Logger().Debug(msg, appendFields(fields...)...)
 }
 
 func Error(msg string, fields ...zap.Field) {
-	appendFields(fields...)
-	Logger().Error(msg, fields...)
+	Logger().Error(msg, appendFields(fields...)...)
 }

@@ -139,9 +139,7 @@ func (n *Nodes) Sort() {
 
 func (c *Config) SetDefaults() {
 	if c.Grpc == nil {
-		c.Grpc = &GRPCConfig{
-			Bind: ":7820",
-		}
+		c.Grpc = &GRPCConfig{}
 	}
 	if c.Grpc.Bind == "" {
 		c.Grpc.Bind = ":7820"
@@ -156,7 +154,7 @@ func (c *Config) SetDefaults() {
 		c.Raft = &RaftConfig{}
 	}
 	if c.Raft.Bind == "" {
-		c.Raft.Bind = ":7840"
+		c.Raft.Bind = "localhost:7840"
 	}
 	if c.Raft.StoragePath == "" {
 		c.Raft.StoragePath = "/tmp/graphik"

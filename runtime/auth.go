@@ -48,13 +48,13 @@ func (s *Runtime) NodeContext(ctx context.Context) *apipb.Node {
 	return nil
 }
 
-func (a *Runtime) JWTMiddleware() grpc_auth.AuthFunc {
+func (r *Runtime) JWTMiddleware() grpc_auth.AuthFunc {
 	return func(ctx context.Context) (context.Context, error) {
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
-		payload, err := a.jwks.VerifyJWT(token)
+		payload, err := r.jwks.VerifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -68,7 +68,7 @@ func (a *Runtime) JWTMiddleware() grpc_auth.AuthFunc {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
-		ctx, err = a.toContext(ctx, payload)
+		ctx, err = r.toContext(ctx, payload)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
