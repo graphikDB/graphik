@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/joho/godotenv"
-	"golang.org/x/oauth2/clientcredentials"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/grpc"
-	"os"
+	"google.golang.org/grpc/metadata"
 	"testing"
 	"time"
 )
@@ -27,18 +27,18 @@ func Test(t *testing.T) {
 		run(ctx, cfg)
 	}()
 	time.Sleep(1 * time.Second)
-	config := clientcredentials.Config{
-		ClientID:       os.Getenv("CLIENT_ID"),
-		ClientSecret:   os.Getenv("CLIENT_SECRET"),
-		TokenURL:       google.Endpoint.TokenURL,
-		Scopes:         nil,
-		EndpointParams: nil,
-	}
-	token, err := config.Token(context.Background())
+	j, err := google.DefaultTokenSource(ctx,"https://www.googleapis.com/auth/devstorage.full_control")
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(token.AccessToken)
+	token, err := j.Token()
+	if err != nil {
+		t.Fatal(err)
+	}
+	id := token.Extra("id_token")
+
+	t.Logf("token= %s", token)
+	ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %v", id))
 	conn, err := grpc.DialContext(ctx, "localhost:7820", grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)
