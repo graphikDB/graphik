@@ -235,7 +235,7 @@ message EdgesToResponse {
   Edges edges =1;
 }
 
-message RequestIntercept {
+message UserIntercept {
   string request_path =1;
   oneof request {
     google.protobuf.Empty empty =2;

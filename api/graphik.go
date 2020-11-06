@@ -24,7 +24,7 @@ func init() {
 			&RaftNode{},
 			&Auth{},
 			&Filter{},
-			&RequestIntercept{},
+			&UserIntercept{},
 			&PathFilter{},
 		))
 	if err != nil {

@@ -131,7 +131,7 @@ func (a *Auth) Raw() *apipb.Auth {
 	}
 }
 
-func (a *Auth) Authorize(intercept *apipb.RequestIntercept) (bool, error) {
+func (a *Auth) Authorize(intercept *apipb.UserIntercept) (bool, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	if len(a.expressions) == 0 {

@@ -4,6 +4,7 @@ import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/runtime"
+	"github.com/golang/protobuf/ptypes/empty"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
@@ -37,7 +38,7 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
 		n := runtime.NodeContext(ctx)
-		request := &apipb.RequestIntercept{
+		request := &apipb.UserIntercept{
 			RequestPath: info.FullMethod,
 			User:        n,
 		}
@@ -80,7 +81,7 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		}
 		n := runtime.NodeContext(ctx)
 
-		request := &apipb.RequestIntercept{
+		request := &apipb.UserIntercept{
 			RequestPath: info.FullMethod,
 			User:        n,
 		}
@@ -100,52 +101,58 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 	}
 }
 
-func populate(req interface{}, intercept *apipb.RequestIntercept) {
+func populate(req interface{}, intercept *apipb.UserIntercept) {
 	switch r := req.(type) {
+	case *empty.Empty:
+		intercept.Request = &apipb.UserIntercept_Empty{
+			Empty: r,
+		}
 	case *apipb.SetAuthRequest:
-		intercept.Request = &apipb.RequestIntercept_Auth{Auth: r.GetAuth()}
+		intercept.Request = &apipb.UserIntercept_Auth{
+			Auth: r.GetAuth(),
+		}
 	case *apipb.SearchNodesRequest:
-		intercept.Request = &apipb.RequestIntercept_Filter{
+		intercept.Request = &apipb.UserIntercept_Filter{
 			Filter: r.GetFilter(),
 		}
 	case *apipb.SearchEdgesRequest:
-		intercept.Request = &apipb.RequestIntercept_Filter{
+		intercept.Request = &apipb.UserIntercept_Filter{
 			Filter: r.GetFilter(),
 		}
 	case *apipb.PatchNodesRequest:
-		intercept.Request = &apipb.RequestIntercept_Patches{
+		intercept.Request = &apipb.UserIntercept_Patches{
 			Patches: r.GetPatches(),
 		}
 	case *apipb.PatchEdgesRequest:
-		intercept.Request = &apipb.RequestIntercept_Patches{
+		intercept.Request = &apipb.UserIntercept_Patches{
 			Patches: r.GetPatches(),
 		}
 	case *apipb.EdgesToRequest:
-		intercept.Request = &apipb.RequestIntercept_PathFilter{
+		intercept.Request = &apipb.UserIntercept_PathFilter{
 			PathFilter: r.GetFilter(),
 		}
 	case *apipb.EdgesFromRequest:
-		intercept.Request = &apipb.RequestIntercept_PathFilter{
+		intercept.Request = &apipb.UserIntercept_PathFilter{
 			PathFilter: r.GetFilter(),
 		}
 	case *apipb.DelNodesRequest:
-		intercept.Request = &apipb.RequestIntercept_Paths{
+		intercept.Request = &apipb.UserIntercept_Paths{
 			Paths: r.GetPaths(),
 		}
 	case *apipb.DelEdgesRequest:
-		intercept.Request = &apipb.RequestIntercept_Paths{
+		intercept.Request = &apipb.UserIntercept_Paths{
 			Paths: r.GetPaths(),
 		}
 	case *apipb.CreateNodesRequest:
-		intercept.Request = &apipb.RequestIntercept_Nodes{
+		intercept.Request = &apipb.UserIntercept_Nodes{
 			Nodes: r.GetNodes(),
 		}
 	case *apipb.CreateEdgesRequest:
-		intercept.Request = &apipb.RequestIntercept_Edges{
+		intercept.Request = &apipb.UserIntercept_Edges{
 			Edges: r.GetEdges(),
 		}
 	case *apipb.JoinClusterRequest:
-		intercept.Request = &apipb.RequestIntercept_Raft{
+		intercept.Request = &apipb.UserIntercept_Raft{
 			Raft: r.GetRaftNode(),
 		}
 	}
