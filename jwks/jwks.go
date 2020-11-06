@@ -13,23 +13,11 @@ import (
 	"sync"
 )
 
-func New(jwks []*apipb.JWKSSource) (*Auth, error) {
-	var sets = map[string]*Set{}
-	for _, j := range jwks {
-		set, err := jwk.Fetch(j.Uri)
-		if err != nil {
-			return nil, err
-		}
-		sets[j.Uri] = &Set{
-			URI:    j.Uri,
-			Issuer: j.Issuer,
-			Set:    set,
-		}
-	}
+func New() *Auth {
 	return &Auth{
-		set: sets,
+		set: map[string]*Set{},
 		mu:  sync.RWMutex{},
-	}, nil
+	}
 }
 
 type Set struct {
@@ -106,16 +94,16 @@ func (a *Auth) RefreshKeys() error {
 	return nil
 }
 
-func (a *Auth) Override(uris map[string]string) error {
-	for uri, issuer := range uris {
-		set, err := jwk.Fetch(uri)
+func (a *Auth) Override(jwks []*apipb.JWKSSource) error {
+	for _, source := range jwks {
+		set, err := jwk.Fetch(source.Uri)
 		if err != nil {
 			return err
 		}
 		a.mu.Lock()
-		a.set[uri] = &Set{
-			URI:    uri,
-			Issuer: issuer,
+		a.set[source.Uri] = &Set{
+			URI:    source.Uri,
+			Issuer: source.Issuer,
 			Set:    set,
 		}
 		a.mu.Unlock()
@@ -123,12 +111,17 @@ func (a *Auth) Override(uris map[string]string) error {
 	return nil
 }
 
-func (a *Auth) List() map[string]string {
-	var list = map[string]string{}
+func (a *Auth) List() *apipb.JWKSSources {
+	var list []*apipb.JWKSSource
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for uri, s := range a.set {
-		list[uri] = s.Issuer
+	for _, s := range a.set {
+		list = append(list, &apipb.JWKSSource{
+			Uri:    s.URI,
+			Issuer: s.Issuer,
+		})
 	}
-	return list
+	return &apipb.JWKSSources{
+		Sources: list,
+	}
 }

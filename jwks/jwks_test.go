@@ -8,10 +8,7 @@ import (
 const token = ""
 
 func Test(t *testing.T) {
-	auth, err := jwks.New(nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	auth := jwks.New()
 	payload, err := auth.VerifyJWT(token)
 	if err != nil {
 		t.Fatal(err)

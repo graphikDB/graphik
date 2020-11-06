@@ -138,9 +138,6 @@ func (n *Nodes) Sort() {
 }
 
 func (c *Config) SetDefaults() {
-	if c.Auth == nil {
-		c.Auth = &AuthConfig{}
-	}
 	if c.Grpc == nil {
 		c.Grpc = &GRPCConfig{
 			Bind: ":7820",

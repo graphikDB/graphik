@@ -35,13 +35,6 @@ type Runtime struct {
 }
 
 func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
-	if cfg.Auth == nil || len(cfg.Auth.JwksSources) == 0 {
-		return nil, fmt.Errorf("empty jwks")
-	}
-	sources, err := jwks.New(cfg.GetAuth().GetJwksSources())
-	if err != nil {
-		return nil, err
-	}
 	os.MkdirAll(cfg.GetRaft().GetStoragePath(), 0700)
 	m := machine.New(ctx)
 	config := raft.DefaultConfig()
@@ -72,7 +65,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 
 	s := &Runtime{
 		machine: m,
-		jwks:    sources,
+		jwks:    jwks.New(),
 		raft:    nil,
 		mu:      sync.RWMutex{},
 		nodes:   nodes,
@@ -112,9 +105,11 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	}
 
 	s.machine.Go(func(routine machine.Routine) {
-		logger.Info("refreshing jwks")
-		if err := s.jwks.RefreshKeys(); err != nil {
-			logger.Error("failed to refresh keys", zap.Error(err))
+		if len(s.jwks.List().GetSources()) > 0 {
+			logger.Info("refreshing jwks")
+			if err := s.jwks.RefreshKeys(); err != nil {
+				logger.Error("failed to refresh keys", zap.Error(err))
+			}
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 	return s, nil
@@ -141,47 +136,6 @@ func (s *Runtime) Machine() *machine.Machine {
 
 func (s *Runtime) JWKS() *jwks.Auth {
 	return s.jwks
-}
-
-func (s *Runtime) JoinNode(nodeID, addr string) error {
-	logger.Info("received join request for remote node",
-		zap.String("node", nodeID),
-		zap.String("address", addr),
-	)
-	configFuture := s.raft.GetConfiguration()
-	if err := configFuture.Error(); err != nil {
-		return err
-	}
-
-	for _, srv := range configFuture.Configuration().Servers {
-		// If a node already exists with either the joining node's ID or address,
-		// that node may need to be removed from the config first.
-		if srv.ID == raft.ServerID(nodeID) || srv.Address == raft.ServerAddress(addr) {
-			// However if *both* the ID and the address are the same, then nothing -- not even
-			// a join operation -- is needed.
-			if srv.Address == raft.ServerAddress(addr) && srv.ID == raft.ServerID(nodeID) {
-				logger.Info("node already member of cluster, ignoring join request",
-					zap.String("node", nodeID),
-					zap.String("address", addr),
-				)
-				return nil
-			}
-
-			future := s.raft.RemoveServer(srv.ID, 0, 0)
-			if err := future.Error(); err != nil {
-				return fmt.Errorf("error removing existing node %s at %s: %s", nodeID, addr, err)
-			}
-		}
-	}
-	f := s.raft.AddVoter(raft.ServerID(nodeID), raft.ServerAddress(addr), 0, 0)
-	if f.Error() != nil {
-		return f.Error()
-	}
-	logger.Info("node joined successfully",
-		zap.String("node", nodeID),
-		zap.String("address", addr),
-	)
-	return nil
 }
 
 func (r *Runtime) Go(fn machine.Func) {

@@ -25,37 +25,17 @@ func (s *Service) JoinCluster(ctx context.Context, request *apipb.JoinClusterReq
 }
 
 func (s *Service) GetJWKS(ctx context.Context, request *apipb.GetJWKSRequest) (*apipb.GetJWKSResponse, error) {
-	var toReturn []*apipb.JWKSSource
-	sources := s.runtime.JWKS().List()
-	for uri, issuer := range sources {
-		toReturn = append(toReturn, &apipb.JWKSSource{
-			Uri:    uri,
-			Issuer: issuer,
-		})
-	}
 	return &apipb.GetJWKSResponse{
-		Sources: toReturn,
+		Sources: s.runtime.JWKS().List(),
 	}, nil
 }
 
-func (s *Service) UpdateJWKS(ctx context.Context, request *apipb.UpdateJWKSRequest) (*apipb.UpdateJWKSResponse, error) {
-	sourceMap := map[string]string{}
-	for _, source := range request.Sources {
-		sourceMap[source.Uri] = source.Issuer
-	}
-	if err := s.runtime.JWKS().Override(sourceMap); err != nil {
+func (s *Service) SetJWKS(ctx context.Context, request *apipb.SetJWKSRequest) (*apipb.SetJWKSResponse, error) {
+	if err := s.runtime.JWKS().Override(request.GetSources().GetSources()); err != nil {
 		return nil, err
 	}
-	var toReturn []*apipb.JWKSSource
-	sources := s.runtime.JWKS().List()
-	for uri, issuer := range sources {
-		toReturn = append(toReturn, &apipb.JWKSSource{
-			Uri:    uri,
-			Issuer: issuer,
-		})
-	}
-	return &apipb.UpdateJWKSResponse{
-		Sources: toReturn,
+	return &apipb.SetJWKSResponse{
+		Sources: s.runtime.JWKS().List(),
 	}, nil
 }
 

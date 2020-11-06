@@ -3,14 +3,57 @@ package runtime
 import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/logger"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
 	"net/http"
 )
+
+func (s *Runtime) JoinNode(nodeID, addr string) error {
+	logger.Info("received join request for remote node",
+		zap.String("node", nodeID),
+		zap.String("address", addr),
+	)
+	configFuture := s.raft.GetConfiguration()
+	if err := configFuture.Error(); err != nil {
+		return err
+	}
+
+	for _, srv := range configFuture.Configuration().Servers {
+		// If a node already exists with either the joining node's ID or address,
+		// that node may need to be removed from the config first.
+		if srv.ID == raft.ServerID(nodeID) || srv.Address == raft.ServerAddress(addr) {
+			// However if *both* the ID and the address are the same, then nothing -- not even
+			// a join operation -- is needed.
+			if srv.Address == raft.ServerAddress(addr) && srv.ID == raft.ServerID(nodeID) {
+				logger.Info("node already member of cluster, ignoring join request",
+					zap.String("node", nodeID),
+					zap.String("address", addr),
+				)
+				return nil
+			}
+
+			future := s.raft.RemoveServer(srv.ID, 0, 0)
+			if err := future.Error(); err != nil {
+				return fmt.Errorf("error removing existing node %s at %s: %s", nodeID, addr, err)
+			}
+		}
+	}
+	f := s.raft.AddVoter(raft.ServerID(nodeID), raft.ServerAddress(addr), 0, 0)
+	if f.Error() != nil {
+		return f.Error()
+	}
+	logger.Info("node joined successfully",
+		zap.String("node", nodeID),
+		zap.String("address", addr),
+	)
+	return nil
+}
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {
 	var c apipb.Command
@@ -20,6 +63,15 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	switch c.Op {
+	case apipb.Op_SET_JWKS:
+		var values = &apipb.JWKSSources{}
+		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
+			return errors.Wrap(err, "failed to decode jwks sources")
+		}
+		if err := f.jwks.Override(values.Sources); err != nil {
+			return errors.Wrap(err, "failed to set jwks sources")
+		}
+		return values
 	case apipb.Op_CREATE_NODES:
 		var values = &apipb.Nodes{}
 		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {

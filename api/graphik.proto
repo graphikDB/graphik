@@ -15,6 +15,7 @@ enum Op {
   CREATE_EDGES =3;
   PATCH_EDGES =4;
   DELETE_EDGES =5;
+  SET_JWKS =6;
 }
 
 enum Keyword {
@@ -107,8 +108,8 @@ message JWKSSource {
   string issuer =2;
 }
 
-message AuthConfig {
-  repeated JWKSSource jwks_sources =1;
+message JWKSSources {
+  repeated JWKSSource sources =1;
 }
 
 message RaftConfig {
@@ -133,7 +134,6 @@ message Config {
   HTTPConfig http =1;
   GRPCConfig grpc =2;
   RaftConfig raft =3;
-  AuthConfig auth =4;
 }
 
 message JoinClusterResponse {}
@@ -141,15 +141,15 @@ message JoinClusterResponse {}
 message GetJWKSRequest {}
 
 message GetJWKSResponse {
-  repeated JWKSSource sources =1;
+  JWKSSources sources =1;
 }
 
-message UpdateJWKSRequest {
-  repeated JWKSSource sources =1;
+message SetJWKSRequest {
+  JWKSSources sources =1;
 }
 
-message UpdateJWKSResponse {
-  repeated JWKSSource sources =1;
+message SetJWKSResponse {
+  JWKSSources sources =1;
 }
 
 message CreateNodesRequest {
@@ -236,6 +236,8 @@ message EdgesToResponse {
 
 service PrivateService {
   rpc JoinCluster(JoinClusterRequest) returns(JoinClusterResponse) {}
+  rpc GetJWKS(GetJWKSRequest) returns(GetJWKSResponse){}
+  rpc SetJWKS(SetJWKSRequest) returns(SetJWKSResponse){}
 
   rpc CreateNodes(CreateNodesRequest) returns(CreateNodesResponse){}
   rpc SearchNodes(SearchNodesRequest) returns (SearchNodesResponse){}

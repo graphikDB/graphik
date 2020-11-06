@@ -37,7 +37,6 @@ var (
 		Http: &apipb.HTTPConfig{},
 		Grpc: &apipb.GRPCConfig{},
 		Raft: &apipb.RaftConfig{},
-		Auth: &apipb.AuthConfig{},
 	}
 )
 
@@ -96,13 +95,13 @@ func main() {
 		grpc.ChainUnaryInterceptor(
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger.Logger()),
-			grpc_auth.UnaryServerInterceptor(runt.AuthMiddleware()),
+			grpc_auth.UnaryServerInterceptor(runt.JWTMiddleware()),
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(logger.Logger()),
-			grpc_auth.StreamServerInterceptor(runt.AuthMiddleware()),
+			grpc_auth.StreamServerInterceptor(runt.JWTMiddleware()),
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
