@@ -22,7 +22,6 @@ import (
 
 const (
 	raftTimeout = 10 * time.Second
-	defaultDir  = "/tmp/graphik"
 )
 
 type Runtime struct {
@@ -84,6 +83,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	if err != nil {
 		return nil, fmt.Errorf("new raft: %s", err)
 	}
+	s.raft = rft
 	if cfg.GetRaft().GetJoin() == "" {
 		configuration := raft.Configuration{
 			Servers: []raft.Server{
@@ -93,7 +93,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 				},
 			},
 		}
-		rft.BootstrapCluster(configuration)
+		s.raft.BootstrapCluster(configuration)
 	} else {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
@@ -110,7 +110,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 			return nil, errors.Wrap(err, "failed to join cluster")
 		}
 	}
-	s.raft = rft
+
 	s.machine.Go(func(routine machine.Routine) {
 		logger.Info("refreshing jwks")
 		if err := s.jwks.RefreshKeys(); err != nil {
