@@ -120,9 +120,9 @@ message RaftConfig {
 
 message HTTPConfig {
   string bind =1;
-  string allowed_origins=2;
-  string allowed_headers =3;
-  string allowed_methods =4;
+  repeated string allowed_origins=2;
+  repeated string allowed_headers =3;
+  repeated string allowed_methods =4;
 }
 
 message GRPCConfig {

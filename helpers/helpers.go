@@ -19,6 +19,14 @@ var (
 	}
 )
 
+func JSONEncode(w io.Writer, msg proto.Message) error {
+	return marshaller.Marshal(w, msg)
+}
+
+func JSONDecode(r io.Reader, msg proto.Message) error {
+	return jsonpb.Unmarshal(r, msg)
+}
+
 // ToStruct converts a map[string]interface{} to a ptypes.Struct
 func ToStruct(v map[string]interface{}) *structpb.Struct {
 	size := len(v)
@@ -229,12 +237,4 @@ func toValue(v reflect.Value) *structpb.Value {
 			},
 		}
 	}
-}
-
-func JSONEncode(w io.Writer, msg proto.Message) error {
-	return marshaller.Marshal(w, msg)
-}
-
-func JSONDecode(r io.Reader, msg proto.Message) error {
-	return jsonpb.Unmarshal(r, msg)
 }

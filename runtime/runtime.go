@@ -10,7 +10,9 @@ import (
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"net"
 	"os"
 	"path/filepath"
@@ -33,42 +35,34 @@ type Runtime struct {
 	close   sync.Once
 }
 
-func New(opts ...Opt) (*Runtime, error) {
-	options := &Opts{}
-	for _, o := range opts {
-		o(options)
-	}
-	if options.jwks == nil || len(options.jwks.List()) == 0 {
+func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
+	if cfg.Auth == nil || len(cfg.Auth.JwksSources) == 0 {
 		return nil, fmt.Errorf("empty jwks")
 	}
-	if options.localID == "" {
-		options.localID = "default"
-	}
-	if options.raftDir == "" {
-		os.MkdirAll(defaultDir, 0700)
-		options.raftDir = defaultDir
-	}
-	if options.machine == nil {
-		options.machine = machine.New(context.Background())
-	}
-	config := raft.DefaultConfig()
-	config.LocalID = raft.ServerID(options.localID)
-	// Setup Raft communication.
-	addr, err := net.ResolveTCPAddr("tcp", options.bindAddr)
+	sources, err := jwks.New(cfg.GetAuth().GetJwksSources())
 	if err != nil {
 		return nil, err
 	}
-	transport, err := raft.NewTCPTransport(options.bindAddr, addr, 3, raftTimeout, os.Stderr)
+	os.MkdirAll(cfg.GetRaft().GetStoragePath(), 0700)
+	m := machine.New(ctx)
+	config := raft.DefaultConfig()
+	config.LocalID = raft.ServerID(cfg.GetRaft().GetNodeId())
+	// Setup Raft communication.
+	addr, err := net.ResolveTCPAddr("tcp", cfg.GetRaft().GetBind())
+	if err != nil {
+		return nil, err
+	}
+	transport, err := raft.NewTCPTransport(cfg.GetRaft().GetBind(), addr, 3, raftTimeout, os.Stderr)
 	if err != nil {
 		return nil, err
 	}
 
 	// Create the snapshot store. This allows the Raft to truncate the log.
-	snapshots, err := raft.NewFileSnapshotStore(options.raftDir, 2, os.Stderr)
+	snapshots, err := raft.NewFileSnapshotStore(cfg.GetRaft().GetStoragePath(), 2, os.Stderr)
 	if err != nil {
 		return nil, fmt.Errorf("file snapshot store: %s", err)
 	}
-	boltDB, err := raftboltdb.NewBoltStore(filepath.Join(options.raftDir, "raft.db"))
+	boltDB, err := raftboltdb.NewBoltStore(filepath.Join(cfg.GetRaft().GetStoragePath(), "raft.db"))
 	if err != nil {
 		return nil, fmt.Errorf("new bolt store: %s", err)
 	}
@@ -76,9 +70,10 @@ func New(opts ...Opt) (*Runtime, error) {
 	stableStore := boltDB
 	edges := generic.NewEdges()
 	nodes := generic.NewNodes(edges)
+
 	s := &Runtime{
-		machine: options.machine,
-		jwks:    options.jwks,
+		machine: m,
+		jwks:    sources,
 		raft:    nil,
 		mu:      sync.RWMutex{},
 		nodes:   nodes,
@@ -89,7 +84,7 @@ func New(opts ...Opt) (*Runtime, error) {
 	if err != nil {
 		return nil, fmt.Errorf("new raft: %s", err)
 	}
-	if options.leader {
+	if cfg.GetRaft().GetJoin() == "" {
 		configuration := raft.Configuration{
 			Servers: []raft.Server{
 				{
@@ -99,6 +94,21 @@ func New(opts ...Opt) (*Runtime, error) {
 			},
 		}
 		rft.BootstrapCluster(configuration)
+	} else {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		conn, err := grpc.DialContext(ctx, cfg.Raft.Join, grpc.WithInsecure())
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to join cluster")
+		}
+		client := apipb.NewPrivateServiceClient(conn)
+		_, err = client.JoinCluster(ctx, &apipb.JoinClusterRequest{
+			NodeId:  cfg.GetRaft().GetNodeId(),
+			Address: cfg.GetRaft().GetBind(),
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to join cluster")
+		}
 	}
 	s.raft = rft
 	s.machine.Go(func(routine machine.Routine) {
@@ -172,4 +182,16 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 		zap.String("address", addr),
 	)
 	return nil
+}
+
+func (r *Runtime) Go(fn machine.Func) {
+	r.machine.Go(fn)
+}
+
+func (r *Runtime) Cancel() {
+	r.machine.Cancel()
+}
+
+func (r *Runtime) Wait() {
+	r.machine.Wait()
 }

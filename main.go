@@ -4,7 +4,6 @@ import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/helpers"
-	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
 	"github.com/autom8ter/graphik/service/private"
@@ -34,8 +33,7 @@ func init() {
 
 var (
 	configFile string
-
-	cfg = &apipb.Config{
+	cfg        = &apipb.Config{
 		Http: &apipb.HTTPConfig{},
 		Grpc: &apipb.GRPCConfig{},
 		Raft: &apipb.RaftConfig{},
@@ -55,49 +53,17 @@ func main() {
 		logger.Error("failed to decode config", zap.Error(err))
 		return
 	}
+	cfg.SetDefaults()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
-
-	mach := machine.New(ctx)
-	j, err := jwks.New(cfg.GetAuth().GetJwksSources())
-	if err != nil {
-		logger.Error("failed to fetch jwks", zap.Error(err))
-		return
-	}
-	runt, err := runtime.New(
-		runtime.WithLeader(cfg.GetRaft().Join == ""),
-		runtime.WithID(cfg.GetRaft().NodeId),
-		runtime.WithBindAddr(cfg.GetRaft().Bind),
-		runtime.WithRaftDir(cfg.GetRaft().StoragePath),
-		runtime.WithJWKS(j),
-		runtime.WithMachine(mach),
-	)
+	runt, err := runtime.New(ctx, cfg)
 	if err != nil {
 		logger.Error("failed to create raft store", zap.Error(err))
 		return
 	}
-	if cfg.Raft.Join != "" {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		conn, err := grpc.DialContext(ctx, cfg.Raft.Join, grpc.WithInsecure())
-		if err != nil {
-			logger.Error("failed to join raft cluster", zap.Error(err))
-			return
-		}
-		client := apipb.NewPrivateServiceClient(conn)
-		_, err = client.JoinCluster(ctx, &apipb.JoinClusterRequest{
-			NodeId:  cfg.Raft.NodeId,
-			Address: cfg.Raft.Bind,
-		})
-		if err != nil {
-			logger.Error("failed to join cluster", zap.Error(err))
-			return
-		}
-	}
-
 	router := http.NewServeMux()
 	router.Handle("/metrics", promhttp.Handler())
 	router.HandleFunc("/debug/pprof/", pprof.Index)
@@ -110,7 +76,7 @@ func main() {
 		Handler: router,
 	}
 
-	mach.Go(func(routine machine.Routine) {
+	runt.Go(func(routine machine.Routine) {
 		lis, err := net.Listen("tcp", cfg.GetHttp().GetBind())
 		if err != nil {
 			logger.Error("failed to create http server listener", zap.Error(err))
@@ -144,7 +110,7 @@ func main() {
 	apipb.RegisterPrivateServiceServer(gserver, privateService)
 	grpc_prometheus.Register(gserver)
 
-	mach.Go(func(routine machine.Routine) {
+	runt.Go(func(routine machine.Routine) {
 		lis, err := net.Listen("tcp", cfg.GetGrpc().GetBind())
 		if err != nil {
 			logger.Error("failed to create gRPC server listener", zap.Error(err))
@@ -161,12 +127,13 @@ func main() {
 	})
 	select {
 	case <-interrupt:
-		mach.Cancel()
+		runt.Cancel()
 		break
 	case <-ctx.Done():
-		mach.Cancel()
+		runt.Cancel()
 		break
 	}
+
 	logger.Warn("shutdown signal received")
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
@@ -177,7 +144,9 @@ func main() {
 		gserver.GracefulStop()
 		close(stopped)
 	}()
+
 	t := time.NewTimer(5 * time.Second)
+
 	select {
 	case <-t.C:
 		gserver.Stop()
@@ -186,5 +155,5 @@ func main() {
 	}
 	_ = runt.Close()
 	logger.Info("shutdown successful")
-	mach.Wait()
+	runt.Wait()
 }
