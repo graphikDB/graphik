@@ -48,14 +48,17 @@ func main() {
 		}
 		f.Close()
 	}
-
 	cfg.SetDefaults()
+	run(context.Background(), cfg)
+}
+
+func run(ctx context.Context, config *apipb.Config) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
-	runtim, err := runtime.New(ctx, cfg)
+	runtim, err := runtime.New(ctx, config)
 	if err != nil {
 		logger.Error("failed to create runtime", zap.Error(err))
 		return
@@ -73,7 +76,7 @@ func main() {
 	}
 
 	runtim.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", cfg.GetHttp().GetBind())
+		lis, err := net.Listen("tcp", config.GetHttp().GetBind())
 		if err != nil {
 			logger.Error("failed to create http server listener", zap.Error(err))
 			return
@@ -108,7 +111,7 @@ func main() {
 	grpc_prometheus.Register(gserver)
 
 	runtim.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", cfg.GetGrpc().GetBind())
+		lis, err := net.Listen("tcp", config.GetGrpc().GetBind())
 		if err != nil {
 			logger.Error("failed to create gRPC server listener", zap.Error(err))
 			return

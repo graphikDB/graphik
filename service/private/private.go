@@ -146,3 +146,12 @@ func (s *Service) EdgesTo(ctx context.Context, request *apipb.EdgesToRequest) (*
 		Edges: edges,
 	}, nil
 }
+
+func (s *Service) Ping(ctx context.Context, r *empty.Empty) (*apipb.Pong, error) {
+	return &apipb.Pong{
+		Message:              "PONG",
+		XXX_NoUnkeyedLiteral: struct{}{},
+		XXX_unrecognized:     nil,
+		XXX_sizecache:        0,
+	}, nil
+}

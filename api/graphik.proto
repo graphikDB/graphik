@@ -35,6 +35,10 @@ message Counter {
   int64 count =1;
 }
 
+message Pong {
+  string message =1;
+}
+
 message Path {
   string Type =1;
   string ID =2;
@@ -252,6 +256,8 @@ message UserIntercept {
 }
 
 service PrivateService {
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+
   rpc JoinCluster(JoinClusterRequest) returns(google.protobuf.Empty) {}
   rpc GetAuth(google.protobuf.Empty) returns(GetAuthResponse){}
   rpc SetAuth(SetAuthRequest) returns(SetAuthResponse){}
