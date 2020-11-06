@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/autom8ter/machine v1.0.0
+	github.com/gogo/protobuf v1.2.1
 	github.com/golang/protobuf v1.3.4
 	github.com/google/cel-go v0.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2

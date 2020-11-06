@@ -107,6 +107,35 @@ message JWKSSource {
   string issuer =2;
 }
 
+message AuthConfig {
+  repeated JWKSSource jwks_sources =1;
+}
+
+message RaftConfig {
+  string bind =1;
+  string storage_path =2;
+  string join =3;
+  string node_id =4;
+}
+
+message HTTPConfig {
+  string bind =1;
+  string allowed_origins=2;
+  string allowed_headers =3;
+  string allowed_methods =4;
+}
+
+message GRPCConfig {
+  string bind =1;
+}
+
+message Config {
+  HTTPConfig http =1;
+  GRPCConfig grpc =2;
+  RaftConfig raft =3;
+  AuthConfig auth =4;
+}
+
 message JoinClusterResponse {}
 
 message GetJWKSRequest {}
@@ -207,8 +236,6 @@ message EdgesToResponse {
 
 service PrivateService {
   rpc JoinCluster(JoinClusterRequest) returns(JoinClusterResponse) {}
-  rpc GetJWKS(GetJWKSRequest) returns (GetJWKSResponse){}
-  rpc UpdateJWKS(UpdateJWKSRequest) returns(UpdateJWKSResponse){}
 
   rpc CreateNodes(CreateNodesRequest) returns(CreateNodesResponse){}
   rpc SearchNodes(SearchNodesRequest) returns (SearchNodesResponse){}

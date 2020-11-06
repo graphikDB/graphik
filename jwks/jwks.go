@@ -3,6 +3,7 @@ package jwks
 import (
 	"encoding/json"
 	"fmt"
+	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
@@ -12,16 +13,16 @@ import (
 	"sync"
 )
 
-func New(jwks map[string]string) (*Auth, error) {
+func New(jwks []*apipb.JWKSSource) (*Auth, error) {
 	var sets = map[string]*Set{}
-	for uri, issuer := range jwks {
-		set, err := jwk.Fetch(uri)
+	for _, j := range jwks {
+		set, err := jwk.Fetch(j.Uri)
 		if err != nil {
 			return nil, err
 		}
-		sets[uri] = &Set{
-			URI:    uri,
-			Issuer: issuer,
+		sets[j.Uri] = &Set{
+			URI:    j.Uri,
+			Issuer: j.Issuer,
 			Set:    set,
 		}
 	}

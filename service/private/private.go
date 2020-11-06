@@ -64,6 +64,7 @@ func (s *Service) SearchNodes(ctx context.Context, request *apipb.SearchNodesReq
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+	nodes.Sort()
 	return &apipb.SearchNodesResponse{
 		Nodes: nodes,
 	}, nil
@@ -96,6 +97,7 @@ func (s *Service) PatchNodes(ctx context.Context, request *apipb.PatchNodesReque
 	if err != nil {
 		return nil, err
 	}
+	nodes.Sort()
 	return &apipb.PatchNodesResponse{
 		Nodes: nodes,
 	}, nil

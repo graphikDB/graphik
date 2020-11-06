@@ -11,7 +11,18 @@ import (
 
 func init() {
 	var err error
-	env, err = cel.NewEnv(cel.Types(&Node{}, &Edge{}, &Path{}, &Message{}))
+	env, err = cel.NewEnv(
+		cel.Types(
+			&Node{},
+			&Edge{},
+			&Path{},
+			&Message{},
+			&Paths{},
+			&Edges{},
+			&Nodes{},
+			&JWKSSource{},
+			&JWKSSource{},
+		))
 	if err != nil {
 		panic(err)
 	}

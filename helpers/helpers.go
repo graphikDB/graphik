@@ -2,8 +2,21 @@ package helpers
 
 import (
 	"fmt"
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/struct"
+	"io"
 	"reflect"
+)
+
+var (
+	marshaller = &jsonpb.Marshaler{
+		EnumsAsInts:  false,
+		EmitDefaults: false,
+		Indent:       "",
+		OrigName:     false,
+		AnyResolver:  nil,
+	}
 )
 
 // ToStruct converts a map[string]interface{} to a ptypes.Struct
@@ -216,4 +229,12 @@ func toValue(v reflect.Value) *structpb.Value {
 			},
 		}
 	}
+}
+
+func JSONEncode(w io.Writer, msg proto.Message) error {
+	return marshaller.Marshal(w, msg)
+}
+
+func JSONDecode(r io.Reader, msg proto.Message) error {
+	return jsonpb.Unmarshal(r, msg)
 }

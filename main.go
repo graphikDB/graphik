@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/config"
+	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
@@ -29,24 +29,32 @@ import (
 const version = "0.0.0"
 
 func init() {
-	pflag.CommandLine.StringVar(&cfg.GrpcBind, "grpc.bind", ":7686", "bind local port to gRPC server")
-	pflag.CommandLine.StringVar(&cfg.HTTPBind, "http.bind", ":7687", "bind local port to http server")
-	pflag.CommandLine.StringVar(&cfg.Raft.DBPath, "raft.path", "/tmp/graphik", "path to database folder")
-	pflag.CommandLine.StringVar(&cfg.Raft.Bind, "raft.bind", "localhost:8090", "bind raft protocol to local port")
-	pflag.CommandLine.StringVar(&cfg.Raft.Join, "raft.join", "", "join raft cluster leader")
-	pflag.CommandLine.StringVar(&cfg.Raft.NodeID, "raft.id", "main", "unique raft node id")
-	pflag.CommandLine.StringToStringVar(&cfg.JWKs, "jwks", nil, "remote json web key set(s)")
+	pflag.CommandLine.StringVar(&configFile, "config", "./graphik.json", "path to json config")
 }
 
 var (
-	cfg = &config.Config{
-		Raft: &config.Raft{},
-		Cors: &config.Cors{},
+	configFile string
+
+	cfg = &apipb.Config{
+		Http: &apipb.HTTPConfig{},
+		Grpc: &apipb.GRPCConfig{},
+		Raft: &apipb.RaftConfig{},
+		Auth: &apipb.AuthConfig{},
 	}
 )
 
 func main() {
 	pflag.Parse()
+	f, err := os.Open(configFile)
+	if err != nil {
+		logger.Error("failed to read config file", zap.Error(err))
+		return
+	}
+	defer f.Close()
+	if err := helpers.JSONDecode(f, cfg); err != nil {
+		logger.Error("failed to decode config", zap.Error(err))
+		return
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
@@ -54,16 +62,16 @@ func main() {
 	defer signal.Stop(interrupt)
 
 	mach := machine.New(ctx)
-	j, err := jwks.New(cfg.JWKs)
+	j, err := jwks.New(cfg.GetAuth().GetJwksSources())
 	if err != nil {
 		logger.Error("failed to fetch jwks", zap.Error(err))
 		return
 	}
 	runt, err := runtime.New(
-		runtime.WithLeader(cfg.Raft.Join == ""),
-		runtime.WithID(cfg.Raft.NodeID),
-		runtime.WithBindAddr(cfg.Raft.Bind),
-		runtime.WithRaftDir(cfg.Raft.DBPath),
+		runtime.WithLeader(cfg.GetRaft().Join == ""),
+		runtime.WithID(cfg.GetRaft().NodeId),
+		runtime.WithBindAddr(cfg.GetRaft().Bind),
+		runtime.WithRaftDir(cfg.GetRaft().StoragePath),
 		runtime.WithJWKS(j),
 		runtime.WithMachine(mach),
 	)
@@ -81,7 +89,7 @@ func main() {
 		}
 		client := apipb.NewPrivateServiceClient(conn)
 		_, err = client.JoinCluster(ctx, &apipb.JoinClusterRequest{
-			NodeId:  cfg.Raft.NodeID,
+			NodeId:  cfg.Raft.NodeId,
 			Address: cfg.Raft.Bind,
 		})
 		if err != nil {
@@ -103,7 +111,7 @@ func main() {
 	}
 
 	mach.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", cfg.HTTPBind)
+		lis, err := net.Listen("tcp", cfg.GetHttp().GetBind())
 		if err != nil {
 			logger.Error("failed to create http server listener", zap.Error(err))
 			return
@@ -137,7 +145,7 @@ func main() {
 	grpc_prometheus.Register(gserver)
 
 	mach.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", cfg.GrpcBind)
+		lis, err := net.Listen("tcp", cfg.GetGrpc().GetBind())
 		if err != nil {
 			logger.Error("failed to create gRPC server listener", zap.Error(err))
 			return
