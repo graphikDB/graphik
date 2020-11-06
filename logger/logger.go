@@ -16,18 +16,18 @@ func Logger(withFields ...zap.Field) *zap.Logger {
 	if logger == nil {
 		zap.NewDevelopmentConfig()
 		jsonEncoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
-			MessageKey:       "msg",
-			LevelKey:         "level",
-			TimeKey:          "ts",
-			NameKey:          "logger",
-			CallerKey:        "caller",
-			FunctionKey:      "function",
-			StacktraceKey:    "stacktrace",
-			EncodeLevel:      zapcore.LowercaseLevelEncoder,
-			EncodeTime:       zapcore.EpochTimeEncoder,
-			EncodeDuration:   zapcore.SecondsDurationEncoder,
-			EncodeCaller:     zapcore.FullCallerEncoder,
-			EncodeName:       zapcore.FullNameEncoder,
+			MessageKey:     "msg",
+			LevelKey:       "level",
+			TimeKey:        "ts",
+			NameKey:        "logger",
+			CallerKey:      "caller",
+			FunctionKey:    "function",
+			StacktraceKey:  "stacktrace",
+			EncodeLevel:    zapcore.LowercaseLevelEncoder,
+			EncodeTime:     zapcore.EpochTimeEncoder,
+			EncodeDuration: zapcore.SecondsDurationEncoder,
+			EncodeCaller:   zapcore.FullCallerEncoder,
+			EncodeName:     zapcore.FullNameEncoder,
 		})
 		fn := zap.LevelEnablerFunc(func(zapcore.Level) bool { return true })
 		core := zapcore.NewCore(jsonEncoder, os.Stdout, fn)

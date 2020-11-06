@@ -22,6 +22,7 @@ func init() {
 			&Nodes{},
 			&JWKSSource{},
 			&JWKSSource{},
+			&RequestIntercept{},
 		))
 	if err != nil {
 		panic(err)

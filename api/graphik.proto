@@ -15,7 +15,8 @@ enum Op {
   CREATE_EDGES =3;
   PATCH_EDGES =4;
   DELETE_EDGES =5;
-  SET_JWKS =6;
+  SET_AUTH =6;
+
 }
 
 enum Keyword {
@@ -108,8 +109,9 @@ message JWKSSource {
   string issuer =2;
 }
 
-message JWKSSources {
-  repeated JWKSSource sources =1;
+message Auth {
+  repeated JWKSSource jwks_sources =1;
+  repeated string auth_expressions =2;
 }
 
 message RaftConfig {
@@ -138,18 +140,18 @@ message Config {
 
 message JoinClusterResponse {}
 
-message GetJWKSRequest {}
+message GetAuthRequest {}
 
-message GetJWKSResponse {
-  JWKSSources sources =1;
+message GetAuthResponse {
+  Auth auth =1;
 }
 
-message SetJWKSRequest {
-  JWKSSources sources =1;
+message SetAuthRequest {
+  Auth auth =1;
 }
 
-message SetJWKSResponse {
-  JWKSSources sources =1;
+message SetAuthResponse {
+  Auth auth =1;
 }
 
 message CreateNodesRequest {
@@ -236,8 +238,8 @@ message EdgesToResponse {
 
 service PrivateService {
   rpc JoinCluster(JoinClusterRequest) returns(JoinClusterResponse) {}
-  rpc GetJWKS(GetJWKSRequest) returns(GetJWKSResponse){}
-  rpc SetJWKS(SetJWKSRequest) returns(SetJWKSResponse){}
+  rpc GetAuth(GetAuthRequest) returns(GetAuthResponse){}
+  rpc SetAuth(SetAuthRequest) returns(SetAuthResponse){}
 
   rpc CreateNodes(CreateNodesRequest) returns(CreateNodesResponse){}
   rpc SearchNodes(SearchNodesRequest) returns (SearchNodesResponse){}
@@ -251,4 +253,25 @@ service PrivateService {
 
   rpc EdgesFrom(EdgesFromRequest) returns(EdgesFromResponse){}
   rpc EdgesTo(EdgesToRequest) returns(EdgesToResponse){}
+}
+
+
+message RequestIntercept {
+  string request_path =1;
+  oneof request {
+    JoinClusterRequest join_cluster =2;
+    GetAuthRequest get_auth =3;
+    SetAuthRequest set_auth =4;
+    CreateNodesRequest create_nodes =5;
+    SearchNodesRequest search_nodes =6;
+    PatchNodesRequest patch_nodes =7;
+    DelNodesRequest del_nodes =8;
+    CreateEdgesRequest create_edges =9;
+    SearchEdgesRequest search_edges =10;
+    PatchEdgesRequest patch_edges =11;
+    DelEdgesRequest  del_edges =12;
+    EdgesFromRequest edges_from =13;
+    EdgesToRequest edges_to =14;
+  }
+  Node user =99;
 }

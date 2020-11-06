@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/auth"
 	"github.com/autom8ter/graphik/generic"
-	"github.com/autom8ter/graphik/jwks"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
@@ -26,7 +26,7 @@ const (
 
 type Runtime struct {
 	machine *machine.Machine
-	jwks    *jwks.Auth
+	auth    *auth.Auth
 	raft    *raft.Raft
 	mu      sync.RWMutex
 	nodes   *generic.Nodes
@@ -65,7 +65,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 
 	s := &Runtime{
 		machine: m,
-		jwks:    jwks.New(),
+		auth:    auth.New(),
 		raft:    nil,
 		mu:      sync.RWMutex{},
 		nodes:   nodes,
@@ -105,11 +105,9 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	}
 
 	s.machine.Go(func(routine machine.Routine) {
-		if len(s.jwks.List().GetSources()) > 0 {
-			logger.Info("refreshing jwks")
-			if err := s.jwks.RefreshKeys(); err != nil {
-				logger.Error("failed to refresh keys", zap.Error(errors.WithStack(err)))
-			}
+		logger.Info("refreshing jwks")
+		if err := s.auth.RefreshKeys(); err != nil {
+			logger.Error("failed to refresh keys", zap.Error(errors.WithStack(err)))
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 	return s, nil
@@ -128,7 +126,7 @@ func (s *Runtime) execute(cmd *apipb.Command) (interface{}, error) {
 
 func (s *Runtime) Close() error {
 	defer s.machine.Close()
-	if err :=  s.raft.Shutdown().Error(); err != nil {
+	if err := s.raft.Shutdown().Error(); err != nil {
 		return err
 	}
 	return nil
@@ -138,8 +136,8 @@ func (s *Runtime) Machine() *machine.Machine {
 	return s.machine
 }
 
-func (s *Runtime) JWKS() *jwks.Auth {
-	return s.jwks
+func (s *Runtime) Auth() *auth.Auth {
+	return s.auth
 }
 
 func (r *Runtime) Go(fn machine.Func) {

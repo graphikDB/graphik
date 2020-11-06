@@ -2,6 +2,7 @@ package interceptors
 
 import (
 	"context"
+	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/runtime"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -17,7 +18,7 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, err
 		}
-		payload, err := runtime.JWKS().VerifyJWT(token)
+		payload, err := runtime.Auth().VerifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -35,10 +36,21 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
+		n := runtime.NodeContext(ctx)
+		request := &apipb.RequestIntercept{
+			RequestPath: info.FullMethod,
+			User:        n,
+		}
+		pass, err := runtime.Auth().Authorize(request)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, err.Error())
+		}
+		if !pass {
+			return nil, status.Error(codes.PermissionDenied, "permission denied")
+		}
 		return handler(ctx, req)
 	}
 }
-
 
 func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
@@ -46,7 +58,7 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return err
 		}
-		payload, err := runtime.JWKS().VerifyJWT(token)
+		payload, err := runtime.Auth().VerifyJWT(token)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -60,12 +72,29 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 				return status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
+
 		ctx, err := runtime.ToContext(ss.Context(), payload)
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
+		n := runtime.NodeContext(ctx)
+
+		request := &apipb.RequestIntercept{
+			RequestPath: info.FullMethod,
+			User:        n,
+		}
+
+		pass, err := runtime.Auth().Authorize(request)
+		if err != nil {
+			return status.Errorf(codes.Internal, err.Error())
+		}
+		if !pass {
+			return status.Error(codes.PermissionDenied, "permission denied")
+		}
+
 		wrapped := grpc_middleware.WrapServerStream(ss)
 		wrapped.WrappedContext = ctx
+
 		return handler(srv, wrapped)
 	}
 }

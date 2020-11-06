@@ -1,4 +1,4 @@
-package jwks
+package auth
 
 import (
 	"encoding/json"
@@ -27,8 +27,9 @@ type Set struct {
 }
 
 type Auth struct {
-	mu  sync.RWMutex
-	set map[string]*Set
+	mu          sync.RWMutex
+	set         map[string]*Set
+	expressions []string
 }
 
 func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
@@ -94,8 +95,8 @@ func (a *Auth) RefreshKeys() error {
 	return nil
 }
 
-func (a *Auth) Override(jwks []*apipb.JWKSSource) error {
-	for _, source := range jwks {
+func (a *Auth) Override(auth *apipb.Auth) error {
+	for _, source := range auth.JwksSources {
 		set, err := jwk.Fetch(source.Uri)
 		if err != nil {
 			return err
@@ -108,20 +109,33 @@ func (a *Auth) Override(jwks []*apipb.JWKSSource) error {
 		}
 		a.mu.Unlock()
 	}
+	a.mu.Lock()
+	a.expressions = auth.AuthExpressions
+	a.mu.Unlock()
 	return nil
 }
 
-func (a *Auth) List() *apipb.JWKSSources {
-	var list []*apipb.JWKSSource
+func (a *Auth) Raw() *apipb.Auth {
+	var jwksSources []*apipb.JWKSSource
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	for _, s := range a.set {
-		list = append(list, &apipb.JWKSSource{
+		jwksSources = append(jwksSources, &apipb.JWKSSource{
 			Uri:    s.URI,
 			Issuer: s.Issuer,
 		})
 	}
-	return &apipb.JWKSSources{
-		Sources: list,
+	return &apipb.Auth{
+		JwksSources:     jwksSources,
+		AuthExpressions: a.expressions,
 	}
+}
+
+func (a *Auth) Authorize(intercept *apipb.RequestIntercept) (bool, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	if len(a.expressions) == 0 {
+		return true, nil
+	}
+	return apipb.EvaluateExpressions(a.expressions, intercept)
 }

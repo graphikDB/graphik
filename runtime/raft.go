@@ -63,13 +63,13 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	switch c.Op {
-	case apipb.Op_SET_JWKS:
-		var values = &apipb.JWKSSources{}
+	case apipb.Op_SET_AUTH:
+		var values = &apipb.Auth{}
 		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
 			return errors.Wrap(err, "failed to decode jwks sources")
 		}
-		if err := f.jwks.Override(values.Sources); err != nil {
-			return errors.Wrap(err, "failed to set jwks sources")
+		if err := f.auth.Override(values); err != nil {
+			return errors.Wrap(err, "failed to override auth")
 		}
 		return values
 	case apipb.Op_CREATE_NODES:

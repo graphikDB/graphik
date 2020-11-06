@@ -24,18 +24,18 @@ func (s *Service) JoinCluster(ctx context.Context, request *apipb.JoinClusterReq
 	return &apipb.JoinClusterResponse{}, s.runtime.JoinNode(request.NodeId, request.Address)
 }
 
-func (s *Service) GetJWKS(ctx context.Context, request *apipb.GetJWKSRequest) (*apipb.GetJWKSResponse, error) {
-	return &apipb.GetJWKSResponse{
-		Sources: s.runtime.JWKS().List(),
+func (s *Service) GetAuth(ctx context.Context, request *apipb.GetAuthRequest) (*apipb.GetAuthResponse, error) {
+	return &apipb.GetAuthResponse{
+		Auth: s.runtime.Auth().Raw(),
 	}, nil
 }
 
-func (s *Service) SetJWKS(ctx context.Context, request *apipb.SetJWKSRequest) (*apipb.SetJWKSResponse, error) {
-	if err := s.runtime.JWKS().Override(request.GetSources().GetSources()); err != nil {
+func (s *Service) SetAuth(ctx context.Context, request *apipb.SetAuthRequest) (*apipb.SetAuthResponse, error) {
+	if err := s.runtime.Auth().Override(request.GetAuth()); err != nil {
 		return nil, err
 	}
-	return &apipb.SetJWKSResponse{
-		Sources: s.runtime.JWKS().List(),
+	return &apipb.SetAuthResponse{
+		Auth: s.runtime.Auth().Raw(),
 	}, nil
 }
 
