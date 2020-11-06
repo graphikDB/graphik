@@ -41,6 +41,7 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 			RequestPath: info.FullMethod,
 			User:        n,
 		}
+		populate(req, request)
 		pass, err := runtime.Auth().Authorize(request)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
@@ -83,7 +84,7 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 			RequestPath: info.FullMethod,
 			User:        n,
 		}
-
+		populate(srv, request)
 		pass, err := runtime.Auth().Authorize(request)
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
@@ -96,5 +97,60 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		wrapped.WrappedContext = ctx
 
 		return handler(srv, wrapped)
+	}
+}
+
+func populate(req interface{}, intercept *apipb.RequestIntercept) {
+	switch r := req.(type) {
+	case *apipb.SetAuthRequest:
+		intercept.Request = &apipb.RequestIntercept_SetAuth{SetAuth: r}
+	case *apipb.SearchNodesRequest:
+		intercept.Request = &apipb.RequestIntercept_SearchNodes{
+			SearchNodes: r,
+		}
+	case *apipb.SearchEdgesRequest:
+		intercept.Request = &apipb.RequestIntercept_SearchEdges{
+			SearchEdges: r,
+		}
+	case *apipb.PatchNodesRequest:
+		intercept.Request = &apipb.RequestIntercept_PatchNodes{
+			PatchNodes: r,
+		}
+	case *apipb.PatchEdgesRequest:
+		intercept.Request = &apipb.RequestIntercept_PatchEdges{
+			PatchEdges: r,
+		}
+	case *apipb.EdgesToRequest:
+		intercept.Request = &apipb.RequestIntercept_EdgesTo{
+			EdgesTo: r,
+		}
+	case *apipb.EdgesFromRequest:
+		intercept.Request = &apipb.RequestIntercept_EdgesFrom{
+			EdgesFrom: r,
+		}
+	case *apipb.DelNodesRequest:
+		intercept.Request = &apipb.RequestIntercept_DelNodes{
+			DelNodes: r,
+		}
+	case *apipb.DelEdgesRequest:
+		intercept.Request = &apipb.RequestIntercept_DelEdges{
+			DelEdges: r,
+		}
+	case *apipb.CreateNodesRequest:
+		intercept.Request = &apipb.RequestIntercept_CreateNodes{
+			CreateNodes: r,
+		}
+	case *apipb.CreateEdgesRequest:
+		intercept.Request = &apipb.RequestIntercept_CreateEdges{
+			CreateEdges: r,
+		}
+	case *apipb.JoinClusterRequest:
+		intercept.Request = &apipb.RequestIntercept_JoinCluster{
+			JoinCluster: r,
+		}
+	case *apipb.GetAuthRequest:
+		intercept.Request = &apipb.RequestIntercept_GetAuth{
+			GetAuth: r,
+		}
 	}
 }
