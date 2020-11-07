@@ -5,7 +5,7 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/auth"
-	"github.com/autom8ter/graphik/generic"
+	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
@@ -29,8 +29,8 @@ type Runtime struct {
 	auth    *auth.Auth
 	raft    *raft.Raft
 	mu      sync.RWMutex
-	nodes   *generic.Nodes
-	edges   *generic.Edges
+	nodes   *graph.Nodes
+	edges   *graph.Edges
 	close   sync.Once
 }
 
@@ -60,8 +60,8 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	}
 	logStore := boltDB
 	stableStore := boltDB
-	edges := generic.NewEdges()
-	nodes := generic.NewNodes(edges)
+	edges := graph.NewEdges()
+	nodes := graph.NewNodes(edges)
 	a, err := auth.New(cfg.Auth)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package generic
+package graph
 
 import (
 	apipb "github.com/autom8ter/graphik/api"

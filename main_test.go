@@ -20,7 +20,7 @@ func init() {
 func Test(t *testing.T) {
 	cfg := &apipb.Config{
 		Auth: &apipb.AuthConfig{
-			JwksSources:          []string{"https://www.googleapis.com/oauth2/v3/certs"},
+			JwksSources: []string{"https://www.googleapis.com/oauth2/v3/certs"},
 		},
 	}
 	cfg.SetDefaults()
