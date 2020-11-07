@@ -13,22 +13,25 @@ import (
 	"sync"
 )
 
-func New() *Auth {
-	return &Auth{
-		set: map[string]*Set{},
-		mu:  sync.RWMutex{},
+func New(cfg *apipb.AuthConfig) (*Auth, error) {
+	setMap := map[string]*jwk.Set{}
+	for _, source := range cfg.JwksSources {
+		set, err := jwk.Fetch(source)
+		if err != nil {
+			return nil, err
+		}
+		setMap[source] = set
 	}
-}
-
-type Set struct {
-	URI    string
-	Issuer string
-	Set    *jwk.Set
+	return &Auth{
+		set:         setMap,
+		mu:          sync.RWMutex{},
+		expressions: cfg.AuthExpressions,
+	}, nil
 }
 
 type Auth struct {
 	mu          sync.RWMutex
-	set         map[string]*Set
+	set         map[string]*jwk.Set
 	expressions []string
 }
 
@@ -51,27 +54,24 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	}
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for _, set := range a.set {
-		keys := set.Set.LookupKeyID(kid.(string))
+	for uri, set := range a.set {
+		keys := set.LookupKeyID(kid.(string))
 		if len(keys) == 0 {
 			continue
 		}
 		var key interface{}
 		if err := keys[0].Raw(&key); err != nil {
-			logger.Error("jwks validation failure", zap.String("uri", set.URI), zap.Error(errors.WithStack(err)))
+			logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(errors.WithStack(err)))
 			continue
 		}
 		payload, err := jws.Verify([]byte(token), alg, key)
 		if err != nil {
-			logger.Error("jwks validation failure", zap.String("uri", set.URI), zap.Error(errors.WithStack(err)))
+			logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(errors.WithStack(err)))
 			continue
 		}
 		data := map[string]interface{}{}
 		if err := json.Unmarshal(payload, &data); err != nil {
 			return nil, err
-		}
-		if issuer := data["iss"].(string); issuer != set.Issuer {
-			continue
 		}
 		return data, nil
 	}
@@ -79,34 +79,26 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 }
 
 func (a *Auth) RefreshKeys() error {
-	for uri, s := range a.set {
+	for uri, _ := range a.set {
 		set, err := jwk.Fetch(uri)
 		if err != nil {
 			return err
 		}
 		a.mu.Lock()
-		a.set[uri] = &Set{
-			URI:    uri,
-			Issuer: s.Issuer,
-			Set:    set,
-		}
+		a.set[uri] = set
 		a.mu.Unlock()
 	}
 	return nil
 }
 
-func (a *Auth) Override(auth *apipb.Auth) error {
+func (a *Auth) Override(auth *apipb.AuthConfig) error {
 	for _, source := range auth.JwksSources {
-		set, err := jwk.Fetch(source.Uri)
+		set, err := jwk.Fetch(source)
 		if err != nil {
 			return err
 		}
 		a.mu.Lock()
-		a.set[source.Uri] = &Set{
-			URI:    source.Uri,
-			Issuer: source.Issuer,
-			Set:    set,
-		}
+		a.set[source] = set
 		a.mu.Unlock()
 	}
 	a.mu.Lock()
@@ -115,17 +107,14 @@ func (a *Auth) Override(auth *apipb.Auth) error {
 	return nil
 }
 
-func (a *Auth) Raw() *apipb.Auth {
-	var jwksSources []*apipb.JWKSSource
+func (a *Auth) Raw() *apipb.AuthConfig {
+	var jwksSources []string
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for _, s := range a.set {
-		jwksSources = append(jwksSources, &apipb.JWKSSource{
-			Uri:    s.URI,
-			Issuer: s.Issuer,
-		})
+	for source, _ := range a.set {
+		jwksSources = append(jwksSources, source)
 	}
-	return &apipb.Auth{
+	return &apipb.AuthConfig{
 		JwksSources:     jwksSources,
 		AuthExpressions: a.expressions,
 	}

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/interceptors"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
@@ -28,28 +27,29 @@ import (
 
 func init() {
 	godotenv.Load()
-	pflag.CommandLine.StringVar(&configFile, "config", "./graphik.json", "path to json config")
+	pflag.CommandLine.StringVar(&cfg.Grpc.Bind, "grpc.bind", ":7820", "")
+	pflag.CommandLine.StringVar(&cfg.Http.Bind, "http.bind", ":7830", "")
+	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedHeaders, "http.headers", nil, "cors allowed headers")
+	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedMethods, "http.methods", nil, "cors allowed methods")
+	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedOrigins, "http.origins", nil, "cors allowed origins")
+	pflag.CommandLine.StringVar(&cfg.Raft.Bind, "raft.bind", "localhost:7840", "")
+	pflag.CommandLine.StringVar(&cfg.Raft.NodeId, "raft.nodeid", "default", "")
+	pflag.CommandLine.StringVar(&cfg.Raft.StoragePath, "raft.storage.path", "/tmp/graphik", "")
+	pflag.CommandLine.StringSliceVar(&cfg.Auth.JwksSources, "auth.jwks", nil, "authorizaed jwks uris")
+	pflag.CommandLine.StringSliceVar(&cfg.Auth.AuthExpressions, "auth.expressions", nil, "auth middleware expressions")
 }
 
 var (
-	configFile string
-	cfg        = &apipb.Config{
+	cfg = &apipb.Config{
 		Http: &apipb.HTTPConfig{},
 		Grpc: &apipb.GRPCConfig{},
 		Raft: &apipb.RaftConfig{},
+		Auth: &apipb.AuthConfig{},
 	}
 )
 
 func main() {
 	pflag.Parse()
-	f, err := os.Open(configFile)
-	if err == nil {
-		if err := helpers.JSONDecode(f, cfg); err != nil {
-			logger.Error("failed to decode config", zap.Error(err))
-			return
-		}
-		f.Close()
-	}
 	cfg.SetDefaults()
 	run(context.Background(), cfg)
 }

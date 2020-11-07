@@ -62,10 +62,13 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	stableStore := boltDB
 	edges := generic.NewEdges()
 	nodes := generic.NewNodes(edges)
-
+	a, err := auth.New(cfg.Auth)
+	if err != nil {
+		return nil, err
+	}
 	s := &Runtime{
 		machine: m,
-		auth:    auth.New(),
+		auth:    a,
 		raft:    nil,
 		mu:      sync.RWMutex{},
 		nodes:   nodes,

@@ -113,13 +113,8 @@ message JoinClusterRequest {
   RaftNode raft_node =1;
 }
 
-message JWKSSource {
-  string uri =1;
-  string issuer =2;
-}
-
-message Auth {
-  repeated JWKSSource jwks_sources =1;
+message AuthConfig {
+  repeated string jwks_sources =1;
   repeated string auth_expressions =2;
 }
 
@@ -145,18 +140,19 @@ message Config {
   HTTPConfig http =1;
   GRPCConfig grpc =2;
   RaftConfig raft =3;
+  AuthConfig auth =4;
 }
 
 message GetAuthResponse {
-  Auth auth =1;
+  AuthConfig auth =1;
 }
 
 message SetAuthRequest {
-  Auth auth =1;
+  AuthConfig auth =1;
 }
 
 message SetAuthResponse {
-  Auth auth =1;
+  AuthConfig auth =1;
 }
 
 message CreateNodesRequest {
@@ -248,7 +244,7 @@ message UserIntercept {
     Nodes nodes =6;
     Edges edges =7;
     Filter filter =8;
-    Auth  auth =9;
+    AuthConfig  auth =9;
     RaftNode raft =10;
     PathFilter path_filter =11;
   }

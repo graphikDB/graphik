@@ -18,16 +18,20 @@ func init() {
 }
 
 func Test(t *testing.T) {
-	cfg := &apipb.Config{}
+	cfg := &apipb.Config{
+		Auth: &apipb.AuthConfig{
+			JwksSources:          []string{"https://www.googleapis.com/oauth2/v3/certs"},
+		},
+	}
 	cfg.SetDefaults()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	go func() {
 
 		defer cancel()
 		run(ctx, cfg)
 	}()
-	time.Sleep(1 * time.Second)
-	j, err := google.DefaultTokenSource(ctx,"https://www.googleapis.com/auth/devstorage.full_control")
+	time.Sleep(3 * time.Second)
+	j, err := google.DefaultTokenSource(ctx, "https://www.googleapis.com/auth/devstorage.full_control")
 	if err != nil {
 		t.Fatal(err)
 	}

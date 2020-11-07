@@ -64,7 +64,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 	defer f.mu.Unlock()
 	switch c.Op {
 	case apipb.Op_SET_AUTH:
-		var values = &apipb.Auth{}
+		var values = &apipb.AuthConfig{}
 		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
 			return errors.Wrap(err, "failed to decode jwks sources")
 		}

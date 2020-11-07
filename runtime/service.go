@@ -81,7 +81,7 @@ func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := resp.(error); err != nil {
+	if err, ok := resp.(error); ok {
 		return nil, err
 	}
 	return resp.(*apipb.Nodes), nil
