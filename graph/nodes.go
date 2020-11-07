@@ -97,10 +97,16 @@ func (n *Nodes) Delete(path *apipb.Path) bool {
 	}
 	n.edges.RangeFrom(node.Path, func(e *apipb.Edge) bool {
 		n.edges.Delete(e.Path)
+		if e.Cascade == apipb.Cascade_TO || e.Cascade == apipb.Cascade_MUTUAL {
+			n.Delete(e.To)
+		}
 		return true
 	})
 	n.edges.RangeTo(node.Path, func(e *apipb.Edge) bool {
 		n.edges.Delete(e.Path)
+		if e.Cascade == apipb.Cascade_FROM || e.Cascade == apipb.Cascade_MUTUAL {
+			n.Delete(e.From)
+		}
 		return true
 	})
 	if c, ok := n.nodes[path.Type]; ok {

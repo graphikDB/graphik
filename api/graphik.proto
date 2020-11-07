@@ -25,6 +25,13 @@ enum Keyword {
   DEFAULT =1;
 }
 
+enum Cascade {
+  NONE =0;
+  FROM =1;
+  TO =2;
+  MUTUAL= 3;
+}
+
 message Command {
   Op op =1;
   google.protobuf.Any val =2;
@@ -93,11 +100,12 @@ message Patches {
 message Edge {
   Path path =1;
   bool mutual =2;
-  google.protobuf.Struct attributes = 3;
-  Path from =4;
-  Path to =5;
-  google.protobuf.Timestamp created_at =6;
-  google.protobuf.Timestamp updated_at =7;
+  Cascade cascade =3;
+  google.protobuf.Struct attributes = 4;
+  Path from =5;
+  Path to =6;
+  google.protobuf.Timestamp created_at =7;
+  google.protobuf.Timestamp updated_at =8;
 }
 
 message Edges {
