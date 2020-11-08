@@ -64,15 +64,8 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
-		if exp, ok := payload["exp"].(int64); ok {
-			if exp < time.Now().Unix() {
-				return status.Errorf(codes.Unauthenticated, "token expired")
-			}
-		}
-		if exp, ok := payload["exp"].(int); ok {
-			if int64(exp) < time.Now().Unix() {
-				return status.Errorf(codes.Unauthenticated, "token expired")
-			}
+		if payload["exp"].(int64) < time.Now().Unix() {
+			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
 
 		ctx, err := runtime.ToContext(ss.Context(), payload)
