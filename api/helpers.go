@@ -1,4 +1,4 @@
-package helpers
+package apipb
 
 import (
 	"fmt"
@@ -39,6 +39,37 @@ func ToStruct(v map[string]interface{}) *structpb.Struct {
 	}
 	return &structpb.Struct{
 		Fields: fields,
+	}
+}
+
+func FromStruct(s *structpb.Struct) map[string]interface{} {
+	values := map[string]interface{}{}
+	for k, field := range s.Fields {
+		values[k] = FromValue(field)
+	}
+	return values
+}
+
+func FromValue(field *structpb.Value) interface{} {
+	switch field.GetKind().(type) {
+	case *structpb.Value_BoolValue:
+		return field.GetBoolValue()
+	case *structpb.Value_NumberValue:
+		return field.GetNumberValue()
+	case *structpb.Value_NullValue:
+		return field.GetNullValue()
+	case *structpb.Value_StringValue:
+		return field.GetStringValue()
+	case *structpb.Value_StructValue:
+		return FromStruct(field.GetStructValue())
+	case *structpb.Value_ListValue:
+		var values []interface{}
+		for _, v := range field.GetListValue().GetValues() {
+			values = append(values, FromValue(v))
+		}
+		return values
+	default:
+		return nil
 	}
 }
 

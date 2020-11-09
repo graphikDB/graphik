@@ -1,40 +1,113 @@
 package apipb
 
 import (
+	"bytes"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/checker/decls"
 	"github.com/hashicorp/raft"
+	"github.com/mitchellh/mapstructure"
+	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+	"reflect"
+	"sort"
 	"strings"
 )
 
-func init() {
-	var err error
-	env, err = cel.NewEnv(
-		cel.Types(
-			&Node{},
-			&Edge{},
-			&Path{},
-			&Message{},
-			&Paths{},
-			&Edges{},
-			&Nodes{},
-			&RaftNode{},
-			&AuthConfig{},
-			&Filter{},
-			&UserIntercept{},
-			&PathFilter{},
-		))
-	if err != nil {
-		panic(err)
+func toMap(obj interface{}) map[string]interface{} {
+	switch o := obj.(type) {
+	case *Node:
+		return map[string]interface{}{
+			"path":       toMap(o.Path),
+			"attributes": o.Attributes,
+			"updated_at": o.UpdatedAt,
+			"created_at": o.CreatedAt,
+		}
+	case *Edge:
+		return map[string]interface{}{
+			"path":       toMap(o.Path),
+			"attributes": o.Attributes,
+			"updated_at": o.UpdatedAt,
+			"created_at": o.CreatedAt,
+			"from":       o.From,
+			"to":         o.To,
+			"cascade":    o.Cascade,
+			"mutual":     o.Mutual,
+		}
+	case *Path:
+		return map[string]interface{}{
+			"id":   o.ID,
+			"type": o.Type,
+		}
+	case *Edges:
+		return map[string]interface{}{
+			"edges": o.Edges,
+		}
+	case *Nodes:
+		return map[string]interface{}{
+			"nodes": o.Nodes,
+		}
+	case *structpb.Struct:
+		return FromStruct(o)
+	case proto.Message:
+		values := map[string]interface{}{}
+		buf := bytes.NewBuffer(nil)
+		marshaller.Marshal(buf, o)
+		json.Unmarshal(buf.Bytes(), &values)
+		return values
+	default:
+		values := map[string]interface{}{}
+		mapstructure.WeakDecode(o, &values)
+		return values
 	}
 }
 
-var env *cel.Env
+func envFrom(obj interface{}) (*cel.Env, error) {
+	mapStrDyn := decls.NewMapType(decls.String, decls.Dyn)
+	var declarations []*exprpb.Decl
+	switch o := obj.(type) {
+	case *Node, Node:
+		declarations = append(declarations, decls.NewVar("path", mapStrDyn))
+		declarations = append(declarations, decls.NewVar("attributes", mapStrDyn))
+		declarations = append(declarations, decls.NewVar("created_at", decls.Timestamp))
+		declarations = append(declarations, decls.NewVar("updated_at", decls.Timestamp))
+	case *Edge, Edge:
+		declarations = append(declarations, decls.NewVar("path", mapStrDyn))
+		declarations = append(declarations, decls.NewVar("attributes", mapStrDyn))
+		declarations = append(declarations, decls.NewVar("created_at", decls.Timestamp))
+		declarations = append(declarations, decls.NewVar("updated_at", decls.Timestamp))
+		declarations = append(declarations, decls.NewVar("from", mapStrDyn))
+		declarations = append(declarations, decls.NewVar("to", mapStrDyn))
+		declarations = append(declarations, decls.NewVar("mutual", decls.Bool))
+		declarations = append(declarations, decls.NewVar("cascade", decls.String))
+	case proto.Message:
+		values := map[string]interface{}{}
+		buf := bytes.NewBuffer(nil)
+		marshaller.Marshal(buf, o)
+		json.Unmarshal(buf.Bytes(), &values)
+		for k, _ := range values {
+			declarations = append(declarations, decls.NewVar(k, decls.Any))
+		}
+	default:
+		val := reflect.ValueOf(o)
+		for i := 0; i < val.NumField(); i++ {
+			field := val.Field(i)
+			declarations = append(declarations, decls.NewVar(field.String(), decls.Any))
+		}
+	}
+	return cel.NewEnv(cel.Declarations(declarations...))
+}
 
 func EvaluateExpressions(expressions []string, obj interface{}) (bool, error) {
+	values := toMap(obj)
 	var programs []cel.Program
+	env, err := envFrom(obj)
+	if err != nil {
+		return false, err
+	}
 	for _, exp := range expressions {
 		ast, iss := env.Compile(exp)
 		if iss.Err() != nil {
@@ -48,7 +121,7 @@ func EvaluateExpressions(expressions []string, obj interface{}) (bool, error) {
 	}
 	var passes = true
 	for _, program := range programs {
-		out, _, err := program.Eval(obj)
+		out, _, err := program.Eval(values)
 		if err != nil {
 			return false, err
 		}
@@ -93,7 +166,7 @@ func (c *Command) Log() *raft.Log {
 }
 
 func (e *Edges) Sort() {
-	sorter := Interface{
+	sorter := Sortable{
 		LenFunc: func() int {
 			if e == nil {
 				return 0
@@ -117,7 +190,7 @@ func (e *Edges) Sort() {
 }
 
 func (n *Nodes) Sort() {
-	sorter := Interface{
+	sorter := Sortable{
 		LenFunc: func() int {
 			if n == nil {
 				return 0
@@ -165,4 +238,35 @@ func (c *Config) SetDefaults() {
 	if c.Raft.NodeId == "" {
 		c.Raft.NodeId = "default"
 	}
+}
+
+type Sortable struct {
+	LenFunc  func() int
+	LessFunc func(i, j int) bool
+	SwapFunc func(i, j int)
+}
+
+func (s Sortable) Len() int {
+	if s.LenFunc == nil {
+		return 0
+	}
+	return s.LenFunc()
+}
+
+func (s Sortable) Less(i, j int) bool {
+	if s.LessFunc == nil {
+		return false
+	}
+	return s.LessFunc(i, j)
+}
+
+func (s Sortable) Swap(i, j int) {
+	if s.SwapFunc == nil {
+		return
+	}
+	s.SwapFunc(i, j)
+}
+
+func (s Sortable) Sort() {
+	sort.Sort(s)
 }
