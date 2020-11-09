@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
@@ -79,6 +78,12 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	return nil, errors.New("zero jwks matches")
 }
 
+func (a *Auth) Expressions() []string {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	return a.expressions
+}
+
 func (a *Auth) RefreshKeys() error {
 	for uri, _ := range a.set {
 		set, err := jwk.Fetch(uri)
@@ -119,13 +124,4 @@ func (a *Auth) Raw() *apipb.AuthConfig {
 		JwksSources:     jwksSources,
 		AuthExpressions: a.expressions,
 	}
-}
-
-func (a *Auth) Authorize(intercept interface{}) (bool, error) {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	if len(a.expressions) == 0 {
-		return true, nil
-	}
-	return graph.BooleanExpression(a.expressions, intercept)
 }

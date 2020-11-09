@@ -139,6 +139,15 @@ func (s *Runtime) Auth() *auth.Auth {
 	return s.auth
 }
 
+func (a *Runtime) Authorize(intercept interface{}) (bool, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	if len(a.auth.Expressions()) == 0 {
+		return true, nil
+	}
+	return a.graph.BooleanExpression(a.auth.Expressions(), intercept)
+}
+
 func (r *Runtime) Go(fn machine.Func) {
 	r.machine.Go(fn)
 }

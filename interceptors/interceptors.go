@@ -36,7 +36,7 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
-		pass, err := runtime.Auth().Authorize(graph.NewValues(map[string]interface{}{
+		pass, err := runtime.Authorize(graph.NewValues(map[string]interface{}{
 			"request_path": info.FullMethod,
 			"user":         runtime.NodeContext(ctx),
 			"request":      graph.ToMap(req),
@@ -69,7 +69,7 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
-		pass, err := runtime.Auth().Authorize(graph.NewValues(map[string]interface{}{
+		pass, err := runtime.Authorize(graph.NewValues(map[string]interface{}{
 			"request_path": info.FullMethod,
 			"user":         runtime.NodeContext(ctx),
 			"request":      graph.ToMap(srv),
