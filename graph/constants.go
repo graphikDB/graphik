@@ -2,8 +2,8 @@ package graph
 
 const (
 	PathKey       = "path"
-	CreatedAtKey  = "createdAt"
-	UpdatedAtKey  = "updatedAt"
+	CreatedAtKey  = "created_at"
+	UpdatedAtKey  = "updated_at"
 	FromKey       = "from"
 	ToKey         = "to"
 	CascadeKey    = "cascade"
