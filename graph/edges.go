@@ -48,18 +48,24 @@ func (n *EdgeStore) Get(path string) (Values, bool) {
 }
 
 func (n *EdgeStore) Set(value Values) Values {
+	if value.GetID() == "" {
+		value.SetID(UUID())
+	}
+	if value.GetType() == "" {
+		value.SetType(Default)
+	}
 	if _, ok := n.edges[value.GetType()]; !ok {
 		n.edges[value.GetType()] = map[string]Values{}
 	}
 
 	n.edges[value.GetType()][value.GetID()] = value
 
-	n.edgesFrom[value.GetString(FromKey)] = append(n.edgesFrom[value.GetString(FromKey)], value.PathString())
-	n.edgesTo[value.GetString(ToKey)] = append(n.edgesTo[value.GetString(ToKey)], value.PathString())
+	n.edgesFrom[value.GetString(FromKey)] = append(n.edgesFrom[value.GetString(FromKey)], value.GetPath())
+	n.edgesTo[value.GetString(ToKey)] = append(n.edgesTo[value.GetString(ToKey)], value.GetPath())
 
 	if value.GetBool(MutualKey) {
-		n.edgesTo[value.GetString(FromKey)] = append(n.edgesTo[value.GetString(FromKey)], value.PathString())
-		n.edgesFrom[value.GetString(ToKey)] = append(n.edgesFrom[value.GetString(ToKey)], value.PathString())
+		n.edgesTo[value.GetString(FromKey)] = append(n.edgesTo[value.GetString(FromKey)], value.GetPath())
+		n.edgesFrom[value.GetString(ToKey)] = append(n.edgesFrom[value.GetString(ToKey)], value.GetPath())
 	}
 	return value
 }
@@ -169,14 +175,14 @@ func (n *EdgeStore) SetAll(edges ValueSet) {
 
 func (n *EdgeStore) DeleteAll(edges ValueSet) {
 	for _, edge := range edges {
-		n.Delete(edge.PathString())
+		n.Delete(edge.GetPath())
 	}
 }
 
 func (n *EdgeStore) Clear(edgeType string) {
 	if cache, ok := n.edges[edgeType]; ok {
 		for _, v := range cache {
-			n.Delete(v.PathString())
+			n.Delete(v.GetPath())
 		}
 	}
 }

@@ -1,8 +1,7 @@
 package graph
 
 const (
-	IDKey         = "_id"
-	TypeKey       = "_type"
+	PathKey       = "_path"
 	CreatedAtKey  = "_createdAt"
 	UpdatedAtKey  = "_updatedAt"
 	FromKey       = "_from"

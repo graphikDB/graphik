@@ -10,8 +10,7 @@ func Test(t *testing.T) {
 	g := graph.New()
 	result, _, err := g.Expression(`create_node(node)`, graph.NewValues(map[string]interface{}{
 		"node": map[string]interface{}{
-			"_id":   "tom2",
-			"_type": "user",
+			"_path": "user",
 			"name":  "tom",
 		},
 	}))
@@ -20,8 +19,7 @@ func Test(t *testing.T) {
 	}
 	result, _, err = g.Expression(`create_node(node)`, graph.NewValues(map[string]interface{}{
 		"node": map[string]interface{}{
-			"_id":   "bob3",
-			"_type": "user",
+			"_path": "user",
 			"name":  "bob",
 		},
 	}))

@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -25,14 +26,27 @@ func (v Values) init() {
 	}
 }
 
-func (v Values) GetType() string {
+func (v Values) GetPath() string {
 	v.init()
-	return parseString(v[TypeKey])
+	return v.GetString(PathKey)
 }
 
 func (v Values) GetID() string {
 	v.init()
-	return parseString(v[IDKey])
+	split := strings.Split(v.GetPath(), "/")
+	if len(split) == 2 {
+		return split[1]
+	}
+	return ""
+}
+
+func (v Values) GetType() string {
+	v.init()
+	split := strings.Split(v.GetPath(), "/")
+	if len(split) > 0 {
+		return split[0]
+	}
+	return ""
 }
 
 func (v Values) GetCreatedAt() int64 {
@@ -45,14 +59,22 @@ func (v Values) GetUpdatedAt() int64 {
 	return int64(parseInt(v[UpdatedAtKey]))
 }
 
-func (v Values) SetID(_id string) {
+func (v Values) SetPath(path string) {
 	v.init()
-	v[IDKey] = _id
+	v[PathKey] = path
 }
 
-func (v Values) SetType(_type string) {
+func (v Values) SetType(xtype string) {
 	v.init()
-	v[TypeKey] = _type
+	if v.GetID() == "" {
+		v[PathKey] = xtype
+	}
+	v[PathKey] = fmt.Sprintf("%s/%s", xtype, v.GetID())
+}
+
+func (v Values) SetID(xid string) {
+	v.init()
+	v[PathKey] = fmt.Sprintf("%s/%s", v.GetType(), xid)
 }
 
 func (v Values) SetCreatedAt(_createdAt time.Time) {
@@ -63,17 +85,6 @@ func (v Values) SetCreatedAt(_createdAt time.Time) {
 func (v Values) SetUpdatedAt(_updatedAt time.Time) {
 	v.init()
 	v[UpdatedAtKey] = _updatedAt.UnixNano()
-}
-
-func (v Values) PathString() string {
-	v.init()
-	if v.GetType() == "" {
-		return ""
-	}
-	if v.GetID() == "" {
-		return v.GetType()
-	}
-	return fmt.Sprintf("%s/%s", v.GetType(), v.GetID())
 }
 
 // Set set an entry in the Node

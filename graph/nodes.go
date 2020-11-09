@@ -47,10 +47,10 @@ func (n *NodeStore) Get(path string) (Values, bool) {
 
 func (n *NodeStore) Set(value Values) Values {
 	if value.GetID() == "" {
-		panic("empty id")
+		value.SetID(UUID())
 	}
 	if value.GetType() == "" {
-		panic("empty type")
+		value.SetType(Default)
 	}
 	if _, ok := n.nodes[value.GetType()]; !ok {
 		n.nodes[value.GetType()] = map[string]Values{}
@@ -92,7 +92,7 @@ func (n *NodeStore) Delete(path string) bool {
 		return false
 	}
 	n.edges.RangeFrom(path, func(e Values) bool {
-		n.edges.Delete(e.PathString())
+		n.edges.Delete(e.GetPath())
 		if this := e.GetString(CascadeKey); this != "" {
 			if this == CascadeTo || this == CascadeMutual {
 				n.Delete(e.GetString(ToKey))
@@ -101,7 +101,7 @@ func (n *NodeStore) Delete(path string) bool {
 		return true
 	})
 	n.edges.RangeTo(path, func(e Values) bool {
-		n.edges.Delete(e.PathString())
+		n.edges.Delete(e.GetPath())
 		if this := e.GetString(CascadeKey); this != "" {
 			if this == CascadeFrom || this == CascadeMutual {
 				n.Delete(e.GetString(FromKey))
@@ -140,7 +140,7 @@ func (n *NodeStore) SetAll(nodes ValueSet) {
 
 func (n *NodeStore) DeleteAll(nodes ValueSet) {
 	for _, node := range nodes {
-		n.Delete(node.PathString())
+		n.Delete(node.GetPath())
 	}
 }
 

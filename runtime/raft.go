@@ -75,8 +75,8 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 	case graph.Op_PATCH_NODES:
 		var nodes = graph.ValueSet{}
 		for _, val := range *c.Val.(*graph.ValueSet) {
-			if !f.graph.Nodes().Exists(val.PathString()) {
-				return errors.Errorf("node %s does not exist", val.PathString())
+			if !f.graph.Nodes().Exists(val.GetPath()) {
+				return errors.Errorf("node %s does not exist", val.GetPath())
 			}
 			n := f.graph.Nodes().Patch(c.Timestamp, val)
 			nodes = append(nodes, n)
@@ -97,8 +97,8 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 	case graph.Op_PATCH_EDGES:
 		var edges = graph.ValueSet{}
 		for _, val := range *c.Val.(*graph.ValueSet) {
-			if !f.graph.Edges().Exists(val.PathString()) {
-				return errors.Errorf("edge %s does not exist", val.PathString())
+			if !f.graph.Edges().Exists(val.GetPath()) {
+				return errors.Errorf("edge %s does not exist", val.GetPath())
 			}
 			edges = append(edges, f.graph.Edges().Patch(c.Timestamp, val))
 		}

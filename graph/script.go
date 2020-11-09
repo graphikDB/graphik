@@ -20,6 +20,13 @@ func (g *Graph) Functions() []*functions.Overload {
 			},
 		},
 		{
+			Operator: "create_edge_map_map",
+			Unary: func(lhs ref.Val) ref.Val {
+				vals := ToMap(lhs.Value())
+				return types.NewDynamicMap(types.NewRegistry(), g.edges.Set(vals))
+			},
+		},
+		{
 			Operator: "get_node_string_map",
 			Unary: func(lhs ref.Val) ref.Val {
 				val, ok := g.nodes.Get(lhs.Value().(string))
