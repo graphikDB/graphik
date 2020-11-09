@@ -3,7 +3,6 @@ package runtime
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/helpers"
 )
 
 const (
@@ -21,7 +20,7 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 			Nodes: []*apipb.Node{
 				{
 					Path:       path,
-					Attributes: helpers.ToStruct(payload),
+					Attributes: apipb.ToStruct(payload),
 				},
 			},
 		})

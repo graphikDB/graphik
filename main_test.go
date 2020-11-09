@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/helpers"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/joho/godotenv"
 	"golang.org/x/oauth2/google"
@@ -63,7 +62,7 @@ func Test(t *testing.T) {
 					Path: &apipb.Path{
 						Type: "pet",
 					},
-					Attributes: helpers.ToStruct(map[string]interface{}{
+					Attributes: apipb.ToStruct(map[string]interface{}{
 						"name": "charlie",
 					}),
 				},

@@ -15,11 +15,13 @@ require (
 	github.com/hashicorp/raft-boltdb v0.0.0-20191021154308-4207f1bf0617
 	github.com/joho/godotenv v1.3.0
 	github.com/lestrrat-go/jwx v1.0.5
+	github.com/mitchellh/mapstructure v1.3.3
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v0.9.3
 	github.com/spf13/pflag v1.0.3
 	go.uber.org/zap v1.16.0
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
+	google.golang.org/genproto v0.0.0-20200423170343-7949de9c1215
 	google.golang.org/grpc v1.29.1
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
