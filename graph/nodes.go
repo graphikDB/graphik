@@ -5,26 +5,26 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
-type Nodes struct {
+type NodeStore struct {
 	nodes map[string]map[string]*apipb.Node
-	edges *Edges
+	edges *EdgeStore
 }
 
-func NewNodes(edges *Edges) *Nodes {
-	return &Nodes{
+func newNodeStore(edges *EdgeStore) *NodeStore {
+	return &NodeStore{
 		nodes: map[string]map[string]*apipb.Node{},
 		edges: edges,
 	}
 }
 
-func (n *Nodes) Len(nodeType string) int {
+func (n *NodeStore) Len(nodeType string) int {
 	if c, ok := n.nodes[nodeType]; ok {
 		return len(c)
 	}
 	return 0
 }
 
-func (n *Nodes) Types() []string {
+func (n *NodeStore) Types() []string {
 	var nodeTypes []string
 	for k, _ := range n.nodes {
 		nodeTypes = append(nodeTypes, k)
@@ -32,7 +32,7 @@ func (n *Nodes) Types() []string {
 	return nodeTypes
 }
 
-func (n *Nodes) All() *apipb.Nodes {
+func (n *NodeStore) All() *apipb.Nodes {
 	var nodes []*apipb.Node
 	n.Range(apipb.Keyword_ANY.String(), func(node *apipb.Node) bool {
 		nodes = append(nodes, node)
@@ -43,7 +43,7 @@ func (n *Nodes) All() *apipb.Nodes {
 	}
 }
 
-func (n *Nodes) Get(path string) (*apipb.Node, bool) {
+func (n *NodeStore) Get(path string) (*apipb.Node, bool) {
 	xtype, xid := apipb.SplitPath(path)
 	if c, ok := n.nodes[xtype]; ok {
 		node := c[xid]
@@ -52,7 +52,7 @@ func (n *Nodes) Get(path string) (*apipb.Node, bool) {
 	return nil, false
 }
 
-func (n *Nodes) Set(value *apipb.Node) *apipb.Node {
+func (n *NodeStore) Set(value *apipb.Node) *apipb.Node {
 	xtype, xid := apipb.SplitPath(value.Path)
 
 	if _, ok := n.nodes[xtype]; !ok {
@@ -62,7 +62,7 @@ func (n *Nodes) Set(value *apipb.Node) *apipb.Node {
 	return value
 }
 
-func (n *Nodes) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb.Node {
+func (n *NodeStore) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb.Node {
 	xtype, xid := apipb.SplitPath(value.Path)
 	if _, ok := n.nodes[xtype]; !ok {
 		return nil
@@ -75,7 +75,7 @@ func (n *Nodes) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb
 	return node
 }
 
-func (n *Nodes) Range(nodeType string, f func(node *apipb.Node) bool) {
+func (n *NodeStore) Range(nodeType string, f func(node *apipb.Node) bool) {
 	if nodeType == apipb.Keyword_ANY.String() {
 		for _, c := range n.nodes {
 			for _, node := range c {
@@ -91,7 +91,7 @@ func (n *Nodes) Range(nodeType string, f func(node *apipb.Node) bool) {
 	}
 }
 
-func (n *Nodes) Delete(path string) bool {
+func (n *NodeStore) Delete(path string) bool {
 	node, ok := n.Get(path)
 	if !ok {
 		return false
@@ -117,12 +117,12 @@ func (n *Nodes) Delete(path string) bool {
 	return true
 }
 
-func (n *Nodes) Exists(path string) bool {
+func (n *NodeStore) Exists(path string) bool {
 	_, ok := n.Get(path)
 	return ok
 }
 
-func (n *Nodes) Filter(nodeType string, filter func(node *apipb.Node) bool) *apipb.Nodes {
+func (n *NodeStore) Filter(nodeType string, filter func(node *apipb.Node) bool) *apipb.Nodes {
 	var filtered []*apipb.Node
 	n.Range(nodeType, func(node *apipb.Node) bool {
 		if filter(node) {
@@ -135,19 +135,19 @@ func (n *Nodes) Filter(nodeType string, filter func(node *apipb.Node) bool) *api
 	}
 }
 
-func (n *Nodes) SetAll(nodes *apipb.Nodes) {
+func (n *NodeStore) SetAll(nodes *apipb.Nodes) {
 	for _, node := range nodes.Nodes {
 		n.Set(node)
 	}
 }
 
-func (n *Nodes) DeleteAll(nodes *apipb.Nodes) {
+func (n *NodeStore) DeleteAll(nodes *apipb.Nodes) {
 	for _, node := range nodes.Nodes {
 		n.Delete(node.Path)
 	}
 }
 
-func (n *Nodes) Clear(nodeType string) {
+func (n *NodeStore) Clear(nodeType string) {
 	if cache, ok := n.nodes[nodeType]; ok {
 		for k, _ := range cache {
 			delete(cache, k)
@@ -155,13 +155,13 @@ func (n *Nodes) Clear(nodeType string) {
 	}
 }
 
-func (n *Nodes) Close() {
+func (n *NodeStore) Close() {
 	for nodeType, _ := range n.nodes {
 		n.Clear(nodeType)
 	}
 }
 
-func (n *Nodes) FilterSearch(filter *apipb.Filter) (*apipb.Nodes, error) {
+func (n *NodeStore) FilterSearch(filter *apipb.Filter) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
 	var err error
 	var pass bool

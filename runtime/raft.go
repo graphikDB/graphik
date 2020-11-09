@@ -78,7 +78,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 			return errors.Wrap(err, "failed to decode nodes")
 		}
 		for _, val := range values.Nodes {
-			f.nodes.Set(&apipb.Node{
+			f.graph.Nodes().Set(&apipb.Node{
 				Path:       val.Path,
 				Attributes: val.Attributes,
 				CreatedAt:  c.Timestamp,
@@ -93,10 +93,10 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		var nodes = &apipb.Nodes{}
 		for _, val := range values.Patches {
-			if !f.nodes.Exists(val.Path) {
+			if !f.graph.Nodes().Exists(val.Path) {
 				return errors.Errorf("node %s does not exist", val.Path)
 			}
-			n := f.nodes.Patch(c.Timestamp, val)
+			n := f.graph.Nodes().Patch(c.Timestamp, val)
 			nodes.Nodes = append(nodes.Nodes, n)
 		}
 		return nodes
@@ -107,7 +107,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		deleted := 0
 		for _, val := range values.Values {
-			if f.nodes.Delete(val) {
+			if f.graph.Nodes().Delete(val) {
 				deleted += 1
 			}
 		}
@@ -118,17 +118,17 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 			return errors.Wrap(err, "failed to decode edge")
 		}
 		for _, val := range values.Edges {
-			_, ok := f.nodes.Get(val.From)
+			_, ok := f.graph.Nodes().Get(val.From)
 			if !ok {
 				return errors.Errorf("from node %s does not exist", (val.From))
 			}
-			_, ok = f.nodes.Get(val.To)
+			_, ok = f.graph.Nodes().Get(val.To)
 			if !ok {
 				return errors.Errorf("to node %s does not exist", val.To)
 			}
 			val.CreatedAt = c.Timestamp
 			val.UpdatedAt = c.Timestamp
-			f.edges.Set(val)
+			f.graph.Edges().Set(val)
 		}
 		return values
 	case apipb.Op_PATCH_EDGES:
@@ -138,10 +138,10 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		var edges = &apipb.Edges{}
 		for _, val := range val.Patches {
-			if !f.edges.Exists(val.Path) {
+			if !f.graph.Edges().Exists(val.Path) {
 				return errors.Errorf("edge %s does not exist", val.Path)
 			}
-			edges.Edges = append(edges.Edges, f.edges.Patch(c.Timestamp, val))
+			edges.Edges = append(edges.Edges, f.graph.Edges().Patch(c.Timestamp, val))
 		}
 		return edges
 
@@ -152,8 +152,8 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		deleted := 0
 		for _, val := range values.Values {
-			if f.edges.Exists(val) {
-				f.edges.Delete(val)
+			if f.graph.Edges().Exists(val) {
+				f.graph.Edges().Delete(val)
 				deleted += 1
 			}
 		}
@@ -178,8 +178,8 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	f.nodes.SetAll(export.Nodes)
-	f.edges.SetAll(export.Edges)
+	f.graph.Nodes().SetAll(export.Nodes)
+	f.graph.Edges().SetAll(export.Edges)
 	return nil
 }
 
@@ -187,8 +187,8 @@ func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	export := &apipb.Export{
-		Nodes: f.nodes.All(),
-		Edges: f.edges.All(),
+		Nodes: f.graph.Nodes().All(),
+		Edges: f.graph.Edges().All(),
 	}
 	bits, err := proto.Marshal(export)
 	if err != nil {
@@ -210,8 +210,8 @@ func (s *Runtime) Export() http.HandlerFunc {
 		s.mu.RLock()
 		defer s.mu.RUnlock()
 		export := &apipb.Export{
-			Nodes: s.nodes.All(),
-			Edges: s.edges.All(),
+			Nodes: s.graph.Nodes().All(),
+			Edges: s.graph.Edges().All(),
 		}
 		bits, err := proto.Marshal(export)
 		if err != nil {

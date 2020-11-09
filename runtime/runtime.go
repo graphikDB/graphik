@@ -27,10 +27,9 @@ const (
 type Runtime struct {
 	machine *machine.Machine
 	auth    *auth.Auth
-	raft    *raft.Raft
 	mu      sync.RWMutex
-	nodes   *graph.Nodes
-	edges   *graph.Edges
+	raft    *raft.Raft
+	graph   *graph.Graph
 	close   sync.Once
 }
 
@@ -60,8 +59,6 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	}
 	logStore := boltDB
 	stableStore := boltDB
-	edges := graph.NewEdges()
-	nodes := graph.NewNodes(edges)
 	a, err := auth.New(cfg.Auth)
 	if err != nil {
 		return nil, err
@@ -71,8 +68,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 		auth:    a,
 		raft:    nil,
 		mu:      sync.RWMutex{},
-		nodes:   nodes,
-		edges:   edges,
+		graph:   graph.New(),
 		close:   sync.Once{},
 	}
 	rft, err := raft.NewRaft(config, s, logStore, stableStore, snapshots, transport)

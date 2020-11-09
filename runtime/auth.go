@@ -6,12 +6,14 @@ import (
 )
 
 const (
-	authCtxKey = "x-graphik-auth-ctx"
+	authCtxKey   = "x-graphik-auth-ctx"
+	identityType = "identity"
+	idClaim      = "sub"
 )
 
 func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, error) {
-	path := apipb.FormPath("user", payload["sub"].(string))
-	n, ok := a.nodes.Get(path)
+	path := apipb.FormPath(identityType, payload[idClaim].(string))
+	n, ok := a.graph.Nodes().Get(path)
 	if !ok {
 		newNode, err := a.CreateNodes(&apipb.Nodes{
 			Nodes: []*apipb.Node{
