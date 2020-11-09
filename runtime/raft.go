@@ -1,17 +1,16 @@
 package runtime
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/lang"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"io"
-	"io/ioutil"
-	"net/http"
 )
 
 func (s *Runtime) JoinNode(nodeID, addr string) error {
@@ -56,108 +55,64 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 }
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {
-	var c apipb.Command
-	if err := proto.Unmarshal(log.Data, &c); err != nil {
-		return fmt.Errorf("failed to unmarshal command: %s", err.Error())
+	var c lang.Command
+	buf := bytes.NewBuffer(log.Data)
+	if err := gob.NewDecoder(buf).Decode(&c); err != nil {
+		return fmt.Errorf("failed to decode command: %s", err.Error())
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	switch c.Op {
-	case apipb.Op_SET_AUTH:
-		var values = &apipb.AuthConfig{}
-		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
-			return errors.Wrap(err, "failed to decode jwks sources")
-		}
-		if err := f.auth.Override(values); err != nil {
+	case lang.Op_SET_AUTH:
+		if err := f.auth.Override(c.Val.(*apipb.AuthConfig)); err != nil {
 			return errors.Wrap(err, "failed to override auth")
 		}
+		return f.auth.Raw()
+	case lang.Op_CREATE_NODES:
+		values := c.Val.(lang.ValueSet)
+		f.graph.Nodes().SetAll(values)
 		return values
-	case apipb.Op_CREATE_NODES:
-		var values = &apipb.Nodes{}
-		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
-			return errors.Wrap(err, "failed to decode nodes")
-		}
-		for _, val := range values.Nodes {
-			f.graph.Nodes().Set(&apipb.Node{
-				Path:       val.Path,
-				Attributes: val.Attributes,
-				CreatedAt:  c.Timestamp,
-				UpdatedAt:  c.Timestamp,
-			})
-		}
-		return values
-	case apipb.Op_PATCH_NODES:
-		var values = &apipb.Patches{}
-		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
-			return errors.Wrap(err, "failed to decode node patches")
-		}
-		var nodes = &apipb.Nodes{}
-		for _, val := range values.Patches {
-			if !f.graph.Nodes().Exists(val.Path) {
-				return errors.Errorf("node %s does not exist", val.Path)
+	case lang.Op_PATCH_NODES:
+		var nodes = lang.ValueSet{}
+		for _, val := range c.Val.(lang.ValueSet) {
+			if !f.graph.Nodes().Exists(val.PathString()) {
+				return errors.Errorf("node %s does not exist", val.PathString())
 			}
 			n := f.graph.Nodes().Patch(c.Timestamp, val)
-			nodes.Nodes = append(nodes.Nodes, n)
+			nodes = append(nodes, n)
 		}
 		return nodes
-	case apipb.Op_DELETE_NODES:
-		var values = &apipb.Paths{}
-		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
-			return errors.Wrap(err, "failed to decode node paths")
-		}
+	case lang.Op_DELETE_NODES:
 		deleted := 0
-		for _, val := range values.Values {
+		for _, val := range c.Val.([]string) {
 			if f.graph.Nodes().Delete(val) {
 				deleted += 1
 			}
 		}
-		return &apipb.Counter{Count: int64(deleted)}
-	case apipb.Op_CREATE_EDGES:
-		var values = &apipb.Edges{}
-		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
-			return errors.Wrap(err, "failed to decode edge")
-		}
-		for _, val := range values.Edges {
-			_, ok := f.graph.Nodes().Get(val.From)
-			if !ok {
-				return errors.Errorf("from node %s does not exist", (val.From))
-			}
-			_, ok = f.graph.Nodes().Get(val.To)
-			if !ok {
-				return errors.Errorf("to node %s does not exist", val.To)
-			}
-			val.CreatedAt = c.Timestamp
-			val.UpdatedAt = c.Timestamp
-			f.graph.Edges().Set(val)
-		}
+		return deleted
+	case lang.Op_CREATE_EDGES:
+		values := c.Val.(lang.ValueSet)
+		f.graph.Edges().SetAll(values)
 		return values
-	case apipb.Op_PATCH_EDGES:
-		var val = &apipb.Patches{}
-		if err := ptypes.UnmarshalAny(c.Val, val); err != nil {
-			return errors.Wrap(err, "failed to decode edge patch")
-		}
-		var edges = &apipb.Edges{}
-		for _, val := range val.Patches {
-			if !f.graph.Edges().Exists(val.Path) {
-				return errors.Errorf("edge %s does not exist", val.Path)
+	case lang.Op_PATCH_EDGES:
+		var edges = lang.ValueSet{}
+		for _, val := range c.Val.(lang.ValueSet) {
+			if !f.graph.Edges().Exists(val.PathString()) {
+				return errors.Errorf("edge %s does not exist", val.PathString())
 			}
-			edges.Edges = append(edges.Edges, f.graph.Edges().Patch(c.Timestamp, val))
+			edges = append(edges, f.graph.Edges().Patch(c.Timestamp, val))
 		}
 		return edges
 
-	case apipb.Op_DELETE_EDGES:
-		var values = &apipb.Paths{}
-		if err := ptypes.UnmarshalAny(c.Val, values); err != nil {
-			return errors.Wrap(err, "failed to decode edge path")
-		}
+	case lang.Op_DELETE_EDGES:
 		deleted := 0
-		for _, val := range values.Values {
+		for _, val := range c.Val.([]string) {
 			if f.graph.Edges().Exists(val) {
 				f.graph.Edges().Delete(val)
 				deleted += 1
 			}
 		}
-		return &apipb.Counter{Count: int64(deleted)}
+		return deleted
 	default:
 		return fmt.Errorf("unsupported command: %v", c.Op)
 	}
@@ -168,12 +123,8 @@ func (f *Runtime) Snapshot() (raft.FSMSnapshot, error) {
 }
 
 func (f *Runtime) Restore(closer io.ReadCloser) error {
-	export := &apipb.Export{}
-	bits, err := ioutil.ReadAll(closer)
-	if err != nil {
-		return err
-	}
-	if err := proto.Unmarshal(bits, export); err != nil {
+	export := &lang.Export{}
+	if err := gob.NewDecoder(closer).Decode(export); err != nil {
 		return err
 	}
 	f.mu.Lock()
@@ -186,15 +137,15 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	export := &apipb.Export{
+	export := &lang.Export{
 		Nodes: f.graph.Nodes().All(),
 		Edges: f.graph.Edges().All(),
 	}
-	bits, err := proto.Marshal(export)
-	if err != nil {
+	buf := bytes.NewBuffer(nil)
+	if err := gob.NewEncoder(buf).Encode(export); err != nil {
 		return err
 	}
-	_, err = sink.Write(bits)
+	_, err := sink.Write(buf.Bytes())
 	if err != nil {
 		return err
 	}
@@ -203,48 +154,6 @@ func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 		return err
 	}
 	return nil
-}
-
-func (s *Runtime) Export() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		s.mu.RLock()
-		defer s.mu.RUnlock()
-		export := &apipb.Export{
-			Nodes: s.graph.Nodes().All(),
-			Edges: s.graph.Edges().All(),
-		}
-		bits, err := proto.Marshal(export)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Write(bits)
-	}
-}
-
-func (s *Runtime) Import() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		export := &apipb.Export{}
-		bits, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		if err := proto.Unmarshal(bits, export); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		_, err = s.CreateNodes(export.Nodes)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		_, err = s.CreateEdges(export.Edges)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-	}
 }
 
 func (f *Runtime) Release() {}

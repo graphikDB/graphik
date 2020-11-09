@@ -1,11 +1,18 @@
 package lang
 
 import (
+	"encoding/gob"
 	"fmt"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"reflect"
 	"time"
 )
+
+func init() {
+	gob.Register(&Values{})
+	gob.Register(&ValueSet{})
+	gob.Register(&Export{})
+}
 
 type Values map[string]interface{}
 
@@ -196,4 +203,11 @@ func (v Values) IsNested(key string) bool {
 
 func (v Values) SetNested(key string, nested Values) {
 	v.Set(key, nested)
+}
+
+type ValueSet []Values
+
+type Export struct {
+	Nodes ValueSet
+	Edges ValueSet
 }

@@ -9,58 +9,6 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 
-enum Op {
-  CREATE_NODES =0;
-  PATCH_NODES =1;
-  DELETE_NODES =2;
-  CREATE_EDGES =3;
-  PATCH_EDGES =4;
-  DELETE_EDGES =5;
-  SET_AUTH =6;
-
-}
-
-enum Keyword {
-  ANY = 0;
-  DEFAULT =1;
-}
-
-enum Cascade {
-  NONE =0;
-  FROM =1;
-  TO =2;
-  MUTUAL= 3;
-}
-
-message Paths {
-  repeated string paths =1;
-}
-
-message ValueSet {
-  repeated google.protobuf.Struct values =1;
-}
-
-message Filter {
-  string type =1;
-  repeated string expressions =2;
-  int32 limit =3;
-}
-
-message PathFilter {
-  string path =1;
-  Filter filter =2;
-}
-
-message Command {
-  Op op =1;
-  google.protobuf.Any val =2;
-  google.protobuf.Timestamp timestamp =3;
-}
-
-message Counter {
-  int64 count =1;
-}
-
 message Pong {
   string message =1;
 }
@@ -102,7 +50,6 @@ message Config {
 
 service PrivateService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
-
   rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
   rpc GetAuth(google.protobuf.Empty) returns(AuthConfig){}
   rpc SetAuth(AuthConfig) returns(AuthConfig){}

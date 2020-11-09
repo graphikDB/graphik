@@ -2,7 +2,6 @@ package interceptors
 
 import (
 	"context"
-	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/lang"
 	"github.com/autom8ter/graphik/runtime"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -37,12 +36,11 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
-		request := &apipb.UserIntercept{
-			RequestPath: info.FullMethod,
-			User:        runtime.NodeContext(ctx),
-			Request:     lang.ToStruct(lang.ToMap(req)),
-		}
-		pass, err := runtime.Auth().Authorize(request)
+		pass, err := runtime.Auth().Authorize(lang.NewValues(map[string]interface{}{
+			"request_path": info.FullMethod,
+			"user":         runtime.NodeContext(ctx),
+			"request":      lang.ToMap(req),
+		}))
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
@@ -71,12 +69,11 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
-		request := &apipb.UserIntercept{
-			RequestPath: info.FullMethod,
-			User:        runtime.NodeContext(ctx),
-			Request:     lang.ToStruct(lang.ToMap(srv)),
-		}
-		pass, err := runtime.Auth().Authorize(request)
+		pass, err := runtime.Auth().Authorize(lang.NewValues(map[string]interface{}{
+			"request_path": info.FullMethod,
+			"user":         runtime.NodeContext(ctx),
+			"request":      lang.ToMap(srv),
+		}))
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}

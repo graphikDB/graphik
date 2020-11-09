@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/lang"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/joho/godotenv"
 	"golang.org/x/oauth2/google"
@@ -56,20 +55,6 @@ func Test(t *testing.T) {
 	if pong.Message != "PONG" {
 		t.Fatal("not PONG")
 	}
-	nodes, err := client.CreateNodes(ctx, &apipb.Nodes{
-		Nodes: []*apipb.Node{
-			{
-				Path: "pet",
-				Attributes: lang.ToStruct(map[string]interface{}{
-					"name": "charlie",
-				}),
-			},
-		},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(nodes.Nodes[0].String())
 	select {
 	case <-ctx.Done():
 		t.Log("done")
