@@ -3,6 +3,7 @@ package runtime
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/lang"
 )
 
 const (
@@ -12,14 +13,14 @@ const (
 )
 
 func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, error) {
-	path := apipb.FormPath(identityType, payload[idClaim].(string))
+	path := lang.FormPath(identityType, payload[idClaim].(string))
 	n, ok := a.graph.Nodes().Get(path)
 	if !ok {
 		newNode, err := a.CreateNodes(&apipb.Nodes{
 			Nodes: []*apipb.Node{
 				{
 					Path:       path,
-					Attributes: apipb.ToStruct(payload),
+					Attributes: lang.ToStruct(payload),
 				},
 			},
 		})

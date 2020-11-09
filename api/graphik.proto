@@ -36,6 +36,10 @@ message Paths {
   repeated string values=1;
 }
 
+message Values {
+  google.protobuf.Struct values =1;
+}
+
 message Command {
   Op op =1;
   google.protobuf.Any val =2;

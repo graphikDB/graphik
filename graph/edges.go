@@ -2,6 +2,7 @@ package graph
 
 import (
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/lang"
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
@@ -46,7 +47,7 @@ func (n *EdgeStore) All() *apipb.Edges {
 }
 
 func (n *EdgeStore) Get(path string) (*apipb.Edge, bool) {
-	typ, id := apipb.SplitPath(path)
+	typ, id := lang.SplitPath(path)
 	if c, ok := n.edges[typ]; ok {
 		node := c[id]
 		return c[id], node != nil
@@ -55,7 +56,7 @@ func (n *EdgeStore) Get(path string) (*apipb.Edge, bool) {
 }
 
 func (n *EdgeStore) Set(value *apipb.Edge) *apipb.Edge {
-	xtype, xid := apipb.SplitPath(value.Path)
+	xtype, xid := lang.SplitPath(value.Path)
 	if _, ok := n.edges[xtype]; !ok {
 		n.edges[xtype] = map[string]*apipb.Edge{}
 	}
@@ -89,7 +90,7 @@ func (n *EdgeStore) Range(edgeType string, f func(edge *apipb.Edge) bool) {
 }
 
 func (n *EdgeStore) Delete(path string) {
-	xtype, xid := apipb.SplitPath(path)
+	xtype, xid := lang.SplitPath(path)
 	edge, ok := n.Get(path)
 	if !ok {
 		return
@@ -131,11 +132,11 @@ func (e *EdgeStore) RangeTo(path string, fn func(e *apipb.Edge) bool) {
 func (e *EdgeStore) RangeFilterFrom(path string, filter *apipb.Filter) *apipb.Edges {
 	var edges []*apipb.Edge
 	e.RangeFrom(path, func(e *apipb.Edge) bool {
-		xtype, _ := apipb.SplitPath(e.Path)
+		xtype, _ := lang.SplitPath(e.Path)
 		if xtype != filter.Type {
 			return true
 		}
-		pass, _ := apipb.EvaluateExpressions(filter.Expressions, e)
+		pass, _ := lang.BooleanExpression(filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -149,11 +150,11 @@ func (e *EdgeStore) RangeFilterFrom(path string, filter *apipb.Filter) *apipb.Ed
 func (e *EdgeStore) RangeFilterTo(path string, filter *apipb.Filter) *apipb.Edges {
 	var edges []*apipb.Edge
 	e.RangeTo(path, func(e *apipb.Edge) bool {
-		xtype, _ := apipb.SplitPath(e.Path)
+		xtype, _ := lang.SplitPath(e.Path)
 		if xtype != filter.Type {
 			return true
 		}
-		pass, _ := apipb.EvaluateExpressions(filter.Expressions, e)
+		pass, _ := lang.BooleanExpression(filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -204,7 +205,7 @@ func (n *EdgeStore) Close() {
 }
 
 func (e *EdgeStore) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb.Edge {
-	xtype, xid := apipb.SplitPath(value.Path)
+	xtype, xid := lang.SplitPath(value.Path)
 	if _, ok := e.edges[xtype]; !ok {
 		return nil
 	}
@@ -220,7 +221,7 @@ func (e *EdgeStore) FilterSearch(filter *apipb.Filter) (*apipb.Edges, error) {
 	var err error
 	var pass bool
 	e.Range(filter.Type, func(edge *apipb.Edge) bool {
-		pass, err = apipb.EvaluateExpressions(filter.Expressions, edge)
+		pass, err = lang.BooleanExpression(filter.Expressions, edge)
 		if err != nil {
 			return false
 		}

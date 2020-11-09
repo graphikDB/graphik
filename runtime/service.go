@@ -3,6 +3,7 @@ package runtime
 import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/lang"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"time"
@@ -54,14 +55,14 @@ func (f *Runtime) EdgesTo(path string, filter *apipb.Filter) (*apipb.Edges, erro
 
 func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	for _, node := range nodes.Nodes {
-		xtype, xid := apipb.SplitPath(node.Path)
+		xtype, xid := lang.SplitPath(node.Path)
 		if xtype == "" {
 			xtype = apipb.Keyword_DEFAULT.String()
-			node.Path = apipb.FormPath(xtype, xid)
+			node.Path = lang.FormPath(xtype, xid)
 		}
 		if xid == "" {
-			xid = apipb.UUID()
-			node.Path = apipb.FormPath(xtype, xid)
+			xid = lang.UUID()
+			node.Path = lang.FormPath(xtype, xid)
 		}
 		node.CreatedAt = &timestamp.Timestamp{
 			Seconds: time.Now().Unix(),
@@ -134,14 +135,14 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 
 func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 	for _, edge := range edges.Edges {
-		xtype, xid := apipb.SplitPath(edge.Path)
+		xtype, xid := lang.SplitPath(edge.Path)
 		if xtype == "" {
 			xtype = apipb.Keyword_DEFAULT.String()
-			edge.Path = apipb.FormPath(xtype, xid)
+			edge.Path = lang.FormPath(xtype, xid)
 		}
 		if xid == "" {
-			xid = apipb.UUID()
-			edge.Path = apipb.FormPath(xtype, xid)
+			xid = lang.UUID()
+			edge.Path = lang.FormPath(xtype, xid)
 		}
 		edge.CreatedAt = &timestamp.Timestamp{
 			Seconds: time.Now().Unix(),

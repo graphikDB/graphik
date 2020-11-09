@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/lang"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
@@ -126,5 +127,5 @@ func (a *Auth) Authorize(intercept *apipb.UserIntercept) (bool, error) {
 	if len(a.expressions) == 0 {
 		return true, nil
 	}
-	return apipb.EvaluateExpressions(a.expressions, intercept)
+	return lang.BooleanExpression(a.expressions, intercept)
 }

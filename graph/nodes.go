@@ -2,6 +2,7 @@ package graph
 
 import (
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/lang"
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
@@ -44,7 +45,7 @@ func (n *NodeStore) All() *apipb.Nodes {
 }
 
 func (n *NodeStore) Get(path string) (*apipb.Node, bool) {
-	xtype, xid := apipb.SplitPath(path)
+	xtype, xid := lang.SplitPath(path)
 	if c, ok := n.nodes[xtype]; ok {
 		node := c[xid]
 		return node, node != nil
@@ -53,7 +54,7 @@ func (n *NodeStore) Get(path string) (*apipb.Node, bool) {
 }
 
 func (n *NodeStore) Set(value *apipb.Node) *apipb.Node {
-	xtype, xid := apipb.SplitPath(value.Path)
+	xtype, xid := lang.SplitPath(value.Path)
 
 	if _, ok := n.nodes[xtype]; !ok {
 		n.nodes[xtype] = map[string]*apipb.Node{}
@@ -63,7 +64,7 @@ func (n *NodeStore) Set(value *apipb.Node) *apipb.Node {
 }
 
 func (n *NodeStore) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb.Node {
-	xtype, xid := apipb.SplitPath(value.Path)
+	xtype, xid := lang.SplitPath(value.Path)
 	if _, ok := n.nodes[xtype]; !ok {
 		return nil
 	}
@@ -110,7 +111,7 @@ func (n *NodeStore) Delete(path string) bool {
 		}
 		return true
 	})
-	xtype, xid := apipb.SplitPath(path)
+	xtype, xid := lang.SplitPath(path)
 	if c, ok := n.nodes[xtype]; ok {
 		delete(c, xid)
 	}
@@ -166,7 +167,7 @@ func (n *NodeStore) FilterSearch(filter *apipb.Filter) (*apipb.Nodes, error) {
 	var err error
 	var pass bool
 	n.Range(filter.Type, func(node *apipb.Node) bool {
-		pass, err = apipb.EvaluateExpressions(filter.Expressions, node)
+		pass, err = lang.BooleanExpression(filter.Expressions, node)
 		if err != nil {
 			return false
 		}

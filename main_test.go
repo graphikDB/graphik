@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/lang"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/joho/godotenv"
 	"golang.org/x/oauth2/google"
@@ -59,7 +60,7 @@ func Test(t *testing.T) {
 		Nodes: []*apipb.Node{
 			{
 				Path: "pet",
-				Attributes: apipb.ToStruct(map[string]interface{}{
+				Attributes: lang.ToStruct(map[string]interface{}{
 					"name": "charlie",
 				}),
 			},

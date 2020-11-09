@@ -1,14 +1,15 @@
-package apipb_test
+package lang_test
 
 import (
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/lang"
 	"testing"
 )
 
 func Test(t *testing.T) {
-	val, err := apipb.EvaluateExpressions([]string{`path.startsWith("user")`}, &apipb.Node{
+	val, err := lang.BooleanExpression([]string{`path.startsWith("user")`}, &apipb.Node{
 		Path: "user",
-		Attributes: apipb.ToStruct(map[string]interface{}{
+		Attributes: lang.ToStruct(map[string]interface{}{
 			"name": "coleman",
 		}),
 	})
