@@ -87,8 +87,7 @@ func (n *NodeStore) Range(nodeType string, f func(node *lang.Values) bool) {
 }
 
 func (n *NodeStore) Delete(path string) bool {
-	node, ok := n.Get(path)
-	if !ok {
+	if !n.Exists(path) {
 		return false
 	}
 	n.edges.RangeFrom(path, func(e *lang.Values) bool {
