@@ -1,18 +1,14 @@
 package lang_test
 
 import (
-	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/lang"
 	"testing"
 )
 
 func Test(t *testing.T) {
-	val, err := lang.BooleanExpression([]string{`path.startsWith("user")`}, &apipb.Node{
-		Path: "user",
-		Attributes: lang.ToStruct(map[string]interface{}{
-			"name": "coleman",
-		}),
-	})
+	val, err := lang.BooleanExpression([]string{`_type.startsWith("user")`}, lang.ToStruct(map[string]interface{}{
+		"_type": "user",
+	}))
 	if err != nil {
 		t.Fatal(err)
 	}

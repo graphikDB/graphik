@@ -3,19 +3,17 @@ package graph
 import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/lang"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
 type EdgeStore struct {
-	edges     map[string]map[string]*structpb.Struct
+	edges     map[string]map[string]*lang.Values
 	edgesTo   map[string][]string
 	edgesFrom map[string][]string
 }
 
 func newEdgeStore() *EdgeStore {
 	return &EdgeStore{
-		edges:     map[string]map[string]*structpb.Struct{},
+		edges:     map[string]map[string]*lang.Values{},
 		edgesTo:   map[string][]string{},
 		edgesFrom: map[string][]string{},
 	}
@@ -36,18 +34,16 @@ func (n *EdgeStore) Types() []string {
 	return edgeTypes
 }
 
-func (n *EdgeStore) All() *structpb.Struct {
-	var edges []*structpb.Struct
-	n.Range(apipb.Keyword_ANY.String(), func(edge *structpb.Struct) bool {
+func (n *EdgeStore) All() []*lang.Values {
+	var edges []*lang.Values
+	n.Range(apipb.Keyword_ANY.String(), func(edge *lang.Values) bool {
 		edges = append(edges, edge)
 		return true
 	})
-	return &apipb.Valuess{
-		Edges: edges,
-	}
+	return edges
 }
 
-func (n *EdgeStore) Get(path string) (*structpb.Struct, bool) {
+func (n *EdgeStore) Get(path string) (*lang.Values, bool) {
 	typ, id := lang.SplitPath(path)
 	if c, ok := n.edges[typ]; ok {
 		node := c[id]
@@ -56,24 +52,24 @@ func (n *EdgeStore) Get(path string) (*structpb.Struct, bool) {
 	return nil, false
 }
 
-func (n *EdgeStore) Set(value *structpb.Struct) *structpb.Struct {
-	if _, ok := n.edges[lang.GetType(value)]; !ok {
-		n.edges[lang.GetType(value)] = map[string]*structpb.Struct{}
+func (n *EdgeStore) Set(value *lang.Values) *lang.Values {
+	if _, ok := n.edges[value.GetType()]; !ok {
+		n.edges[value.GetType()] = map[string]*lang.Values{}
 	}
 
-	n.edges[lang.GetType(value)][value.ID()] = value
+	n.edges[value.GetType()][value.GetID()] = value
 
-	n.edgesFrom[value.From] = append(n.edgesFrom[value.From], value.Path)
-	n.edgesTo[value.To] = append(n.edgesTo[value.To], value.Path)
+	n.edgesFrom[value.GetString("from")] = append(n.edgesFrom[value.GetString("from")], value.PathString())
+	n.edgesTo[value.GetString("to")] = append(n.edgesTo[value.GetString("to")], value.PathString())
 
-	if value.Mutual {
-		n.edgesTo[value.From] = append(n.edgesTo[value.From], value.Path)
-		n.edgesFrom[value.To] = append(n.edgesFrom[value.To], value.Path)
+	if value.GetBool("mutual") {
+		n.edgesTo[value.GetString("from")] = append(n.edgesTo[value.GetString("from")], value.PathString())
+		n.edgesFrom[value.GetString("to")] = append(n.edgesFrom[value.GetString("to")], value.PathString())
 	}
 	return value
 }
 
-func (n *EdgeStore) Range(edgeType string, f func(edge *structpb.Struct) bool) {
+func (n *EdgeStore) Range(edgeType string, f func(edge *lang.Values) bool) {
 	if edgeType == apipb.Keyword_ANY.String() {
 		for _, c := range n.edges {
 			for _, v := range c {
@@ -95,10 +91,10 @@ func (n *EdgeStore) Delete(path string) {
 	if !ok {
 		return
 	}
-	n.edgesFrom[edge.From] = removeEdge(edge.Path, n.edgesFrom[edge.From])
-	n.edgesTo[edge.From] = removeEdge(edge.Path, n.edgesTo[edge.From])
-	n.edgesFrom[edge.To] = removeEdge(edge.Path, n.edgesFrom[edge.To])
-	n.edgesTo[edge.To] = removeEdge(edge.Path, n.edgesTo[edge.To])
+	n.edgesFrom[edge.GetString("from")] = removeEdge(path, n.edgesFrom[edge.GetString("from")])
+	n.edgesTo[edge.GetString("from")] = removeEdge(path, n.edgesTo[edge.GetString("from")])
+	n.edgesFrom[edge.GetString("to")] = removeEdge(path, n.edgesFrom[edge.GetString("to")])
+	n.edgesTo[edge.GetString("to")] = removeEdge(path, n.edgesTo[edge.GetString("to")])
 	delete(n.edges[xtype], xid)
 }
 
@@ -107,7 +103,7 @@ func (n *EdgeStore) Exists(path string) bool {
 	return ok
 }
 
-func (e *EdgeStore) RangeFrom(path string, fn func(e *structpb.Struct) bool) {
+func (e *EdgeStore) RangeFrom(path string, fn func(e *lang.Values) bool) {
 	for _, edge := range e.edgesFrom[path] {
 		e, ok := e.Get(edge)
 		if ok {
@@ -118,7 +114,7 @@ func (e *EdgeStore) RangeFrom(path string, fn func(e *structpb.Struct) bool) {
 	}
 }
 
-func (e *EdgeStore) RangeTo(path string, fn func(e *structpb.Struct) bool) {
+func (e *EdgeStore) RangeTo(path string, fn func(e *lang.Values) bool) {
 	for _, edge := range e.edgesTo[path] {
 		e, ok := e.Get(edge)
 		if ok {
@@ -129,11 +125,10 @@ func (e *EdgeStore) RangeTo(path string, fn func(e *structpb.Struct) bool) {
 	}
 }
 
-func (e *EdgeStore) RangeFilterFrom(path string, filter *apipb.Filter) *structpb.Struct {
-	var edges []*structpb.Struct
-	e.RangeFrom(path, func(e *structpb.Struct) bool {
-		xtype, _ := lang.SplitPath(e.Path)
-		if xtype != filter.Type {
+func (e *EdgeStore) RangeFilterFrom(path string, filter *apipb.Filter) []*lang.Values {
+	var edges []*lang.Values
+	e.RangeFrom(path, func(e *lang.Values) bool {
+		if e.GetType() != filter.Type {
 			return true
 		}
 		pass, _ := lang.BooleanExpression(filter.Expressions, e)
@@ -142,16 +137,13 @@ func (e *EdgeStore) RangeFilterFrom(path string, filter *apipb.Filter) *structpb
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	return &apipb.Valuess{
-		Edges: edges,
-	}
+	return edges
 }
 
-func (e *EdgeStore) RangeFilterTo(path string, filter *apipb.Filter) *structpb.Struct {
-	var edges []*structpb.Struct
-	e.RangeTo(path, func(e *structpb.Struct) bool {
-		xtype, _ := lang.SplitPath(e.Path)
-		if xtype != filter.Type {
+func (e *EdgeStore) RangeFilterTo(path string, filter *apipb.Filter) []*lang.Values {
+	var edges []*lang.Values
+	e.RangeTo(path, func(e *lang.Values) bool {
+		if e.GetType() != filter.Type {
 			return true
 		}
 		pass, _ := lang.BooleanExpression(filter.Expressions, e)
@@ -160,40 +152,36 @@ func (e *EdgeStore) RangeFilterTo(path string, filter *apipb.Filter) *structpb.S
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	return &apipb.Valuess{
-		Edges: edges,
-	}
+	return edges
 }
 
-func (n *EdgeStore) Filter(edgeType string, filter func(edge *structpb.Struct) bool) *structpb.Struct {
-	var filtered []*structpb.Struct
-	n.Range(edgeType, func(node *structpb.Struct) bool {
+func (n *EdgeStore) Filter(edgeType string, filter func(edge *lang.Values) bool) []*lang.Values {
+	var filtered []*lang.Values
+	n.Range(edgeType, func(node *lang.Values) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
 		return true
 	})
-	return &apipb.Valuess{
-		Edges: filtered,
-	}
+	return filtered
 }
 
-func (n *EdgeStore) SetAll(edges *structpb.Struct) {
-	for _, edge := range edges.Edges {
+func (n *EdgeStore) SetAll(edges []*lang.Values) {
+	for _, edge := range edges {
 		n.Set(edge)
 	}
 }
 
-func (n *EdgeStore) DeleteAll(edges *structpb.Struct) {
-	for _, edge := range edges.Edges {
-		n.Delete(edge.Path)
+func (n *EdgeStore) DeleteAll(edges []*lang.Values) {
+	for _, edge := range edges {
+		n.Delete(edge.PathString())
 	}
 }
 
 func (n *EdgeStore) Clear(edgeType string) {
 	if cache, ok := n.edges[edgeType]; ok {
 		for _, v := range cache {
-			n.Delete(v.Path)
+			n.Delete(v.PathString())
 		}
 	}
 }
@@ -204,22 +192,22 @@ func (n *EdgeStore) Close() {
 	}
 }
 
-func (e *EdgeStore) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *structpb.Struct {
-	if _, ok := e.edges[xtype]; !ok {
+func (e *EdgeStore) Patch(updatedAt int64, value *lang.Values) *lang.Values {
+	if _, ok := e.edges[value.GetType()]; !ok {
 		return nil
 	}
-	for k, v := range value.Patch.Fields {
-		e.edges[xtype][xid].Attributes.Fields[k] = v
+	for k, v := range value.Fields {
+		e.edges[value.GetType()][value.GetID()].Fields[k] = v
 	}
-	e.edges[xtype][xid].UpdatedAt = updatedAt
-	return e.edges[xtype][xid]
+	e.edges[value.GetType()][value.GetID()].Fields["updated_at"] = lang.ToValue(updatedAt)
+	return e.edges[value.GetType()][value.GetID()]
 }
 
-func (e *EdgeStore) FilterSearch(filter *apipb.Filter) (*structpb.Struct, error) {
-	var edges []*structpb.Struct
+func (e *EdgeStore) FilterSearch(filter *apipb.Filter) ([]*lang.Values, error) {
+	var edges []*lang.Values
 	var err error
 	var pass bool
-	e.Range(filter.Type, func(edge *structpb.Struct) bool {
+	e.Range(filter.Type, func(edge *lang.Values) bool {
 		pass, err = lang.BooleanExpression(filter.Expressions, edge)
 		if err != nil {
 			return false
@@ -229,9 +217,7 @@ func (e *EdgeStore) FilterSearch(filter *apipb.Filter) (*structpb.Struct, error)
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	return &apipb.Valuess{
-		Edges: edges,
-	}, err
+	return edges, err
 }
 
 func removeEdge(path string, paths []string) []string {

@@ -22,6 +22,14 @@ const (
 	updatedAtKey = "_updatedAt"
 )
 
+type Values struct {
+	*structpb.Struct
+}
+
+func NewValues(values *structpb.Struct) *Values {
+	return &Values{values}
+}
+
 var (
 	marshaller = &jsonpb.Marshaler{
 		EnumsAsInts:  false,
@@ -34,7 +42,7 @@ var (
 )
 
 // ToStruct converts a map[string]interface{} to a ptypes.Struct
-func ToStruct(v map[string]interface{}) *structpb.Struct {
+func ToStruct(v map[string]interface{}) *Values {
 	size := len(v)
 	if size == 0 {
 		return nil
@@ -43,14 +51,15 @@ func ToStruct(v map[string]interface{}) *structpb.Struct {
 	for k, v := range v {
 		fields[k] = ToValue(v)
 	}
-	return &structpb.Struct{
-		Fields: fields,
-	}
+	return &Values{
+		Struct: &structpb.Struct{
+			Fields: fields,
+		}}
 }
 
-func FromStruct(s *structpb.Struct) map[string]interface{} {
+func (v *Values) Map() map[string]interface{} {
 	values := map[string]interface{}{}
-	for k, field := range s.Fields {
+	for k, field := range v.Fields {
 		values[k] = FromValue(field)
 	}
 	return values
@@ -67,7 +76,8 @@ func FromValue(field *structpb.Value) interface{} {
 	case *structpb.Value_StringValue:
 		return field.GetStringValue()
 	case *structpb.Value_StructValue:
-		return FromStruct(field.GetStructValue())
+		vals := &Values{field.GetStructValue()}
+		return vals.Map()
 	case *structpb.Value_ListValue:
 		var values []interface{}
 		for _, v := range field.GetListValue().GetValues() {
@@ -166,6 +176,14 @@ func ToValue(v interface{}) *structpb.Value {
 				StringValue: v.Error(),
 			},
 		}
+	case *structpb.Struct:
+		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: v}}
+	case structpb.Struct:
+		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: &v}}
+	case *Values:
+		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: v.Struct}}
+	case Values:
+		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: v.Struct}}
 	default:
 		// Fallback to reflection for other types
 		return toValue(reflect.ValueOf(v))
@@ -276,142 +294,145 @@ func toValue(v reflect.Value) *structpb.Value {
 	}
 }
 
-func initStruct(values *structpb.Struct) {
-	if values == nil {
-		values = &structpb.Struct{
+func (v *Values) init() {
+	if v == nil {
+		v = &Values{&structpb.Struct{
 			Fields: map[string]*structpb.Value{},
-		}
+		}}
+	}
+	if v.Fields == nil {
+		v.Fields = map[string]*structpb.Value{}
 	}
 }
 
-func GetType(values *structpb.Struct) string {
-	initStruct(values)
-	return values.GetFields()[typeKey].GetStringValue()
+func (v *Values) GetType() string {
+	v.init()
+	return v.GetFields()[typeKey].GetStringValue()
 }
 
-func GetID(values *structpb.Struct) string {
-	initStruct(values)
-	return values.GetFields()[idKey].GetStringValue()
+func (v *Values) GetID() string {
+	v.init()
+	return v.GetFields()[idKey].GetStringValue()
 }
 
-func GetCreatedAt(values *structpb.Struct) int64 {
-	initStruct(values)
-	return int64(values.GetFields()[createdAtKey].GetNumberValue())
+func (v *Values) GetCreatedAt() int64 {
+	v.init()
+	return int64(v.GetFields()[createdAtKey].GetNumberValue())
 }
 
-func GetUpdatedAt(values *structpb.Struct) int64 {
-	initStruct(values)
-	return int64(values.GetFields()[updatedAtKey].GetNumberValue())
+func (v *Values) GetUpdatedAt() int64 {
+	v.init()
+	return int64(v.GetFields()[updatedAtKey].GetNumberValue())
 }
 
-func SetID(values *structpb.Struct, _id string) {
-	initStruct(values)
-	values.GetFields()[idKey] = &structpb.Value{
+func (v *Values) SetID(_id string) {
+	v.init()
+	v.GetFields()[idKey] = &structpb.Value{
 		Kind: &structpb.Value_StringValue{StringValue: _id},
 	}
 }
 
-func SetType(values *structpb.Struct, _type string) {
-	initStruct(values)
-	values.GetFields()[typeKey] = &structpb.Value{
+func (v *Values) SetType(_type string) {
+	v.init()
+	v.GetFields()[typeKey] = &structpb.Value{
 		Kind: &structpb.Value_StringValue{StringValue: _type},
 	}
 }
 
-func SetCreatedAt(values *structpb.Struct, _createdAt *timestamp.Timestamp) {
-	initStruct(values)
-	values.GetFields()[createdAtKey] = &structpb.Value{
+func (v *Values) SetCreatedAt(_createdAt *timestamp.Timestamp) {
+	v.init()
+	v.GetFields()[createdAtKey] = &structpb.Value{
 		Kind: &structpb.Value_NumberValue{NumberValue: float64(_createdAt.Seconds)},
 	}
 }
 
-func SetUpdatedAt(values *structpb.Struct, _updatedAt *timestamp.Timestamp) {
-	initStruct(values)
-	values.GetFields()[updatedAtKey] = &structpb.Value{
+func (v *Values) SetUpdatedAt(_updatedAt *timestamp.Timestamp) {
+	v.init()
+	v.GetFields()[updatedAtKey] = &structpb.Value{
 		Kind: &structpb.Value_NumberValue{NumberValue: float64(_updatedAt.Seconds)},
 	}
 }
 
-func PathString(values *structpb.Struct) string {
-	initStruct(values)
-	if GetID(values) == "" {
-		return GetType(values)
+func (v *Values) PathString() string {
+	v.init()
+	if v.GetID() == "" {
+		return v.GetType()
 	}
-	return fmt.Sprintf("%s/%s", GetType(values), GetID(values))
+	return fmt.Sprintf("%s/%s", v.GetType(), v.GetID())
 }
 
 // Set set an entry in the Node
-func Set(values *structpb.Struct, k string, val *structpb.Value) {
-	initStruct(values)
-	values.Fields[k] = val
+func (v *Values) Set(k string, val *structpb.Value) {
+	v.init()
+	v.Fields[k] = val
 }
 
 // SetAll set all entries in the Node
-func SetAll(values *structpb.Struct, data map[string]interface{}) {
-	initStruct(values)
+func (v *Values) SetAll(data map[string]interface{}) {
+	v.init()
 	if data == nil {
 		return
 	}
 	for k, val := range data {
-		Set(values, k, ToValue(val))
+		v.Set(k, ToValue(val))
 	}
 }
 
 // Get gets an entry from the Node by key
-func Get(values *structpb.Struct, key string) *structpb.Value {
-	initStruct(values)
-	return values.Fields[key]
+func (v *Values) Get(key string) *structpb.Value {
+	v.init()
+	return v.Fields[key]
 }
 
 // Exists returns true if the key exists in the Node
-func Exists(values *structpb.Struct, key string) bool {
-	initStruct(values)
-	if val, ok := values.Fields[key]; ok && val != nil {
+func (v *Values) Exists(key string) bool {
+	v.init()
+	if val, ok := v.Fields[key]; ok && val != nil {
 		return true
 	}
 	return false
 }
 
 // GetString gets an entry from the Node by key
-func GetString(values *structpb.Struct, key string) string {
-	initStruct(values)
-	if !Exists(values, key) {
+func (v *Values) GetString(key string) string {
+	v.init()
+	if !v.Exists(key) {
 		return ""
 	}
-	return values.Fields[key].GetStringValue()
+	return v.Fields[key].GetStringValue()
 }
 
-func GetBool(values *structpb.Struct, key string) bool {
-	if !Exists(values, key) {
+func (v *Values) GetBool(key string) bool {
+	if !v.Exists(key) {
 		return false
 	}
-	return values.Fields[key].GetBoolValue()
+	return v.Fields[key].GetBoolValue()
 }
 
-func GetInt(values *structpb.Struct, key string) int {
-	if !Exists(values, key) {
+func (v *Values) GetInt(key string) int {
+	if !v.Exists(key) {
 		return 0
 	}
-	return int(values.Fields[key].GetNumberValue())
+	return int(v.Fields[key].GetNumberValue())
 }
 
-func GetFloat(values *structpb.Struct, key string) float64 {
-	if !Exists(values, key) {
+func (v *Values) GetFloat(key string) float64 {
+	if !v.Exists(key) {
 		return 0
 	}
-	return values.Fields[key].GetNumberValue()
+	return v.Fields[key].GetNumberValue()
 }
 
 // Del deletes the entry from the Node by key
-func Del(values *structpb.Struct, key string) {
-	initStruct(values)
-	delete(values.Fields, key)
+func (v *Values) Del(key string) {
+	v.init()
+	delete(v.Fields, key)
 }
 
 // Range iterates over the Node with the function. If the function returns false, the iteration exits.
-func Range(values *structpb.Struct, iterator func(key string, val *structpb.Value) bool) {
-	initStruct(values)
-	for k, val := range values.GetFields() {
+func (v *Values) Range(iterator func(key string, val *structpb.Value) bool) {
+	v.init()
+	for k, val := range v.GetFields() {
 		if !iterator(k, val) {
 			break
 		}
@@ -419,43 +440,41 @@ func Range(values *structpb.Struct, iterator func(key string, val *structpb.Valu
 }
 
 // Filter returns a Node of the node that return true from the filter function
-func Filter(values *structpb.Struct, filter func(key string, v *structpb.Value) bool) *structpb.Struct {
+func (v *Values) Filter(filter func(key string, v *structpb.Value) bool) *Values {
+	v.init()
 	data := &structpb.Struct{
 		Fields: map[string]*structpb.Value{},
 	}
-	if values == nil {
-		return data
-	}
-	Range(values, func(key string, val *structpb.Value) bool {
+	v.Range(func(key string, val *structpb.Value) bool {
 		if filter(key, val) {
-			Set(values, key, val)
+			v.Set(key, val)
 		}
 		return true
 	})
-	return data
+	return &Values{data}
 }
 
 // Copy creates a replica of the Node
-func Copy(values *structpb.Struct) *structpb.Struct {
+func (v *Values) Copy(values *structpb.Struct) *structpb.Struct {
 	copied := &structpb.Struct{
 		Fields: map[string]*structpb.Value{},
 	}
 	if values == nil {
 		return copied
 	}
-	Range(values, func(k string, val *structpb.Value) bool {
-		Set(values, k, val)
+	v.Range(func(k string, val *structpb.Value) bool {
+		v.Set(k, val)
 		return true
 	})
 	return copied
 }
 
-func Equals(values *structpb.Struct, other *structpb.Struct) bool {
-	return reflect.DeepEqual(values, other)
+func (v *Values) Equals(other *Values) bool {
+	return reflect.DeepEqual(v, other)
 }
 
-func GetNested(values *structpb.Struct, key string) (*structpb.Struct, bool) {
-	if val, ok := values.Fields[key]; ok && val != nil {
+func (v *Values) GetNested(key string) (*structpb.Struct, bool) {
+	if val, ok := v.Fields[key]; ok && val != nil {
 		if node := val.GetStructValue(); node != nil {
 			return node, true
 		}
@@ -463,23 +482,28 @@ func GetNested(values *structpb.Struct, key string) (*structpb.Struct, bool) {
 	return nil, false
 }
 
-func IsNested(values *structpb.Struct, key string) bool {
-	_, ok := GetNested(values, key)
+func (v *Values) IsNested(key string) bool {
+	_, ok := v.GetNested(key)
 	return ok
 }
 
-func SetNested(values *structpb.Struct, key string, nested *structpb.Struct) {
-	Set(values, key, ToValue(nested))
+func (v *Values) SetNested(key string, nested *structpb.Struct) {
+	v.Set(key, ToValue(nested))
 }
 
 func ToMap(obj interface{}) map[string]interface{} {
 	switch o := obj.(type) {
 	case *structpb.Struct:
-		return FromStruct(o)
+		vals := &Values{o}
+		return vals.Map()
+	case *Values:
+		return o.Map()
 	case string, int, int64, int32, bool:
 		return map[string]interface{}{
 			"value": o,
 		}
+	case map[string]interface{}:
+		return o
 	default:
 		values := map[string]interface{}{}
 		typeOf := reflect.TypeOf(o)
