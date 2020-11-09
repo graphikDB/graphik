@@ -1,4 +1,4 @@
-package lang
+package graph
 
 import (
 	"github.com/google/cel-go/cel"

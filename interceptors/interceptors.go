@@ -2,7 +2,7 @@ package interceptors
 
 import (
 	"context"
-	"github.com/autom8ter/graphik/lang"
+	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/runtime"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -36,10 +36,10 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
-		pass, err := runtime.Auth().Authorize(lang.NewValues(map[string]interface{}{
+		pass, err := runtime.Auth().Authorize(graph.NewValues(map[string]interface{}{
 			"request_path": info.FullMethod,
 			"user":         runtime.NodeContext(ctx),
-			"request":      lang.ToMap(req),
+			"request":      graph.ToMap(req),
 		}))
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
@@ -69,10 +69,10 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
-		pass, err := runtime.Auth().Authorize(lang.NewValues(map[string]interface{}{
+		pass, err := runtime.Auth().Authorize(graph.NewValues(map[string]interface{}{
 			"request_path": info.FullMethod,
 			"user":         runtime.NodeContext(ctx),
-			"request":      lang.ToMap(srv),
+			"request":      graph.ToMap(srv),
 		}))
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())

@@ -1,4 +1,4 @@
-package lang
+package graph
 
 import (
 	"bytes"

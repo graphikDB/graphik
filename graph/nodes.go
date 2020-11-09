@@ -1,17 +1,13 @@
 package graph
 
-import (
-	"github.com/autom8ter/graphik/lang"
-)
-
 type NodeStore struct {
-	nodes map[string]map[string]lang.Values
+	nodes map[string]map[string]Values
 	edges *EdgeStore
 }
 
 func newNodeStore(edges *EdgeStore) *NodeStore {
 	return &NodeStore{
-		nodes: map[string]map[string]lang.Values{},
+		nodes: map[string]map[string]Values{},
 		edges: edges,
 	}
 }
@@ -31,17 +27,17 @@ func (n *NodeStore) Types() []string {
 	return nodeTypes
 }
 
-func (n *NodeStore) All() lang.ValueSet {
-	var nodes lang.ValueSet
-	n.Range(lang.Any, func(node lang.Values) bool {
+func (n *NodeStore) All() ValueSet {
+	var nodes ValueSet
+	n.Range(Any, func(node Values) bool {
 		nodes = append(nodes, node)
 		return true
 	})
 	return nodes
 }
 
-func (n *NodeStore) Get(path string) (lang.Values, bool) {
-	xtype, xid := lang.SplitPath(path)
+func (n *NodeStore) Get(path string) (Values, bool) {
+	xtype, xid := SplitPath(path)
 	if c, ok := n.nodes[xtype]; ok {
 		node := c[xid]
 		return node, node != nil
@@ -49,15 +45,15 @@ func (n *NodeStore) Get(path string) (lang.Values, bool) {
 	return nil, false
 }
 
-func (n *NodeStore) Set(value lang.Values) lang.Values {
+func (n *NodeStore) Set(value Values) Values {
 	if _, ok := n.nodes[value.GetType()]; !ok {
-		n.nodes[value.GetType()] = map[string]lang.Values{}
+		n.nodes[value.GetType()] = map[string]Values{}
 	}
 	n.nodes[value.GetType()][value.GetID()] = value
 	return value
 }
 
-func (n *NodeStore) Patch(updatedAt int64, value lang.Values) lang.Values {
+func (n *NodeStore) Patch(updatedAt int64, value Values) Values {
 	if _, ok := n.nodes[value.GetType()]; !ok {
 		return nil
 	}
@@ -65,12 +61,12 @@ func (n *NodeStore) Patch(updatedAt int64, value lang.Values) lang.Values {
 	for k, v := range value {
 		node[k] = v
 	}
-	node[lang.UpdatedAtKey] = updatedAt
+	node[UpdatedAtKey] = updatedAt
 	return node
 }
 
-func (n *NodeStore) Range(nodeType string, f func(node lang.Values) bool) {
-	if nodeType == lang.Any {
+func (n *NodeStore) Range(nodeType string, f func(node Values) bool) {
+	if nodeType == Any {
 		for _, c := range n.nodes {
 			for _, node := range c {
 				f(node)
@@ -89,21 +85,21 @@ func (n *NodeStore) Delete(path string) bool {
 	if !n.Exists(path) {
 		return false
 	}
-	n.edges.RangeFrom(path, func(e lang.Values) bool {
+	n.edges.RangeFrom(path, func(e Values) bool {
 		n.edges.Delete(e.PathString())
-		if e.GetString(lang.CascadeKey) == lang.CascadeTo || e.GetString(lang.CascadeKey) == lang.CascadeMutual {
-			n.Delete(e.GetString(lang.ToKey))
+		if e.GetString(CascadeKey) == CascadeTo || e.GetString(CascadeKey) == CascadeMutual {
+			n.Delete(e.GetString(ToKey))
 		}
 		return true
 	})
-	n.edges.RangeTo(path, func(e lang.Values) bool {
+	n.edges.RangeTo(path, func(e Values) bool {
 		n.edges.Delete(e.PathString())
-		if e.GetString(lang.CascadeKey) == lang.CascadeFrom || e.GetString(lang.CascadeKey) == lang.CascadeMutual {
-			n.Delete(e.GetString(lang.FromKey))
+		if e.GetString(CascadeKey) == CascadeFrom || e.GetString(CascadeKey) == CascadeMutual {
+			n.Delete(e.GetString(FromKey))
 		}
 		return true
 	})
-	xtype, xid := lang.SplitPath(path)
+	xtype, xid := SplitPath(path)
 	if c, ok := n.nodes[xtype]; ok {
 		delete(c, xid)
 	}
@@ -115,9 +111,9 @@ func (n *NodeStore) Exists(path string) bool {
 	return ok
 }
 
-func (n *NodeStore) Filter(nodeType string, filter func(node lang.Values) bool) lang.ValueSet {
-	var filtered lang.ValueSet
-	n.Range(nodeType, func(node lang.Values) bool {
+func (n *NodeStore) Filter(nodeType string, filter func(node Values) bool) ValueSet {
+	var filtered ValueSet
+	n.Range(nodeType, func(node Values) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
@@ -126,13 +122,13 @@ func (n *NodeStore) Filter(nodeType string, filter func(node lang.Values) bool) 
 	return filtered
 }
 
-func (n *NodeStore) SetAll(nodes lang.ValueSet) {
+func (n *NodeStore) SetAll(nodes ValueSet) {
 	for _, node := range nodes {
 		n.Set(node)
 	}
 }
 
-func (n *NodeStore) DeleteAll(nodes lang.ValueSet) {
+func (n *NodeStore) DeleteAll(nodes ValueSet) {
 	for _, node := range nodes {
 		n.Delete(node.PathString())
 	}
@@ -152,12 +148,12 @@ func (n *NodeStore) Close() {
 	}
 }
 
-func (n *NodeStore) FilterSearch(filter *lang.Filter) (lang.ValueSet, error) {
-	var nodes lang.ValueSet
+func (n *NodeStore) FilterSearch(filter *Filter) (ValueSet, error) {
+	var nodes ValueSet
 	var err error
 	var pass bool
-	n.Range(filter.Type, func(node lang.Values) bool {
-		pass, err = lang.BooleanExpression(filter.Expressions, node)
+	n.Range(filter.Type, func(node Values) bool {
+		pass, err = BooleanExpression(filter.Expressions, node)
 		if err != nil {
 			return false
 		}

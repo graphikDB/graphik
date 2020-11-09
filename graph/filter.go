@@ -1,4 +1,4 @@
-package lang
+package graph
 
 type Filter struct {
 	Type        string

@@ -1,18 +1,14 @@
 package graph
 
-import (
-	"github.com/autom8ter/graphik/lang"
-)
-
 type EdgeStore struct {
-	edges     map[string]map[string]lang.Values
+	edges     map[string]map[string]Values
 	edgesTo   map[string][]string
 	edgesFrom map[string][]string
 }
 
 func newEdgeStore() *EdgeStore {
 	return &EdgeStore{
-		edges:     map[string]map[string]lang.Values{},
+		edges:     map[string]map[string]Values{},
 		edgesTo:   map[string][]string{},
 		edgesFrom: map[string][]string{},
 	}
@@ -33,17 +29,17 @@ func (n *EdgeStore) Types() []string {
 	return edgeTypes
 }
 
-func (n *EdgeStore) All() lang.ValueSet {
-	var edges lang.ValueSet
-	n.Range(lang.Any, func(edge lang.Values) bool {
+func (n *EdgeStore) All() ValueSet {
+	var edges ValueSet
+	n.Range(Any, func(edge Values) bool {
 		edges = append(edges, edge)
 		return true
 	})
 	return edges
 }
 
-func (n *EdgeStore) Get(path string) (lang.Values, bool) {
-	typ, id := lang.SplitPath(path)
+func (n *EdgeStore) Get(path string) (Values, bool) {
+	typ, id := SplitPath(path)
 	if c, ok := n.edges[typ]; ok {
 		node := c[id]
 		return c[id], node != nil
@@ -51,25 +47,25 @@ func (n *EdgeStore) Get(path string) (lang.Values, bool) {
 	return nil, false
 }
 
-func (n *EdgeStore) Set(value lang.Values) lang.Values {
+func (n *EdgeStore) Set(value Values) Values {
 	if _, ok := n.edges[value.GetType()]; !ok {
-		n.edges[value.GetType()] = map[string]lang.Values{}
+		n.edges[value.GetType()] = map[string]Values{}
 	}
 
 	n.edges[value.GetType()][value.GetID()] = value
 
-	n.edgesFrom[value.GetString(lang.FromKey)] = append(n.edgesFrom[value.GetString(lang.FromKey)], value.PathString())
-	n.edgesTo[value.GetString(lang.ToKey)] = append(n.edgesTo[value.GetString(lang.ToKey)], value.PathString())
+	n.edgesFrom[value.GetString(FromKey)] = append(n.edgesFrom[value.GetString(FromKey)], value.PathString())
+	n.edgesTo[value.GetString(ToKey)] = append(n.edgesTo[value.GetString(ToKey)], value.PathString())
 
-	if value.GetBool(lang.MutualKey) {
-		n.edgesTo[value.GetString(lang.FromKey)] = append(n.edgesTo[value.GetString(lang.FromKey)], value.PathString())
-		n.edgesFrom[value.GetString(lang.ToKey)] = append(n.edgesFrom[value.GetString(lang.ToKey)], value.PathString())
+	if value.GetBool(MutualKey) {
+		n.edgesTo[value.GetString(FromKey)] = append(n.edgesTo[value.GetString(FromKey)], value.PathString())
+		n.edgesFrom[value.GetString(ToKey)] = append(n.edgesFrom[value.GetString(ToKey)], value.PathString())
 	}
 	return value
 }
 
-func (n *EdgeStore) Range(edgeType string, f func(edge lang.Values) bool) {
-	if edgeType == lang.Any {
+func (n *EdgeStore) Range(edgeType string, f func(edge Values) bool) {
+	if edgeType == Any {
 		for _, c := range n.edges {
 			for _, v := range c {
 				f(v)
@@ -85,15 +81,15 @@ func (n *EdgeStore) Range(edgeType string, f func(edge lang.Values) bool) {
 }
 
 func (n *EdgeStore) Delete(path string) {
-	xtype, xid := lang.SplitPath(path)
+	xtype, xid := SplitPath(path)
 	edge, ok := n.Get(path)
 	if !ok {
 		return
 	}
-	n.edgesFrom[edge.GetString(lang.FromKey)] = removeEdge(path, n.edgesFrom[edge.GetString(lang.FromKey)])
-	n.edgesTo[edge.GetString(lang.FromKey)] = removeEdge(path, n.edgesTo[edge.GetString(lang.FromKey)])
-	n.edgesFrom[edge.GetString(lang.ToKey)] = removeEdge(path, n.edgesFrom[edge.GetString(lang.ToKey)])
-	n.edgesTo[edge.GetString(lang.ToKey)] = removeEdge(path, n.edgesTo[edge.GetString(lang.ToKey)])
+	n.edgesFrom[edge.GetString(FromKey)] = removeEdge(path, n.edgesFrom[edge.GetString(FromKey)])
+	n.edgesTo[edge.GetString(FromKey)] = removeEdge(path, n.edgesTo[edge.GetString(FromKey)])
+	n.edgesFrom[edge.GetString(ToKey)] = removeEdge(path, n.edgesFrom[edge.GetString(ToKey)])
+	n.edgesTo[edge.GetString(ToKey)] = removeEdge(path, n.edgesTo[edge.GetString(ToKey)])
 	delete(n.edges[xtype], xid)
 }
 
@@ -102,7 +98,7 @@ func (n *EdgeStore) Exists(path string) bool {
 	return ok
 }
 
-func (e *EdgeStore) RangeFrom(path string, fn func(e lang.Values) bool) {
+func (e *EdgeStore) RangeFrom(path string, fn func(e Values) bool) {
 	for _, edge := range e.edgesFrom[path] {
 		e, ok := e.Get(edge)
 		if ok {
@@ -113,7 +109,7 @@ func (e *EdgeStore) RangeFrom(path string, fn func(e lang.Values) bool) {
 	}
 }
 
-func (e *EdgeStore) RangeTo(path string, fn func(e lang.Values) bool) {
+func (e *EdgeStore) RangeTo(path string, fn func(e Values) bool) {
 	for _, edge := range e.edgesTo[path] {
 		e, ok := e.Get(edge)
 		if ok {
@@ -124,13 +120,13 @@ func (e *EdgeStore) RangeTo(path string, fn func(e lang.Values) bool) {
 	}
 }
 
-func (e *EdgeStore) RangeFilterFrom(path string, filter *lang.Filter) lang.ValueSet {
-	var edges lang.ValueSet
-	e.RangeFrom(path, func(e lang.Values) bool {
+func (e *EdgeStore) RangeFilterFrom(path string, filter *Filter) ValueSet {
+	var edges ValueSet
+	e.RangeFrom(path, func(e Values) bool {
 		if e.GetType() != filter.Type {
 			return true
 		}
-		pass, _ := lang.BooleanExpression(filter.Expressions, e)
+		pass, _ := BooleanExpression(filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -139,13 +135,13 @@ func (e *EdgeStore) RangeFilterFrom(path string, filter *lang.Filter) lang.Value
 	return edges
 }
 
-func (e *EdgeStore) RangeFilterTo(path string, filter *lang.Filter) lang.ValueSet {
-	var edges lang.ValueSet
-	e.RangeTo(path, func(e lang.Values) bool {
+func (e *EdgeStore) RangeFilterTo(path string, filter *Filter) ValueSet {
+	var edges ValueSet
+	e.RangeTo(path, func(e Values) bool {
 		if e.GetType() != filter.Type {
 			return true
 		}
-		pass, _ := lang.BooleanExpression(filter.Expressions, e)
+		pass, _ := BooleanExpression(filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -154,9 +150,9 @@ func (e *EdgeStore) RangeFilterTo(path string, filter *lang.Filter) lang.ValueSe
 	return edges
 }
 
-func (n *EdgeStore) Filter(edgeType string, filter func(edge lang.Values) bool) lang.ValueSet {
-	var filtered lang.ValueSet
-	n.Range(edgeType, func(node lang.Values) bool {
+func (n *EdgeStore) Filter(edgeType string, filter func(edge Values) bool) ValueSet {
+	var filtered ValueSet
+	n.Range(edgeType, func(node Values) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
@@ -165,13 +161,13 @@ func (n *EdgeStore) Filter(edgeType string, filter func(edge lang.Values) bool) 
 	return filtered
 }
 
-func (n *EdgeStore) SetAll(edges lang.ValueSet) {
+func (n *EdgeStore) SetAll(edges ValueSet) {
 	for _, edge := range edges {
 		n.Set(edge)
 	}
 }
 
-func (n *EdgeStore) DeleteAll(edges lang.ValueSet) {
+func (n *EdgeStore) DeleteAll(edges ValueSet) {
 	for _, edge := range edges {
 		n.Delete(edge.PathString())
 	}
@@ -191,23 +187,23 @@ func (n *EdgeStore) Close() {
 	}
 }
 
-func (e *EdgeStore) Patch(updatedAt int64, value lang.Values) lang.Values {
+func (e *EdgeStore) Patch(updatedAt int64, value Values) Values {
 	if _, ok := e.edges[value.GetType()]; !ok {
 		return nil
 	}
 	for k, v := range value {
 		e.edges[value.GetType()][value.GetID()][k] = v
 	}
-	e.edges[value.GetType()][value.GetID()][lang.UpdatedAtKey] = updatedAt
+	e.edges[value.GetType()][value.GetID()][UpdatedAtKey] = updatedAt
 	return e.edges[value.GetType()][value.GetID()]
 }
 
-func (e *EdgeStore) FilterSearch(filter *lang.Filter) (lang.ValueSet, error) {
-	var edges lang.ValueSet
+func (e *EdgeStore) FilterSearch(filter *Filter) (ValueSet, error) {
+	var edges ValueSet
 	var err error
 	var pass bool
-	e.Range(filter.Type, func(edge lang.Values) bool {
-		pass, err = lang.BooleanExpression(filter.Expressions, edge)
+	e.Range(filter.Type, func(edge Values) bool {
+		pass, err = BooleanExpression(filter.Expressions, edge)
 		if err != nil {
 			return false
 		}

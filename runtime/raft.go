@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/lang"
+	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
@@ -55,7 +55,7 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 }
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {
-	var c lang.Command
+	var c graph.Command
 	buf := bytes.NewBuffer(log.Data)
 	if err := gob.NewDecoder(buf).Decode(&c); err != nil {
 		return fmt.Errorf("failed to decode command: %s", err.Error())
@@ -63,18 +63,18 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	switch c.Op {
-	case lang.Op_SET_AUTH:
+	case graph.Op_SET_AUTH:
 		if err := f.auth.Override(c.Val.(*apipb.AuthConfig)); err != nil {
 			return errors.Wrap(err, "failed to override auth")
 		}
 		return f.auth.Raw()
-	case lang.Op_CREATE_NODES:
-		values := c.Val.(*lang.ValueSet)
+	case graph.Op_CREATE_NODES:
+		values := c.Val.(*graph.ValueSet)
 		f.graph.Nodes().SetAll(*values)
 		return *values
-	case lang.Op_PATCH_NODES:
-		var nodes = lang.ValueSet{}
-		for _, val := range *c.Val.(*lang.ValueSet) {
+	case graph.Op_PATCH_NODES:
+		var nodes = graph.ValueSet{}
+		for _, val := range *c.Val.(*graph.ValueSet) {
 			if !f.graph.Nodes().Exists(val.PathString()) {
 				return errors.Errorf("node %s does not exist", val.PathString())
 			}
@@ -82,7 +82,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 			nodes = append(nodes, n)
 		}
 		return nodes
-	case lang.Op_DELETE_NODES:
+	case graph.Op_DELETE_NODES:
 		deleted := 0
 		for _, val := range c.Val.([]string) {
 			if f.graph.Nodes().Delete(val) {
@@ -90,13 +90,13 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 			}
 		}
 		return deleted
-	case lang.Op_CREATE_EDGES:
-		values := c.Val.(*lang.ValueSet)
+	case graph.Op_CREATE_EDGES:
+		values := c.Val.(*graph.ValueSet)
 		f.graph.Edges().SetAll(*values)
 		return *values
-	case lang.Op_PATCH_EDGES:
-		var edges = lang.ValueSet{}
-		for _, val := range *c.Val.(*lang.ValueSet) {
+	case graph.Op_PATCH_EDGES:
+		var edges = graph.ValueSet{}
+		for _, val := range *c.Val.(*graph.ValueSet) {
 			if !f.graph.Edges().Exists(val.PathString()) {
 				return errors.Errorf("edge %s does not exist", val.PathString())
 			}
@@ -104,7 +104,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		return edges
 
-	case lang.Op_DELETE_EDGES:
+	case graph.Op_DELETE_EDGES:
 		deleted := 0
 		for _, val := range c.Val.([]string) {
 			if f.graph.Edges().Exists(val) {
@@ -123,7 +123,7 @@ func (f *Runtime) Snapshot() (raft.FSMSnapshot, error) {
 }
 
 func (f *Runtime) Restore(closer io.ReadCloser) error {
-	export := &lang.Export{}
+	export := &graph.Export{}
 	if err := gob.NewDecoder(closer).Decode(export); err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	export := &lang.Export{
+	export := &graph.Export{
 		Nodes: f.graph.Nodes().All(),
 		Edges: f.graph.Edges().All(),
 	}
