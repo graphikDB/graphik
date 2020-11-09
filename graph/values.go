@@ -67,6 +67,9 @@ func (v Values) SetUpdatedAt(_updatedAt time.Time) {
 
 func (v Values) PathString() string {
 	v.init()
+	if v.GetType() == "" {
+		return ""
+	}
 	if v.GetID() == "" {
 		return v.GetType()
 	}

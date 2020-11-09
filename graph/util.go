@@ -107,9 +107,9 @@ func parseFloat(obj interface{}) float64 {
 }
 
 func parseString(obj interface{}) string {
-	switch obj.(type) {
+	switch o := obj.(type) {
 	case string:
-		return obj.(string)
+		return o
 	default:
 		return fmt.Sprint(obj)
 	}

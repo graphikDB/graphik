@@ -6,6 +6,7 @@ import (
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
 	"github.com/google/cel-go/interpreter/functions"
+	"github.com/pkg/errors"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
@@ -14,8 +15,8 @@ func (g *Graph) Functions() []*functions.Overload {
 		{
 			Operator: "create_node_map_map",
 			Unary: func(lhs ref.Val) ref.Val {
-				m := ToMap(lhs.Value())
-				return types.NewDynamicMap(types.NewRegistry(), g.nodes.Set(m))
+				vals := ToMap(lhs.Value())
+				return types.NewDynamicMap(types.NewRegistry(), g.nodes.Set(vals))
 			},
 		},
 		{
@@ -102,17 +103,21 @@ func (g *Graph) Expression(expression string, obj interface{}) (ref.Val, *cel.Ev
 	values := ToMap(obj)
 	env, err := g.Env(obj)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "creating env")
 	}
 	ast, iss := env.Compile(expression)
 	if iss.Err() != nil {
-		return nil, nil, iss.Err()
+		return nil, nil, errors.Wrap(iss.Err(), "compiling env")
 	}
 	program, err := env.Program(ast, cel.Functions(g.Functions()...))
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "programming env")
 	}
-	return program.Eval(values)
+	x, y, err := program.Eval(values)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "evaluating program")
+	}
+	return x, y, nil
 }
 
 func (g *Graph) BooleanExpression(expressions []string, obj interface{}) (bool, error) {
