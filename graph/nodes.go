@@ -122,7 +122,7 @@ func (n *NodeStore) Exists(path string) bool {
 	return ok
 }
 
-func (n *NodeStore) Filter(nodeType string, filter func(node *structpb.Struct) bool) *structpb.Structs {
+func (n *NodeStore) Filter(nodeType string, filter func(node *structpb.Struct) bool) *apipb.Structs {
 	var filtered []*structpb.Struct
 	n.Range(nodeType, func(node *structpb.Struct) bool {
 		if filter(node) {
@@ -130,19 +130,19 @@ func (n *NodeStore) Filter(nodeType string, filter func(node *structpb.Struct) b
 		}
 		return true
 	})
-	return &apipb.Nodes{
-		Nodes: filtered,
+	return &apipb.Structs{
+		Values: filtered,
 	}
 }
 
-func (n *NodeStore) SetAll(nodes *structpb.Structs) {
-	for _, node := range nodes.Nodes {
+func (n *NodeStore) SetAll(nodes *apipb.Structs) {
+	for _, node := range nodes.Values {
 		n.Set(node)
 	}
 }
 
-func (n *NodeStore) DeleteAll(nodes *structpb.Structs) {
-	for _, node := range nodes.Nodes {
+func (n *NodeStore) DeleteAll(nodes *apipb.Structs) {
+	for _, node := range nodes.Values {
 		n.Delete(node.Path)
 	}
 }
@@ -161,7 +161,7 @@ func (n *NodeStore) Close() {
 	}
 }
 
-func (n *NodeStore) FilterSearch(filter *apipb.Filter) (*structpb.Structs, error) {
+func (n *NodeStore) FilterSearch(filter *apipb.Filter) (*apipb.Structs, error) {
 	var nodes []*structpb.Struct
 	var err error
 	var pass bool

@@ -32,6 +32,17 @@ enum Cascade {
   MUTUAL= 3;
 }
 
+message Filter {
+  string type =1;
+  repeated string expressions =2;
+  int32 limit =3;
+}
+
+message PathFilter {
+  string path =1;
+  Filter filter =2;
+}
+
 message Structs {
   repeated google.protobuf.Struct values =1;
 }
@@ -40,6 +51,10 @@ message Command {
   Op op =1;
   google.protobuf.Any val =2;
   google.protobuf.Timestamp timestamp =3;
+}
+
+message Counter {
+  int64 count =1;
 }
 
 message Pong {

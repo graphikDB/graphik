@@ -32,4 +32,3 @@ func (s Sortable) Swap(i, j int) {
 func (s Sortable) Sort() {
 	sort.Sort(s)
 }
-

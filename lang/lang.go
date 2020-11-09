@@ -560,4 +560,3 @@ func JSONEncode(w io.Writer, msg proto.Message) error {
 func JSONDecode(r io.Reader, msg proto.Message) error {
 	return unmarshaller.Unmarshal(r, msg)
 }
-
