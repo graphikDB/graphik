@@ -32,6 +32,10 @@ enum Cascade {
   MUTUAL= 3;
 }
 
+message Paths {
+  repeated string values=1;
+}
+
 message Command {
   Op op =1;
   google.protobuf.Any val =2;
@@ -46,17 +50,8 @@ message Pong {
   string message =1;
 }
 
-message Path {
-  string Type =1;
-  string ID =2;
-}
-
-message Paths {
-  repeated Path paths =1;
-}
-
 message Node {
-  Path path =1;
+  string path =1;
   google.protobuf.Struct attributes = 2;
   google.protobuf.Timestamp created_at =3;
   google.protobuf.Timestamp updated_at =4;
@@ -79,7 +74,7 @@ message Filter {
 }
 
 message PathFilter {
-  Path path =1;
+  string path =1;
   Filter filter =2;
 }
 
@@ -89,7 +84,7 @@ message Export {
 }
 
 message Patch {
-  Path path =1;
+  string path =1;
   google.protobuf.Struct patch = 2;
 }
 
@@ -98,12 +93,12 @@ message Patches {
 }
 
 message Edge {
-  Path path =1;
+  string path =1;
   bool mutual =2;
   Cascade cascade =3;
   google.protobuf.Struct attributes = 4;
-  Path from =5;
-  Path to =6;
+  string from =5;
+  string to =6;
   google.protobuf.Timestamp created_at =7;
   google.protobuf.Timestamp updated_at =8;
 }
@@ -115,10 +110,6 @@ message Edges {
 message RaftNode {
   string node_id =1;
   string address =2;
-}
-
-message JoinClusterRequest {
-  RaftNode raft_node =1;
 }
 
 message AuthConfig {
@@ -151,131 +142,29 @@ message Config {
   AuthConfig auth =4;
 }
 
-message GetAuthResponse {
-  AuthConfig auth =1;
-}
-
-message SetAuthRequest {
-  AuthConfig auth =1;
-}
-
-message SetAuthResponse {
-  AuthConfig auth =1;
-}
-
-message CreateNodesRequest {
-  Nodes nodes =1;
-}
-
-message CreateNodesResponse {
-  Nodes nodes =1;
-}
-
-message SearchNodesRequest {
-    Filter filter =1;
-}
-
-message SearchNodesResponse {
-  Nodes nodes = 1;
-}
-
-message PatchNodesRequest {
-  Patches patches =1;
-}
-
-message PatchNodesResponse {
-  Nodes nodes =1;
-}
-
-message DelNodesRequest {
-  Paths paths =1;
-}
-
-message DelNodesResponse {
-  Counter counter =1;
-}
-
-message CreateEdgesRequest {
-  Edges edges =1;
-}
-
-message CreateEdgesResponse {
-  Edges edges =1;
-}
-
-message SearchEdgesRequest {
-  Filter filter =1;
-}
-
-message SearchEdgesResponse {
-  Edges edges = 1;
-}
-
-message PatchEdgesRequest {
-  Patches patches =1;
-}
-
-message PatchEdgesResponse {
-  Edges edges =1;
-}
-
-message DelEdgesRequest {
-  Paths paths =1;
-}
-
-message DelEdgesResponse {
-  Counter counter =1;
-}
-
-message EdgesFromRequest {
-  PathFilter filter =1;
-}
-
-message EdgesFromResponse {
-  Edges edges =1;
-}
-
-message EdgesToRequest {
-  PathFilter filter =1;
-}
-
-message EdgesToResponse {
-  Edges edges =1;
-}
-
 message UserIntercept {
   string request_path =1;
-  oneof request {
-    google.protobuf.Empty empty =2;
-    Patches patches =3;
-    Paths paths =5;
-    Nodes nodes =6;
-    Edges edges =7;
-    Filter filter =8;
-    AuthConfig  auth =9;
-    RaftNode raft =10;
-    PathFilter path_filter =11;
-  }
-  Node user =99;
+  google.protobuf.Struct request =2;
+  Node user =3;
 }
 
 service PrivateService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
 
-  rpc JoinCluster(JoinClusterRequest) returns(google.protobuf.Empty) {}
-  rpc GetAuth(google.protobuf.Empty) returns(GetAuthResponse){}
-  rpc SetAuth(SetAuthRequest) returns(SetAuthResponse){}
+  rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
+  rpc GetAuth(google.protobuf.Empty) returns(AuthConfig){}
+  rpc SetAuth(AuthConfig) returns(AuthConfig){}
 
-  rpc CreateNodes(CreateNodesRequest) returns(CreateNodesResponse){}
-  rpc SearchNodes(SearchNodesRequest) returns (SearchNodesResponse){}
-  rpc PatchNodes(PatchNodesRequest) returns(PatchNodesResponse){}
-  rpc DelNodes(DelNodesRequest) returns(DelNodesResponse){}
+  rpc CreateNodes(Nodes) returns(Nodes){}
+  rpc SearchNodes(Filter) returns (Nodes){}
+  rpc PatchNodes(Patches) returns(Nodes){}
+  rpc DelNodes(Paths) returns(Counter){}
 
-  rpc CreateEdges(CreateEdgesRequest) returns(CreateEdgesResponse){}
-  rpc SearchEdges(SearchEdgesRequest) returns (SearchEdgesResponse){}
-  rpc PatchEdges(PatchEdgesRequest) returns(PatchEdgesResponse){}
-  rpc DelEdges(DelEdgesRequest) returns(DelEdgesResponse){}
+  rpc CreateEdges(Edges) returns(Edges){}
+  rpc SearchEdges(Filter) returns (Edges){}
+  rpc PatchEdges(Patches) returns(Edges){}
+  rpc DelEdges(Paths) returns(Counter){}
 
-  rpc EdgesFrom(EdgesFromRequest) returns(EdgesFromResponse){}
-  rpc EdgesTo(EdgesToRequest) returns(EdgesToResponse){}
+  rpc EdgesFrom(PathFilter) returns(Edges){}
+  rpc EdgesTo(PathFilter) returns(Edges){}
 }

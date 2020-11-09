@@ -6,10 +6,8 @@ import (
 )
 
 func Test(t *testing.T) {
-	val, err := apipb.EvaluateExpressions([]string{`path.type.startsWith("user")`}, &apipb.Node{
-		Path: &apipb.Path{
-			Type: "user",
-		},
+	val, err := apipb.EvaluateExpressions([]string{`path.startsWith("user")`}, &apipb.Node{
+		Path: "user",
 		Attributes: apipb.ToStruct(map[string]interface{}{
 			"name": "coleman",
 		}),

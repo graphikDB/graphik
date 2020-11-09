@@ -94,7 +94,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		var nodes = &apipb.Nodes{}
 		for _, val := range values.Patches {
 			if !f.nodes.Exists(val.Path) {
-				return errors.Errorf("node %s does not exist", val.Path.String())
+				return errors.Errorf("node %s does not exist", val.Path)
 			}
 			n := f.nodes.Patch(c.Timestamp, val)
 			nodes.Nodes = append(nodes.Nodes, n)
@@ -106,7 +106,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 			return errors.Wrap(err, "failed to decode node paths")
 		}
 		deleted := 0
-		for _, val := range values.Paths {
+		for _, val := range values.Values {
 			if f.nodes.Delete(val) {
 				deleted += 1
 			}
@@ -120,11 +120,11 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		for _, val := range values.Edges {
 			_, ok := f.nodes.Get(val.From)
 			if !ok {
-				return errors.Errorf("from node %s does not exist", (val.From.String()))
+				return errors.Errorf("from node %s does not exist", (val.From))
 			}
 			_, ok = f.nodes.Get(val.To)
 			if !ok {
-				return errors.Errorf("to node %s does not exist", val.To.String())
+				return errors.Errorf("to node %s does not exist", val.To)
 			}
 			val.CreatedAt = c.Timestamp
 			val.UpdatedAt = c.Timestamp
@@ -139,7 +139,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		var edges = &apipb.Edges{}
 		for _, val := range val.Patches {
 			if !f.edges.Exists(val.Path) {
-				return errors.Errorf("edge %s does not exist", val.Path.String())
+				return errors.Errorf("edge %s does not exist", val.Path)
 			}
 			edges.Edges = append(edges.Edges, f.edges.Patch(c.Timestamp, val))
 		}
@@ -151,7 +151,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 			return errors.Wrap(err, "failed to decode edge path")
 		}
 		deleted := 0
-		for _, val := range values.Paths {
+		for _, val := range values.Values {
 			if f.edges.Exists(val) {
 				f.edges.Delete(val)
 				deleted += 1

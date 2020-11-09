@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-func (f *Runtime) Node(input *apipb.Path) (*apipb.Node, error) {
+func (f *Runtime) Node(input string) (*apipb.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	node, ok := f.nodes.Get(input)
 	if !ok {
-		return nil, fmt.Errorf("node %s.%s does not exist", input.Type, input.ID)
+		return nil, fmt.Errorf("node %s does not exist", input)
 	}
 	return node, nil
 }
@@ -24,12 +24,12 @@ func (f *Runtime) Nodes(input *apipb.Filter) (*apipb.Nodes, error) {
 	return f.nodes.FilterSearch(input)
 }
 
-func (f *Runtime) Edge(input *apipb.Path) (*apipb.Edge, error) {
+func (f *Runtime) Edge(input string) (*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edge, ok := f.edges.Get(input)
 	if !ok {
-		return nil, fmt.Errorf("edge node %s.%s does not exist", input.Type, input.ID)
+		return nil, fmt.Errorf("edge node %s does not exist", input)
 	}
 	return edge, nil
 }
@@ -40,13 +40,13 @@ func (f *Runtime) Edges(input *apipb.Filter) (*apipb.Edges, error) {
 	return f.edges.FilterSearch(input)
 }
 
-func (f *Runtime) EdgesFrom(path *apipb.Path, filter *apipb.Filter) (*apipb.Edges, error) {
+func (f *Runtime) EdgesFrom(path string, filter *apipb.Filter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.edges.RangeFilterFrom(path, filter), nil
 }
 
-func (f *Runtime) EdgesTo(path *apipb.Path, filter *apipb.Filter) (*apipb.Edges, error) {
+func (f *Runtime) EdgesTo(path string, filter *apipb.Filter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.edges.RangeFilterTo(path, filter), nil
@@ -54,11 +54,14 @@ func (f *Runtime) EdgesTo(path *apipb.Path, filter *apipb.Filter) (*apipb.Edges,
 
 func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	for _, node := range nodes.Nodes {
-		if node.Path.ID == "" {
-			node.Path.ID = apipb.UUID()
+		xtype, xid := apipb.SplitPath(node.Path)
+		if xtype == "" {
+			xtype = apipb.Keyword_DEFAULT.String()
+			node.Path = apipb.FormPath(xtype, xid)
 		}
-		if node.Path.Type == "" {
-			node.Path.Type = apipb.Keyword_DEFAULT.String()
+		if xid == "" {
+			xid = apipb.UUID()
+			node.Path = apipb.FormPath(xtype, xid)
 		}
 		node.CreatedAt = &timestamp.Timestamp{
 			Seconds: time.Now().Unix(),
@@ -131,11 +134,14 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 
 func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 	for _, edge := range edges.Edges {
-		if edge.Path.ID == "" {
-			edge.Path.ID = apipb.UUID()
+		xtype, xid := apipb.SplitPath(edge.Path)
+		if xtype == "" {
+			xtype = apipb.Keyword_DEFAULT.String()
+			edge.Path = apipb.FormPath(xtype, xid)
 		}
-		if edge.Path.Type == "" {
-			edge.Path.Type = apipb.Keyword_DEFAULT.String()
+		if xid == "" {
+			xid = apipb.UUID()
+			edge.Path = apipb.FormPath(xtype, xid)
 		}
 		edge.CreatedAt = &timestamp.Timestamp{
 			Seconds: time.Now().Unix(),

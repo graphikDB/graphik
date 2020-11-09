@@ -17,18 +17,18 @@ import (
 	"strings"
 )
 
-func toMap(obj interface{}) map[string]interface{} {
+func ToMap(obj interface{}) map[string]interface{} {
 	switch o := obj.(type) {
 	case *Node:
 		return map[string]interface{}{
-			"path":       toMap(o.Path),
+			"path":       o.Path,
 			"attributes": o.Attributes,
 			"updated_at": o.UpdatedAt,
 			"created_at": o.CreatedAt,
 		}
 	case *Edge:
 		return map[string]interface{}{
-			"path":       toMap(o.Path),
+			"path":       o.Path,
 			"attributes": o.Attributes,
 			"updated_at": o.UpdatedAt,
 			"created_at": o.CreatedAt,
@@ -36,11 +36,6 @@ func toMap(obj interface{}) map[string]interface{} {
 			"to":         o.To,
 			"cascade":    o.Cascade,
 			"mutual":     o.Mutual,
-		}
-	case *Path:
-		return map[string]interface{}{
-			"id":   o.ID,
-			"type": o.Type,
 		}
 	case *Edges:
 		return map[string]interface{}{
@@ -54,9 +49,8 @@ func toMap(obj interface{}) map[string]interface{} {
 		return FromStruct(o)
 	case proto.Message:
 		values := map[string]interface{}{}
-		buf := bytes.NewBuffer(nil)
-		marshaller.Marshal(buf, o)
-		json.Unmarshal(buf.Bytes(), &values)
+		str, _ := marshaller.MarshalToString(o)
+		json.Unmarshal([]byte(str), &values)
 		return values
 	default:
 		values := map[string]interface{}{}
@@ -70,12 +64,12 @@ func envFrom(obj interface{}) (*cel.Env, error) {
 	var declarations []*exprpb.Decl
 	switch o := obj.(type) {
 	case *Node, Node:
-		declarations = append(declarations, decls.NewVar("path", mapStrDyn))
+		declarations = append(declarations, decls.NewVar("path", decls.String))
 		declarations = append(declarations, decls.NewVar("attributes", mapStrDyn))
 		declarations = append(declarations, decls.NewVar("created_at", decls.Timestamp))
 		declarations = append(declarations, decls.NewVar("updated_at", decls.Timestamp))
 	case *Edge, Edge:
-		declarations = append(declarations, decls.NewVar("path", mapStrDyn))
+		declarations = append(declarations, decls.NewVar("path", decls.String))
 		declarations = append(declarations, decls.NewVar("attributes", mapStrDyn))
 		declarations = append(declarations, decls.NewVar("created_at", decls.Timestamp))
 		declarations = append(declarations, decls.NewVar("updated_at", decls.Timestamp))
@@ -102,7 +96,7 @@ func envFrom(obj interface{}) (*cel.Env, error) {
 }
 
 func EvaluateExpressions(expressions []string, obj interface{}) (bool, error) {
-	values := toMap(obj)
+	values := ToMap(obj)
 	var programs []cel.Program
 	env, err := envFrom(obj)
 	if err != nil {
@@ -132,24 +126,19 @@ func EvaluateExpressions(expressions []string, obj interface{}) (bool, error) {
 	return passes, nil
 }
 
-func (p *Path) PathString() string {
-	if p.ID == "" {
-		return p.Type
-	}
-	return fmt.Sprintf("%s/%s", p.Type, p.ID)
+func FormPath(xtype, xid string) string {
+	return strings.Join([]string{xtype, xid}, "/")
 }
 
-func PathFromString(path string) *Path {
-	parts := strings.Split(path, "/")
-	if len(parts) == 2 {
-		return &Path{
-			ID:   parts[1],
-			Type: parts[0],
-		}
+func SplitPath(path string) (string, string) {
+	split := strings.Split(path, "/")
+	if len(split) == 1 {
+		return split[0], ""
 	}
-	return &Path{
-		Type: parts[0],
+	if len(split) == 2 {
+		return split[0], split[1]
 	}
+	return "", ""
 }
 
 func UUID() string {

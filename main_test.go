@@ -55,24 +55,20 @@ func Test(t *testing.T) {
 	if pong.Message != "PONG" {
 		t.Fatal("not PONG")
 	}
-	nodes, err := client.CreateNodes(ctx, &apipb.CreateNodesRequest{
-		Nodes: &apipb.Nodes{
-			Nodes: []*apipb.Node{
-				{
-					Path: &apipb.Path{
-						Type: "pet",
-					},
-					Attributes: apipb.ToStruct(map[string]interface{}{
-						"name": "charlie",
-					}),
-				},
+	nodes, err := client.CreateNodes(ctx, &apipb.Nodes{
+		Nodes: []*apipb.Node{
+			{
+				Path: "pet",
+				Attributes: apipb.ToStruct(map[string]interface{}{
+					"name": "charlie",
+				}),
 			},
 		},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(nodes.Nodes.Nodes[0].String())
+	t.Log(nodes.Nodes[0].String())
 	select {
 	case <-ctx.Done():
 		t.Log("done")

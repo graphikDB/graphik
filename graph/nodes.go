@@ -43,30 +43,31 @@ func (n *Nodes) All() *apipb.Nodes {
 	}
 }
 
-func (n *Nodes) Get(path *apipb.Path) (*apipb.Node, bool) {
-	if c, ok := n.nodes[path.Type]; ok {
-		node := c[path.ID]
+func (n *Nodes) Get(path string) (*apipb.Node, bool) {
+	xtype, xid := apipb.SplitPath(path)
+	if c, ok := n.nodes[xtype]; ok {
+		node := c[xid]
 		return node, node != nil
 	}
 	return nil, false
 }
 
 func (n *Nodes) Set(value *apipb.Node) *apipb.Node {
-	if value.Path.ID == "" {
-		value.Path.ID = apipb.UUID()
+	xtype, xid := apipb.SplitPath(value.Path)
+
+	if _, ok := n.nodes[xtype]; !ok {
+		n.nodes[xtype] = map[string]*apipb.Node{}
 	}
-	if _, ok := n.nodes[value.Path.Type]; !ok {
-		n.nodes[value.Path.Type] = map[string]*apipb.Node{}
-	}
-	n.nodes[value.Path.Type][value.Path.ID] = value
+	n.nodes[xtype][xid] = value
 	return value
 }
 
 func (n *Nodes) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb.Node {
-	if _, ok := n.nodes[value.Path.Type]; !ok {
+	xtype, xid := apipb.SplitPath(value.Path)
+	if _, ok := n.nodes[xtype]; !ok {
 		return nil
 	}
-	node := n.nodes[value.Path.Type][value.Path.ID]
+	node := n.nodes[xtype][xid]
 	for k, v := range value.Patch.Fields {
 		node.Attributes.Fields[k] = v
 	}
@@ -90,7 +91,7 @@ func (n *Nodes) Range(nodeType string, f func(node *apipb.Node) bool) {
 	}
 }
 
-func (n *Nodes) Delete(path *apipb.Path) bool {
+func (n *Nodes) Delete(path string) bool {
 	node, ok := n.Get(path)
 	if !ok {
 		return false
@@ -109,13 +110,14 @@ func (n *Nodes) Delete(path *apipb.Path) bool {
 		}
 		return true
 	})
-	if c, ok := n.nodes[path.Type]; ok {
-		delete(c, path.ID)
+	xtype, xid := apipb.SplitPath(path)
+	if c, ok := n.nodes[xtype]; ok {
+		delete(c, xid)
 	}
 	return true
 }
 
-func (n *Nodes) Exists(path *apipb.Path) bool {
+func (n *Nodes) Exists(path string) bool {
 	_, ok := n.Get(path)
 	return ok
 }

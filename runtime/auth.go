@@ -10,10 +10,7 @@ const (
 )
 
 func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, error) {
-	path := &apipb.Path{
-		Type: "user",
-		ID:   payload["sub"].(string),
-	}
+	path := apipb.FormPath("user", payload["sub"].(string))
 	n, ok := a.nodes.Get(path)
 	if !ok {
 		newNode, err := a.CreateNodes(&apipb.Nodes{
