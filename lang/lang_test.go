@@ -6,7 +6,7 @@ import (
 )
 
 func Test(t *testing.T) {
-	val, err := lang.BooleanExpression([]string{`_type.startsWith("user")`}, lang.ToStruct(map[string]interface{}{
+	val, err := lang.BooleanExpression([]string{`_type.startsWith("user")`}, lang.NewValues(map[string]interface{}{
 		"_type": "user",
 	}))
 	if err != nil {

@@ -32,6 +32,14 @@ enum Cascade {
   MUTUAL= 3;
 }
 
+message Paths {
+  repeated string paths =1;
+}
+
+message ValueSet {
+  repeated google.protobuf.Struct values =1;
+}
+
 message Filter {
   string type =1;
   repeated string expressions =2;
@@ -41,10 +49,6 @@ message Filter {
 message PathFilter {
   string path =1;
   Filter filter =2;
-}
-
-message Structs {
-  repeated google.protobuf.Struct values =1;
 }
 
 message Command {

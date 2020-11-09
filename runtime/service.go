@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func (f *Runtime) Node(input string) (*apipb.Node, error) {
+func (f *Runtime) Node(input string) (*lang.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	node, ok := f.graph.Nodes().Get(input)
@@ -19,13 +19,13 @@ func (f *Runtime) Node(input string) (*apipb.Node, error) {
 	return node, nil
 }
 
-func (f *Runtime) Nodes(input *apipb.Filter) (*apipb.Nodes, error) {
+func (f *Runtime) Nodes(input *apipb.Filter) ([]*lang.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.Nodes().FilterSearch(input)
 }
 
-func (f *Runtime) Edge(input string) (*apipb.Edge, error) {
+func (f *Runtime) Edge(input string) (*lang.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edge, ok := f.graph.Edges().Get(input)
@@ -35,26 +35,26 @@ func (f *Runtime) Edge(input string) (*apipb.Edge, error) {
 	return edge, nil
 }
 
-func (f *Runtime) Edges(input *apipb.Filter) (*apipb.Edges, error) {
+func (f *Runtime) Edges(input *apipb.Filter) ([]*lang.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.Edges().FilterSearch(input)
 }
 
-func (f *Runtime) EdgesFrom(path string, filter *apipb.Filter) (*apipb.Edges, error) {
+func (f *Runtime) EdgesFrom(path string, filter *apipb.Filter) ([]*lang.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.Edges().RangeFilterFrom(path, filter), nil
 }
 
-func (f *Runtime) EdgesTo(path string, filter *apipb.Filter) (*apipb.Edges, error) {
+func (f *Runtime) EdgesTo(path string, filter *apipb.Filter) ([]*lang.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.Edges().RangeFilterTo(path, filter), nil
 }
 
-func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
-	for _, node := range nodes.Nodes {
+func (r *Runtime) CreateNodes(nodes *apipb.ValueSet) ([]*lang.Values, error) {
+	for _, node := range nodes.Values {
 		xtype, xid := lang.SplitPath(node.Path)
 		if xtype == "" {
 			xtype = apipb.Keyword_DEFAULT.String()
@@ -88,10 +88,10 @@ func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	if err, ok := resp.(error); ok {
 		return nil, err
 	}
-	return resp.(*apipb.Nodes), nil
+	return resp.([]*lang.Values), nil
 }
 
-func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
+func (r *Runtime) PatchNodes(patches []*lang.Values) ([]*lang.Values, error) {
 	any, err := ptypes.MarshalAny(patches)
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 	if err := resp.(error); err != nil {
 		return nil, err
 	}
-	return resp.(*apipb.Nodes), nil
+	return resp.([]*lang.Values), nil
 }
 
 func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
@@ -133,7 +133,7 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 	return resp.(*apipb.Counter), nil
 }
 
-func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
+func (r *Runtime) CreateEdges(edges []*lang.Values) ([]*lang.Values, error) {
 	for _, edge := range edges.Edges {
 		xtype, xid := lang.SplitPath(edge.Path)
 		if xtype == "" {
@@ -168,10 +168,10 @@ func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 	if err := resp.(error); err != nil {
 		return nil, err
 	}
-	return resp.(*apipb.Edges), nil
+	return resp.([]*lang.Values), nil
 }
 
-func (r *Runtime) PatchEdges(patch *apipb.Patches) (*apipb.Edges, error) {
+func (r *Runtime) PatchEdges(patch *apipb.ValueSet) ([]*lang.Values, error) {
 	any, err := ptypes.MarshalAny(patch)
 	if err != nil {
 		return nil, err
@@ -189,7 +189,7 @@ func (r *Runtime) PatchEdges(patch *apipb.Patches) (*apipb.Edges, error) {
 	if err := resp.(error); err != nil {
 		return nil, err
 	}
-	return resp.(*apipb.Edges), nil
+	return resp.([]*lang.Values), nil
 }
 
 func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
