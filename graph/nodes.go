@@ -1,5 +1,7 @@
 package graph
 
+import "time"
+
 type NodeStore struct {
 	nodes map[string]map[string]Values
 	edges *EdgeStore
@@ -52,6 +54,12 @@ func (n *NodeStore) Set(value Values) Values {
 	if value.GetType() == "" {
 		value.SetType(Default)
 	}
+	if value.GetCreatedAt() == 0 {
+		value.SetCreatedAt(time.Now())
+	}
+	if value.GetUpdatedAt() == 0 {
+		value.SetUpdatedAt(time.Now())
+	}
 	if _, ok := n.nodes[value.GetType()]; !ok {
 		n.nodes[value.GetType()] = map[string]Values{}
 	}
@@ -59,7 +67,7 @@ func (n *NodeStore) Set(value Values) Values {
 	return value
 }
 
-func (n *NodeStore) Patch(updatedAt int64, value Values) Values {
+func (n *NodeStore) Patch(value Values) Values {
 	if _, ok := n.nodes[value.GetType()]; !ok {
 		return nil
 	}
@@ -67,7 +75,7 @@ func (n *NodeStore) Patch(updatedAt int64, value Values) Values {
 	for k, v := range value {
 		node[k] = v
 	}
-	node[UpdatedAtKey] = updatedAt
+	value.SetUpdatedAt(time.Now())
 	return node
 }
 

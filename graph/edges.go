@@ -1,5 +1,7 @@
 package graph
 
+import "time"
+
 type EdgeStore struct {
 	edges     map[string]map[string]Values
 	edgesTo   map[string][]string
@@ -197,14 +199,14 @@ func (n *EdgeStore) Close() {
 	}
 }
 
-func (e *EdgeStore) Patch(updatedAt int64, value Values) Values {
+func (e *EdgeStore) Patch(value Values) Values {
 	if _, ok := e.edges[value.GetType()]; !ok {
 		return nil
 	}
 	for k, v := range value {
 		e.edges[value.GetType()][value.GetID()][k] = v
 	}
-	e.edges[value.GetType()][value.GetID()][UpdatedAtKey] = updatedAt
+	e.edges[value.GetType()][value.GetID()].SetUpdatedAt(time.Now())
 	return e.edges[value.GetType()][value.GetID()]
 }
 
