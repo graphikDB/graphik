@@ -16,10 +16,14 @@ import (
 )
 
 const (
-	idKey        = "_id"
-	typeKey      = "_type"
-	createdAtKey = "_createdAt"
-	updatedAtKey = "_updatedAt"
+	IDKey        = "_id"
+	TypeKey      = "_type"
+	CreatedAtKey = "_createdAt"
+	UpdatedAtKey = "_updatedAt"
+	FromKey = "_from"
+	ToKey = "_to"
+	CascadeKey = "_cascade"
+	MutualKey = "_mutual"
 )
 
 type Values struct {
@@ -307,48 +311,48 @@ func (v *Values) init() {
 
 func (v *Values) GetType() string {
 	v.init()
-	return v.GetFields()[typeKey].GetStringValue()
+	return v.GetFields()[TypeKey].GetStringValue()
 }
 
 func (v *Values) GetID() string {
 	v.init()
-	return v.GetFields()[idKey].GetStringValue()
+	return v.GetFields()[IDKey].GetStringValue()
 }
 
 func (v *Values) GetCreatedAt() int64 {
 	v.init()
-	return int64(v.GetFields()[createdAtKey].GetNumberValue())
+	return int64(v.GetFields()[CreatedAtKey].GetNumberValue())
 }
 
 func (v *Values) GetUpdatedAt() int64 {
 	v.init()
-	return int64(v.GetFields()[updatedAtKey].GetNumberValue())
+	return int64(v.GetFields()[UpdatedAtKey].GetNumberValue())
 }
 
 func (v *Values) SetID(_id string) {
 	v.init()
-	v.GetFields()[idKey] = &structpb.Value{
+	v.GetFields()[IDKey] = &structpb.Value{
 		Kind: &structpb.Value_StringValue{StringValue: _id},
 	}
 }
 
 func (v *Values) SetType(_type string) {
 	v.init()
-	v.GetFields()[typeKey] = &structpb.Value{
+	v.GetFields()[TypeKey] = &structpb.Value{
 		Kind: &structpb.Value_StringValue{StringValue: _type},
 	}
 }
 
 func (v *Values) SetCreatedAt(_createdAt *timestamp.Timestamp) {
 	v.init()
-	v.GetFields()[createdAtKey] = &structpb.Value{
+	v.GetFields()[CreatedAtKey] = &structpb.Value{
 		Kind: &structpb.Value_NumberValue{NumberValue: float64(_createdAt.Seconds)},
 	}
 }
 
 func (v *Values) SetUpdatedAt(_updatedAt *timestamp.Timestamp) {
 	v.init()
-	v.GetFields()[updatedAtKey] = &structpb.Value{
+	v.GetFields()[UpdatedAtKey] = &structpb.Value{
 		Kind: &structpb.Value_NumberValue{NumberValue: float64(_updatedAt.Seconds)},
 	}
 }

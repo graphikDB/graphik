@@ -66,7 +66,7 @@ func (n *NodeStore) Patch(updatedAt int64, value *lang.Values) *lang.Values {
 	for k, v := range value.Fields {
 		node.Fields[k] = v
 	}
-	node.Fields["updated_at"] = lang.ToValue(updatedAt)
+	node.Fields[lang.UpdatedAtKey] = lang.ToValue(updatedAt)
 	return node
 }
 
@@ -93,15 +93,15 @@ func (n *NodeStore) Delete(path string) bool {
 	}
 	n.edges.RangeFrom(path, func(e *lang.Values) bool {
 		n.edges.Delete(e.PathString())
-		if e.GetString("cascade") == apipb.Cascade_TO.String() || e.GetString("cascade") == apipb.Cascade_MUTUAL.String() {
-			n.Delete(e.GetString("to"))
+		if e.GetString(lang.CascadeKey) == apipb.Cascade_TO.String() || e.GetString(lang.CascadeKey) == apipb.Cascade_MUTUAL.String() {
+			n.Delete(e.GetString(lang.ToKey))
 		}
 		return true
 	})
 	n.edges.RangeTo(path, func(e *lang.Values) bool {
 		n.edges.Delete(e.PathString())
-		if e.GetString("cascade") == apipb.Cascade_FROM.String() || e.GetString("cascade") == apipb.Cascade_MUTUAL.String() {
-			n.Delete(e.GetString("from"))
+		if e.GetString(lang.CascadeKey) == apipb.Cascade_FROM.String() || e.GetString(lang.CascadeKey) == apipb.Cascade_MUTUAL.String() {
+			n.Delete(e.GetString(lang.FromKey))
 		}
 		return true
 	})

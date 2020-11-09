@@ -59,12 +59,12 @@ func (n *EdgeStore) Set(value *lang.Values) *lang.Values {
 
 	n.edges[value.GetType()][value.GetID()] = value
 
-	n.edgesFrom[value.GetString("from")] = append(n.edgesFrom[value.GetString("from")], value.PathString())
-	n.edgesTo[value.GetString("to")] = append(n.edgesTo[value.GetString("to")], value.PathString())
+	n.edgesFrom[value.GetString(lang.FromKey)] = append(n.edgesFrom[value.GetString(lang.FromKey)], value.PathString())
+	n.edgesTo[value.GetString(lang.ToKey)] = append(n.edgesTo[value.GetString(lang.ToKey)], value.PathString())
 
-	if value.GetBool("mutual") {
-		n.edgesTo[value.GetString("from")] = append(n.edgesTo[value.GetString("from")], value.PathString())
-		n.edgesFrom[value.GetString("to")] = append(n.edgesFrom[value.GetString("to")], value.PathString())
+	if value.GetBool(lang.MutualKey) {
+		n.edgesTo[value.GetString(lang.FromKey)] = append(n.edgesTo[value.GetString(lang.FromKey)], value.PathString())
+		n.edgesFrom[value.GetString(lang.ToKey)] = append(n.edgesFrom[value.GetString(lang.ToKey)], value.PathString())
 	}
 	return value
 }
@@ -91,10 +91,10 @@ func (n *EdgeStore) Delete(path string) {
 	if !ok {
 		return
 	}
-	n.edgesFrom[edge.GetString("from")] = removeEdge(path, n.edgesFrom[edge.GetString("from")])
-	n.edgesTo[edge.GetString("from")] = removeEdge(path, n.edgesTo[edge.GetString("from")])
-	n.edgesFrom[edge.GetString("to")] = removeEdge(path, n.edgesFrom[edge.GetString("to")])
-	n.edgesTo[edge.GetString("to")] = removeEdge(path, n.edgesTo[edge.GetString("to")])
+	n.edgesFrom[edge.GetString(lang.FromKey)] = removeEdge(path, n.edgesFrom[edge.GetString(lang.FromKey)])
+	n.edgesTo[edge.GetString(lang.FromKey)] = removeEdge(path, n.edgesTo[edge.GetString(lang.FromKey)])
+	n.edgesFrom[edge.GetString(lang.ToKey)] = removeEdge(path, n.edgesFrom[edge.GetString(lang.ToKey)])
+	n.edgesTo[edge.GetString(lang.ToKey)] = removeEdge(path, n.edgesTo[edge.GetString(lang.ToKey)])
 	delete(n.edges[xtype], xid)
 }
 
@@ -199,7 +199,7 @@ func (e *EdgeStore) Patch(updatedAt int64, value *lang.Values) *lang.Values {
 	for k, v := range value.Fields {
 		e.edges[value.GetType()][value.GetID()].Fields[k] = v
 	}
-	e.edges[value.GetType()][value.GetID()].Fields["updated_at"] = lang.ToValue(updatedAt)
+	e.edges[value.GetType()][value.GetID()].Fields[lang.UpdatedAtKey] = lang.ToValue(updatedAt)
 	return e.edges[value.GetType()][value.GetID()]
 }
 
