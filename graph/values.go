@@ -3,7 +3,6 @@ package graph
 import (
 	"encoding/gob"
 	"fmt"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"reflect"
 	"time"
 )
@@ -48,9 +47,7 @@ func (v Values) GetUpdatedAt() int64 {
 
 func (v Values) SetID(_id string) {
 	v.init()
-	v[IDKey] = &structpb.Value{
-		Kind: &structpb.Value_StringValue{StringValue: _id},
-	}
+	v[IDKey] = _id
 }
 
 func (v Values) SetType(_type string) {
@@ -168,13 +165,13 @@ func (v Values) Filter(filter func(key string, v interface{}) bool) Values {
 }
 
 // Copy creates a replica of the Node
-func (v Values) Copy(values *structpb.Struct) Values {
+func (v Values) Copy() Values {
 	copied := map[string]interface{}{}
-	if values == nil {
+	if v == nil {
 		return copied
 	}
 	v.Range(func(k string, val interface{}) bool {
-		v.Set(k, val)
+		copied[k] = val
 		return true
 	})
 	return copied

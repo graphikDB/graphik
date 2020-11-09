@@ -1,18 +1,38 @@
 package graph_test
 
 import (
+	"fmt"
 	"github.com/autom8ter/graphik/graph"
 	"testing"
 )
 
 func Test(t *testing.T) {
-	val, err := graph.BooleanExpression([]string{`_type.startsWith("user")`}, graph.NewValues(map[string]interface{}{
-		"_type": "user",
+	g := graph.New()
+	result, _, err := g.Expression(`create_node(node)`, graph.NewValues(map[string]interface{}{
+		"node": map[string]interface{}{
+			"_id": "tom2",
+			"_type": "user",
+			"name":  "tom",
+		},
 	}))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !val {
-		t.Fatal("failure")
+	result, _, err = g.Expression(`create_node(node)`, graph.NewValues(map[string]interface{}{
+		"node": map[string]interface{}{
+			"_id": "bob3",
+			"_type": "user",
+			"name":  "bob",
+		},
+	}))
+	if err != nil {
+		t.Fatal(err)
 	}
+	result, _, err = g.Expression(`get_nodes(_type)`, map[string]interface{}{
+		"_type": "user",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(fmt.Sprint(result.Value()))
 }

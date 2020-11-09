@@ -18,6 +18,53 @@ func (g *Graph) Functions() []*functions.Overload {
 				return types.NewDynamicMap(types.NewRegistry(), g.nodes.Set(m))
 			},
 		},
+		{
+			Operator: "get_node_string_map",
+			Unary: func(lhs ref.Val) ref.Val {
+				val, ok := g.nodes.Get(lhs.Value().(string))
+				if !ok {
+					return types.NullType
+				}
+				return types.NewDynamicMap(types.NewRegistry(), val)
+			},
+		},
+		{
+			Operator: "get_nodes_string_map",
+			Unary: func(lhs ref.Val) ref.Val {
+				var values = ValueSet{}
+				g.nodes.Range(lhs.Value().(string), func(node Values) bool {
+					values = append(values, node)
+					return true
+				})
+				return types.NewDynamicMap(types.NewRegistry(), map[string]interface{}{
+					"nodes": values,
+				})
+			},
+		},
+		{
+			Operator: "edges_from_string_string_map",
+			Binary: func(lhs ref.Val, rhs ref.Val) ref.Val {
+				m := ToMap(rhs.Value())
+				values := g.edges.RangeFilterFrom(lhs.Value().(string), &Filter{
+					Type:        m["_type"].(string),
+					Expressions: m["expressions"].([]string),
+					Limit:       m["limit"].(int),
+				})
+				return types.NewDynamicList(types.NewRegistry(), values)
+			},
+		},
+		{
+			Operator: "edges_to_string_string_map",
+			Binary: func(lhs ref.Val, rhs ref.Val) ref.Val {
+				m := ToMap(rhs.Value())
+				values := g.edges.RangeFilterTo(lhs.Value().(string), &Filter{
+					Type:        m["_type"].(string),
+					Expressions: m["expressions"].([]string),
+					Limit:       m["limit"].(int),
+				})
+				return types.NewDynamicList(types.NewRegistry(), values)
+			},
+		},
 	}
 }
 
@@ -27,6 +74,22 @@ func (g *Graph) Env(obj interface{}) (*cel.Env, error) {
 			decls.NewOverload("create_node_map_map",
 				[]*exprpb.Type{decls.NewMapType(decls.String, decls.Any)},
 				decls.NewMapType(decls.String, decls.Any))),
+		decls.NewFunction("get_node",
+			decls.NewOverload("get_node_string_map",
+				[]*exprpb.Type{decls.String},
+				decls.NewMapType(decls.String, decls.Any))),
+		decls.NewFunction("get_nodes",
+			decls.NewOverload("get_nodes_string_map",
+				[]*exprpb.Type{decls.String},
+				decls.NewListType(decls.NewMapType(decls.String, decls.Any)))),
+		decls.NewFunction("edges_from",
+			decls.NewOverload("edges_from_string_string_map",
+				[]*exprpb.Type{decls.String, decls.NewMapType(decls.String, decls.Any)},
+				decls.NewListType(decls.NewMapType(decls.String, decls.Any)))),
+		decls.NewFunction("edges_to",
+			decls.NewOverload("edges_to_string_string_map",
+				[]*exprpb.Type{decls.String, decls.NewMapType(decls.String, decls.Any)},
+				decls.NewListType(decls.NewMapType(decls.String, decls.Any)))),
 	}
 	data := ToMap(obj)
 	for k, _ := range data {
@@ -45,7 +108,7 @@ func (g *Graph) Expression(expression string, obj interface{}) (ref.Val, *cel.Ev
 	if iss.Err() != nil {
 		return nil, nil, iss.Err()
 	}
-	program, err := env.Program(ast)
+	program, err := env.Program(ast, cel.Functions(g.Functions()...))
 	if err != nil {
 		return nil, nil, err
 	}

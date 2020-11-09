@@ -46,6 +46,12 @@ func (n *NodeStore) Get(path string) (Values, bool) {
 }
 
 func (n *NodeStore) Set(value Values) Values {
+	if value.GetType() == "" {
+		value.SetType(Default)
+	}
+	if value.GetID() == "" {
+		value.SetID(UUID())
+	}
 	if _, ok := n.nodes[value.GetType()]; !ok {
 		n.nodes[value.GetType()] = map[string]Values{}
 	}
