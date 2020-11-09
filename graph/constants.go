@@ -1,13 +1,13 @@
 package graph
 
 const (
-	PathKey       = "_path"
-	CreatedAtKey  = "_createdAt"
-	UpdatedAtKey  = "_updatedAt"
-	FromKey       = "_from"
-	ToKey         = "_to"
-	CascadeKey    = "_cascade"
-	MutualKey     = "_mutual"
+	PathKey       = "path"
+	CreatedAtKey  = "createdAt"
+	UpdatedAtKey  = "updatedAt"
+	FromKey       = "from"
+	ToKey         = "to"
+	CascadeKey    = "cascade"
+	MutualKey     = "mutual"
 	Any           = "*"
 	Default       = "default"
 	CascadeNone   = "cascade_none"

@@ -74,13 +74,17 @@ func (n *EdgeStore) Range(edgeType string, f func(edge Values) bool) {
 	if edgeType == Any {
 		for _, c := range n.edges {
 			for _, v := range c {
-				f(v)
+				if !f(v) {
+					return
+				}
 			}
 		}
 	} else {
 		if c, ok := n.edges[edgeType]; ok {
 			for _, v := range c {
-				f(v)
+				if !f(v) {
+					return
+				}
 			}
 		}
 	}
@@ -109,7 +113,7 @@ func (e *EdgeStore) RangeFrom(path string, fn func(e Values) bool) {
 		e, ok := e.Get(edge)
 		if ok {
 			if !fn(e) {
-				break
+				return
 			}
 		}
 	}
@@ -120,7 +124,7 @@ func (e *EdgeStore) RangeTo(path string, fn func(e Values) bool) {
 		e, ok := e.Get(edge)
 		if ok {
 			if !fn(e) {
-				break
+				return
 			}
 		}
 	}
@@ -209,14 +213,11 @@ func (e *EdgeStore) FilterSearch(filter *Filter) (ValueSet, error) {
 	var err error
 	var pass bool
 	e.Range(filter.Type, func(edge Values) bool {
-		pass, err = BooleanExpression(filter.Expressions, edge)
-		if err != nil {
-			return false
-		}
+		pass, _ = BooleanExpression(filter.Expressions, edge)
 		if pass {
 			edges = append(edges, edge)
 		}
-		return len(edges) < int(filter.Limit)
+		return len(edges) < filter.Limit
 	})
 	return edges, err
 }

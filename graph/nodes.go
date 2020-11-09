@@ -75,13 +75,17 @@ func (n *NodeStore) Range(nodeType string, f func(node Values) bool) {
 	if nodeType == Any {
 		for _, c := range n.nodes {
 			for _, node := range c {
-				f(node)
+				if !f(node) {
+					return
+				}
 			}
 		}
 	} else {
 		if c, ok := n.nodes[nodeType]; ok {
 			for _, node := range c {
-				f(node)
+				if !f(node) {
+					return
+				}
 			}
 		}
 	}

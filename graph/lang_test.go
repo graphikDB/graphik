@@ -10,7 +10,7 @@ func Test(t *testing.T) {
 	g := graph.New()
 	result, _, err := g.Expression(`create_node(node)`, graph.NewValues(map[string]interface{}{
 		"node": map[string]interface{}{
-			"_path": "user",
+			"path": "user",
 			"name":  "tom",
 		},
 	}))
@@ -19,15 +19,23 @@ func Test(t *testing.T) {
 	}
 	result, _, err = g.Expression(`create_node(node)`, graph.NewValues(map[string]interface{}{
 		"node": map[string]interface{}{
-			"_path": "user",
+			"path": "user",
 			"name":  "bob",
 		},
 	}))
 	if err != nil {
 		t.Fatal(err)
 	}
-	result, _, err = g.Expression(`get_nodes(_type)`, map[string]interface{}{
-		"_type": "user",
+	nodes := g.Nodes().All()
+	for _, n := range nodes {
+		t.Log(n)
+	}
+	result, _, err = g.Expression(`get_nodes(filter)`, map[string]interface{}{
+		"filter": map[string]interface{}{
+			"type":       "*",
+			"expressions": []string{},
+			"limit":       5,
+		},
 	})
 	if err != nil {
 		t.Fatal(err)

@@ -16,7 +16,7 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 	n, ok := a.graph.Nodes().Get(path)
 	if !ok {
 		values := map[string]interface{}{
-			"_type": path,
+			"type": path,
 			"_id":   payload[idClaim].(string),
 		}
 		for k, v := range payload {
