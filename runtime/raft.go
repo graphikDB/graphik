@@ -69,12 +69,12 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		return f.auth.Raw()
 	case lang.Op_CREATE_NODES:
-		values := c.Val.(lang.ValueSet)
-		f.graph.Nodes().SetAll(values)
-		return values
+		values := c.Val.(*lang.ValueSet)
+		f.graph.Nodes().SetAll(*values)
+		return *values
 	case lang.Op_PATCH_NODES:
 		var nodes = lang.ValueSet{}
-		for _, val := range c.Val.(lang.ValueSet) {
+		for _, val := range *c.Val.(*lang.ValueSet) {
 			if !f.graph.Nodes().Exists(val.PathString()) {
 				return errors.Errorf("node %s does not exist", val.PathString())
 			}
@@ -91,12 +91,12 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		return deleted
 	case lang.Op_CREATE_EDGES:
-		values := c.Val.(lang.ValueSet)
-		f.graph.Edges().SetAll(values)
-		return values
+		values := c.Val.(*lang.ValueSet)
+		f.graph.Edges().SetAll(*values)
+		return *values
 	case lang.Op_PATCH_EDGES:
 		var edges = lang.ValueSet{}
-		for _, val := range c.Val.(lang.ValueSet) {
+		for _, val := range *c.Val.(*lang.ValueSet) {
 			if !f.graph.Edges().Exists(val.PathString()) {
 				return errors.Errorf("edge %s does not exist", val.PathString())
 			}

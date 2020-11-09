@@ -51,18 +51,6 @@ func (f *Runtime) EdgesTo(path string, filter *lang.Filter) (lang.ValueSet, erro
 }
 
 func (r *Runtime) CreateNodes(nodes lang.ValueSet) (lang.ValueSet, error) {
-	for _, node := range nodes {
-		if node.GetType() == "" {
-			node.SetType(lang.Default)
-		}
-		if node.GetID() == "" {
-			node.SetID(lang.UUID())
-		}
-		now := time.Now()
-		node.SetCreatedAt(now)
-		node.SetUpdatedAt(now)
-
-	}
 	resp, err := r.execute(&lang.Command{
 		Op:        lang.Op_CREATE_NODES,
 		Val:       nodes,
