@@ -122,78 +122,39 @@ func (Cascade) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_063490d3009de3e6, []int{2}
 }
 
-type Paths struct {
-	Values               []string `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type Structs struct {
+	Values               []*_struct.Struct `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
-func (m *Paths) Reset()         { *m = Paths{} }
-func (m *Paths) String() string { return proto.CompactTextString(m) }
-func (*Paths) ProtoMessage()    {}
-func (*Paths) Descriptor() ([]byte, []int) {
+func (m *Structs) Reset()         { *m = Structs{} }
+func (m *Structs) String() string { return proto.CompactTextString(m) }
+func (*Structs) ProtoMessage()    {}
+func (*Structs) Descriptor() ([]byte, []int) {
 	return fileDescriptor_063490d3009de3e6, []int{0}
 }
 
-func (m *Paths) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Paths.Unmarshal(m, b)
+func (m *Structs) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Structs.Unmarshal(m, b)
 }
-func (m *Paths) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Paths.Marshal(b, m, deterministic)
+func (m *Structs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Structs.Marshal(b, m, deterministic)
 }
-func (m *Paths) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Paths.Merge(m, src)
+func (m *Structs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Structs.Merge(m, src)
 }
-func (m *Paths) XXX_Size() int {
-	return xxx_messageInfo_Paths.Size(m)
+func (m *Structs) XXX_Size() int {
+	return xxx_messageInfo_Structs.Size(m)
 }
-func (m *Paths) XXX_DiscardUnknown() {
-	xxx_messageInfo_Paths.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Paths proto.InternalMessageInfo
-
-func (m *Paths) GetValues() []string {
-	if m != nil {
-		return m.Values
-	}
-	return nil
+func (m *Structs) XXX_DiscardUnknown() {
+	xxx_messageInfo_Structs.DiscardUnknown(m)
 }
 
-type Values struct {
-	Values               *_struct.Struct `protobuf:"bytes,1,opt,name=values,proto3" json:"values,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
+var xxx_messageInfo_Structs proto.InternalMessageInfo
 
-func (m *Values) Reset()         { *m = Values{} }
-func (m *Values) String() string { return proto.CompactTextString(m) }
-func (*Values) ProtoMessage()    {}
-func (*Values) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{1}
-}
-
-func (m *Values) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Values.Unmarshal(m, b)
-}
-func (m *Values) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Values.Marshal(b, m, deterministic)
-}
-func (m *Values) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Values.Merge(m, src)
-}
-func (m *Values) XXX_Size() int {
-	return xxx_messageInfo_Values.Size(m)
-}
-func (m *Values) XXX_DiscardUnknown() {
-	xxx_messageInfo_Values.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Values proto.InternalMessageInfo
-
-func (m *Values) GetValues() *_struct.Struct {
+func (m *Structs) GetValues() []*_struct.Struct {
 	if m != nil {
 		return m.Values
 	}
@@ -213,7 +174,7 @@ func (m *Command) Reset()         { *m = Command{} }
 func (m *Command) String() string { return proto.CompactTextString(m) }
 func (*Command) ProtoMessage()    {}
 func (*Command) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{2}
+	return fileDescriptor_063490d3009de3e6, []int{1}
 }
 
 func (m *Command) XXX_Unmarshal(b []byte) error {
@@ -255,45 +216,6 @@ func (m *Command) GetTimestamp() *timestamp.Timestamp {
 	return nil
 }
 
-type Counter struct {
-	Count                int64    `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Counter) Reset()         { *m = Counter{} }
-func (m *Counter) String() string { return proto.CompactTextString(m) }
-func (*Counter) ProtoMessage()    {}
-func (*Counter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{3}
-}
-
-func (m *Counter) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Counter.Unmarshal(m, b)
-}
-func (m *Counter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Counter.Marshal(b, m, deterministic)
-}
-func (m *Counter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Counter.Merge(m, src)
-}
-func (m *Counter) XXX_Size() int {
-	return xxx_messageInfo_Counter.Size(m)
-}
-func (m *Counter) XXX_DiscardUnknown() {
-	xxx_messageInfo_Counter.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Counter proto.InternalMessageInfo
-
-func (m *Counter) GetCount() int64 {
-	if m != nil {
-		return m.Count
-	}
-	return 0
-}
-
 type Pong struct {
 	Message              string   `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -305,7 +227,7 @@ func (m *Pong) Reset()         { *m = Pong{} }
 func (m *Pong) String() string { return proto.CompactTextString(m) }
 func (*Pong) ProtoMessage()    {}
 func (*Pong) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{4}
+	return fileDescriptor_063490d3009de3e6, []int{2}
 }
 
 func (m *Pong) XXX_Unmarshal(b []byte) error {
@@ -333,532 +255,6 @@ func (m *Pong) GetMessage() string {
 	return ""
 }
 
-type Node struct {
-	Path                 string               `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Attributes           *_struct.Struct      `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
-	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt            *timestamp.Timestamp `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
-}
-
-func (m *Node) Reset()         { *m = Node{} }
-func (m *Node) String() string { return proto.CompactTextString(m) }
-func (*Node) ProtoMessage()    {}
-func (*Node) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{5}
-}
-
-func (m *Node) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Node.Unmarshal(m, b)
-}
-func (m *Node) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Node.Marshal(b, m, deterministic)
-}
-func (m *Node) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Node.Merge(m, src)
-}
-func (m *Node) XXX_Size() int {
-	return xxx_messageInfo_Node.Size(m)
-}
-func (m *Node) XXX_DiscardUnknown() {
-	xxx_messageInfo_Node.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Node proto.InternalMessageInfo
-
-func (m *Node) GetPath() string {
-	if m != nil {
-		return m.Path
-	}
-	return ""
-}
-
-func (m *Node) GetAttributes() *_struct.Struct {
-	if m != nil {
-		return m.Attributes
-	}
-	return nil
-}
-
-func (m *Node) GetCreatedAt() *timestamp.Timestamp {
-	if m != nil {
-		return m.CreatedAt
-	}
-	return nil
-}
-
-func (m *Node) GetUpdatedAt() *timestamp.Timestamp {
-	if m != nil {
-		return m.UpdatedAt
-	}
-	return nil
-}
-
-type Nodes struct {
-	Nodes                []*Node  `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Nodes) Reset()         { *m = Nodes{} }
-func (m *Nodes) String() string { return proto.CompactTextString(m) }
-func (*Nodes) ProtoMessage()    {}
-func (*Nodes) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{6}
-}
-
-func (m *Nodes) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Nodes.Unmarshal(m, b)
-}
-func (m *Nodes) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Nodes.Marshal(b, m, deterministic)
-}
-func (m *Nodes) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Nodes.Merge(m, src)
-}
-func (m *Nodes) XXX_Size() int {
-	return xxx_messageInfo_Nodes.Size(m)
-}
-func (m *Nodes) XXX_DiscardUnknown() {
-	xxx_messageInfo_Nodes.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Nodes proto.InternalMessageInfo
-
-func (m *Nodes) GetNodes() []*Node {
-	if m != nil {
-		return m.Nodes
-	}
-	return nil
-}
-
-type Message struct {
-	Channel              string          `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
-	Type                 string          `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	Attributes           *_struct.Struct `protobuf:"bytes,3,opt,name=attributes,proto3" json:"attributes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
-
-func (m *Message) Reset()         { *m = Message{} }
-func (m *Message) String() string { return proto.CompactTextString(m) }
-func (*Message) ProtoMessage()    {}
-func (*Message) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{7}
-}
-
-func (m *Message) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Message.Unmarshal(m, b)
-}
-func (m *Message) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Message.Marshal(b, m, deterministic)
-}
-func (m *Message) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Message.Merge(m, src)
-}
-func (m *Message) XXX_Size() int {
-	return xxx_messageInfo_Message.Size(m)
-}
-func (m *Message) XXX_DiscardUnknown() {
-	xxx_messageInfo_Message.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Message proto.InternalMessageInfo
-
-func (m *Message) GetChannel() string {
-	if m != nil {
-		return m.Channel
-	}
-	return ""
-}
-
-func (m *Message) GetType() string {
-	if m != nil {
-		return m.Type
-	}
-	return ""
-}
-
-func (m *Message) GetAttributes() *_struct.Struct {
-	if m != nil {
-		return m.Attributes
-	}
-	return nil
-}
-
-type Filter struct {
-	Type                 string   `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	Expressions          []string `protobuf:"bytes,2,rep,name=expressions,proto3" json:"expressions,omitempty"`
-	Limit                int32    `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Filter) Reset()         { *m = Filter{} }
-func (m *Filter) String() string { return proto.CompactTextString(m) }
-func (*Filter) ProtoMessage()    {}
-func (*Filter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{8}
-}
-
-func (m *Filter) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Filter.Unmarshal(m, b)
-}
-func (m *Filter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Filter.Marshal(b, m, deterministic)
-}
-func (m *Filter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Filter.Merge(m, src)
-}
-func (m *Filter) XXX_Size() int {
-	return xxx_messageInfo_Filter.Size(m)
-}
-func (m *Filter) XXX_DiscardUnknown() {
-	xxx_messageInfo_Filter.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Filter proto.InternalMessageInfo
-
-func (m *Filter) GetType() string {
-	if m != nil {
-		return m.Type
-	}
-	return ""
-}
-
-func (m *Filter) GetExpressions() []string {
-	if m != nil {
-		return m.Expressions
-	}
-	return nil
-}
-
-func (m *Filter) GetLimit() int32 {
-	if m != nil {
-		return m.Limit
-	}
-	return 0
-}
-
-type PathFilter struct {
-	Path                 string   `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Filter               *Filter  `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *PathFilter) Reset()         { *m = PathFilter{} }
-func (m *PathFilter) String() string { return proto.CompactTextString(m) }
-func (*PathFilter) ProtoMessage()    {}
-func (*PathFilter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{9}
-}
-
-func (m *PathFilter) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_PathFilter.Unmarshal(m, b)
-}
-func (m *PathFilter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_PathFilter.Marshal(b, m, deterministic)
-}
-func (m *PathFilter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PathFilter.Merge(m, src)
-}
-func (m *PathFilter) XXX_Size() int {
-	return xxx_messageInfo_PathFilter.Size(m)
-}
-func (m *PathFilter) XXX_DiscardUnknown() {
-	xxx_messageInfo_PathFilter.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_PathFilter proto.InternalMessageInfo
-
-func (m *PathFilter) GetPath() string {
-	if m != nil {
-		return m.Path
-	}
-	return ""
-}
-
-func (m *PathFilter) GetFilter() *Filter {
-	if m != nil {
-		return m.Filter
-	}
-	return nil
-}
-
-type Export struct {
-	Nodes                *Nodes   `protobuf:"bytes,1,opt,name=nodes,proto3" json:"nodes,omitempty"`
-	Edges                *Edges   `protobuf:"bytes,2,opt,name=edges,proto3" json:"edges,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Export) Reset()         { *m = Export{} }
-func (m *Export) String() string { return proto.CompactTextString(m) }
-func (*Export) ProtoMessage()    {}
-func (*Export) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{10}
-}
-
-func (m *Export) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Export.Unmarshal(m, b)
-}
-func (m *Export) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Export.Marshal(b, m, deterministic)
-}
-func (m *Export) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Export.Merge(m, src)
-}
-func (m *Export) XXX_Size() int {
-	return xxx_messageInfo_Export.Size(m)
-}
-func (m *Export) XXX_DiscardUnknown() {
-	xxx_messageInfo_Export.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Export proto.InternalMessageInfo
-
-func (m *Export) GetNodes() *Nodes {
-	if m != nil {
-		return m.Nodes
-	}
-	return nil
-}
-
-func (m *Export) GetEdges() *Edges {
-	if m != nil {
-		return m.Edges
-	}
-	return nil
-}
-
-type Patch struct {
-	Path                 string          `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Patch                *_struct.Struct `protobuf:"bytes,2,opt,name=patch,proto3" json:"patch,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
-
-func (m *Patch) Reset()         { *m = Patch{} }
-func (m *Patch) String() string { return proto.CompactTextString(m) }
-func (*Patch) ProtoMessage()    {}
-func (*Patch) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{11}
-}
-
-func (m *Patch) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Patch.Unmarshal(m, b)
-}
-func (m *Patch) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Patch.Marshal(b, m, deterministic)
-}
-func (m *Patch) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Patch.Merge(m, src)
-}
-func (m *Patch) XXX_Size() int {
-	return xxx_messageInfo_Patch.Size(m)
-}
-func (m *Patch) XXX_DiscardUnknown() {
-	xxx_messageInfo_Patch.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Patch proto.InternalMessageInfo
-
-func (m *Patch) GetPath() string {
-	if m != nil {
-		return m.Path
-	}
-	return ""
-}
-
-func (m *Patch) GetPatch() *_struct.Struct {
-	if m != nil {
-		return m.Patch
-	}
-	return nil
-}
-
-type Patches struct {
-	Patches              []*Patch `protobuf:"bytes,1,rep,name=patches,proto3" json:"patches,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Patches) Reset()         { *m = Patches{} }
-func (m *Patches) String() string { return proto.CompactTextString(m) }
-func (*Patches) ProtoMessage()    {}
-func (*Patches) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{12}
-}
-
-func (m *Patches) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Patches.Unmarshal(m, b)
-}
-func (m *Patches) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Patches.Marshal(b, m, deterministic)
-}
-func (m *Patches) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Patches.Merge(m, src)
-}
-func (m *Patches) XXX_Size() int {
-	return xxx_messageInfo_Patches.Size(m)
-}
-func (m *Patches) XXX_DiscardUnknown() {
-	xxx_messageInfo_Patches.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Patches proto.InternalMessageInfo
-
-func (m *Patches) GetPatches() []*Patch {
-	if m != nil {
-		return m.Patches
-	}
-	return nil
-}
-
-type Edge struct {
-	Path                 string               `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Mutual               bool                 `protobuf:"varint,2,opt,name=mutual,proto3" json:"mutual,omitempty"`
-	Cascade              Cascade              `protobuf:"varint,3,opt,name=cascade,proto3,enum=api.Cascade" json:"cascade,omitempty"`
-	Attributes           *_struct.Struct      `protobuf:"bytes,4,opt,name=attributes,proto3" json:"attributes,omitempty"`
-	From                 string               `protobuf:"bytes,5,opt,name=from,proto3" json:"from,omitempty"`
-	To                   string               `protobuf:"bytes,6,opt,name=to,proto3" json:"to,omitempty"`
-	CreatedAt            *timestamp.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt            *timestamp.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
-}
-
-func (m *Edge) Reset()         { *m = Edge{} }
-func (m *Edge) String() string { return proto.CompactTextString(m) }
-func (*Edge) ProtoMessage()    {}
-func (*Edge) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{13}
-}
-
-func (m *Edge) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Edge.Unmarshal(m, b)
-}
-func (m *Edge) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Edge.Marshal(b, m, deterministic)
-}
-func (m *Edge) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Edge.Merge(m, src)
-}
-func (m *Edge) XXX_Size() int {
-	return xxx_messageInfo_Edge.Size(m)
-}
-func (m *Edge) XXX_DiscardUnknown() {
-	xxx_messageInfo_Edge.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Edge proto.InternalMessageInfo
-
-func (m *Edge) GetPath() string {
-	if m != nil {
-		return m.Path
-	}
-	return ""
-}
-
-func (m *Edge) GetMutual() bool {
-	if m != nil {
-		return m.Mutual
-	}
-	return false
-}
-
-func (m *Edge) GetCascade() Cascade {
-	if m != nil {
-		return m.Cascade
-	}
-	return Cascade_NONE
-}
-
-func (m *Edge) GetAttributes() *_struct.Struct {
-	if m != nil {
-		return m.Attributes
-	}
-	return nil
-}
-
-func (m *Edge) GetFrom() string {
-	if m != nil {
-		return m.From
-	}
-	return ""
-}
-
-func (m *Edge) GetTo() string {
-	if m != nil {
-		return m.To
-	}
-	return ""
-}
-
-func (m *Edge) GetCreatedAt() *timestamp.Timestamp {
-	if m != nil {
-		return m.CreatedAt
-	}
-	return nil
-}
-
-func (m *Edge) GetUpdatedAt() *timestamp.Timestamp {
-	if m != nil {
-		return m.UpdatedAt
-	}
-	return nil
-}
-
-type Edges struct {
-	Edges                []*Edge  `protobuf:"bytes,1,rep,name=edges,proto3" json:"edges,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Edges) Reset()         { *m = Edges{} }
-func (m *Edges) String() string { return proto.CompactTextString(m) }
-func (*Edges) ProtoMessage()    {}
-func (*Edges) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{14}
-}
-
-func (m *Edges) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Edges.Unmarshal(m, b)
-}
-func (m *Edges) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Edges.Marshal(b, m, deterministic)
-}
-func (m *Edges) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Edges.Merge(m, src)
-}
-func (m *Edges) XXX_Size() int {
-	return xxx_messageInfo_Edges.Size(m)
-}
-func (m *Edges) XXX_DiscardUnknown() {
-	xxx_messageInfo_Edges.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Edges proto.InternalMessageInfo
-
-func (m *Edges) GetEdges() []*Edge {
-	if m != nil {
-		return m.Edges
-	}
-	return nil
-}
-
 type RaftNode struct {
 	NodeId               string   `protobuf:"bytes,1,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
 	Address              string   `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
@@ -871,7 +267,7 @@ func (m *RaftNode) Reset()         { *m = RaftNode{} }
 func (m *RaftNode) String() string { return proto.CompactTextString(m) }
 func (*RaftNode) ProtoMessage()    {}
 func (*RaftNode) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{15}
+	return fileDescriptor_063490d3009de3e6, []int{3}
 }
 
 func (m *RaftNode) XXX_Unmarshal(b []byte) error {
@@ -918,7 +314,7 @@ func (m *AuthConfig) Reset()         { *m = AuthConfig{} }
 func (m *AuthConfig) String() string { return proto.CompactTextString(m) }
 func (*AuthConfig) ProtoMessage()    {}
 func (*AuthConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{16}
+	return fileDescriptor_063490d3009de3e6, []int{4}
 }
 
 func (m *AuthConfig) XXX_Unmarshal(b []byte) error {
@@ -967,7 +363,7 @@ func (m *RaftConfig) Reset()         { *m = RaftConfig{} }
 func (m *RaftConfig) String() string { return proto.CompactTextString(m) }
 func (*RaftConfig) ProtoMessage()    {}
 func (*RaftConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{17}
+	return fileDescriptor_063490d3009de3e6, []int{5}
 }
 
 func (m *RaftConfig) XXX_Unmarshal(b []byte) error {
@@ -1030,7 +426,7 @@ func (m *HTTPConfig) Reset()         { *m = HTTPConfig{} }
 func (m *HTTPConfig) String() string { return proto.CompactTextString(m) }
 func (*HTTPConfig) ProtoMessage()    {}
 func (*HTTPConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{18}
+	return fileDescriptor_063490d3009de3e6, []int{6}
 }
 
 func (m *HTTPConfig) XXX_Unmarshal(b []byte) error {
@@ -1090,7 +486,7 @@ func (m *GRPCConfig) Reset()         { *m = GRPCConfig{} }
 func (m *GRPCConfig) String() string { return proto.CompactTextString(m) }
 func (*GRPCConfig) ProtoMessage()    {}
 func (*GRPCConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{19}
+	return fileDescriptor_063490d3009de3e6, []int{7}
 }
 
 func (m *GRPCConfig) XXX_Unmarshal(b []byte) error {
@@ -1132,7 +528,7 @@ func (m *Config) Reset()         { *m = Config{} }
 func (m *Config) String() string { return proto.CompactTextString(m) }
 func (*Config) ProtoMessage()    {}
 func (*Config) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{20}
+	return fileDescriptor_063490d3009de3e6, []int{8}
 }
 
 func (m *Config) XXX_Unmarshal(b []byte) error {
@@ -1181,172 +577,72 @@ func (m *Config) GetAuth() *AuthConfig {
 	return nil
 }
 
-type UserIntercept struct {
-	RequestPath          string          `protobuf:"bytes,1,opt,name=request_path,json=requestPath,proto3" json:"request_path,omitempty"`
-	Request              *_struct.Struct `protobuf:"bytes,2,opt,name=request,proto3" json:"request,omitempty"`
-	User                 *Node           `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
-
-func (m *UserIntercept) Reset()         { *m = UserIntercept{} }
-func (m *UserIntercept) String() string { return proto.CompactTextString(m) }
-func (*UserIntercept) ProtoMessage()    {}
-func (*UserIntercept) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{21}
-}
-
-func (m *UserIntercept) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_UserIntercept.Unmarshal(m, b)
-}
-func (m *UserIntercept) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_UserIntercept.Marshal(b, m, deterministic)
-}
-func (m *UserIntercept) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UserIntercept.Merge(m, src)
-}
-func (m *UserIntercept) XXX_Size() int {
-	return xxx_messageInfo_UserIntercept.Size(m)
-}
-func (m *UserIntercept) XXX_DiscardUnknown() {
-	xxx_messageInfo_UserIntercept.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UserIntercept proto.InternalMessageInfo
-
-func (m *UserIntercept) GetRequestPath() string {
-	if m != nil {
-		return m.RequestPath
-	}
-	return ""
-}
-
-func (m *UserIntercept) GetRequest() *_struct.Struct {
-	if m != nil {
-		return m.Request
-	}
-	return nil
-}
-
-func (m *UserIntercept) GetUser() *Node {
-	if m != nil {
-		return m.User
-	}
-	return nil
-}
-
 func init() {
 	proto.RegisterEnum("api.Op", Op_name, Op_value)
 	proto.RegisterEnum("api.Keyword", Keyword_name, Keyword_value)
 	proto.RegisterEnum("api.Cascade", Cascade_name, Cascade_value)
-	proto.RegisterType((*Paths)(nil), "api.Paths")
-	proto.RegisterType((*Values)(nil), "api.Values")
+	proto.RegisterType((*Structs)(nil), "api.Structs")
 	proto.RegisterType((*Command)(nil), "api.Command")
-	proto.RegisterType((*Counter)(nil), "api.Counter")
 	proto.RegisterType((*Pong)(nil), "api.Pong")
-	proto.RegisterType((*Node)(nil), "api.Node")
-	proto.RegisterType((*Nodes)(nil), "api.Nodes")
-	proto.RegisterType((*Message)(nil), "api.Message")
-	proto.RegisterType((*Filter)(nil), "api.Filter")
-	proto.RegisterType((*PathFilter)(nil), "api.PathFilter")
-	proto.RegisterType((*Export)(nil), "api.Export")
-	proto.RegisterType((*Patch)(nil), "api.Patch")
-	proto.RegisterType((*Patches)(nil), "api.Patches")
-	proto.RegisterType((*Edge)(nil), "api.Edge")
-	proto.RegisterType((*Edges)(nil), "api.Edges")
 	proto.RegisterType((*RaftNode)(nil), "api.RaftNode")
 	proto.RegisterType((*AuthConfig)(nil), "api.AuthConfig")
 	proto.RegisterType((*RaftConfig)(nil), "api.RaftConfig")
 	proto.RegisterType((*HTTPConfig)(nil), "api.HTTPConfig")
 	proto.RegisterType((*GRPCConfig)(nil), "api.GRPCConfig")
 	proto.RegisterType((*Config)(nil), "api.Config")
-	proto.RegisterType((*UserIntercept)(nil), "api.UserIntercept")
 }
 
 func init() { proto.RegisterFile("api/graphik.proto", fileDescriptor_063490d3009de3e6) }
 
 var fileDescriptor_063490d3009de3e6 = []byte{
-	// 1251 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x56, 0xdd, 0x6e, 0xdb, 0xb6,
-	0x17, 0xf7, 0x87, 0x2c, 0xc5, 0xc7, 0x69, 0xe2, 0x3f, 0x51, 0xb4, 0xf9, 0x7b, 0x1b, 0x92, 0xa9,
-	0x43, 0x9b, 0x65, 0x68, 0x82, 0x66, 0xc3, 0xb6, 0x5e, 0xec, 0xc2, 0x73, 0x94, 0xa6, 0x5d, 0x12,
-	0x1b, 0xb2, 0x33, 0x60, 0xbd, 0x31, 0x18, 0x89, 0xb1, 0xd5, 0xda, 0x12, 0x27, 0x51, 0x69, 0x03,
-	0xec, 0x72, 0x6f, 0xb1, 0xbd, 0xc2, 0x1e, 0x64, 0xaf, 0xb4, 0xab, 0xe1, 0x90, 0x94, 0x4d, 0xd8,
-	0xce, 0xd2, 0xed, 0xee, 0xf0, 0xfc, 0x7e, 0x3c, 0x3c, 0x3c, 0x1f, 0x3c, 0x84, 0xff, 0x51, 0x1e,
-	0x1d, 0x8c, 0x52, 0xca, 0xc7, 0xd1, 0xdb, 0x7d, 0x9e, 0x26, 0x22, 0x21, 0x55, 0xca, 0xa3, 0xd6,
-	0xc7, 0xa3, 0x24, 0x19, 0x4d, 0xd8, 0x81, 0x54, 0x5d, 0xe6, 0x57, 0x07, 0x99, 0x48, 0xf3, 0x40,
-	0x28, 0x4a, 0x6b, 0x7b, 0x11, 0x15, 0xd1, 0x94, 0x65, 0x82, 0x4e, 0xb9, 0x26, 0xfc, 0x7f, 0x91,
-	0x40, 0xe3, 0x1b, 0x0d, 0x7d, 0xb4, 0x08, 0xb1, 0x29, 0x17, 0x1a, 0x74, 0xb7, 0xa1, 0xd6, 0xa3,
-	0x62, 0x9c, 0x91, 0x07, 0x60, 0x5f, 0xd3, 0x49, 0xce, 0xb2, 0xad, 0xf2, 0x4e, 0x75, 0xb7, 0xee,
-	0xeb, 0x95, 0xfb, 0x1c, 0xec, 0x1f, 0xa5, 0x44, 0x0e, 0x0c, 0x46, 0x79, 0xb7, 0x71, 0xf8, 0x70,
-	0x5f, 0x19, 0xde, 0x2f, 0x0c, 0xef, 0xf7, 0xa5, 0xcb, 0xb3, 0xad, 0xbf, 0x96, 0xc1, 0xe9, 0x24,
-	0xd3, 0x29, 0x8d, 0x43, 0xf2, 0x10, 0x2a, 0x09, 0x97, 0x1b, 0x37, 0x0e, 0x9d, 0x7d, 0xca, 0xa3,
-	0xfd, 0x2e, 0xf7, 0x2b, 0x09, 0x27, 0x8f, 0xa1, 0x7a, 0x4d, 0x27, 0x5b, 0x15, 0x69, 0xf2, 0xfe,
-	0x92, 0xc9, 0x76, 0x7c, 0xe3, 0x23, 0x81, 0x7c, 0x0b, 0xf5, 0xd9, 0x9d, 0xb7, 0xaa, 0x92, 0xdd,
-	0x5a, 0x62, 0x0f, 0x0a, 0x86, 0x3f, 0x27, 0xbb, 0xdb, 0xe8, 0x45, 0x1e, 0x0b, 0x96, 0x92, 0xfb,
-	0x50, 0x0b, 0x50, 0x94, 0x8e, 0x54, 0x7d, 0xb5, 0x70, 0x77, 0xc0, 0xea, 0x25, 0xf1, 0x88, 0x6c,
-	0x81, 0x33, 0x65, 0x59, 0x46, 0x47, 0x4c, 0xe2, 0x75, 0xbf, 0x58, 0xba, 0x7f, 0x96, 0xc1, 0x3a,
-	0x4f, 0x42, 0x46, 0x08, 0x58, 0x9c, 0x8a, 0xb1, 0xc6, 0xa5, 0x4c, 0xbe, 0x01, 0xa0, 0x42, 0xa4,
-	0xd1, 0x65, 0x2e, 0x58, 0xa6, 0x2f, 0x72, 0x6b, 0x6c, 0x0c, 0x2a, 0x79, 0x0e, 0x10, 0xa4, 0x8c,
-	0x0a, 0x16, 0x0e, 0xa9, 0xf8, 0x90, 0x3b, 0x69, 0x76, 0x5b, 0xe0, 0xd6, 0x9c, 0x87, 0xc5, 0x56,
-	0xeb, 0xee, 0xad, 0x9a, 0xdd, 0x16, 0xee, 0x2e, 0xd4, 0xf0, 0x2a, 0x19, 0xd9, 0x86, 0x5a, 0x8c,
-	0x82, 0x4c, 0x78, 0xe3, 0xb0, 0x2e, 0xb3, 0x82, 0x90, 0xaf, 0xf4, 0x2e, 0x07, 0xe7, 0x4c, 0x05,
-	0x00, 0x43, 0x13, 0x8c, 0x69, 0x1c, 0xb3, 0x49, 0x11, 0x1a, 0xbd, 0xc4, 0x88, 0x88, 0x1b, 0xce,
-	0xe4, 0xbd, 0xeb, 0xbe, 0x94, 0x17, 0x22, 0x52, 0xfd, 0xe0, 0x88, 0xb8, 0x03, 0xb0, 0x8f, 0xa3,
-	0x09, 0x66, 0xaa, 0x30, 0x5b, 0x36, 0xcc, 0xee, 0x40, 0x83, 0xbd, 0xe7, 0x29, 0xcb, 0xb2, 0x28,
-	0x89, 0x31, 0xd2, 0x58, 0xa7, 0xa6, 0x0a, 0xf3, 0x3b, 0x89, 0xa6, 0x91, 0x0a, 0x66, 0xcd, 0x57,
-	0x0b, 0xd7, 0x03, 0xc0, 0x1a, 0x9f, 0x5b, 0x5e, 0x4a, 0xe1, 0x23, 0xb0, 0xaf, 0x24, 0xaa, 0xd3,
-	0xd7, 0x90, 0xb1, 0x50, 0x1b, 0x7c, 0x0d, 0xb9, 0xa7, 0x60, 0x7b, 0xef, 0x79, 0x92, 0x0a, 0xb2,
-	0x33, 0x8f, 0x1c, 0xb2, 0x61, 0x16, 0xb9, 0x4c, 0x87, 0x0e, 0x19, 0x2c, 0x1c, 0xcd, 0xca, 0x41,
-	0x31, 0x3c, 0xd4, 0xf8, 0x0a, 0x70, 0x5f, 0xc9, 0xc6, 0x0b, 0xc6, 0x2b, 0xfd, 0x79, 0x0a, 0x35,
-	0x8e, 0xe0, 0x5d, 0xd5, 0xa4, 0x58, 0xee, 0x01, 0x38, 0xd2, 0x16, 0xcb, 0xc8, 0x67, 0xe0, 0x70,
-	0x25, 0xea, 0xb4, 0xaa, 0xa3, 0x25, 0xec, 0x17, 0x90, 0xfb, 0x47, 0x05, 0x2c, 0xf4, 0x66, 0xe5,
-	0xe1, 0x0f, 0xc0, 0x9e, 0xe6, 0x22, 0xd7, 0x4d, 0xb9, 0xe6, 0xeb, 0x15, 0x79, 0x0c, 0x4e, 0x40,
-	0xb3, 0x80, 0x86, 0x4c, 0x86, 0x77, 0xe3, 0x70, 0x5d, 0x9a, 0xee, 0x28, 0x9d, 0x5f, 0x80, 0x0b,
-	0xd9, 0xb7, 0x3e, 0xbc, 0x1f, 0x08, 0x58, 0x57, 0x69, 0x32, 0xdd, 0xaa, 0x29, 0x67, 0x50, 0x26,
-	0x1b, 0x50, 0x11, 0xc9, 0x96, 0x2d, 0x35, 0x15, 0x91, 0x2c, 0xf4, 0x8c, 0xf3, 0xdf, 0x7b, 0x66,
-	0xed, 0x5f, 0xf6, 0x8c, 0x4c, 0x1e, 0xf6, 0x8c, 0xca, 0xab, 0xd9, 0x33, 0x08, 0x15, 0x69, 0xfd,
-	0x0e, 0xd6, 0x7c, 0x7a, 0x25, 0xe4, 0x63, 0xf1, 0x10, 0x1c, 0xac, 0x86, 0x61, 0x14, 0xea, 0xf8,
-	0xda, 0xb8, 0x7c, 0x19, 0x62, 0x37, 0xd1, 0x30, 0xc4, 0xaa, 0xd5, 0x6d, 0x53, 0x2c, 0xdd, 0xd7,
-	0x00, 0xed, 0x5c, 0x8c, 0x3b, 0x49, 0x7c, 0x15, 0x8d, 0xc8, 0xa7, 0xb0, 0xfe, 0xe6, 0xdd, 0xdb,
-	0x6c, 0x98, 0x25, 0x79, 0x1a, 0xcc, 0x5e, 0xe6, 0x06, 0xea, 0xfa, 0x4a, 0x45, 0x3e, 0x87, 0x26,
-	0xcd, 0xc5, 0x78, 0xb8, 0xdc, 0x18, 0x9b, 0xa8, 0xf7, 0xe6, 0x6a, 0x97, 0x03, 0xa0, 0x6b, 0xda,
-	0x36, 0x01, 0xeb, 0x32, 0x8a, 0x0b, 0xcf, 0xa4, 0x8c, 0xe7, 0x65, 0x22, 0x49, 0xe9, 0x88, 0x0d,
-	0x65, 0x55, 0x28, 0xe7, 0x1a, 0x5a, 0x87, 0x3d, 0x84, 0xdb, 0xde, 0x24, 0x51, 0x2c, 0x2b, 0xa0,
-	0xee, 0x4b, 0xd9, 0xbc, 0xa7, 0x65, 0xde, 0xd3, 0xfd, 0xad, 0x0c, 0x70, 0x32, 0x18, 0xf4, 0xfe,
-	0xe1, 0xc8, 0x27, 0xb0, 0x49, 0x27, 0x93, 0xe4, 0x1d, 0x0b, 0x87, 0x49, 0x1a, 0x8d, 0xa2, 0x99,
-	0xfb, 0x1b, 0x5a, 0xdd, 0x55, 0x5a, 0x93, 0x38, 0x66, 0x34, 0x64, 0x29, 0x3e, 0x2c, 0x26, 0xf1,
-	0x44, 0x69, 0x4d, 0xe2, 0x94, 0x89, 0x71, 0x12, 0x62, 0x0d, 0x9a, 0xc4, 0x33, 0xa5, 0x75, 0x77,
-	0x00, 0x5e, 0xf8, 0xbd, 0xce, 0xed, 0xce, 0xb9, 0xbf, 0x97, 0xc1, 0xd6, 0xf0, 0x23, 0xb0, 0xc6,
-	0x42, 0x70, 0xdd, 0xf1, 0x9b, 0x32, 0xef, 0xf3, 0xab, 0xf9, 0x12, 0x44, 0xd2, 0x28, 0xe5, 0x81,
-	0xee, 0x5a, 0x45, 0x9a, 0x1f, 0xe1, 0x4b, 0x10, 0x49, 0x29, 0xbd, 0x2a, 0xde, 0x7b, 0x45, 0x9a,
-	0xe7, 0xc5, 0x97, 0x20, 0x92, 0x30, 0x7d, 0xba, 0x7b, 0x14, 0x69, 0x5e, 0x18, 0xbe, 0x04, 0x71,
-	0xbe, 0xde, 0xbb, 0xc8, 0x58, 0xfa, 0x12, 0x67, 0x5b, 0xc0, 0xb8, 0xc0, 0x04, 0xa6, 0xec, 0xe7,
-	0x9c, 0x65, 0x62, 0x68, 0xb4, 0x75, 0x43, 0xeb, 0x64, 0x02, 0x9f, 0x81, 0xa3, 0x97, 0x77, 0x3d,
-	0x2e, 0x05, 0x8f, 0x7c, 0x02, 0x56, 0x9e, 0xb1, 0x54, 0x7b, 0x6c, 0xcc, 0x09, 0xa9, 0xde, 0xfb,
-	0x05, 0x2a, 0x5d, 0x4e, 0x9a, 0xb0, 0xde, 0xf1, 0xbd, 0xf6, 0xc0, 0x1b, 0x9e, 0x77, 0x8f, 0xbc,
-	0x7e, 0xb3, 0x44, 0x36, 0xa1, 0xd1, 0x6b, 0x0f, 0x3a, 0x27, 0x5a, 0x51, 0x46, 0xca, 0x91, 0x77,
-	0xea, 0xcd, 0x28, 0x15, 0x63, 0x93, 0x77, 0xf4, 0xc2, 0xeb, 0x37, 0xab, 0xf3, 0x4d, 0x4a, 0x61,
-	0x19, 0x9b, 0x94, 0xa6, 0x46, 0xd6, 0x61, 0xad, 0xef, 0x0d, 0x86, 0xed, 0x8b, 0xc1, 0x49, 0xd3,
-	0xde, 0xdb, 0x06, 0xe7, 0x07, 0x76, 0xf3, 0x2e, 0x49, 0x43, 0xe2, 0x40, 0xb5, 0x7d, 0xfe, 0x53,
-	0xb3, 0x44, 0x1a, 0xe0, 0x1c, 0x79, 0xc7, 0xed, 0x8b, 0xd3, 0x41, 0xb3, 0xbc, 0xf7, 0x0c, 0x1c,
-	0xfd, 0x44, 0x91, 0x35, 0xb0, 0xce, 0xbb, 0xe7, 0x5e, 0xb3, 0x84, 0xd2, 0xb1, 0xdf, 0x3d, 0x6b,
-	0x96, 0x89, 0x0d, 0x95, 0x41, 0xb7, 0x59, 0x21, 0x00, 0xf6, 0xd9, 0xc5, 0xe0, 0xa2, 0x7d, 0xda,
-	0xac, 0x1e, 0xfe, 0x65, 0xc1, 0x46, 0x2f, 0x8d, 0xae, 0xa9, 0x60, 0x7d, 0x96, 0x5e, 0x47, 0x01,
-	0x23, 0x5f, 0x80, 0xd5, 0x8b, 0xe2, 0x11, 0x79, 0xb0, 0x14, 0x2d, 0x0f, 0x7f, 0x53, 0x2d, 0x15,
-	0x15, 0xfc, 0x46, 0xb8, 0x25, 0xf2, 0x35, 0x34, 0x5e, 0x25, 0x51, 0xdc, 0x99, 0xe4, 0x19, 0x4e,
-	0x9c, 0x7b, 0xb3, 0x1c, 0x63, 0xd4, 0x5a, 0xb7, 0x98, 0x70, 0x4b, 0xe4, 0x2b, 0x70, 0x5e, 0x30,
-	0x81, 0x79, 0xbe, 0xf5, 0x9c, 0xc5, 0x52, 0x70, 0x4b, 0xe4, 0x29, 0x38, 0x7d, 0xbd, 0x6b, 0x11,
-	0x5d, 0x45, 0x7f, 0x02, 0x8d, 0x8e, 0x7c, 0x13, 0xd5, 0x2f, 0xc0, 0x18, 0x5e, 0x2d, 0x43, 0x76,
-	0x4b, 0x64, 0x17, 0x1a, 0x7d, 0x46, 0xd3, 0x60, 0xac, 0x88, 0xe6, 0x4c, 0x5c, 0x62, 0x82, 0x1c,
-	0x30, 0x8a, 0xb8, 0x3e, 0x9f, 0x38, 0x4b, 0x36, 0x1f, 0xc3, 0xda, 0x11, 0x9b, 0x98, 0x27, 0xcb,
-	0xdf, 0x67, 0x4b, 0x8f, 0x12, 0xf5, 0x4d, 0x33, 0x9d, 0x54, 0xcf, 0xae, 0x31, 0x3f, 0x5b, 0x86,
-	0x6c, 0x3a, 0xa9, 0x88, 0x2b, 0x9c, 0x9c, 0x33, 0x95, 0x93, 0x8a, 0xb8, 0xca, 0xc9, 0x82, 0xa9,
-	0x9c, 0x34, 0x4f, 0x5e, 0xed, 0xe4, 0x1e, 0xd4, 0x25, 0xe9, 0x18, 0x07, 0xd5, 0xe6, 0x8c, 0x78,
-	0xcb, 0xe9, 0x8e, 0x14, 0x07, 0xc9, 0x1d, 0xcc, 0xef, 0x9d, 0xd7, 0x35, 0xca, 0x23, 0x7e, 0x79,
-	0x69, 0xcb, 0xd4, 0x7f, 0xf9, 0x77, 0x00, 0x00, 0x00, 0xff, 0xff, 0x58, 0x1c, 0x52, 0x4d, 0x32,
-	0x0c, 0x00, 0x00,
+	// 751 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x94, 0xdf, 0x6f, 0xeb, 0x34,
+	0x14, 0xc7, 0x9b, 0x26, 0xb7, 0x59, 0x4f, 0xc6, 0x16, 0x2c, 0xc4, 0x4a, 0x41, 0xba, 0x25, 0x48,
+	0x30, 0x86, 0xe8, 0x44, 0x41, 0x08, 0x21, 0xf1, 0x10, 0xda, 0xdc, 0x15, 0xd8, 0xda, 0xca, 0x4d,
+	0x1f, 0xb8, 0x2f, 0x95, 0xdb, 0xb8, 0x89, 0xef, 0x6d, 0x63, 0x2b, 0x71, 0x3b, 0x26, 0xf1, 0xc8,
+	0x7f, 0x01, 0x7f, 0x19, 0x7f, 0x0d, 0xb2, 0x93, 0xfe, 0x58, 0xc7, 0xee, 0x5b, 0xfc, 0xfd, 0x7e,
+	0xce, 0xf1, 0xf1, 0xf1, 0x71, 0xe0, 0x7d, 0x22, 0xd8, 0x75, 0x9c, 0x11, 0x91, 0xb0, 0xb7, 0x6d,
+	0x91, 0x71, 0xc9, 0x91, 0x49, 0x04, 0x6b, 0x7e, 0x12, 0x73, 0x1e, 0x2f, 0xe9, 0xb5, 0x96, 0x66,
+	0xeb, 0xc5, 0x75, 0x2e, 0xb3, 0xf5, 0x5c, 0x16, 0x48, 0xf3, 0xe5, 0xb1, 0x2b, 0xd9, 0x8a, 0xe6,
+	0x92, 0xac, 0x44, 0x09, 0x7c, 0x74, 0x0c, 0x90, 0xf4, 0xa1, 0xb4, 0x3e, 0x3e, 0xb6, 0xe8, 0x4a,
+	0xc8, 0xd2, 0xf4, 0x7e, 0x04, 0x7b, 0xac, 0x37, 0xca, 0xd1, 0x35, 0xd4, 0x36, 0x64, 0xb9, 0xa6,
+	0x79, 0xc3, 0x68, 0x99, 0x97, 0x4e, 0xe7, 0xa2, 0x5d, 0x04, 0xb6, 0xb7, 0x81, 0xed, 0x82, 0xc4,
+	0x25, 0xe6, 0xfd, 0x65, 0x80, 0xdd, 0xe5, 0xab, 0x15, 0x49, 0x23, 0x74, 0x01, 0x55, 0x2e, 0x1a,
+	0x46, 0xcb, 0xb8, 0x3c, 0xeb, 0xd8, 0x6d, 0x22, 0x58, 0x7b, 0x28, 0x70, 0x95, 0x0b, 0xf4, 0x39,
+	0x98, 0x1b, 0xb2, 0x6c, 0x54, 0x5b, 0xc6, 0xa5, 0xd3, 0xf9, 0xe0, 0x49, 0x4a, 0x3f, 0x7d, 0xc0,
+	0x0a, 0x40, 0x3f, 0x40, 0x7d, 0x77, 0xa6, 0x86, 0xa9, 0xe9, 0xe6, 0x13, 0x3a, 0xdc, 0x12, 0x78,
+	0x0f, 0x7b, 0x2d, 0xb0, 0x46, 0x3c, 0x8d, 0x51, 0x03, 0xec, 0x15, 0xcd, 0x73, 0x12, 0x53, 0x5d,
+	0x47, 0x1d, 0x6f, 0x97, 0xde, 0x4f, 0x70, 0x82, 0xc9, 0x42, 0x0e, 0x78, 0x44, 0xd1, 0x05, 0xd8,
+	0x29, 0x8f, 0xe8, 0x94, 0x45, 0x25, 0x55, 0x53, 0xcb, 0x5f, 0x22, 0x15, 0x4e, 0xa2, 0x28, 0xa3,
+	0x79, 0xae, 0x8b, 0xad, 0xe3, 0xed, 0xd2, 0x7b, 0x0d, 0xe0, 0xaf, 0x65, 0xd2, 0xe5, 0xe9, 0x82,
+	0xc5, 0xe8, 0x53, 0x38, 0x7d, 0x73, 0xff, 0x36, 0x9f, 0xe6, 0x7c, 0x9d, 0xcd, 0xcb, 0x66, 0xd5,
+	0xb1, 0xa3, 0xb4, 0x71, 0x21, 0xa1, 0x2f, 0xc1, 0x25, 0x6b, 0x99, 0x4c, 0xe9, 0x1f, 0x42, 0x25,
+	0x60, 0x3c, 0x55, 0x39, 0x15, 0x76, 0xae, 0xf4, 0x60, 0x2f, 0x7b, 0x02, 0x40, 0x95, 0x56, 0xe6,
+	0x46, 0x60, 0xcd, 0x58, 0xba, 0xad, 0x4c, 0x7f, 0xab, 0xfd, 0x72, 0xc9, 0x33, 0x12, 0xd3, 0xa9,
+	0x20, 0x32, 0x29, 0x8b, 0x73, 0x4a, 0x6d, 0x44, 0x64, 0xa2, 0xc2, 0xde, 0x70, 0x96, 0xea, 0xb6,
+	0xd5, 0xb1, 0xfe, 0x3e, 0x3c, 0xa7, 0x75, 0x78, 0x4e, 0xef, 0x6f, 0x03, 0xa0, 0x1f, 0x86, 0xa3,
+	0x77, 0x6c, 0xf9, 0x05, 0x9c, 0x93, 0xe5, 0x92, 0xdf, 0xd3, 0x68, 0xca, 0x33, 0x16, 0xb3, 0x5d,
+	0xf9, 0x67, 0xa5, 0x3c, 0x2c, 0xd4, 0x43, 0x30, 0xa1, 0x24, 0xa2, 0x59, 0xde, 0x30, 0x1f, 0x81,
+	0xfd, 0x42, 0x3d, 0x04, 0x57, 0x54, 0x26, 0x3c, 0xca, 0x1b, 0xd6, 0x23, 0xf0, 0xae, 0x50, 0xbd,
+	0x16, 0xc0, 0x0d, 0x1e, 0x75, 0x9f, 0x2f, 0xce, 0xfb, 0xc7, 0x80, 0x5a, 0x69, 0x7f, 0x06, 0x56,
+	0x22, 0x65, 0x31, 0x76, 0x4e, 0xe7, 0x5c, 0x8f, 0xdd, 0xfe, 0x68, 0x58, 0x9b, 0x0a, 0x8a, 0x33,
+	0x31, 0x2f, 0x27, 0xb0, 0x80, 0xf6, 0x5b, 0x60, 0x6d, 0x2a, 0x28, 0x23, 0x0b, 0x59, 0x0e, 0x5e,
+	0x01, 0xed, 0xef, 0x05, 0x6b, 0x53, 0x41, 0xea, 0xfa, 0x74, 0x3f, 0xb7, 0xd0, 0x7e, 0x30, 0xb0,
+	0x36, 0xaf, 0xfe, 0x84, 0xea, 0x50, 0x20, 0x17, 0x4e, 0xbb, 0x38, 0xf0, 0xc3, 0x60, 0x3a, 0x18,
+	0xf6, 0x82, 0xb1, 0x5b, 0x41, 0xe7, 0xe0, 0x8c, 0xfc, 0xb0, 0xdb, 0x2f, 0x05, 0x43, 0x21, 0xbd,
+	0xe0, 0x36, 0xd8, 0x21, 0xd5, 0x83, 0xa0, 0xa0, 0x77, 0x13, 0x8c, 0x5d, 0x73, 0x1f, 0x54, 0x08,
+	0xd6, 0x41, 0x50, 0xa1, 0xbc, 0x40, 0xa7, 0x70, 0x32, 0x0e, 0xc2, 0xa9, 0x3f, 0x09, 0xfb, 0x6e,
+	0xed, 0xea, 0x25, 0xd8, 0xbf, 0xd1, 0x87, 0x7b, 0x9e, 0x45, 0xc8, 0x06, 0xd3, 0x1f, 0xfc, 0xee,
+	0x56, 0x90, 0x03, 0x76, 0x2f, 0x78, 0xe5, 0x4f, 0x6e, 0x43, 0xd7, 0xb8, 0xfa, 0x06, 0xec, 0x2e,
+	0xc9, 0xe7, 0x24, 0xa2, 0xe8, 0x04, 0xac, 0xc1, 0x70, 0x10, 0xb8, 0x15, 0xf5, 0xf5, 0x0a, 0x0f,
+	0xef, 0x5c, 0x03, 0xd5, 0xa0, 0x1a, 0x0e, 0xdd, 0x2a, 0x02, 0xa8, 0xdd, 0x4d, 0xc2, 0x89, 0x7f,
+	0xeb, 0x9a, 0x9d, 0x7f, 0x0d, 0x38, 0x1b, 0x65, 0x6c, 0x43, 0x24, 0x1d, 0xd3, 0x6c, 0xc3, 0xe6,
+	0x14, 0x7d, 0x05, 0xd6, 0x88, 0xa5, 0x31, 0xfa, 0xf0, 0xc9, 0x0b, 0x0d, 0xd4, 0xbf, 0xa5, 0x59,
+	0xd7, 0xbd, 0x51, 0xaf, 0xd2, 0xab, 0xa0, 0xef, 0xc1, 0xf9, 0x95, 0xb3, 0xb4, 0xbb, 0x5c, 0xe7,
+	0x92, 0x66, 0xe8, 0xbd, 0x5d, 0x73, 0xd5, 0x7b, 0x6c, 0x3e, 0x93, 0xc2, 0xab, 0xa0, 0xef, 0xc0,
+	0xbe, 0xa1, 0x52, 0x35, 0xf8, 0xd9, 0x7d, 0x8e, 0xef, 0xc0, 0xab, 0xa0, 0xaf, 0xc1, 0x1e, 0x97,
+	0x51, 0xc7, 0xee, 0xff, 0xe0, 0x3f, 0xdb, 0xaf, 0x5f, 0x10, 0xc1, 0xc4, 0x6c, 0x56, 0xd3, 0xa9,
+	0xbf, 0xfd, 0x2f, 0x00, 0x00, 0xff, 0xff, 0xcf, 0x63, 0x96, 0x31, 0xa0, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1365,16 +661,6 @@ type PrivateServiceClient interface {
 	JoinCluster(ctx context.Context, in *RaftNode, opts ...grpc.CallOption) (*empty.Empty, error)
 	GetAuth(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*AuthConfig, error)
 	SetAuth(ctx context.Context, in *AuthConfig, opts ...grpc.CallOption) (*AuthConfig, error)
-	CreateNodes(ctx context.Context, in *Nodes, opts ...grpc.CallOption) (*Nodes, error)
-	SearchNodes(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Nodes, error)
-	PatchNodes(ctx context.Context, in *Patches, opts ...grpc.CallOption) (*Nodes, error)
-	DelNodes(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*Counter, error)
-	CreateEdges(ctx context.Context, in *Edges, opts ...grpc.CallOption) (*Edges, error)
-	SearchEdges(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Edges, error)
-	PatchEdges(ctx context.Context, in *Patches, opts ...grpc.CallOption) (*Edges, error)
-	DelEdges(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*Counter, error)
-	EdgesFrom(ctx context.Context, in *PathFilter, opts ...grpc.CallOption) (*Edges, error)
-	EdgesTo(ctx context.Context, in *PathFilter, opts ...grpc.CallOption) (*Edges, error)
 }
 
 type privateServiceClient struct {
@@ -1421,112 +707,12 @@ func (c *privateServiceClient) SetAuth(ctx context.Context, in *AuthConfig, opts
 	return out, nil
 }
 
-func (c *privateServiceClient) CreateNodes(ctx context.Context, in *Nodes, opts ...grpc.CallOption) (*Nodes, error) {
-	out := new(Nodes)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/CreateNodes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) SearchNodes(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Nodes, error) {
-	out := new(Nodes)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/SearchNodes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) PatchNodes(ctx context.Context, in *Patches, opts ...grpc.CallOption) (*Nodes, error) {
-	out := new(Nodes)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/PatchNodes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) DelNodes(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*Counter, error) {
-	out := new(Counter)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/DelNodes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) CreateEdges(ctx context.Context, in *Edges, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/CreateEdges", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) SearchEdges(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/SearchEdges", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) PatchEdges(ctx context.Context, in *Patches, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/PatchEdges", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) DelEdges(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*Counter, error) {
-	out := new(Counter)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/DelEdges", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) EdgesFrom(ctx context.Context, in *PathFilter, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/EdgesFrom", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *privateServiceClient) EdgesTo(ctx context.Context, in *PathFilter, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.PrivateService/EdgesTo", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // PrivateServiceServer is the server API for PrivateService service.
 type PrivateServiceServer interface {
 	Ping(context.Context, *empty.Empty) (*Pong, error)
 	JoinCluster(context.Context, *RaftNode) (*empty.Empty, error)
 	GetAuth(context.Context, *empty.Empty) (*AuthConfig, error)
 	SetAuth(context.Context, *AuthConfig) (*AuthConfig, error)
-	CreateNodes(context.Context, *Nodes) (*Nodes, error)
-	SearchNodes(context.Context, *Filter) (*Nodes, error)
-	PatchNodes(context.Context, *Patches) (*Nodes, error)
-	DelNodes(context.Context, *Paths) (*Counter, error)
-	CreateEdges(context.Context, *Edges) (*Edges, error)
-	SearchEdges(context.Context, *Filter) (*Edges, error)
-	PatchEdges(context.Context, *Patches) (*Edges, error)
-	DelEdges(context.Context, *Paths) (*Counter, error)
-	EdgesFrom(context.Context, *PathFilter) (*Edges, error)
-	EdgesTo(context.Context, *PathFilter) (*Edges, error)
 }
 
 func RegisterPrivateServiceServer(s *grpc.Server, srv PrivateServiceServer) {
@@ -1605,186 +791,6 @@ func _PrivateService_SetAuth_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PrivateService_CreateNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Nodes)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).CreateNodes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/CreateNodes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).CreateNodes(ctx, req.(*Nodes))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_SearchNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Filter)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).SearchNodes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/SearchNodes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).SearchNodes(ctx, req.(*Filter))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_PatchNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Patches)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).PatchNodes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/PatchNodes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).PatchNodes(ctx, req.(*Patches))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_DelNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Paths)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).DelNodes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/DelNodes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).DelNodes(ctx, req.(*Paths))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_CreateEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Edges)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).CreateEdges(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/CreateEdges",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).CreateEdges(ctx, req.(*Edges))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_SearchEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Filter)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).SearchEdges(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/SearchEdges",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).SearchEdges(ctx, req.(*Filter))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_PatchEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Patches)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).PatchEdges(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/PatchEdges",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).PatchEdges(ctx, req.(*Patches))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_DelEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Paths)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).DelEdges(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/DelEdges",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).DelEdges(ctx, req.(*Paths))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_EdgesFrom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PathFilter)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).EdgesFrom(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/EdgesFrom",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).EdgesFrom(ctx, req.(*PathFilter))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _PrivateService_EdgesTo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PathFilter)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PrivateServiceServer).EdgesTo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.PrivateService/EdgesTo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PrivateServiceServer).EdgesTo(ctx, req.(*PathFilter))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _PrivateService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "api.PrivateService",
 	HandlerType: (*PrivateServiceServer)(nil),
@@ -1804,46 +810,6 @@ var _PrivateService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SetAuth",
 			Handler:    _PrivateService_SetAuth_Handler,
-		},
-		{
-			MethodName: "CreateNodes",
-			Handler:    _PrivateService_CreateNodes_Handler,
-		},
-		{
-			MethodName: "SearchNodes",
-			Handler:    _PrivateService_SearchNodes_Handler,
-		},
-		{
-			MethodName: "PatchNodes",
-			Handler:    _PrivateService_PatchNodes_Handler,
-		},
-		{
-			MethodName: "DelNodes",
-			Handler:    _PrivateService_DelNodes_Handler,
-		},
-		{
-			MethodName: "CreateEdges",
-			Handler:    _PrivateService_CreateEdges_Handler,
-		},
-		{
-			MethodName: "SearchEdges",
-			Handler:    _PrivateService_SearchEdges_Handler,
-		},
-		{
-			MethodName: "PatchEdges",
-			Handler:    _PrivateService_PatchEdges_Handler,
-		},
-		{
-			MethodName: "DelEdges",
-			Handler:    _PrivateService_DelEdges_Handler,
-		},
-		{
-			MethodName: "EdgesFrom",
-			Handler:    _PrivateService_EdgesFrom_Handler,
-		},
-		{
-			MethodName: "EdgesTo",
-			Handler:    _PrivateService_EdgesTo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

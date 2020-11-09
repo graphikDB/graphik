@@ -3,17 +3,18 @@ package graph
 import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/lang"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
 type NodeStore struct {
-	nodes map[string]map[string]*apipb.Node
+	nodes map[string]map[string]*structpb.Struct
 	edges *EdgeStore
 }
 
 func newNodeStore(edges *EdgeStore) *NodeStore {
 	return &NodeStore{
-		nodes: map[string]map[string]*apipb.Node{},
+		nodes: map[string]map[string]*structpb.Struct{},
 		edges: edges,
 	}
 }
@@ -33,18 +34,18 @@ func (n *NodeStore) Types() []string {
 	return nodeTypes
 }
 
-func (n *NodeStore) All() *apipb.Nodes {
-	var nodes []*apipb.Node
-	n.Range(apipb.Keyword_ANY.String(), func(node *apipb.Node) bool {
+func (n *NodeStore) All() *apipb.Structs {
+	var nodes []*structpb.Struct
+	n.Range(apipb.Keyword_ANY.String(), func(node *structpb.Struct) bool {
 		nodes = append(nodes, node)
 		return true
 	})
-	return &apipb.Nodes{
-		Nodes: nodes,
+	return &apipb.Structs{
+		Values: nodes,
 	}
 }
 
-func (n *NodeStore) Get(path string) (*apipb.Node, bool) {
+func (n *NodeStore) Get(path string) (*structpb.Struct, bool) {
 	xtype, xid := lang.SplitPath(path)
 	if c, ok := n.nodes[xtype]; ok {
 		node := c[xid]
@@ -53,17 +54,15 @@ func (n *NodeStore) Get(path string) (*apipb.Node, bool) {
 	return nil, false
 }
 
-func (n *NodeStore) Set(value *apipb.Node) *apipb.Node {
-	xtype, xid := lang.SplitPath(value.Path)
-
-	if _, ok := n.nodes[xtype]; !ok {
-		n.nodes[xtype] = map[string]*apipb.Node{}
+func (n *NodeStore) Set(value *structpb.Struct) *structpb.Struct {
+	if _, ok := n.nodes[lang.GetType(value)]; !ok {
+		n.nodes[lang.GetType(value)] = map[string]*structpb.Struct{}
 	}
-	n.nodes[xtype][xid] = value
+	n.nodes[lang.GetType(value)][lang.GetID(value)] = value
 	return value
 }
 
-func (n *NodeStore) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *apipb.Node {
+func (n *NodeStore) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *structpb.Struct {
 	xtype, xid := lang.SplitPath(value.Path)
 	if _, ok := n.nodes[xtype]; !ok {
 		return nil
@@ -76,7 +75,7 @@ func (n *NodeStore) Patch(updatedAt *timestamp.Timestamp, value *apipb.Patch) *a
 	return node
 }
 
-func (n *NodeStore) Range(nodeType string, f func(node *apipb.Node) bool) {
+func (n *NodeStore) Range(nodeType string, f func(node *structpb.Struct) bool) {
 	if nodeType == apipb.Keyword_ANY.String() {
 		for _, c := range n.nodes {
 			for _, node := range c {
@@ -123,9 +122,9 @@ func (n *NodeStore) Exists(path string) bool {
 	return ok
 }
 
-func (n *NodeStore) Filter(nodeType string, filter func(node *apipb.Node) bool) *apipb.Nodes {
-	var filtered []*apipb.Node
-	n.Range(nodeType, func(node *apipb.Node) bool {
+func (n *NodeStore) Filter(nodeType string, filter func(node *structpb.Struct) bool) *structpb.Structs {
+	var filtered []*structpb.Struct
+	n.Range(nodeType, func(node *structpb.Struct) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
@@ -136,13 +135,13 @@ func (n *NodeStore) Filter(nodeType string, filter func(node *apipb.Node) bool) 
 	}
 }
 
-func (n *NodeStore) SetAll(nodes *apipb.Nodes) {
+func (n *NodeStore) SetAll(nodes *structpb.Structs) {
 	for _, node := range nodes.Nodes {
 		n.Set(node)
 	}
 }
 
-func (n *NodeStore) DeleteAll(nodes *apipb.Nodes) {
+func (n *NodeStore) DeleteAll(nodes *structpb.Structs) {
 	for _, node := range nodes.Nodes {
 		n.Delete(node.Path)
 	}
@@ -162,11 +161,11 @@ func (n *NodeStore) Close() {
 	}
 }
 
-func (n *NodeStore) FilterSearch(filter *apipb.Filter) (*apipb.Nodes, error) {
-	var nodes []*apipb.Node
+func (n *NodeStore) FilterSearch(filter *apipb.Filter) (*structpb.Structs, error) {
+	var nodes []*structpb.Struct
 	var err error
 	var pass bool
-	n.Range(filter.Type, func(node *apipb.Node) bool {
+	n.Range(filter.Type, func(node *structpb.Struct) bool {
 		pass, err = lang.BooleanExpression(filter.Expressions, node)
 		if err != nil {
 			return false
