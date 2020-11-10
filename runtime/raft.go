@@ -66,16 +66,59 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.RaftLog, error) {
 			return nil, errors.Wrap(err, "failed to override auth")
 		}
 		return &apipb.RaftLog{
-			Log:                  &apipb.RaftLog_Auth{Auth: f.auth.Raw()},
+			Log: &apipb.RaftLog_Auth{Auth: f.auth.Raw()},
 		}, nil
 	case apipb.Op_CREATE_NODE:
 		return &apipb.RaftLog{
-			Log:                  &apipb.RaftLog_Node{Node: f.graph.SetNode(c.Val.GetNode())},
+			Log: &apipb.RaftLog_Node{Node: f.graph.SetNode(c.Val.GetNode())},
 		}, nil
 	case apipb.Op_CREATE_EDGE:
 		return &apipb.RaftLog{
-			Log:                  &apipb.RaftLog_Edge{Edge: f.graph.SetEdge(c.Val.GetEdge())},
+			Log: &apipb.RaftLog_Edge{Edge: f.graph.SetEdge(c.Val.GetEdge())},
 		}, nil
+	case apipb.Op_CREATE_NODES:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Nodes{Nodes: f.graph.SetNodes(c.Val.GetNodes().GetNodes())},
+		}, nil
+	case apipb.Op_CREATE_EDGES:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Edges{Edges: f.graph.SetEdges(c.Val.GetEdges().GetEdges())},
+		}, nil
+
+	case apipb.Op_PATCH_NODE:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Node{Node: f.graph.PatchNode(c.Val.GetNode())},
+		}, nil
+	case apipb.Op_PATCH_EDGE:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Edge{Edge: f.graph.PatchEdge(c.Val.GetEdge())},
+		}, nil
+	case apipb.Op_PATCH_NODES:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Nodes{Nodes: f.graph.PatchNodes(c.Val.GetNodes().GetNodes())},
+		}, nil
+	case apipb.Op_PATCH_EDGES:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Edges{Edges: f.graph.PatchEdges(c.Val.GetEdges().GetEdges())},
+		}, nil
+
+	case apipb.Op_DELETE_NODE:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Counter{Counter: f.graph.DeleteNode(c.Val.GetPath())},
+		}, nil
+	case apipb.Op_DELETE_EDGE:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Counter{Counter: f.graph.DeleteEdge(c.Val.GetPath())},
+		}, nil
+	case apipb.Op_DELETE_NODES:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Counter{Counter: f.graph.DeleteNodes(c.Val.GetPaths().GetPaths())},
+		}, nil
+	case apipb.Op_DELETE_EDGES:
+		return &apipb.RaftLog{
+			Log: &apipb.RaftLog_Counter{Counter: f.graph.DeleteEdges(c.Val.GetPaths().GetPaths())},
+		}, nil
+
 	default:
 		return nil, fmt.Errorf("unsupported command: %v", c.Op)
 	}

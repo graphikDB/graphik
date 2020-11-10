@@ -48,7 +48,7 @@ message Path {
 }
 
 message Paths {
-  repeated Path path =1;
+  repeated Path paths =1;
 }
 
 message Node {

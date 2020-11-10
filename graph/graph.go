@@ -93,6 +93,16 @@ func (n *Graph) PatchNode(value *apipb.Node) *apipb.Node {
 	return node
 }
 
+func (n *Graph) PatchNodes(values []*apipb.Node) *apipb.Nodes {
+	var nodes []*apipb.Node
+	for _, val := range values {
+		nodes = append(nodes, n.PatchNode(val))
+	}
+	return &apipb.Nodes{
+		Nodes: nodes,
+	}
+}
+
 func (n *Graph) RangeNode(nodeType string, f func(node *apipb.Node) bool) {
 	if nodeType == apipb.Keyword_ANY.String() {
 		for _, c := range n.nodes {
@@ -113,9 +123,11 @@ func (n *Graph) RangeNode(nodeType string, f func(node *apipb.Node) bool) {
 	}
 }
 
-func (n *Graph) DeleteNode(path *apipb.Path) bool {
+func (n *Graph) DeleteNode(path *apipb.Path) *apipb.Counter {
 	if !n.HasNode(path) {
-		return false
+		return &apipb.Counter{
+			Count: 0,
+		}
 	}
 	n.RangeFrom(path, func(e *apipb.Edge) bool {
 		n.DeleteEdge(e.Path())
@@ -133,7 +145,9 @@ func (n *Graph) DeleteNode(path *apipb.Path) bool {
 	})
 
 	delete(n.nodes[path.Type], path.Id)
-	return true
+	return &apipb.Counter{
+		Count: 1,
+	}
 }
 
 func (n *Graph) HasNode(path *apipb.Path) bool {
@@ -154,15 +168,23 @@ func (n *Graph) FilterNode(nodeType string, filter func(node *apipb.Node) bool) 
 	}
 }
 
-func (n *Graph) SetNodes(nodes []*apipb.Node) {
+func (n *Graph) SetNodes(nodes []*apipb.Node) *apipb.Nodes {
+	var returned []*apipb.Node
 	for _, node := range nodes {
-		n.SetNode(node)
+		returned = append(returned, n.SetNode(node))
+	}
+	return &apipb.Nodes{
+		Nodes: nodes,
 	}
 }
 
-func (n *Graph) DeleteNodes(nodes []*apipb.Path) {
+func (n *Graph) DeleteNodes(nodes []*apipb.Path) *apipb.Counter {
+	count := int64(0)
 	for _, node := range nodes {
-		n.DeleteNode(node)
+		count += n.DeleteNode(node).Count
+	}
+	return &apipb.Counter{
+		Count: count,
 	}
 }
 
@@ -268,16 +290,21 @@ func (n *Graph) RangeEdges(edgeType string, f func(edge *apipb.Edge) bool) {
 	}
 }
 
-func (n *Graph) DeleteEdge(path *apipb.Path) {
+func (n *Graph) DeleteEdge(path *apipb.Path) *apipb.Counter {
 	edge, ok := n.GetEdge(path)
 	if !ok {
-		return
+		return &apipb.Counter{
+			Count: 0,
+		}
 	}
 	n.edgesFrom[edge.From] = removeEdge(path, n.edgesFrom[edge.From])
 	n.edgesTo[edge.From] = removeEdge(path, n.edgesTo[edge.From])
 	n.edgesFrom[edge.To] = removeEdge(path, n.edgesFrom[edge.To])
 	n.edgesTo[edge.To] = removeEdge(path, n.edgesTo[edge.To])
 	delete(n.edges[path.Type], path.Id)
+	return &apipb.Counter{
+		Count: 1,
+	}
 }
 
 func (n *Graph) HasEdge(path *apipb.Path) bool {
@@ -354,15 +381,23 @@ func (n *Graph) FilterEdges(edgeType string, filter func(edge *apipb.Edge) bool)
 	}
 }
 
-func (n *Graph) SetEdges(edges []*apipb.Edge) {
+func (n *Graph) SetEdges(edges []*apipb.Edge) *apipb.Edges {
+	var returned []*apipb.Edge
 	for _, edge := range edges {
-		n.SetEdge(edge)
+		returned = append(returned, n.SetEdge(edge))
+	}
+	return &apipb.Edges{
+		Edges: returned,
 	}
 }
 
-func (n *Graph) DeleteEdges(edges []*apipb.Path) {
+func (n *Graph) DeleteEdges(edges []*apipb.Path) *apipb.Counter {
+	count := int64(0)
 	for _, edge := range edges {
-		n.DeleteEdge(edge)
+		count += n.DeleteEdge(edge).Count
+	}
+	return &apipb.Counter{
+		Count: count,
 	}
 }
 
@@ -387,6 +422,16 @@ func (e *Graph) PatchEdge(value *apipb.Edge) *apipb.Edge {
 	}
 	e.SetEdge(edge)
 	return edge
+}
+
+func (e *Graph) PatchEdges(values []*apipb.Edge) *apipb.Edges {
+	var edges []*apipb.Edge
+	for _, val := range values {
+		edges = append(edges, e.PatchEdge(val))
+	}
+	return &apipb.Edges{
+		Edges: edges,
+	}
 }
 
 func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) *apipb.Edges {
