@@ -6,6 +6,7 @@ import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/auth"
 	"github.com/autom8ter/graphik/graph"
+	"github.com/autom8ter/graphik/lang"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/hashicorp/raft"
@@ -29,7 +30,7 @@ type Runtime struct {
 	auth    *auth.Auth
 	mu      sync.RWMutex
 	raft    *raft.Raft
-	graph   *graph.Graph
+	vm      *lang.VM
 	close   sync.Once
 }
 
@@ -68,7 +69,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 		auth:    a,
 		raft:    nil,
 		mu:      sync.RWMutex{},
-		graph:   graph.New(),
+		vm:      lang.NewVM(graph.New()),
 		close:   sync.Once{},
 	}
 	rft, err := raft.NewRaft(config, s, logStore, stableStore, snapshots, transport)
@@ -145,7 +146,8 @@ func (a *Runtime) Authorize(intercept interface{}) (bool, error) {
 	if len(a.auth.Expressions()) == 0 {
 		return true, nil
 	}
-	return a.graph.BooleanExpression(a.auth.Expressions(), intercept)
+
+	return a.vm.PrivateBoolean(a.auth.Expressions(), intercept)
 }
 
 func (r *Runtime) Go(fn machine.Func) {

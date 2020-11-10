@@ -68,52 +68,8 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 			return errors.Wrap(err, "failed to override auth")
 		}
 		return f.auth.Raw()
-	case graph.Op_CREATE_NODES:
-		values := c.Val.(*graph.ValueSet)
-		f.graph.Nodes().SetAll(*values)
-		return *values
-	case graph.Op_PATCH_NODES:
-		var nodes = graph.ValueSet{}
-		for _, val := range *c.Val.(*graph.ValueSet) {
-			if !f.graph.Nodes().Exists(val.GetPath()) {
-				return errors.Errorf("node %s does not exist", val.GetPath())
-			}
-			n := f.graph.Nodes().Patch(c.Timestamp, val)
-			nodes = append(nodes, n)
-		}
-		return nodes
-	case graph.Op_DELETE_NODES:
-		deleted := 0
-		for _, val := range c.Val.([]string) {
-			if f.graph.Nodes().Delete(val) {
-				deleted += 1
-			}
-		}
-		return deleted
-	case graph.Op_CREATE_EDGES:
-		values := c.Val.(*graph.ValueSet)
-		f.graph.Edges().SetAll(*values)
-		return *values
-	case graph.Op_PATCH_EDGES:
-		var edges = graph.ValueSet{}
-		for _, val := range *c.Val.(*graph.ValueSet) {
-			if !f.graph.Edges().Exists(val.GetPath()) {
-				return errors.Errorf("edge %s does not exist", val.GetPath())
-			}
-			edges = append(edges, f.graph.Edges().Patch(c.Timestamp, val))
-		}
-		return edges
 
-	case graph.Op_DELETE_EDGES:
-		deleted := 0
-		for _, val := range c.Val.([]string) {
-			if f.graph.Edges().Exists(val) {
-				f.graph.Edges().Delete(val)
-				deleted += 1
-			}
-		}
-		return deleted
-	default:
+		default:
 		return fmt.Errorf("unsupported command: %v", c.Op)
 	}
 }
