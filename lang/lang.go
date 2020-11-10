@@ -56,7 +56,9 @@ func (f FuncMap) MapEval(expression string, args map[string]interface{}) (map[st
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "programming env")
 	}
-	result, details, err := program.Eval(args)
+	result, details, err := program.Eval(map[string]interface{}{
+		"input": args,
+	})
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "evaluating program")
 	}
@@ -92,7 +94,9 @@ func (f FuncMap) BoolEval(expressions []string, args map[string]interface{}) (bo
 	}
 	var passes = true
 	for _, program := range programs {
-		out, _, err := program.Eval(args)
+		out, _, err := program.Eval(map[string]interface{}{
+			"input": args,
+		})
 		if err != nil {
 			return false, err
 		}
