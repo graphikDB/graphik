@@ -75,8 +75,8 @@ message Command {
 }
 
 message Export {
-  repeated google.protobuf.Struct nodes =1;
-  repeated google.protobuf.Struct edges=2;
+  repeated Node nodes =1;
+  repeated Edge edges=2;
 }
 
 message Pong {

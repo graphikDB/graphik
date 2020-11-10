@@ -7,15 +7,15 @@ import (
 
 func (n *Node) Path() *Path {
 	return &Path{
-		Type:                 n.Type,
-		Id:                   n.Id,
+		Type: n.Type,
+		Id:   n.Id,
 	}
 }
 
 func (e *Edge) Path() *Path {
 	return &Path{
-		Type:                 e.Type,
-		Id:                   e.Id,
+		Type: e.Type,
+		Id:   e.Id,
 	}
 }
 

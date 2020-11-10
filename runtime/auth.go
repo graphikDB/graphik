@@ -2,8 +2,9 @@ package runtime
 
 import (
 	"context"
-	"github.com/autom8ter/graphik/graph"
+	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/values"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -13,22 +14,22 @@ const (
 )
 
 func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, error) {
-	path := graph.FormPath(identityType, payload[idClaim].(string))
+	path := &apipb.Path{
+		Type: identityType,
+		Id:   payload[idClaim].(string),
+	}
+	var err error
 	n, ok := a.graph.GetNode(path)
 	if !ok {
-		values := map[string]interface{}{
-			"path": path,
-		}
-		for k, v := range payload {
-			values[k] = v
-		}
-		newNode, err := a.CreateNodes(values.ValueSet{
-			values,
+		strct, _ := structpb.NewStruct(payload)
+		n, err = a.CreateNode(&apipb.Node{
+			Type:       path.Type,
+			Id:         path.Id,
+			Attributes: strct,
 		})
 		if err != nil {
 			return nil, err
 		}
-		n = newNode[0]
 	}
 	return context.WithValue(ctx, authCtxKey, n), nil
 }

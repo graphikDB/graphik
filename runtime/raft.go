@@ -4,7 +4,6 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/values"
 	"github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/hashicorp/raft"
@@ -90,14 +89,10 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 	if err := proto.Unmarshal(bits, export); err != nil {
 		return err
 	}
-	nodes := values.ValueSet{}
-	nodes.FromStructs(export.GetNodes())
-	edges := values.ValueSet{}
-	edges.FromStructs(export.GetEdges())
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	f.graph.SetNodes(nodes)
-	f.graph.SetEdges(edges)
+	f.graph.SetNodes(export.GetNodes())
+	f.graph.SetEdges(export.GetEdges())
 	return nil
 }
 
@@ -105,8 +100,8 @@ func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	export := &apipb.Export{
-		Nodes: f.graph.AllNodes().Structs(),
-		Edges: f.graph.AllEdges().Structs(),
+		Nodes: f.graph.AllNodes(),
+		Edges: f.graph.AllEdges(),
 	}
 	bits, err := proto.Marshal(export)
 	if err != nil {

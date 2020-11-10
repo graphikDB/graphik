@@ -6,10 +6,11 @@ import (
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/values"
 	"github.com/golang/protobuf/ptypes"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"time"
 )
 
-func (f *Runtime) Node(input string) (values.Values, error) {
+func (f *Runtime) Node(input *apipb.Path) (*apipb.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	node, ok := f.graph.GetNode(input)
@@ -19,13 +20,13 @@ func (f *Runtime) Node(input string) (values.Values, error) {
 	return node, nil
 }
 
-func (f *Runtime) Nodes(input *apipb.TypeFilter) (values.ValueSet, error) {
+func (f *Runtime) Nodes(input *apipb.TypeFilter) ([]*apipb.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.FilterSearchNodes(input)
 }
 
-func (f *Runtime) Edge(input string) (values.Values, error) {
+func (f *Runtime) Edge(input *apipb.Path) (*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edge, ok := f.graph.GetEdge(input)
@@ -35,25 +36,25 @@ func (f *Runtime) Edge(input string) (values.Values, error) {
 	return edge, nil
 }
 
-func (f *Runtime) Edges(input *graph.Filter) (values.ValueSet, error) {
+func (f *Runtime) Edges(input *apipb.TypeFilter) ([]*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.FilterSearchEdges(input)
 }
 
-func (f *Runtime) EdgesFrom(path string, filter *graph.Filter) (values.ValueSet, error) {
+func (f *Runtime) EdgesFrom(path *apipb.Path, filter *apipb.TypeFilter) ([]*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.RangeFilterFrom(path, filter), nil
 }
 
-func (f *Runtime) EdgesTo(path string, filter *graph.Filter) (values.ValueSet, error) {
+func (f *Runtime) EdgesTo(path *apipb.Path, filter *apipb.TypeFilter) ([]*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.RangeFilterTo(path, filter), nil
 }
 
-func (r *Runtime) CreateNodes(nodes values.ValueSet) (values.ValueSet, error) {
+func (r *Runtime) CreateNodes(nodes []*apipb.Node) ([]*apipb.Node, error) {
 	any, err := ptypes.MarshalAny(&apipb.ValueSet{
 		Values: nodes.Structs(),
 	})
@@ -74,9 +75,9 @@ func (r *Runtime) CreateNodes(nodes values.ValueSet) (values.ValueSet, error) {
 	return resp.(values.ValueSet), nil
 }
 
-func (r *Runtime) CreateNode(node values.Values) (values.Values, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_CREATE_NODES,
+func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_CREATE_NODES,
 		Val:       values.ValueSet{node},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -89,9 +90,9 @@ func (r *Runtime) CreateNode(node values.Values) (values.Values, error) {
 	return resp.(values.ValueSet)[0], nil
 }
 
-func (r *Runtime) PatchNodes(patches values.ValueSet) (values.ValueSet, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_PATCH_NODES,
+func (r *Runtime) PatchNodes(patches []*structpb.Struct) ([]*apipb.Node, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_PATCH_NODES,
 		Val:       patches,
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -104,9 +105,9 @@ func (r *Runtime) PatchNodes(patches values.ValueSet) (values.ValueSet, error) {
 	return resp.(values.ValueSet), nil
 }
 
-func (r *Runtime) PatchNode(patch values.Values) (values.Values, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_PATCH_NODES,
+func (r *Runtime) PatchNode(patch *structpb.Struct) (*apipb.Node, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_PATCH_NODES,
 		Val:       values.ValueSet{patch},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -119,9 +120,9 @@ func (r *Runtime) PatchNode(patch values.Values) (values.Values, error) {
 	return resp.(values.ValueSet)[0], nil
 }
 
-func (r *Runtime) DelNodes(paths []string) (int, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_DELETE_NODES,
+func (r *Runtime) DelNodes(paths []*apipb.Path) (int, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_DELETE_NODES,
 		Val:       paths,
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -134,9 +135,9 @@ func (r *Runtime) DelNodes(paths []string) (int, error) {
 	return resp.(int), nil
 }
 
-func (r *Runtime) DelNode(path string) (int, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_DELETE_NODES,
+func (r *Runtime) DelNode(path *apipb.Path) (int, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_DELETE_NODES,
 		Val:       []string{path},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -149,7 +150,7 @@ func (r *Runtime) DelNode(path string) (int, error) {
 	return resp.(int), nil
 }
 
-func (r *Runtime) CreateEdges(edges values.ValueSet) (values.ValueSet, error) {
+func (r *Runtime) CreateEdges(edges []*apipb.Edge) ([]*apipb.Edge, error) {
 	for _, edge := range edges {
 		if edge.GetType() == "" {
 			edge.SetType(graph.Default)
@@ -160,8 +161,8 @@ func (r *Runtime) CreateEdges(edges values.ValueSet) (values.ValueSet, error) {
 		edge.SetCreatedAt(time.Now())
 		edge.SetUpdatedAt(time.Now())
 	}
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_CREATE_EDGES,
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_CREATE_EDGES,
 		Val:       edges,
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -174,9 +175,9 @@ func (r *Runtime) CreateEdges(edges values.ValueSet) (values.ValueSet, error) {
 	return resp.(values.ValueSet), nil
 }
 
-func (r *Runtime) CreateEdge(edge values.Values) (values.Values, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_CREATE_EDGES,
+func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_CREATE_EDGES,
 		Val:       values.ValueSet{edge},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -189,10 +190,10 @@ func (r *Runtime) CreateEdge(edge values.Values) (values.Values, error) {
 	return resp.(values.ValueSet)[0], nil
 }
 
-func (r *Runtime) PatchEdges(patch values.ValueSet) (values.ValueSet, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_PATCH_EDGES,
-		Val:       patch,
+func (r *Runtime) PatchEdges(patches []*structpb.Struct) ([]*apipb.Edge, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_PATCH_EDGES,
+		Val:       patches,
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
@@ -204,9 +205,9 @@ func (r *Runtime) PatchEdges(patch values.ValueSet) (values.ValueSet, error) {
 	return resp.(values.ValueSet), nil
 }
 
-func (r *Runtime) PatchEdge(patch values.Values) (values.Values, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_PATCH_EDGES,
+func (r *Runtime) PatchEdge(patch *structpb.Struct) (*apipb.Edge, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_PATCH_EDGES,
 		Val:       values.ValueSet{patch},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -219,9 +220,9 @@ func (r *Runtime) PatchEdge(patch values.Values) (values.Values, error) {
 	return resp.(values.ValueSet)[0], nil
 }
 
-func (r *Runtime) DelEdges(paths []string) (int, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_DELETE_EDGES,
+func (r *Runtime) DelEdges(paths []*apipb.Path) (int, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_DELETE_EDGES,
 		Val:       paths,
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -234,9 +235,9 @@ func (r *Runtime) DelEdges(paths []string) (int, error) {
 	return resp.(int), nil
 }
 
-func (r *Runtime) DelEdge(path string) (int, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_DELETE_EDGES,
+func (r *Runtime) DelEdge(path *apipb.Path) (int, error) {
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_DELETE_EDGES,
 		Val:       []string{path},
 		Timestamp: time.Now().UnixNano(),
 	})

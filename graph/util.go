@@ -7,7 +7,6 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/mitchellh/mapstructure"
 	"io"
-	"strings"
 )
 
 var (
@@ -20,21 +19,6 @@ var (
 	}
 	unmarshaller = &jsonpb.Unmarshaler{}
 )
-
-func FormPath(xtype, xid string) string {
-	return strings.Join([]string{xtype, xid}, "/")
-}
-
-func SplitPath(path string) (string, string) {
-	split := strings.Split(path, "/")
-	if len(split) == 1 {
-		return split[0], ""
-	}
-	if len(split) == 2 {
-		return split[0], split[1]
-	}
-	return "", ""
-}
 
 func UUID() string {
 	b := make([]byte, 16)
