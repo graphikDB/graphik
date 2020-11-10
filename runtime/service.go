@@ -107,7 +107,7 @@ func (r *Runtime) PatchNode(patch *apipb.Node) (*apipb.Node, error) {
 	return resp.GetNode(), nil
 }
 
-func (r *Runtime) DelNodes(paths *apipb.Paths) (int64, error) {
+func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 	resp, err := r.execute(&apipb.Command{
 		Op: apipb.Op_DELETE_NODES,
 		Val: &apipb.RaftLog{
@@ -116,12 +116,12 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (int64, error) {
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	return resp.GetCounter(), nil
 }
 
-func (r *Runtime) DelNode(path *apipb.Path) (int64, error) {
+func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
 	resp, err := r.execute(&apipb.Command{
 		Op: apipb.Op_DELETE_NODES,
 		Val: &apipb.RaftLog{
@@ -130,7 +130,7 @@ func (r *Runtime) DelNode(path *apipb.Path) (int64, error) {
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	return resp.GetCounter(), nil
 }
@@ -202,7 +202,7 @@ func (r *Runtime) PatchEdge(patch *apipb.Edge) (*apipb.Edge, error) {
 	return resp.GetEdge(), nil
 }
 
-func (r *Runtime) DelEdges(paths *apipb.Paths) (int64, error) {
+func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
 	resp, err := r.execute(&apipb.Command{
 		Op: apipb.Op_DELETE_EDGES,
 		Val: &apipb.RaftLog{
@@ -211,12 +211,12 @@ func (r *Runtime) DelEdges(paths *apipb.Paths) (int64, error) {
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	return resp.GetCounter(), nil
 }
 
-func (r *Runtime) DelEdge(path *apipb.Path) (int64, error) {
+func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
 	resp, err := r.execute(&apipb.Command{
 		Op: apipb.Op_DELETE_EDGES,
 		Val: &apipb.RaftLog{
@@ -225,7 +225,7 @@ func (r *Runtime) DelEdge(path *apipb.Path) (int64, error) {
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	return resp.GetCounter(), nil
 }

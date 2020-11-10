@@ -47,7 +47,7 @@ func Test(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	client := apipb.NewPrivateServiceClient(conn)
+	client := apipb.NewConfigServiceClient(conn)
 	pong, err := client.Ping(ctx, &empty.Empty{})
 	if err != nil {
 		t.Fatal(err)

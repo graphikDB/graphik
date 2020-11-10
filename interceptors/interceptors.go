@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/runtime"
-	"github.com/autom8ter/graphik/values"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
@@ -37,11 +36,11 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
-		pass, err := runtime.Authorize(values.NewValues(map[string]interface{}{
+		pass, err := runtime.Authorize(map[string]interface{}{
 			"request_path": info.FullMethod,
 			"user":         runtime.NodeContext(ctx),
 			"request":      graph.ToMap(req),
-		}))
+		})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
@@ -70,11 +69,11 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
-		pass, err := runtime.Authorize(values.NewValues(map[string]interface{}{
+		pass, err := runtime.Authorize(map[string]interface{}{
 			"request_path": info.FullMethod,
 			"user":         runtime.NodeContext(ctx),
 			"request":      graph.ToMap(srv),
-		}))
+		})
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}

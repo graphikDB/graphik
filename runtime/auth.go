@@ -3,7 +3,6 @@ package runtime
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/values"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -34,10 +33,14 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 	return context.WithValue(ctx, authCtxKey, n), nil
 }
 
-func (s *Runtime) NodeContext(ctx context.Context) values.Values {
-	val, ok := ctx.Value(authCtxKey).(values.Values)
+func (s *Runtime) NodeContext(ctx context.Context) *apipb.Node {
+	val, ok := ctx.Value(authCtxKey).(*apipb.Node)
 	if ok {
 		return val
+	}
+	val2, ok := ctx.Value(authCtxKey).(apipb.Node)
+	if ok {
+		return &val2
 	}
 	return nil
 }

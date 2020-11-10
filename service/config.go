@@ -1,4 +1,4 @@
-package private
+package service
 
 import (
 	"context"
@@ -9,37 +9,37 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Service struct {
+type Config struct {
 	runtime *runtime.Runtime
 }
 
-func NewService(runtime *runtime.Runtime) *Service {
-	return &Service{runtime: runtime}
+func NewConfig(runtime *runtime.Runtime) *Config {
+	return &Config{runtime: runtime}
 }
 
-func (s *Service) implements() apipb.PrivateServiceServer {
+func (s *Config) implements() apipb.ConfigServiceServer {
 	return s
 }
 
-func (s *Service) JoinCluster(ctx context.Context, request *apipb.RaftNode) (*empty.Empty, error) {
+func (s *Config) JoinCluster(ctx context.Context, request *apipb.RaftNode) (*empty.Empty, error) {
 	if err := s.runtime.JoinNode(request.GetNodeId(), request.GetAddress()); err != nil {
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
 	return &empty.Empty{}, nil
 }
 
-func (s *Service) GetAuth(ctx context.Context, empty *empty.Empty) (*apipb.AuthConfig, error) {
+func (s *Config) GetAuth(ctx context.Context, empty *empty.Empty) (*apipb.AuthConfig, error) {
 	return s.runtime.Auth().Raw(), nil
 }
 
-func (s *Service) SetAuth(ctx context.Context, request *apipb.AuthConfig) (*apipb.AuthConfig, error) {
+func (s *Config) SetAuth(ctx context.Context, request *apipb.AuthConfig) (*apipb.AuthConfig, error) {
 	if err := s.runtime.Auth().Override(request); err != nil {
 		return nil, err
 	}
 	return s.runtime.Auth().Raw(), nil
 }
 
-func (s *Service) Ping(ctx context.Context, r *empty.Empty) (*apipb.Pong, error) {
+func (s *Config) Ping(ctx context.Context, r *empty.Empty) (*apipb.Pong, error) {
 	return &apipb.Pong{
 		Message: "PONG",
 	}, nil

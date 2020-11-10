@@ -6,7 +6,7 @@ import (
 	"github.com/autom8ter/graphik/interceptors"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
-	"github.com/autom8ter/graphik/service/private"
+	"github.com/autom8ter/graphik/service"
 	"github.com/autom8ter/machine"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -25,8 +25,15 @@ import (
 	"time"
 )
 
-func init() {
+func main() {
 	godotenv.Load()
+	cfg := &apipb.Config{
+		Http: &apipb.HTTPConfig{},
+		Grpc: &apipb.GRPCConfig{},
+		Raft: &apipb.RaftConfig{},
+		Auth: &apipb.AuthConfig{},
+	}
+
 	pflag.CommandLine.StringVar(&cfg.Grpc.Bind, "grpc.bind", ":7820", "")
 	pflag.CommandLine.StringVar(&cfg.Http.Bind, "http.bind", ":7830", "")
 	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedHeaders, "http.headers", nil, "cors allowed headers")
@@ -37,30 +44,19 @@ func init() {
 	pflag.CommandLine.StringVar(&cfg.Raft.StoragePath, "raft.storage.path", "/tmp/graphik", "")
 	pflag.CommandLine.StringSliceVar(&cfg.Auth.JwksSources, "auth.jwks", nil, "authorizaed jwks uris")
 	pflag.CommandLine.StringSliceVar(&cfg.Auth.AuthExpressions, "auth.expressions", nil, "auth middleware expressions")
-}
 
-var (
-	cfg = &apipb.Config{
-		Http: &apipb.HTTPConfig{},
-		Grpc: &apipb.GRPCConfig{},
-		Raft: &apipb.RaftConfig{},
-		Auth: &apipb.AuthConfig{},
-	}
-)
-
-func main() {
 	pflag.Parse()
 	cfg.SetDefaults()
 	run(context.Background(), cfg)
 }
 
-func run(ctx context.Context, config *apipb.Config) {
+func run(ctx context.Context, cfg *apipb.Config) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
-	runtim, err := runtime.New(ctx, config)
+	runtim, err := runtime.New(ctx, cfg)
 	if err != nil {
 		logger.Error("failed to create runtime", zap.Error(err))
 		return
@@ -78,7 +74,7 @@ func run(ctx context.Context, config *apipb.Config) {
 	}
 
 	runtim.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", config.GetHttp().GetBind())
+		lis, err := net.Listen("tcp", cfg.GetHttp().GetBind())
 		if err != nil {
 			logger.Error("failed to create http server listener", zap.Error(err))
 			return
@@ -107,13 +103,12 @@ func run(ctx context.Context, config *apipb.Config) {
 		),
 	)
 
-	privateService := private.NewService(runtim)
-
-	apipb.RegisterPrivateServiceServer(gserver, privateService)
+	apipb.RegisterConfigServiceServer(gserver, service.NewConfig(runtim))
+	apipb.RegisterGraphServiceServer(gserver, service.NewGraph(runtim))
 	grpc_prometheus.Register(gserver)
 
 	runtim.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", config.GetGrpc().GetBind())
+		lis, err := net.Listen("tcp", cfg.GetGrpc().GetBind())
 		if err != nil {
 			logger.Error("failed to create gRPC server listener", zap.Error(err))
 			return

@@ -38,6 +38,10 @@ enum Keyword {
   DEFAULT =2;
 }
 
+message Counter {
+  int64 count =1;
+}
+
 message Path {
   string type =1;
   string id =2;
@@ -83,7 +87,7 @@ message RaftLog {
     Path path =5;
     Paths paths =6;
     AuthConfig auth =7;
-    int64 counter =8;
+    Counter counter =8;
   }
 }
 
@@ -150,9 +154,31 @@ message Config {
   AuthConfig auth =4;
 }
 
-service PrivateService {
+service ConfigService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
   rpc GetAuth(google.protobuf.Empty) returns(AuthConfig){}
   rpc SetAuth(AuthConfig) returns(AuthConfig){}
+}
+
+service GraphService {
+  rpc CreateNode(Node) returns(Node){}
+  rpc CreateNodes(Nodes) returns(Nodes){}
+  rpc GetNode(Path) returns(Node){}
+  rpc GetNodes(Paths) returns(Nodes){}
+  rpc SearchNodes(TypeFilter) returns(Nodes){}
+  rpc PatchNode(Node) returns(Node){}
+  rpc PatchNodes(Nodes) returns(Nodes){}
+  rpc DelNode(Path) returns(Counter){}
+  rpc DelNodes(Paths) returns(Counter){}
+
+  rpc CreateEdge(Edge) returns(Edge){}
+  rpc CreateEdges(Edges) returns(Edges){}
+  rpc GetEdge(Path) returns(Edge){}
+  rpc GetEdges(Paths) returns(Edges){}
+  rpc SearchEdges(TypeFilter) returns(Edges){}
+  rpc PatchEdge(Edge) returns(Edge){}
+  rpc PatchEdges(Edges) returns(Edges){}
+  rpc DelEdge(Path) returns(Counter){}
+  rpc DelEdges(Paths) returns(Counter){}
 }

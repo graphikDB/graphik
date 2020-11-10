@@ -93,7 +93,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to join cluster")
 		}
-		client := apipb.NewPrivateServiceClient(conn)
+		client := apipb.NewConfigServiceClient(conn)
 		_, err = client.JoinCluster(ctx, &apipb.RaftNode{
 			NodeId:  cfg.GetRaft().GetNodeId(),
 			Address: cfg.GetRaft().GetBind(),
