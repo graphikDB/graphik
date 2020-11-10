@@ -11,12 +11,18 @@ import "google/protobuf/empty.proto";
 
 enum Op {
   CREATE_NODES = 0;
-  PATCH_NODES = 1;
-  DELETE_NODES = 2;
-  CREATE_EDGES = 3;
-  PATCH_EDGES = 4;
-  DELETE_EDGES = 5;
-  SET_AUTH  = 6;
+  CREATE_NODE =1;
+  PATCH_NODES = 2;
+  PATCH_NODE = 3;
+  DELETE_NODES = 4;
+  DELETE_NODE =5;
+  CREATE_EDGES = 6;
+  CREATE_EDGE =7;
+  PATCH_EDGES = 8;
+  PATCH_EDGE =9;
+  DELETE_EDGES = 10;
+  DELETE_EDGE =11;
+  SET_AUTH  = 12;
 }
 
 enum Cascade {
@@ -31,9 +37,14 @@ enum Keyword {
   ANY =1;
   DEFAULT =2;
 }
+
 message Path {
   string type =1;
   string id =2;
+}
+
+message Paths {
+  repeated Path path =1;
 }
 
 message Node {
@@ -42,6 +53,10 @@ message Node {
   google.protobuf.Struct attributes =3;
   int64 created_at =4;
   int64 updated_at =5;
+}
+
+message Nodes {
+  repeated Node nodes =1;
 }
 
 message Edge {
@@ -53,6 +68,23 @@ message Edge {
   Path to =6;
   int64 created_at =10;
   int64 updated_at =11;
+}
+
+message Edges {
+  repeated Edge edges =1;
+}
+
+message RaftLog {
+  oneof log {
+    Node node =1;
+    Nodes nodes =2;
+    Edge edge =3;
+    Edges edges =4;
+    Path path =5;
+    Paths paths =6;
+    AuthConfig auth =7;
+    int64 counter =8;
+  }
 }
 
 message TypeFilter {
@@ -70,13 +102,13 @@ message PathFilter {
 
 message Command {
   Op op =1;
-  google.protobuf.Any val =2;
+  RaftLog val =2;
   int64 timestamp =3;
 }
 
 message Export {
-  repeated Node nodes =1;
-  repeated Edge edges=2;
+  Nodes nodes =1;
+  Edges edges=2;
 }
 
 message Pong {

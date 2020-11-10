@@ -2,7 +2,6 @@ package graph
 
 import (
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/sortable"
 	"sort"
 	"time"
 )
@@ -43,14 +42,15 @@ func (n *Graph) NodeTypes() []string {
 	return nodeTypes
 }
 
-func (n *Graph) AllNodes() []*apipb.Node {
+func (n *Graph) AllNodes() *apipb.Nodes {
 	var nodes []*apipb.Node
 	n.RangeNode(apipb.Keyword_ANY.String(), func(node *apipb.Node) bool {
 		nodes = append(nodes, node)
 		return true
 	})
-	sortNodes(nodes)
-	return nodes
+	return &apipb.Nodes{
+		Nodes: nodes,
+	}
 }
 
 func (n *Graph) GetNode(path *apipb.Path) (*apipb.Node, bool) {
@@ -141,7 +141,7 @@ func (n *Graph) HasNode(path *apipb.Path) bool {
 	return ok
 }
 
-func (n *Graph) FilterNode(nodeType string, filter func(node *apipb.Node) bool) []*apipb.Node {
+func (n *Graph) FilterNode(nodeType string, filter func(node *apipb.Node) bool) *apipb.Nodes {
 	var filtered []*apipb.Node
 	n.RangeNode(nodeType, func(node *apipb.Node) bool {
 		if filter(node) {
@@ -149,8 +149,9 @@ func (n *Graph) FilterNode(nodeType string, filter func(node *apipb.Node) bool) 
 		}
 		return true
 	})
-	sortNodes(filtered)
-	return filtered
+	return &apipb.Nodes{
+		Nodes: filtered,
+	}
 }
 
 func (n *Graph) SetNodes(nodes []*apipb.Node) {
@@ -187,7 +188,7 @@ func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) ([]*apipb.Node, erro
 		}
 		return len(nodes) < int(filter.Limit)
 	})
-	sortNodes(nodes)
+
 	return nodes, err
 }
 
@@ -207,14 +208,15 @@ func (n *Graph) EdgeTypes() []string {
 	return edgeTypes
 }
 
-func (n *Graph) AllEdges() []*apipb.Edge {
+func (n *Graph) AllEdges() *apipb.Edges {
 	var edges []*apipb.Edge
 	n.RangeEdges(apipb.Keyword_ANY.String(), func(edge *apipb.Edge) bool {
 		edges = append(edges, edge)
 		return true
 	})
-	sortEdge(edges)
-	return edges
+	return &apipb.Edges{
+		Edges: edges,
+	}
 }
 
 func (n *Graph) GetEdge(path *apipb.Path) (*apipb.Edge, bool) {
@@ -303,7 +305,7 @@ func (e *Graph) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 	}
 }
 
-func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) []*apipb.Edge {
+func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
 	e.RangeFrom(path, func(e *apipb.Edge) bool {
 		if e.GetType() != filter.Type {
@@ -315,11 +317,12 @@ func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) []*a
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	sortEdge(edges)
-	return edges
+	return &apipb.Edges{
+		Edges: edges,
+	}
 }
 
-func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.TypeFilter) []*apipb.Edge {
+func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
 	e.RangeTo(path, func(e *apipb.Edge) bool {
 		if e.GetType() != filter.Type {
@@ -331,11 +334,12 @@ func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.TypeFilter) []*api
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	sortEdge(edges)
-	return edges
+	return &apipb.Edges{
+		Edges: edges,
+	}
 }
 
-func (n *Graph) FilterEdges(edgeType string, filter func(edge *apipb.Edge) bool) []*apipb.Edge {
+func (n *Graph) FilterEdges(edgeType string, filter func(edge *apipb.Edge) bool) *apipb.Edges {
 	var filtered []*apipb.Edge
 	n.RangeEdges(edgeType, func(node *apipb.Edge) bool {
 		if filter(node) {
@@ -343,8 +347,9 @@ func (n *Graph) FilterEdges(edgeType string, filter func(edge *apipb.Edge) bool)
 		}
 		return true
 	})
-	sortEdge(filtered)
-	return filtered
+	return &apipb.Edges{
+		Edges: filtered,
+	}
 }
 
 func (n *Graph) SetEdges(edges []*apipb.Edge) {
@@ -382,9 +387,8 @@ func (e *Graph) PatchEdge(value *apipb.Edge) *apipb.Edge {
 	return edge
 }
 
-func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) ([]*apipb.Edge, error) {
+func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
-	var err error
 	var pass bool
 	e.RangeEdges(filter.Type, func(edge *apipb.Edge) bool {
 		pass, _ = BooleanExpression(filter.Expressions, edge)
@@ -393,8 +397,9 @@ func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) ([]*apipb.Edge, erro
 		}
 		return len(edges) < int(filter.Limit)
 	})
-	sortEdge(edges)
-	return edges, err
+	return &apipb.Edges{
+		Edges: edges,
+	}
 }
 
 func removeEdge(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
@@ -405,34 +410,4 @@ func removeEdge(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
 		}
 	}
 	return newPaths
-}
-
-func sortNodes(nodes []*apipb.Node) {
-	s := sortable.Sortable{
-		LenFunc: func() int {
-			return len(nodes)
-		},
-		LessFunc: func(i, j int) bool {
-			return nodes[i].UpdatedAt < nodes[j].UpdatedAt
-		},
-		SwapFunc: func(i, j int) {
-			nodes[i], nodes[j] = nodes[j], nodes[i]
-		},
-	}
-	s.Sort()
-}
-
-func sortEdge(edges []*apipb.Edge) {
-	s := sortable.Sortable{
-		LenFunc: func() int {
-			return len(edges)
-		},
-		LessFunc: func(i, j int) bool {
-			return edges[i].UpdatedAt < edges[j].UpdatedAt
-		},
-		SwapFunc: func(i, j int) {
-			edges[i], edges[j] = edges[j], edges[i]
-		},
-	}
-	s.Sort()
 }

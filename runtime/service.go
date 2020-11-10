@@ -4,9 +4,6 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/graph"
-	"github.com/autom8ter/graphik/values"
-	"github.com/golang/protobuf/ptypes"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"time"
 )
 
@@ -36,216 +33,199 @@ func (f *Runtime) Edge(input *apipb.Path) (*apipb.Edge, error) {
 	return edge, nil
 }
 
-func (f *Runtime) Edges(input *apipb.TypeFilter) ([]*apipb.Edge, error) {
+func (f *Runtime) Edges(input *apipb.TypeFilter) *apipb.Edges {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.FilterSearchEdges(input)
 }
 
-func (f *Runtime) EdgesFrom(path *apipb.Path, filter *apipb.TypeFilter) ([]*apipb.Edge, error) {
+func (f *Runtime) EdgesFrom(path *apipb.Path, filter *apipb.TypeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.RangeFilterFrom(path, filter), nil
 }
 
-func (f *Runtime) EdgesTo(path *apipb.Path, filter *apipb.TypeFilter) ([]*apipb.Edge, error) {
+func (f *Runtime) EdgesTo(path *apipb.Path, filter *apipb.TypeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.RangeFilterTo(path, filter), nil
 }
 
-func (r *Runtime) CreateNodes(nodes []*apipb.Node) ([]*apipb.Node, error) {
-	any, err := ptypes.MarshalAny(&apipb.ValueSet{
-		Values: nodes.Structs(),
-	})
-	if err != nil {
-		return nil, err
-	}
+func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_CREATE_NODES,
-		Val:       any,
+		Op: apipb.Op_CREATE_NODES,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Nodes{Nodes: nodes},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err, ok := resp.(error); ok {
-		return nil, err
-	}
-	return resp.(values.ValueSet), nil
+	return resp.GetNodes(), nil
 }
 
 func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_CREATE_NODES,
-		Val:       values.ValueSet{node},
+		Op: apipb.Op_CREATE_NODE,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Node{Node: node},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err, ok := resp.(error); ok {
-		return nil, err
-	}
-	return resp.(values.ValueSet)[0], nil
+	return resp.GetNode(), nil
 }
 
-func (r *Runtime) PatchNodes(patches []*structpb.Struct) ([]*apipb.Node, error) {
+func (r *Runtime) PatchNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_PATCH_NODES,
-		Val:       patches,
+		Op: apipb.Op_PATCH_NODES,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Nodes{Nodes: nodes},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err := resp.(error); err != nil {
-		return nil, err
-	}
-	return resp.(values.ValueSet), nil
+	return resp.GetNodes(), nil
 }
 
-func (r *Runtime) PatchNode(patch *structpb.Struct) (*apipb.Node, error) {
+func (r *Runtime) PatchNode(patch *apipb.Node) (*apipb.Node, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_PATCH_NODES,
-		Val:       values.ValueSet{patch},
+		Op: apipb.Op_PATCH_NODE,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Node{Node: patch},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err, ok := resp.(error); ok {
-		return nil, err
-	}
-	return resp.(values.ValueSet)[0], nil
+	return resp.GetNode(), nil
 }
 
-func (r *Runtime) DelNodes(paths []*apipb.Path) (int, error) {
+func (r *Runtime) DelNodes(paths *apipb.Paths) (int64, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_DELETE_NODES,
-		Val:       paths,
+		Op: apipb.Op_DELETE_NODES,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Paths{Paths: paths},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return 0, err
 	}
-	if err := resp.(error); err != nil {
-		return 0, err
-	}
-	return resp.(int), nil
+	return resp.GetCounter(), nil
 }
 
-func (r *Runtime) DelNode(path *apipb.Path) (int, error) {
+func (r *Runtime) DelNode(path *apipb.Path) (int64, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_DELETE_NODES,
-		Val:       []string{path},
+		Op: apipb.Op_DELETE_NODES,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Path{Path: path},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return 0, err
 	}
-	if err := resp.(error); err != nil {
-		return 0, err
-	}
-	return resp.(int), nil
+	return resp.GetCounter(), nil
 }
 
-func (r *Runtime) CreateEdges(edges []*apipb.Edge) ([]*apipb.Edge, error) {
-	for _, edge := range edges {
+func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
+	now := time.Now().UnixNano()
+	for _, edge := range edges.GetEdges() {
 		if edge.GetType() == "" {
-			edge.SetType(graph.Default)
+			edge.Type = apipb.Keyword_DEFAULT.String()
 		}
-		if edge.GetID() == "" {
-			edge.SetID(graph.UUID())
+		if edge.GetId() == "" {
+			edge.Id = graph.UUID()
 		}
-		edge.SetCreatedAt(time.Now())
-		edge.SetUpdatedAt(time.Now())
+		edge.CreatedAt = now
+		edge.UpdatedAt = now
 	}
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_CREATE_EDGES,
-		Val:       edges,
-		Timestamp: time.Now().UnixNano(),
+		Op: apipb.Op_CREATE_EDGES,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Edges{Edges: edges},
+		},
+		Timestamp: now,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err := resp.(error); err != nil {
-		return nil, err
-	}
-	return resp.(values.ValueSet), nil
+	return resp.GetEdges(), nil
 }
 
 func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_CREATE_EDGES,
-		Val:       values.ValueSet{edge},
+		Op: apipb.Op_CREATE_EDGE,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Edge{Edge: edge},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err := resp.(error); err != nil {
-		return nil, err
-	}
-	return resp.(values.ValueSet)[0], nil
+	return resp.GetEdge(), nil
 }
 
-func (r *Runtime) PatchEdges(patches []*structpb.Struct) ([]*apipb.Edge, error) {
+func (r *Runtime) PatchEdges(patches *apipb.Edges) (*apipb.Edges, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_PATCH_EDGES,
-		Val:       patches,
+		Op: apipb.Op_PATCH_EDGES,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Edges{Edges: patches},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err := resp.(error); err != nil {
-		return nil, err
-	}
-	return resp.(values.ValueSet), nil
+	return resp.GetEdges(), nil
 }
 
-func (r *Runtime) PatchEdge(patch *structpb.Struct) (*apipb.Edge, error) {
+func (r *Runtime) PatchEdge(patch *apipb.Edge) (*apipb.Edge, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_PATCH_EDGES,
-		Val:       values.ValueSet{patch},
+		Op: apipb.Op_PATCH_EDGE,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Edge{Edge: patch},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err := resp.(error); err != nil {
-		return nil, err
-	}
-	return resp.(values.ValueSet)[0], nil
+	return resp.GetEdge(), nil
 }
 
-func (r *Runtime) DelEdges(paths []*apipb.Path) (int, error) {
+func (r *Runtime) DelEdges(paths *apipb.Paths) (int64, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_DELETE_EDGES,
-		Val:       paths,
+		Op: apipb.Op_DELETE_EDGES,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Paths{Paths: paths},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return 0, err
 	}
-	if err := resp.(error); err != nil {
-		return 0, err
-	}
-	return resp.(int), nil
+	return resp.GetCounter(), nil
 }
 
-func (r *Runtime) DelEdge(path *apipb.Path) (int, error) {
+func (r *Runtime) DelEdge(path *apipb.Path) (int64, error) {
 	resp, err := r.execute(&apipb.Command{
-		Op:        apipb.Op_DELETE_EDGES,
-		Val:       []string{path},
+		Op: apipb.Op_DELETE_EDGES,
+		Val: &apipb.RaftLog{
+			Log: &apipb.RaftLog_Path{Path: path},
+		},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
 		return 0, err
 	}
-	if err := resp.(error); err != nil {
-		return 0, err
-	}
-	return resp.(int), nil
+	return resp.GetCounter(), nil
 }

@@ -5,7 +5,6 @@ import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/gogo/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -63,11 +62,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 	defer f.mu.Unlock()
 	switch c.Op {
 	case apipb.Op_SET_AUTH:
-		var auth apipb.AuthConfig
-		if err := ptypes.UnmarshalAny(c.Val, &auth); err != nil {
-			return err
-		}
-		if err := f.auth.Override(&auth); err != nil {
+		if err := f.auth.Override(c.Val.GetAuth()); err != nil {
 			return errors.Wrap(err, "failed to override auth")
 		}
 		return f.auth.Raw()
@@ -91,8 +86,8 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	f.graph.SetNodes(export.GetNodes())
-	f.graph.SetEdges(export.GetEdges())
+	f.graph.SetNodes(export.GetNodes().GetNodes())
+	f.graph.SetEdges(export.GetEdges().GetEdges())
 	return nil
 }
 
