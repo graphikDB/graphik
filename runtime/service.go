@@ -20,7 +20,9 @@ func (f *Runtime) Node(input *apipb.Path) (*apipb.Node, error) {
 func (f *Runtime) Nodes(input *apipb.TypeFilter) (*apipb.Nodes, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.FilterSearchNodes(input)
+	nodes := f.graph.FilterSearchNodes(input)
+	nodes.Sort()
+	return nodes, nil
 }
 
 func (f *Runtime) Edge(input *apipb.Path) (*apipb.Edge, error) {
@@ -36,19 +38,25 @@ func (f *Runtime) Edge(input *apipb.Path) (*apipb.Edge, error) {
 func (f *Runtime) Edges(input *apipb.TypeFilter) *apipb.Edges {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.FilterSearchEdges(input)
+	edges := f.graph.FilterSearchEdges(input)
+	edges.Sort()
+	return edges
 }
 
 func (f *Runtime) EdgesFrom(path *apipb.Path, filter *apipb.TypeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.RangeFilterFrom(path, filter), nil
+	edges := f.graph.RangeFilterFrom(path, filter)
+	edges.Sort()
+	return edges, nil
 }
 
 func (f *Runtime) EdgesTo(path *apipb.Path, filter *apipb.TypeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.RangeFilterTo(path, filter), nil
+	edges := f.graph.RangeFilterTo(path, filter)
+	edges.Sort()
+	return edges, nil
 }
 
 func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
@@ -62,7 +70,9 @@ func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetNodes(), nil
+	respNodes := resp.GetNodes()
+	respNodes.Sort()
+	return respNodes, nil
 }
 
 func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
@@ -90,7 +100,9 @@ func (r *Runtime) PatchNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetNodes(), nil
+	respNodes := resp.GetNodes()
+	respNodes.Sort()
+	return respNodes, nil
 }
 
 func (r *Runtime) PatchNode(patch *apipb.Node) (*apipb.Node, error) {
@@ -157,7 +169,9 @@ func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetEdges(), nil
+	redges := resp.GetEdges()
+	redges.Sort()
+	return redges, nil
 }
 
 func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
@@ -185,7 +199,9 @@ func (r *Runtime) PatchEdges(patches *apipb.Edges) (*apipb.Edges, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetEdges(), nil
+	redges := resp.GetEdges()
+	redges.Sort()
+	return redges, nil
 }
 
 func (r *Runtime) PatchEdge(patch *apipb.Edge) (*apipb.Edge, error) {

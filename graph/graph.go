@@ -196,15 +196,11 @@ func (n *Graph) ClearNodes(nodeType string) {
 	}
 }
 
-func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) (*apipb.Nodes, error) {
+func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) *apipb.Nodes {
 	var nodes []*apipb.Node
-	var err error
 	var pass bool
 	n.RangeNode(filter.Type, func(node *apipb.Node) bool {
-		pass, err = BooleanExpression(filter.Expressions, node)
-		if err != nil {
-			return false
-		}
+		pass, _ = BooleanExpression(filter.Expressions, node)
 		if pass {
 			nodes = append(nodes, node)
 		}
@@ -213,7 +209,7 @@ func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) (*apipb.Nodes, error
 
 	return &apipb.Nodes{
 		Nodes: nodes,
-	}, err
+	}
 }
 
 func (n *Graph) EdgeCount(edgeType string) int {
