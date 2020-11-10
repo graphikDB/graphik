@@ -9,6 +9,11 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 
+message Export {
+  repeated google.protobuf.Struct nodes =1;
+  repeated google.protobuf.Struct edges=2;
+}
+
 message Pong {
   string message =1;
 }

@@ -7,10 +7,12 @@ import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/gogo/protobuf/proto"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"io"
+	"io/ioutil"
 )
 
 func (s *Runtime) JoinNode(nodeID, addr string) error {
@@ -79,29 +81,37 @@ func (f *Runtime) Snapshot() (raft.FSMSnapshot, error) {
 }
 
 func (f *Runtime) Restore(closer io.ReadCloser) error {
-	export := &graph.Export{}
-	if err := gob.NewDecoder(closer).Decode(export); err != nil {
+	export := &apipb.Export{}
+	bits, err := ioutil.ReadAll(closer)
+	if err != nil {
 		return err
 	}
+	if err := proto.Unmarshal(bits, export); err != nil {
+		return err
+	}
+	nodes := graph.ValueSet{}
+	nodes.FromStructs(export.GetNodes())
+	edges := graph.ValueSet{}
+	edges.FromStructs(export.GetEdges())
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	f.graph.SetNodes(export.Nodes)
-	f.graph.SetEdges(export.Edges)
+	f.graph.SetNodes(nodes)
+	f.graph.SetEdges(edges)
 	return nil
 }
 
 func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	export := &graph.Export{
-		Nodes: f.graph.AllNodes(),
-		Edges: f.graph.AllEdges(),
+	export := &apipb.Export{
+		Nodes: f.graph.AllNodes().Structs(),
+		Edges: f.graph.AllEdges().Structs(),
 	}
-	buf := bytes.NewBuffer(nil)
-	if err := gob.NewEncoder(buf).Encode(export); err != nil {
+	bits, err := proto.Marshal(export)
+	if err != nil {
 		return err
 	}
-	_, err := sink.Write(buf.Bytes())
+	_, err = sink.Write(bits)
 	if err != nil {
 		return err
 	}

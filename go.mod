@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/autom8ter/machine v1.0.0
 	github.com/gogo/protobuf v1.2.1
-	github.com/golang/protobuf v1.3.4
+	github.com/golang/protobuf v1.4.1
 	github.com/google/cel-go v0.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
@@ -21,8 +21,9 @@ require (
 	github.com/spf13/pflag v1.0.3
 	go.uber.org/zap v1.16.0
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
-	google.golang.org/genproto v0.0.0-20200423170343-7949de9c1215
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013
 	google.golang.org/grpc v1.29.1
+	google.golang.org/protobuf v1.25.0
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )

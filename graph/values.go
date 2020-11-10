@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/autom8ter/graphik/sortable"
+	"google.golang.org/protobuf/types/known/structpb"
 	"reflect"
 	"strings"
 	"time"
@@ -12,18 +13,23 @@ import (
 func init() {
 	gob.Register(&Values{})
 	gob.Register(&ValueSet{})
-	gob.Register(&Export{})
 }
 
 type Values map[string]interface{}
 
 func NewValues(v map[string]interface{}) Values {
-	return Values(v)
+	return v
 }
 
 func (v Values) init() {
 	if v == nil {
 		v = map[string]interface{}{}
+	}
+}
+
+func (v Values) FromStruct(strct *structpb.Struct) {
+	for k, val := range strct.AsMap() {
+		v[k] = val
 	}
 }
 
@@ -217,7 +223,29 @@ func (v Values) SetNested(key string, nested Values) {
 	v.Set(key, nested)
 }
 
+func (v Values) Struct() *structpb.Struct {
+	s, err := structpb.NewStruct(v)
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
+
 type ValueSet []Values
+
+func (v ValueSet) Structs() []*structpb.Struct {
+	var structs []*structpb.Struct
+	for _, val := range v {
+		structs = append(structs, val.Struct())
+	}
+	return structs
+}
+
+func (v ValueSet) FromStructs(structs []*structpb.Struct) {
+	for _, strct := range structs {
+		v = append(v, strct.AsMap())
+	}
+}
 
 func (v ValueSet) Sort() {
 	s := &sortable.Sortable{
@@ -232,9 +260,4 @@ func (v ValueSet) Sort() {
 		},
 	}
 	s.Sort()
-}
-
-type Export struct {
-	Nodes ValueSet
-	Edges ValueSet
 }
