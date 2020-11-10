@@ -59,7 +59,7 @@ func ToMap(obj interface{}) map[string]interface{} {
 			"attributes": o.GetAttributes(),
 			"cascade":    o.GetCascade().String(),
 			"from": map[string]interface{}{
-				"gid":   o.GetFrom().GetGid(),
+				"gid":  o.GetFrom().GetGid(),
 				"type": o.GetFrom().GetGtype(),
 			},
 			"to": map[string]interface{}{

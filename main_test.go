@@ -29,6 +29,7 @@ func init() {
 }
 
 var ctx context.Context
+
 //
 //func Test(t *testing.T) {
 //	time.Sleep(3 * time.Second)
@@ -72,22 +73,18 @@ func Benchmark(b *testing.B) {
 		b.Fatal(err)
 	}
 	var (
-		gClient   = apipb.NewGraphServiceClient(conn)
+		gClient = apipb.NewGraphServiceClient(conn)
 	)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		node, err := gClient.CreateNode(ctx, &apipb.Node{
-			Path:                 &apipb.Path{
-				Gtype:                "test-user",
-			},
-			Attributes:           apipb.NewStruct(map[string]interface{}{
-				"name": "coleman",
-			}),
+		node, err := gClient.SearchNodes(ctx, &apipb.TypeFilter{
+			Gtype:       "test-user",
+			Expressions: []string{`attributes.name.contains("cole")`},
+			Limit:       1,
 		})
 		if err != nil {
 			b.Fatal(err)
 		}
-		b.Log(node.Path.String())
+		b.Log(node.String())
 	}
 }
-
