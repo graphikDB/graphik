@@ -36,6 +36,7 @@ type Auth struct {
 }
 
 func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
+
 	message, err := jws.ParseString(token)
 	if err != nil {
 		return nil, err

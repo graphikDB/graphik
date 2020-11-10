@@ -2,6 +2,7 @@ package graph
 
 import (
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/google/uuid"
 	"sort"
 	"time"
 )
@@ -62,25 +63,27 @@ func (n *Graph) GetNode(path *apipb.Path) (*apipb.Node, bool) {
 }
 
 func (n *Graph) SetNode(value *apipb.Node) *apipb.Node {
+	now := time.Now().UnixNano()
 	if value.GetPath() == nil {
 		value.Path = &apipb.Path{}
 	}
 	if value.GetPath().GetGid() == "" {
-		value.Path.Gid = UUID()
+		value.Path.Gid = uuid.New().String()
 	}
 	if value.GetPath().GetGtype() == "" {
 		value.Path.Gtype = apipb.Keyword_DEFAULT.String()
 	}
 	if value.GetCreatedAt() == 0 {
-		value.CreatedAt = time.Now().UnixNano()
+		value.CreatedAt = now
 	}
 	if value.GetUpdatedAt() == 0 {
-		value.UpdatedAt = time.Now().UnixNano()
+		value.UpdatedAt = now
 	}
-	if _, ok := n.nodes[value.GetPath().GetGtype()]; !ok {
+	if nodeMap, ok := n.nodes[value.GetPath().GetGtype()]; !ok {
 		n.nodes[value.GetPath().GetGtype()] = map[string]*apipb.Node{}
+	} else {
+		nodeMap[value.GetPath().GetGid()] = value
 	}
-	n.nodes[value.GetPath().GetGtype()][value.GetPath().GetGid()] = value
 	return value
 }
 

@@ -116,6 +116,12 @@ func (s *Runtime) execute(cmd *apipb.Command) (*apipb.RaftLog, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
+	now := time.Now()
+	defer func() {
+		logger.Info("executing raft mutation", zap.Int64("duration(ms)", time.Since(now).Milliseconds()))
+	}()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	future := s.raft.ApplyLog(cmd.Log(), raftTimeout)
 	if err := future.Error(); err != nil {
 		return nil, err

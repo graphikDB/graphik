@@ -58,8 +58,6 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.RaftLog, error) {
 	if err := proto.Unmarshal(log.Data, &c); err != nil {
 		return nil, fmt.Errorf("failed to decode command: %s", err.Error())
 	}
-	f.mu.Lock()
-	defer f.mu.Unlock()
 	switch c.Op {
 	case apipb.Op_SET_AUTH:
 		if err := f.auth.Override(c.Val.GetAuth()); err != nil {

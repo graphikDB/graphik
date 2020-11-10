@@ -4,7 +4,13 @@ import (
 	"github.com/autom8ter/graphik/sortable"
 	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
+	"google.golang.org/protobuf/types/known/structpb"
 )
+
+func NewStruct(data map[string]interface{}) *structpb.Struct {
+	x, _ := structpb.NewStruct(data)
+	return x
+}
 
 func (c *Command) Log() raft.Log {
 	bits, _ := proto.Marshal(c)
