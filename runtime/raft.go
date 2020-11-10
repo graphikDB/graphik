@@ -85,8 +85,8 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
-	f.graph.Nodes().SetAll(export.Nodes)
-	f.graph.Edges().SetAll(export.Edges)
+	f.graph.SetNodes(export.Nodes)
+	f.graph.SetEdges(export.Edges)
 	return nil
 }
 
@@ -94,8 +94,8 @@ func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	export := &graph.Export{
-		Nodes: f.graph.Nodes().All(),
-		Edges: f.graph.Edges().All(),
+		Nodes: f.graph.AllNodes(),
+		Edges: f.graph.AllEdges(),
 	}
 	buf := bytes.NewBuffer(nil)
 	if err := gob.NewEncoder(buf).Encode(export); err != nil {

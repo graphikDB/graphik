@@ -9,7 +9,7 @@ import (
 func (f *Runtime) Node(input string) (graph.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	node, ok := f.graph.Nodes().Get(input)
+	node, ok := f.graph.GetNode(input)
 	if !ok {
 		return nil, fmt.Errorf("node %s does not exist", input)
 	}
@@ -19,13 +19,13 @@ func (f *Runtime) Node(input string) (graph.Values, error) {
 func (f *Runtime) Nodes(input *graph.Filter) (graph.ValueSet, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.Nodes().FilterSearch(input)
+	return f.graph.FilterSearchNodes(input)
 }
 
 func (f *Runtime) Edge(input string) (graph.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edge, ok := f.graph.Edges().Get(input)
+	edge, ok := f.graph.GetEdge(input)
 	if !ok {
 		return nil, fmt.Errorf("edge node %s does not exist", input)
 	}
@@ -35,19 +35,19 @@ func (f *Runtime) Edge(input string) (graph.Values, error) {
 func (f *Runtime) Edges(input *graph.Filter) (graph.ValueSet, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.Edges().FilterSearch(input)
+	return f.graph.FilterSearchEdges(input)
 }
 
 func (f *Runtime) EdgesFrom(path string, filter *graph.Filter) (graph.ValueSet, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.Edges().RangeFilterFrom(path, filter), nil
+	return f.graph.RangeFilterFrom(path, filter), nil
 }
 
 func (f *Runtime) EdgesTo(path string, filter *graph.Filter) (graph.ValueSet, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.Edges().RangeFilterTo(path, filter), nil
+	return f.graph.RangeFilterTo(path, filter), nil
 }
 
 func (r *Runtime) CreateNodes(nodes graph.ValueSet) (graph.ValueSet, error) {

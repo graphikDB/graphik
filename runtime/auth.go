@@ -13,7 +13,7 @@ const (
 
 func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, error) {
 	path := graph.FormPath(identityType, payload[idClaim].(string))
-	n, ok := a.graph.Nodes().Get(path)
+	n, ok := a.graph.GetNode(path)
 	if !ok {
 		values := map[string]interface{}{
 			"path": path,
