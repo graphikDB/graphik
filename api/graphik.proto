@@ -165,7 +165,6 @@ service GraphService {
   rpc CreateNode(Node) returns(Node){}
   rpc CreateNodes(Nodes) returns(Nodes){}
   rpc GetNode(Path) returns(Node){}
-  rpc GetNodes(Paths) returns(Nodes){}
   rpc SearchNodes(TypeFilter) returns(Nodes){}
   rpc PatchNode(Node) returns(Node){}
   rpc PatchNodes(Nodes) returns(Nodes){}
@@ -175,7 +174,6 @@ service GraphService {
   rpc CreateEdge(Edge) returns(Edge){}
   rpc CreateEdges(Edges) returns(Edges){}
   rpc GetEdge(Path) returns(Edge){}
-  rpc GetEdges(Paths) returns(Edges){}
   rpc SearchEdges(TypeFilter) returns(Edges){}
   rpc PatchEdge(Edge) returns(Edge){}
   rpc PatchEdges(Edges) returns(Edges){}

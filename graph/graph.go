@@ -174,7 +174,7 @@ func (n *Graph) ClearNodes(nodeType string) {
 	}
 }
 
-func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) ([]*apipb.Node, error) {
+func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
 	var err error
 	var pass bool
@@ -189,7 +189,9 @@ func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) ([]*apipb.Node, erro
 		return len(nodes) < int(filter.Limit)
 	})
 
-	return nodes, err
+	return &apipb.Nodes{
+		Nodes: nodes,
+	}, err
 }
 
 func (n *Graph) EdgeCount(edgeType string) int {

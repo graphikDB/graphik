@@ -17,7 +17,7 @@ func (f *Runtime) Node(input *apipb.Path) (*apipb.Node, error) {
 	return node, nil
 }
 
-func (f *Runtime) Nodes(input *apipb.TypeFilter) ([]*apipb.Node, error) {
+func (f *Runtime) Nodes(input *apipb.TypeFilter) (*apipb.Nodes, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.FilterSearchNodes(input)
