@@ -60,8 +60,8 @@ func Test(t *testing.T) {
 		t.Fatal("not PONG")
 	}
 	nodes, err := gClient.SearchNodes(ctx, &apipb.TypeFilter{
-		Type:        "identity",
-		Expressions: nil,
+		Gtype:       "identity",
+		Expressions: []string{`attributes.email.contains("coleman")`},
 		Limit:       1,
 	})
 	if err != nil {

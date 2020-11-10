@@ -14,16 +14,15 @@ const (
 
 func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, error) {
 	path := &apipb.Path{
-		Type: identityType,
-		Id:   payload[idClaim].(string),
+		Gtype: identityType,
+		Gid:   payload[idClaim].(string),
 	}
 	var err error
 	n, ok := a.graph.GetNode(path)
 	if !ok {
 		strct, _ := structpb.NewStruct(payload)
 		n, err = a.CreateNode(&apipb.Node{
-			Type:       path.Type,
-			Id:         path.Id,
+			Path:       path,
 			Attributes: strct,
 		})
 		if err != nil {

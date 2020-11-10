@@ -54,19 +54,22 @@ func (n *Graph) AllNodes() *apipb.Nodes {
 }
 
 func (n *Graph) GetNode(path *apipb.Path) (*apipb.Node, bool) {
-	if c, ok := n.nodes[path.Type]; ok {
-		node := c[path.Id]
+	if c, ok := n.nodes[path.GetGtype()]; ok {
+		node := c[path.GetGid()]
 		return node, node != nil
 	}
 	return nil, false
 }
 
 func (n *Graph) SetNode(value *apipb.Node) *apipb.Node {
-	if value.GetId() == "" {
-		value.Id = UUID()
+	if value.GetPath() == nil {
+		value.Path = &apipb.Path{}
 	}
-	if value.GetType() == "" {
-		value.Type = apipb.Keyword_DEFAULT.String()
+	if value.GetPath().GetGid() == "" {
+		value.Path.Gid = UUID()
+	}
+	if value.GetPath().GetGtype() == "" {
+		value.Path.Gtype = apipb.Keyword_DEFAULT.String()
 	}
 	if value.GetCreatedAt() == 0 {
 		value.CreatedAt = time.Now().UnixNano()
@@ -74,19 +77,19 @@ func (n *Graph) SetNode(value *apipb.Node) *apipb.Node {
 	if value.GetUpdatedAt() == 0 {
 		value.UpdatedAt = time.Now().UnixNano()
 	}
-	if _, ok := n.nodes[value.GetType()]; !ok {
-		n.nodes[value.GetType()] = map[string]*apipb.Node{}
+	if _, ok := n.nodes[value.GetPath().GetGtype()]; !ok {
+		n.nodes[value.GetPath().GetGtype()] = map[string]*apipb.Node{}
 	}
-	n.nodes[value.GetType()][value.GetId()] = value
+	n.nodes[value.GetPath().GetGtype()][value.GetPath().GetGid()] = value
 	return value
 }
 
 func (n *Graph) PatchNode(value *apipb.Node) *apipb.Node {
 	value.UpdatedAt = time.Now().UnixNano()
-	if _, ok := n.nodes[value.GetType()]; !ok {
+	if _, ok := n.nodes[value.GetPath().GetGtype()]; !ok {
 		return nil
 	}
-	node := n.nodes[value.GetType()][value.GetId()]
+	node := n.nodes[value.GetPath().GetGtype()][value.GetPath().GetGid()]
 	for k, v := range value.GetAttributes().GetFields() {
 		node.GetAttributes().GetFields()[k] = v
 	}
@@ -130,21 +133,21 @@ func (n *Graph) DeleteNode(path *apipb.Path) *apipb.Counter {
 		}
 	}
 	n.RangeFrom(path, func(e *apipb.Edge) bool {
-		n.DeleteEdge(e.Path())
+		n.DeleteEdge(e.GetPath())
 		if e.Cascade == apipb.Cascade_CASCADE_TO || e.Cascade == apipb.Cascade_CASCADE_MUTUAL {
 			n.DeleteNode(e.To)
 		}
 		return true
 	})
 	n.RangeTo(path, func(e *apipb.Edge) bool {
-		n.DeleteEdge(e.Path())
+		n.DeleteEdge(e.GetPath())
 		if e.Cascade == apipb.Cascade_CASCADE_FROM || e.Cascade == apipb.Cascade_CASCADE_MUTUAL {
 			n.DeleteNode(e.From)
 		}
 		return true
 	})
 
-	delete(n.nodes[path.Type], path.Id)
+	delete(n.nodes[path.Gtype], path.Gid)
 	return &apipb.Counter{
 		Count: 1,
 	}
@@ -197,10 +200,16 @@ func (n *Graph) ClearNodes(nodeType string) {
 }
 
 func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) *apipb.Nodes {
+	env, err := getEnv()
+	if err != nil {
+		panic(err)
+	}
 	var nodes []*apipb.Node
-	var pass bool
-	n.RangeNode(filter.Type, func(node *apipb.Node) bool {
-		pass, _ = BooleanExpression(filter.Expressions, node)
+	n.RangeNode(filter.Gtype, func(node *apipb.Node) bool {
+		pass, err := evalExpression(env, filter.Expressions, node)
+		if err != nil {
+			panic(err)
+		}
 		if pass {
 			nodes = append(nodes, node)
 		}
@@ -240,28 +249,31 @@ func (n *Graph) AllEdges() *apipb.Edges {
 }
 
 func (n *Graph) GetEdge(path *apipb.Path) (*apipb.Edge, bool) {
-	if c, ok := n.edges[path.GetType()]; ok {
-		node := c[path.GetId()]
-		return c[path.GetId()], node != nil
+	if c, ok := n.edges[path.GetGtype()]; ok {
+		node := c[path.GetGid()]
+		return c[path.GetGid()], node != nil
 	}
 	return nil, false
 }
 
 func (n *Graph) SetEdge(value *apipb.Edge) *apipb.Edge {
-	if value.GetId() == "" {
-		value.Id = UUID()
+	if value.Path == nil {
+		value.Path = &apipb.Path{}
 	}
-	if value.GetType() == "" {
-		value.Type = apipb.Keyword_DEFAULT.String()
+	if value.GetPath().GetGid() == "" {
+		value.Path.Gid = UUID()
 	}
-	if _, ok := n.edges[value.GetType()]; !ok {
-		n.edges[value.GetType()] = map[string]*apipb.Edge{}
+	if value.GetPath().GetGtype() == "" {
+		value.Path.Gtype = apipb.Keyword_DEFAULT.String()
+	}
+	if _, ok := n.edges[value.GetPath().GetGtype()]; !ok {
+		n.edges[value.GetPath().GetGtype()] = map[string]*apipb.Edge{}
 	}
 
-	n.edges[value.GetType()][value.GetId()] = value
+	n.edges[value.GetPath().GetGtype()][value.GetPath().GetGid()] = value
 
-	n.edgesFrom[value.GetFrom()] = append(n.edgesFrom[value.GetFrom()], value.Path())
-	n.edgesTo[value.GetTo()] = append(n.edgesTo[value.GetTo()], value.Path())
+	n.edgesFrom[value.GetFrom()] = append(n.edgesFrom[value.GetFrom()], value.GetPath())
+	n.edgesTo[value.GetTo()] = append(n.edgesTo[value.GetTo()], value.GetPath())
 
 	return value
 }
@@ -297,7 +309,7 @@ func (n *Graph) DeleteEdge(path *apipb.Path) *apipb.Counter {
 	n.edgesTo[edge.From] = removeEdge(path, n.edgesTo[edge.From])
 	n.edgesFrom[edge.To] = removeEdge(path, n.edgesFrom[edge.To])
 	n.edgesTo[edge.To] = removeEdge(path, n.edgesTo[edge.To])
-	delete(n.edges[path.Type], path.Id)
+	delete(n.edges[path.Gtype], path.Gid)
 	return &apipb.Counter{
 		Count: 1,
 	}
@@ -331,12 +343,16 @@ func (e *Graph) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 }
 
 func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
+	env, err := getEnv()
+	if err != nil {
+		panic(err)
+	}
 	var edges []*apipb.Edge
 	e.RangeFrom(path, func(e *apipb.Edge) bool {
-		if e.GetType() != filter.Type {
+		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
-		pass, _ := BooleanExpression(filter.Expressions, e)
+		pass, _ := evalExpression(env, filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -348,12 +364,16 @@ func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *api
 }
 
 func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
+	env, err := getEnv()
+	if err != nil {
+		panic(err)
+	}
 	var edges []*apipb.Edge
 	e.RangeTo(path, func(e *apipb.Edge) bool {
-		if e.GetType() != filter.Type {
+		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
-		pass, _ := BooleanExpression(filter.Expressions, e)
+		pass, _ := evalExpression(env, filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -400,16 +420,16 @@ func (n *Graph) DeleteEdges(edges []*apipb.Path) *apipb.Counter {
 func (n *Graph) ClearEdges(edgeType string) {
 	if cache, ok := n.edges[edgeType]; ok {
 		for _, v := range cache {
-			n.DeleteEdge(v.Path())
+			n.DeleteEdge(v.GetPath())
 		}
 	}
 }
 
 func (e *Graph) PatchEdge(value *apipb.Edge) *apipb.Edge {
-	if _, ok := e.edges[value.GetType()]; !ok {
+	if _, ok := e.edges[value.GetPath().GetGtype()]; !ok {
 		return nil
 	}
-	edge, ok := e.GetEdge(value.Path())
+	edge, ok := e.GetEdge(value.GetPath())
 	if !ok {
 		return nil
 	}
@@ -431,10 +451,14 @@ func (e *Graph) PatchEdges(values []*apipb.Edge) *apipb.Edges {
 }
 
 func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) *apipb.Edges {
+	env, err := getEnv()
+	if err != nil {
+		panic(err)
+	}
 	var edges []*apipb.Edge
 	var pass bool
-	e.RangeEdges(filter.Type, func(edge *apipb.Edge) bool {
-		pass, _ = BooleanExpression(filter.Expressions, edge)
+	e.RangeEdges(filter.Gtype, func(edge *apipb.Edge) bool {
+		pass, _ = evalExpression(env, filter.Expressions, edge)
 		if pass {
 			edges = append(edges, edge)
 		}

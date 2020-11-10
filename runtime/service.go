@@ -3,7 +3,6 @@ package runtime
 import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/graph"
 	"time"
 )
 
@@ -149,16 +148,6 @@ func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
 
 func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 	now := time.Now().UnixNano()
-	for _, edge := range edges.GetEdges() {
-		if edge.GetType() == "" {
-			edge.Type = apipb.Keyword_DEFAULT.String()
-		}
-		if edge.GetId() == "" {
-			edge.Id = graph.UUID()
-		}
-		edge.CreatedAt = now
-		edge.UpdatedAt = now
-	}
 	resp, err := r.execute(&apipb.Command{
 		Op: apipb.Op_CREATE_EDGES,
 		Val: &apipb.RaftLog{

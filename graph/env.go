@@ -3,45 +3,26 @@ package graph
 import (
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
-	"github.com/google/cel-go/common/types/ref"
-	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
-func envFrom(obj interface{}) (*cel.Env, error) {
-	var declarations []*exprpb.Decl
-	data := ToMap(obj)
-	for k, _ := range data {
-		declarations = append(declarations, decls.NewVar(k, decls.Any))
-	}
-	return cel.NewEnv(cel.Declarations(declarations...))
+func getEnv() (*cel.Env, error) {
+	return cel.NewEnv(cel.Declarations(
+		decls.NewVar("gid", decls.String),
+		decls.NewVar("gtype", decls.String),
+		decls.NewVar("attributes", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("created_at", decls.Int),
+		decls.NewVar("updated_at", decls.Int),
+		decls.NewVar("from", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("to", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("cascade", decls.String),
+	))
 }
 
-func Expression(expression string, obj interface{}) (ref.Val, *cel.EvalDetails, error) {
-	values := ToMap(obj)
-	env, err := envFrom(obj)
-	if err != nil {
-		return nil, nil, err
-	}
-	ast, iss := env.Compile(expression)
-	if iss.Err() != nil {
-		return nil, nil, iss.Err()
-	}
-	program, err := env.Program(ast)
-	if err != nil {
-		return nil, nil, err
-	}
-	return program.Eval(values)
-}
-
-func BooleanExpression(expressions []string, obj interface{}) (bool, error) {
+func evalExpression(env *cel.Env, expressions []string, obj interface{}) (bool, error) {
 	if len(expressions) == 0 {
 		return true, nil
 	}
 	values := ToMap(obj)
-	env, err := envFrom(obj)
-	if err != nil {
-		return false, err
-	}
 	var programs []cel.Program
 	for _, exp := range expressions {
 		ast, iss := env.Compile(exp)
@@ -65,4 +46,5 @@ func BooleanExpression(expressions []string, obj interface{}) (bool, error) {
 		}
 	}
 	return passes, nil
+
 }

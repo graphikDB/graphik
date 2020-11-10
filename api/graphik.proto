@@ -43,8 +43,8 @@ message Counter {
 }
 
 message Path {
-  string type =1;
-  string id =2;
+  string gtype =1;
+  string gid =2;
 }
 
 message Paths {
@@ -52,8 +52,7 @@ message Paths {
 }
 
 message Node {
-  string type =1;
-  string id =2;
+  Path path =1;
   google.protobuf.Struct attributes =3;
   int64 created_at =4;
   int64 updated_at =5;
@@ -64,8 +63,7 @@ message Nodes {
 }
 
 message Edge {
-  string type =1;
-  string id =2;
+  Path path =1;
   google.protobuf.Struct attributes =3;
   Cascade cascade =4;
   Path from =5;
@@ -92,14 +90,13 @@ message RaftLog {
 }
 
 message TypeFilter {
-  string type =1;
+  string gtype =1;
   repeated string expressions =2;
   int32 limit =3;
 }
 
 message PathFilter {
-  string type =1;
-  string id =2;
+  Path path =1;
   repeated string expressions =3;
   int32 limit =4;
 }

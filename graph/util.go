@@ -3,9 +3,11 @@ package graph
 import (
 	"crypto/rand"
 	"fmt"
+	apipb "github.com/autom8ter/graphik/api"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/mitchellh/mapstructure"
+	"google.golang.org/protobuf/types/known/structpb"
 	"io"
 )
 
@@ -36,12 +38,43 @@ func JSONDecode(r io.Reader, msg proto.Message) error {
 
 func ToMap(obj interface{}) map[string]interface{} {
 	switch o := obj.(type) {
+	case map[string]interface{}:
+		return o
+	case *apipb.Node:
+		return map[string]interface{}{
+			"path": map[string]interface{}{
+				"gid":   o.GetPath().GetGid(),
+				"gtype": o.GetPath().GetGtype(),
+			},
+			"attributes": o.GetAttributes(),
+			"created_at": o.GetCreatedAt(),
+			"updated_at": o.GetUpdatedAt(),
+		}
+	case *apipb.Edge:
+		return map[string]interface{}{
+			"path": map[string]interface{}{
+				"gid":   o.GetPath().GetGid(),
+				"gtype": o.GetPath().GetGtype(),
+			},
+			"attributes": o.GetAttributes(),
+			"cascade":    o.GetCascade().String(),
+			"from": map[string]interface{}{
+				"gid":   o.GetFrom().GetGid(),
+				"type": o.GetFrom().GetGtype(),
+			},
+			"to": map[string]interface{}{
+				"gid":   o.GetFrom().GetGid(),
+				"gtype": o.GetFrom().GetGtype(),
+			},
+			"created_at": o.GetCreatedAt(),
+			"updated_at": o.GetUpdatedAt(),
+		}
+	case *structpb.Struct:
+		return o.AsMap()
 	case string, int, int64, int32, bool:
 		return map[string]interface{}{
 			"value": o,
 		}
-	case map[string]interface{}:
-		return o
 	default:
 		values := map[string]interface{}{}
 		mapstructure.WeakDecode(o, &values)
