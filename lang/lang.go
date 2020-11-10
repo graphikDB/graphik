@@ -11,12 +11,6 @@ import (
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
-var dynamic = decls.NewMapType(decls.String, decls.Any)
-
-var defaultFields = []*exprpb.Decl{
-	decls.NewVar("input", dynamic),
-}
-
 type Function struct {
 	Name         string
 	Overload     *functions.Overload
@@ -38,8 +32,8 @@ func (f FuncMap) MapEval(expression string, args map[string]interface{}) (map[st
 	for name, fn := range f {
 		declarations = append(declarations, decls.NewFunction(name, fn.Declarations...))
 	}
-	for _, ext := range defaultFields {
-		declarations = append(declarations, ext)
+	for k, _ := range args {
+		declarations = append(declarations, decls.NewVar(k, decls.Any))
 	}
 	env, err := cel.NewEnv(cel.Declarations(declarations...))
 	if err != nil {
@@ -54,9 +48,7 @@ func (f FuncMap) MapEval(expression string, args map[string]interface{}) (map[st
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "programming env")
 	}
-	result, details, err := program.Eval(map[string]interface{}{
-		"input": args,
-	})
+	result, details, err := program.Eval(args)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "evaluating program")
 	}
@@ -71,8 +63,8 @@ func (f FuncMap) BoolEval(expressions []string, args map[string]interface{}) (bo
 	for name, fn := range f {
 		declarations = append(declarations, decls.NewFunction(name, fn.Declarations...))
 	}
-	for _, ext := range defaultFields {
-		declarations = append(declarations, ext)
+	for k, _ := range args {
+		declarations = append(declarations, decls.NewVar(k, decls.Any))
 	}
 	env, err := cel.NewEnv(cel.Declarations(declarations...))
 	if err != nil {
@@ -92,9 +84,7 @@ func (f FuncMap) BoolEval(expressions []string, args map[string]interface{}) (bo
 	}
 	var passes = true
 	for _, program := range programs {
-		out, _, err := program.Eval(map[string]interface{}{
-			"input": args,
-		})
+		out, _, err := program.Eval(args)
 		if err != nil {
 			return false, err
 		}
@@ -105,7 +95,7 @@ func (f FuncMap) BoolEval(expressions []string, args map[string]interface{}) (bo
 	return passes, nil
 }
 
-func errVal(err error) ref.Val {
+func ErrVal(err error) ref.Val {
 	return types.NewDynamicMap(types.NewRegistry(), map[string]interface{}{
 		"error": err,
 	})

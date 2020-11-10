@@ -13,16 +13,10 @@ const (
 
 func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, error) {
 	path := graph.FormPath(identityType, payload[idClaim].(string))
-	n, _, err := a.vm.Private("getNode(path)", map[string]interface{}{
-		"path": path,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if len(n) == 0 {
+	n, ok := a.graph.Nodes().Get(path)
+	if !ok {
 		values := map[string]interface{}{
-			"type": path,
-			"_id":  payload[idClaim].(string),
+			"path": path,
 		}
 		for k, v := range payload {
 			values[k] = v

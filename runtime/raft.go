@@ -69,7 +69,7 @@ func (f *Runtime) Apply(log *raft.Log) interface{} {
 		}
 		return f.auth.Raw()
 
-		default:
+	default:
 		return fmt.Errorf("unsupported command: %v", c.Op)
 	}
 }
