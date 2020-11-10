@@ -9,7 +9,7 @@ import (
 func Test(t *testing.T) {
 	g := graph.New()
 	vm := lang.NewVM(g)
-	result, _, err := vm.Private().MapEval(`create_node(input)`, map[string]interface{}{
+	result, _, err := vm.Private().MapEval(`createNode(input)`, map[string]interface{}{
 		"path": "user",
 		"name": "tom",
 	})
@@ -17,7 +17,7 @@ func Test(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(result)
-	result, _, err = vm.Private().MapEval(`create_node(input)`, map[string]interface{}{
+	result, _, err = vm.Private().MapEval(`createNode(input)`, map[string]interface{}{
 		"path": "user",
 		"name": "bob",
 	})
@@ -25,8 +25,19 @@ func Test(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(result)
+	result, _, err = vm.Private().MapEval(`getNode(input)`, map[string]interface{}{
+		"path": result["path"].(string),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(result)
 	nodes := g.Nodes().All()
+	if len(nodes) == 0 {
+		t.Fatal("zero nodes")
+	}
 	for _, n := range nodes {
 		t.Log(n)
 	}
+
 }

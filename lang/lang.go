@@ -4,6 +4,8 @@ import (
 	"github.com/autom8ter/graphik/graph"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"github.com/google/cel-go/common/types"
+	"github.com/google/cel-go/common/types/ref"
 	"github.com/google/cel-go/interpreter/functions"
 	"github.com/pkg/errors"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
@@ -16,13 +18,9 @@ var defaultFields = []*exprpb.Decl{
 }
 
 type Function struct {
-	Overload    *functions.Overload
-	Declaration *Declaration
-}
-
-type Declaration struct {
-	Name      string
-	Overloads []*exprpb.Decl_FunctionDecl_Overload
+	Name         string
+	Overload     *functions.Overload
+	Declarations []*exprpb.Decl_FunctionDecl_Overload
 }
 
 type FuncMap map[string]*Function
@@ -38,7 +36,7 @@ func (f FuncMap) functions() []*functions.Overload {
 func (f FuncMap) MapEval(expression string, args map[string]interface{}) (map[string]interface{}, *cel.EvalDetails, error) {
 	var declarations []*exprpb.Decl
 	for name, fn := range f {
-		declarations = append(declarations, decls.NewFunction(name, fn.Declaration.Overloads...))
+		declarations = append(declarations, decls.NewFunction(name, fn.Declarations...))
 	}
 	for _, ext := range defaultFields {
 		declarations = append(declarations, ext)
@@ -62,7 +60,7 @@ func (f FuncMap) MapEval(expression string, args map[string]interface{}) (map[st
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "evaluating program")
 	}
-	return graph.ToMap(result), details, nil
+	return graph.ToMap(result.Value()), details, nil
 }
 
 func (f FuncMap) BoolEval(expressions []string, args map[string]interface{}) (bool, error) {
@@ -71,7 +69,7 @@ func (f FuncMap) BoolEval(expressions []string, args map[string]interface{}) (bo
 	}
 	var declarations []*exprpb.Decl
 	for name, fn := range f {
-		declarations = append(declarations, decls.NewFunction(name, fn.Declaration.Overloads...))
+		declarations = append(declarations, decls.NewFunction(name, fn.Declarations...))
 	}
 	for _, ext := range defaultFields {
 		declarations = append(declarations, ext)
@@ -105,4 +103,10 @@ func (f FuncMap) BoolEval(expressions []string, args map[string]interface{}) (bo
 		}
 	}
 	return passes, nil
+}
+
+func errVal(err error) ref.Val {
+	return types.NewDynamicMap(types.NewRegistry(), map[string]interface{}{
+		"error": err,
+	})
 }
