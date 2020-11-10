@@ -1,6 +1,9 @@
 package graph
 
-import "time"
+import (
+	"sort"
+	"time"
+)
 
 type EdgeStore struct {
 	edges     map[string]map[string]Values
@@ -28,6 +31,7 @@ func (n *EdgeStore) Types() []string {
 	for k, _ := range n.edges {
 		edgeTypes = append(edgeTypes, k)
 	}
+	sort.Strings(edgeTypes)
 	return edgeTypes
 }
 
@@ -37,6 +41,7 @@ func (n *EdgeStore) All() ValueSet {
 		edges = append(edges, edge)
 		return true
 	})
+	edges.Sort()
 	return edges
 }
 
@@ -144,6 +149,7 @@ func (e *EdgeStore) RangeFilterFrom(path string, filter *Filter) ValueSet {
 		}
 		return len(edges) < int(filter.Limit)
 	})
+	edges.Sort()
 	return edges
 }
 
@@ -159,6 +165,7 @@ func (e *EdgeStore) RangeFilterTo(path string, filter *Filter) ValueSet {
 		}
 		return len(edges) < int(filter.Limit)
 	})
+	edges.Sort()
 	return edges
 }
 
@@ -170,6 +177,7 @@ func (n *EdgeStore) Filter(edgeType string, filter func(edge Values) bool) Value
 		}
 		return true
 	})
+	filtered.Sort()
 	return filtered
 }
 
@@ -221,6 +229,7 @@ func (e *EdgeStore) FilterSearch(filter *Filter) (ValueSet, error) {
 		}
 		return len(edges) < filter.Limit
 	})
+	edges.Sort()
 	return edges, err
 }
 
@@ -231,5 +240,6 @@ func removeEdge(path string, paths []string) []string {
 			newPaths = append(newPaths, p)
 		}
 	}
+	sort.Strings(newPaths)
 	return newPaths
 }

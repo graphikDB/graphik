@@ -3,6 +3,7 @@ package graph
 import (
 	"encoding/gob"
 	"fmt"
+	"github.com/autom8ter/graphik/sortable"
 	"reflect"
 	"strings"
 	"time"
@@ -217,6 +218,21 @@ func (v Values) SetNested(key string, nested Values) {
 }
 
 type ValueSet []Values
+
+func (v ValueSet) Sort() {
+	s := &sortable.Sortable{
+		LenFunc: func() int {
+			return len(v)
+		},
+		LessFunc: func(i, j int) bool {
+			return v[i].GetUpdatedAt() < v[j].GetUpdatedAt()
+		},
+		SwapFunc: func(i, j int) {
+			v[i], v[j] = v[j], v[i]
+		},
+	}
+	s.Sort()
+}
 
 type Export struct {
 	Nodes ValueSet

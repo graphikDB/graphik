@@ -1,6 +1,9 @@
 package graph
 
-import "time"
+import (
+	"sort"
+	"time"
+)
 
 type NodeStore struct {
 	nodes map[string]map[string]Values
@@ -26,6 +29,7 @@ func (n *NodeStore) Types() []string {
 	for k, _ := range n.nodes {
 		nodeTypes = append(nodeTypes, k)
 	}
+	sort.Strings(nodeTypes)
 	return nodeTypes
 }
 
@@ -35,6 +39,7 @@ func (n *NodeStore) All() ValueSet {
 		nodes = append(nodes, node)
 		return true
 	})
+	nodes.Sort()
 	return nodes
 }
 
@@ -68,6 +73,7 @@ func (n *NodeStore) Set(value Values) Values {
 }
 
 func (n *NodeStore) Patch(value Values) Values {
+	value.SetUpdatedAt(time.Now())
 	if _, ok := n.nodes[value.GetType()]; !ok {
 		return nil
 	}
@@ -75,7 +81,6 @@ func (n *NodeStore) Patch(value Values) Values {
 	for k, v := range value {
 		node[k] = v
 	}
-	value.SetUpdatedAt(time.Now())
 	return node
 }
 
@@ -141,6 +146,7 @@ func (n *NodeStore) Filter(nodeType string, filter func(node Values) bool) Value
 		}
 		return true
 	})
+	filtered.Sort()
 	return filtered
 }
 
@@ -184,5 +190,6 @@ func (n *NodeStore) FilterSearch(filter *Filter) (ValueSet, error) {
 		}
 		return len(nodes) < int(filter.Limit)
 	})
+	nodes.Sort()
 	return nodes, err
 }
