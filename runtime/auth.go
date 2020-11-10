@@ -3,6 +3,7 @@ package runtime
 import (
 	"context"
 	"github.com/autom8ter/graphik/graph"
+	"github.com/autom8ter/graphik/values"
 )
 
 const (
@@ -21,7 +22,7 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 		for k, v := range payload {
 			values[k] = v
 		}
-		newNode, err := a.CreateNodes(graph.ValueSet{
+		newNode, err := a.CreateNodes(values.ValueSet{
 			values,
 		})
 		if err != nil {
@@ -32,8 +33,8 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 	return context.WithValue(ctx, authCtxKey, n), nil
 }
 
-func (s *Runtime) NodeContext(ctx context.Context) graph.Values {
-	val, ok := ctx.Value(authCtxKey).(graph.Values)
+func (s *Runtime) NodeContext(ctx context.Context) values.Values {
+	val, ok := ctx.Value(authCtxKey).(values.Values)
 	if ok {
 		return val
 	}

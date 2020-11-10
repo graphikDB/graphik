@@ -1,19 +1,11 @@
-package graph
+package values
 
 import (
-	"encoding/gob"
 	"fmt"
-	"github.com/autom8ter/graphik/sortable"
 	"google.golang.org/protobuf/types/known/structpb"
 	"reflect"
-	"strings"
-	"time"
+	"strconv"
 )
-
-func init() {
-	gob.Register(&Values{})
-	gob.Register(&ValueSet{})
-}
 
 type Values map[string]interface{}
 
@@ -31,67 +23,6 @@ func (v Values) FromStruct(strct *structpb.Struct) {
 	for k, val := range strct.AsMap() {
 		v[k] = val
 	}
-}
-
-func (v Values) GetPath() string {
-	v.init()
-	return v.GetString(PathKey)
-}
-
-func (v Values) GetID() string {
-	v.init()
-	split := strings.Split(v.GetPath(), "/")
-	if len(split) == 2 {
-		return split[1]
-	}
-	return ""
-}
-
-func (v Values) GetType() string {
-	v.init()
-	split := strings.Split(v.GetPath(), "/")
-	if len(split) > 0 {
-		return split[0]
-	}
-	return ""
-}
-
-func (v Values) GetCreatedAt() int64 {
-	v.init()
-	return int64(parseInt(v[CreatedAtKey]))
-}
-
-func (v Values) GetUpdatedAt() int64 {
-	v.init()
-	return int64(parseInt(v[UpdatedAtKey]))
-}
-
-func (v Values) SetPath(path string) {
-	v.init()
-	v[PathKey] = path
-}
-
-func (v Values) SetType(xtype string) {
-	v.init()
-	if v.GetID() == "" {
-		v[PathKey] = xtype
-	}
-	v[PathKey] = fmt.Sprintf("%s/%s", xtype, v.GetID())
-}
-
-func (v Values) SetID(xid string) {
-	v.init()
-	v[PathKey] = fmt.Sprintf("%s/%s", v.GetType(), xid)
-}
-
-func (v Values) SetCreatedAt(_createdAt time.Time) {
-	v.init()
-	v[CreatedAtKey] = _createdAt.UnixNano()
-}
-
-func (v Values) SetUpdatedAt(_updatedAt time.Time) {
-	v.init()
-	v[UpdatedAtKey] = _updatedAt.UnixNano()
 }
 
 // Set set an entry in the Node
@@ -231,33 +162,63 @@ func (v Values) Struct() *structpb.Struct {
 	return s
 }
 
-type ValueSet []Values
-
-func (v ValueSet) Structs() []*structpb.Struct {
-	var structs []*structpb.Struct
-	for _, val := range v {
-		structs = append(structs, val.Struct())
+func parseInt(obj interface{}) int {
+	switch obj.(type) {
+	case int:
+		return obj.(int)
+	case int32:
+		return int(obj.(int32))
+	case int64:
+		return int(obj.(int64))
+	case float32:
+		return int(obj.(float32))
+	case float64:
+		return int(obj.(float64))
+	case string:
+		val, _ := strconv.Atoi(obj.(string))
+		return val
+	default:
+		return 0
 	}
-	return structs
 }
 
-func (v ValueSet) FromStructs(structs []*structpb.Struct) {
-	for _, strct := range structs {
-		v = append(v, strct.AsMap())
+func parseFloat(obj interface{}) float64 {
+	switch o := obj.(type) {
+	case int:
+		return float64(o)
+	case int32:
+		return float64(o)
+	case int64:
+		return float64(o)
+	case float32:
+		return float64(o)
+	case float64:
+		return o
+	case string:
+		val, _ := strconv.ParseFloat(o, 64)
+		return val
+	default:
+		return 0
 	}
 }
 
-func (v ValueSet) Sort() {
-	s := &sortable.Sortable{
-		LenFunc: func() int {
-			return len(v)
-		},
-		LessFunc: func(i, j int) bool {
-			return v[i].GetUpdatedAt() < v[j].GetUpdatedAt()
-		},
-		SwapFunc: func(i, j int) {
-			v[i], v[j] = v[j], v[i]
-		},
+func parseString(obj interface{}) string {
+	switch o := obj.(type) {
+	case string:
+		return o
+	default:
+		return fmt.Sprint(obj)
 	}
-	s.Sort()
+}
+
+func parseBool(obj interface{}) bool {
+	switch obj.(type) {
+	case bool:
+		return obj.(bool)
+	case string:
+		val, _ := strconv.ParseBool(obj.(string))
+		return val
+	default:
+		return false
+	}
 }

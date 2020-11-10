@@ -4,11 +4,12 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/graph"
+	"github.com/autom8ter/graphik/values"
 	"github.com/golang/protobuf/ptypes"
 	"time"
 )
 
-func (f *Runtime) Node(input string) (graph.Values, error) {
+func (f *Runtime) Node(input string) (values.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	node, ok := f.graph.GetNode(input)
@@ -18,13 +19,13 @@ func (f *Runtime) Node(input string) (graph.Values, error) {
 	return node, nil
 }
 
-func (f *Runtime) Nodes(input *graph.Filter) (graph.ValueSet, error) {
+func (f *Runtime) Nodes(input *apipb.TypeFilter) (values.ValueSet, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.FilterSearchNodes(input)
 }
 
-func (f *Runtime) Edge(input string) (graph.Values, error) {
+func (f *Runtime) Edge(input string) (values.Values, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edge, ok := f.graph.GetEdge(input)
@@ -34,25 +35,25 @@ func (f *Runtime) Edge(input string) (graph.Values, error) {
 	return edge, nil
 }
 
-func (f *Runtime) Edges(input *graph.Filter) (graph.ValueSet, error) {
+func (f *Runtime) Edges(input *graph.Filter) (values.ValueSet, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.FilterSearchEdges(input)
 }
 
-func (f *Runtime) EdgesFrom(path string, filter *graph.Filter) (graph.ValueSet, error) {
+func (f *Runtime) EdgesFrom(path string, filter *graph.Filter) (values.ValueSet, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.RangeFilterFrom(path, filter), nil
 }
 
-func (f *Runtime) EdgesTo(path string, filter *graph.Filter) (graph.ValueSet, error) {
+func (f *Runtime) EdgesTo(path string, filter *graph.Filter) (values.ValueSet, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	return f.graph.RangeFilterTo(path, filter), nil
 }
 
-func (r *Runtime) CreateNodes(nodes graph.ValueSet) (graph.ValueSet, error) {
+func (r *Runtime) CreateNodes(nodes values.ValueSet) (values.ValueSet, error) {
 	any, err := ptypes.MarshalAny(&apipb.ValueSet{
 		Values: nodes.Structs(),
 	})
@@ -70,13 +71,13 @@ func (r *Runtime) CreateNodes(nodes graph.ValueSet) (graph.ValueSet, error) {
 	if err, ok := resp.(error); ok {
 		return nil, err
 	}
-	return resp.(graph.ValueSet), nil
+	return resp.(values.ValueSet), nil
 }
 
-func (r *Runtime) CreateNode(node graph.Values) (graph.Values, error) {
+func (r *Runtime) CreateNode(node values.Values) (values.Values, error) {
 	resp, err := r.execute(&graph.Command{
 		Op:        graph.Op_CREATE_NODES,
-		Val:       graph.ValueSet{node},
+		Val:       values.ValueSet{node},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
@@ -85,10 +86,10 @@ func (r *Runtime) CreateNode(node graph.Values) (graph.Values, error) {
 	if err, ok := resp.(error); ok {
 		return nil, err
 	}
-	return resp.(graph.ValueSet)[0], nil
+	return resp.(values.ValueSet)[0], nil
 }
 
-func (r *Runtime) PatchNodes(patches graph.ValueSet) (graph.ValueSet, error) {
+func (r *Runtime) PatchNodes(patches values.ValueSet) (values.ValueSet, error) {
 	resp, err := r.execute(&graph.Command{
 		Op:        graph.Op_PATCH_NODES,
 		Val:       patches,
@@ -100,13 +101,13 @@ func (r *Runtime) PatchNodes(patches graph.ValueSet) (graph.ValueSet, error) {
 	if err := resp.(error); err != nil {
 		return nil, err
 	}
-	return resp.(graph.ValueSet), nil
+	return resp.(values.ValueSet), nil
 }
 
-func (r *Runtime) PatchNode(patch graph.Values) (graph.Values, error) {
+func (r *Runtime) PatchNode(patch values.Values) (values.Values, error) {
 	resp, err := r.execute(&graph.Command{
 		Op:        graph.Op_PATCH_NODES,
-		Val:       graph.ValueSet{patch},
+		Val:       values.ValueSet{patch},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
@@ -115,7 +116,7 @@ func (r *Runtime) PatchNode(patch graph.Values) (graph.Values, error) {
 	if err, ok := resp.(error); ok {
 		return nil, err
 	}
-	return resp.(graph.ValueSet)[0], nil
+	return resp.(values.ValueSet)[0], nil
 }
 
 func (r *Runtime) DelNodes(paths []string) (int, error) {
@@ -148,7 +149,7 @@ func (r *Runtime) DelNode(path string) (int, error) {
 	return resp.(int), nil
 }
 
-func (r *Runtime) CreateEdges(edges graph.ValueSet) (graph.ValueSet, error) {
+func (r *Runtime) CreateEdges(edges values.ValueSet) (values.ValueSet, error) {
 	for _, edge := range edges {
 		if edge.GetType() == "" {
 			edge.SetType(graph.Default)
@@ -170,13 +171,13 @@ func (r *Runtime) CreateEdges(edges graph.ValueSet) (graph.ValueSet, error) {
 	if err := resp.(error); err != nil {
 		return nil, err
 	}
-	return resp.(graph.ValueSet), nil
+	return resp.(values.ValueSet), nil
 }
 
-func (r *Runtime) CreateEdge(edge graph.Values) (graph.Values, error) {
+func (r *Runtime) CreateEdge(edge values.Values) (values.Values, error) {
 	resp, err := r.execute(&graph.Command{
 		Op:        graph.Op_CREATE_EDGES,
-		Val:       graph.ValueSet{edge},
+		Val:       values.ValueSet{edge},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
@@ -185,10 +186,10 @@ func (r *Runtime) CreateEdge(edge graph.Values) (graph.Values, error) {
 	if err := resp.(error); err != nil {
 		return nil, err
 	}
-	return resp.(graph.ValueSet)[0], nil
+	return resp.(values.ValueSet)[0], nil
 }
 
-func (r *Runtime) PatchEdges(patch graph.ValueSet) (graph.ValueSet, error) {
+func (r *Runtime) PatchEdges(patch values.ValueSet) (values.ValueSet, error) {
 	resp, err := r.execute(&graph.Command{
 		Op:        graph.Op_PATCH_EDGES,
 		Val:       patch,
@@ -200,13 +201,13 @@ func (r *Runtime) PatchEdges(patch graph.ValueSet) (graph.ValueSet, error) {
 	if err := resp.(error); err != nil {
 		return nil, err
 	}
-	return resp.(graph.ValueSet), nil
+	return resp.(values.ValueSet), nil
 }
 
-func (r *Runtime) PatchEdge(patch graph.Values) (graph.Values, error) {
+func (r *Runtime) PatchEdge(patch values.Values) (values.Values, error) {
 	resp, err := r.execute(&graph.Command{
 		Op:        graph.Op_PATCH_EDGES,
-		Val:       graph.ValueSet{patch},
+		Val:       values.ValueSet{patch},
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {
@@ -215,7 +216,7 @@ func (r *Runtime) PatchEdge(patch graph.Values) (graph.Values, error) {
 	if err := resp.(error); err != nil {
 		return nil, err
 	}
-	return resp.(graph.ValueSet)[0], nil
+	return resp.(values.ValueSet)[0], nil
 }
 
 func (r *Runtime) DelEdges(paths []string) (int, error) {

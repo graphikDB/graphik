@@ -3,8 +3,8 @@ package runtime
 import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/graphik/values"
 	"github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/hashicorp/raft"
@@ -90,9 +90,9 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 	if err := proto.Unmarshal(bits, export); err != nil {
 		return err
 	}
-	nodes := graph.ValueSet{}
+	nodes := values.ValueSet{}
 	nodes.FromStructs(export.GetNodes())
-	edges := graph.ValueSet{}
+	edges := values.ValueSet{}
 	edges.FromStructs(export.GetEdges())
 	f.mu.Lock()
 	defer f.mu.Unlock()

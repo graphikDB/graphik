@@ -7,7 +7,6 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/mitchellh/mapstructure"
 	"io"
-	"strconv"
 	"strings"
 )
 
@@ -63,66 +62,5 @@ func ToMap(obj interface{}) map[string]interface{} {
 		values := map[string]interface{}{}
 		mapstructure.WeakDecode(o, &values)
 		return values
-	}
-}
-
-func parseInt(obj interface{}) int {
-	switch obj.(type) {
-	case int:
-		return obj.(int)
-	case int32:
-		return int(obj.(int32))
-	case int64:
-		return int(obj.(int64))
-	case float32:
-		return int(obj.(float32))
-	case float64:
-		return int(obj.(float64))
-	case string:
-		val, _ := strconv.Atoi(obj.(string))
-		return val
-	default:
-		return 0
-	}
-}
-
-func parseFloat(obj interface{}) float64 {
-	switch o := obj.(type) {
-	case int:
-		return float64(o)
-	case int32:
-		return float64(o)
-	case int64:
-		return float64(o)
-	case float32:
-		return float64(o)
-	case float64:
-		return o
-	case string:
-		val, _ := strconv.ParseFloat(o, 64)
-		return val
-	default:
-		return 0
-	}
-}
-
-func parseString(obj interface{}) string {
-	switch o := obj.(type) {
-	case string:
-		return o
-	default:
-		return fmt.Sprint(obj)
-	}
-}
-
-func parseBool(obj interface{}) bool {
-	switch obj.(type) {
-	case bool:
-		return obj.(bool)
-	case string:
-		val, _ := strconv.ParseBool(obj.(string))
-		return val
-	default:
-		return false
 	}
 }

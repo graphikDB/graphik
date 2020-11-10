@@ -5,6 +5,20 @@ import (
 	"github.com/hashicorp/raft"
 )
 
+func (n *Node) Path() *Path {
+	return &Path{
+		Type:                 n.Type,
+		Id:                   n.Id,
+	}
+}
+
+func (e *Edge) Path() *Path {
+	return &Path{
+		Type:                 e.Type,
+		Id:                   e.Id,
+	}
+}
+
 func (c *Command) Log() raft.Log {
 	bits, _ := proto.Marshal(c)
 	return raft.Log{
