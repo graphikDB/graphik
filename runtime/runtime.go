@@ -112,11 +112,11 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	return s, nil
 }
 
-func (s *Runtime) execute(cmd *graph.Command) (interface{}, error) {
+func (s *Runtime) execute(cmd *apipb.Command) (interface{}, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
-	future := s.raft.ApplyLog(*cmd.Log(), raftTimeout)
+	future := s.raft.ApplyLog(cmd.Log(), raftTimeout)
 	if err := future.Error(); err != nil {
 		return nil, err
 	}

@@ -1,5 +1,17 @@
 package apipb
 
+import (
+	"github.com/golang/protobuf/proto"
+	"github.com/hashicorp/raft"
+)
+
+func (c *Command) Log() raft.Log {
+	bits, _ := proto.Marshal(c)
+	return raft.Log{
+		Data: bits,
+	}
+}
+
 func (c *Config) SetDefaults() {
 	if c.Grpc == nil {
 		c.Grpc = &GRPCConfig{}

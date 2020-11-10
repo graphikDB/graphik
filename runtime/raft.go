@@ -1,13 +1,12 @@
 package runtime
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/gogo/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -57,20 +56,22 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 }
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {
-	var c graph.Command
-	buf := bytes.NewBuffer(log.Data)
-	if err := gob.NewDecoder(buf).Decode(&c); err != nil {
+	var c apipb.Command
+	if err := proto.Unmarshal(log.Data, &c); err != nil {
 		return fmt.Errorf("failed to decode command: %s", err.Error())
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	switch c.Op {
-	case graph.Op_SET_AUTH:
-		if err := f.auth.Override(c.Val.(*apipb.AuthConfig)); err != nil {
+	case apipb.Op_SET_AUTH:
+		var auth apipb.AuthConfig
+		if err := ptypes.UnmarshalAny(c.Val, &auth); err != nil {
+			return err
+		}
+		if err := f.auth.Override(&auth); err != nil {
 			return errors.Wrap(err, "failed to override auth")
 		}
 		return f.auth.Raw()
-
 	default:
 		return fmt.Errorf("unsupported command: %v", c.Op)
 	}

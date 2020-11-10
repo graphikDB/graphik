@@ -2,7 +2,9 @@ package runtime
 
 import (
 	"fmt"
+	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/graph"
+	"github.com/golang/protobuf/ptypes"
 	"time"
 )
 
@@ -51,9 +53,15 @@ func (f *Runtime) EdgesTo(path string, filter *graph.Filter) (graph.ValueSet, er
 }
 
 func (r *Runtime) CreateNodes(nodes graph.ValueSet) (graph.ValueSet, error) {
-	resp, err := r.execute(&graph.Command{
-		Op:        graph.Op_CREATE_NODES,
-		Val:       nodes,
+	any, err := ptypes.MarshalAny(&apipb.ValueSet{
+		Values: nodes.Structs(),
+	})
+	if err != nil {
+		return nil, err
+	}
+	resp, err := r.execute(&apipb.Command{
+		Op:        apipb.Op_CREATE_NODES,
+		Val:       any,
 		Timestamp: time.Now().UnixNano(),
 	})
 	if err != nil {

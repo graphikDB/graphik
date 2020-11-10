@@ -9,6 +9,55 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 
+enum Op {
+  CREATE_NODES = 0;
+  PATCH_NODES = 1;
+  DELETE_NODES = 2;
+  CREATE_EDGES = 3;
+  PATCH_EDGES = 4;
+  DELETE_EDGES = 5;
+  SET_AUTH  = 6;
+}
+
+enum Cascade {
+  CASCADE_NONE =0;
+  CASCADE_FROM =1;
+  CASCADE_TO=2;
+  CASCADE_MUTUAL=3;
+}
+
+enum Keyword {
+  INVALID =0;
+  ANY =1;
+  DEFAULT =2;
+}
+message Path {
+  string type =1;
+  string id =2;
+}
+
+message Node {
+  Path path =1;
+  google.protobuf.Struct attributes =2;
+  int64 created_at =3;
+  int64 updated_at =4;
+}
+
+message Edge {
+  Path path =1;
+  google.protobuf.Struct attributes =2;
+  bool mutual=3;
+
+  int64 created_at =10;
+  int64 updated_at =11;
+}
+
+message Command {
+  Op op =1;
+  google.protobuf.Any val =2;
+  int64 timestamp =3;
+}
+
 message Export {
   repeated google.protobuf.Struct nodes =1;
   repeated google.protobuf.Struct edges=2;
