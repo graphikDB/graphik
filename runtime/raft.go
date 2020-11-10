@@ -4,7 +4,7 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/gogo/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -53,22 +53,40 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 	return nil
 }
 
-func (f *Runtime) Apply(log *raft.Log) interface{} {
+func (f *Runtime) apply(log *raft.Log) (*apipb.RaftLog, error) {
 	var c apipb.Command
 	if err := proto.Unmarshal(log.Data, &c); err != nil {
-		return fmt.Errorf("failed to decode command: %s", err.Error())
+		return nil, fmt.Errorf("failed to decode command: %s", err.Error())
 	}
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	switch c.Op {
 	case apipb.Op_SET_AUTH:
 		if err := f.auth.Override(c.Val.GetAuth()); err != nil {
-			return errors.Wrap(err, "failed to override auth")
+			return nil, errors.Wrap(err, "failed to override auth")
 		}
-		return f.auth.Raw()
+		return &apipb.RaftLog{
+			Log:                  &apipb.RaftLog_Auth{Auth: f.auth.Raw()},
+		}, nil
+	case apipb.Op_CREATE_NODE:
+		return &apipb.RaftLog{
+			Log:                  &apipb.RaftLog_Node{Node: f.graph.SetNode(c.Val.GetNode())},
+		}, nil
+	case apipb.Op_CREATE_EDGE:
+		return &apipb.RaftLog{
+			Log:                  &apipb.RaftLog_Edge{Edge: f.graph.SetEdge(c.Val.GetEdge())},
+		}, nil
 	default:
-		return fmt.Errorf("unsupported command: %v", c.Op)
+		return nil, fmt.Errorf("unsupported command: %v", c.Op)
 	}
+}
+
+func (f *Runtime) Apply(log *raft.Log) interface{} {
+	res, err := f.apply(log)
+	if err != nil {
+		return err
+	}
+	return res
 }
 
 func (f *Runtime) Snapshot() (raft.FSMSnapshot, error) {

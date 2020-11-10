@@ -33,7 +33,6 @@ func main() {
 		Raft: &apipb.RaftConfig{},
 		Auth: &apipb.AuthConfig{},
 	}
-
 	pflag.CommandLine.StringVar(&cfg.Grpc.Bind, "grpc.bind", ":7820", "")
 	pflag.CommandLine.StringVar(&cfg.Http.Bind, "http.bind", ":7830", "")
 	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedHeaders, "http.headers", nil, "cors allowed headers")

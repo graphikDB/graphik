@@ -24,13 +24,13 @@ func Test(t *testing.T) {
 		},
 	}
 	cfg.SetDefaults()
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	go func() {
 
 		defer cancel()
 		run(ctx, cfg)
 	}()
-	time.Sleep(3 * time.Second)
+	time.Sleep(5 * time.Second)
 	j, err := google.DefaultTokenSource(ctx, "https://www.googleapis.com/auth/devstorage.full_control")
 	if err != nil {
 		t.Fatal(err)

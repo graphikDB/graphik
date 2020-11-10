@@ -3,8 +3,8 @@ package graph
 import (
 	"crypto/rand"
 	"fmt"
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/gogo/protobuf/proto"
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
 	"github.com/mitchellh/mapstructure"
 	"io"
 )
