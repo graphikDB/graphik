@@ -136,14 +136,14 @@ func (n *Graph) DeleteNode(path *apipb.Path) *apipb.Counter {
 			Count: 0,
 		}
 	}
-	n.RangeFrom(path, func(e *apipb.Edge) bool {
+	n.RangeFrom(path, 0, func(e *apipb.Edge) bool {
 		n.DeleteEdge(e.GetPath())
 		if e.Cascade == apipb.Cascade_CASCADE_TO || e.Cascade == apipb.Cascade_CASCADE_MUTUAL {
 			n.DeleteNode(e.To)
 		}
 		return true
 	})
-	n.RangeTo(path, func(e *apipb.Edge) bool {
+	n.RangeTo(path, 0, func(e *apipb.Edge) bool {
 		n.DeleteEdge(e.GetPath())
 		if e.Cascade == apipb.Cascade_CASCADE_FROM || e.Cascade == apipb.Cascade_CASCADE_MUTUAL {
 			n.DeleteNode(e.From)
@@ -321,11 +321,12 @@ func (n *Graph) HasEdge(path *apipb.Path) bool {
 }
 
 func (g *Graph) RangeFrom(path *apipb.Path, degree int32, fn func(e *apipb.Edge) bool) {
+	visited := map[*apipb.Path]struct{}{}
 	for _, edge := range g.edgesFrom[path] {
 		e, ok := g.GetEdge(edge)
 		if ok {
 			for x := int32(0); x < degree; x++ {
-				fn = EdgeFunc(fn).ascendFrom(g)
+				fn = EdgeFunc(fn).ascendFrom(g, visited)
 			}
 			if !fn(e) {
 				return
@@ -335,11 +336,12 @@ func (g *Graph) RangeFrom(path *apipb.Path, degree int32, fn func(e *apipb.Edge)
 }
 
 func (g *Graph) RangeTo(path *apipb.Path, degree int32, fn func(edge *apipb.Edge) bool) {
+	visited := map[*apipb.Path]struct{}{}
 	for _, edge := range g.edgesTo[path] {
 		e, ok := g.GetEdge(edge)
 		if ok {
 			for x := int32(0); x < degree; x++ {
-				fn = EdgeFunc(fn).ascendTo(g)
+				fn = EdgeFunc(fn).ascendTo(g, visited)
 			}
 			if !fn(e) {
 				return
@@ -348,9 +350,9 @@ func (g *Graph) RangeTo(path *apipb.Path, degree int32, fn func(edge *apipb.Edge
 	}
 }
 
-func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.EdgeFilter) *apipb.Edges {
+func (e *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
-	e.RangeFrom(path, filter.MaxDegree, func(e *apipb.Edge) bool {
+	e.RangeFrom(filter.NodePath, filter.MaxDegree, func(e *apipb.Edge) bool {
 		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
@@ -365,9 +367,9 @@ func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.EdgeFilter) *api
 	}
 }
 
-func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.EdgeFilter) *apipb.Edges {
+func (e *Graph) RangeFilterTo(filter *apipb.EdgeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
-	e.RangeTo(path, func(e *apipb.Edge) bool {
+	e.RangeTo(filter.NodePath, filter.MaxDegree, func(e *apipb.Edge) bool {
 		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
@@ -471,12 +473,4 @@ func removeEdge(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
 		}
 	}
 	return newPaths
-}
-
-func (g *Graph) ascendFrom(e *apipb.Edge) *apipb.Edge {
-	n, ok := g.GetNode(e.To)
-	if !ok {
-		return nil
-	}
-	g.RangeFrom()
 }

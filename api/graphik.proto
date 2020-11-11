@@ -77,22 +77,17 @@ message Edges {
 }
 
 message EdgeFilter {
-  string gtype =1;
-  repeated string expressions =2;
-  int32 limit =3;
-  int32 max_degree =4;
+  Path node_path =1;
+  string gtype =2;
+  repeated string expressions =3;
+  int32 limit =4;
+  int32 max_degree =5;
 }
 
 message TypeFilter {
   string gtype =1;
   repeated string expressions =2;
   int32 limit =3;
-}
-
-message PathFilter {
-  Path path =1;
-  repeated string expressions =3;
-  int32 limit =4;
 }
 
 message ChangeFilter {
@@ -211,6 +206,9 @@ service GraphService {
   rpc PatchEdges(Edges) returns(Edges){}
   rpc DelEdge(Path) returns(Counter){}
   rpc DelEdges(Paths) returns(Counter){}
+
+  rpc EdgesFrom(EdgeFilter) returns(Edges){}
+  rpc EdgesTo(EdgeFilter) returns(Edges){}
 
   rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}

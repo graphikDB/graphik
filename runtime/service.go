@@ -42,18 +42,18 @@ func (f *Runtime) Edges(input *apipb.TypeFilter) *apipb.Edges {
 	return edges
 }
 
-func (f *Runtime) EdgesFrom(path *apipb.Path, filter *apipb.TypeFilter) (*apipb.Edges, error) {
+func (f *Runtime) EdgesFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edges := f.graph.RangeFilterFrom(path, filter)
+	edges := f.graph.RangeFilterFrom(filter)
 	edges.Sort()
 	return edges, nil
 }
 
-func (f *Runtime) EdgesTo(path *apipb.Path, filter *apipb.TypeFilter) (*apipb.Edges, error) {
+func (f *Runtime) EdgesTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edges := f.graph.RangeFilterTo(path, filter)
+	edges := f.graph.RangeFilterTo(filter)
 	edges.Sort()
 	return edges, nil
 }

@@ -49,11 +49,56 @@ func Test(t *testing.T) {
 	if pong.Message != "PONG" {
 		t.Fatal("not PONG")
 	}
-	node, err := gClient.Me(ctx, &empty.Empty{})
+	me, err := gClient.Me(ctx, &empty.Empty{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(node.String())
+	t.Log(me.String())
+
+	note, err := gClient.CreateNode(ctx, &apipb.Node{
+		Path: &apipb.Path{
+			Gtype: "note",
+		},
+		Attributes: apipb.NewStruct(map[string]interface{}{
+			"title":       "this is a test note",
+			"description": "testing creating a node of type note",
+		}),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = gClient.CreateEdge(ctx, &apipb.Edge{
+		Path:                 &apipb.Path{
+			Gtype:                "personal_notes",
+		},
+		Attributes:           apipb.NewStruct(map[string]interface{}{
+			"weight": 5,
+		}),
+		Cascade:              apipb.Cascade_CASCADE_TO,
+		From:                 me.Path,
+		To:                   note.Path,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	edges, err := gClient.EdgesTo(ctx, &apipb.EdgeFilter{
+		NodePath:             me.Path,
+		Gtype:                "personal_notes",
+		//Expressions:          []string{
+		//	`attributes.weight > 3`,
+		//},
+		Limit:                1,
+		MaxDegree:            1,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(edges.GetEdges()) == 0 {
+		t.Fatal("zero edges found")
+	}
+	for _, e := range edges.GetEdges() {
+		t.Log(e.String())
+	}
 }
 
 func Benchmark(b *testing.B) {

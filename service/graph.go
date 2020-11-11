@@ -148,3 +148,13 @@ func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphService
 	}
 	return nil
 }
+
+
+func (g *Graph) EdgesFrom(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+	return g.runtime.EdgesFrom(filter)
+}
+
+func (g *Graph) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+	return g.runtime.EdgesTo(filter)
+}
+
