@@ -320,10 +320,13 @@ func (n *Graph) HasEdge(path *apipb.Path) bool {
 	return ok
 }
 
-func (e *Graph) RangeFrom(path *apipb.Path, fn func(e *apipb.Edge) bool) {
-	for _, edge := range e.edgesFrom[path] {
-		e, ok := e.GetEdge(edge)
+func (g *Graph) RangeFrom(path *apipb.Path, degree int32, fn func(e *apipb.Edge) bool) {
+	for _, edge := range g.edgesFrom[path] {
+		e, ok := g.GetEdge(edge)
 		if ok {
+			for x := int32(0); x < degree; x++ {
+				fn = EdgeFunc(fn).ascendFrom(g)
+			}
 			if !fn(e) {
 				return
 			}
@@ -331,10 +334,13 @@ func (e *Graph) RangeFrom(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 	}
 }
 
-func (e *Graph) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
-	for _, edge := range e.edgesTo[path] {
-		e, ok := e.GetEdge(edge)
+func (g *Graph) RangeTo(path *apipb.Path, degree int32, fn func(edge *apipb.Edge) bool) {
+	for _, edge := range g.edgesTo[path] {
+		e, ok := g.GetEdge(edge)
 		if ok {
+			for x := int32(0); x < degree; x++ {
+				fn = EdgeFunc(fn).ascendTo(g)
+			}
 			if !fn(e) {
 				return
 			}
@@ -342,9 +348,9 @@ func (e *Graph) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 	}
 }
 
-func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
+func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.EdgeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
-	e.RangeFrom(path, func(e *apipb.Edge) bool {
+	e.RangeFrom(path, filter.MaxDegree, func(e *apipb.Edge) bool {
 		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
@@ -359,7 +365,7 @@ func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *api
 	}
 }
 
-func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
+func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.EdgeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
 	e.RangeTo(path, func(e *apipb.Edge) bool {
 		if e.GetPath().GetGtype() != filter.Gtype {
@@ -465,4 +471,12 @@ func removeEdge(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
 		}
 	}
 	return newPaths
+}
+
+func (g *Graph) ascendFrom(e *apipb.Edge) *apipb.Edge {
+	n, ok := g.GetNode(e.To)
+	if !ok {
+		return nil
+	}
+	g.RangeFrom()
 }

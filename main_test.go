@@ -56,26 +56,24 @@ func Test(t *testing.T) {
 	t.Log(node.String())
 }
 
-//
-//func Benchmark(b *testing.B) {
-//	b.ReportAllocs()
-//	conn, err := grpc.DialContext(ctx, "localhost:7820", grpc.WithInsecure())
-//	if err != nil {
-//		b.Fatal(err)
-//	}
-//	var (
-//		gClient = apipb.NewGraphServiceClient(conn)
-//	)
-//	b.ResetTimer()
-//	for i := 0; i < b.N; i++ {
-//		node, err := gClient.SearchNodes(ctx, &apipb.TypeFilter{
-//			Gtype:       "test-user",
-//			Expressions: []string{`attributes.name.contains("cole")`},
-//			Limit:       1,
-//		})
-//		if err != nil {
-//			b.Fatal(err)
-//		}
-//		b.Log(node.String())
-//	}
-//}
+func Benchmark(b *testing.B) {
+	b.ReportAllocs()
+	conn, err := grpc.DialContext(ctx, "localhost:7820", grpc.WithInsecure())
+	if err != nil {
+		b.Fatal(err)
+	}
+	var (
+		gClient = apipb.NewGraphServiceClient(conn)
+	)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, err := gClient.SearchNodes(ctx, &apipb.TypeFilter{
+			Gtype:       apipb.Keyword_ANY.String(),
+			Expressions: []string{`attributes.name.contains("cole")`},
+			Limit:       1,
+		})
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}

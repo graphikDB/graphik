@@ -76,6 +76,13 @@ message Edges {
   repeated Edge edges =1;
 }
 
+message EdgeFilter {
+  string gtype =1;
+  repeated string expressions =2;
+  int32 limit =3;
+  int32 max_degree =4;
+}
+
 message TypeFilter {
   string gtype =1;
   repeated string expressions =2;
