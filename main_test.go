@@ -84,11 +84,10 @@ func Test(t *testing.T) {
 	edges, err := gClient.EdgesFrom(ctx, &apipb.EdgeFilter{
 		NodePath: me.Path,
 		Gtype:    "personal_notes",
-		//Expressions:          []string{
-		//	`attributes.weight > 3`,
-		//},
+		Expressions:          []string{
+			`path.gtype.contains("note")`,
+		},
 		Limit:     1,
-		MaxDegree: 1,
 	})
 	if err != nil {
 		t.Fatal(err)

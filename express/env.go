@@ -15,8 +15,7 @@ import (
 func init() {
 	var err error
 	e, err = cel.NewEnv(cel.Declarations(
-		decls.NewVar("gid", decls.String),
-		decls.NewVar("gtype", decls.String),
+		decls.NewVar("path", decls.NewMapType(decls.String, decls.Any)),
 		decls.NewVar("attributes", decls.NewMapType(decls.String, decls.Any)),
 		decls.NewVar("created_at", decls.Int),
 		decls.NewVar("updated_at", decls.Int),

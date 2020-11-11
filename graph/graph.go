@@ -136,14 +136,14 @@ func (n *Graph) DeleteNode(path *apipb.Path) *apipb.Counter {
 			Count: 0,
 		}
 	}
-	n.RangeFrom(path, 0, func(e *apipb.Edge) bool {
+	n.RangeFrom(path, func(e *apipb.Edge) bool {
 		n.DeleteEdge(e.GetPath())
 		if e.Cascade == apipb.Cascade_CASCADE_TO || e.Cascade == apipb.Cascade_CASCADE_MUTUAL {
 			n.DeleteNode(e.To)
 		}
 		return true
 	})
-	n.RangeTo(path, 0, func(e *apipb.Edge) bool {
+	n.RangeTo(path, func(e *apipb.Edge) bool {
 		n.DeleteEdge(e.GetPath())
 		if e.Cascade == apipb.Cascade_CASCADE_FROM || e.Cascade == apipb.Cascade_CASCADE_MUTUAL {
 			n.DeleteNode(e.From)
@@ -320,27 +320,19 @@ func (n *Graph) HasEdge(path *apipb.Path) bool {
 	return ok
 }
 
-func (g *Graph) RangeFrom(path *apipb.Path, degree int32, fn func(e *apipb.Edge) bool) {
-	visited := map[*apipb.Path]struct{}{}
+func (g *Graph) RangeFrom(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 	for _, path := range g.edgesFrom[path.String()] {
 		edge, _ := g.GetEdge(path)
-		for x := int32(0); x < degree; x++ {
-			fn = EdgeFunc(fn).ascendFrom(g, visited)
-		}
 		if !fn(edge) {
 			return
 		}
 	}
 }
 
-func (g *Graph) RangeTo(path *apipb.Path, degree int32, fn func(edge *apipb.Edge) bool) {
-	visited := map[*apipb.Path]struct{}{}
+func (g *Graph) RangeTo(path *apipb.Path, fn func(edge *apipb.Edge) bool) {
 	for _, edge := range g.edgesTo[path.String()] {
 		e, ok := g.GetEdge(edge)
 		if ok {
-			for x := int32(0); x < degree; x++ {
-				fn = EdgeFunc(fn).ascendTo(g, visited)
-			}
 			if !fn(e) {
 				return
 			}
@@ -351,7 +343,7 @@ func (g *Graph) RangeTo(path *apipb.Path, degree int32, fn func(edge *apipb.Edge
 func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
 
-	g.RangeFrom(filter.NodePath, filter.MaxDegree, func(edge *apipb.Edge) bool {
+	g.RangeFrom(filter.NodePath, func(edge *apipb.Edge) bool {
 		if edge.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
@@ -372,7 +364,7 @@ func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) *apipb.Edges {
 
 func (e *Graph) RangeFilterTo(filter *apipb.EdgeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
-	e.RangeTo(filter.NodePath, filter.MaxDegree, func(edge *apipb.Edge) bool {
+	e.RangeTo(filter.NodePath, func(edge *apipb.Edge) bool {
 		if edge.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}

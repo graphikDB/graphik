@@ -81,7 +81,6 @@ message EdgeFilter {
   string gtype =2;
   repeated string expressions =3;
   int32 limit =4;
-  int32 max_degree =5;
 }
 
 message TypeFilter {
