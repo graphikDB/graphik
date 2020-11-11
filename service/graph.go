@@ -3,11 +3,12 @@ package service
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/graph"
+	"github.com/autom8ter/graphik/express"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
+	"time"
 )
 
 type Graph struct {
@@ -88,12 +89,8 @@ func (g *Graph) DelEdges(ctx context.Context, paths *apipb.Paths) (*apipb.Counte
 }
 
 func (g *Graph) ChangeStream(filter *apipb.ChangeFilter, server apipb.GraphService_ChangeStreamServer) error {
-	env, err := graph.GetEnv()
-	if err != nil {
-		return err
-	}
 	filterFunc := func(msg interface{}) bool {
-		result, err := graph.EvalExpression(env, filter.Expressions, msg)
+		result, err := express.Eval(filter.Expressions, msg)
 		if err != nil {
 			logger.Error("subscription filter failure", zap.Error(err))
 			return false
@@ -106,6 +103,41 @@ func (g *Graph) ChangeStream(filter *apipb.ChangeFilter, server apipb.GraphServi
 			return
 		}
 		if val, ok := msg.(*apipb.StateChange); ok {
+			if err := server.Send(val); err != nil {
+				logger.Error("failed to send subscription", zap.Error(err))
+				return
+			}
+		}
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
+	return nil, g.runtime.Machine().PubSub().Publish(message.Channel, &apipb.Message{
+		Channel:   message.Channel,
+		Data:      message.Data,
+		Sender:    g.runtime.NodeContext(ctx).Path,
+		Timestamp: time.Now().UnixNano(),
+	})
+}
+
+func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphService_SubscribeServer) error {
+	filterFunc := func(msg interface{}) bool {
+		result, err := express.Eval(filter.Expressions, msg)
+		if err != nil {
+			logger.Error("subscription filter failure", zap.Error(err))
+			return false
+		}
+		return result
+	}
+	if err := g.runtime.Machine().PubSub().SubscribeFilter(server.Context(), filter.Channel, filterFunc, func(msg interface{}) {
+		if err, ok := msg.(error); ok && err != nil {
+			logger.Error("failed to send subscription", zap.Error(err))
+			return
+		}
+		if val, ok := msg.(*apipb.Message); ok {
 			if err := server.Send(val); err != nil {
 				logger.Error("failed to send subscription", zap.Error(err))
 				return

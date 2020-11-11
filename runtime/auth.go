@@ -12,7 +12,7 @@ const (
 	idClaim      = "sub"
 )
 
-func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, error) {
+func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
 	path := &apipb.Path{
 		Gtype: identityType,
 		Gid:   payload[idClaim].(string),
@@ -26,10 +26,10 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 			Attributes: strct,
 		})
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
-	return context.WithValue(ctx, authCtxKey, n), nil
+	return context.WithValue(ctx, authCtxKey, n), n, nil
 }
 
 func (s *Runtime) NodeContext(ctx context.Context) *apipb.Node {

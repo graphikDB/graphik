@@ -2,10 +2,12 @@ package interceptors
 
 import (
 	"context"
-	"github.com/autom8ter/graphik/graph"
+	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/express"
 	"github.com/autom8ter/graphik/runtime"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -32,17 +34,17 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
-		ctx, err = runtime.ToContext(ctx, payload)
+		ctx, node, err := runtime.ToContext(ctx, payload)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, err.Error())
+			return nil, status.Errorf(codes.Internal, errors.Wrap(err, "failed to create user").Error())
 		}
-		pass, err := runtime.Authorize(map[string]interface{}{
-			"request_path": info.FullMethod,
-			"user":         runtime.NodeContext(ctx),
-			"request":      graph.ToMap(req),
+		pass, err := runtime.Authorize(&apipb.RequestIntercept{
+			FullPath: info.FullMethod,
+			User:     node,
+			Request:  apipb.NewStruct(express.ToMap(req)),
 		})
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, err.Error())
+			return nil, status.Errorf(codes.Internal, errors.Wrap(err, "authorization failure").Error())
 		}
 		if !pass {
 			return nil, status.Error(codes.PermissionDenied, "permission denied")
@@ -65,17 +67,17 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
 
-		ctx, err := runtime.ToContext(ss.Context(), payload)
+		ctx, node, err := runtime.ToContext(ss.Context(), payload)
 		if err != nil {
-			return status.Errorf(codes.Internal, err.Error())
+			return status.Errorf(codes.Internal, errors.Wrap(err, "failed to create user").Error())
 		}
-		pass, err := runtime.Authorize(map[string]interface{}{
-			"request_path": info.FullMethod,
-			"user":         runtime.NodeContext(ctx),
-			"request":      graph.ToMap(srv),
+		pass, err := runtime.Authorize(&apipb.RequestIntercept{
+			FullPath: info.FullMethod,
+			User:     node,
+			Request:  apipb.NewStruct(express.ToMap(srv)),
 		})
 		if err != nil {
-			return status.Errorf(codes.Internal, err.Error())
+			return status.Errorf(codes.Internal, errors.Wrap(err, "authorization failure").Error())
 		}
 		if !pass {
 			return status.Error(codes.PermissionDenied, "permission denied")

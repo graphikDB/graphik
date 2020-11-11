@@ -83,11 +83,11 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 			Log: &apipb.Log_Edges{Edges: f.graph.SetEdges(c.Log.GetEdges().GetEdges())},
 		}
 	case apipb.Op_PATCH_NODE:
-		c.Log =  &apipb.Log{
+		c.Log = &apipb.Log{
 			Log: &apipb.Log_Node{Node: f.graph.PatchNode(c.Log.GetNode())},
 		}
 	case apipb.Op_PATCH_EDGE:
-		c.Log =  &apipb.Log{
+		c.Log = &apipb.Log{
 			Log: &apipb.Log_Edge{Edge: f.graph.PatchEdge(c.Log.GetEdge())},
 		}
 	case apipb.Op_PATCH_NODES:
@@ -99,7 +99,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 			Log: &apipb.Log_Edges{Edges: f.graph.PatchEdges(c.Log.GetEdges().GetEdges())},
 		}
 	case apipb.Op_DELETE_NODE:
-		c.Log =  &apipb.Log{
+		c.Log = &apipb.Log{
 			Log: &apipb.Log_Counter{Counter: f.graph.DeleteNode(c.Log.GetPath())},
 		}
 	case apipb.Op_DELETE_EDGE:

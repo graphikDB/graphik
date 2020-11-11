@@ -5,6 +5,7 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/auth"
+	"github.com/autom8ter/graphik/express"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
@@ -21,7 +22,7 @@ import (
 )
 
 const (
-	raftTimeout = 10 * time.Second
+	raftTimeout         = 10 * time.Second
 	ChangeStreamChannel = "changes"
 )
 
@@ -151,14 +152,12 @@ func (s *Runtime) Auth() *auth.Auth {
 	return s.auth
 }
 
-func (a *Runtime) Authorize(intercept interface{}) (bool, error) {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	if len(a.auth.Expressions()) == 0 {
+func (a *Runtime) Authorize(intercept *apipb.RequestIntercept) (bool, error) {
+	expressions := a.auth.Expressions()
+	if len(expressions) == 0 {
 		return true, nil
 	}
-
-	return true, nil
+	return express.Eval(expressions, intercept)
 }
 
 func (r *Runtime) Go(fn machine.Func) {

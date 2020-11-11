@@ -1,7 +1,7 @@
 package lang
 
 import (
-	"github.com/autom8ter/graphik/graph"
+	"github.com/autom8ter/graphik/express"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
 	"github.com/google/cel-go/common/types"
@@ -52,7 +52,7 @@ func (f FuncMap) MapEval(expression string, args map[string]interface{}) (map[st
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "evaluating program")
 	}
-	return graph.ToMap(result.Value()), details, nil
+	return express.ToMap(result.Value()), details, nil
 }
 
 func (f FuncMap) BoolEval(expressions []string, args map[string]interface{}) (bool, error) {

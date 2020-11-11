@@ -92,6 +92,11 @@ message ChangeFilter {
   repeated string expressions =1;
 }
 
+message ChannelFilter {
+  string channel =1;;
+  repeated string expressions =2;
+}
+
 message StateChange {
   Op op =1;
   Log log =2;
@@ -155,6 +160,24 @@ message Config {
   AuthConfig auth =4;
 }
 
+message RequestIntercept {
+  string full_path =1;
+  Node user =2;
+  google.protobuf.Struct request =3;
+}
+
+message OutboundMessage {
+  string channel =1;
+  google.protobuf.Struct data =2;
+}
+
+message Message {
+  string channel =1;
+  google.protobuf.Struct data =2;
+  Path sender =3;
+  int64 timestamp=4;
+}
+
 service ConfigService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
@@ -183,5 +206,7 @@ service GraphService {
   rpc DelEdges(Paths) returns(Counter){}
 
   rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
+  rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
+  rpc Subscribe(ChannelFilter) returns(stream Message){}
 }
 

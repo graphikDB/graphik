@@ -16,7 +16,7 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] Bulk Export
 - [x] Bulk Import
 - [x] Change Stream Subscriptions
-- [ ] Channel Based PubSub
+- [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Based Authorization
 - [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Constraints
@@ -33,7 +33,6 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 ## Use Cases
 
 - relational state-machine fine-grained authorization
-
 
 ## TODO
 

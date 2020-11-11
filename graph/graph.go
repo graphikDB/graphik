@@ -2,6 +2,7 @@ package graph
 
 import (
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/express"
 	"github.com/google/uuid"
 	"sort"
 	"time"
@@ -203,13 +204,9 @@ func (n *Graph) ClearNodes(nodeType string) {
 }
 
 func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) *apipb.Nodes {
-	env, err := GetEnv()
-	if err != nil {
-		panic(err)
-	}
 	var nodes []*apipb.Node
 	n.RangeNode(filter.Gtype, func(node *apipb.Node) bool {
-		pass, err := EvalExpression(env, filter.Expressions, node)
+		pass, err := express.Eval(filter.Expressions, node)
 		if err != nil {
 			panic(err)
 		}
@@ -264,7 +261,7 @@ func (n *Graph) SetEdge(value *apipb.Edge) *apipb.Edge {
 		value.Path = &apipb.Path{}
 	}
 	if value.GetPath().GetGid() == "" {
-		value.Path.Gid = UUID()
+		value.Path.Gid = uuid.New().String()
 	}
 	if value.GetPath().GetGtype() == "" {
 		value.Path.Gtype = apipb.Keyword_DEFAULT.String()
@@ -346,16 +343,12 @@ func (e *Graph) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 }
 
 func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
-	env, err := GetEnv()
-	if err != nil {
-		panic(err)
-	}
 	var edges []*apipb.Edge
 	e.RangeFrom(path, func(e *apipb.Edge) bool {
 		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
-		pass, _ := EvalExpression(env, filter.Expressions, e)
+		pass, _ := express.Eval(filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -367,16 +360,12 @@ func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *api
 }
 
 func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
-	env, err := GetEnv()
-	if err != nil {
-		panic(err)
-	}
 	var edges []*apipb.Edge
 	e.RangeTo(path, func(e *apipb.Edge) bool {
 		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
-		pass, _ := EvalExpression(env, filter.Expressions, e)
+		pass, _ := express.Eval(filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -454,14 +443,10 @@ func (e *Graph) PatchEdges(values []*apipb.Edge) *apipb.Edges {
 }
 
 func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) *apipb.Edges {
-	env, err := GetEnv()
-	if err != nil {
-		panic(err)
-	}
 	var edges []*apipb.Edge
 	var pass bool
 	e.RangeEdges(filter.Gtype, func(edge *apipb.Edge) bool {
-		pass, _ = EvalExpression(env, filter.Expressions, edge)
+		pass, _ = express.Eval(filter.Expressions, edge)
 		if pass {
 			edges = append(edges, edge)
 		}
