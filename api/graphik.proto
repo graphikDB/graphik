@@ -76,19 +76,6 @@ message Edges {
   repeated Edge edges =1;
 }
 
-message RaftLog {
-  oneof log {
-    Node node =1;
-    Nodes nodes =2;
-    Edge edge =3;
-    Edges edges =4;
-    Path path =5;
-    Paths paths =6;
-    AuthConfig auth =7;
-    Counter counter =8;
-  }
-}
-
 message TypeFilter {
   string gtype =1;
   repeated string expressions =2;
@@ -101,10 +88,27 @@ message PathFilter {
   int32 limit =4;
 }
 
-message Command {
+message ChangeFilter {
+  repeated string expressions =1;
+}
+
+message StateChange {
   Op op =1;
-  RaftLog val =2;
+  Log log =2;
   int64 timestamp =3;
+}
+
+message Log {
+  oneof log {
+    Node node =1;
+    Nodes nodes =2;
+    Edge edge =3;
+    Edges edges =4;
+    Path path =5;
+    Paths paths =6;
+    AuthConfig auth =7;
+    Counter counter =8;
+  }
 }
 
 message Export {
@@ -159,6 +163,7 @@ service ConfigService {
 }
 
 service GraphService {
+  rpc Me(google.protobuf.Empty) returns(Node){}
   rpc CreateNode(Node) returns(Node){}
   rpc CreateNodes(Nodes) returns(Nodes){}
   rpc GetNode(Path) returns(Node){}
@@ -176,4 +181,7 @@ service GraphService {
   rpc PatchEdges(Edges) returns(Edges){}
   rpc DelEdge(Path) returns(Counter){}
   rpc DelEdges(Paths) returns(Counter){}
+
+  rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
 }
+

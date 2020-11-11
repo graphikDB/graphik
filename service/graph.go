@@ -3,7 +3,11 @@ package service
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/graph"
+	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
+	"github.com/golang/protobuf/ptypes/empty"
+	"go.uber.org/zap"
 )
 
 type Graph struct {
@@ -12,6 +16,11 @@ type Graph struct {
 
 func NewGraph(runtime *runtime.Runtime) *Graph {
 	return &Graph{runtime: runtime}
+}
+
+func (g *Graph) Me(ctx context.Context, empty *empty.Empty) (*apipb.Node, error) {
+	n := g.runtime.NodeContext(ctx)
+	return n, nil
 }
 
 func (g *Graph) CreateNode(ctx context.Context, node *apipb.Node) (*apipb.Node, error) {
@@ -76,4 +85,34 @@ func (g *Graph) DelEdge(ctx context.Context, path *apipb.Path) (*apipb.Counter, 
 
 func (g *Graph) DelEdges(ctx context.Context, paths *apipb.Paths) (*apipb.Counter, error) {
 	return g.runtime.DelEdges(paths)
+}
+
+func (g *Graph) ChangeStream(filter *apipb.ChangeFilter, server apipb.GraphService_ChangeStreamServer) error {
+	env, err := graph.GetEnv()
+	if err != nil {
+		return err
+	}
+	filterFunc := func(msg interface{}) bool {
+		result, err := graph.EvalExpression(env, filter.Expressions, msg)
+		if err != nil {
+			logger.Error("subscription filter failure", zap.Error(err))
+			return false
+		}
+		return result
+	}
+	if err := g.runtime.Machine().PubSub().SubscribeFilter(server.Context(), runtime.ChangeStreamChannel, filterFunc, func(msg interface{}) {
+		if err, ok := msg.(error); ok && err != nil {
+			logger.Error("failed to send subscription", zap.Error(err))
+			return
+		}
+		if val, ok := msg.(*apipb.StateChange); ok {
+			if err := server.Send(val); err != nil {
+				logger.Error("failed to send subscription", zap.Error(err))
+				return
+			}
+		}
+	}); err != nil {
+		return err
+	}
+	return nil
 }

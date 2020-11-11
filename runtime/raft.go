@@ -53,73 +53,74 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 	return nil
 }
 
-func (f *Runtime) apply(log *raft.Log) (*apipb.RaftLog, error) {
-	var c apipb.Command
-	if err := proto.Unmarshal(log.Data, &c); err != nil {
+func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
+	var c = &apipb.StateChange{}
+	if err := proto.Unmarshal(log.Data, c); err != nil {
 		return nil, fmt.Errorf("failed to decode command: %s", err.Error())
 	}
 	switch c.Op {
 	case apipb.Op_SET_AUTH:
-		if err := f.auth.Override(c.Val.GetAuth()); err != nil {
+		if err := f.auth.Override(c.Log.GetAuth()); err != nil {
 			return nil, errors.Wrap(err, "failed to override auth")
 		}
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Auth{Auth: f.auth.Raw()},
-		}, nil
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Auth{Auth: f.auth.Raw()},
+		}
 	case apipb.Op_CREATE_NODE:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Node{Node: f.graph.SetNode(c.Val.GetNode())},
-		}, nil
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Node{Node: f.graph.SetNode(c.Log.GetNode())},
+		}
 	case apipb.Op_CREATE_EDGE:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Edge{Edge: f.graph.SetEdge(c.Val.GetEdge())},
-		}, nil
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Edge{Edge: f.graph.SetEdge(c.Log.GetEdge())},
+		}
 	case apipb.Op_CREATE_NODES:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Nodes{Nodes: f.graph.SetNodes(c.Val.GetNodes().GetNodes())},
-		}, nil
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Nodes{Nodes: f.graph.SetNodes(c.Log.GetNodes().GetNodes())},
+		}
 	case apipb.Op_CREATE_EDGES:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Edges{Edges: f.graph.SetEdges(c.Val.GetEdges().GetEdges())},
-		}, nil
-
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Edges{Edges: f.graph.SetEdges(c.Log.GetEdges().GetEdges())},
+		}
 	case apipb.Op_PATCH_NODE:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Node{Node: f.graph.PatchNode(c.Val.GetNode())},
-		}, nil
+		c.Log =  &apipb.Log{
+			Log: &apipb.Log_Node{Node: f.graph.PatchNode(c.Log.GetNode())},
+		}
 	case apipb.Op_PATCH_EDGE:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Edge{Edge: f.graph.PatchEdge(c.Val.GetEdge())},
-		}, nil
+		c.Log =  &apipb.Log{
+			Log: &apipb.Log_Edge{Edge: f.graph.PatchEdge(c.Log.GetEdge())},
+		}
 	case apipb.Op_PATCH_NODES:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Nodes{Nodes: f.graph.PatchNodes(c.Val.GetNodes().GetNodes())},
-		}, nil
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Nodes{Nodes: f.graph.PatchNodes(c.Log.GetNodes().GetNodes())},
+		}
 	case apipb.Op_PATCH_EDGES:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Edges{Edges: f.graph.PatchEdges(c.Val.GetEdges().GetEdges())},
-		}, nil
-
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Edges{Edges: f.graph.PatchEdges(c.Log.GetEdges().GetEdges())},
+		}
 	case apipb.Op_DELETE_NODE:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Counter{Counter: f.graph.DeleteNode(c.Val.GetPath())},
-		}, nil
+		c.Log =  &apipb.Log{
+			Log: &apipb.Log_Counter{Counter: f.graph.DeleteNode(c.Log.GetPath())},
+		}
 	case apipb.Op_DELETE_EDGE:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Counter{Counter: f.graph.DeleteEdge(c.Val.GetPath())},
-		}, nil
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Counter{Counter: f.graph.DeleteEdge(c.Log.GetPath())},
+		}
 	case apipb.Op_DELETE_NODES:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Counter{Counter: f.graph.DeleteNodes(c.Val.GetPaths().GetPaths())},
-		}, nil
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Counter{Counter: f.graph.DeleteNodes(c.Log.GetPaths().GetPaths())},
+		}
 	case apipb.Op_DELETE_EDGES:
-		return &apipb.RaftLog{
-			Log: &apipb.RaftLog_Counter{Counter: f.graph.DeleteEdges(c.Val.GetPaths().GetPaths())},
-		}, nil
-
+		c.Log = &apipb.Log{
+			Log: &apipb.Log_Counter{Counter: f.graph.DeleteEdges(c.Log.GetPaths().GetPaths())},
+		}
 	default:
 		return nil, fmt.Errorf("unsupported command: %v", c.Op)
 	}
+	if err := f.machine.PubSub().Publish(ChangeStreamChannel, c); err != nil {
+		return nil, err
+	}
+	return c.Log, nil
 }
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {

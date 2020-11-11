@@ -21,6 +21,7 @@ import (
 	"net/http/pprof"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -33,16 +34,16 @@ func main() {
 		Raft: &apipb.RaftConfig{},
 		Auth: &apipb.AuthConfig{},
 	}
-	pflag.CommandLine.StringVar(&cfg.Grpc.Bind, "grpc.bind", ":7820", "")
-	pflag.CommandLine.StringVar(&cfg.Http.Bind, "http.bind", ":7830", "")
-	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedHeaders, "http.headers", nil, "cors allowed headers")
-	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedMethods, "http.methods", nil, "cors allowed methods")
-	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedOrigins, "http.origins", nil, "cors allowed origins")
+	pflag.CommandLine.StringVar(&cfg.Grpc.Bind, "grpc.bind", ":7820", "grpc server bind address")
+	pflag.CommandLine.StringVar(&cfg.Http.Bind, "http.bind", ":7830", "http server bind address")
+	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedHeaders, "http.headers", strings.Split(os.Getenv("GRAPHIK_HTTP_HEADERS"), ","), "cors allowed headers (env: GRAPHIK_HTTP_HEADERS)")
+	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedMethods, "http.methods", strings.Split(os.Getenv("GRAPHIK_HTTP_METHODS"), ","), "cors allowed methods (env: GRAPHIK_HTTP_METHODS)")
+	pflag.CommandLine.StringSliceVar(&cfg.Http.AllowedOrigins, "http.origins", strings.Split(os.Getenv("GRAPHIK_HTTP_ORIGINS"), ","), "cors allowed origins (env: GRAPHIK_HTTP_ORIGINS)")
 	pflag.CommandLine.StringVar(&cfg.Raft.Bind, "raft.bind", "localhost:7840", "raft protocol bind address")
-	pflag.CommandLine.StringVar(&cfg.Raft.NodeId, "raft.nodeid", apipb.Keyword_DEFAULT.String(), "raft node id")
+	pflag.CommandLine.StringVar(&cfg.Raft.NodeId, "raft.nodeid", os.Getenv("GRAPHIK_RAFT_ID"), "raft node id (env: GRAPHIK_RAFT_ID)")
 	pflag.CommandLine.StringVar(&cfg.Raft.StoragePath, "raft.storage.path", "/tmp/graphik", "raft storage path")
-	pflag.CommandLine.StringSliceVar(&cfg.Auth.JwksSources, "auth.jwks", nil, "authorizaed jwks uris ex: https://www.googleapis.com/oauth2/v3/certs")
-	pflag.CommandLine.StringSliceVar(&cfg.Auth.AuthExpressions, "auth.expressions", nil, "auth middleware expressions")
+	pflag.CommandLine.StringSliceVar(&cfg.Auth.JwksSources, "auth.jwks", strings.Split(os.Getenv("GRAPHIK_JWKS_URIS"), ","), "authorizaed jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)")
+	pflag.CommandLine.StringSliceVar(&cfg.Auth.AuthExpressions, "auth.expressions", strings.Split(os.Getenv("GRAPHIK_AUTH_EXPRESSIONS"), ","), "auth middleware expressions (env: GRAPHIK_AUTH_EXPRESSIONS)")
 
 	pflag.Parse()
 	cfg.SetDefaults()

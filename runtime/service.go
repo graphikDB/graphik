@@ -59,10 +59,10 @@ func (f *Runtime) EdgesTo(path *apipb.Path, filter *apipb.TypeFilter) (*apipb.Ed
 }
 
 func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODES,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Nodes{Nodes: nodes},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Nodes{Nodes: nodes},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -75,10 +75,10 @@ func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 }
 
 func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODE,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Node{Node: node},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Node{Node: node},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -89,10 +89,10 @@ func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
 }
 
 func (r *Runtime) PatchNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_NODES,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Nodes{Nodes: nodes},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Nodes{Nodes: nodes},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -105,10 +105,10 @@ func (r *Runtime) PatchNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 }
 
 func (r *Runtime) PatchNode(patch *apipb.Node) (*apipb.Node, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_NODE,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Node{Node: patch},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Node{Node: patch},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -119,10 +119,10 @@ func (r *Runtime) PatchNode(patch *apipb.Node) (*apipb.Node, error) {
 }
 
 func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Paths{Paths: paths},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Paths{Paths: paths},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -133,10 +133,10 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 }
 
 func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Path{Path: path},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Path{Path: path},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -148,10 +148,10 @@ func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
 
 func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 	now := time.Now().UnixNano()
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGES,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Edges{Edges: edges},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Edges{Edges: edges},
 		},
 		Timestamp: now,
 	})
@@ -164,10 +164,10 @@ func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 }
 
 func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGE,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Edge{Edge: edge},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Edge{Edge: edge},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -178,10 +178,10 @@ func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
 }
 
 func (r *Runtime) PatchEdges(patches *apipb.Edges) (*apipb.Edges, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGES,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Edges{Edges: patches},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Edges{Edges: patches},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -194,10 +194,10 @@ func (r *Runtime) PatchEdges(patches *apipb.Edges) (*apipb.Edges, error) {
 }
 
 func (r *Runtime) PatchEdge(patch *apipb.Edge) (*apipb.Edge, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGE,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Edge{Edge: patch},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Edge{Edge: patch},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -208,10 +208,10 @@ func (r *Runtime) PatchEdge(patch *apipb.Edge) (*apipb.Edge, error) {
 }
 
 func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Paths{Paths: paths},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Paths{Paths: paths},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -222,10 +222,10 @@ func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
 }
 
 func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
-	resp, err := r.execute(&apipb.Command{
+	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
-		Val: &apipb.RaftLog{
-			Log: &apipb.RaftLog_Path{Path: path},
+		Log: &apipb.Log{
+			Log: &apipb.Log_Path{Path: path},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})

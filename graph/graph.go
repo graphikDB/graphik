@@ -203,13 +203,13 @@ func (n *Graph) ClearNodes(nodeType string) {
 }
 
 func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) *apipb.Nodes {
-	env, err := getEnv()
+	env, err := GetEnv()
 	if err != nil {
 		panic(err)
 	}
 	var nodes []*apipb.Node
 	n.RangeNode(filter.Gtype, func(node *apipb.Node) bool {
-		pass, err := evalExpression(env, filter.Expressions, node)
+		pass, err := EvalExpression(env, filter.Expressions, node)
 		if err != nil {
 			panic(err)
 		}
@@ -346,7 +346,7 @@ func (e *Graph) RangeTo(path *apipb.Path, fn func(e *apipb.Edge) bool) {
 }
 
 func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
-	env, err := getEnv()
+	env, err := GetEnv()
 	if err != nil {
 		panic(err)
 	}
@@ -355,7 +355,7 @@ func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *api
 		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
-		pass, _ := evalExpression(env, filter.Expressions, e)
+		pass, _ := EvalExpression(env, filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -367,7 +367,7 @@ func (e *Graph) RangeFilterFrom(path *apipb.Path, filter *apipb.TypeFilter) *api
 }
 
 func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.TypeFilter) *apipb.Edges {
-	env, err := getEnv()
+	env, err := GetEnv()
 	if err != nil {
 		panic(err)
 	}
@@ -376,7 +376,7 @@ func (e *Graph) RangeFilterTo(path *apipb.Path, filter *apipb.TypeFilter) *apipb
 		if e.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
-		pass, _ := evalExpression(env, filter.Expressions, e)
+		pass, _ := EvalExpression(env, filter.Expressions, e)
 		if pass {
 			edges = append(edges, e)
 		}
@@ -454,14 +454,14 @@ func (e *Graph) PatchEdges(values []*apipb.Edge) *apipb.Edges {
 }
 
 func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) *apipb.Edges {
-	env, err := getEnv()
+	env, err := GetEnv()
 	if err != nil {
 		panic(err)
 	}
 	var edges []*apipb.Edge
 	var pass bool
 	e.RangeEdges(filter.Gtype, func(edge *apipb.Edge) bool {
-		pass, _ = evalExpression(env, filter.Expressions, edge)
+		pass, _ = EvalExpression(env, filter.Expressions, edge)
 		if pass {
 			edges = append(edges, edge)
 		}

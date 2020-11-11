@@ -12,7 +12,7 @@ func NewStruct(data map[string]interface{}) *structpb.Struct {
 	return x
 }
 
-func (c *Command) Log() raft.Log {
+func (c *StateChange) RaftLog() raft.Log {
 	bits, _ := proto.Marshal(c)
 	return raft.Log{
 		Data: bits,

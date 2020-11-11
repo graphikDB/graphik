@@ -5,7 +5,7 @@ import (
 	"github.com/google/cel-go/checker/decls"
 )
 
-func getEnv() (*cel.Env, error) {
+func GetEnv() (*cel.Env, error) {
 	return cel.NewEnv(cel.Declarations(
 		decls.NewVar("gid", decls.String),
 		decls.NewVar("gtype", decls.String),
@@ -18,7 +18,7 @@ func getEnv() (*cel.Env, error) {
 	))
 }
 
-func evalExpression(env *cel.Env, expressions []string, obj interface{}) (bool, error) {
+func EvalExpression(env *cel.Env, expressions []string, obj interface{}) (bool, error) {
 	if len(expressions) == 0 {
 		return true, nil
 	}

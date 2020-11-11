@@ -22,6 +22,7 @@ import (
 
 const (
 	raftTimeout = 10 * time.Second
+	ChangeStreamChannel = "changes"
 )
 
 type Runtime struct {
@@ -112,7 +113,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	return s, nil
 }
 
-func (s *Runtime) execute(cmd *apipb.Command) (*apipb.RaftLog, error) {
+func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.Log, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
@@ -122,7 +123,7 @@ func (s *Runtime) execute(cmd *apipb.Command) (*apipb.RaftLog, error) {
 	//}()
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	future := s.raft.ApplyLog(cmd.Log(), raftTimeout)
+	future := s.raft.ApplyLog(cmd.RaftLog(), raftTimeout)
 
 	if err := future.Error(); err != nil {
 		return nil, err
@@ -131,7 +132,7 @@ func (s *Runtime) execute(cmd *apipb.Command) (*apipb.RaftLog, error) {
 	if err, ok := future.Response().(error); ok {
 		return nil, err
 	}
-	return future.Response().(*apipb.RaftLog), nil
+	return future.Response().(*apipb.Log), nil
 }
 
 func (s *Runtime) Close() error {
