@@ -68,27 +68,27 @@ func Test(t *testing.T) {
 		t.Fatal(err)
 	}
 	_, err = gClient.CreateEdge(ctx, &apipb.Edge{
-		Path:                 &apipb.Path{
-			Gtype:                "personal_notes",
+		Path: &apipb.Path{
+			Gtype: "personal_notes",
 		},
-		Attributes:           apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb.NewStruct(map[string]interface{}{
 			"weight": 5,
 		}),
-		Cascade:              apipb.Cascade_CASCADE_TO,
-		From:                 me.Path,
-		To:                   note.Path,
+		Cascade: apipb.Cascade_CASCADE_TO,
+		From:    me.Path,
+		To:      note.Path,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	edges, err := gClient.EdgesTo(ctx, &apipb.EdgeFilter{
-		NodePath:             me.Path,
-		Gtype:                "personal_notes",
+	edges, err := gClient.EdgesFrom(ctx, &apipb.EdgeFilter{
+		NodePath: me.Path,
+		Gtype:    "personal_notes",
 		//Expressions:          []string{
 		//	`attributes.weight > 3`,
 		//},
-		Limit:                1,
-		MaxDegree:            1,
+		Limit:     1,
+		MaxDegree: 1,
 	})
 	if err != nil {
 		t.Fatal(err)

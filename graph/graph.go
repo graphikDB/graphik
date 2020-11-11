@@ -11,16 +11,16 @@ import (
 type Graph struct {
 	nodes     map[string]map[string]*apipb.Node
 	edges     map[string]map[string]*apipb.Edge
-	edgesTo   map[*apipb.Path][]*apipb.Path
-	edgesFrom map[*apipb.Path][]*apipb.Path
+	edgesTo   map[string][]*apipb.Path
+	edgesFrom map[string][]*apipb.Path
 }
 
 func New() *Graph {
 	return &Graph{
 		nodes:     map[string]map[string]*apipb.Node{},
 		edges:     map[string]map[string]*apipb.Edge{},
-		edgesTo:   map[*apipb.Path][]*apipb.Path{},
-		edgesFrom: map[*apipb.Path][]*apipb.Path{},
+		edgesTo:   map[string][]*apipb.Path{},
+		edgesFrom: map[string][]*apipb.Path{},
 	}
 }
 
@@ -272,8 +272,8 @@ func (n *Graph) SetEdge(value *apipb.Edge) *apipb.Edge {
 
 	n.edges[value.GetPath().GetGtype()][value.GetPath().GetGid()] = value
 
-	n.edgesFrom[value.GetFrom()] = append(n.edgesFrom[value.GetFrom()], value.GetPath())
-	n.edgesTo[value.GetTo()] = append(n.edgesTo[value.GetTo()], value.GetPath())
+	n.edgesFrom[value.GetFrom().String()] = append(n.edgesFrom[value.GetFrom().String()], value.GetPath())
+	n.edgesTo[value.GetTo().String()] = append(n.edgesTo[value.GetTo().String()], value.GetPath())
 
 	return value
 }
@@ -305,10 +305,10 @@ func (n *Graph) DeleteEdge(path *apipb.Path) *apipb.Counter {
 			Count: 0,
 		}
 	}
-	n.edgesFrom[edge.From] = removeEdge(path, n.edgesFrom[edge.From])
-	n.edgesTo[edge.From] = removeEdge(path, n.edgesTo[edge.From])
-	n.edgesFrom[edge.To] = removeEdge(path, n.edgesFrom[edge.To])
-	n.edgesTo[edge.To] = removeEdge(path, n.edgesTo[edge.To])
+	n.edgesFrom[edge.From.String()] = removeEdge(path, n.edgesFrom[edge.From.String()])
+	n.edgesTo[edge.From.String()] = removeEdge(path, n.edgesTo[edge.From.String()])
+	n.edgesFrom[edge.To.String()] = removeEdge(path, n.edgesFrom[edge.To.String()])
+	n.edgesTo[edge.To.String()] = removeEdge(path, n.edgesTo[edge.To.String()])
 	delete(n.edges[path.Gtype], path.Gid)
 	return &apipb.Counter{
 		Count: 1,
@@ -322,22 +322,20 @@ func (n *Graph) HasEdge(path *apipb.Path) bool {
 
 func (g *Graph) RangeFrom(path *apipb.Path, degree int32, fn func(e *apipb.Edge) bool) {
 	visited := map[*apipb.Path]struct{}{}
-	for _, edge := range g.edgesFrom[path] {
-		e, ok := g.GetEdge(edge)
-		if ok {
-			for x := int32(0); x < degree; x++ {
-				fn = EdgeFunc(fn).ascendFrom(g, visited)
-			}
-			if !fn(e) {
-				return
-			}
+	for _, path := range g.edgesFrom[path.String()] {
+		edge, _ := g.GetEdge(path)
+		for x := int32(0); x < degree; x++ {
+			fn = EdgeFunc(fn).ascendFrom(g, visited)
+		}
+		if !fn(edge) {
+			return
 		}
 	}
 }
 
 func (g *Graph) RangeTo(path *apipb.Path, degree int32, fn func(edge *apipb.Edge) bool) {
 	visited := map[*apipb.Path]struct{}{}
-	for _, edge := range g.edgesTo[path] {
+	for _, edge := range g.edgesTo[path.String()] {
 		e, ok := g.GetEdge(edge)
 		if ok {
 			for x := int32(0); x < degree; x++ {
@@ -350,16 +348,21 @@ func (g *Graph) RangeTo(path *apipb.Path, degree int32, fn func(edge *apipb.Edge
 	}
 }
 
-func (e *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) *apipb.Edges {
+func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
-	e.RangeFrom(filter.NodePath, filter.MaxDegree, func(e *apipb.Edge) bool {
-		if e.GetPath().GetGtype() != filter.Gtype {
+
+	g.RangeFrom(filter.NodePath, filter.MaxDegree, func(edge *apipb.Edge) bool {
+		if edge.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
-		pass, _ := express.Eval(filter.Expressions, e)
-		if pass {
-			edges = append(edges, e)
+		pass, err := express.Eval(filter.Expressions, edge)
+		if err != nil {
+			panic(err)
 		}
+		if pass {
+			edges = append(edges, edge)
+		}
+
 		return len(edges) < int(filter.Limit)
 	})
 	return &apipb.Edges{
@@ -369,13 +372,16 @@ func (e *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) *apipb.Edges {
 
 func (e *Graph) RangeFilterTo(filter *apipb.EdgeFilter) *apipb.Edges {
 	var edges []*apipb.Edge
-	e.RangeTo(filter.NodePath, filter.MaxDegree, func(e *apipb.Edge) bool {
-		if e.GetPath().GetGtype() != filter.Gtype {
+	e.RangeTo(filter.NodePath, filter.MaxDegree, func(edge *apipb.Edge) bool {
+		if edge.GetPath().GetGtype() != filter.Gtype {
 			return true
 		}
-		pass, _ := express.Eval(filter.Expressions, e)
+		pass, err := express.Eval(filter.Expressions, edge)
+		if err != nil {
+			panic(err)
+		}
 		if pass {
-			edges = append(edges, e)
+			edges = append(edges, edge)
 		}
 		return len(edges) < int(filter.Limit)
 	})

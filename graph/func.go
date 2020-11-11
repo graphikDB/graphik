@@ -19,6 +19,7 @@ func (e EdgeFunc) ascendFrom(g *Graph, visited map[*apipb.Path]struct{}) EdgeFun
 				if _, ok := visited[edge.GetPath()]; ok {
 					return true
 				}
+				visited[edge.GetPath()] = struct{}{}
 				return e(edge)
 			})
 		}
