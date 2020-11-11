@@ -55,4 +55,3 @@ An identity-aware, permissioned, persistant labelled property graph database wri
       --raft.storage.path string   raft storage path (default "/tmp/graphik")
 
 ```
-
