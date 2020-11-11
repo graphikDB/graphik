@@ -10,10 +10,10 @@ help:
 	@echo "----------------------------------------------------------------"
 
 run:
-	@go run main.go
+	@go run main.go  --auth.jwks=https://www.googleapis.com/oauth2/v3/certs
 
 gen:
-	@gqlgen generate
+	@go generate ./...
 
 patch: ## bump version by 1 patch
 	bumpversion patch --allow-dirty
@@ -29,3 +29,10 @@ docker-build:
 
 docker-push:
 	@docker push colemanword/graphik:v$(version)
+
+.PHONY: proto
+proto: ## regenerate gRPC code
+	@echo "generating protobuf code..."
+	@rm -rf gen
+	@docker run -v `pwd`:/tmp colemanword/prototool:latest prototool generate
+	@go fmt ./...

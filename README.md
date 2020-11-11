@@ -1,129 +1,57 @@
 # Graphik
 
-A persistant labelled property graph database written in 100% Go
+An identity-aware, permissioned, persistant labelled property graph database written in Go
 
-## Example Queries
+- [x] 100% Go
+- [x] Containerized
+- [x] Native gRPC Support
+- [x] Persistant (Raft)
+- [x] Horizontally Scaleable (Raft)
+- [x] Loosely typed(mongo-esque)
+- [x] Prometheus Metrics
+- [x] Pprof Metrics
+- [x] Live runtime config update
+- [x] Private/Admin api
+- [x] Secure JWT based auth with remote JWKS support
+- [x] Bulk Export
+- [x] Bulk Import
+- [x] Change Stream Subscriptions
+- [x] Channel Based PubSub
+- [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
+- [x] [Common Expression Language](https://opensource.google/projects/cel) Based Authorization
+- [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Constraints
+- [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Triggers
+- [ ] Kubernetes Operator
+- [ ] Helm Chart
 
-### create a node
-```graphql
-mutation createNode {
-    createNode(input: {
-        path: "user"
-        attributes: {
-          name: "coleman"
-        }
-    }) {
-        path
-        attributes
-    }
-}
+## Key Dependencies
+
+- github.com/hashicorp/raft
+- github.com/autom8ter/machine
+- github.com/google/cel-go/cel
+
+## Use Cases
+
+- relational state-machine fine-grained authorization
+
+## TODO
+
+- [ ] Auto redirect mutations to Raft leader
+- [ ] E2E Tests
+- [ ] Benchmarks Against Other Graph Databases
+
+## Flags
+
+```text
+      --auth.expressions strings   auth middleware expressions (env: GRAPHIK_AUTH_EXPRESSIONS)
+      --auth.jwks strings          authorizaed jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
+      --grpc.bind string           grpc server bind address (default ":7820")
+      --http.bind string           http server bind address (default ":7830")
+      --http.headers strings       cors allowed headers (env: GRAPHIK_HTTP_HEADERS)
+      --http.methods strings       cors allowed methods (env: GRAPHIK_HTTP_METHODS)
+      --http.origins strings       cors allowed origins (env: GRAPHIK_HTTP_ORIGINS)
+      --raft.bind string           raft protocol bind address (default "localhost:7840")
+      --raft.nodeid string         raft node id (env: GRAPHIK_RAFT_ID)
+      --raft.storage.path string   raft storage path (default "/tmp/graphik")
+
 ```
-
-### get nodes
-
-```graphql
-query {
-    nodes(input:{type:"user" limit: 100}) {
-    	path
-        attributes
-    	createdAt
-        updatedAt
-    }
-}
-```
-
-### patch node
-
-```graphql
-mutation patchNode {
-    patchNode(input: {
-        path: "user/cac3b142-0e52-2e24-388c-79a9bd50c35f"
-        patch: {
-          name: "Coleman Word"
-          email: "colemanword@gmail.com"
-          gender: "male"
-        }
-    }) {
-        path
-        attributes
-    }
-}
-```
-
-### delete a node
-
-```graphql
-mutation delNode {
-    delNode(input: "user/abd70fc5-2520-28c4-6f17-ef3bd5ae6073") {
-      count  
-    }
-}
-```
-
-### depthSearch
-
-```graphql
-query {
-    depthSearch(input:{
-      path:"user/9e02d1c2-719a-9770-9b41-024c6a90db41" 
-      edgeType: "friend" 
-      reverse: false
-      depth: 1
-      limit: 6
-    }) {
-    	path
-        updatedAt
-    	createdAt
-        attributes
-    }
-}
-```
-
-### createEdge
-
-```graphql
-mutation createEdge {
-    createEdge(input: {
-      	path: "friend"
-      	mutual: true
-        from: "user/9e02d1c2-719a-9770-9b41-024c6a90db41"
-        to: "user/49bbc52e-f5ab-7f8a-81e8-913e380c51b7"
-    }) {
-        path
-        attributes
-    	
-    		from
-        to
-    }
-}
-```
-
-### get edges
-
-```graphql
-query {
-    getEdges(input:{type:"friend" limit: 10}) {
-    	path
-        updatedAt
-        attributes
-    	mutual
-    	from
-    	to
-    }
-}
-```
-
-### get single edge
-
-```graphql
-query {
-    getEdge(input: "friend/8516e0d3-03c0-5b2c-e5b5-fba631c6c1b4") {
-        path
-        attributes
-        from
-        to
-        createdAt
-    }
-}
-```
-

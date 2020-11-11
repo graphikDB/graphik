@@ -1,1 +1,0 @@
-package generic_test

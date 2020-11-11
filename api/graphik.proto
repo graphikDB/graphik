@@ -1,0 +1,212 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "apipb";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+
+enum Op {
+  CREATE_NODES = 0;
+  CREATE_NODE =1;
+  PATCH_NODES = 2;
+  PATCH_NODE = 3;
+  DELETE_NODES = 4;
+  DELETE_NODE =5;
+  CREATE_EDGES = 6;
+  CREATE_EDGE =7;
+  PATCH_EDGES = 8;
+  PATCH_EDGE =9;
+  DELETE_EDGES = 10;
+  DELETE_EDGE =11;
+  SET_AUTH  = 12;
+}
+
+enum Cascade {
+  CASCADE_NONE =0;
+  CASCADE_FROM =1;
+  CASCADE_TO=2;
+  CASCADE_MUTUAL=3;
+}
+
+enum Keyword {
+  INVALID =0;
+  ANY =1;
+  DEFAULT =2;
+}
+
+message Counter {
+  int64 count =1;
+}
+
+message Path {
+  string gtype =1;
+  string gid =2;
+}
+
+message Paths {
+  repeated Path paths =1;
+}
+
+message Node {
+  Path path =1;
+  google.protobuf.Struct attributes =3;
+  int64 created_at =4;
+  int64 updated_at =5;
+}
+
+message Nodes {
+  repeated Node nodes =1;
+}
+
+message Edge {
+  Path path =1;
+  google.protobuf.Struct attributes =3;
+  Cascade cascade =4;
+  Path from =5;
+  Path to =6;
+  int64 created_at =10;
+  int64 updated_at =11;
+}
+
+message Edges {
+  repeated Edge edges =1;
+}
+
+message TypeFilter {
+  string gtype =1;
+  repeated string expressions =2;
+  int32 limit =3;
+}
+
+message PathFilter {
+  Path path =1;
+  repeated string expressions =3;
+  int32 limit =4;
+}
+
+message ChangeFilter {
+  repeated string expressions =1;
+}
+
+message ChannelFilter {
+  string channel =1;;
+  repeated string expressions =2;
+}
+
+message StateChange {
+  Op op =1;
+  Log log =2;
+  int64 timestamp =3;
+}
+
+message Log {
+  oneof log {
+    Node node =1;
+    Nodes nodes =2;
+    Edge edge =3;
+    Edges edges =4;
+    Path path =5;
+    Paths paths =6;
+    AuthConfig auth =7;
+    Counter counter =8;
+  }
+}
+
+message Export {
+  Nodes nodes =1;
+  Edges edges=2;
+}
+
+message Pong {
+  string message =1;
+}
+
+message RaftNode {
+  string node_id =1;
+  string address =2;
+}
+
+message AuthConfig {
+  repeated string jwks_sources =1;
+  repeated string auth_expressions =2;
+}
+
+message RaftConfig {
+  string bind =1;
+  string storage_path =2;
+  string join =3;
+  string node_id =4;
+}
+
+message HTTPConfig {
+  string bind =1;
+  repeated string allowed_origins=2;
+  repeated string allowed_headers =3;
+  repeated string allowed_methods =4;
+}
+
+message GRPCConfig {
+  string bind =1;
+}
+
+message Config {
+  HTTPConfig http =1;
+  GRPCConfig grpc =2;
+  RaftConfig raft =3;
+  AuthConfig auth =4;
+}
+
+message RequestIntercept {
+  string full_path =1;
+  Node user =2;
+  google.protobuf.Struct request =3;
+}
+
+message OutboundMessage {
+  string channel =1;
+  google.protobuf.Struct data =2;
+}
+
+message Message {
+  string channel =1;
+  google.protobuf.Struct data =2;
+  Path sender =3;
+  int64 timestamp=4;
+}
+
+service ConfigService {
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
+  rpc GetAuth(google.protobuf.Empty) returns(AuthConfig){}
+  rpc SetAuth(AuthConfig) returns(AuthConfig){}
+}
+
+service GraphService {
+  rpc Me(google.protobuf.Empty) returns(Node){}
+  rpc CreateNode(Node) returns(Node){}
+  rpc CreateNodes(Nodes) returns(Nodes){}
+  rpc GetNode(Path) returns(Node){}
+  rpc SearchNodes(TypeFilter) returns(Nodes){}
+  rpc PatchNode(Node) returns(Node){}
+  rpc PatchNodes(Nodes) returns(Nodes){}
+  rpc DelNode(Path) returns(Counter){}
+  rpc DelNodes(Paths) returns(Counter){}
+
+  rpc CreateEdge(Edge) returns(Edge){}
+  rpc CreateEdges(Edges) returns(Edges){}
+  rpc GetEdge(Path) returns(Edge){}
+  rpc SearchEdges(TypeFilter) returns(Edges){}
+  rpc PatchEdge(Edge) returns(Edge){}
+  rpc PatchEdges(Edges) returns(Edges){}
+  rpc DelEdge(Path) returns(Counter){}
+  rpc DelEdges(Paths) returns(Counter){}
+
+  rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
+  rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
+  rpc Subscribe(ChannelFilter) returns(stream Message){}
+}
+
