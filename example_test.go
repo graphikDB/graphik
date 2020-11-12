@@ -34,3 +34,29 @@ func ExampleNewClient() {
 	fmt.Println(pong.Message)
 	// Output: PONG
 }
+
+func ExampleClient_Me() {
+	ctx := context.Background()
+
+	// ensure graphik server is started with --auth.jwks=https://www.googleapis.com/oauth2/v3/certs
+	tokenSource, err := google.DefaultTokenSource(context.Background(), "https://www.googleapis.com/auth/devstorage.full_control")
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	cli, err := graphik.NewClient(ctx, "localhost:7820", tokenSource)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
+	me, err := cli.Me(ctx, &empty.Empty{})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	issuer := me.GetAttributes().GetFields()["iss"].GetStringValue() // token issuer
+	fmt.Println(issuer)
+	// Output: https://accounts.google.com
+}
