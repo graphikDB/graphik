@@ -84,10 +84,10 @@ func Test(t *testing.T) {
 	edges, err := gClient.EdgesFrom(ctx, &apipb.EdgeFilter{
 		NodePath: me.Path,
 		Gtype:    "personal_notes",
-		Expressions:          []string{
+		Expressions: []string{
 			`path.gtype.contains("note")`,
 		},
-		Limit:     1,
+		Limit: 1,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -98,6 +98,9 @@ func Test(t *testing.T) {
 	for _, e := range edges.GetEdges() {
 		t.Log(e.String())
 	}
+	gClient.ChangeStream(ctx, &apipb.ChangeFilter{
+		Expressions: nil,
+	})
 }
 
 func Benchmark(b *testing.B) {

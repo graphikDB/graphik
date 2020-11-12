@@ -10,7 +10,7 @@ help:
 	@echo "----------------------------------------------------------------"
 
 run:
-	@go run main.go  --auth.jwks=https://www.googleapis.com/oauth2/v3/certs
+	@go run graphik/main.go  --auth.jwks=https://www.googleapis.com/oauth2/v3/certs
 
 gen:
 	@go generate ./...

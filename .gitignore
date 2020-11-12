@@ -1,3 +1,5 @@
 vendor
 .idea
+graphik/.env
+bin
 .env
