@@ -40,11 +40,11 @@ func (g *Graph) SearchNodes(ctx context.Context, filter *apipb.TypeFilter) (*api
 	return g.runtime.Nodes(filter)
 }
 
-func (g *Graph) PatchNode(ctx context.Context, node *apipb.Node) (*apipb.Node, error) {
+func (g *Graph) PatchNode(ctx context.Context, node *apipb.Patch) (*apipb.Node, error) {
 	return g.runtime.PatchNode(node)
 }
 
-func (g *Graph) PatchNodes(ctx context.Context, nodes *apipb.Nodes) (*apipb.Nodes, error) {
+func (g *Graph) PatchNodes(ctx context.Context, nodes *apipb.Patches) (*apipb.Nodes, error) {
 	return g.runtime.PatchNodes(nodes)
 }
 
@@ -72,11 +72,11 @@ func (g *Graph) SearchEdges(ctx context.Context, filter *apipb.TypeFilter) (*api
 	return g.runtime.Edges(filter), nil
 }
 
-func (g *Graph) PatchEdge(ctx context.Context, edge *apipb.Edge) (*apipb.Edge, error) {
+func (g *Graph) PatchEdge(ctx context.Context, edge *apipb.Patch) (*apipb.Edge, error) {
 	return g.runtime.PatchEdge(edge)
 }
 
-func (g *Graph) PatchEdges(ctx context.Context, edges *apipb.Edges) (*apipb.Edges, error) {
+func (g *Graph) PatchEdges(ctx context.Context, edges *apipb.Patches) (*apipb.Edges, error) {
 	return g.runtime.PatchEdges(edges)
 }
 
@@ -102,11 +102,9 @@ func (g *Graph) ChangeStream(filter *apipb.ChangeFilter, server apipb.GraphServi
 			logger.Error("failed to send subscription", zap.Error(err))
 			return
 		}
-		if val, ok := msg.(*apipb.StateChange); ok {
-			if err := server.Send(val); err != nil {
-				logger.Error("failed to send subscription", zap.Error(err))
-				return
-			}
+		if err := server.Send(msg.(*apipb.StateChange)); err != nil {
+			logger.Error("failed to send subscription", zap.Error(err))
+			return
 		}
 	}); err != nil {
 		return err

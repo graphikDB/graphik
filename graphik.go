@@ -58,11 +58,11 @@ func (c *Client) SearchNodes(ctx context.Context, in *apipb.TypeFilter, opts ...
 	return c.graph.SearchNodes(ctx, in, opts...)
 }
 
-func (c *Client) PatchNode(ctx context.Context, in *apipb.Node, opts ...grpc.CallOption) (*apipb.Node, error) {
+func (c *Client) PatchNode(ctx context.Context, in *apipb.Patch, opts ...grpc.CallOption) (*apipb.Node, error) {
 	return c.graph.PatchNode(ctx, in, opts...)
 }
 
-func (c *Client) PatchNodes(ctx context.Context, in *apipb.Nodes, opts ...grpc.CallOption) (*apipb.Nodes, error) {
+func (c *Client) PatchNodes(ctx context.Context, in *apipb.Patches, opts ...grpc.CallOption) (*apipb.Nodes, error) {
 	return c.graph.PatchNodes(ctx, in, opts...)
 }
 
@@ -90,11 +90,11 @@ func (c *Client) SearchEdges(ctx context.Context, in *apipb.TypeFilter, opts ...
 	return c.graph.SearchEdges(ctx, in, opts...)
 }
 
-func (c *Client) PatchEdge(ctx context.Context, in *apipb.Edge, opts ...grpc.CallOption) (*apipb.Edge, error) {
+func (c *Client) PatchEdge(ctx context.Context, in *apipb.Patch, opts ...grpc.CallOption) (*apipb.Edge, error) {
 	return c.graph.PatchEdge(ctx, in, opts...)
 }
 
-func (c *Client) PatchEdges(ctx context.Context, in *apipb.Edges, opts ...grpc.CallOption) (*apipb.Edges, error) {
+func (c *Client) PatchEdges(ctx context.Context, in *apipb.Patches, opts ...grpc.CallOption) (*apipb.Edges, error) {
 	return c.graph.PatchEdges(ctx, in, opts...)
 }
 

@@ -88,8 +88,7 @@ func (n *Graph) SetNode(value *apipb.Node) *apipb.Node {
 	return value
 }
 
-func (n *Graph) PatchNode(value *apipb.Node) *apipb.Node {
-	value.UpdatedAt = time.Now().UnixNano()
+func (n *Graph) PatchNode(value *apipb.Patch) *apipb.Node {
 	if _, ok := n.nodes[value.GetPath().GetGtype()]; !ok {
 		return nil
 	}
@@ -97,12 +96,13 @@ func (n *Graph) PatchNode(value *apipb.Node) *apipb.Node {
 	for k, v := range value.GetAttributes().GetFields() {
 		node.GetAttributes().GetFields()[k] = v
 	}
+	node.UpdatedAt = time.Now().UnixNano()
 	return node
 }
 
-func (n *Graph) PatchNodes(values []*apipb.Node) *apipb.Nodes {
+func (n *Graph) PatchNodes(values *apipb.Patches) *apipb.Nodes {
 	var nodes []*apipb.Node
-	for _, val := range values {
+	for _, val := range values.GetPatches() {
 		nodes = append(nodes, n.PatchNode(val))
 	}
 	return &apipb.Nodes{
@@ -423,7 +423,7 @@ func (n *Graph) ClearEdges(edgeType string) {
 	}
 }
 
-func (e *Graph) PatchEdge(value *apipb.Edge) *apipb.Edge {
+func (e *Graph) PatchEdge(value *apipb.Patch) *apipb.Edge {
 	if _, ok := e.edges[value.GetPath().GetGtype()]; !ok {
 		return nil
 	}
@@ -438,9 +438,9 @@ func (e *Graph) PatchEdge(value *apipb.Edge) *apipb.Edge {
 	return edge
 }
 
-func (e *Graph) PatchEdges(values []*apipb.Edge) *apipb.Edges {
+func (e *Graph) PatchEdges(values *apipb.Patches) *apipb.Edges {
 	var edges []*apipb.Edge
-	for _, val := range values {
+	for _, val := range values.GetPatches() {
 		edges = append(edges, e.PatchEdge(val))
 	}
 	return &apipb.Edges{

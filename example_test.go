@@ -68,10 +68,10 @@ func ExampleClient_Me() {
 
 func ExampleClient_CreateNode() {
 	charlie, err := client.CreateNode(context.Background(), &apipb.Node{
-		Path:                 &apipb.Path{
-			Gtype:                "dog",
+		Path: &apipb.Path{
+			Gtype: "dog",
 		},
-		Attributes:           apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb.NewStruct(map[string]interface{}{
 			"name": "Charlie",
 		}),
 	})
@@ -86,7 +86,7 @@ func ExampleClient_CreateNode() {
 
 func ExampleClient_SearchNodes() {
 	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
-		Gtype:                "dog",
+		Gtype: "dog",
 		Expressions: []string{
 			`attributes.name.contains("Charl")`,
 		},
@@ -104,7 +104,7 @@ func ExampleClient_SearchNodes() {
 
 func ExampleClient_CreateEdge() {
 	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
-		Gtype:                "dog",
+		Gtype: "dog",
 		Expressions: []string{
 			`attributes.name.contains("Charl")`,
 		},
@@ -116,10 +116,10 @@ func ExampleClient_CreateEdge() {
 	}
 	charlie := dogs.GetNodes()[0]
 	coleman, err := client.CreateNode(context.Background(), &apipb.Node{
-		Path:                 &apipb.Path{
-			Gtype:                "human",
+		Path: &apipb.Path{
+			Gtype: "human",
 		},
-		Attributes:           apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb.NewStruct(map[string]interface{}{
 			"name": "Coleman",
 		}),
 	})
@@ -128,15 +128,15 @@ func ExampleClient_CreateEdge() {
 		return
 	}
 	ownerEdge, err := client.CreateEdge(context.Background(), &apipb.Edge{
-		Path:                 &apipb.Path{
-			Gtype:                "owner",
+		Path: &apipb.Path{
+			Gtype: "owner",
 		},
-		Attributes:           apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb.NewStruct(map[string]interface{}{
 			"primary_owner": true,
 		}),
-		Cascade:              apipb.Cascade_CASCADE_NONE,
-		From:                 charlie.Path,
-		To:                   coleman.Path,
+		Cascade: apipb.Cascade_CASCADE_NONE,
+		From:    charlie.Path,
+		To:      coleman.Path,
 	})
 	if err != nil {
 		log.Print(err)
@@ -145,4 +145,66 @@ func ExampleClient_CreateEdge() {
 	primary := ownerEdge.Attributes.Fields["primary_owner"].GetBoolValue()
 	fmt.Println(primary)
 	// Output: true
+}
+
+func ExampleClient_SearchEdges() {
+	owners, err := client.SearchEdges(context.Background(), &apipb.TypeFilter{
+		Gtype: "owner",
+		Expressions: []string{
+			`attributes.primary_owner`,
+		},
+		Limit: 1,
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	coleman := owners.GetEdges()[0]
+	primary := coleman.Attributes.Fields["primary_owner"].GetBoolValue()
+	fmt.Println(primary)
+	// Output: true
+}
+
+func ExampleClient_PatchNode() {
+	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
+		Gtype: "dog",
+		Expressions: []string{
+			`attributes.name.contains("Charl")`,
+		},
+		Limit: 1,
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	charlie := dogs.GetNodes()[0]
+	charlie, err = client.PatchNode(context.Background(), &apipb.Patch{
+		Path: charlie.Path,
+		Attributes: apipb.NewStruct(map[string]interface{}{
+			"weight": 25,
+		}),
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	fmt.Println(charlie.GetAttributes().GetFields()["weight"].GetNumberValue())
+	// Output: 25
+}
+
+func ExampleClient_SetAuth() {
+	auth, err := client.SetAuth(context.Background(), &apipb.AuthConfig{
+		JwksSources: []string{"https://www.googleapis.com/oauth2/v3/certs"},
+		//AuthExpressions:      []string{`user.attributes.email.contains("cole")`},
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	fmt.Println(auth.GetJwksSources()[0])
+	// Output: https://www.googleapis.com/oauth2/v3/certs
+}
+
+func ExampleClient_Publish() {
+
 }

@@ -114,12 +114,23 @@ message Log {
     Paths paths =6;
     AuthConfig auth =7;
     Counter counter =8;
+    Patch patch =9;
+    Patches patches =10;
   }
 }
 
 message Export {
   Nodes nodes =1;
   Edges edges=2;
+}
+
+message Patch {
+  Path path =1;
+  google.protobuf.Struct attributes =2;
+}
+
+message Patches {
+  repeated Patch patches =1;
 }
 
 message Pong {
@@ -192,8 +203,8 @@ service GraphService {
   rpc CreateNodes(Nodes) returns(Nodes){}
   rpc GetNode(Path) returns(Node){}
   rpc SearchNodes(TypeFilter) returns(Nodes){}
-  rpc PatchNode(Node) returns(Node){}
-  rpc PatchNodes(Nodes) returns(Nodes){}
+  rpc PatchNode(Patch) returns(Node){}
+  rpc PatchNodes(Patches) returns(Nodes){}
   rpc DelNode(Path) returns(Counter){}
   rpc DelNodes(Paths) returns(Counter){}
 
@@ -201,8 +212,8 @@ service GraphService {
   rpc CreateEdges(Edges) returns(Edges){}
   rpc GetEdge(Path) returns(Edge){}
   rpc SearchEdges(TypeFilter) returns(Edges){}
-  rpc PatchEdge(Edge) returns(Edge){}
-  rpc PatchEdges(Edges) returns(Edges){}
+  rpc PatchEdge(Patch) returns(Edge){}
+  rpc PatchEdges(Patches) returns(Edges){}
   rpc DelEdge(Path) returns(Counter){}
   rpc DelEdges(Paths) returns(Counter){}
 

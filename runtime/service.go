@@ -88,11 +88,11 @@ func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
 	return resp.GetNode(), nil
 }
 
-func (r *Runtime) PatchNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
+func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_NODES,
 		Log: &apipb.Log{
-			Log: &apipb.Log_Nodes{Nodes: nodes},
+			Log: &apipb.Log_Patches{Patches: patches},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -104,11 +104,11 @@ func (r *Runtime) PatchNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	return respNodes, nil
 }
 
-func (r *Runtime) PatchNode(patch *apipb.Node) (*apipb.Node, error) {
+func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_NODE,
 		Log: &apipb.Log{
-			Log: &apipb.Log_Node{Node: patch},
+			Log: &apipb.Log_Patch{Patch: patch},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -177,11 +177,11 @@ func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
 	return resp.GetEdge(), nil
 }
 
-func (r *Runtime) PatchEdges(patches *apipb.Edges) (*apipb.Edges, error) {
+func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGES,
 		Log: &apipb.Log{
-			Log: &apipb.Log_Edges{Edges: patches},
+			Log: &apipb.Log_Patches{Patches: patches},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -193,11 +193,11 @@ func (r *Runtime) PatchEdges(patches *apipb.Edges) (*apipb.Edges, error) {
 	return redges, nil
 }
 
-func (r *Runtime) PatchEdge(patch *apipb.Edge) (*apipb.Edge, error) {
+func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGE,
 		Log: &apipb.Log{
-			Log: &apipb.Log_Edge{Edge: patch},
+			Log: &apipb.Log_Patch{Patch: patch},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
