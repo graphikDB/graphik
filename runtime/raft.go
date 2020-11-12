@@ -67,20 +67,58 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 			Log: &apipb.Log_Auth{Auth: f.auth.Raw()},
 		}
 	case apipb.Op_CREATE_NODE:
+		n := c.Log.GetNodeConstructor()
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Node{Node: f.graph.SetNode(c.Log.GetNode())},
+			Log: &apipb.Log_Node{Node: f.graph.SetNode(&apipb.Node{
+				Path:       n.Path,
+				Attributes: n.Attributes,
+				CreatedAt:  c.Timestamp,
+				UpdatedAt:  c.Timestamp,
+			})},
 		}
 	case apipb.Op_CREATE_EDGE:
+		e := c.Log.GetEdgeConstructor()
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edge{Edge: f.graph.SetEdge(c.Log.GetEdge())},
+			Log: &apipb.Log_Edge{Edge: f.graph.SetEdge(&apipb.Edge{
+				Path:       e.Path,
+				Attributes: e.Attributes,
+				Cascade:    e.Cascade,
+				From:       e.From,
+				To:         e.To,
+				CreatedAt:  c.Timestamp,
+				UpdatedAt:  c.Timestamp,
+			})},
 		}
 	case apipb.Op_CREATE_NODES:
+		n := c.Log.GetNodeConstructors()
+		var nodes []*apipb.Node
+		for _, node := range n.GetNodes() {
+			nodes = append(nodes, &apipb.Node{
+				Path:       node.Path,
+				Attributes: node.Attributes,
+				CreatedAt:  c.Timestamp,
+				UpdatedAt:  c.Timestamp,
+			})
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Nodes{Nodes: f.graph.SetNodes(c.Log.GetNodes().GetNodes())},
+			Log: &apipb.Log_Nodes{Nodes: f.graph.SetNodes(nodes)},
 		}
 	case apipb.Op_CREATE_EDGES:
+		e := c.Log.GetEdgeConstructors()
+		var edges []*apipb.Edge
+		for _, edge := range e.GetEdges() {
+			edges = append(edges, &apipb.Edge{
+				Path:       edge.Path,
+				Attributes: edge.Attributes,
+				Cascade:    edge.Cascade,
+				From:       edge.From,
+				To:         edge.To,
+				CreatedAt:  c.Timestamp,
+				UpdatedAt:  c.Timestamp,
+			})
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edges{Edges: f.graph.SetEdges(c.Log.GetEdges().GetEdges())},
+			Log: &apipb.Log_Edges{Edges: f.graph.SetEdges(edges)},
 		}
 	case apipb.Op_PATCH_NODE:
 		c.Log = &apipb.Log{

@@ -55,7 +55,7 @@ func Test(t *testing.T) {
 	}
 	t.Log(me.String())
 
-	note, err := gClient.CreateNode(ctx, &apipb.Node{
+	note, err := gClient.CreateNode(ctx, &apipb.NodeConstructor{
 		Path: &apipb.Path{
 			Gtype: "note",
 		},
@@ -67,7 +67,7 @@ func Test(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = gClient.CreateEdge(ctx, &apipb.Edge{
+	_, err = gClient.CreateEdge(ctx, &apipb.EdgeConstructor{
 		Path: &apipb.Path{
 			Gtype: "personal_notes",
 		},

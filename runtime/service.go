@@ -59,14 +59,14 @@ func (f *Runtime) EdgesTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	return edges, nil
 }
 
-func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
+func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, error) {
 	for _, n := range nodes.GetNodes() {
-		nodeDefaults(n)
+		pathDefaults(n.Path)
 	}
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODES,
 		Log: &apipb.Log{
-			Log: &apipb.Log_Nodes{Nodes: nodes},
+			Log: &apipb.Log_NodeConstructors{NodeConstructors: nodes},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -78,12 +78,12 @@ func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 	return respNodes, nil
 }
 
-func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
-	nodeDefaults(node)
+func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
+	pathDefaults(node.GetPath())
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODE,
 		Log: &apipb.Log{
-			Log: &apipb.Log_Node{Node: node},
+			Log: &apipb.Log_NodeConstructor{NodeConstructor: node},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -151,15 +151,15 @@ func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
 	return resp.GetCounter(), nil
 }
 
-func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
+func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, error) {
 	for _, n := range edges.GetEdges() {
-		edgeDefaults(n)
+		pathDefaults(n.Path)
 	}
 	now := time.Now().UnixNano()
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGES,
 		Log: &apipb.Log{
-			Log: &apipb.Log_Edges{Edges: edges},
+			Log: &apipb.Log_EdgeConstructors{EdgeConstructors: edges},
 		},
 		Timestamp: now,
 	})
@@ -171,12 +171,12 @@ func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 	return redges, nil
 }
 
-func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
-	edgeDefaults(edge)
+func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
+	pathDefaults(edge.Path)
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGE,
 		Log: &apipb.Log{
-			Log: &apipb.Log_Edge{Edge: edge},
+			Log: &apipb.Log_EdgeConstructor{EdgeConstructor: edge},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -244,40 +244,14 @@ func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
 	return resp.GetCounter(), nil
 }
 
-func nodeDefaults(node *apipb.Node) {
-	now := time.Now().UnixNano()
-	if node.GetPath() == nil {
-		node.Path = &apipb.Path{}
+func pathDefaults(path *apipb.Path) {
+	if path == nil {
+		path = &apipb.Path{}
 	}
-	if node.GetPath().GetGid() == "" {
-		node.Path.Gid = uuid.New().String()
+	if path.GetGid() == "" {
+		path.Gid = uuid.New().String()
 	}
-	if node.GetPath().GetGtype() == "" {
-		node.Path.Gtype = apipb.Keyword_DEFAULT.String()
-	}
-	if node.GetCreatedAt() == 0 {
-		node.CreatedAt = now
-	}
-	if node.GetUpdatedAt() == 0 {
-		node.UpdatedAt = now
-	}
-}
-
-func edgeDefaults(edge *apipb.Edge) {
-	now := time.Now().UnixNano()
-	if edge.GetPath() == nil {
-		edge.Path = &apipb.Path{}
-	}
-	if edge.GetPath().GetGid() == "" {
-		edge.Path.Gid = uuid.New().String()
-	}
-	if edge.GetPath().GetGtype() == "" {
-		edge.Path.Gtype = apipb.Keyword_DEFAULT.String()
-	}
-	if edge.GetCreatedAt() == 0 {
-		edge.CreatedAt = now
-	}
-	if edge.GetUpdatedAt() == 0 {
-		edge.UpdatedAt = now
+	if path.GetGtype() == "" {
+		path.Gtype = apipb.Keyword_DEFAULT.String()
 	}
 }

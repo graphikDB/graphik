@@ -69,7 +69,7 @@ func ExampleClient_Me() {
 }
 
 func ExampleClient_CreateNode() {
-	charlie, err := client.CreateNode(context.Background(), &apipb.Node{
+	charlie, err := client.CreateNode(context.Background(), &apipb.NodeConstructor{
 		Path: &apipb.Path{
 			Gtype: "dog",
 		},
@@ -117,7 +117,7 @@ func ExampleClient_CreateEdge() {
 		return
 	}
 	charlie := dogs.GetNodes()[0]
-	coleman, err := client.CreateNode(context.Background(), &apipb.Node{
+	coleman, err := client.CreateNode(context.Background(), &apipb.NodeConstructor{
 		Path: &apipb.Path{
 			Gtype: "human",
 		},
@@ -129,7 +129,7 @@ func ExampleClient_CreateEdge() {
 		log.Print(err)
 		return
 	}
-	ownerEdge, err := client.CreateEdge(context.Background(), &apipb.Edge{
+	ownerEdge, err := client.CreateEdge(context.Background(), &apipb.EdgeConstructor{
 		Path: &apipb.Path{
 			Gtype: "owner",
 		},
@@ -228,7 +228,43 @@ func ExampleClient_Publish() {
 			return
 		}
 	})
-	time.Sleep(1*time.Second)
+	time.Sleep(1 * time.Second)
+	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
+		Channel: "testing",
+		Data: apipb.NewStruct(map[string]interface{}{
+			"text": "hello world",
+		}),
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	m.Wait()
+	// Output: hello world
+}
+
+func ExampleClient_Subscribe() {
+	m := machine.New(context.Background())
+	m.Go(func(routine machine.Routine) {
+		stream, err := client.Subscribe(routine.Context(), &apipb.ChannelFilter{
+			Channel:     "testing",
+			Expressions: nil,
+		})
+		if err != nil {
+			log.Print(err)
+			return
+		}
+		for {
+			msg, err := stream.Recv()
+			if err != nil {
+				log.Print(err)
+				return
+			}
+			fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
+			return
+		}
+	})
+	time.Sleep(1 * time.Second)
 	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
 		Channel: "testing",
 		Data: apipb.NewStruct(map[string]interface{}{

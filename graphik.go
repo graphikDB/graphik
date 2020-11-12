@@ -58,11 +58,11 @@ func (c *Client) Me(ctx context.Context, in *empty.Empty, opts ...grpc.CallOptio
 	return c.graph.Me(ctx, in, opts...)
 }
 
-func (c *Client) CreateNode(ctx context.Context, in *apipb.Node, opts ...grpc.CallOption) (*apipb.Node, error) {
+func (c *Client) CreateNode(ctx context.Context, in *apipb.NodeConstructor, opts ...grpc.CallOption) (*apipb.Node, error) {
 	return c.graph.CreateNode(ctx, in, opts...)
 }
 
-func (c *Client) CreateNodes(ctx context.Context, in *apipb.Nodes, opts ...grpc.CallOption) (*apipb.Nodes, error) {
+func (c *Client) CreateNodes(ctx context.Context, in *apipb.NodeConstructors, opts ...grpc.CallOption) (*apipb.Nodes, error) {
 	return c.graph.CreateNodes(ctx, in, opts...)
 }
 
@@ -90,11 +90,11 @@ func (c *Client) DelNodes(ctx context.Context, in *apipb.Paths, opts ...grpc.Cal
 	return c.graph.DelNodes(ctx, in, opts...)
 }
 
-func (c *Client) CreateEdge(ctx context.Context, in *apipb.Edge, opts ...grpc.CallOption) (*apipb.Edge, error) {
+func (c *Client) CreateEdge(ctx context.Context, in *apipb.EdgeConstructor, opts ...grpc.CallOption) (*apipb.Edge, error) {
 	return c.graph.CreateEdge(ctx, in, opts...)
 }
 
-func (c *Client) CreateEdges(ctx context.Context, in *apipb.Edges, opts ...grpc.CallOption) (*apipb.Edges, error) {
+func (c *Client) CreateEdges(ctx context.Context, in *apipb.EdgeConstructors, opts ...grpc.CallOption) (*apipb.Edges, error) {
 	return c.graph.CreateEdges(ctx, in, opts...)
 }
 

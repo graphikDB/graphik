@@ -24,11 +24,11 @@ func (g *Graph) Me(ctx context.Context, empty *empty.Empty) (*apipb.Node, error)
 	return n, nil
 }
 
-func (g *Graph) CreateNode(ctx context.Context, node *apipb.Node) (*apipb.Node, error) {
+func (g *Graph) CreateNode(ctx context.Context, node *apipb.NodeConstructor) (*apipb.Node, error) {
 	return g.runtime.CreateNode(node)
 }
 
-func (g *Graph) CreateNodes(ctx context.Context, nodes *apipb.Nodes) (*apipb.Nodes, error) {
+func (g *Graph) CreateNodes(ctx context.Context, nodes *apipb.NodeConstructors) (*apipb.Nodes, error) {
 	return g.runtime.CreateNodes(nodes)
 }
 
@@ -56,11 +56,11 @@ func (g *Graph) DelNodes(ctx context.Context, paths *apipb.Paths) (*apipb.Counte
 	return g.runtime.DelNodes(paths)
 }
 
-func (g *Graph) CreateEdge(ctx context.Context, edge *apipb.Edge) (*apipb.Edge, error) {
+func (g *Graph) CreateEdge(ctx context.Context, edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 	return g.runtime.CreateEdge(edge)
 }
 
-func (g *Graph) CreateEdges(ctx context.Context, edges *apipb.Edges) (*apipb.Edges, error) {
+func (g *Graph) CreateEdges(ctx context.Context, edges *apipb.EdgeConstructors) (*apipb.Edges, error) {
 	return g.runtime.CreateEdges(edges)
 }
 

@@ -21,7 +21,7 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 	n, ok := a.graph.GetNode(path)
 	if !ok {
 		strct, _ := structpb.NewStruct(payload)
-		n, err = a.CreateNode(&apipb.Node{
+		n, err = a.CreateNode(&apipb.NodeConstructor{
 			Path:       path,
 			Attributes: strct,
 		})
