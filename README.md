@@ -11,7 +11,6 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] Prometheus Metrics
 - [x] Pprof Metrics
 - [x] Live runtime config update
-- [x] Private/Admin api
 - [x] Secure JWT based auth with remote JWKS support
 - [x] Bulk Export
 - [x] Bulk Import
@@ -19,7 +18,6 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Based Authorization
-- [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Constraints
 - [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Triggers
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
