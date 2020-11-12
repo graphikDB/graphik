@@ -209,7 +209,6 @@ func ExampleClient_SetAuth() {
 
 func ExampleClient_Publish() {
 	m := machine.New(context.Background())
-	var text = ""
 	m.Go(func(routine machine.Routine) {
 		stream, err := client.Subscribe(routine.Context(), &apipb.ChannelFilter{
 			Channel:     "testing",
@@ -225,7 +224,7 @@ func ExampleClient_Publish() {
 				log.Print(err)
 				return
 			}
-			text = msg.Data.GetFields()["text"].GetStringValue()
+			fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
 			return
 		}
 	})
@@ -241,6 +240,5 @@ func ExampleClient_Publish() {
 		return
 	}
 	m.Wait()
-	fmt.Println(text)
 	// Output: hello world
 }
