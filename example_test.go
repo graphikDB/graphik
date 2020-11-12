@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
 	"log"
+	"time"
 )
 
 func init() {
@@ -228,6 +229,7 @@ func ExampleClient_Publish() {
 			return
 		}
 	})
+	time.Sleep(1*time.Second)
 	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
 		Channel: "testing",
 		Data: apipb.NewStruct(map[string]interface{}{
