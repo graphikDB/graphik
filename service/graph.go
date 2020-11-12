@@ -113,7 +113,7 @@ func (g *Graph) ChangeStream(filter *apipb.ChangeFilter, server apipb.GraphServi
 }
 
 func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
-	return nil, g.runtime.Machine().PubSub().Publish(message.Channel, &apipb.Message{
+	return &empty.Empty{}, g.runtime.Machine().PubSub().Publish(message.Channel, &apipb.Message{
 		Channel:   message.Channel,
 		Data:      message.Data,
 		Sender:    g.runtime.NodeContext(ctx).Path,

@@ -210,9 +210,9 @@ func ExampleClient_Publish() {
 	m := machine.New(context.Background())
 	var text = ""
 	m.Go(func(routine machine.Routine) {
-		stream, err :=client.Subscribe(routine.Context(), &apipb.ChannelFilter{
-			Channel:              "testing",
-			Expressions:          nil,
+		stream, err := client.Subscribe(routine.Context(), &apipb.ChannelFilter{
+			Channel:     "testing",
+			Expressions: nil,
 		})
 		if err != nil {
 			log.Print(err)
@@ -229,8 +229,8 @@ func ExampleClient_Publish() {
 		}
 	})
 	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
-		Channel:              "testing",
-		Data:                 apipb.NewStruct(map[string]interface{}{
+		Channel: "testing",
+		Data: apipb.NewStruct(map[string]interface{}{
 			"text": "hello world",
 		}),
 	})

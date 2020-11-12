@@ -3,6 +3,7 @@ package runtime
 import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -59,6 +60,9 @@ func (f *Runtime) EdgesTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 }
 
 func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
+	for _, n := range nodes.GetNodes() {
+		nodeDefaults(n)
+	}
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODES,
 		Log: &apipb.Log{
@@ -75,6 +79,7 @@ func (r *Runtime) CreateNodes(nodes *apipb.Nodes) (*apipb.Nodes, error) {
 }
 
 func (r *Runtime) CreateNode(node *apipb.Node) (*apipb.Node, error) {
+	nodeDefaults(node)
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODE,
 		Log: &apipb.Log{
@@ -147,6 +152,9 @@ func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
 }
 
 func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
+	for _, n := range edges.GetEdges() {
+		edgeDefaults(n)
+	}
 	now := time.Now().UnixNano()
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGES,
@@ -164,6 +172,7 @@ func (r *Runtime) CreateEdges(edges *apipb.Edges) (*apipb.Edges, error) {
 }
 
 func (r *Runtime) CreateEdge(edge *apipb.Edge) (*apipb.Edge, error) {
+	edgeDefaults(edge)
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGE,
 		Log: &apipb.Log{
@@ -233,4 +242,42 @@ func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
 		return nil, err
 	}
 	return resp.GetCounter(), nil
+}
+
+func nodeDefaults(node *apipb.Node) {
+	now := time.Now().UnixNano()
+	if node.GetPath() == nil {
+		node.Path = &apipb.Path{}
+	}
+	if node.GetPath().GetGid() == "" {
+		node.Path.Gid = uuid.New().String()
+	}
+	if node.GetPath().GetGtype() == "" {
+		node.Path.Gtype = apipb.Keyword_DEFAULT.String()
+	}
+	if node.GetCreatedAt() == 0 {
+		node.CreatedAt = now
+	}
+	if node.GetUpdatedAt() == 0 {
+		node.UpdatedAt = now
+	}
+}
+
+func edgeDefaults(edge *apipb.Edge) {
+	now := time.Now().UnixNano()
+	if edge.GetPath() == nil {
+		edge.Path = &apipb.Path{}
+	}
+	if edge.GetPath().GetGid() == "" {
+		edge.Path.Gid = uuid.New().String()
+	}
+	if edge.GetPath().GetGtype() == "" {
+		edge.Path.Gtype = apipb.Keyword_DEFAULT.String()
+	}
+	if edge.GetCreatedAt() == 0 {
+		edge.CreatedAt = now
+	}
+	if edge.GetUpdatedAt() == 0 {
+		edge.UpdatedAt = now
+	}
 }

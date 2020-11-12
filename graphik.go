@@ -25,9 +25,9 @@ func NewClient(ctx context.Context, target string, tokenSource oauth2.TokenSourc
 			if err != nil {
 				return nil, err
 			}
-			return streamer(ctx,desc, cc, method, opts...)
+			return streamer(ctx, desc, cc, method, opts...)
 		}),
-		)
+	)
 	if err != nil {
 		return nil, err
 	}
