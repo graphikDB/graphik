@@ -63,10 +63,12 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
-		if payload["exp"].(int64) < time.Now().Unix() {
+		if val, ok := payload["exp"].(int64); ok && val < time.Now().Unix() {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
-
+		if val, ok := payload["exp"].(float64); ok && int64(val) < time.Now().Unix() {
+			return status.Errorf(codes.Unauthenticated, "token expired")
+		}
 		ctx, node, err := runtime.ToContext(ss.Context(), payload)
 		if err != nil {
 			return status.Errorf(codes.Internal, errors.Wrap(err, "failed to create user").Error())

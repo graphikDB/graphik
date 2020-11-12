@@ -6,6 +6,7 @@ import (
 	"github.com/autom8ter/graphik"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
@@ -206,5 +207,38 @@ func ExampleClient_SetAuth() {
 }
 
 func ExampleClient_Publish() {
-
+	m := machine.New(context.Background())
+	var text = ""
+	m.Go(func(routine machine.Routine) {
+		stream, err :=client.Subscribe(routine.Context(), &apipb.ChannelFilter{
+			Channel:              "testing",
+			Expressions:          nil,
+		})
+		if err != nil {
+			log.Print(err)
+			return
+		}
+		for {
+			msg, err := stream.Recv()
+			if err != nil {
+				log.Print(err)
+				return
+			}
+			text = msg.Data.GetFields()["text"].GetStringValue()
+			return
+		}
+	})
+	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
+		Channel:              "testing",
+		Data:                 apipb.NewStruct(map[string]interface{}{
+			"text": "hello world",
+		}),
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	m.Wait()
+	fmt.Println(text)
+	// Output: hello world
 }

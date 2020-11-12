@@ -14,14 +14,20 @@ func NewClient(ctx context.Context, target string, tokenSource oauth2.TokenSourc
 	conn, err := grpc.DialContext(ctx, target,
 		grpc.WithInsecure(),
 		grpc.WithChainUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-			token, err := tokenSource.Token()
+			ctx, err := toContext(ctx, tokenSource)
 			if err != nil {
 				return err
 			}
-			id := token.Extra("id_token")
-			ctx = metadata.AppendToOutgoingContext(context.Background(), "Authorization", fmt.Sprintf("Bearer %v", id))
 			return invoker(ctx, method, req, reply, cc, opts...)
-		}))
+		}),
+		grpc.WithChainStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+			ctx, err := toContext(ctx, tokenSource)
+			if err != nil {
+				return nil, err
+			}
+			return streamer(ctx,desc, cc, method, opts...)
+		}),
+		)
 	if err != nil {
 		return nil, err
 	}
@@ -36,6 +42,16 @@ type Client struct {
 	graph       apipb.GraphServiceClient
 	config      apipb.ConfigServiceClient
 	tokenSource oauth2.TokenSource
+}
+
+func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Context, error) {
+	token, err := tokenSource.Token()
+	if err != nil {
+		return ctx, err
+	}
+	id := token.Extra("id_token")
+	ctx = metadata.AppendToOutgoingContext(context.Background(), "Authorization", fmt.Sprintf("Bearer %v", id))
+	return ctx, nil
 }
 
 func (c *Client) Me(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Node, error) {

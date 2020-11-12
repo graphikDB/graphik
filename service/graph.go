@@ -135,7 +135,7 @@ func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphService
 			logger.Error("failed to send subscription", zap.Error(err))
 			return
 		}
-		if val, ok := msg.(*apipb.Message); ok {
+		if val, ok := msg.(*apipb.Message); ok && val != nil {
 			if err := server.Send(val); err != nil {
 				logger.Error("failed to send subscription", zap.Error(err))
 				return
