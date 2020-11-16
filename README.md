@@ -24,9 +24,12 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 
 ## Key Dependencies
 
+- google.golang.org/grpc
 - github.com/hashicorp/raft
 - github.com/autom8ter/machine
 - github.com/google/cel-go/cel
+- go.etcd.io/bbolt
+- go.uber.org/zap
 
 ## Use Cases
 
