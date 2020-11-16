@@ -10,6 +10,7 @@ import (
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/mitchellh/mapstructure"
 	"io"
+	"strings"
 )
 
 var (
@@ -23,12 +24,22 @@ var (
 	unmarshaller = &jsonpb.Unmarshaler{}
 )
 
-func JsonEncode(w io.Writer, msg proto.Message) error {
+func JSONEncode(w io.Writer, msg proto.Message) error {
 	return marshaller.Marshal(w, msg)
 }
 
-func JsonDecode(r io.Reader, msg proto.Message) error {
+func JSONDecode(r io.Reader, msg proto.Message) error {
 	return unmarshaller.Unmarshal(r, msg)
+}
+
+func JSONString(msg proto.Message) string {
+	buf := bytes.NewBuffer(nil)
+	JSONEncode(buf, msg)
+	return buf.String()
+}
+
+func FromJSONString(str string, msg proto.Message) error {
+	return JSONDecode(strings.NewReader(str), msg)
 }
 
 func ToMap(obj interface{}) map[string]interface{} {
@@ -77,7 +88,7 @@ func ToMap(obj interface{}) map[string]interface{} {
 	case proto.Message:
 		buf := bytes.NewBuffer(nil)
 		var data = map[string]interface{}{}
-		JsonEncode(buf, o)
+		JSONEncode(buf, o)
 		json.Unmarshal(buf.Bytes(), &data)
 		return data
 	default:
