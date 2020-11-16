@@ -222,7 +222,7 @@ func (f *Runtime) Snapshot() (raft.FSMSnapshot, error) {
 }
 
 func (f *Runtime) Restore(closer io.ReadCloser) error {
-	export := &apipb.Export{}
+	export := &apipb.Graph{}
 	bits, err := ioutil.ReadAll(closer)
 	if err != nil {
 		return err
@@ -230,21 +230,17 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 	if err := proto.Unmarshal(bits, export); err != nil {
 		return err
 	}
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.graph.SetNodes(export.GetNodes().GetNodes())
-	f.graph.SetEdges(export.GetEdges().GetEdges())
+	_, err = f.Import(export)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (f *Runtime) Persist(sink raft.SnapshotSink) error {
-	f.mu.RLock()
-	defer f.mu.RUnlock()
-	nodes, err := f.graph.AllNodes()
-	edges, err := f.graph.AllEdges()
-	export := &apipb.Export{
-		Nodes: nodes,
-		Edges: edges,
+	export, err := f.Export()
+	if err != nil {
+		return err
 	}
 	bits, err := proto.Marshal(export)
 	if err != nil {

@@ -145,9 +145,9 @@ message Log {
   }
 }
 
-message Export {
+message Graph {
   Nodes nodes =1;
-  Edges edges=2;
+  Edges edges =2;
 }
 
 message Patch {
@@ -249,5 +249,8 @@ service GraphService {
   rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   rpc Subscribe(ChannelFilter) returns(stream Message){}
+
+  rpc Import(Graph) returns(Graph){}
+  rpc Export(TypeFilter) returns(Graph){}
 }
 

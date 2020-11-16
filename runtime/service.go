@@ -258,3 +258,37 @@ func pathDefaults(path *apipb.Path) {
 		path.Gtype = apipb.Keyword_DEFAULT.String()
 	}
 }
+
+func (r *Runtime) Export() (*apipb.Graph, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	nodes, err := r.graph.AllNodes()
+	if err != nil {
+		return nil, err
+	}
+	edges, err := r.graph.AllEdges()
+	if err != nil {
+		return nil, err
+	}
+	return &apipb.Graph{
+		Nodes: nodes,
+		Edges: edges,
+	}, nil
+}
+
+func (r *Runtime) Import(graph *apipb.Graph) (*apipb.Graph, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	nodes, err := r.graph.SetNodes(graph.GetNodes().GetNodes())
+	if err != nil {
+		return nil, err
+	}
+	edges, err := r.graph.SetEdges(graph.GetEdges().GetEdges())
+	if err != nil {
+		return nil, err
+	}
+	return &apipb.Graph{
+		Nodes: nodes,
+		Edges: edges,
+	}, nil
+}
