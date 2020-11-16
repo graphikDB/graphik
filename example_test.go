@@ -278,3 +278,26 @@ func ExampleClient_Subscribe() {
 	m.Wait()
 	// Output: hello world
 }
+
+func ExampleClient_SubGraph() {
+	g, err := client.SubGraph(context.Background(), &apipb.SubGraphFilter{
+		NodeFilter: &apipb.TypeFilter{
+			Gtype: apipb.Keyword_ANY.String(),
+			Expressions: []string{
+				`has(attributes.name) && attributes.name.contains("Ch")`,
+			},
+			Limit: 50,
+		},
+		EdgeFilter: &apipb.TypeFilter{
+			Gtype:       apipb.Keyword_ANY.String(),
+			Expressions: nil,
+			Limit:       10,
+		},
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	fmt.Println(g.String())
+	// Output: hello world
+}

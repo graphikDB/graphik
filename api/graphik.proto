@@ -122,7 +122,7 @@ message ChannelFilter {
 
 message SubGraphFilter {
   TypeFilter node_filter =1;
-  EdgeFilter edge_filter =2;
+  TypeFilter edge_filter =2;
 }
 
 message StateChange {

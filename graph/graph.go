@@ -256,7 +256,7 @@ func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) (*apipb.Nodes, error
 	if err := n.RangeNode(filter.Gtype, func(node *apipb.Node) bool {
 		pass, err := express.Eval(filter.Expressions, node)
 		if err != nil {
-			panic(err)
+			return true
 		}
 		if pass {
 			nodes = append(nodes, node)
@@ -419,25 +419,27 @@ func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) 
 	var edges []*apipb.Edge
 	var err error
 	var pass bool
-	if err := g.RangeFrom(filter.NodePath, func(edge *apipb.Edge) bool {
-		if edge.GetPath().GetGtype() != filter.Gtype {
-			return true
+	if err = g.RangeFrom(filter.NodePath, func(edge *apipb.Edge) bool {
+		if filter.Gtype != apipb.Keyword_ANY.String() {
+			if edge.GetPath().GetGtype() != filter.Gtype {
+				return true
+			}
 		}
+
 		pass, err = express.Eval(filter.Expressions, edge)
 		if err != nil {
-			return false
+			return true
 		}
 		if pass {
 			edges = append(edges, edge)
 		}
-
 		return len(edges) < int(filter.Limit)
 	}); err != nil {
 		return nil, err
 	}
 	return &apipb.Edges{
 		Edges: edges,
-	}, nil
+	}, err
 }
 
 func (e *Graph) RangeFilterTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
@@ -445,12 +447,14 @@ func (e *Graph) RangeFilterTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	var pass bool
 	var err error
 	if err := e.RangeTo(filter.NodePath, func(edge *apipb.Edge) bool {
-		if edge.GetPath().GetGtype() != filter.Gtype {
-			return true
+		if filter.Gtype != apipb.Keyword_ANY.String() {
+			if edge.GetPath().GetGtype() != filter.Gtype {
+				return true
+			}
 		}
 		pass, err = express.Eval(filter.Expressions, edge)
 		if err != nil {
-			return false
+			return true
 		}
 		if pass {
 			edges = append(edges, edge)
@@ -557,7 +561,7 @@ func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) (*apipb.Edges, error
 	if err := e.RangeEdges(filter.Gtype, func(edge *apipb.Edge) bool {
 		pass, err = express.Eval(filter.Expressions, edge)
 		if err != nil {
-			return false
+			return true
 		}
 		if pass {
 			edges = append(edges, edge)
@@ -682,7 +686,12 @@ func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	}
 	for _, node := range nodes.GetNodes() {
 		graph.Nodes.Nodes = append(graph.Nodes.Nodes, node)
-		edges, err := g.RangeFilterFrom(filter.EdgeFilter)
+		edges, err := g.RangeFilterFrom(&apipb.EdgeFilter{
+			NodePath:    node.Path,
+			Gtype:       filter.GetEdgeFilter().GetGtype(),
+			Expressions: filter.GetEdgeFilter().GetExpressions(),
+			Limit:       filter.GetEdgeFilter().GetLimit(),
+		})
 		if err != nil {
 			return nil, err
 		}
