@@ -30,6 +30,7 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - github.com/google/cel-go/cel
 - go.etcd.io/bbolt
 - go.uber.org/zap
+- golang.org/x/oauth2
 
 ## Use Cases
 
