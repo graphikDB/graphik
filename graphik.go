@@ -70,7 +70,7 @@ func (c *Client) GetNode(ctx context.Context, in *apipb.Path, opts ...grpc.CallO
 	return c.graph.GetNode(ctx, in, opts...)
 }
 
-func (c *Client) SearchNodes(ctx context.Context, in *apipb.TypeFilter, opts ...grpc.CallOption) (*apipb.Nodes, error) {
+func (c *Client) SearchNodes(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) (*apipb.Nodes, error) {
 	return c.graph.SearchNodes(ctx, in, opts...)
 }
 
@@ -102,7 +102,7 @@ func (c *Client) GetEdge(ctx context.Context, in *apipb.Path, opts ...grpc.CallO
 	return c.graph.GetEdge(ctx, in, opts...)
 }
 
-func (c *Client) SearchEdges(ctx context.Context, in *apipb.TypeFilter, opts ...grpc.CallOption) (*apipb.Edges, error) {
+func (c *Client) SearchEdges(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) (*apipb.Edges, error) {
 	return c.graph.SearchEdges(ctx, in, opts...)
 }
 

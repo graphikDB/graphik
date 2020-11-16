@@ -90,7 +90,7 @@ func ExampleClient_CreateNode() {
 }
 
 func ExampleClient_SearchNodes() {
-	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
+	dogs, err := client.SearchNodes(context.Background(), &apipb.Filter{
 		Gtype: "dog",
 		Expressions: []string{
 			`attributes.name.contains("Charl")`,
@@ -108,7 +108,7 @@ func ExampleClient_SearchNodes() {
 }
 
 func ExampleClient_CreateEdge() {
-	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
+	dogs, err := client.SearchNodes(context.Background(), &apipb.Filter{
 		Gtype: "dog",
 		Expressions: []string{
 			`attributes.name.contains("Charl")`,
@@ -153,7 +153,7 @@ func ExampleClient_CreateEdge() {
 }
 
 func ExampleClient_SearchEdges() {
-	owners, err := client.SearchEdges(context.Background(), &apipb.TypeFilter{
+	owners, err := client.SearchEdges(context.Background(), &apipb.Filter{
 		Gtype: "owner",
 		Expressions: []string{
 			`attributes.primary_owner`,
@@ -171,7 +171,7 @@ func ExampleClient_SearchEdges() {
 }
 
 func ExampleClient_PatchNode() {
-	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
+	dogs, err := client.SearchNodes(context.Background(), &apipb.Filter{
 		Gtype: "dog",
 		Expressions: []string{
 			`attributes.name.contains("Charl")`,
@@ -284,14 +284,14 @@ func ExampleClient_Subscribe() {
 
 func ExampleClient_SubGraph() {
 	g, err := client.SubGraph(context.Background(), &apipb.SubGraphFilter{
-		Nodes: &apipb.TypeFilter{
+		Nodes: &apipb.Filter{
 			Gtype: apipb.Keyword_ANY.String(),
 			Expressions: []string{
 				`has(attributes.name) && attributes.name.contains("Ch")`,
 			},
 			Limit: 50,
 		},
-		Edges: &apipb.TypeFilter{
+		Edges: &apipb.Filter{
 			Gtype:       apipb.Keyword_ANY.String(),
 			Expressions: nil,
 			Limit:       10,

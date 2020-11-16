@@ -86,8 +86,8 @@ message NodeDetails {
 
 message NodeDetailFilter {
   Path path =1;
-  TypeFilter edges_from =2;
-  TypeFilter edges_to =3;
+  Filter edges_from =2;
+  Filter edges_to =3;
 }
 
 message Edge {
@@ -138,15 +138,15 @@ message EdgeFilter {
   int32 limit =4;
 }
 
-message TypeFilter {
+message Filter {
   string gtype =1;
   repeated string expressions =2;
   int32 limit =3;
 }
 
 message MeFilter {
-  TypeFilter edges_from =1;
-  TypeFilter edges_to =2;
+  Filter edges_from =1;
+  Filter edges_to =2;
 }
 
 message ChangeFilter {
@@ -159,8 +159,8 @@ message ChannelFilter {
 }
 
 message SubGraphFilter {
-  TypeFilter nodes =1;
-  TypeFilter edges =2;
+  Filter nodes =1;
+  Filter edges =2;
 }
 
 message StateChange {
@@ -271,7 +271,7 @@ service GraphService {
   rpc CreateNode(NodeConstructor) returns(Node){}
   rpc CreateNodes(NodeConstructors) returns(Nodes){}
   rpc GetNode(Path) returns(Node){}
-  rpc SearchNodes(TypeFilter) returns(Nodes){}
+  rpc SearchNodes(Filter) returns(Nodes){}
   rpc PatchNode(Patch) returns(Node){}
   rpc PatchNodes(Patches) returns(Nodes){}
   rpc DelNode(Path) returns(Counter){}
@@ -280,7 +280,7 @@ service GraphService {
   rpc CreateEdge(EdgeConstructor) returns(Edge){}
   rpc CreateEdges(EdgeConstructors) returns(Edges){}
   rpc GetEdge(Path) returns(Edge){}
-  rpc SearchEdges(TypeFilter) returns(Edges){}
+  rpc SearchEdges(Filter) returns(Edges){}
   rpc PatchEdge(Patch) returns(Edge){}
   rpc PatchEdges(Patches) returns(Edges){}
   rpc DelEdge(Path) returns(Counter){}

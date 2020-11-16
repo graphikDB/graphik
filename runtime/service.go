@@ -12,7 +12,7 @@ func (f *Runtime) Node(input *apipb.Path) (*apipb.Node, error) {
 	return f.graph.GetNode(input)
 }
 
-func (f *Runtime) Nodes(input *apipb.TypeFilter) (*apipb.Nodes, error) {
+func (f *Runtime) Nodes(input *apipb.Filter) (*apipb.Nodes, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	nodes, err := f.graph.FilterSearchNodes(input)
@@ -29,7 +29,7 @@ func (f *Runtime) Edge(input *apipb.Path) (*apipb.Edge, error) {
 	return f.graph.GetEdge(input)
 }
 
-func (f *Runtime) Edges(input *apipb.TypeFilter) (*apipb.Edges, error) {
+func (f *Runtime) Edges(input *apipb.Filter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
 	edges, err := f.graph.FilterSearchEdges(input)

@@ -40,7 +40,7 @@ func (g *Graph) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, err
 	return g.runtime.Node(path)
 }
 
-func (g *Graph) SearchNodes(ctx context.Context, filter *apipb.TypeFilter) (*apipb.Nodes, error) {
+func (g *Graph) SearchNodes(ctx context.Context, filter *apipb.Filter) (*apipb.Nodes, error) {
 	return g.runtime.Nodes(filter)
 }
 
@@ -72,7 +72,7 @@ func (g *Graph) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, err
 	return g.runtime.Edge(path)
 }
 
-func (g *Graph) SearchEdges(ctx context.Context, filter *apipb.TypeFilter) (*apipb.Edges, error) {
+func (g *Graph) SearchEdges(ctx context.Context, filter *apipb.Filter) (*apipb.Edges, error) {
 	return g.runtime.Edges(filter)
 }
 

@@ -251,7 +251,7 @@ func (n *Graph) ClearNodes(nodeType string) error {
 	return n.db.DropPrefix([]byte(fmt.Sprintf("%s/", nodeType)))
 }
 
-func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) (*apipb.Nodes, error) {
+func (n *Graph) FilterSearchNodes(filter *apipb.Filter) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
 	if err := n.RangeNode(filter.Gtype, func(node *apipb.Node) bool {
 		pass, err := express.Eval(filter.Expressions, node)
@@ -554,7 +554,7 @@ func (e *Graph) PatchEdges(values *apipb.Patches) (*apipb.Edges, error) {
 	}, nil
 }
 
-func (e *Graph) FilterSearchEdges(filter *apipb.TypeFilter) (*apipb.Edges, error) {
+func (e *Graph) FilterSearchEdges(filter *apipb.Filter) (*apipb.Edges, error) {
 	var edges []*apipb.Edge
 	var pass bool
 	var err error
