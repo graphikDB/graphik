@@ -70,7 +70,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	}
 	g, err := graph.New(filepath.Join(cfg.GetRaft().GetStoragePath(), "graph.db"))
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to create graph")
 	}
 	s := &Runtime{
 		machine: m,
@@ -164,11 +164,7 @@ func (s *Runtime) Auth() *auth.Auth {
 }
 
 func (a *Runtime) Authorize(intercept *apipb.RequestIntercept) (bool, error) {
-	expressions := a.auth.Expressions()
-	if len(expressions) == 0 {
-		return true, nil
-	}
-	return express.Eval(expressions, intercept)
+	return express.Eval(a.auth.Programs(), intercept)
 }
 
 func (r *Runtime) Go(fn machine.Func) {

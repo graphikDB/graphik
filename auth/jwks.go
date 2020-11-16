@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/express"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/google/cel-go/cel"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jws"
@@ -22,17 +24,26 @@ func New(cfg *apipb.AuthConfig) (*Auth, error) {
 		}
 		setMap[source] = set
 	}
-	return &Auth{
+	a := &Auth{
 		set:         setMap,
 		mu:          sync.RWMutex{},
 		expressions: cfg.AuthExpressions,
-	}, nil
+	}
+	if len(a.expressions) > 0 && a.expressions[0] != "" {
+		programs, err := express.Programs(cfg.AuthExpressions)
+		if err != nil {
+			return nil, err
+		}
+		a.programs = programs
+	}
+	return a, nil
 }
 
 type Auth struct {
 	mu          sync.RWMutex
 	set         map[string]*jwk.Set
 	expressions []string
+	programs    []cel.Program
 }
 
 func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
@@ -85,6 +96,12 @@ func (a *Auth) Expressions() []string {
 	return a.expressions
 }
 
+func (a *Auth) Programs() []cel.Program {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	return a.programs
+}
+
 func (a *Auth) RefreshKeys() error {
 	for uri, _ := range a.set {
 		set, err := jwk.Fetch(uri)
@@ -109,8 +126,15 @@ func (a *Auth) Override(auth *apipb.AuthConfig) error {
 		a.mu.Unlock()
 	}
 	a.mu.Lock()
+	defer a.mu.Unlock()
 	a.expressions = auth.AuthExpressions
-	a.mu.Unlock()
+	if len(a.expressions) > 0 && a.expressions[0] != "" {
+		programs, err := express.Programs(a.expressions)
+		if err != nil {
+			return err
+		}
+		a.programs = programs
+	}
 	return nil
 }
 

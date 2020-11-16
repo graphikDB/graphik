@@ -3,7 +3,7 @@ package interceptors
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/express"
+	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/runtime"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -41,7 +41,7 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		pass, err := runtime.Authorize(&apipb.RequestIntercept{
 			FullPath: info.FullMethod,
 			User:     node,
-			Request:  apipb.NewStruct(express.ToMap(req)),
+			Request:  apipb.NewStruct(helpers.ToMap(req)),
 		})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, errors.Wrap(err, "authorization failure").Error())
@@ -76,7 +76,7 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		pass, err := runtime.Authorize(&apipb.RequestIntercept{
 			FullPath: info.FullMethod,
 			User:     node,
-			Request:  apipb.NewStruct(express.ToMap(srv)),
+			Request:  apipb.NewStruct(helpers.ToMap(srv)),
 		})
 		if err != nil {
 			return status.Errorf(codes.Internal, errors.Wrap(err, "authorization failure").Error())

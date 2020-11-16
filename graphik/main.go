@@ -12,6 +12,7 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/joho/godotenv"
+	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
@@ -58,7 +59,7 @@ func run(ctx context.Context, cfg *apipb.Config) {
 	defer signal.Stop(interrupt)
 	runtim, err := runtime.New(ctx, cfg)
 	if err != nil {
-		logger.Error("failed to create runtime", zap.Error(err))
+		logger.Error("failed to create runtime", zap.Error(errors.WithStack(err)))
 		return
 	}
 	router := http.NewServeMux()

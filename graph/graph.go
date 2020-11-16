@@ -263,8 +263,12 @@ func (n *Graph) ClearNodes(nodeType string) error {
 
 func (n *Graph) FilterSearchNodes(filter *apipb.Filter) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
+	programs, err := express.Programs(filter.Expressions)
+	if err != nil {
+		return nil, err
+	}
 	if err := n.RangeNode(filter.Gtype, func(node *apipb.Node) bool {
-		pass, err := express.Eval(filter.Expressions, node)
+		pass, err := express.Eval(programs, node)
 		if err != nil {
 			return true
 		}
@@ -430,8 +434,11 @@ func (g *Graph) RangeTo(path *apipb.Path, fn func(edge *apipb.Edge) bool) error 
 }
 
 func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+	programs, err := express.Programs(filter.Expressions)
+	if err != nil {
+		return nil, err
+	}
 	var edges []*apipb.Edge
-	var err error
 	var pass bool
 	if err = g.RangeFrom(filter.NodePath, func(edge *apipb.Edge) bool {
 		if filter.Gtype != apipb.Keyword_ANY.String() {
@@ -440,7 +447,7 @@ func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) 
 			}
 		}
 
-		pass, err = express.Eval(filter.Expressions, edge)
+		pass, err = express.Eval(programs, edge)
 		if err != nil {
 			return true
 		}
@@ -459,16 +466,19 @@ func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) 
 }
 
 func (e *Graph) RangeFilterTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+	programs, err := express.Programs(filter.Expressions)
+	if err != nil {
+		return nil, err
+	}
 	var edges []*apipb.Edge
 	var pass bool
-	var err error
 	if err := e.RangeTo(filter.NodePath, func(edge *apipb.Edge) bool {
 		if filter.Gtype != apipb.Keyword_ANY.String() {
 			if edge.GetPath().GetGtype() != filter.Gtype {
 				return true
 			}
 		}
-		pass, err = express.Eval(filter.Expressions, edge)
+		pass, err = express.Eval(programs, edge)
 		if err != nil {
 			return true
 		}
@@ -577,11 +587,14 @@ func (e *Graph) PatchEdges(values *apipb.Patches) (*apipb.Edges, error) {
 }
 
 func (e *Graph) FilterSearchEdges(filter *apipb.Filter) (*apipb.Edges, error) {
+	programs, err := express.Programs(filter.Expressions)
+	if err != nil {
+		return nil, err
+	}
 	var edges []*apipb.Edge
 	var pass bool
-	var err error
 	if err := e.RangeEdges(filter.Gtype, func(edge *apipb.Edge) bool {
-		pass, err = express.Eval(filter.Expressions, edge)
+		pass, err = express.Eval(programs, edge)
 		if err != nil {
 			return true
 		}
