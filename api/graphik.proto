@@ -120,6 +120,10 @@ message ChannelFilter {
   repeated string expressions =2;
 }
 
+message SubGraphFilter {
+  TypeFilter node_filter =1;
+}
+
 message StateChange {
   Op op =1;
   Log log =2;
@@ -251,6 +255,6 @@ service GraphService {
   rpc Subscribe(ChannelFilter) returns(stream Message){}
 
   rpc Import(Graph) returns(Graph){}
-  rpc Export(TypeFilter) returns(Graph){}
+  rpc SubGraph(SubGraphFilter) returns(Graph){}
 }
 

@@ -155,11 +155,10 @@ func (g *Graph) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.E
 	return g.runtime.EdgesTo(filter)
 }
 
-
 func (g *Graph) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Graph, error) {
 	return g.runtime.Import(graph)
 }
 
-func (g *Graph) Export(ctx context.Context, filter *apipb.TypeFilter) (*apipb.Graph, error) {
+func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	return g.runtime.Export()
 }
