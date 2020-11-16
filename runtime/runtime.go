@@ -8,10 +8,10 @@ import (
 	"github.com/autom8ter/graphik/express"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/graphik/storage"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
-	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -56,17 +56,19 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create snapshot store")
 	}
-	boltDB, err := raftboltdb.NewBoltStore(filepath.Join(cfg.GetRaft().GetStoragePath(), "raft.db"))
+	logStore, err := storage.NewLogStore(filepath.Join(cfg.GetRaft().GetStoragePath(), "logs.db"))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create bolt store")
 	}
-	logStore := boltDB
-	stableStore := boltDB
+	snapshotStore, err := storage.NewSnapshotStore(filepath.Join(cfg.GetRaft().GetStoragePath(), "snapshots.db"))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create bolt store")
+	}
 	a, err := auth.New(cfg.Auth)
 	if err != nil {
 		return nil, err
 	}
-	g, err := graph.New("/tmp/graphik/graph")
+	g, err := graph.New(filepath.Join(cfg.GetRaft().GetStoragePath(), "graph.db"))
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +80,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 		graph:   g,
 		close:   sync.Once{},
 	}
-	rft, err := raft.NewRaft(config, s, logStore, stableStore, snapshots, transport)
+	rft, err := raft.NewRaft(config, s, logStore, snapshotStore, snapshots, transport)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create raft")
 	}

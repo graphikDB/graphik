@@ -1,10 +1,9 @@
 package graph
 
 import (
-	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/express"
-	"github.com/dgraph-io/badger/v2"
+	"github.com/autom8ter/graphik/storage"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"sort"
@@ -12,7 +11,7 @@ import (
 )
 
 type Graph struct {
-	db        *badger.DB
+	db        *storage.GraphStore
 	nodes     map[string]map[string]*apipb.Path
 	edges     map[string]map[string]*apipb.Path
 	edgesTo   map[string][]*apipb.Path
@@ -20,7 +19,7 @@ type Graph struct {
 }
 
 func New(path string) (*Graph, error) {
-	db, err := badger.Open(badger.DefaultOptions(path))
+	db, err := storage.NewGraphStore(path)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +69,7 @@ func (n *Graph) AllNodes() (*apipb.Nodes, error) {
 
 func (n *Graph) GetNode(path *apipb.Path) (*apipb.Node, error) {
 	if n.HasNode(path) {
-		return n.getNode(path)
+		return n.db.GetNode(path)
 	}
 	return nil, noExist(path)
 }
@@ -95,7 +94,7 @@ func (n *Graph) SetNode(value *apipb.Node) (*apipb.Node, error) {
 	if _, ok := n.nodes[value.GetPath().GetGtype()]; !ok {
 		n.nodes[value.GetPath().GetGtype()] = map[string]*apipb.Path{}
 	}
-	if err := n.setNode(value); err != nil {
+	if err := n.db.SetNode(value); err != nil {
 		return nil, err
 	}
 	n.nodes[value.GetPath().GetGtype()][value.GetPath().GetGid()] = value.GetPath()
@@ -106,7 +105,7 @@ func (n *Graph) PatchNode(value *apipb.Patch) (*apipb.Node, error) {
 	if _, ok := n.nodes[value.GetPath().GetGtype()]; !ok {
 		return nil, noExist(value.GetPath())
 	}
-	node, err := n.getNode(value.GetPath())
+	node, err := n.db.GetNode(value.GetPath())
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +136,7 @@ func (n *Graph) RangeNode(nodeType string, f func(node *apipb.Node) bool) error 
 	if nodeType == apipb.Keyword_ANY.String() {
 		for _, c := range n.nodes {
 			for _, path := range c {
-				node, err := n.getNode(path)
+				node, err := n.db.GetNode(path)
 				if err != nil {
 					return err
 				}
@@ -149,7 +148,7 @@ func (n *Graph) RangeNode(nodeType string, f func(node *apipb.Node) bool) error 
 	} else {
 		if c, ok := n.nodes[nodeType]; ok {
 			for _, path := range c {
-				node, err := n.getNode(path)
+				node, err := n.db.GetNode(path)
 				if err != nil {
 					return err
 				}
@@ -259,7 +258,7 @@ func (n *Graph) ClearNodes(nodeType string) error {
 			delete(cache, k)
 		}
 	}
-	return n.db.DropPrefix([]byte(fmt.Sprintf("%s/", nodeType)))
+	return n.db.DelNodeType(nodeType)
 }
 
 func (n *Graph) FilterSearchNodes(filter *apipb.Filter) (*apipb.Nodes, error) {
@@ -317,7 +316,7 @@ func (n *Graph) AllEdges() (*apipb.Edges, error) {
 func (n *Graph) GetEdge(path *apipb.Path) (*apipb.Edge, error) {
 	if c, ok := n.edges[path.GetGtype()]; ok {
 		path := c[path.GetGid()]
-		return n.getEdge(path)
+		return n.db.GetEdge(path)
 	}
 	return nil, noExist(path)
 }
@@ -335,7 +334,7 @@ func (n *Graph) SetEdge(value *apipb.Edge) (*apipb.Edge, error) {
 	if _, ok := n.edges[value.GetPath().GetGtype()]; !ok {
 		n.edges[value.GetPath().GetGtype()] = map[string]*apipb.Path{}
 	}
-	if err := n.setEdge(value); err != nil {
+	if err := n.db.SetEdge(value); err != nil {
 		return nil, err
 	}
 	n.edges[value.GetPath().GetGtype()][value.GetPath().GetGid()] = value.GetPath()
@@ -350,7 +349,7 @@ func (n *Graph) RangeEdges(edgeType string, f func(edge *apipb.Edge) bool) error
 	if edgeType == apipb.Keyword_ANY.String() {
 		for _, c := range n.edges {
 			for _, path := range c {
-				e, err := n.getEdge(path)
+				e, err := n.db.GetEdge(path)
 				if err != nil {
 					return err
 				}
@@ -362,7 +361,7 @@ func (n *Graph) RangeEdges(edgeType string, f func(edge *apipb.Edge) bool) error
 	} else {
 		if c, ok := n.edges[edgeType]; ok {
 			for _, path := range c {
-				e, err := n.getEdge(path)
+				e, err := n.db.GetEdge(path)
 				if err != nil {
 					return err
 				}
@@ -385,7 +384,7 @@ func (n *Graph) DeleteEdge(path *apipb.Path) (*apipb.Counter, error) {
 	n.edgesFrom[edge.To.String()] = removeEdge(path, n.edgesFrom[edge.To.String()])
 	n.edgesTo[edge.To.String()] = removeEdge(path, n.edgesTo[edge.To.String()])
 	delete(n.edges[path.Gtype], path.Gid)
-	if err := n.delEdge(path); err != nil {
+	if err := n.db.DelEdges(path); err != nil {
 		return nil, err
 	}
 	return &apipb.Counter{
@@ -535,14 +534,12 @@ func (n *Graph) DeleteEdges(edges []*apipb.Path) (*apipb.Counter, error) {
 }
 
 func (n *Graph) ClearEdges(edgeType string) error {
-	if cache, ok := n.edges[edgeType]; ok {
-		for _, v := range cache {
-			if _, err := n.DeleteEdge(v); err != nil {
-				return err
-			}
+	if cache, ok := n.nodes[edgeType]; ok {
+		for k, _ := range cache {
+			delete(cache, k)
 		}
 	}
-	return nil
+	return n.db.DelNodeType(edgeType)
 }
 
 func (e *Graph) PatchEdge(value *apipb.Patch) (*apipb.Edge, error) {
@@ -630,15 +627,15 @@ func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 }
 
 func (g *Graph) GetEdgeDetail(path *apipb.Path) (*apipb.EdgeDetail, error) {
-	e, err := g.getEdge(path)
+	e, err := g.db.GetEdge(path)
 	if err != nil {
 		return nil, err
 	}
-	from, err := g.getNode(e.From)
+	from, err := g.db.GetNode(e.From)
 	if err != nil {
 		return nil, err
 	}
-	to, err := g.getNode(e.To)
+	to, err := g.db.GetNode(e.To)
 	if err != nil {
 		return nil, err
 	}
@@ -659,7 +656,7 @@ func (g *Graph) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail
 		EdgesTo:   map[string]*apipb.EdgeDetails{},
 		EdgesFrom: map[string]*apipb.EdgeDetails{},
 	}
-	node, err := g.getNode(filter.GetPath())
+	node, err := g.db.GetNode(filter.GetPath())
 	if err != nil {
 		return nil, err
 	}
