@@ -197,16 +197,18 @@ func ExampleClient_PatchNode() {
 	// Output: 25
 }
 
-func ExampleClient_SetAuth() {
-	auth, err := client.SetAuth(context.Background(), &apipb.AuthConfig{
-		JwksSources: []string{"https://www.googleapis.com/oauth2/v3/certs"},
-		//AuthExpressions:      []string{`user.attributes.email.contains("cole")`},
+func ExampleClient_SetConfig() {
+	auth, err := client.SetConfig(context.Background(), &apipb.Config{
+		Auth: &apipb.AuthConfig{
+			JwksSources: []string{"https://www.googleapis.com/oauth2/v3/certs"},
+			//AuthExpressions:      []string{`user.attributes.email.contains("cole")`},
+		},
 	})
 	if err != nil {
 		log.Print(err)
 		return
 	}
-	fmt.Println(auth.GetJwksSources()[0])
+	fmt.Println(auth.GetAuth().GetJwksSources()[0])
 	// Output: https://www.googleapis.com/oauth2/v3/certs
 }
 

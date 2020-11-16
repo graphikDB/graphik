@@ -59,12 +59,12 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 		return nil, fmt.Errorf("failed to decode command: %s", err.Error())
 	}
 	switch c.Op {
-	case apipb.Op_SET_AUTH:
-		if err := f.auth.Override(c.Log.GetAuth()); err != nil {
-			return nil, errors.Wrap(err, "failed to override auth")
+	case apipb.Op_SET_CONFIG:
+		if err := f.config.Override(c.Log.GetConfig()); err != nil {
+			return nil, errors.Wrap(err, "failed to override config")
 		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Auth{Auth: f.auth.Raw()},
+			Log: &apipb.Log_Config{Config: f.config.Config()},
 		}
 	case apipb.Op_CREATE_NODE:
 		n := c.Log.GetNodeConstructor()

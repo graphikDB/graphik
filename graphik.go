@@ -33,14 +33,12 @@ func NewClient(ctx context.Context, target string, tokenSource oauth2.TokenSourc
 	}
 	return &Client{
 		graph:       apipb.NewGraphServiceClient(conn),
-		config:      apipb.NewConfigServiceClient(conn),
 		tokenSource: tokenSource,
 	}, nil
 }
 
 type Client struct {
 	graph       apipb.GraphServiceClient
-	config      apipb.ConfigServiceClient
 	tokenSource oauth2.TokenSource
 }
 
@@ -147,17 +145,17 @@ func (c *Client) SubGraph(ctx context.Context, in *apipb.SubGraphFilter) (*apipb
 }
 
 func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {
-	return c.config.Ping(ctx, in, opts...)
+	return c.graph.Ping(ctx, in, opts...)
 }
 
 func (c *Client) JoinCluster(ctx context.Context, in *apipb.RaftNode, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.config.JoinCluster(ctx, in, opts...)
+	return c.graph.JoinCluster(ctx, in, opts...)
 }
 
-func (c *Client) GetAuth(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.AuthConfig, error) {
-	return c.config.GetAuth(ctx, in, opts...)
+func (c *Client) GetConfig(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Config, error) {
+	return c.graph.GetConfig(ctx, in, opts...)
 }
 
-func (c *Client) SetAuth(ctx context.Context, in *apipb.AuthConfig, opts ...grpc.CallOption) (*apipb.AuthConfig, error) {
-	return c.config.SetAuth(ctx, in, opts...)
+func (c *Client) SetConfig(ctx context.Context, in *apipb.Config, opts ...grpc.CallOption) (*apipb.Config, error) {
+	return c.graph.SetConfig(ctx, in, opts...)
 }

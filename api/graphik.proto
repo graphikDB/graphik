@@ -22,7 +22,7 @@ enum Op {
   PATCH_EDGE =9;
   DELETE_EDGES = 10;
   DELETE_EDGE =11;
-  SET_AUTH  = 12;
+  SET_CONFIG = 12;
 }
 
 enum Cascade {
@@ -181,7 +181,7 @@ message Log {
     Edges edges =8;
     Path path =9;
     Paths paths =10;
-    AuthConfig auth =11;
+    Config config =11;
     Counter counter =12;
     Patch patch =13;
     Patches patches =14;
@@ -242,12 +242,18 @@ message GRPCConfig {
   string bind =1;
 }
 
+message TriggerConfig {
+  repeated string expressions =1;
+}
+
 message Config {
   HTTPConfig http =1;
   GRPCConfig grpc =2;
   RaftConfig raft =3;
   AuthConfig auth =4;
+  TriggerConfig trigger =5;
 }
+
 
 message RequestIntercept {
   string full_path =1;
@@ -267,14 +273,12 @@ message Message {
   int64 timestamp=4;
 }
 
-service ConfigService {
+service GraphService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
-  rpc GetAuth(google.protobuf.Empty) returns(AuthConfig){}
-  rpc SetAuth(AuthConfig) returns(AuthConfig){}
-}
+  rpc GetConfig(google.protobuf.Empty) returns(Config){}
+  rpc SetConfig(Config) returns(Config){}
 
-service GraphService {
   rpc Me(MeFilter) returns(NodeDetail){}
   rpc CreateNode(NodeConstructor) returns(Node){}
   rpc CreateNodes(NodeConstructors) returns(Nodes){}

@@ -8,6 +8,8 @@ import (
 	"github.com/autom8ter/graphik/runtime"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"time"
 )
 
@@ -17,6 +19,30 @@ type Graph struct {
 
 func NewGraph(runtime *runtime.Runtime) *Graph {
 	return &Graph{runtime: runtime}
+}
+
+func (s *Graph) JoinCluster(ctx context.Context, request *apipb.RaftNode) (*empty.Empty, error) {
+	if err := s.runtime.JoinNode(request.GetNodeId(), request.GetAddress()); err != nil {
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+	return &empty.Empty{}, nil
+}
+
+func (s *Graph) GetConfig(ctx context.Context, empty *empty.Empty) (*apipb.Config, error) {
+	return s.runtime.Config().Config(), nil
+}
+
+func (s *Graph) SetConfig(ctx context.Context, request *apipb.Config) (*apipb.Config, error) {
+	if err := s.runtime.Config().Override(request); err != nil {
+		return nil, err
+	}
+	return s.runtime.Config().Config(), nil
+}
+
+func (s *Graph) Ping(ctx context.Context, r *empty.Empty) (*apipb.Pong, error) {
+	return &apipb.Pong{
+		Message: "PONG",
+	}, nil
 }
 
 func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.NodeDetail, error) {

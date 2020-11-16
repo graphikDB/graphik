@@ -26,6 +26,9 @@ func (c *Config) SetDefaults() {
 	if c.Raft == nil {
 		c.Raft = &RaftConfig{}
 	}
+	if c.Trigger == nil {
+		c.Trigger = &TriggerConfig{}
+	}
 	if c.Raft.Bind == "" {
 		c.Raft.Bind = "localhost:7840"
 	}

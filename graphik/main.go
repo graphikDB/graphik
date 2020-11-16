@@ -104,7 +104,6 @@ func run(ctx context.Context, cfg *apipb.Config) {
 		),
 	)
 
-	apipb.RegisterConfigServiceServer(gserver, service.NewConfig(runtim))
 	apipb.RegisterGraphServiceServer(gserver, service.NewGraph(runtim))
 	grpc_prometheus.Register(gserver)
 

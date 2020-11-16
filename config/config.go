@@ -1,4 +1,4 @@
-package auth
+package config
 
 import (
 	"encoding/json"
@@ -15,38 +15,44 @@ import (
 	"sync"
 )
 
-func New(cfg *apipb.AuthConfig) (*Auth, error) {
+type Config struct {
+	mu                 sync.RWMutex
+	jwksSet            map[string]*jwk.Set
+	authExpressions    []string
+	authPrograms       []cel.Program
+	triggerExpressions []string
+	triggerPrograms    []cel.Program
+	source             *apipb.Config
+}
+
+func New(cfg *apipb.Config) (*Config, error) {
+	cfg.SetDefaults()
 	setMap := map[string]*jwk.Set{}
-	for _, source := range cfg.JwksSources {
+	for _, source := range cfg.GetAuth().GetJwksSources() {
 		set, err := jwk.Fetch(source)
 		if err != nil {
 			return nil, err
 		}
 		setMap[source] = set
 	}
-	a := &Auth{
-		set:         setMap,
-		mu:          sync.RWMutex{},
-		expressions: cfg.AuthExpressions,
+	c := &Config{
+		mu:                 sync.RWMutex{},
+		jwksSet:            setMap,
+		authExpressions:    cfg.GetAuth().GetAuthExpressions(),
+		triggerExpressions: nil,
+		source:             cfg,
 	}
-	if len(a.expressions) > 0 && a.expressions[0] != "" {
-		programs, err := express.Programs(cfg.AuthExpressions)
+	if len(c.authExpressions) > 0 && c.authExpressions[0] != "" {
+		programs, err := express.Programs(cfg.GetAuth().GetAuthExpressions())
 		if err != nil {
 			return nil, err
 		}
-		a.programs = programs
+		c.authPrograms = programs
 	}
-	return a, nil
+	return c, nil
 }
 
-type Auth struct {
-	mu          sync.RWMutex
-	set         map[string]*jwk.Set
-	expressions []string
-	programs    []cel.Program
-}
-
-func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
+func (a *Config) VerifyJWT(token string) (map[string]interface{}, error) {
 
 	message, err := jws.ParseString(token)
 	if err != nil {
@@ -66,7 +72,7 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	}
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for uri, set := range a.set {
+	for uri, set := range a.jwksSet {
 		keys := set.LookupKeyID(kid.(string))
 		if len(keys) == 0 {
 			continue
@@ -90,63 +96,66 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	return nil, errors.New("zero jwks matches")
 }
 
-func (a *Auth) Expressions() []string {
+func (a *Config) AuthExpressions() []string {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	return a.expressions
+	return a.authExpressions
 }
 
-func (a *Auth) Programs() []cel.Program {
+func (a *Config) AuthPrograms() []cel.Program {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	return a.programs
+	return a.authPrograms
 }
 
-func (a *Auth) RefreshKeys() error {
-	for uri, _ := range a.set {
+func (a *Config) RefreshKeys() error {
+	for uri, _ := range a.jwksSet {
 		set, err := jwk.Fetch(uri)
 		if err != nil {
 			return err
 		}
 		a.mu.Lock()
-		a.set[uri] = set
+		a.jwksSet[uri] = set
 		a.mu.Unlock()
 	}
 	return nil
 }
 
-func (a *Auth) Override(auth *apipb.AuthConfig) error {
-	for _, source := range auth.JwksSources {
+func (a *Config) Override(config *apipb.Config) error {
+	config.SetDefaults()
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.source = config
+	for _, source := range config.GetAuth().JwksSources {
 		set, err := jwk.Fetch(source)
 		if err != nil {
 			return err
 		}
-		a.mu.Lock()
-		a.set[source] = set
-		a.mu.Unlock()
+		a.jwksSet[source] = set
 	}
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	a.expressions = auth.AuthExpressions
-	if len(a.expressions) > 0 && a.expressions[0] != "" {
-		programs, err := express.Programs(a.expressions)
+
+	a.authExpressions = config.GetAuth().AuthExpressions
+	if len(a.authExpressions) > 0 && a.authExpressions[0] != "" {
+		programs, err := express.Programs(a.authExpressions)
 		if err != nil {
 			return err
 		}
-		a.programs = programs
+		a.authPrograms = programs
+	}
+
+	a.triggerExpressions = config.GetTrigger().Expressions
+	if len(a.triggerExpressions) > 0 && a.triggerExpressions[0] != "" {
+		programs, err := express.Programs(a.triggerExpressions)
+		if err != nil {
+			return err
+		}
+		a.triggerPrograms = programs
 	}
 	return nil
 }
 
-func (a *Auth) Raw() *apipb.AuthConfig {
-	var jwksSources []string
+func (a *Config) Config() *apipb.Config {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for source, _ := range a.set {
-		jwksSources = append(jwksSources, source)
-	}
-	return &apipb.AuthConfig{
-		JwksSources:     jwksSources,
-		AuthExpressions: a.expressions,
-	}
+	return a.source
 }

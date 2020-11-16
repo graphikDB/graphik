@@ -39,10 +39,9 @@ func Test(t *testing.T) {
 		t.Fatal(err)
 	}
 	var (
-		cfgClient = apipb.NewConfigServiceClient(conn)
 		gClient   = apipb.NewGraphServiceClient(conn)
 	)
-	pong, err := cfgClient.Ping(ctx, &empty.Empty{})
+	pong, err := gClient.Ping(ctx, &empty.Empty{})
 	if err != nil {
 		t.Fatal(err)
 	}

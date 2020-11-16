@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/auth"
+	"github.com/autom8ter/graphik/config"
 	"github.com/autom8ter/graphik/express"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
@@ -29,7 +29,7 @@ const (
 
 type Runtime struct {
 	machine *machine.Machine
-	auth    *auth.Auth
+	config  *config.Config
 	mu      sync.RWMutex
 	raft    *raft.Raft
 	graph   *graph.Graph
@@ -39,8 +39,8 @@ type Runtime struct {
 func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	os.MkdirAll(cfg.GetRaft().GetStoragePath(), 0700)
 	m := machine.New(ctx)
-	config := raft.DefaultConfig()
-	config.LocalID = raft.ServerID(cfg.GetRaft().GetNodeId())
+	rconfig := raft.DefaultConfig()
+	rconfig.LocalID = raft.ServerID(cfg.GetRaft().GetNodeId())
 	// Setup Raft communication.
 	addr, err := net.ResolveTCPAddr("tcp", cfg.GetRaft().GetBind())
 	if err != nil {
@@ -64,7 +64,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create bolt store")
 	}
-	a, err := auth.New(cfg.Auth)
+	c, err := config.New(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -74,13 +74,13 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	}
 	s := &Runtime{
 		machine: m,
-		auth:    a,
+		config:  c,
 		raft:    nil,
 		mu:      sync.RWMutex{},
 		graph:   g,
 		close:   sync.Once{},
 	}
-	rft, err := raft.NewRaft(config, s, logStore, snapshotStore, snapshots, transport)
+	rft, err := raft.NewRaft(rconfig, s, logStore, snapshotStore, snapshots, transport)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create raft")
 	}
@@ -89,7 +89,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 		configuration := raft.Configuration{
 			Servers: []raft.Server{
 				{
-					ID:      config.LocalID,
+					ID:      rconfig.LocalID,
 					Address: transport.LocalAddr(),
 				},
 			},
@@ -102,7 +102,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to join cluster")
 		}
-		client := apipb.NewConfigServiceClient(conn)
+		client := apipb.NewGraphServiceClient(conn)
 		_, err = client.JoinCluster(ctx, &apipb.RaftNode{
 			NodeId:  cfg.GetRaft().GetNodeId(),
 			Address: cfg.GetRaft().GetBind(),
@@ -114,7 +114,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 
 	s.machine.Go(func(routine machine.Routine) {
 		logger.Info("refreshing jwks")
-		if err := s.auth.RefreshKeys(); err != nil {
+		if err := s.config.RefreshKeys(); err != nil {
 			logger.Error("failed to refresh keys", zap.Error(errors.WithStack(err)))
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
@@ -159,12 +159,12 @@ func (s *Runtime) Machine() *machine.Machine {
 	return s.machine
 }
 
-func (s *Runtime) Auth() *auth.Auth {
-	return s.auth
+func (s *Runtime) Config() *config.Config {
+	return s.config
 }
 
 func (a *Runtime) Authorize(intercept *apipb.RequestIntercept) (bool, error) {
-	return express.Eval(a.auth.Programs(), intercept)
+	return express.Eval(a.config.AuthPrograms(), intercept)
 }
 
 func (r *Runtime) Go(fn machine.Func) {

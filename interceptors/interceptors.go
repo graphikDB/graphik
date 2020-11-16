@@ -20,7 +20,7 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, err
 		}
-		payload, err := runtime.Auth().VerifyJWT(token)
+		payload, err := runtime.Config().VerifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -59,7 +59,7 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return err
 		}
-		payload, err := runtime.Auth().VerifyJWT(token)
+		payload, err := runtime.Config().VerifyJWT(token)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
