@@ -592,9 +592,8 @@ func (e *Graph) FilterSearchEdges(filter *apipb.Filter) (*apipb.Edges, error) {
 		return nil, err
 	}
 	var edges []*apipb.Edge
-	var pass bool
 	if err := e.RangeEdges(filter.Gtype, func(edge *apipb.Edge) bool {
-		pass, err = express.Eval(programs, edge)
+		pass, err := express.Eval(programs, edge)
 		if err != nil {
 			return true
 		}
