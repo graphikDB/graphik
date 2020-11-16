@@ -199,17 +199,19 @@ func (n *Graph) HasNode(path *apipb.Path) bool {
 	return false
 }
 
-func (n *Graph) FilterNode(nodeType string, filter func(node *apipb.Node) bool) *apipb.Nodes {
+func (n *Graph) FilterNode(nodeType string, filter func(node *apipb.Node) bool) (*apipb.Nodes, error) {
 	var filtered []*apipb.Node
-	n.RangeNode(nodeType, func(node *apipb.Node) bool {
+	if err := n.RangeNode(nodeType, func(node *apipb.Node) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
 		return true
-	})
+	}); err != nil {
+		return nil, err
+	}
 	return &apipb.Nodes{
 		Nodes: filtered,
-	}
+	}, nil
 }
 
 func (n *Graph) SetNodes(nodes []*apipb.Node) (*apipb.Nodes, error) {
@@ -240,12 +242,13 @@ func (n *Graph) DeleteNodes(nodes []*apipb.Path) (*apipb.Counter, error) {
 	}, nil
 }
 
-func (n *Graph) ClearNodes(nodeType string) {
+func (n *Graph) ClearNodes(nodeType string) error {
 	if cache, ok := n.nodes[nodeType]; ok {
 		for k, _ := range cache {
 			delete(cache, k)
 		}
 	}
+	return n.db.DropPrefix([]byte(fmt.Sprintf("%s/", nodeType)))
 }
 
 func (n *Graph) FilterSearchNodes(filter *apipb.TypeFilter) (*apipb.Nodes, error) {
@@ -367,6 +370,9 @@ func (n *Graph) DeleteEdge(path *apipb.Path) (*apipb.Counter, error) {
 	n.edgesFrom[edge.To.String()] = removeEdge(path, n.edgesFrom[edge.To.String()])
 	n.edgesTo[edge.To.String()] = removeEdge(path, n.edgesTo[edge.To.String()])
 	delete(n.edges[path.Gtype], path.Gid)
+	if err := n.delEdge(path); err != nil {
+		return nil, err
+	}
 	return &apipb.Counter{
 		Count: 1,
 	}, nil
@@ -631,6 +637,28 @@ func (g *Graph) setEdge(edge *apipb.Edge) error {
 		}
 		if err := txn.Set(key, bits); err != nil {
 			return err
+		}
+		return nil
+	})
+}
+
+func (g *Graph) delEdge(paths ...*apipb.Path) error {
+	return g.db.Update(func(txn *badger.Txn) error {
+		for _, path := range paths {
+			if err := txn.Delete([]byte(fmt.Sprintf("edges/%s/%s", path.GetGtype(), path.GetGid()))); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (g *Graph) delNode(paths ...*apipb.Path) error {
+	return g.db.Update(func(txn *badger.Txn) error {
+		for _, path := range paths {
+			if err := txn.Delete([]byte(fmt.Sprintf("nodes/%s/%s", path.GetGtype(), path.GetGid()))); err != nil {
+				return err
+			}
 		}
 		return nil
 	})
