@@ -89,13 +89,15 @@ func (g *Graph) DelEdges(ctx context.Context, paths *apipb.Paths) (*apipb.Counte
 }
 
 func (g *Graph) ChangeStream(filter *apipb.ChangeFilter, server apipb.GraphService_ChangeStreamServer) error {
+	var pass bool
+	var err error
 	filterFunc := func(msg interface{}) bool {
-		result, err := express.Eval(filter.Expressions, msg)
+		pass, err = express.Eval(filter.Expressions, msg)
 		if err != nil {
 			logger.Error("subscription filter failure", zap.Error(err))
 			return false
 		}
-		return result
+		return pass
 	}
 	if err := g.runtime.Machine().PubSub().SubscribeFilter(server.Context(), runtime.ChangeStreamChannel, filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
@@ -109,7 +111,7 @@ func (g *Graph) ChangeStream(filter *apipb.ChangeFilter, server apipb.GraphServi
 	}); err != nil {
 		return err
 	}
-	return nil
+	return err
 }
 
 func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
