@@ -682,10 +682,11 @@ func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	}
 	for _, node := range nodes.GetNodes() {
 		graph.Nodes.Nodes = append(graph.Nodes.Nodes, node)
-		g.RangeFrom(node.Path, func(e *apipb.Edge) bool {
-			graph.Edges.Edges = append(graph.Edges.Edges, e)
-			return true
-		})
+		edges, err := g.RangeFilterFrom(filter.EdgeFilter)
+		if err != nil {
+			return nil, err
+		}
+		graph.Edges.Edges = append(graph.Edges.Edges, edges.GetEdges()...)
 	}
 	return graph, err
 }
