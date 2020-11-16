@@ -66,3 +66,18 @@ func (e *Edges) Sort() {
 	}
 	s.Sort()
 }
+
+func (e *EdgeDetails) Sort() {
+	s := sortable.Sortable{
+		LenFunc: func() int {
+			return len(e.GetEdges())
+		},
+		LessFunc: func(i, j int) bool {
+			return e.GetEdges()[i].UpdatedAt < e.GetEdges()[j].UpdatedAt
+		},
+		SwapFunc: func(i, j int) {
+			e.GetEdges()[i], e.GetEdges()[j] = e.GetEdges()[j], e.GetEdges()[i]
+		},
+	}
+	s.Sort()
+}
