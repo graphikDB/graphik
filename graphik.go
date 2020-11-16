@@ -142,6 +142,10 @@ func (c *Client) Subscribe(ctx context.Context, in *apipb.ChannelFilter, opts ..
 	return c.graph.Subscribe(ctx, in, opts...)
 }
 
+func (c *Client) SubGraph(ctx context.Context, in *apipb.SubGraphFilter) (*apipb.Graph, error) {
+	return c.graph.SubGraph(ctx, in)
+}
+
 func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {
 	return c.config.Ping(ctx, in, opts...)
 }

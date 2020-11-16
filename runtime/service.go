@@ -292,3 +292,9 @@ func (r *Runtime) Import(graph *apipb.Graph) (*apipb.Graph, error) {
 		Edges: edges,
 	}, nil
 }
+
+func (r *Runtime) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.graph.SubGraph(filter)
+}

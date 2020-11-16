@@ -162,5 +162,5 @@ func (g *Graph) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Graph, e
 }
 
 func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
-	return g.runtime.Export()
+	return g.runtime.SubGraph(filter)
 }

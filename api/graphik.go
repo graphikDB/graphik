@@ -2,21 +2,12 @@ package apipb
 
 import (
 	"github.com/autom8ter/graphik/sortable"
-	"github.com/golang/protobuf/proto"
-	"github.com/hashicorp/raft"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func NewStruct(data map[string]interface{}) *structpb.Struct {
 	x, _ := structpb.NewStruct(data)
 	return x
-}
-
-func (c *StateChange) RaftLog() raft.Log {
-	bits, _ := proto.Marshal(c)
-	return raft.Log{
-		Data: bits,
-	}
 }
 
 func (c *Config) SetDefaults() {

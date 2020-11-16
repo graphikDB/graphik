@@ -10,6 +10,7 @@ import (
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/dgraph-io/badger"
+	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/pkg/errors"
@@ -127,14 +128,18 @@ func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.Log, error) {
 	//defer func() {
 	//	logger.Info("executing raft mutation", zap.Int64("duration(ms)", time.Since(now).Milliseconds()))
 	//}()
+	bits, err := proto.Marshal(cmd)
+	if err != nil {
+		return nil, err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	future := s.raft.ApplyLog(cmd.RaftLog(), raftTimeout)
 
+	future := s.raft.Apply(bits, raftTimeout)
 	if err := future.Error(); err != nil {
 		return nil, err
 	}
-	logger.Info("executing raft mutation", zap.Int64("duration(ms)", time.Since(now).Milliseconds()))
+	logger.Info("raft mutation completed", zap.Int64("duration(ms)", time.Since(now).Milliseconds()))
 	if err, ok := future.Response().(error); ok {
 		return nil, err
 	}
