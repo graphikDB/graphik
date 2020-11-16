@@ -9,6 +9,7 @@ import (
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
+	"github.com/dgraph-io/badger"
 	"github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/pkg/errors"
@@ -65,12 +66,16 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	if err != nil {
 		return nil, err
 	}
+	db, err := badger.Open(badger.DefaultOptions("/tmp/graphik"))
+	if err != nil {
+		return nil, err
+	}
 	s := &Runtime{
 		machine: m,
 		auth:    a,
 		raft:    nil,
 		mu:      sync.RWMutex{},
-		graph:   graph.New(),
+		graph:   graph.New(db),
 		close:   sync.Once{},
 	}
 	rft, err := raft.NewRaft(config, s, logStore, stableStore, snapshots, transport)

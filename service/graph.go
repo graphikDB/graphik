@@ -69,7 +69,7 @@ func (g *Graph) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, err
 }
 
 func (g *Graph) SearchEdges(ctx context.Context, filter *apipb.TypeFilter) (*apipb.Edges, error) {
-	return g.runtime.Edges(filter), nil
+	return g.runtime.Edges(filter)
 }
 
 func (g *Graph) PatchEdge(ctx context.Context, edge *apipb.Patch) (*apipb.Edge, error) {

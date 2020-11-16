@@ -68,26 +68,34 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 		}
 	case apipb.Op_CREATE_NODE:
 		n := c.Log.GetNodeConstructor()
+		node, err := f.graph.SetNode(&apipb.Node{
+			Path:       n.Path,
+			Attributes: n.Attributes,
+			CreatedAt:  c.Timestamp,
+			UpdatedAt:  c.Timestamp,
+		})
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Node{Node: f.graph.SetNode(&apipb.Node{
-				Path:       n.Path,
-				Attributes: n.Attributes,
-				CreatedAt:  c.Timestamp,
-				UpdatedAt:  c.Timestamp,
-			})},
+			Log: &apipb.Log_Node{Node: node},
 		}
 	case apipb.Op_CREATE_EDGE:
 		e := c.Log.GetEdgeConstructor()
+		edge, err := f.graph.SetEdge(&apipb.Edge{
+			Path:       e.Path,
+			Attributes: e.Attributes,
+			Cascade:    e.Cascade,
+			From:       e.From,
+			To:         e.To,
+			CreatedAt:  c.Timestamp,
+			UpdatedAt:  c.Timestamp,
+		})
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edge{Edge: f.graph.SetEdge(&apipb.Edge{
-				Path:       e.Path,
-				Attributes: e.Attributes,
-				Cascade:    e.Cascade,
-				From:       e.From,
-				To:         e.To,
-				CreatedAt:  c.Timestamp,
-				UpdatedAt:  c.Timestamp,
-			})},
+			Log: &apipb.Log_Edge{Edge: edge},
 		}
 	case apipb.Op_CREATE_NODES:
 		n := c.Log.GetNodeConstructors()
@@ -100,8 +108,12 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 				UpdatedAt:  c.Timestamp,
 			})
 		}
+		res, err := f.graph.SetNodes(nodes)
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Nodes{Nodes: f.graph.SetNodes(nodes)},
+			Log: &apipb.Log_Nodes{Nodes: res},
 		}
 	case apipb.Op_CREATE_EDGES:
 		e := c.Log.GetEdgeConstructors()
@@ -117,40 +129,76 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 				UpdatedAt:  c.Timestamp,
 			})
 		}
+		res, err := f.graph.SetEdges(edges)
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edges{Edges: f.graph.SetEdges(edges)},
+			Log: &apipb.Log_Edges{Edges: res},
 		}
 	case apipb.Op_PATCH_NODE:
+		res, err := f.graph.PatchNode(c.Log.GetPatch())
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Node{Node: f.graph.PatchNode(c.Log.GetPatch())},
+			Log: &apipb.Log_Node{Node: res},
 		}
 	case apipb.Op_PATCH_EDGE:
+		res, err := f.graph.PatchEdge(c.Log.GetPatch())
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edge{Edge: f.graph.PatchEdge(c.Log.GetPatch())},
+			Log: &apipb.Log_Edge{Edge: res},
 		}
 	case apipb.Op_PATCH_NODES:
+		res, err := f.graph.PatchNodes(c.Log.GetPatches())
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Nodes{Nodes: f.graph.PatchNodes(c.Log.GetPatches())},
+			Log: &apipb.Log_Nodes{Nodes: res},
 		}
 	case apipb.Op_PATCH_EDGES:
+		res, err := f.graph.PatchEdges(c.Log.GetPatches())
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edges{Edges: f.graph.PatchEdges(c.Log.GetPatches())},
+			Log: &apipb.Log_Edges{Edges: res},
 		}
 	case apipb.Op_DELETE_NODE:
+		res, err := f.graph.DeleteNode(c.Log.GetPath())
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Counter{Counter: f.graph.DeleteNode(c.Log.GetPath())},
+			Log: &apipb.Log_Counter{Counter: res},
 		}
 	case apipb.Op_DELETE_EDGE:
+		res, err := f.graph.DeleteEdge(c.Log.GetPath())
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Counter{Counter: f.graph.DeleteEdge(c.Log.GetPath())},
+			Log: &apipb.Log_Counter{Counter: res},
 		}
 	case apipb.Op_DELETE_NODES:
+		res, err := f.graph.DeleteNodes(c.Log.GetPaths().GetPaths())
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Counter{Counter: f.graph.DeleteNodes(c.Log.GetPaths().GetPaths())},
+			Log: &apipb.Log_Counter{Counter: res},
 		}
 	case apipb.Op_DELETE_EDGES:
+		res, err := f.graph.DeleteEdges(c.Log.GetPaths().GetPaths())
+		if err != nil {
+			return nil, err
+		}
 		c.Log = &apipb.Log{
-			Log: &apipb.Log_Counter{Counter: f.graph.DeleteEdges(c.Log.GetPaths().GetPaths())},
+			Log: &apipb.Log_Counter{Counter: res},
 		}
 	default:
 		return nil, fmt.Errorf("unsupported command: %v", c.Op)
@@ -192,9 +240,11 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 func (f *Runtime) Persist(sink raft.SnapshotSink) error {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
+	nodes, err := f.graph.AllNodes()
+	edges, err := f.graph.AllEdges()
 	export := &apipb.Export{
-		Nodes: f.graph.AllNodes(),
-		Edges: f.graph.AllEdges(),
+		Nodes: nodes,
+		Edges: edges,
 	}
 	bits, err := proto.Marshal(export)
 	if err != nil {

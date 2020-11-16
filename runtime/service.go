@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/google/uuid"
 	"time"
@@ -10,17 +9,16 @@ import (
 func (f *Runtime) Node(input *apipb.Path) (*apipb.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	node, ok := f.graph.GetNode(input)
-	if !ok {
-		return nil, fmt.Errorf("node %s does not exist", input)
-	}
-	return node, nil
+	return f.graph.GetNode(input)
 }
 
 func (f *Runtime) Nodes(input *apipb.TypeFilter) (*apipb.Nodes, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	nodes := f.graph.FilterSearchNodes(input)
+	nodes, err := f.graph.FilterSearchNodes(input)
+	if err != nil {
+		return nil, err
+	}
 	nodes.Sort()
 	return nodes, nil
 }
@@ -28,25 +26,27 @@ func (f *Runtime) Nodes(input *apipb.TypeFilter) (*apipb.Nodes, error) {
 func (f *Runtime) Edge(input *apipb.Path) (*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edge, ok := f.graph.GetEdge(input)
-	if !ok {
-		return nil, fmt.Errorf("edge node %s does not exist", input)
-	}
-	return edge, nil
+	return f.graph.GetEdge(input)
 }
 
-func (f *Runtime) Edges(input *apipb.TypeFilter) *apipb.Edges {
+func (f *Runtime) Edges(input *apipb.TypeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edges := f.graph.FilterSearchEdges(input)
+	edges, err := f.graph.FilterSearchEdges(input)
+	if err != nil {
+		return nil, err
+	}
 	edges.Sort()
-	return edges
+	return edges, nil
 }
 
 func (f *Runtime) EdgesFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edges := f.graph.RangeFilterFrom(filter)
+	edges, err := f.graph.RangeFilterFrom(filter)
+	if err != nil {
+		return nil, err
+	}
 	edges.Sort()
 	return edges, nil
 }
@@ -54,7 +54,10 @@ func (f *Runtime) EdgesFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 func (f *Runtime) EdgesTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edges := f.graph.RangeFilterTo(filter)
+	edges, err := f.graph.RangeFilterTo(filter)
+	if err != nil {
+		return nil, err
+	}
 	edges.Sort()
 	return edges, nil
 }
