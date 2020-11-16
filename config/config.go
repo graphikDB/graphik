@@ -26,6 +26,12 @@ type Config struct {
 }
 
 func New(cfg *apipb.RuntimeConfig) (*Config, error) {
+	if cfg.Trigger == nil {
+		cfg.Trigger = &apipb.TriggerConfig{}
+	}
+	if cfg.Auth == nil {
+		cfg.Auth = &apipb.AuthConfig{}
+	}
 	setMap := map[string]*jwk.Set{}
 	for _, source := range cfg.GetAuth().GetJwksSources() {
 		set, err := jwk.Fetch(source)
@@ -47,6 +53,13 @@ func New(cfg *apipb.RuntimeConfig) (*Config, error) {
 			return nil, err
 		}
 		c.authPrograms = programs
+	}
+	if len(c.triggerExpressions) > 0 && c.triggerExpressions[0] != "" {
+		programs, err := express.Programs(cfg.GetTrigger().GetExpressions())
+		if err != nil {
+			return nil, err
+		}
+		c.triggerPrograms = programs
 	}
 	return c, nil
 }
@@ -121,9 +134,14 @@ func (a *Config) RefreshKeys() error {
 }
 
 func (a *Config) Override(config *apipb.RuntimeConfig) error {
+	if config.Trigger == nil {
+		config.Trigger = &apipb.TriggerConfig{}
+	}
+	if config.Auth == nil {
+		config.Auth = &apipb.AuthConfig{}
+	}
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	a.source = config
 	for _, source := range config.GetAuth().JwksSources {
 		set, err := jwk.Fetch(source)
 		if err != nil {
@@ -132,7 +150,7 @@ func (a *Config) Override(config *apipb.RuntimeConfig) error {
 		a.jwksSet[source] = set
 	}
 
-	a.authExpressions = config.GetAuth().AuthExpressions
+	a.authExpressions = config.GetAuth().GetAuthExpressions()
 	if len(a.authExpressions) > 0 && a.authExpressions[0] != "" {
 		programs, err := express.Programs(a.authExpressions)
 		if err != nil {
@@ -141,7 +159,7 @@ func (a *Config) Override(config *apipb.RuntimeConfig) error {
 		a.authPrograms = programs
 	}
 
-	a.triggerExpressions = config.GetTrigger().Expressions
+	a.triggerExpressions = config.GetTrigger().GetExpressions()
 	if len(a.triggerExpressions) > 0 && a.triggerExpressions[0] != "" {
 		programs, err := express.Programs(a.triggerExpressions)
 		if err != nil {
@@ -149,6 +167,7 @@ func (a *Config) Override(config *apipb.RuntimeConfig) error {
 		}
 		a.triggerPrograms = programs
 	}
+	a.source = config
 	return nil
 }
 
