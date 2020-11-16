@@ -33,7 +33,10 @@ func main() {
 		Http: &apipb.HTTPConfig{},
 		Grpc: &apipb.GRPCConfig{},
 		Raft: &apipb.RaftConfig{},
-		Auth: &apipb.AuthConfig{},
+		Runtime: &apipb.RuntimeConfig{
+			Auth:    &apipb.AuthConfig{},
+			Trigger: &apipb.TriggerConfig{},
+		},
 	}
 	pflag.CommandLine.StringVar(&cfg.Grpc.Bind, "grpc.bind", ":7820", "grpc server bind address")
 	pflag.CommandLine.StringVar(&cfg.Http.Bind, "http.bind", ":7830", "http server bind address")
@@ -43,9 +46,9 @@ func main() {
 	pflag.CommandLine.StringVar(&cfg.Raft.Bind, "raft.bind", "localhost:7840", "raft protocol bind address")
 	pflag.CommandLine.StringVar(&cfg.Raft.NodeId, "raft.nodeid", os.Getenv("GRAPHIK_RAFT_ID"), "raft node id (env: GRAPHIK_RAFT_ID)")
 	pflag.CommandLine.StringVar(&cfg.Raft.StoragePath, "raft.storage.path", "/tmp/graphik", "raft storage path")
-	pflag.CommandLine.StringSliceVar(&cfg.Auth.JwksSources, "auth.jwks", strings.Split(os.Getenv("GRAPHIK_JWKS_URIS"), ","), "authorizaed jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)")
-	pflag.CommandLine.StringSliceVar(&cfg.Auth.AuthExpressions, "auth.expressions", strings.Split(os.Getenv("GRAPHIK_AUTH_EXPRESSIONS"), ","), "auth middleware expressions (env: GRAPHIK_AUTH_EXPRESSIONS)")
-
+	pflag.CommandLine.StringSliceVar(&cfg.Runtime.Auth.JwksSources, "auth.jwks", strings.Split(os.Getenv("GRAPHIK_JWKS_URIS"), ","), "authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)")
+	pflag.CommandLine.StringSliceVar(&cfg.Runtime.Auth.AuthExpressions, "auth.expressions", strings.Split(os.Getenv("GRAPHIK_AUTH_EXPRESSIONS"), ","), "auth middleware expressions (env: GRAPHIK_AUTH_EXPRESSIONS)")
+	pflag.CommandLine.StringSliceVar(&cfg.Runtime.Trigger.Expressions, "trigger.expressions", strings.Split(os.Getenv("GRAPHIK_TRIGGER_EXPRESSIONS"), ","), "trigger expressions (env: GRAPHIK_TRIGGER_EXPRESSIONS)")
 	pflag.Parse()
 	cfg.SetDefaults()
 	run(context.Background(), cfg)
@@ -62,6 +65,7 @@ func run(ctx context.Context, cfg *apipb.Config) {
 		logger.Error("failed to create runtime", zap.Error(errors.WithStack(err)))
 		return
 	}
+	defer runtim.Close()
 	router := http.NewServeMux()
 	router.Handle("/metrics", promhttp.Handler())
 	router.HandleFunc("/debug/pprof/", pprof.Index)
@@ -149,7 +153,6 @@ func run(ctx context.Context, cfg *apipb.Config) {
 	case <-stopped:
 		t.Stop()
 	}
-	_ = runtim.Close()
-	logger.Info("shutdown successful")
 	runtim.Wait()
+	logger.Info("shutdown successful")
 }

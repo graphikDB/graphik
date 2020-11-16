@@ -64,7 +64,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create bolt store")
 	}
-	c, err := config.New(cfg)
+	c, err := config.New(cfg.GetRuntime())
 	if err != nil {
 		return nil, err
 	}

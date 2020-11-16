@@ -198,7 +198,7 @@ func ExampleClient_PatchNode() {
 }
 
 func ExampleClient_SetConfig() {
-	auth, err := client.SetConfig(context.Background(), &apipb.Config{
+	auth, err := client.SetConfig(context.Background(), &apipb.RuntimeConfig{
 		Auth: &apipb.AuthConfig{
 			JwksSources: []string{"https://www.googleapis.com/oauth2/v3/certs"},
 			//AuthExpressions:      []string{`user.attributes.email.contains("cole")`},

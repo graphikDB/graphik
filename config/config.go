@@ -22,11 +22,10 @@ type Config struct {
 	authPrograms       []cel.Program
 	triggerExpressions []string
 	triggerPrograms    []cel.Program
-	source             *apipb.Config
+	source             *apipb.RuntimeConfig
 }
 
-func New(cfg *apipb.Config) (*Config, error) {
-	cfg.SetDefaults()
+func New(cfg *apipb.RuntimeConfig) (*Config, error) {
 	setMap := map[string]*jwk.Set{}
 	for _, source := range cfg.GetAuth().GetJwksSources() {
 		set, err := jwk.Fetch(source)
@@ -121,8 +120,7 @@ func (a *Config) RefreshKeys() error {
 	return nil
 }
 
-func (a *Config) Override(config *apipb.Config) error {
-	config.SetDefaults()
+func (a *Config) Override(config *apipb.RuntimeConfig) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	a.source = config
@@ -154,7 +152,7 @@ func (a *Config) Override(config *apipb.Config) error {
 	return nil
 }
 
-func (a *Config) Config() *apipb.Config {
+func (a *Config) Config() *apipb.RuntimeConfig {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	return a.source

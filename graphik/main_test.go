@@ -39,7 +39,7 @@ func Test(t *testing.T) {
 		t.Fatal(err)
 	}
 	var (
-		gClient   = apipb.NewGraphServiceClient(conn)
+		gClient = apipb.NewGraphServiceClient(conn)
 	)
 	pong, err := gClient.Ping(ctx, &empty.Empty{})
 	if err != nil {

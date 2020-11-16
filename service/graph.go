@@ -28,11 +28,11 @@ func (s *Graph) JoinCluster(ctx context.Context, request *apipb.RaftNode) (*empt
 	return &empty.Empty{}, nil
 }
 
-func (s *Graph) GetConfig(ctx context.Context, empty *empty.Empty) (*apipb.Config, error) {
+func (s *Graph) GetConfig(ctx context.Context, empty *empty.Empty) (*apipb.RuntimeConfig, error) {
 	return s.runtime.Config().Config(), nil
 }
 
-func (s *Graph) SetConfig(ctx context.Context, request *apipb.Config) (*apipb.Config, error) {
+func (s *Graph) SetConfig(ctx context.Context, request *apipb.RuntimeConfig) (*apipb.RuntimeConfig, error) {
 	if err := s.runtime.Config().Override(request); err != nil {
 		return nil, err
 	}

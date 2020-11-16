@@ -181,7 +181,7 @@ message Log {
     Edges edges =8;
     Path path =9;
     Paths paths =10;
-    Config config =11;
+    RuntimeConfig config =11;
     Counter counter =12;
     Patch patch =13;
     Patches patches =14;
@@ -246,14 +246,17 @@ message TriggerConfig {
   repeated string expressions =1;
 }
 
-message Config {
-  HTTPConfig http =1;
-  GRPCConfig grpc =2;
-  RaftConfig raft =3;
+message RuntimeConfig {
   AuthConfig auth =4;
   TriggerConfig trigger =5;
 }
 
+message Config {
+  HTTPConfig http =1;
+  GRPCConfig grpc =2;
+  RaftConfig raft =3;
+  RuntimeConfig runtime =4;
+}
 
 message RequestIntercept {
   string full_path =1;
@@ -276,8 +279,8 @@ message Message {
 service GraphService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
-  rpc GetConfig(google.protobuf.Empty) returns(Config){}
-  rpc SetConfig(Config) returns(Config){}
+  rpc GetConfig(google.protobuf.Empty) returns(RuntimeConfig){}
+  rpc SetConfig(RuntimeConfig) returns(RuntimeConfig){}
 
   rpc Me(MeFilter) returns(NodeDetail){}
   rpc CreateNode(NodeConstructor) returns(Node){}
