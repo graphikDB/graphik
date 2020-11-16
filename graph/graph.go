@@ -4,7 +4,7 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/express"
-	"github.com/dgraph-io/badger"
+	"github.com/dgraph-io/badger/v2"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"sort"
@@ -19,14 +19,18 @@ type Graph struct {
 	edgesFrom map[string][]*apipb.Path
 }
 
-func New(db *badger.DB) *Graph {
+func New(path string) (*Graph, error) {
+	db, err := badger.Open(badger.DefaultOptions(path))
+	if err != nil {
+		return nil, err
+	}
 	return &Graph{
 		db:        db,
 		nodes:     map[string]map[string]*apipb.Path{},
 		edges:     map[string]map[string]*apipb.Path{},
 		edgesTo:   map[string][]*apipb.Path{},
 		edgesFrom: map[string][]*apipb.Path{},
-	}
+	}, nil
 }
 
 func (g *Graph) Do(fn func(g *Graph)) {

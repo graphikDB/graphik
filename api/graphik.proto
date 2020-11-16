@@ -211,6 +211,14 @@ message RaftNode {
   string address =2;
 }
 
+message RaftLog {
+  uint64 index =1;
+  uint64 term =3;
+  uint32 type =4;
+  bytes data =9;
+  bytes extensions =10;
+}
+
 message AuthConfig {
   repeated string jwks_sources =1;
   repeated string auth_expressions =2;
