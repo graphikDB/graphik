@@ -670,3 +670,22 @@ func (g *Graph) delNode(paths ...*apipb.Path) error {
 		return nil
 	})
 }
+
+func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
+	graph := &apipb.Graph{
+		Nodes: &apipb.Nodes{},
+		Edges: &apipb.Edges{},
+	}
+	nodes, err := g.FilterSearchNodes(filter.NodeFilter)
+	if err != nil {
+		return nil, err
+	}
+	for _, node := range nodes.GetNodes() {
+		graph.Nodes.Nodes = append(graph.Nodes.Nodes, node)
+		g.RangeFrom(node.Path, func(e *apipb.Edge) bool {
+			graph.Edges.Edges = append(graph.Edges.Edges, e)
+			return true
+		})
+	}
+	return graph, err
+}
