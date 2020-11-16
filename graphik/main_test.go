@@ -49,7 +49,7 @@ func Test(t *testing.T) {
 	if pong.Message != "PONG" {
 		t.Fatal("not PONG")
 	}
-	me, err := gClient.Me(ctx, &empty.Empty{})
+	me, err := gClient.Me(ctx, &apipb.MeFilter{})
 	if err != nil {
 		t.Fatal(err)
 	}

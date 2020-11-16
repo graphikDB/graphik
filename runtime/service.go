@@ -298,3 +298,15 @@ func (r *Runtime) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	defer r.mu.Unlock()
 	return r.graph.SubGraph(filter)
 }
+
+func (r *Runtime) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.graph.GetNodeDetail(filter)
+}
+
+func (r *Runtime) GetEdgeDetail(path *apipb.Path) (*apipb.EdgeDetail, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.graph.GetEdgeDetail(path)
+}

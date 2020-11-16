@@ -54,7 +54,7 @@ func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Con
 	return ctx, nil
 }
 
-func (c *Client) Me(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Node, error) {
+func (c *Client) Me(ctx context.Context, in *apipb.MeFilter, opts ...grpc.CallOption) (*apipb.NodeDetail, error) {
 	return c.graph.Me(ctx, in, opts...)
 }
 

@@ -71,6 +71,25 @@ message Nodes {
   repeated Node nodes =1;
 }
 
+message NodeDetail {
+  Path path =1;
+  google.protobuf.Struct attributes =2;
+  map<string, EdgeDetails> edges_from =3;
+  map<string, EdgeDetails> edges_to =4;
+  int64 created_at =5;
+  int64 updated_at =6;
+}
+
+message NodeDetails {
+  repeated NodeDetail node_details =1;
+}
+
+message NodeDetailFilter {
+  Path path =1;
+  TypeFilter edges_from =2;
+  TypeFilter edges_to =3;
+}
+
 message Edge {
   Path path =1;
   google.protobuf.Struct attributes =3;
@@ -98,6 +117,20 @@ message Edges {
   repeated Edge edges =1;
 }
 
+message EdgeDetail {
+  Path path =1;
+  google.protobuf.Struct attributes =3;
+  Cascade cascade =4;
+  Node from =5;
+  Node to =6;
+  int64 created_at =10;
+  int64 updated_at =11;
+}
+
+message EdgeDetails {
+  repeated EdgeDetail edges =1;
+}
+
 message EdgeFilter {
   Path node_path =1;
   string gtype =2;
@@ -111,6 +144,11 @@ message TypeFilter {
   int32 limit =3;
 }
 
+message MeFilter {
+  TypeFilter edges_from =1;
+  TypeFilter edges_to =2;
+}
+
 message ChangeFilter {
   repeated string expressions =1;
 }
@@ -121,8 +159,8 @@ message ChannelFilter {
 }
 
 message SubGraphFilter {
-  TypeFilter node_filter =1;
-  TypeFilter edge_filter =2;
+  TypeFilter nodes =1;
+  TypeFilter edges =2;
 }
 
 message StateChange {
@@ -229,7 +267,7 @@ service ConfigService {
 }
 
 service GraphService {
-  rpc Me(google.protobuf.Empty) returns(Node){}
+  rpc Me(MeFilter) returns(NodeDetail){}
   rpc CreateNode(NodeConstructor) returns(Node){}
   rpc CreateNodes(NodeConstructors) returns(Nodes){}
   rpc GetNode(Path) returns(Node){}
@@ -256,6 +294,7 @@ service GraphService {
   rpc Subscribe(ChannelFilter) returns(stream Message){}
 
   rpc Import(Graph) returns(Graph){}
+  rpc Export(google.protobuf.Empty) returns (Graph){}
   rpc SubGraph(SubGraphFilter) returns(Graph){}
 }
 

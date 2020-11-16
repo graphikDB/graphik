@@ -19,9 +19,13 @@ func NewGraph(runtime *runtime.Runtime) *Graph {
 	return &Graph{runtime: runtime}
 }
 
-func (g *Graph) Me(ctx context.Context, empty *empty.Empty) (*apipb.Node, error) {
+func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.NodeDetail, error) {
 	n := g.runtime.NodeContext(ctx)
-	return n, nil
+	return g.runtime.GetNodeDetail(&apipb.NodeDetailFilter{
+		Path:      n.Path,
+		EdgesFrom: filter.EdgesFrom,
+		EdgesTo:   filter.EdgesTo,
+	})
 }
 
 func (g *Graph) CreateNode(ctx context.Context, node *apipb.NodeConstructor) (*apipb.Node, error) {
@@ -163,4 +167,8 @@ func (g *Graph) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Graph, e
 
 func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	return g.runtime.SubGraph(filter)
+}
+
+func (g *Graph) Export(ctx context.Context, empty *empty.Empty) (*apipb.Graph, error) {
+	return g.runtime.Export()
 }

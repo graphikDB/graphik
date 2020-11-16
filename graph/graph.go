@@ -680,7 +680,7 @@ func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 		Nodes: &apipb.Nodes{},
 		Edges: &apipb.Edges{},
 	}
-	nodes, err := g.FilterSearchNodes(filter.NodeFilter)
+	nodes, err := g.FilterSearchNodes(filter.Nodes)
 	if err != nil {
 		return nil, err
 	}
@@ -688,9 +688,9 @@ func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 		graph.Nodes.Nodes = append(graph.Nodes.Nodes, node)
 		edges, err := g.RangeFilterFrom(&apipb.EdgeFilter{
 			NodePath:    node.Path,
-			Gtype:       filter.GetEdgeFilter().GetGtype(),
-			Expressions: filter.GetEdgeFilter().GetExpressions(),
-			Limit:       filter.GetEdgeFilter().GetLimit(),
+			Gtype:       filter.GetEdges().GetGtype(),
+			Expressions: filter.GetEdges().GetExpressions(),
+			Limit:       filter.GetEdges().GetLimit(),
 		})
 		if err != nil {
 			return nil, err
@@ -698,4 +698,81 @@ func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 		graph.Edges.Edges = append(graph.Edges.Edges, edges.GetEdges()...)
 	}
 	return graph, err
+}
+
+func (g *Graph) GetEdgeDetail(path *apipb.Path) (*apipb.EdgeDetail, error) {
+	e, err := g.getEdge(path)
+	if err != nil {
+		return nil, err
+	}
+	from, err := g.getNode(e.From)
+	if err != nil {
+		return nil, err
+	}
+	to, err := g.getNode(e.To)
+	if err != nil {
+		return nil, err
+	}
+	return &apipb.EdgeDetail{
+		Path:       e.Path,
+		Attributes: e.Attributes,
+		Cascade:    e.Cascade,
+		From:       from,
+		To:         to,
+		CreatedAt:  e.CreatedAt,
+		UpdatedAt:  e.UpdatedAt,
+	}, nil
+}
+
+func (g *Graph) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
+	detail := &apipb.NodeDetail{
+		Path:      filter.GetPath(),
+		EdgesTo:   map[string]*apipb.EdgeDetails{},
+		EdgesFrom: map[string]*apipb.EdgeDetails{},
+	}
+	node, err := g.getNode(filter.GetPath())
+	if err != nil {
+		return nil, err
+	}
+	detail.UpdatedAt = node.UpdatedAt
+	detail.CreatedAt = node.CreatedAt
+	detail.Attributes = node.Attributes
+	if filter.GetEdgesFrom() != nil {
+		edgesFrom, err := g.RangeFilterFrom(&apipb.EdgeFilter{
+			NodePath:    node.Path,
+			Gtype:       filter.GetEdgesFrom().GetGtype(),
+			Expressions: filter.GetEdgesFrom().GetExpressions(),
+			Limit:       filter.GetEdgesFrom().GetLimit(),
+		})
+		if err != nil {
+			return nil, err
+		}
+		for _, edge := range edgesFrom.GetEdges() {
+			eDetail, err := g.GetEdgeDetail(edge.GetPath())
+			if err != nil {
+				return nil, err
+			}
+			detail.EdgesFrom[edge.GetPath().GetGtype()].Edges = append(detail.EdgesFrom[edge.GetPath().GetGtype()].Edges, eDetail)
+		}
+	}
+
+	if filter.GetEdgesTo() != nil {
+		edgesTo, err := g.RangeFilterTo(&apipb.EdgeFilter{
+			NodePath:    node.Path,
+			Gtype:       filter.GetEdgesTo().GetGtype(),
+			Expressions: filter.GetEdgesTo().GetExpressions(),
+			Limit:       filter.GetEdgesTo().GetLimit(),
+		})
+		if err != nil {
+			return nil, err
+		}
+		for _, edge := range edgesTo.GetEdges() {
+			eDetail, err := g.GetEdgeDetail(edge.GetPath())
+			if err != nil {
+				return nil, err
+			}
+			detail.EdgesTo[edge.GetPath().GetGtype()].Edges = append(detail.EdgesTo[edge.GetPath().GetGtype()].Edges, eDetail)
+		}
+	}
+	return detail, nil
 }

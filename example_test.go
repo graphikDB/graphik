@@ -58,7 +58,10 @@ func ExampleNewClient() {
 }
 
 func ExampleClient_Me() {
-	me, err := client.Me(context.Background(), &empty.Empty{})
+	me, err := client.Me(context.Background(), &apipb.MeFilter{
+		EdgesFrom: nil,
+		EdgesTo:   nil,
+	})
 	if err != nil {
 		log.Print(err)
 		return
@@ -281,14 +284,14 @@ func ExampleClient_Subscribe() {
 
 func ExampleClient_SubGraph() {
 	g, err := client.SubGraph(context.Background(), &apipb.SubGraphFilter{
-		NodeFilter: &apipb.TypeFilter{
+		Nodes: &apipb.TypeFilter{
 			Gtype: apipb.Keyword_ANY.String(),
 			Expressions: []string{
 				`has(attributes.name) && attributes.name.contains("Ch")`,
 			},
 			Limit: 50,
 		},
-		EdgeFilter: &apipb.TypeFilter{
+		Edges: &apipb.TypeFilter{
 			Gtype:       apipb.Keyword_ANY.String(),
 			Expressions: nil,
 			Limit:       10,
