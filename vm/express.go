@@ -1,10 +1,9 @@
-package express
+package vm
 
 import (
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func init() {
@@ -61,20 +60,4 @@ func Eval(programs []cel.Program, obj interface{}) (bool, error) {
 		}
 	}
 	return passes, nil
-}
-
-func Trigger(program cel.Program, values *structpb.Struct) (*structpb.Struct, error) {
-	out, _, err := program.Eval(values.AsMap())
-	if err != nil {
-		return values, err
-	}
-	if val, ok := out.Value().(map[string]interface{}); ok {
-		for k, v := range val {
-			nv, err := structpb.NewValue(v)
-			if err == nil {
-				values.GetFields()[k] = nv
-			}
-		}
-	}
-	return values, nil
 }

@@ -53,21 +53,21 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 	return nil
 }
 
-func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
+func (f *Runtime) apply(log *raft.Log) (*apipb.Mutation, error) {
 	var c = &apipb.StateChange{}
 	if err := proto.Unmarshal(log.Data, c); err != nil {
 		return nil, fmt.Errorf("failed to decode command: %s", err.Error())
 	}
 	switch c.Op {
 	case apipb.Op_SET_CONFIG:
-		if err := f.config.Override(c.Log.GetConfig()); err != nil {
+		if err := f.config.Override(c.Mutation.GetConfig()); err != nil {
 			return nil, errors.Wrap(err, "failed to override config")
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Config{Config: f.config.Config()},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Config{Config: f.config.Config()},
 		}
 	case apipb.Op_CREATE_NODE:
-		n := c.Log.GetNodeConstructor()
+		n := c.Mutation.GetNodeConstructor()
 		node, err := f.graph.SetNode(&apipb.Node{
 			Path:       n.Path,
 			Attributes: n.Attributes,
@@ -77,11 +77,11 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Node{Node: node},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Node{Node: node},
 		}
 	case apipb.Op_CREATE_EDGE:
-		e := c.Log.GetEdgeConstructor()
+		e := c.Mutation.GetEdgeConstructor()
 		edge, err := f.graph.SetEdge(&apipb.Edge{
 			Path:       e.Path,
 			Attributes: e.Attributes,
@@ -94,11 +94,11 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edge{Edge: edge},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Edge{Edge: edge},
 		}
 	case apipb.Op_CREATE_NODES:
-		n := c.Log.GetNodeConstructors()
+		n := c.Mutation.GetNodeConstructors()
 		var nodes []*apipb.Node
 		for _, node := range n.GetNodes() {
 			nodes = append(nodes, &apipb.Node{
@@ -112,11 +112,11 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Nodes{Nodes: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Nodes{Nodes: res},
 		}
 	case apipb.Op_CREATE_EDGES:
-		e := c.Log.GetEdgeConstructors()
+		e := c.Mutation.GetEdgeConstructors()
 		var edges []*apipb.Edge
 		for _, edge := range e.GetEdges() {
 			edges = append(edges, &apipb.Edge{
@@ -133,72 +133,72 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edges{Edges: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Edges{Edges: res},
 		}
 	case apipb.Op_PATCH_NODE:
-		res, err := f.graph.PatchNode(c.Log.GetPatch())
+		res, err := f.graph.PatchNode(c.Mutation.GetPatch())
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Node{Node: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Node{Node: res},
 		}
 	case apipb.Op_PATCH_EDGE:
-		res, err := f.graph.PatchEdge(c.Log.GetPatch())
+		res, err := f.graph.PatchEdge(c.Mutation.GetPatch())
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edge{Edge: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Edge{Edge: res},
 		}
 	case apipb.Op_PATCH_NODES:
-		res, err := f.graph.PatchNodes(c.Log.GetPatches())
+		res, err := f.graph.PatchNodes(c.Mutation.GetPatches())
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Nodes{Nodes: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Nodes{Nodes: res},
 		}
 	case apipb.Op_PATCH_EDGES:
-		res, err := f.graph.PatchEdges(c.Log.GetPatches())
+		res, err := f.graph.PatchEdges(c.Mutation.GetPatches())
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Edges{Edges: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Edges{Edges: res},
 		}
 	case apipb.Op_DELETE_NODE:
-		res, err := f.graph.DeleteNode(c.Log.GetPath())
+		res, err := f.graph.DeleteNode(c.Mutation.GetPath())
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Counter{Counter: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Counter{Counter: res},
 		}
 	case apipb.Op_DELETE_EDGE:
-		res, err := f.graph.DeleteEdge(c.Log.GetPath())
+		res, err := f.graph.DeleteEdge(c.Mutation.GetPath())
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Counter{Counter: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Counter{Counter: res},
 		}
 	case apipb.Op_DELETE_NODES:
-		res, err := f.graph.DeleteNodes(c.Log.GetPaths().GetPaths())
+		res, err := f.graph.DeleteNodes(c.Mutation.GetPaths().GetPaths())
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Counter{Counter: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Counter{Counter: res},
 		}
 	case apipb.Op_DELETE_EDGES:
-		res, err := f.graph.DeleteEdges(c.Log.GetPaths().GetPaths())
+		res, err := f.graph.DeleteEdges(c.Mutation.GetPaths().GetPaths())
 		if err != nil {
 			return nil, err
 		}
-		c.Log = &apipb.Log{
-			Log: &apipb.Log_Counter{Counter: res},
+		c.Mutation = &apipb.Mutation{
+			Object: &apipb.Mutation_Counter{Counter: res},
 		}
 	default:
 		return nil, fmt.Errorf("unsupported command: %v", c.Op)
@@ -206,7 +206,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Log, error) {
 	if err := f.machine.PubSub().Publish(ChangeStreamChannel, c); err != nil {
 		return nil, err
 	}
-	return c.Log, nil
+	return c.Mutation, nil
 }
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {

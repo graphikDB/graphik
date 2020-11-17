@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/express"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/graphik/vm"
 	"github.com/google/cel-go/cel"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
@@ -48,14 +48,14 @@ func New(cfg *apipb.RuntimeConfig) (*Config, error) {
 		source:             cfg,
 	}
 	if len(c.authExpressions) > 0 && c.authExpressions[0] != "" {
-		programs, err := express.Programs(cfg.GetAuth().GetAuthExpressions())
+		programs, err := vm.Programs(cfg.GetAuth().GetAuthExpressions())
 		if err != nil {
 			return nil, err
 		}
 		c.authPrograms = programs
 	}
 	if len(c.triggerExpressions) > 0 && c.triggerExpressions[0] != "" {
-		programs, err := express.Programs(cfg.GetTrigger().GetExpressions())
+		programs, err := vm.Programs(cfg.GetTrigger().GetExpressions())
 		if err != nil {
 			return nil, err
 		}
@@ -152,7 +152,7 @@ func (a *Config) Override(config *apipb.RuntimeConfig) error {
 
 	a.authExpressions = config.GetAuth().GetAuthExpressions()
 	if len(a.authExpressions) > 0 && a.authExpressions[0] != "" {
-		programs, err := express.Programs(a.authExpressions)
+		programs, err := vm.Programs(a.authExpressions)
 		if err != nil {
 			return err
 		}
@@ -161,7 +161,7 @@ func (a *Config) Override(config *apipb.RuntimeConfig) error {
 
 	a.triggerExpressions = config.GetTrigger().GetExpressions()
 	if len(a.triggerExpressions) > 0 && a.triggerExpressions[0] != "" {
-		programs, err := express.Programs(a.triggerExpressions)
+		programs, err := vm.Programs(a.triggerExpressions)
 		if err != nil {
 			return err
 		}

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/config"
-	"github.com/autom8ter/graphik/express"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/storage"
+	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
@@ -121,7 +121,7 @@ func New(ctx context.Context, cfg *apipb.Config) (*Runtime, error) {
 	return s, nil
 }
 
-func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.Log, error) {
+func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.Mutation, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
@@ -144,7 +144,7 @@ func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.Log, error) {
 	if err, ok := future.Response().(error); ok {
 		return nil, err
 	}
-	return future.Response().(*apipb.Log), nil
+	return future.Response().(*apipb.Mutation), nil
 }
 
 func (s *Runtime) Close() error {
@@ -164,7 +164,7 @@ func (s *Runtime) Config() *config.Config {
 }
 
 func (a *Runtime) Authorize(intercept *apipb.RequestIntercept) (bool, error) {
-	return express.Eval(a.config.AuthPrograms(), intercept)
+	return vm.Eval(a.config.AuthPrograms(), intercept)
 }
 
 func (r *Runtime) Go(fn machine.Func) {

@@ -165,12 +165,12 @@ message SubGraphFilter {
 
 message StateChange {
   Op op =1;
-  Log log =2;
+  Mutation mutation =2;
   int64 timestamp =3;
 }
 
-message Log {
-  oneof log {
+message Mutation {
+  oneof object {
     Node node =1;
     Nodes nodes =2;
     NodeConstructor node_constructor =3;
@@ -313,3 +313,19 @@ service GraphService {
   rpc SubGraph(SubGraphFilter) returns(Graph){}
 }
 
+enum Event {
+  ON_CREATE =0;
+  ON_UPDATE =1;
+  ON_DELETE =2;
+}
+
+message Trigger {
+  Event event =1;
+
+  int64 timestamp=4;
+}
+
+
+service PluginService {
+
+}

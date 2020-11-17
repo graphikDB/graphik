@@ -68,8 +68,8 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 	}
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODES,
-		Log: &apipb.Log{
-			Log: &apipb.Log_NodeConstructors{NodeConstructors: nodes},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_NodeConstructors{NodeConstructors: nodes},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -85,8 +85,8 @@ func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
 	pathDefaults(node.GetPath())
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODE,
-		Log: &apipb.Log{
-			Log: &apipb.Log_NodeConstructor{NodeConstructor: node},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_NodeConstructor{NodeConstructor: node},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -99,8 +99,8 @@ func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
 func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_NODES,
-		Log: &apipb.Log{
-			Log: &apipb.Log_Patches{Patches: patches},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_Patches{Patches: patches},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -115,8 +115,8 @@ func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_NODE,
-		Log: &apipb.Log{
-			Log: &apipb.Log_Patch{Patch: patch},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_Patch{Patch: patch},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -129,8 +129,8 @@ func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
 func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
-		Log: &apipb.Log{
-			Log: &apipb.Log_Paths{Paths: paths},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_Paths{Paths: paths},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -143,8 +143,8 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
-		Log: &apipb.Log{
-			Log: &apipb.Log_Path{Path: path},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_Path{Path: path},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -161,8 +161,8 @@ func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, erro
 	now := time.Now().UnixNano()
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGES,
-		Log: &apipb.Log{
-			Log: &apipb.Log_EdgeConstructors{EdgeConstructors: edges},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_EdgeConstructors{EdgeConstructors: edges},
 		},
 		Timestamp: now,
 	})
@@ -178,8 +178,8 @@ func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 	pathDefaults(edge.Path)
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGE,
-		Log: &apipb.Log{
-			Log: &apipb.Log_EdgeConstructor{EdgeConstructor: edge},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_EdgeConstructor{EdgeConstructor: edge},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -192,8 +192,8 @@ func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGES,
-		Log: &apipb.Log{
-			Log: &apipb.Log_Patches{Patches: patches},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_Patches{Patches: patches},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -208,8 +208,8 @@ func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
 func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGE,
-		Log: &apipb.Log{
-			Log: &apipb.Log_Patch{Patch: patch},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_Patch{Patch: patch},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -222,8 +222,8 @@ func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
 func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
-		Log: &apipb.Log{
-			Log: &apipb.Log_Paths{Paths: paths},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_Paths{Paths: paths},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
@@ -236,8 +236,8 @@ func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
 func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
-		Log: &apipb.Log{
-			Log: &apipb.Log_Path{Path: path},
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_Path{Path: path},
 		},
 		Timestamp: time.Now().UnixNano(),
 	})
