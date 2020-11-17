@@ -39,7 +39,6 @@ func init() {
 	pflag.Parse()
 }
 
-
 func envOr(key string, defaul string) string {
 	if val := os.Getenv(key); val == "" {
 		return defaul

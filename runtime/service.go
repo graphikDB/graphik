@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/google/uuid"
 	"time"
@@ -66,6 +67,23 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 	for _, n := range nodes.GetNodes() {
 		pathDefaults(n.Path)
 	}
+	change := &apipb.StateChange{
+		Op: apipb.Op_CREATE_NODES,
+		Mutation: &apipb.Mutation{
+			Object: &apipb.Mutation_NodeConstructors{NodeConstructors: nodes},
+		},
+		Timestamp: time.Now().UnixNano(),
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
 	resp, err := r.execute(&apipb.StateChange{
 		Op: apipb.Op_CREATE_NODES,
 		Mutation: &apipb.Mutation{
@@ -75,6 +93,20 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 	})
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State: &apipb.StateChange{
+				Op:        apipb.Op_CREATE_NODES,
+				Mutation:  resp,
+				Timestamp: time.Now().UnixNano(),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change.Mutation
 	}
 	respNodes := resp.GetNodes()
 	respNodes.Sort()

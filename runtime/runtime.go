@@ -34,6 +34,7 @@ type Runtime struct {
 	raft    *raft.Raft
 	graph   *graph.Graph
 	close   sync.Once
+	plugins []apipb.PluginServiceClient
 }
 
 func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
