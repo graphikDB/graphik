@@ -3,6 +3,7 @@ package runtime
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"time"
 )
@@ -211,7 +212,7 @@ func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
 	return resp.GetMutation().GetNode(), nil
 }
 
-func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
+func (r *Runtime) DelNodes(paths *apipb.Paths) (*empty.Empty, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
 		Mutation: &apipb.Mutation{
@@ -243,10 +244,10 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 		}
 		resp = change
 	}
-	return resp.GetMutation().GetCounter(), nil
+	return resp.GetMutation().GetEmpty(), nil
 }
 
-func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
+func (r *Runtime) DelNode(path *apipb.Path) (*empty.Empty, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
 		Mutation: &apipb.Mutation{
@@ -278,7 +279,7 @@ func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
 		}
 		resp = change
 	}
-	return resp.GetMutation().GetCounter(), nil
+	return resp.GetMutation().GetEmpty(), nil
 }
 
 func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, error) {
@@ -429,7 +430,7 @@ func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
 	return resp.GetMutation().GetEdge(), nil
 }
 
-func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
+func (r *Runtime) DelEdges(paths *apipb.Paths) (*empty.Empty, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
 		Mutation: &apipb.Mutation{
@@ -461,10 +462,10 @@ func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
 		}
 		resp = change
 	}
-	return resp.GetMutation().GetCounter(), nil
+	return resp.GetMutation().GetEmpty(), nil
 }
 
-func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
+func (r *Runtime) DelEdge(path *apipb.Path) (*empty.Empty, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
 		Mutation: &apipb.Mutation{
@@ -496,7 +497,7 @@ func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
 		}
 		resp = change
 	}
-	return resp.GetMutation().GetCounter(), nil
+	return resp.GetMutation().GetEmpty(), nil
 }
 
 func pathDefaults(path *apipb.Path) {
@@ -507,7 +508,7 @@ func pathDefaults(path *apipb.Path) {
 		path.Gid = uuid.New().String()
 	}
 	if path.GetGtype() == "" {
-		path.Gtype = apipb.Keyword_DEFAULT.String()
+		path.Gtype = "default"
 	}
 }
 

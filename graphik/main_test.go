@@ -114,7 +114,7 @@ func Benchmark(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_, err := gClient.SearchNodes(ctx, &apipb.Filter{
-			Gtype:       apipb.Keyword_ANY.String(),
+			Gtype:       "*",
 			Expressions: []string{`attributes.name.contains("cole")`},
 			Limit:       1,
 		})

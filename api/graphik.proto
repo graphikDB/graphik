@@ -36,16 +36,6 @@ enum Cascade {
   CASCADE_MUTUAL=3;
 }
 
-enum Keyword {
-  INVALID =0;
-  ANY =1;
-  DEFAULT =2;
-}
-
-message Counter {
-  int64 count =1;
-}
-
 message Path {
   string gtype =1;
   string gid =2;
@@ -187,9 +177,9 @@ message Mutation {
     Edges edges =8;
     Path path =9;
     Paths paths =10;
-    Counter counter =12;
     Patch patch =13;
     Patches patches =14;
+    google.protobuf.Empty empty =15;
   }
 }
 
@@ -252,8 +242,8 @@ service GraphService {
   rpc SearchNodes(Filter) returns(Nodes){}
   rpc PatchNode(Patch) returns(Node){}
   rpc PatchNodes(Patches) returns(Nodes){}
-  rpc DelNode(Path) returns(Counter){}
-  rpc DelNodes(Paths) returns(Counter){}
+  rpc DelNode(Path) returns(google.protobuf.Empty){}
+  rpc DelNodes(Paths) returns(google.protobuf.Empty){}
 
   rpc CreateEdge(EdgeConstructor) returns(Edge){}
   rpc CreateEdges(EdgeConstructors) returns(Edges){}
@@ -261,8 +251,8 @@ service GraphService {
   rpc SearchEdges(Filter) returns(Edges){}
   rpc PatchEdge(Patch) returns(Edge){}
   rpc PatchEdges(Patches) returns(Edges){}
-  rpc DelEdge(Path) returns(Counter){}
-  rpc DelEdges(Paths) returns(Counter){}
+  rpc DelEdge(Path) returns(google.protobuf.Empty){}
+  rpc DelEdges(Paths) returns(google.protobuf.Empty){}
 
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   rpc EdgesTo(EdgeFilter) returns(Edges){}

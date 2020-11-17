@@ -80,11 +80,11 @@ func (c *Client) PatchNodes(ctx context.Context, in *apipb.Patches, opts ...grpc
 	return c.graph.PatchNodes(ctx, in, opts...)
 }
 
-func (c *Client) DelNode(ctx context.Context, in *apipb.Path, opts ...grpc.CallOption) (*apipb.Counter, error) {
+func (c *Client) DelNode(ctx context.Context, in *apipb.Path, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.DelNode(ctx, in, opts...)
 }
 
-func (c *Client) DelNodes(ctx context.Context, in *apipb.Paths, opts ...grpc.CallOption) (*apipb.Counter, error) {
+func (c *Client) DelNodes(ctx context.Context, in *apipb.Paths, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.DelNodes(ctx, in, opts...)
 }
 
@@ -112,11 +112,11 @@ func (c *Client) PatchEdges(ctx context.Context, in *apipb.Patches, opts ...grpc
 	return c.graph.PatchEdges(ctx, in, opts...)
 }
 
-func (c *Client) DelEdge(ctx context.Context, in *apipb.Path, opts ...grpc.CallOption) (*apipb.Counter, error) {
+func (c *Client) DelEdge(ctx context.Context, in *apipb.Path, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.DelEdge(ctx, in, opts...)
 }
 
-func (c *Client) DelEdges(ctx context.Context, in *apipb.Paths, opts ...grpc.CallOption) (*apipb.Counter, error) {
+func (c *Client) DelEdges(ctx context.Context, in *apipb.Paths, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.DelEdges(ctx, in, opts...)
 }
 

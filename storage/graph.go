@@ -50,21 +50,50 @@ func (b *GraphStore) Close() error {
 func (g *GraphStore) GetEdge(path *apipb.Path) (*apipb.Edge, error) {
 	var edge apipb.Edge
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bits := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype)).Get([]byte(path.Gid))
+		bucket := tx.Bucket(dbEdges)
+		bucket, err := bucket.CreateBucketIfNotExists([]byte(path.Gtype))
+		if err != nil {
+			return err
+		}
+		bits := bucket.Get([]byte(path.Gid))
 		if err := proto.Unmarshal(bits, &edge); err != nil {
 			return err
 		}
 		return nil
-	}); err != nil {
+	}); err != nil && err != DONE {
 		return nil, err
 	}
 	return &edge, nil
 }
 
+func (g *GraphStore) RangeEdges(gType string, fn func(e *apipb.Edge) bool) error {
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket(dbEdges).Bucket([]byte(gType))
+		return bucket.ForEach(func(k, v []byte) error {
+			var edge apipb.Edge
+			if err := proto.Unmarshal(v, &edge); err != nil {
+				return err
+			}
+			if !fn(&edge) {
+				return DONE
+			}
+			return nil
+		})
+	}); err != nil && err != DONE {
+		return err
+	}
+	return nil
+}
+
 func (g *GraphStore) GetNode(path *apipb.Path) (*apipb.Node, error) {
 	var node apipb.Node
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bits := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype)).Get([]byte(path.Gid))
+		bucket := tx.Bucket(dbNodes)
+		bucket, err := bucket.CreateBucketIfNotExists([]byte(path.Gtype))
+		if err != nil {
+			return err
+		}
+		bits := bucket.Get([]byte(path.Gid))
 		if err := proto.Unmarshal(bits, &node); err != nil {
 			return err
 		}
@@ -73,6 +102,25 @@ func (g *GraphStore) GetNode(path *apipb.Path) (*apipb.Node, error) {
 		return nil, err
 	}
 	return &node, nil
+}
+
+func (g *GraphStore) RangeNodes(gType string, fn func(n *apipb.Node) bool) error {
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket(dbNodes).Bucket([]byte(gType))
+		return bucket.ForEach(func(k, v []byte) error {
+			var node apipb.Node
+			if err := proto.Unmarshal(v, &node); err != nil {
+				return err
+			}
+			if !fn(&node) {
+				return DONE
+			}
+			return nil
+		})
+	}); err != nil && err != DONE {
+		return err
+	}
+	return nil
 }
 
 func (g *GraphStore) SetNode(node *apipb.Node) error {
@@ -145,11 +193,4 @@ func (g *GraphStore) DelEdgeType(typ string) error {
 		bucket := tx.Bucket(dbEdges)
 		return bucket.DeleteBucket([]byte(typ))
 	})
-}
-
-// Sync performs an fsync on the database file handle. This is not necessary
-// under normal operation unless NoSync is enabled, in which this forces the
-// database file to sync against the disk.
-func (b *GraphStore) Sync() error {
-	return b.db.Sync()
 }

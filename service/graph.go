@@ -67,11 +67,11 @@ func (g *Graph) PatchNodes(ctx context.Context, nodes *apipb.Patches) (*apipb.No
 	return g.runtime.PatchNodes(nodes)
 }
 
-func (g *Graph) DelNode(ctx context.Context, path *apipb.Path) (*apipb.Counter, error) {
+func (g *Graph) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
 	return g.runtime.DelNode(path)
 }
 
-func (g *Graph) DelNodes(ctx context.Context, paths *apipb.Paths) (*apipb.Counter, error) {
+func (g *Graph) DelNodes(ctx context.Context, paths *apipb.Paths) (*empty.Empty, error) {
 	return g.runtime.DelNodes(paths)
 }
 
@@ -99,11 +99,11 @@ func (g *Graph) PatchEdges(ctx context.Context, edges *apipb.Patches) (*apipb.Ed
 	return g.runtime.PatchEdges(edges)
 }
 
-func (g *Graph) DelEdge(ctx context.Context, path *apipb.Path) (*apipb.Counter, error) {
+func (g *Graph) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
 	return g.runtime.DelEdge(path)
 }
 
-func (g *Graph) DelEdges(ctx context.Context, paths *apipb.Paths) (*apipb.Counter, error) {
+func (g *Graph) DelEdges(ctx context.Context, paths *apipb.Paths) (*empty.Empty, error) {
 	return g.runtime.DelEdges(paths)
 }
 

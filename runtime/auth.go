@@ -19,7 +19,7 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 	}
 	var err error
 	n, err := a.graph.GetNode(path)
-	if err != nil {
+	if err != nil || n == nil {
 		strct, _ := structpb.NewStruct(payload)
 		n, err = a.CreateNode(&apipb.NodeConstructor{
 			Path:       path,

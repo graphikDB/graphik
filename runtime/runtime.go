@@ -29,15 +29,17 @@ const (
 )
 
 type Runtime struct {
-	machine *machine.Machine
-	config  *auth.Config
-	mu      sync.RWMutex
-	raft    *raft.Raft
-	graph   *graph.Graph
-	close   sync.Once
-	plugins []apipb.PluginServiceClient
-	closed  bool
-	closers []func()
+	machine   *machine.Machine
+	config    *auth.Config
+	mu        sync.RWMutex
+	raft      *raft.Raft
+	graph     *graph.Graph
+	close     sync.Once
+	plugins   []apipb.PluginServiceClient
+	closed    bool
+	closers   []func()
+	logStore  *storage.LogStore
+	snapStore *storage.SnapshotStore
 }
 
 func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
@@ -99,14 +101,16 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 		return nil, errors.Wrap(err, "failed to create graph")
 	}
 	s := &Runtime{
-		machine: m,
-		config:  c,
-		raft:    nil,
-		mu:      sync.RWMutex{},
-		graph:   g,
-		close:   sync.Once{},
-		closers: closers,
-		plugins: plugins,
+		machine:   m,
+		config:    c,
+		raft:      nil,
+		mu:        sync.RWMutex{},
+		graph:     g,
+		close:     sync.Once{},
+		closers:   closers,
+		plugins:   plugins,
+		logStore:  logStore,
+		snapStore: snapshotStore,
 	}
 	rft, err := raft.NewRaft(rconfig, s, logStore, snapshotStore, snapshots, transport)
 	if err != nil {
@@ -185,6 +189,9 @@ func (s *Runtime) Close() error {
 	s.machine.Cancel()
 	defer s.machine.Close()
 	s.raft.Shutdown().Error()
+	s.graph.Close()
+	s.snapStore.Close()
+	s.logStore.Close()
 	return nil
 }
 

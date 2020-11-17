@@ -166,7 +166,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			return nil, err
 		}
 		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Counter{Counter: res},
+			Object: &apipb.Mutation_Empty{Empty: res},
 		}
 	case apipb.Op_DELETE_EDGE:
 		res, err := f.graph.DeleteEdge(c.Mutation.GetPath())
@@ -174,7 +174,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			return nil, err
 		}
 		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Counter{Counter: res},
+			Object: &apipb.Mutation_Empty{Empty: res},
 		}
 	case apipb.Op_DELETE_NODES:
 		res, err := f.graph.DeleteNodes(c.Mutation.GetPaths().GetPaths())
@@ -182,7 +182,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			return nil, err
 		}
 		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Counter{Counter: res},
+			Object: &apipb.Mutation_Empty{Empty: res},
 		}
 	case apipb.Op_DELETE_EDGES:
 		res, err := f.graph.DeleteEdges(c.Mutation.GetPaths().GetPaths())
@@ -190,7 +190,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			return nil, err
 		}
 		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Counter{Counter: res},
+			Object: &apipb.Mutation_Empty{Empty: res},
 		}
 	default:
 		return nil, fmt.Errorf("unsupported command: %v", c.Op)

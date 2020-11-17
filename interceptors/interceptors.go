@@ -34,6 +34,9 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 			}
 		}
 		ctx, _, err = runtime.ToContext(ctx, payload)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, err.Error())
+		}
 		ctx = context.WithValue(ctx, MethodCtxKey, info.FullMethod)
 		return handler(ctx, req)
 	}
@@ -56,6 +59,9 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
 		ctx, _, err := runtime.ToContext(ss.Context(), payload)
+		if err != nil {
+			return status.Errorf(codes.Internal, err.Error())
+		}
 		ctx = context.WithValue(ctx, MethodCtxKey, info.FullMethod)
 		wrapped := grpc_middleware.WrapServerStream(ss)
 		wrapped.WrappedContext = ctx

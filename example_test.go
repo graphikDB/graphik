@@ -272,14 +272,14 @@ func ExampleClient_Subscribe() {
 func ExampleClient_SubGraph() {
 	g, err := client.SubGraph(context.Background(), &apipb.SubGraphFilter{
 		Nodes: &apipb.Filter{
-			Gtype: apipb.Keyword_ANY.String(),
+			Gtype: "*",
 			Expressions: []string{
 				`has(attributes.name) && attributes.name.contains("Ch")`,
 			},
 			Limit: 50,
 		},
 		Edges: &apipb.Filter{
-			Gtype:       apipb.Keyword_ANY.String(),
+			Gtype:       "*",
 			Expressions: nil,
 			Limit:       10,
 		},

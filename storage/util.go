@@ -1,6 +1,11 @@
 package storage
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"github.com/pkg/errors"
+)
+
+var DONE = errors.New("DONE")
 
 // Converts bytes to an integer
 func bytesToUint64(b []byte) uint64 {
