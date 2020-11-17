@@ -84,13 +84,7 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 		}
 		change = resp
 	}
-	resp, err := r.execute(&apipb.StateChange{
-		Op: apipb.Op_CREATE_NODES,
-		Mutation: &apipb.Mutation{
-			Object: &apipb.Mutation_NodeConstructors{NodeConstructors: nodes},
-		},
-		Timestamp: time.Now().UnixNano(),
-	})
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
 	}
@@ -111,29 +105,71 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 
 func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
 	pathDefaults(node.GetPath())
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_CREATE_NODE,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_NodeConstructor{NodeConstructor: node},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	return resp.GetMutation().GetNode(), nil
 }
 
 func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_PATCH_NODES,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Patches{Patches: patches},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	respNodes := resp.GetMutation().GetNodes()
 	respNodes.Sort()
@@ -141,43 +177,106 @@ func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 }
 
 func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_PATCH_NODE,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Patch{Patch: patch},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	return resp.GetMutation().GetNode(), nil
 }
 
 func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Paths{Paths: paths},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	return resp.GetMutation().GetCounter(), nil
 }
 
 func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Path{Path: path},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	return resp.GetMutation().GetCounter(), nil
 }
@@ -186,16 +285,36 @@ func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, erro
 	for _, n := range edges.GetEdges() {
 		pathDefaults(n.Path)
 	}
-	now := time.Now().UnixNano()
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGES,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_EdgeConstructors{EdgeConstructors: edges},
 		},
-		Timestamp: now,
-	})
+		Timestamp: time.Now().UnixNano(),
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	redges := resp.GetMutation().GetEdges()
 	redges.Sort()
@@ -204,29 +323,71 @@ func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, erro
 
 func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 	pathDefaults(edge.Path)
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGE,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_EdgeConstructor{EdgeConstructor: edge},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	return resp.GetMutation().GetEdge(), nil
 }
 
 func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGES,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Patches{Patches: patches},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	redges := resp.GetMutation().GetEdges()
 	redges.Sort()
@@ -234,43 +395,106 @@ func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
 }
 
 func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGE,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Patch{Patch: patch},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	return resp.GetMutation().GetEdge(), nil
 }
 
 func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Paths{Paths: paths},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	return resp.GetMutation().GetCounter(), nil
 }
 
 func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
-	resp, err := r.execute(&apipb.StateChange{
+	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Path{Path: path},
 		},
 		Timestamp: time.Now().UnixNano(),
-	})
+	}
+	for _, plugin := range r.plugins {
+		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_BEFORE,
+			State:  change,
+		})
+		if err != nil {
+			return nil, err
+		}
+		change = resp
+	}
+	resp, err := r.execute(change)
 	if err != nil {
 		return nil, err
+	}
+	for _, plugin := range r.plugins {
+		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+			Timing: apipb.Timing_AFTER,
+			State:  resp,
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp = change
 	}
 	return resp.GetMutation().GetCounter(), nil
 }

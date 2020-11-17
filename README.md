@@ -18,7 +18,7 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Based Authorization
-- [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Triggers
+- [x] gRPC Based Plugins/Triggers
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 

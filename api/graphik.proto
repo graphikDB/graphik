@@ -9,6 +9,11 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 
+enum Timing {
+  BEFORE =0;
+  AFTER =1;
+}
+
 enum Op {
   CREATE_NODES = 0;
   CREATE_NODE =1;
@@ -163,9 +168,11 @@ message SubGraphFilter {
 }
 
 message StateChange {
-  Op op =1;
-  Mutation mutation =2;
-  int64 timestamp =3;
+  string request_path =1;
+  Node user =2;
+  Op op =3;
+  Mutation mutation =4;
+  int64 timestamp =5;
 }
 
 message Mutation {
@@ -217,12 +224,6 @@ message RaftLog {
   bytes extensions =10;
 }
 
-message RequestIntercept {
-  string full_path =1;
-  Node user =2;
-  google.protobuf.Struct request =3;
-}
-
 message OutboundMessage {
   string channel =1;
   google.protobuf.Struct data =2;
@@ -233,6 +234,11 @@ message Message {
   google.protobuf.Struct data =2;
   Path sender =3;
   int64 timestamp=4;
+}
+
+message Trigger {
+  Timing timing =1;
+  StateChange state =2;
 }
 
 service GraphService {
@@ -268,16 +274,6 @@ service GraphService {
   rpc Import(Graph) returns(Graph){}
   rpc Export(google.protobuf.Empty) returns (Graph){}
   rpc SubGraph(SubGraphFilter) returns(Graph){}
-}
-
-enum Timing {
-  BEFORE =0;
-  AFTER =1;
-}
-
-message Trigger {
-  Timing timing =1;
-  StateChange state =2;
 }
 
 service PluginService {

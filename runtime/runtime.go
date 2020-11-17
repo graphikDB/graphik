@@ -11,6 +11,7 @@ import (
 	"github.com/autom8ter/graphik/storage"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/proto"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -35,10 +36,34 @@ type Runtime struct {
 	graph   *graph.Graph
 	close   sync.Once
 	plugins []apipb.PluginServiceClient
+	closed  bool
+	closers []func()
 }
 
 func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 	os.MkdirAll(cfg.StoragePath, 0700)
+	var plugins []apipb.PluginServiceClient
+	var closers []func()
+	for _, plugin := range cfg.Plugins {
+		if plugin == "" {
+			continue
+		}
+		tctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+		conn, err := grpc.DialContext(
+			tctx,
+			plugin,
+			grpc.WithChainUnaryInterceptor(grpc_zap.UnaryClientInterceptor(logger.Logger())),
+			grpc.WithInsecure(),
+		)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to dial plugin")
+		}
+		plugins = append(plugins, apipb.NewPluginServiceClient(conn))
+		closers = append(closers, func() {
+			conn.Close()
+		})
+	}
 	m := machine.New(ctx)
 	rconfig := raft.DefaultConfig()
 	rconfig.LocalID = raft.ServerID(cfg.RaftID)
@@ -80,6 +105,8 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 		mu:      sync.RWMutex{},
 		graph:   g,
 		close:   sync.Once{},
+		closers: closers,
+		plugins: plugins,
 	}
 	rft, err := raft.NewRaft(rconfig, s, logStore, snapshotStore, snapshots, transport)
 	if err != nil {
@@ -111,6 +138,9 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to join cluster")
 		}
+		s.closers = append(s.closers, func() {
+			conn.Close()
+		})
 	}
 
 	s.machine.Go(func(routine machine.Routine) {
@@ -149,10 +179,12 @@ func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.StateChange, error) {
 }
 
 func (s *Runtime) Close() error {
-	defer s.machine.Close()
-	if err := s.raft.Shutdown().Error(); err != nil {
-		return err
+	for _, closer := range s.closers {
+		closer()
 	}
+	s.machine.Cancel()
+	defer s.machine.Close()
+	s.raft.Shutdown().Error()
 	return nil
 }
 
