@@ -52,7 +52,7 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 	return nil
 }
 
-func (f *Runtime) apply(log *raft.Log) (*apipb.Mutation, error) {
+func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 	var c = &apipb.StateChange{}
 	if err := proto.Unmarshal(log.Data, c); err != nil {
 		return nil, fmt.Errorf("failed to decode command: %s", err.Error())
@@ -198,7 +198,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Mutation, error) {
 	if err := f.machine.PubSub().Publish(ChangeStreamChannel, c); err != nil {
 		return nil, err
 	}
-	return c.Mutation, nil
+	return c, nil
 }
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {

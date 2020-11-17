@@ -122,7 +122,7 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 	return s, nil
 }
 
-func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.Mutation, error) {
+func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.StateChange, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}
@@ -145,7 +145,7 @@ func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.Mutation, error) {
 	if err, ok := future.Response().(error); ok {
 		return nil, err
 	}
-	return future.Response().(*apipb.Mutation), nil
+	return future.Response().(*apipb.StateChange), nil
 }
 
 func (s *Runtime) Close() error {

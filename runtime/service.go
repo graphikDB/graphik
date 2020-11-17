@@ -97,18 +97,14 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 	for _, plugin := range r.plugins {
 		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
-			State: &apipb.StateChange{
-				Op:        apipb.Op_CREATE_NODES,
-				Mutation:  resp,
-				Timestamp: time.Now().UnixNano(),
-			},
+			State:  resp,
 		})
 		if err != nil {
 			return nil, err
 		}
-		resp = change.Mutation
+		resp = change
 	}
-	respNodes := resp.GetNodes()
+	respNodes := resp.GetMutation().GetNodes()
 	respNodes.Sort()
 	return respNodes, nil
 }
@@ -125,7 +121,7 @@ func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetNode(), nil
+	return resp.GetMutation().GetNode(), nil
 }
 
 func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
@@ -139,7 +135,7 @@ func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 	if err != nil {
 		return nil, err
 	}
-	respNodes := resp.GetNodes()
+	respNodes := resp.GetMutation().GetNodes()
 	respNodes.Sort()
 	return respNodes, nil
 }
@@ -155,7 +151,7 @@ func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetNode(), nil
+	return resp.GetMutation().GetNode(), nil
 }
 
 func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
@@ -169,7 +165,7 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*apipb.Counter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetCounter(), nil
+	return resp.GetMutation().GetCounter(), nil
 }
 
 func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
@@ -183,7 +179,7 @@ func (r *Runtime) DelNode(path *apipb.Path) (*apipb.Counter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetCounter(), nil
+	return resp.GetMutation().GetCounter(), nil
 }
 
 func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, error) {
@@ -201,7 +197,7 @@ func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, erro
 	if err != nil {
 		return nil, err
 	}
-	redges := resp.GetEdges()
+	redges := resp.GetMutation().GetEdges()
 	redges.Sort()
 	return redges, nil
 }
@@ -218,7 +214,7 @@ func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetEdge(), nil
+	return resp.GetMutation().GetEdge(), nil
 }
 
 func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
@@ -232,7 +228,7 @@ func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
 	if err != nil {
 		return nil, err
 	}
-	redges := resp.GetEdges()
+	redges := resp.GetMutation().GetEdges()
 	redges.Sort()
 	return redges, nil
 }
@@ -248,7 +244,7 @@ func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetEdge(), nil
+	return resp.GetMutation().GetEdge(), nil
 }
 
 func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
@@ -262,7 +258,7 @@ func (r *Runtime) DelEdges(paths *apipb.Paths) (*apipb.Counter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetCounter(), nil
+	return resp.GetMutation().GetCounter(), nil
 }
 
 func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
@@ -276,7 +272,7 @@ func (r *Runtime) DelEdge(path *apipb.Path) (*apipb.Counter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return resp.GetCounter(), nil
+	return resp.GetMutation().GetCounter(), nil
 }
 
 func pathDefaults(path *apipb.Path) {
