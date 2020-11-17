@@ -2,12 +2,9 @@ package interceptors
 
 import (
 	"context"
-	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/runtime"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -34,21 +31,7 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
-		ctx, node, err := runtime.ToContext(ctx, payload)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, errors.Wrap(err, "failed to create user").Error())
-		}
-		pass, err := runtime.Authorize(&apipb.RequestIntercept{
-			FullPath: info.FullMethod,
-			User:     node,
-			Request:  apipb.NewStruct(helpers.ToMap(req)),
-		})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, errors.Wrap(err, "authorization failure").Error())
-		}
-		if !pass {
-			return nil, status.Error(codes.PermissionDenied, "permission denied")
-		}
+		ctx, _, err = runtime.ToContext(ctx, payload)
 		return handler(ctx, req)
 	}
 }
@@ -69,22 +52,7 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if val, ok := payload["exp"].(float64); ok && int64(val) < time.Now().Unix() {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
-		ctx, node, err := runtime.ToContext(ss.Context(), payload)
-		if err != nil {
-			return status.Errorf(codes.Internal, errors.Wrap(err, "failed to create user").Error())
-		}
-		pass, err := runtime.Authorize(&apipb.RequestIntercept{
-			FullPath: info.FullMethod,
-			User:     node,
-			Request:  apipb.NewStruct(helpers.ToMap(srv)),
-		})
-		if err != nil {
-			return status.Errorf(codes.Internal, errors.Wrap(err, "authorization failure").Error())
-		}
-		if !pass {
-			return status.Error(codes.PermissionDenied, "permission denied")
-		}
-
+		ctx, _, err := runtime.ToContext(ss.Context(), payload)
 		wrapped := grpc_middleware.WrapServerStream(ss)
 		wrapped.WrappedContext = ctx
 

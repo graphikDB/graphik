@@ -6,7 +6,6 @@ import (
 	"github.com/autom8ter/graphik/logger"
 	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
@@ -59,13 +58,6 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.Mutation, error) {
 		return nil, fmt.Errorf("failed to decode command: %s", err.Error())
 	}
 	switch c.Op {
-	case apipb.Op_SET_CONFIG:
-		if err := f.config.Override(c.Mutation.GetConfig()); err != nil {
-			return nil, errors.Wrap(err, "failed to override config")
-		}
-		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Config{Config: f.config.Config()},
-		}
 	case apipb.Op_CREATE_NODE:
 		n := c.Mutation.GetNodeConstructor()
 		node, err := f.graph.SetNode(&apipb.Node{

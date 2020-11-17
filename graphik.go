@@ -151,11 +151,3 @@ func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOpt
 func (c *Client) JoinCluster(ctx context.Context, in *apipb.RaftNode, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.JoinCluster(ctx, in, opts...)
 }
-
-func (c *Client) GetConfig(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.RuntimeConfig, error) {
-	return c.graph.GetConfig(ctx, in, opts...)
-}
-
-func (c *Client) SetConfig(ctx context.Context, in *apipb.RuntimeConfig, opts ...grpc.CallOption) (*apipb.RuntimeConfig, error) {
-	return c.graph.SetConfig(ctx, in, opts...)
-}

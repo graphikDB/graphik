@@ -22,7 +22,6 @@ enum Op {
   PATCH_EDGE =9;
   DELETE_EDGES = 10;
   DELETE_EDGE =11;
-  SET_CONFIG = 12;
 }
 
 enum Cascade {
@@ -181,7 +180,6 @@ message Mutation {
     Edges edges =8;
     Path path =9;
     Paths paths =10;
-    RuntimeConfig config =11;
     Counter counter =12;
     Patch patch =13;
     Patches patches =14;
@@ -219,45 +217,6 @@ message RaftLog {
   bytes extensions =10;
 }
 
-message AuthConfig {
-  repeated string jwks_sources =1;
-  repeated string auth_expressions =2;
-}
-
-message RaftConfig {
-  string bind =1;
-  string storage_path =2;
-  string join =3;
-  string node_id =4;
-}
-
-message HTTPConfig {
-  string bind =1;
-  repeated string allowed_origins=2;
-  repeated string allowed_headers =3;
-  repeated string allowed_methods =4;
-}
-
-message GRPCConfig {
-  string bind =1;
-}
-
-message TriggerConfig {
-  repeated string expressions =1;
-}
-
-message RuntimeConfig {
-  AuthConfig auth =4;
-  TriggerConfig trigger =5;
-}
-
-message Config {
-  HTTPConfig http =1;
-  GRPCConfig grpc =2;
-  RaftConfig raft =3;
-  RuntimeConfig runtime =4;
-}
-
 message RequestIntercept {
   string full_path =1;
   Node user =2;
@@ -279,8 +238,6 @@ message Message {
 service GraphService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
-  rpc GetConfig(google.protobuf.Empty) returns(RuntimeConfig){}
-  rpc SetConfig(RuntimeConfig) returns(RuntimeConfig){}
 
   rpc Me(MeFilter) returns(NodeDetail){}
   rpc CreateNode(NodeConstructor) returns(Node){}
@@ -313,19 +270,16 @@ service GraphService {
   rpc SubGraph(SubGraphFilter) returns(Graph){}
 }
 
-enum Event {
-  ON_CREATE =0;
-  ON_UPDATE =1;
-  ON_DELETE =2;
+enum Timing {
+  BEFORE =0;
+  AFTER =1;
 }
 
 message Trigger {
-  Event event =1;
-
-  int64 timestamp=4;
+  Timing timing =1;
+  StateChange state =2;
 }
 
-
 service PluginService {
-
+  rpc HandleTrigger(Trigger) returns(StateChange){}
 }

@@ -28,17 +28,6 @@ func (s *Graph) JoinCluster(ctx context.Context, request *apipb.RaftNode) (*empt
 	return &empty.Empty{}, nil
 }
 
-func (s *Graph) GetConfig(ctx context.Context, empty *empty.Empty) (*apipb.RuntimeConfig, error) {
-	return s.runtime.Config().Config(), nil
-}
-
-func (s *Graph) SetConfig(ctx context.Context, request *apipb.RuntimeConfig) (*apipb.RuntimeConfig, error) {
-	if err := s.runtime.Config().Override(request); err != nil {
-		return nil, err
-	}
-	return s.runtime.Config().Config(), nil
-}
-
 func (s *Graph) Ping(ctx context.Context, r *empty.Empty) (*apipb.Pong, error) {
 	return &apipb.Pong{
 		Message: "PONG",
