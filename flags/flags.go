@@ -18,6 +18,7 @@ type Flags struct {
 	RaftID      string
 	JoinRaft    string
 	StoragePath string
+	Metrics     bool
 }
 
 var Global = &Flags{}
@@ -34,6 +35,7 @@ func init() {
 	pflag.CommandLine.StringVar(&Global.RaftID, "raft.id", envOr("GRAPHIK_RAFT_ID", "leader"), "raft node id (env: GRAPHIK_RAFT_ID)")
 	pflag.CommandLine.StringVar(&Global.StoragePath, "storage", envOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
 	pflag.CommandLine.StringSliceVar(&Global.JWKS, "jwks", strings.Split(os.Getenv("GRAPHIK_JWKS_URIS"), ","), "authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)")
+	pflag.CommandLine.BoolVar(&Global.Metrics, "metrics", os.Getenv("GRAPHIK_METRICS") == "true", "enable prometheus & pprof metrics")
 	pflag.Parse()
 }
 
