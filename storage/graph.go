@@ -11,7 +11,6 @@ import (
 type GraphStore struct {
 	// db is the underlying handle to the db.
 	db *bbolt.DB
-
 	// The path to the Bolt database file
 	path      string
 	nodeMu    sync.RWMutex
@@ -58,6 +57,9 @@ func (b *GraphStore) Close() error {
 }
 
 func (g *GraphStore) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, error) {
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
 	var edge apipb.Edge
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		bits := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype)).Get([]byte(path.Gid))
@@ -72,6 +74,9 @@ func (g *GraphStore) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge
 }
 
 func (g *GraphStore) RangeEdges(ctx context.Context, gType string, fn func(e *apipb.Edge) bool) error {
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
 	if gType == apipb.Any {
 		for _, edgeType := range g.EdgeTypes(ctx) {
 			if edgeType == apipb.Any {
@@ -101,6 +106,9 @@ func (g *GraphStore) RangeEdges(ctx context.Context, gType string, fn func(e *ap
 }
 
 func (g *GraphStore) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, error) {
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
 	var node apipb.Node
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		bits := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype)).Get([]byte(path.Gid))
@@ -115,6 +123,9 @@ func (g *GraphStore) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node
 }
 
 func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *apipb.Node) bool) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		if gType == apipb.Any {
 			for _, nodeType := range g.NodeTypes(ctx) {
@@ -144,6 +155,9 @@ func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *ap
 }
 
 func (g *GraphStore) SetNode(ctx context.Context, node *apipb.Node) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		bits, err := proto.Marshal(node)
 		if err != nil {
@@ -164,6 +178,9 @@ func (g *GraphStore) SetNode(ctx context.Context, node *apipb.Node) error {
 }
 
 func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		for _, node := range nodes {
 			bits, err := proto.Marshal(node)
@@ -189,6 +206,9 @@ func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) error {
 }
 
 func (g *GraphStore) SetEdge(ctx context.Context, edge *apipb.Edge) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		bits, err := proto.Marshal(edge)
 		if err != nil {
@@ -209,6 +229,9 @@ func (g *GraphStore) SetEdge(ctx context.Context, edge *apipb.Edge) error {
 }
 
 func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		for _, edge := range edges {
 			bits, err := proto.Marshal(edge)
@@ -234,6 +257,9 @@ func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) error {
 }
 
 func (g *GraphStore) DelEdges(ctx context.Context, paths ...*apipb.Path) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		for _, p := range paths {
 			bucket := tx.Bucket(dbEdges)
@@ -248,6 +274,9 @@ func (g *GraphStore) DelEdges(ctx context.Context, paths ...*apipb.Path) error {
 }
 
 func (g *GraphStore) DelNodes(ctx context.Context, paths ...*apipb.Path) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		for _, p := range paths {
 			bucket := tx.Bucket(dbNodes)
@@ -262,6 +291,9 @@ func (g *GraphStore) DelNodes(ctx context.Context, paths ...*apipb.Path) error {
 }
 
 func (g *GraphStore) DelNodeType(ctx context.Context, typ string) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket(dbNodes)
 		return bucket.DeleteBucket([]byte(typ))
@@ -269,6 +301,9 @@ func (g *GraphStore) DelNodeType(ctx context.Context, typ string) error {
 }
 
 func (g *GraphStore) DelEdgeType(ctx context.Context, typ string) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket(dbEdges)
 		return bucket.DeleteBucket([]byte(typ))

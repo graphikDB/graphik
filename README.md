@@ -10,7 +10,8 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] Loosely typed(mongo-esque)
 - [x] Prometheus Metrics
 - [x] Pprof Metrics
-- [ ] Timeouts
+- [ ] Context-Based Timeouts
+- [ ] Automatic Schema Recognition/Mapping
 - [x] Live runtime config update
 - [x] Secure JWT based auth with remote JWKS support
 - [x] Bulk Export

@@ -279,6 +279,6 @@ service GraphService {
   rpc SubGraph(SubGraphFilter) returns(Graph){}
 }
 
-service PluginService {
+service TriggerService {
   rpc HandleTrigger(Trigger) returns(StateChange){}
 }

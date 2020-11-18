@@ -35,7 +35,7 @@ type Runtime struct {
 	raft      *raft.Raft
 	graph     *graph.Graph
 	close     sync.Once
-	plugins   []apipb.PluginServiceClient
+	triggers  []apipb.TriggerServiceClient
 	closed    bool
 	closers   []func()
 	logStore  *storage.LogStore
@@ -44,7 +44,7 @@ type Runtime struct {
 
 func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 	os.MkdirAll(cfg.StoragePath, 0700)
-	var plugins []apipb.PluginServiceClient
+	var triggers []apipb.TriggerServiceClient
 	var closers []func()
 	for _, plugin := range cfg.Plugins {
 		if plugin == "" {
@@ -61,7 +61,7 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to dial plugin")
 		}
-		plugins = append(plugins, apipb.NewPluginServiceClient(conn))
+		triggers = append(triggers, apipb.NewTriggerServiceClient(conn))
 		closers = append(closers, func() {
 			conn.Close()
 		})
@@ -108,7 +108,7 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 		graph:     g,
 		close:     sync.Once{},
 		closers:   closers,
-		plugins:   plugins,
+		triggers:  triggers,
 		logStore:  logStore,
 		snapStore: snapshotStore,
 	}

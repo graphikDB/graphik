@@ -75,7 +75,7 @@ func (r *Runtime) CreateNodes(ctx context.Context, nodes *apipb.NodeConstructors
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -89,7 +89,7 @@ func (r *Runtime) CreateNodes(ctx context.Context, nodes *apipb.NodeConstructors
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -113,7 +113,7 @@ func (r *Runtime) CreateNode(ctx context.Context, node *apipb.NodeConstructor) (
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -127,7 +127,7 @@ func (r *Runtime) CreateNode(ctx context.Context, node *apipb.NodeConstructor) (
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -148,7 +148,7 @@ func (r *Runtime) PatchNodes(ctx context.Context, patches *apipb.Patches) (*apip
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -162,7 +162,7 @@ func (r *Runtime) PatchNodes(ctx context.Context, patches *apipb.Patches) (*apip
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -185,7 +185,7 @@ func (r *Runtime) PatchNode(ctx context.Context, patch *apipb.Patch) (*apipb.Nod
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -199,7 +199,7 @@ func (r *Runtime) PatchNode(ctx context.Context, patch *apipb.Patch) (*apipb.Nod
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -220,7 +220,7 @@ func (r *Runtime) DelNodes(ctx context.Context, paths *apipb.Paths) (*empty.Empt
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -234,7 +234,7 @@ func (r *Runtime) DelNodes(ctx context.Context, paths *apipb.Paths) (*empty.Empt
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -255,7 +255,7 @@ func (r *Runtime) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, 
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -269,7 +269,7 @@ func (r *Runtime) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, 
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -293,7 +293,7 @@ func (r *Runtime) CreateEdges(ctx context.Context, edges *apipb.EdgeConstructors
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -307,7 +307,7 @@ func (r *Runtime) CreateEdges(ctx context.Context, edges *apipb.EdgeConstructors
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -331,7 +331,7 @@ func (r *Runtime) CreateEdge(ctx context.Context, edge *apipb.EdgeConstructor) (
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -345,7 +345,7 @@ func (r *Runtime) CreateEdge(ctx context.Context, edge *apipb.EdgeConstructor) (
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -366,7 +366,7 @@ func (r *Runtime) PatchEdges(ctx context.Context, patches *apipb.Patches) (*apip
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -380,7 +380,7 @@ func (r *Runtime) PatchEdges(ctx context.Context, patches *apipb.Patches) (*apip
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -403,7 +403,7 @@ func (r *Runtime) PatchEdge(ctx context.Context, patch *apipb.Patch) (*apipb.Edg
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -417,7 +417,7 @@ func (r *Runtime) PatchEdge(ctx context.Context, patch *apipb.Patch) (*apipb.Edg
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -438,7 +438,7 @@ func (r *Runtime) DelEdges(ctx context.Context, paths *apipb.Paths) (*empty.Empt
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -452,7 +452,7 @@ func (r *Runtime) DelEdges(ctx context.Context, paths *apipb.Paths) (*empty.Empt
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
@@ -473,7 +473,7 @@ func (r *Runtime) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, 
 		},
 		Timestamp: time.Now().UnixNano(),
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
@@ -487,7 +487,7 @@ func (r *Runtime) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, 
 	if err != nil {
 		return nil, err
 	}
-	for _, plugin := range r.plugins {
+	for _, plugin := range r.triggers {
 		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
