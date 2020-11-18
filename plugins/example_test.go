@@ -6,6 +6,7 @@ import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/plugins"
+	"google.golang.org/protobuf/types/known/structpb"
 	"time"
 )
 
@@ -26,6 +27,26 @@ func ExampleAuthorizerFunc_Serve() {
 		}, nil
 	})
 	authorizer.Serve(ctx, &flags.PluginFlags{
+		BindGrpc: ":8080",
+		BindHTTP: ":8081",
+		Metrics:  true,
+	})
+	fmt.Println("Done")
+	// Output: Done
+}
+
+func ExampleTriggerFunc_Serve() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	trigger := plugins.NewTrigger(func(ctx context.Context, trigger *apipb.Trigger) (*apipb.StateChange, error) {
+		state := trigger.State
+		switch r := state.GetMutation().GetObject().(type) {
+		case *apipb.Mutation_NodeConstructor:
+			r.NodeConstructor.Attributes.Fields["testing"] = structpb.NewBoolValue(true)
+		}
+		return state, nil
+	})
+	trigger.Serve(ctx, &flags.PluginFlags{
 		BindGrpc: ":8080",
 		BindHTTP: ":8081",
 		Metrics:  true,
