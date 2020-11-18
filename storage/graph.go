@@ -12,9 +12,9 @@ type GraphStore struct {
 	db *bbolt.DB
 
 	// The path to the Bolt database file
-	path string
-	nodeMu sync.RWMutex
-	edgeMu sync.RWMutex
+	path      string
+	nodeMu    sync.RWMutex
+	edgeMu    sync.RWMutex
 	nodeTypes map[string]struct{}
 	edgeTypes map[string]struct{}
 }
@@ -280,7 +280,7 @@ func (g *GraphStore) hasNodeType(ntype string) bool {
 func (g *GraphStore) addNodeType(ntype string) {
 	g.nodeMu.Lock()
 	defer g.nodeMu.Unlock()
-	g.nodeTypes[ntype]= struct{}{}
+	g.nodeTypes[ntype] = struct{}{}
 }
 
 func (g *GraphStore) hasEdgeType(ntype string) bool {
@@ -293,7 +293,7 @@ func (g *GraphStore) hasEdgeType(ntype string) bool {
 func (g *GraphStore) addEdgeType(ntype string) {
 	g.edgeMu.Lock()
 	defer g.edgeMu.Unlock()
-	g.edgeTypes[ntype]= struct{}{}
+	g.edgeTypes[ntype] = struct{}{}
 }
 
 func (g *GraphStore) NodeTypes() []string {
@@ -301,7 +301,7 @@ func (g *GraphStore) NodeTypes() []string {
 	defer g.nodeMu.RUnlock()
 	var types []string
 	for k, _ := range g.nodeTypes {
-		types= append(types, k)
+		types = append(types, k)
 	}
 	return types
 }
@@ -311,7 +311,7 @@ func (g *GraphStore) EdgeTypes() []string {
 	defer g.edgeMu.RUnlock()
 	var types []string
 	for k, _ := range g.edgeTypes {
-		types= append(types, k)
+		types = append(types, k)
 	}
 	return types
 }
