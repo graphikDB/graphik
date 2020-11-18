@@ -1,4 +1,4 @@
-# Graphik
+# Graphik [![GoDoc](https://godoc.org/github.com/autom8ter/graphik?status.svg)](https://godoc.org/github.com/autom8ter/graphik)
 
     git@github.com:autom8ter/graphik.git
     
