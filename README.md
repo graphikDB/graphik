@@ -9,7 +9,7 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] 100% Go
 - [x] Containerized
 - [x] Native gRPC Support
-- [x] Persistant (Raft)
+- [x] Persistant(bbolt LMDB)
 - [x] Horizontally Scaleable (Raft)
 - [x] Loosely typed(mongo-esque)
 - [x] Prometheus Metrics
