@@ -31,6 +31,7 @@ An identity-aware, permissioned, persistant [labelled property graph](https://en
 
 
 [API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
+
 [Examples](https://github.com/autom8ter/graphik/blob/master/example_test.go)
 
 ## Key Dependencies
