@@ -274,8 +274,25 @@ message Trigger {
 message RequestIntercept {
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
   Node user =2;
-  google.protobuf.Any request =3;
-  int64 timestamp =4;
+  int64 timestamp =3;
+  oneof request {
+      google.protobuf.Empty empty =4;
+      SubGraphFilter subgraph_filter =5;
+      Graph graph =6;
+      ChannelFilter channel_filter =7;
+      OutboundMessage outbound_message =8;
+      ChangeFilter change_filter =9;
+      EdgeFilter   edge_filter =10;
+      Paths paths =11;
+      Path path =12;
+      Patches patches =13;
+      Patch patch =14;
+      Filter filter =15;
+      NodeConstructors node_constructors =16;
+      NodeConstructor node_constructor =17;
+      MeFilter me_filter =18;
+      RaftNode raft_node =19;
+  }
 }
 
 // Decision is returned by registered external authorizers
