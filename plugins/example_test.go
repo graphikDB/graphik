@@ -16,6 +16,7 @@ func ExampleAuthorizerFunc_Serve() {
 	authorizer := plugins.NewAuthorizer(func(ctx context.Context, r *apipb.RequestIntercept) (*apipb.Decision, error) {
 		switch val := r.Request.(type) {
 		case *apipb.RequestIntercept_Filter:
+			// block all filters from being > 50
 			if val.Filter.GetLimit() > 50 {
 				return &apipb.Decision{
 					Value: false,
@@ -40,9 +41,9 @@ func ExampleTriggerFunc_Serve() {
 	defer cancel()
 	trigger := plugins.NewTrigger(func(ctx context.Context, trigger *apipb.Trigger) (*apipb.StateChange, error) {
 		state := trigger.State
-		switch r := state.GetMutation().GetObject().(type) {
+		switch state.GetMutation().GetObject().(type) {
 		case *apipb.Mutation_NodeConstructor:
-			r.NodeConstructor.Attributes.Fields["testing"] = structpb.NewBoolValue(true)
+			state.Mutation.GetNodeConstructor().GetAttributes().GetFields()["testing"] = structpb.NewBoolValue(true)
 		}
 		return state, nil
 	})
