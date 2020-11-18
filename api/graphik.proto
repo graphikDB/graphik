@@ -8,6 +8,8 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
+import "go-proto-validators/validator.proto";
+
 
 enum Timing {
   BEFORE =0;
@@ -37,7 +39,7 @@ enum Cascade {
 }
 
 message Path {
-  string gtype =1;
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
   string gid =2;
 }
 
@@ -126,16 +128,16 @@ message EdgeDetails {
 }
 
 message EdgeFilter {
-  Path node_path =1;
-  string gtype =2;
+  Path node_path =1 [(validator.field) = {msg_exists : true}];
+  string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
   repeated string expressions =3;
-  int32 limit =4;
+  int32 limit =4 [(validator.field) = {int_gt : 0}];
 }
 
 message Filter {
-  string gtype =1;
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
   repeated string expressions =2;
-  int32 limit =3;
+  int32 limit =3 [(validator.field) = {int_gt : 0}];
 }
 
 message MeFilter {
@@ -148,13 +150,13 @@ message ChangeFilter {
 }
 
 message ChannelFilter {
-  string channel =1;;
+  string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
   repeated string expressions =2;
 }
 
 message SubGraphFilter {
-  Filter nodes =1;
-  Filter edges =2;
+  Filter nodes =1 [(validator.field) = {msg_exists : true}];
+  Filter edges =2 [(validator.field) = {msg_exists : true}];
 }
 
 message StateChange {

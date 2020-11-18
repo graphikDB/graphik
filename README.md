@@ -13,6 +13,7 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] Context-Based Timeouts
 - [x] Live runtime config update
 - [x] Secure JWT based auth with remote JWKS support
+- [x] Auto JWKS refresh
 - [x] Bulk Export
 - [x] Bulk Import
 - [x] Change Stream Subscriptions
@@ -23,6 +24,9 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] gRPC Based External Authorizer Implementation(sidecar)
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
+
+
+[API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
 
 ## Key Dependencies
 

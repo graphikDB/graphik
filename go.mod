@@ -16,6 +16,7 @@ require (
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lestrrat-go/jwx v1.0.5
 	github.com/mitchellh/mapstructure v1.3.3
+	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v0.9.3
 	github.com/spf13/pflag v1.0.3

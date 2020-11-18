@@ -10,6 +10,7 @@ import (
 	"github.com/autom8ter/machine"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -73,12 +74,14 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		grpc.ChainUnaryInterceptor(
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger.Logger()),
+			grpc_validator.UnaryServerInterceptor(),
 			runtim.UnaryAuth(),
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(logger.Logger()),
+			grpc_validator.StreamServerInterceptor(),
 			runtim.StreamAuth(),
 			grpc_recovery.StreamServerInterceptor(),
 		),
