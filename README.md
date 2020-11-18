@@ -1,5 +1,9 @@
 # Graphik
 
+    git@github.com:autom8ter/graphik.git
+    
+    docker pull colemanword/graphik
+
 An identity-aware, permissioned, persistant labelled property graph database written in Go
 
 - [x] 100% Go

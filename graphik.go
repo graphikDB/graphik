@@ -155,3 +155,7 @@ func (c *Client) JoinCluster(ctx context.Context, in *apipb.RaftNode, opts ...gr
 func (c *Client) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Schema, error) {
 	return c.graph.GetSchema(ctx, in, opts...)
 }
+
+func (c *Client) Shutdown(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
+	return c.graph.Shutdown(ctx, in, opts...)
+}
