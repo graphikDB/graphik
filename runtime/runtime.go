@@ -36,6 +36,7 @@ type Runtime struct {
 	graph     *graph.Graph
 	close     sync.Once
 	triggers  []apipb.TriggerServiceClient
+	authorizers  []apipb.AuthorizationServiceClient
 	closed    bool
 	closers   []func()
 	logStore  *storage.LogStore

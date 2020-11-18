@@ -158,8 +158,6 @@ message SubGraphFilter {
 }
 
 message StateChange {
-  string request_path =1;
-  Node user =2;
   Op op =3;
   Mutation mutation =4;
   int64 timestamp =5;
@@ -227,8 +225,21 @@ message Message {
 }
 
 message Trigger {
-  Timing timing =1;
-  StateChange state =2;
+  string request_path =1;
+  Node user =2;
+  Timing timing =3;
+  StateChange state =4;
+}
+
+message RequestIntercept {
+  string request_path =1;
+  Node user =2;
+  google.protobuf.Any request =3;
+  int64 timestamp =4;
+}
+
+message Decision {
+  bool value =1;
 }
 
 message Schema {
@@ -273,4 +284,8 @@ service GraphService {
 
 service TriggerService {
   rpc HandleTrigger(Trigger) returns(StateChange){}
+}
+
+service AuthorizationService {
+ rpc Authorize(RequestIntercept) returns(Decision){}
 }
