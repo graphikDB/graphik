@@ -34,6 +34,6 @@ generate:
 #      output: gen/go
 #    - name: swagger
 #      output: .
-#    - name: govalidators
-#      type: go
-#      output: gen/go
+    - name: govalidators
+      type: go
+      output: .
