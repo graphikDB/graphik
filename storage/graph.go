@@ -42,8 +42,12 @@ func NewGraphStore(path string) (*GraphStore, error) {
 		return nil, err
 	}
 	return &GraphStore{
-		db:   handle,
-		path: path,
+		db:        handle,
+		path:      path,
+		nodeMu:    sync.RWMutex{},
+		edgeMu:    sync.RWMutex{},
+		nodeTypes: map[string]struct{}{},
+		edgeTypes: map[string]struct{}{},
 	}, nil
 }
 
