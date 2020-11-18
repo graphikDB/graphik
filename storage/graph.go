@@ -86,6 +86,9 @@ func (g *GraphStore) RangeEdges(ctx context.Context, gType string, fn func(e *ap
 	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbEdges).Bucket([]byte(gType)).ForEach(func(k, v []byte) error {
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
 			var edge apipb.Edge
 			if err := proto.Unmarshal(v, &edge); err != nil {
 				return err
@@ -136,6 +139,9 @@ func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *ap
 			return nil
 		}
 		return tx.Bucket(dbNodes).Bucket([]byte(gType)).ForEach(func(k, v []byte) error {
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
 			var node apipb.Node
 			if err := proto.Unmarshal(v, &node); err != nil {
 				return err
