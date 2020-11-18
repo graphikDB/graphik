@@ -53,6 +53,9 @@ func (this *Node) Validate() error {
 	return nil
 }
 func (this *NodeConstructor) Validate() error {
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
 	if this.Path != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
@@ -152,6 +155,9 @@ func (this *Edge) Validate() error {
 	return nil
 }
 func (this *EdgeConstructor) Validate() error {
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
 	if this.Path != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
@@ -162,10 +168,16 @@ func (this *EdgeConstructor) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
 		}
 	}
+	if nil == this.From {
+		return github_com_mwitkow_go_proto_validators.FieldError("From", fmt.Errorf("message must exist"))
+	}
 	if this.From != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.From); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("From", err)
 		}
+	}
+	if nil == this.To {
+		return github_com_mwitkow_go_proto_validators.FieldError("To", fmt.Errorf("message must exist"))
 	}
 	if this.To != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.To); err != nil {
@@ -419,6 +431,9 @@ func (this *Graph) Validate() error {
 	return nil
 }
 func (this *Patch) Validate() error {
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
 	if this.Path != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
@@ -444,13 +459,32 @@ func (this *Patches) Validate() error {
 func (this *Pong) Validate() error {
 	return nil
 }
+
+var _regex_RaftNode_NodeId = regexp.MustCompile(`^.{1,225}$`)
+var _regex_RaftNode_Address = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *RaftNode) Validate() error {
+	if !_regex_RaftNode_NodeId.MatchString(this.NodeId) {
+		return github_com_mwitkow_go_proto_validators.FieldError("NodeId", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.NodeId))
+	}
+	if !_regex_RaftNode_Address.MatchString(this.Address) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Address", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Address))
+	}
 	return nil
 }
 func (this *RaftLog) Validate() error {
 	return nil
 }
+
+var _regex_OutboundMessage_Channel = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *OutboundMessage) Validate() error {
+	if !_regex_OutboundMessage_Channel.MatchString(this.Channel) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Channel", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Channel))
+	}
+	if nil == this.Data {
+		return github_com_mwitkow_go_proto_validators.FieldError("Data", fmt.Errorf("message must exist"))
+	}
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -458,7 +492,16 @@ func (this *OutboundMessage) Validate() error {
 	}
 	return nil
 }
+
+var _regex_Message_Channel = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *Message) Validate() error {
+	if !_regex_Message_Channel.MatchString(this.Channel) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Channel", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Channel))
+	}
+	if nil == this.Data {
+		return github_com_mwitkow_go_proto_validators.FieldError("Data", fmt.Errorf("message must exist"))
+	}
 	if this.Data != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
@@ -471,7 +514,13 @@ func (this *Message) Validate() error {
 	}
 	return nil
 }
+
+var _regex_Trigger_Method = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *Trigger) Validate() error {
+	if !_regex_Trigger_Method.MatchString(this.Method) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
+	}
 	if this.User != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
@@ -484,7 +533,13 @@ func (this *Trigger) Validate() error {
 	}
 	return nil
 }
+
+var _regex_RequestIntercept_Method = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *RequestIntercept) Validate() error {
+	if !_regex_RequestIntercept_Method.MatchString(this.Method) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
+	}
 	if this.User != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("User", err)

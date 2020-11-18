@@ -29,11 +29,75 @@ An identity-aware, permissioned, persistant [labelled property graph](https://en
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
+## API Spec
 
 [API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
 
 [Examples](https://github.com/autom8ter/graphik/blob/master/example_test.go)
 
+```proto
+// GraphService is the primary Graph service
+service GraphService {
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // JoinCluster Joins the raft node to the cluster
+  rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
+  // GetSchema gets schema about the Graph node & edge types
+  rpc GetSchema(google.protobuf.Empty) returns(Schema){}
+ // Me returns a NodeDetail of the currently logged in user(the subject of the JWT)
+  rpc Me(MeFilter) returns(NodeDetail){}
+  // CreateNode creates a node in the graph
+  rpc CreateNode(NodeConstructor) returns(Node){}
+  // CreateNodes creates a batch of nodes in the graph
+  rpc CreateNodes(NodeConstructors) returns(Nodes){}
+  // GetNode gets a single node in the graph
+  rpc GetNode(Path) returns(Node){}
+  // SearchNodes searches the graph for nodes
+  rpc SearchNodes(Filter) returns(Nodes){}
+  // PatchNode patches a nodes attributes
+  rpc PatchNode(Patch) returns(Node){}
+  // PatchNodes patches a batch of nodes attributes
+  rpc PatchNodes(Patches) returns(Nodes){}
+  // DelNode deletes a node from the graph
+  rpc DelNode(Path) returns(google.protobuf.Empty){}
+  // DelNodes deletes a batch of nodes from the graph
+  rpc DelNodes(Paths) returns(google.protobuf.Empty){}
+  // CreateEdge creates an edge in the graph
+  rpc CreateEdge(EdgeConstructor) returns(Edge){}
+  // CreateEdges creates a batch of edges in the graph
+  rpc CreateEdges(EdgeConstructors) returns(Edges){}
+  // GetEdge gets a single edge in the graph
+  rpc GetEdge(Path) returns(Edge){}
+  // SearchEdges searches the graph for edges
+  rpc SearchEdges(Filter) returns(Edges){}
+  // PatchEdge patches an edges attributes
+  rpc PatchEdge(Patch) returns(Edge){}
+  // PatchEdges patches a batch of edges attributes
+  rpc PatchEdges(Patches) returns(Edges){}
+  // DelEdge deletes an edge from the graph
+  rpc DelEdge(Path) returns(google.protobuf.Empty){}
+  // DelEdges deletes a batch of edges from the graph
+  rpc DelEdges(Paths) returns(google.protobuf.Empty){}
+  // EdgesFrom returns edges that source from the given node path that pass the filter
+  rpc EdgesFrom(EdgeFilter) returns(Edges){}
+  // EdgesTo returns edges that point to the given node path that pass the filter
+  rpc EdgesTo(EdgeFilter) returns(Edges){}
+  // ChangeStream subscribes to filtered changes on a stream
+  rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
+  // Publish publishes a message to a pubsub channel
+  rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
+  // Subscribe subscribes to messages on a pubsub channel
+  rpc Subscribe(ChannelFilter) returns(stream Message){}
+  // Import imports the Graph into the database
+  rpc Import(Graph) returns(Graph){}
+  // Export returns the Graph data
+  rpc Export(google.protobuf.Empty) returns (Graph){}
+  // SubGraph returns a subgraph using the given filter
+  rpc SubGraph(SubGraphFilter) returns(Graph){}
+  // Shutdown shuts down the database
+  rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
+}
+```
 ## Key Dependencies
 
 - google.golang.org/grpc
