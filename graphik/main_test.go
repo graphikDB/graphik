@@ -39,23 +39,22 @@ func Test(t *testing.T) {
 		t.Fatal(err)
 	}
 	var (
-		cfgClient = apipb.NewConfigServiceClient(conn)
-		gClient   = apipb.NewGraphServiceClient(conn)
+		gClient = apipb.NewGraphServiceClient(conn)
 	)
-	pong, err := cfgClient.Ping(ctx, &empty.Empty{})
+	pong, err := gClient.Ping(ctx, &empty.Empty{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if pong.Message != "PONG" {
 		t.Fatal("not PONG")
 	}
-	me, err := gClient.Me(ctx, &empty.Empty{})
+	me, err := gClient.Me(ctx, &apipb.MeFilter{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(me.String())
 
-	note, err := gClient.CreateNode(ctx, &apipb.Node{
+	note, err := gClient.CreateNode(ctx, &apipb.NodeConstructor{
 		Path: &apipb.Path{
 			Gtype: "note",
 		},
@@ -67,7 +66,7 @@ func Test(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = gClient.CreateEdge(ctx, &apipb.Edge{
+	_, err = gClient.CreateEdge(ctx, &apipb.EdgeConstructor{
 		Path: &apipb.Path{
 			Gtype: "personal_notes",
 		},
@@ -114,8 +113,8 @@ func Benchmark(b *testing.B) {
 	)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, err := gClient.SearchNodes(ctx, &apipb.TypeFilter{
-			Gtype:       apipb.Keyword_ANY.String(),
+		_, err := gClient.SearchNodes(ctx, &apipb.Filter{
+			Gtype:       "*",
 			Expressions: []string{`attributes.name.contains("cole")`},
 			Limit:       1,
 		})

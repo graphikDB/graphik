@@ -2,17 +2,18 @@ package interceptors
 
 import (
 	"context"
-	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/express"
+	"fmt"
 	"github.com/autom8ter/graphik/runtime"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"time"
 )
+
+const MethodCtxKey = "x-grpc-full-method"
 
 func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
@@ -20,7 +21,7 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, err
 		}
-		payload, err := runtime.Auth().VerifyJWT(token)
+		payload, err := runtime.Config().VerifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -34,21 +35,12 @@ func UnaryAuth(runtime *runtime.Runtime) grpc.UnaryServerInterceptor {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
-		ctx, node, err := runtime.ToContext(ctx, payload)
+		ctx, _, err = runtime.ToContext(ctx, payload)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, errors.Wrap(err, "failed to create user").Error())
+			return nil, status.Errorf(codes.Internal, err.Error())
 		}
-		pass, err := runtime.Authorize(&apipb.RequestIntercept{
-			FullPath: info.FullMethod,
-			User:     node,
-			Request:  apipb.NewStruct(express.ToMap(req)),
-		})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, errors.Wrap(err, "authorization failure").Error())
-		}
-		if !pass {
-			return nil, status.Error(codes.PermissionDenied, "permission denied")
-		}
+		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
+		ctx = context.WithValue(ctx, MethodCtxKey, info.FullMethod)
 		return handler(ctx, req)
 	}
 }
@@ -59,30 +51,22 @@ func StreamAuth(runtime *runtime.Runtime) grpc.StreamServerInterceptor {
 		if err != nil {
 			return err
 		}
-		payload, err := runtime.Auth().VerifyJWT(token)
+		payload, err := runtime.Config().VerifyJWT(token)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
-		if payload["exp"].(int64) < time.Now().Unix() {
+		if val, ok := payload["exp"].(int64); ok && val < time.Now().Unix() {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
-
-		ctx, node, err := runtime.ToContext(ss.Context(), payload)
+		if val, ok := payload["exp"].(float64); ok && int64(val) < time.Now().Unix() {
+			return status.Errorf(codes.Unauthenticated, "token expired")
+		}
+		ctx, _, err := runtime.ToContext(ss.Context(), payload)
 		if err != nil {
-			return status.Errorf(codes.Internal, errors.Wrap(err, "failed to create user").Error())
+			return status.Errorf(codes.Internal, err.Error())
 		}
-		pass, err := runtime.Authorize(&apipb.RequestIntercept{
-			FullPath: info.FullMethod,
-			User:     node,
-			Request:  apipb.NewStruct(express.ToMap(srv)),
-		})
-		if err != nil {
-			return status.Errorf(codes.Internal, errors.Wrap(err, "authorization failure").Error())
-		}
-		if !pass {
-			return status.Error(codes.PermissionDenied, "permission denied")
-		}
-
+		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
+		ctx = context.WithValue(ctx, MethodCtxKey, info.FullMethod)
 		wrapped := grpc_middleware.WrapServerStream(ss)
 		wrapped.WrappedContext = ctx
 

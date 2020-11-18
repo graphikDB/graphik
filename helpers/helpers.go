@@ -1,63 +1,45 @@
-package express
+package helpers
 
 import (
 	"bytes"
 	"encoding/json"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/checker/decls"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/mitchellh/mapstructure"
-	"google.golang.org/protobuf/types/known/structpb"
+	"io"
+	"strings"
 )
 
-func init() {
-	var err error
-	e, err = cel.NewEnv(cel.Declarations(
-		decls.NewVar("path", decls.NewMapType(decls.String, decls.Any)),
-		decls.NewVar("attributes", decls.NewMapType(decls.String, decls.Any)),
-		decls.NewVar("created_at", decls.Int),
-		decls.NewVar("updated_at", decls.Int),
-		decls.NewVar("from", decls.NewMapType(decls.String, decls.Any)),
-		decls.NewVar("to", decls.NewMapType(decls.String, decls.Any)),
-		decls.NewVar("cascade", decls.String),
-	))
-	if err != nil {
-		panic(err)
+var (
+	marshaller = &jsonpb.Marshaler{
+		EnumsAsInts:  false,
+		EmitDefaults: false,
+		Indent:       "",
+		OrigName:     false,
+		AnyResolver:  nil,
 	}
+	unmarshaller = &jsonpb.Unmarshaler{}
+)
+
+func JSONEncode(w io.Writer, msg proto.Message) error {
+	return marshaller.Marshal(w, msg)
 }
 
-var e *cel.Env
+func JSONDecode(r io.Reader, msg proto.Message) error {
+	return unmarshaller.Unmarshal(r, msg)
+}
 
-func Eval(expressions []string, obj interface{}) (bool, error) {
-	if len(expressions) == 0 || expressions[0] == "" {
-		return true, nil
-	}
-	values := ToMap(obj)
-	var programs []cel.Program
-	for _, exp := range expressions {
-		ast, iss := e.Compile(exp)
-		if iss.Err() != nil {
-			return false, iss.Err()
-		}
-		prgm, err := e.Program(ast)
-		if err != nil {
-			return false, err
-		}
-		programs = append(programs, prgm)
-	}
-	var passes = true
-	for _, program := range programs {
-		out, _, err := program.Eval(values)
-		if err != nil {
-			return false, err
-		}
-		if val, ok := out.Value().(bool); !ok || !val {
-			passes = false
-		}
-	}
-	return passes, nil
+func JSONString(msg proto.Message) string {
+	buf := bytes.NewBuffer(nil)
+	JSONEncode(buf, msg)
+	return buf.String()
+}
+
+func FromJSONString(str string, msg proto.Message) error {
+	return JSONDecode(strings.NewReader(str), msg)
 }
 
 func ToMap(obj interface{}) map[string]interface{} {
@@ -106,7 +88,7 @@ func ToMap(obj interface{}) map[string]interface{} {
 	case proto.Message:
 		buf := bytes.NewBuffer(nil)
 		var data = map[string]interface{}{}
-		jSONEncode(buf, o)
+		JSONEncode(buf, o)
 		json.Unmarshal(buf.Bytes(), &data)
 		return data
 	default:

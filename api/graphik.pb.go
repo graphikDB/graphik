@@ -26,6 +26,31 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type Timing int32
+
+const (
+	Timing_BEFORE Timing = 0
+	Timing_AFTER  Timing = 1
+)
+
+var Timing_name = map[int32]string{
+	0: "BEFORE",
+	1: "AFTER",
+}
+
+var Timing_value = map[string]int32{
+	"BEFORE": 0,
+	"AFTER":  1,
+}
+
+func (x Timing) String() string {
+	return proto.EnumName(Timing_name, int32(x))
+}
+
+func (Timing) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{0}
+}
+
 type Op int32
 
 const (
@@ -41,7 +66,6 @@ const (
 	Op_PATCH_EDGE   Op = 9
 	Op_DELETE_EDGES Op = 10
 	Op_DELETE_EDGE  Op = 11
-	Op_SET_AUTH     Op = 12
 )
 
 var Op_name = map[int32]string{
@@ -57,7 +81,6 @@ var Op_name = map[int32]string{
 	9:  "PATCH_EDGE",
 	10: "DELETE_EDGES",
 	11: "DELETE_EDGE",
-	12: "SET_AUTH",
 }
 
 var Op_value = map[string]int32{
@@ -73,7 +96,6 @@ var Op_value = map[string]int32{
 	"PATCH_EDGE":   9,
 	"DELETE_EDGES": 10,
 	"DELETE_EDGE":  11,
-	"SET_AUTH":     12,
 }
 
 func (x Op) String() string {
@@ -81,7 +103,7 @@ func (x Op) String() string {
 }
 
 func (Op) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{0}
+	return fileDescriptor_063490d3009de3e6, []int{1}
 }
 
 type Cascade int32
@@ -112,74 +134,7 @@ func (x Cascade) String() string {
 }
 
 func (Cascade) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{1}
-}
-
-type Keyword int32
-
-const (
-	Keyword_INVALID Keyword = 0
-	Keyword_ANY     Keyword = 1
-	Keyword_DEFAULT Keyword = 2
-)
-
-var Keyword_name = map[int32]string{
-	0: "INVALID",
-	1: "ANY",
-	2: "DEFAULT",
-}
-
-var Keyword_value = map[string]int32{
-	"INVALID": 0,
-	"ANY":     1,
-	"DEFAULT": 2,
-}
-
-func (x Keyword) String() string {
-	return proto.EnumName(Keyword_name, int32(x))
-}
-
-func (Keyword) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_063490d3009de3e6, []int{2}
-}
-
-type Counter struct {
-	Count                int64    `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *Counter) Reset()         { *m = Counter{} }
-func (m *Counter) String() string { return proto.CompactTextString(m) }
-func (*Counter) ProtoMessage()    {}
-func (*Counter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{0}
-}
-
-func (m *Counter) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Counter.Unmarshal(m, b)
-}
-func (m *Counter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Counter.Marshal(b, m, deterministic)
-}
-func (m *Counter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Counter.Merge(m, src)
-}
-func (m *Counter) XXX_Size() int {
-	return xxx_messageInfo_Counter.Size(m)
-}
-func (m *Counter) XXX_DiscardUnknown() {
-	xxx_messageInfo_Counter.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Counter proto.InternalMessageInfo
-
-func (m *Counter) GetCount() int64 {
-	if m != nil {
-		return m.Count
-	}
-	return 0
 }
 
 type Path struct {
@@ -194,7 +149,7 @@ func (m *Path) Reset()         { *m = Path{} }
 func (m *Path) String() string { return proto.CompactTextString(m) }
 func (*Path) ProtoMessage()    {}
 func (*Path) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{1}
+	return fileDescriptor_063490d3009de3e6, []int{0}
 }
 
 func (m *Path) XXX_Unmarshal(b []byte) error {
@@ -240,7 +195,7 @@ func (m *Paths) Reset()         { *m = Paths{} }
 func (m *Paths) String() string { return proto.CompactTextString(m) }
 func (*Paths) ProtoMessage()    {}
 func (*Paths) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{2}
+	return fileDescriptor_063490d3009de3e6, []int{1}
 }
 
 func (m *Paths) XXX_Unmarshal(b []byte) error {
@@ -282,7 +237,7 @@ func (m *Node) Reset()         { *m = Node{} }
 func (m *Node) String() string { return proto.CompactTextString(m) }
 func (*Node) ProtoMessage()    {}
 func (*Node) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{3}
+	return fileDescriptor_063490d3009de3e6, []int{2}
 }
 
 func (m *Node) XXX_Unmarshal(b []byte) error {
@@ -331,6 +286,92 @@ func (m *Node) GetUpdatedAt() int64 {
 	return 0
 }
 
+type NodeConstructor struct {
+	Path                 *Path           `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	Attributes           *_struct.Struct `protobuf:"bytes,3,opt,name=attributes,proto3" json:"attributes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *NodeConstructor) Reset()         { *m = NodeConstructor{} }
+func (m *NodeConstructor) String() string { return proto.CompactTextString(m) }
+func (*NodeConstructor) ProtoMessage()    {}
+func (*NodeConstructor) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{3}
+}
+
+func (m *NodeConstructor) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NodeConstructor.Unmarshal(m, b)
+}
+func (m *NodeConstructor) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NodeConstructor.Marshal(b, m, deterministic)
+}
+func (m *NodeConstructor) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodeConstructor.Merge(m, src)
+}
+func (m *NodeConstructor) XXX_Size() int {
+	return xxx_messageInfo_NodeConstructor.Size(m)
+}
+func (m *NodeConstructor) XXX_DiscardUnknown() {
+	xxx_messageInfo_NodeConstructor.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NodeConstructor proto.InternalMessageInfo
+
+func (m *NodeConstructor) GetPath() *Path {
+	if m != nil {
+		return m.Path
+	}
+	return nil
+}
+
+func (m *NodeConstructor) GetAttributes() *_struct.Struct {
+	if m != nil {
+		return m.Attributes
+	}
+	return nil
+}
+
+type NodeConstructors struct {
+	Nodes                []*NodeConstructor `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *NodeConstructors) Reset()         { *m = NodeConstructors{} }
+func (m *NodeConstructors) String() string { return proto.CompactTextString(m) }
+func (*NodeConstructors) ProtoMessage()    {}
+func (*NodeConstructors) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{4}
+}
+
+func (m *NodeConstructors) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NodeConstructors.Unmarshal(m, b)
+}
+func (m *NodeConstructors) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NodeConstructors.Marshal(b, m, deterministic)
+}
+func (m *NodeConstructors) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodeConstructors.Merge(m, src)
+}
+func (m *NodeConstructors) XXX_Size() int {
+	return xxx_messageInfo_NodeConstructors.Size(m)
+}
+func (m *NodeConstructors) XXX_DiscardUnknown() {
+	xxx_messageInfo_NodeConstructors.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NodeConstructors proto.InternalMessageInfo
+
+func (m *NodeConstructors) GetNodes() []*NodeConstructor {
+	if m != nil {
+		return m.Nodes
+	}
+	return nil
+}
+
 type Nodes struct {
 	Nodes                []*Node  `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -342,7 +383,7 @@ func (m *Nodes) Reset()         { *m = Nodes{} }
 func (m *Nodes) String() string { return proto.CompactTextString(m) }
 func (*Nodes) ProtoMessage()    {}
 func (*Nodes) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{4}
+	return fileDescriptor_063490d3009de3e6, []int{5}
 }
 
 func (m *Nodes) XXX_Unmarshal(b []byte) error {
@@ -370,6 +411,179 @@ func (m *Nodes) GetNodes() []*Node {
 	return nil
 }
 
+type NodeDetail struct {
+	Path                 *Path                   `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	Attributes           *_struct.Struct         `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
+	EdgesFrom            map[string]*EdgeDetails `protobuf:"bytes,3,rep,name=edges_from,json=edgesFrom,proto3" json:"edges_from,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	EdgesTo              map[string]*EdgeDetails `protobuf:"bytes,4,rep,name=edges_to,json=edgesTo,proto3" json:"edges_to,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	CreatedAt            int64                   `protobuf:"varint,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt            int64                   `protobuf:"varint,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
+	XXX_unrecognized     []byte                  `json:"-"`
+	XXX_sizecache        int32                   `json:"-"`
+}
+
+func (m *NodeDetail) Reset()         { *m = NodeDetail{} }
+func (m *NodeDetail) String() string { return proto.CompactTextString(m) }
+func (*NodeDetail) ProtoMessage()    {}
+func (*NodeDetail) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{6}
+}
+
+func (m *NodeDetail) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NodeDetail.Unmarshal(m, b)
+}
+func (m *NodeDetail) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NodeDetail.Marshal(b, m, deterministic)
+}
+func (m *NodeDetail) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodeDetail.Merge(m, src)
+}
+func (m *NodeDetail) XXX_Size() int {
+	return xxx_messageInfo_NodeDetail.Size(m)
+}
+func (m *NodeDetail) XXX_DiscardUnknown() {
+	xxx_messageInfo_NodeDetail.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NodeDetail proto.InternalMessageInfo
+
+func (m *NodeDetail) GetPath() *Path {
+	if m != nil {
+		return m.Path
+	}
+	return nil
+}
+
+func (m *NodeDetail) GetAttributes() *_struct.Struct {
+	if m != nil {
+		return m.Attributes
+	}
+	return nil
+}
+
+func (m *NodeDetail) GetEdgesFrom() map[string]*EdgeDetails {
+	if m != nil {
+		return m.EdgesFrom
+	}
+	return nil
+}
+
+func (m *NodeDetail) GetEdgesTo() map[string]*EdgeDetails {
+	if m != nil {
+		return m.EdgesTo
+	}
+	return nil
+}
+
+func (m *NodeDetail) GetCreatedAt() int64 {
+	if m != nil {
+		return m.CreatedAt
+	}
+	return 0
+}
+
+func (m *NodeDetail) GetUpdatedAt() int64 {
+	if m != nil {
+		return m.UpdatedAt
+	}
+	return 0
+}
+
+type NodeDetails struct {
+	NodeDetails          []*NodeDetail `protobuf:"bytes,1,rep,name=node_details,json=nodeDetails,proto3" json:"node_details,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *NodeDetails) Reset()         { *m = NodeDetails{} }
+func (m *NodeDetails) String() string { return proto.CompactTextString(m) }
+func (*NodeDetails) ProtoMessage()    {}
+func (*NodeDetails) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{7}
+}
+
+func (m *NodeDetails) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NodeDetails.Unmarshal(m, b)
+}
+func (m *NodeDetails) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NodeDetails.Marshal(b, m, deterministic)
+}
+func (m *NodeDetails) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodeDetails.Merge(m, src)
+}
+func (m *NodeDetails) XXX_Size() int {
+	return xxx_messageInfo_NodeDetails.Size(m)
+}
+func (m *NodeDetails) XXX_DiscardUnknown() {
+	xxx_messageInfo_NodeDetails.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NodeDetails proto.InternalMessageInfo
+
+func (m *NodeDetails) GetNodeDetails() []*NodeDetail {
+	if m != nil {
+		return m.NodeDetails
+	}
+	return nil
+}
+
+type NodeDetailFilter struct {
+	Path                 *Path    `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	EdgesFrom            *Filter  `protobuf:"bytes,2,opt,name=edges_from,json=edgesFrom,proto3" json:"edges_from,omitempty"`
+	EdgesTo              *Filter  `protobuf:"bytes,3,opt,name=edges_to,json=edgesTo,proto3" json:"edges_to,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *NodeDetailFilter) Reset()         { *m = NodeDetailFilter{} }
+func (m *NodeDetailFilter) String() string { return proto.CompactTextString(m) }
+func (*NodeDetailFilter) ProtoMessage()    {}
+func (*NodeDetailFilter) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{8}
+}
+
+func (m *NodeDetailFilter) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_NodeDetailFilter.Unmarshal(m, b)
+}
+func (m *NodeDetailFilter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_NodeDetailFilter.Marshal(b, m, deterministic)
+}
+func (m *NodeDetailFilter) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodeDetailFilter.Merge(m, src)
+}
+func (m *NodeDetailFilter) XXX_Size() int {
+	return xxx_messageInfo_NodeDetailFilter.Size(m)
+}
+func (m *NodeDetailFilter) XXX_DiscardUnknown() {
+	xxx_messageInfo_NodeDetailFilter.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NodeDetailFilter proto.InternalMessageInfo
+
+func (m *NodeDetailFilter) GetPath() *Path {
+	if m != nil {
+		return m.Path
+	}
+	return nil
+}
+
+func (m *NodeDetailFilter) GetEdgesFrom() *Filter {
+	if m != nil {
+		return m.EdgesFrom
+	}
+	return nil
+}
+
+func (m *NodeDetailFilter) GetEdgesTo() *Filter {
+	if m != nil {
+		return m.EdgesTo
+	}
+	return nil
+}
+
 type Edge struct {
 	Path                 *Path           `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 	Attributes           *_struct.Struct `protobuf:"bytes,3,opt,name=attributes,proto3" json:"attributes,omitempty"`
@@ -387,7 +601,7 @@ func (m *Edge) Reset()         { *m = Edge{} }
 func (m *Edge) String() string { return proto.CompactTextString(m) }
 func (*Edge) ProtoMessage()    {}
 func (*Edge) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{5}
+	return fileDescriptor_063490d3009de3e6, []int{9}
 }
 
 func (m *Edge) XXX_Unmarshal(b []byte) error {
@@ -457,6 +671,116 @@ func (m *Edge) GetUpdatedAt() int64 {
 	return 0
 }
 
+type EdgeConstructor struct {
+	Path                 *Path           `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	Attributes           *_struct.Struct `protobuf:"bytes,3,opt,name=attributes,proto3" json:"attributes,omitempty"`
+	Cascade              Cascade         `protobuf:"varint,4,opt,name=cascade,proto3,enum=api.Cascade" json:"cascade,omitempty"`
+	From                 *Path           `protobuf:"bytes,5,opt,name=from,proto3" json:"from,omitempty"`
+	To                   *Path           `protobuf:"bytes,6,opt,name=to,proto3" json:"to,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *EdgeConstructor) Reset()         { *m = EdgeConstructor{} }
+func (m *EdgeConstructor) String() string { return proto.CompactTextString(m) }
+func (*EdgeConstructor) ProtoMessage()    {}
+func (*EdgeConstructor) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{10}
+}
+
+func (m *EdgeConstructor) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EdgeConstructor.Unmarshal(m, b)
+}
+func (m *EdgeConstructor) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EdgeConstructor.Marshal(b, m, deterministic)
+}
+func (m *EdgeConstructor) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EdgeConstructor.Merge(m, src)
+}
+func (m *EdgeConstructor) XXX_Size() int {
+	return xxx_messageInfo_EdgeConstructor.Size(m)
+}
+func (m *EdgeConstructor) XXX_DiscardUnknown() {
+	xxx_messageInfo_EdgeConstructor.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EdgeConstructor proto.InternalMessageInfo
+
+func (m *EdgeConstructor) GetPath() *Path {
+	if m != nil {
+		return m.Path
+	}
+	return nil
+}
+
+func (m *EdgeConstructor) GetAttributes() *_struct.Struct {
+	if m != nil {
+		return m.Attributes
+	}
+	return nil
+}
+
+func (m *EdgeConstructor) GetCascade() Cascade {
+	if m != nil {
+		return m.Cascade
+	}
+	return Cascade_CASCADE_NONE
+}
+
+func (m *EdgeConstructor) GetFrom() *Path {
+	if m != nil {
+		return m.From
+	}
+	return nil
+}
+
+func (m *EdgeConstructor) GetTo() *Path {
+	if m != nil {
+		return m.To
+	}
+	return nil
+}
+
+type EdgeConstructors struct {
+	Edges                []*EdgeConstructor `protobuf:"bytes,1,rep,name=edges,proto3" json:"edges,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
+	XXX_unrecognized     []byte             `json:"-"`
+	XXX_sizecache        int32              `json:"-"`
+}
+
+func (m *EdgeConstructors) Reset()         { *m = EdgeConstructors{} }
+func (m *EdgeConstructors) String() string { return proto.CompactTextString(m) }
+func (*EdgeConstructors) ProtoMessage()    {}
+func (*EdgeConstructors) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{11}
+}
+
+func (m *EdgeConstructors) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EdgeConstructors.Unmarshal(m, b)
+}
+func (m *EdgeConstructors) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EdgeConstructors.Marshal(b, m, deterministic)
+}
+func (m *EdgeConstructors) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EdgeConstructors.Merge(m, src)
+}
+func (m *EdgeConstructors) XXX_Size() int {
+	return xxx_messageInfo_EdgeConstructors.Size(m)
+}
+func (m *EdgeConstructors) XXX_DiscardUnknown() {
+	xxx_messageInfo_EdgeConstructors.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EdgeConstructors proto.InternalMessageInfo
+
+func (m *EdgeConstructors) GetEdges() []*EdgeConstructor {
+	if m != nil {
+		return m.Edges
+	}
+	return nil
+}
+
 type Edges struct {
 	Edges                []*Edge  `protobuf:"bytes,1,rep,name=edges,proto3" json:"edges,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -468,7 +792,7 @@ func (m *Edges) Reset()         { *m = Edges{} }
 func (m *Edges) String() string { return proto.CompactTextString(m) }
 func (*Edges) ProtoMessage()    {}
 func (*Edges) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{6}
+	return fileDescriptor_063490d3009de3e6, []int{12}
 }
 
 func (m *Edges) XXX_Unmarshal(b []byte) error {
@@ -496,6 +820,132 @@ func (m *Edges) GetEdges() []*Edge {
 	return nil
 }
 
+type EdgeDetail struct {
+	Path                 *Path           `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	Attributes           *_struct.Struct `protobuf:"bytes,3,opt,name=attributes,proto3" json:"attributes,omitempty"`
+	Cascade              Cascade         `protobuf:"varint,4,opt,name=cascade,proto3,enum=api.Cascade" json:"cascade,omitempty"`
+	From                 *Node           `protobuf:"bytes,5,opt,name=from,proto3" json:"from,omitempty"`
+	To                   *Node           `protobuf:"bytes,6,opt,name=to,proto3" json:"to,omitempty"`
+	CreatedAt            int64           `protobuf:"varint,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt            int64           `protobuf:"varint,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *EdgeDetail) Reset()         { *m = EdgeDetail{} }
+func (m *EdgeDetail) String() string { return proto.CompactTextString(m) }
+func (*EdgeDetail) ProtoMessage()    {}
+func (*EdgeDetail) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{13}
+}
+
+func (m *EdgeDetail) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EdgeDetail.Unmarshal(m, b)
+}
+func (m *EdgeDetail) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EdgeDetail.Marshal(b, m, deterministic)
+}
+func (m *EdgeDetail) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EdgeDetail.Merge(m, src)
+}
+func (m *EdgeDetail) XXX_Size() int {
+	return xxx_messageInfo_EdgeDetail.Size(m)
+}
+func (m *EdgeDetail) XXX_DiscardUnknown() {
+	xxx_messageInfo_EdgeDetail.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EdgeDetail proto.InternalMessageInfo
+
+func (m *EdgeDetail) GetPath() *Path {
+	if m != nil {
+		return m.Path
+	}
+	return nil
+}
+
+func (m *EdgeDetail) GetAttributes() *_struct.Struct {
+	if m != nil {
+		return m.Attributes
+	}
+	return nil
+}
+
+func (m *EdgeDetail) GetCascade() Cascade {
+	if m != nil {
+		return m.Cascade
+	}
+	return Cascade_CASCADE_NONE
+}
+
+func (m *EdgeDetail) GetFrom() *Node {
+	if m != nil {
+		return m.From
+	}
+	return nil
+}
+
+func (m *EdgeDetail) GetTo() *Node {
+	if m != nil {
+		return m.To
+	}
+	return nil
+}
+
+func (m *EdgeDetail) GetCreatedAt() int64 {
+	if m != nil {
+		return m.CreatedAt
+	}
+	return 0
+}
+
+func (m *EdgeDetail) GetUpdatedAt() int64 {
+	if m != nil {
+		return m.UpdatedAt
+	}
+	return 0
+}
+
+type EdgeDetails struct {
+	Edges                []*EdgeDetail `protobuf:"bytes,1,rep,name=edges,proto3" json:"edges,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
+}
+
+func (m *EdgeDetails) Reset()         { *m = EdgeDetails{} }
+func (m *EdgeDetails) String() string { return proto.CompactTextString(m) }
+func (*EdgeDetails) ProtoMessage()    {}
+func (*EdgeDetails) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{14}
+}
+
+func (m *EdgeDetails) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_EdgeDetails.Unmarshal(m, b)
+}
+func (m *EdgeDetails) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_EdgeDetails.Marshal(b, m, deterministic)
+}
+func (m *EdgeDetails) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EdgeDetails.Merge(m, src)
+}
+func (m *EdgeDetails) XXX_Size() int {
+	return xxx_messageInfo_EdgeDetails.Size(m)
+}
+func (m *EdgeDetails) XXX_DiscardUnknown() {
+	xxx_messageInfo_EdgeDetails.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EdgeDetails proto.InternalMessageInfo
+
+func (m *EdgeDetails) GetEdges() []*EdgeDetail {
+	if m != nil {
+		return m.Edges
+	}
+	return nil
+}
+
 type EdgeFilter struct {
 	NodePath             *Path    `protobuf:"bytes,1,opt,name=node_path,json=nodePath,proto3" json:"node_path,omitempty"`
 	Gtype                string   `protobuf:"bytes,2,opt,name=gtype,proto3" json:"gtype,omitempty"`
@@ -510,7 +960,7 @@ func (m *EdgeFilter) Reset()         { *m = EdgeFilter{} }
 func (m *EdgeFilter) String() string { return proto.CompactTextString(m) }
 func (*EdgeFilter) ProtoMessage()    {}
 func (*EdgeFilter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{7}
+	return fileDescriptor_063490d3009de3e6, []int{15}
 }
 
 func (m *EdgeFilter) XXX_Unmarshal(b []byte) error {
@@ -559,7 +1009,7 @@ func (m *EdgeFilter) GetLimit() int32 {
 	return 0
 }
 
-type TypeFilter struct {
+type Filter struct {
 	Gtype                string   `protobuf:"bytes,1,opt,name=gtype,proto3" json:"gtype,omitempty"`
 	Expressions          []string `protobuf:"bytes,2,rep,name=expressions,proto3" json:"expressions,omitempty"`
 	Limit                int32    `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
@@ -568,50 +1018,97 @@ type TypeFilter struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *TypeFilter) Reset()         { *m = TypeFilter{} }
-func (m *TypeFilter) String() string { return proto.CompactTextString(m) }
-func (*TypeFilter) ProtoMessage()    {}
-func (*TypeFilter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{8}
+func (m *Filter) Reset()         { *m = Filter{} }
+func (m *Filter) String() string { return proto.CompactTextString(m) }
+func (*Filter) ProtoMessage()    {}
+func (*Filter) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{16}
 }
 
-func (m *TypeFilter) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_TypeFilter.Unmarshal(m, b)
+func (m *Filter) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Filter.Unmarshal(m, b)
 }
-func (m *TypeFilter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_TypeFilter.Marshal(b, m, deterministic)
+func (m *Filter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Filter.Marshal(b, m, deterministic)
 }
-func (m *TypeFilter) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TypeFilter.Merge(m, src)
+func (m *Filter) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Filter.Merge(m, src)
 }
-func (m *TypeFilter) XXX_Size() int {
-	return xxx_messageInfo_TypeFilter.Size(m)
+func (m *Filter) XXX_Size() int {
+	return xxx_messageInfo_Filter.Size(m)
 }
-func (m *TypeFilter) XXX_DiscardUnknown() {
-	xxx_messageInfo_TypeFilter.DiscardUnknown(m)
+func (m *Filter) XXX_DiscardUnknown() {
+	xxx_messageInfo_Filter.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_TypeFilter proto.InternalMessageInfo
+var xxx_messageInfo_Filter proto.InternalMessageInfo
 
-func (m *TypeFilter) GetGtype() string {
+func (m *Filter) GetGtype() string {
 	if m != nil {
 		return m.Gtype
 	}
 	return ""
 }
 
-func (m *TypeFilter) GetExpressions() []string {
+func (m *Filter) GetExpressions() []string {
 	if m != nil {
 		return m.Expressions
 	}
 	return nil
 }
 
-func (m *TypeFilter) GetLimit() int32 {
+func (m *Filter) GetLimit() int32 {
 	if m != nil {
 		return m.Limit
 	}
 	return 0
+}
+
+type MeFilter struct {
+	EdgesFrom            *Filter  `protobuf:"bytes,1,opt,name=edges_from,json=edgesFrom,proto3" json:"edges_from,omitempty"`
+	EdgesTo              *Filter  `protobuf:"bytes,2,opt,name=edges_to,json=edgesTo,proto3" json:"edges_to,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *MeFilter) Reset()         { *m = MeFilter{} }
+func (m *MeFilter) String() string { return proto.CompactTextString(m) }
+func (*MeFilter) ProtoMessage()    {}
+func (*MeFilter) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{17}
+}
+
+func (m *MeFilter) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_MeFilter.Unmarshal(m, b)
+}
+func (m *MeFilter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_MeFilter.Marshal(b, m, deterministic)
+}
+func (m *MeFilter) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MeFilter.Merge(m, src)
+}
+func (m *MeFilter) XXX_Size() int {
+	return xxx_messageInfo_MeFilter.Size(m)
+}
+func (m *MeFilter) XXX_DiscardUnknown() {
+	xxx_messageInfo_MeFilter.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MeFilter proto.InternalMessageInfo
+
+func (m *MeFilter) GetEdgesFrom() *Filter {
+	if m != nil {
+		return m.EdgesFrom
+	}
+	return nil
+}
+
+func (m *MeFilter) GetEdgesTo() *Filter {
+	if m != nil {
+		return m.EdgesTo
+	}
+	return nil
 }
 
 type ChangeFilter struct {
@@ -625,7 +1122,7 @@ func (m *ChangeFilter) Reset()         { *m = ChangeFilter{} }
 func (m *ChangeFilter) String() string { return proto.CompactTextString(m) }
 func (*ChangeFilter) ProtoMessage()    {}
 func (*ChangeFilter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{9}
+	return fileDescriptor_063490d3009de3e6, []int{18}
 }
 
 func (m *ChangeFilter) XXX_Unmarshal(b []byte) error {
@@ -665,7 +1162,7 @@ func (m *ChannelFilter) Reset()         { *m = ChannelFilter{} }
 func (m *ChannelFilter) String() string { return proto.CompactTextString(m) }
 func (*ChannelFilter) ProtoMessage()    {}
 func (*ChannelFilter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{10}
+	return fileDescriptor_063490d3009de3e6, []int{19}
 }
 
 func (m *ChannelFilter) XXX_Unmarshal(b []byte) error {
@@ -700,20 +1197,69 @@ func (m *ChannelFilter) GetExpressions() []string {
 	return nil
 }
 
-type StateChange struct {
-	Op                   Op       `protobuf:"varint,1,opt,name=op,proto3,enum=api.Op" json:"op,omitempty"`
-	Log                  *Log     `protobuf:"bytes,2,opt,name=log,proto3" json:"log,omitempty"`
-	Timestamp            int64    `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+type SubGraphFilter struct {
+	Nodes                *Filter  `protobuf:"bytes,1,opt,name=nodes,proto3" json:"nodes,omitempty"`
+	Edges                *Filter  `protobuf:"bytes,2,opt,name=edges,proto3" json:"edges,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SubGraphFilter) Reset()         { *m = SubGraphFilter{} }
+func (m *SubGraphFilter) String() string { return proto.CompactTextString(m) }
+func (*SubGraphFilter) ProtoMessage()    {}
+func (*SubGraphFilter) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{20}
+}
+
+func (m *SubGraphFilter) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubGraphFilter.Unmarshal(m, b)
+}
+func (m *SubGraphFilter) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubGraphFilter.Marshal(b, m, deterministic)
+}
+func (m *SubGraphFilter) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubGraphFilter.Merge(m, src)
+}
+func (m *SubGraphFilter) XXX_Size() int {
+	return xxx_messageInfo_SubGraphFilter.Size(m)
+}
+func (m *SubGraphFilter) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubGraphFilter.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SubGraphFilter proto.InternalMessageInfo
+
+func (m *SubGraphFilter) GetNodes() *Filter {
+	if m != nil {
+		return m.Nodes
+	}
+	return nil
+}
+
+func (m *SubGraphFilter) GetEdges() *Filter {
+	if m != nil {
+		return m.Edges
+	}
+	return nil
+}
+
+type StateChange struct {
+	RequestPath          string    `protobuf:"bytes,1,opt,name=request_path,json=requestPath,proto3" json:"request_path,omitempty"`
+	User                 *Node     `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
+	Op                   Op        `protobuf:"varint,3,opt,name=op,proto3,enum=api.Op" json:"op,omitempty"`
+	Mutation             *Mutation `protobuf:"bytes,4,opt,name=mutation,proto3" json:"mutation,omitempty"`
+	Timestamp            int64     `protobuf:"varint,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
 func (m *StateChange) Reset()         { *m = StateChange{} }
 func (m *StateChange) String() string { return proto.CompactTextString(m) }
 func (*StateChange) ProtoMessage()    {}
 func (*StateChange) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{11}
+	return fileDescriptor_063490d3009de3e6, []int{21}
 }
 
 func (m *StateChange) XXX_Unmarshal(b []byte) error {
@@ -734,6 +1280,20 @@ func (m *StateChange) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_StateChange proto.InternalMessageInfo
 
+func (m *StateChange) GetRequestPath() string {
+	if m != nil {
+		return m.RequestPath
+	}
+	return ""
+}
+
+func (m *StateChange) GetUser() *Node {
+	if m != nil {
+		return m.User
+	}
+	return nil
+}
+
 func (m *StateChange) GetOp() Op {
 	if m != nil {
 		return m.Op
@@ -741,9 +1301,9 @@ func (m *StateChange) GetOp() Op {
 	return Op_CREATE_NODES
 }
 
-func (m *StateChange) GetLog() *Log {
+func (m *StateChange) GetMutation() *Mutation {
 	if m != nil {
-		return m.Log
+		return m.Mutation
 	}
 	return nil
 }
@@ -755,207 +1315,252 @@ func (m *StateChange) GetTimestamp() int64 {
 	return 0
 }
 
-type Log struct {
-	// Types that are valid to be assigned to Log:
-	//	*Log_Node
-	//	*Log_Nodes
-	//	*Log_Edge
-	//	*Log_Edges
-	//	*Log_Path
-	//	*Log_Paths
-	//	*Log_Auth
-	//	*Log_Counter
-	//	*Log_Patch
-	//	*Log_Patches
-	Log                  isLog_Log `protobuf_oneof:"log"`
-	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
-	XXX_unrecognized     []byte    `json:"-"`
-	XXX_sizecache        int32     `json:"-"`
+type Mutation struct {
+	// Types that are valid to be assigned to Object:
+	//	*Mutation_Node
+	//	*Mutation_Nodes
+	//	*Mutation_NodeConstructor
+	//	*Mutation_NodeConstructors
+	//	*Mutation_EdgeConstructor
+	//	*Mutation_EdgeConstructors
+	//	*Mutation_Edge
+	//	*Mutation_Edges
+	//	*Mutation_Path
+	//	*Mutation_Paths
+	//	*Mutation_Patch
+	//	*Mutation_Patches
+	//	*Mutation_Empty
+	Object               isMutation_Object `protobuf_oneof:"object"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
-func (m *Log) Reset()         { *m = Log{} }
-func (m *Log) String() string { return proto.CompactTextString(m) }
-func (*Log) ProtoMessage()    {}
-func (*Log) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{12}
+func (m *Mutation) Reset()         { *m = Mutation{} }
+func (m *Mutation) String() string { return proto.CompactTextString(m) }
+func (*Mutation) ProtoMessage()    {}
+func (*Mutation) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{22}
 }
 
-func (m *Log) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Log.Unmarshal(m, b)
+func (m *Mutation) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Mutation.Unmarshal(m, b)
 }
-func (m *Log) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Log.Marshal(b, m, deterministic)
+func (m *Mutation) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Mutation.Marshal(b, m, deterministic)
 }
-func (m *Log) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Log.Merge(m, src)
+func (m *Mutation) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Mutation.Merge(m, src)
 }
-func (m *Log) XXX_Size() int {
-	return xxx_messageInfo_Log.Size(m)
+func (m *Mutation) XXX_Size() int {
+	return xxx_messageInfo_Mutation.Size(m)
 }
-func (m *Log) XXX_DiscardUnknown() {
-	xxx_messageInfo_Log.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Log proto.InternalMessageInfo
-
-type isLog_Log interface {
-	isLog_Log()
+func (m *Mutation) XXX_DiscardUnknown() {
+	xxx_messageInfo_Mutation.DiscardUnknown(m)
 }
 
-type Log_Node struct {
+var xxx_messageInfo_Mutation proto.InternalMessageInfo
+
+type isMutation_Object interface {
+	isMutation_Object()
+}
+
+type Mutation_Node struct {
 	Node *Node `protobuf:"bytes,1,opt,name=node,proto3,oneof"`
 }
 
-type Log_Nodes struct {
+type Mutation_Nodes struct {
 	Nodes *Nodes `protobuf:"bytes,2,opt,name=nodes,proto3,oneof"`
 }
 
-type Log_Edge struct {
-	Edge *Edge `protobuf:"bytes,3,opt,name=edge,proto3,oneof"`
+type Mutation_NodeConstructor struct {
+	NodeConstructor *NodeConstructor `protobuf:"bytes,3,opt,name=node_constructor,json=nodeConstructor,proto3,oneof"`
 }
 
-type Log_Edges struct {
-	Edges *Edges `protobuf:"bytes,4,opt,name=edges,proto3,oneof"`
+type Mutation_NodeConstructors struct {
+	NodeConstructors *NodeConstructors `protobuf:"bytes,4,opt,name=node_constructors,json=nodeConstructors,proto3,oneof"`
 }
 
-type Log_Path struct {
-	Path *Path `protobuf:"bytes,5,opt,name=path,proto3,oneof"`
+type Mutation_EdgeConstructor struct {
+	EdgeConstructor *EdgeConstructor `protobuf:"bytes,5,opt,name=edge_constructor,json=edgeConstructor,proto3,oneof"`
 }
 
-type Log_Paths struct {
-	Paths *Paths `protobuf:"bytes,6,opt,name=paths,proto3,oneof"`
+type Mutation_EdgeConstructors struct {
+	EdgeConstructors *EdgeConstructors `protobuf:"bytes,6,opt,name=edge_constructors,json=edgeConstructors,proto3,oneof"`
 }
 
-type Log_Auth struct {
-	Auth *AuthConfig `protobuf:"bytes,7,opt,name=auth,proto3,oneof"`
+type Mutation_Edge struct {
+	Edge *Edge `protobuf:"bytes,7,opt,name=edge,proto3,oneof"`
 }
 
-type Log_Counter struct {
-	Counter *Counter `protobuf:"bytes,8,opt,name=counter,proto3,oneof"`
+type Mutation_Edges struct {
+	Edges *Edges `protobuf:"bytes,8,opt,name=edges,proto3,oneof"`
 }
 
-type Log_Patch struct {
-	Patch *Patch `protobuf:"bytes,9,opt,name=patch,proto3,oneof"`
+type Mutation_Path struct {
+	Path *Path `protobuf:"bytes,9,opt,name=path,proto3,oneof"`
 }
 
-type Log_Patches struct {
-	Patches *Patches `protobuf:"bytes,10,opt,name=patches,proto3,oneof"`
+type Mutation_Paths struct {
+	Paths *Paths `protobuf:"bytes,10,opt,name=paths,proto3,oneof"`
 }
 
-func (*Log_Node) isLog_Log() {}
+type Mutation_Patch struct {
+	Patch *Patch `protobuf:"bytes,13,opt,name=patch,proto3,oneof"`
+}
 
-func (*Log_Nodes) isLog_Log() {}
+type Mutation_Patches struct {
+	Patches *Patches `protobuf:"bytes,14,opt,name=patches,proto3,oneof"`
+}
 
-func (*Log_Edge) isLog_Log() {}
+type Mutation_Empty struct {
+	Empty *empty.Empty `protobuf:"bytes,15,opt,name=empty,proto3,oneof"`
+}
 
-func (*Log_Edges) isLog_Log() {}
+func (*Mutation_Node) isMutation_Object() {}
 
-func (*Log_Path) isLog_Log() {}
+func (*Mutation_Nodes) isMutation_Object() {}
 
-func (*Log_Paths) isLog_Log() {}
+func (*Mutation_NodeConstructor) isMutation_Object() {}
 
-func (*Log_Auth) isLog_Log() {}
+func (*Mutation_NodeConstructors) isMutation_Object() {}
 
-func (*Log_Counter) isLog_Log() {}
+func (*Mutation_EdgeConstructor) isMutation_Object() {}
 
-func (*Log_Patch) isLog_Log() {}
+func (*Mutation_EdgeConstructors) isMutation_Object() {}
 
-func (*Log_Patches) isLog_Log() {}
+func (*Mutation_Edge) isMutation_Object() {}
 
-func (m *Log) GetLog() isLog_Log {
+func (*Mutation_Edges) isMutation_Object() {}
+
+func (*Mutation_Path) isMutation_Object() {}
+
+func (*Mutation_Paths) isMutation_Object() {}
+
+func (*Mutation_Patch) isMutation_Object() {}
+
+func (*Mutation_Patches) isMutation_Object() {}
+
+func (*Mutation_Empty) isMutation_Object() {}
+
+func (m *Mutation) GetObject() isMutation_Object {
 	if m != nil {
-		return m.Log
+		return m.Object
 	}
 	return nil
 }
 
-func (m *Log) GetNode() *Node {
-	if x, ok := m.GetLog().(*Log_Node); ok {
+func (m *Mutation) GetNode() *Node {
+	if x, ok := m.GetObject().(*Mutation_Node); ok {
 		return x.Node
 	}
 	return nil
 }
 
-func (m *Log) GetNodes() *Nodes {
-	if x, ok := m.GetLog().(*Log_Nodes); ok {
+func (m *Mutation) GetNodes() *Nodes {
+	if x, ok := m.GetObject().(*Mutation_Nodes); ok {
 		return x.Nodes
 	}
 	return nil
 }
 
-func (m *Log) GetEdge() *Edge {
-	if x, ok := m.GetLog().(*Log_Edge); ok {
+func (m *Mutation) GetNodeConstructor() *NodeConstructor {
+	if x, ok := m.GetObject().(*Mutation_NodeConstructor); ok {
+		return x.NodeConstructor
+	}
+	return nil
+}
+
+func (m *Mutation) GetNodeConstructors() *NodeConstructors {
+	if x, ok := m.GetObject().(*Mutation_NodeConstructors); ok {
+		return x.NodeConstructors
+	}
+	return nil
+}
+
+func (m *Mutation) GetEdgeConstructor() *EdgeConstructor {
+	if x, ok := m.GetObject().(*Mutation_EdgeConstructor); ok {
+		return x.EdgeConstructor
+	}
+	return nil
+}
+
+func (m *Mutation) GetEdgeConstructors() *EdgeConstructors {
+	if x, ok := m.GetObject().(*Mutation_EdgeConstructors); ok {
+		return x.EdgeConstructors
+	}
+	return nil
+}
+
+func (m *Mutation) GetEdge() *Edge {
+	if x, ok := m.GetObject().(*Mutation_Edge); ok {
 		return x.Edge
 	}
 	return nil
 }
 
-func (m *Log) GetEdges() *Edges {
-	if x, ok := m.GetLog().(*Log_Edges); ok {
+func (m *Mutation) GetEdges() *Edges {
+	if x, ok := m.GetObject().(*Mutation_Edges); ok {
 		return x.Edges
 	}
 	return nil
 }
 
-func (m *Log) GetPath() *Path {
-	if x, ok := m.GetLog().(*Log_Path); ok {
+func (m *Mutation) GetPath() *Path {
+	if x, ok := m.GetObject().(*Mutation_Path); ok {
 		return x.Path
 	}
 	return nil
 }
 
-func (m *Log) GetPaths() *Paths {
-	if x, ok := m.GetLog().(*Log_Paths); ok {
+func (m *Mutation) GetPaths() *Paths {
+	if x, ok := m.GetObject().(*Mutation_Paths); ok {
 		return x.Paths
 	}
 	return nil
 }
 
-func (m *Log) GetAuth() *AuthConfig {
-	if x, ok := m.GetLog().(*Log_Auth); ok {
-		return x.Auth
-	}
-	return nil
-}
-
-func (m *Log) GetCounter() *Counter {
-	if x, ok := m.GetLog().(*Log_Counter); ok {
-		return x.Counter
-	}
-	return nil
-}
-
-func (m *Log) GetPatch() *Patch {
-	if x, ok := m.GetLog().(*Log_Patch); ok {
+func (m *Mutation) GetPatch() *Patch {
+	if x, ok := m.GetObject().(*Mutation_Patch); ok {
 		return x.Patch
 	}
 	return nil
 }
 
-func (m *Log) GetPatches() *Patches {
-	if x, ok := m.GetLog().(*Log_Patches); ok {
+func (m *Mutation) GetPatches() *Patches {
+	if x, ok := m.GetObject().(*Mutation_Patches); ok {
 		return x.Patches
 	}
 	return nil
 }
 
+func (m *Mutation) GetEmpty() *empty.Empty {
+	if x, ok := m.GetObject().(*Mutation_Empty); ok {
+		return x.Empty
+	}
+	return nil
+}
+
 // XXX_OneofWrappers is for the internal use of the proto package.
-func (*Log) XXX_OneofWrappers() []interface{} {
+func (*Mutation) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*Log_Node)(nil),
-		(*Log_Nodes)(nil),
-		(*Log_Edge)(nil),
-		(*Log_Edges)(nil),
-		(*Log_Path)(nil),
-		(*Log_Paths)(nil),
-		(*Log_Auth)(nil),
-		(*Log_Counter)(nil),
-		(*Log_Patch)(nil),
-		(*Log_Patches)(nil),
+		(*Mutation_Node)(nil),
+		(*Mutation_Nodes)(nil),
+		(*Mutation_NodeConstructor)(nil),
+		(*Mutation_NodeConstructors)(nil),
+		(*Mutation_EdgeConstructor)(nil),
+		(*Mutation_EdgeConstructors)(nil),
+		(*Mutation_Edge)(nil),
+		(*Mutation_Edges)(nil),
+		(*Mutation_Path)(nil),
+		(*Mutation_Paths)(nil),
+		(*Mutation_Patch)(nil),
+		(*Mutation_Patches)(nil),
+		(*Mutation_Empty)(nil),
 	}
 }
 
-type Export struct {
+type Graph struct {
 	Nodes                *Nodes   `protobuf:"bytes,1,opt,name=nodes,proto3" json:"nodes,omitempty"`
 	Edges                *Edges   `protobuf:"bytes,2,opt,name=edges,proto3" json:"edges,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -963,39 +1568,39 @@ type Export struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Export) Reset()         { *m = Export{} }
-func (m *Export) String() string { return proto.CompactTextString(m) }
-func (*Export) ProtoMessage()    {}
-func (*Export) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{13}
+func (m *Graph) Reset()         { *m = Graph{} }
+func (m *Graph) String() string { return proto.CompactTextString(m) }
+func (*Graph) ProtoMessage()    {}
+func (*Graph) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{23}
 }
 
-func (m *Export) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Export.Unmarshal(m, b)
+func (m *Graph) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Graph.Unmarshal(m, b)
 }
-func (m *Export) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Export.Marshal(b, m, deterministic)
+func (m *Graph) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Graph.Marshal(b, m, deterministic)
 }
-func (m *Export) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Export.Merge(m, src)
+func (m *Graph) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Graph.Merge(m, src)
 }
-func (m *Export) XXX_Size() int {
-	return xxx_messageInfo_Export.Size(m)
+func (m *Graph) XXX_Size() int {
+	return xxx_messageInfo_Graph.Size(m)
 }
-func (m *Export) XXX_DiscardUnknown() {
-	xxx_messageInfo_Export.DiscardUnknown(m)
+func (m *Graph) XXX_DiscardUnknown() {
+	xxx_messageInfo_Graph.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Export proto.InternalMessageInfo
+var xxx_messageInfo_Graph proto.InternalMessageInfo
 
-func (m *Export) GetNodes() *Nodes {
+func (m *Graph) GetNodes() *Nodes {
 	if m != nil {
 		return m.Nodes
 	}
 	return nil
 }
 
-func (m *Export) GetEdges() *Edges {
+func (m *Graph) GetEdges() *Edges {
 	if m != nil {
 		return m.Edges
 	}
@@ -1014,7 +1619,7 @@ func (m *Patch) Reset()         { *m = Patch{} }
 func (m *Patch) String() string { return proto.CompactTextString(m) }
 func (*Patch) ProtoMessage()    {}
 func (*Patch) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{14}
+	return fileDescriptor_063490d3009de3e6, []int{24}
 }
 
 func (m *Patch) XXX_Unmarshal(b []byte) error {
@@ -1060,7 +1665,7 @@ func (m *Patches) Reset()         { *m = Patches{} }
 func (m *Patches) String() string { return proto.CompactTextString(m) }
 func (*Patches) ProtoMessage()    {}
 func (*Patches) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{15}
+	return fileDescriptor_063490d3009de3e6, []int{25}
 }
 
 func (m *Patches) XXX_Unmarshal(b []byte) error {
@@ -1099,7 +1704,7 @@ func (m *Pong) Reset()         { *m = Pong{} }
 func (m *Pong) String() string { return proto.CompactTextString(m) }
 func (*Pong) ProtoMessage()    {}
 func (*Pong) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{16}
+	return fileDescriptor_063490d3009de3e6, []int{26}
 }
 
 func (m *Pong) XXX_Unmarshal(b []byte) error {
@@ -1139,7 +1744,7 @@ func (m *RaftNode) Reset()         { *m = RaftNode{} }
 func (m *RaftNode) String() string { return proto.CompactTextString(m) }
 func (*RaftNode) ProtoMessage()    {}
 func (*RaftNode) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{17}
+	return fileDescriptor_063490d3009de3e6, []int{27}
 }
 
 func (m *RaftNode) XXX_Unmarshal(b []byte) error {
@@ -1174,332 +1779,73 @@ func (m *RaftNode) GetAddress() string {
 	return ""
 }
 
-type AuthConfig struct {
-	JwksSources          []string `protobuf:"bytes,1,rep,name=jwks_sources,json=jwksSources,proto3" json:"jwks_sources,omitempty"`
-	AuthExpressions      []string `protobuf:"bytes,2,rep,name=auth_expressions,json=authExpressions,proto3" json:"auth_expressions,omitempty"`
+type RaftLog struct {
+	Index                uint64   `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
+	Term                 uint64   `protobuf:"varint,3,opt,name=term,proto3" json:"term,omitempty"`
+	Type                 uint32   `protobuf:"varint,4,opt,name=type,proto3" json:"type,omitempty"`
+	Data                 []byte   `protobuf:"bytes,9,opt,name=data,proto3" json:"data,omitempty"`
+	Extensions           []byte   `protobuf:"bytes,10,opt,name=extensions,proto3" json:"extensions,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *AuthConfig) Reset()         { *m = AuthConfig{} }
-func (m *AuthConfig) String() string { return proto.CompactTextString(m) }
-func (*AuthConfig) ProtoMessage()    {}
-func (*AuthConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{18}
+func (m *RaftLog) Reset()         { *m = RaftLog{} }
+func (m *RaftLog) String() string { return proto.CompactTextString(m) }
+func (*RaftLog) ProtoMessage()    {}
+func (*RaftLog) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{28}
 }
 
-func (m *AuthConfig) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AuthConfig.Unmarshal(m, b)
+func (m *RaftLog) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RaftLog.Unmarshal(m, b)
 }
-func (m *AuthConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AuthConfig.Marshal(b, m, deterministic)
+func (m *RaftLog) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RaftLog.Marshal(b, m, deterministic)
 }
-func (m *AuthConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AuthConfig.Merge(m, src)
+func (m *RaftLog) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RaftLog.Merge(m, src)
 }
-func (m *AuthConfig) XXX_Size() int {
-	return xxx_messageInfo_AuthConfig.Size(m)
+func (m *RaftLog) XXX_Size() int {
+	return xxx_messageInfo_RaftLog.Size(m)
 }
-func (m *AuthConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_AuthConfig.DiscardUnknown(m)
+func (m *RaftLog) XXX_DiscardUnknown() {
+	xxx_messageInfo_RaftLog.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AuthConfig proto.InternalMessageInfo
+var xxx_messageInfo_RaftLog proto.InternalMessageInfo
 
-func (m *AuthConfig) GetJwksSources() []string {
+func (m *RaftLog) GetIndex() uint64 {
 	if m != nil {
-		return m.JwksSources
+		return m.Index
+	}
+	return 0
+}
+
+func (m *RaftLog) GetTerm() uint64 {
+	if m != nil {
+		return m.Term
+	}
+	return 0
+}
+
+func (m *RaftLog) GetType() uint32 {
+	if m != nil {
+		return m.Type
+	}
+	return 0
+}
+
+func (m *RaftLog) GetData() []byte {
+	if m != nil {
+		return m.Data
 	}
 	return nil
 }
 
-func (m *AuthConfig) GetAuthExpressions() []string {
+func (m *RaftLog) GetExtensions() []byte {
 	if m != nil {
-		return m.AuthExpressions
-	}
-	return nil
-}
-
-type RaftConfig struct {
-	Bind                 string   `protobuf:"bytes,1,opt,name=bind,proto3" json:"bind,omitempty"`
-	StoragePath          string   `protobuf:"bytes,2,opt,name=storage_path,json=storagePath,proto3" json:"storage_path,omitempty"`
-	Join                 string   `protobuf:"bytes,3,opt,name=join,proto3" json:"join,omitempty"`
-	NodeId               string   `protobuf:"bytes,4,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RaftConfig) Reset()         { *m = RaftConfig{} }
-func (m *RaftConfig) String() string { return proto.CompactTextString(m) }
-func (*RaftConfig) ProtoMessage()    {}
-func (*RaftConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{19}
-}
-
-func (m *RaftConfig) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RaftConfig.Unmarshal(m, b)
-}
-func (m *RaftConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RaftConfig.Marshal(b, m, deterministic)
-}
-func (m *RaftConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RaftConfig.Merge(m, src)
-}
-func (m *RaftConfig) XXX_Size() int {
-	return xxx_messageInfo_RaftConfig.Size(m)
-}
-func (m *RaftConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_RaftConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RaftConfig proto.InternalMessageInfo
-
-func (m *RaftConfig) GetBind() string {
-	if m != nil {
-		return m.Bind
-	}
-	return ""
-}
-
-func (m *RaftConfig) GetStoragePath() string {
-	if m != nil {
-		return m.StoragePath
-	}
-	return ""
-}
-
-func (m *RaftConfig) GetJoin() string {
-	if m != nil {
-		return m.Join
-	}
-	return ""
-}
-
-func (m *RaftConfig) GetNodeId() string {
-	if m != nil {
-		return m.NodeId
-	}
-	return ""
-}
-
-type HTTPConfig struct {
-	Bind                 string   `protobuf:"bytes,1,opt,name=bind,proto3" json:"bind,omitempty"`
-	AllowedOrigins       []string `protobuf:"bytes,2,rep,name=allowed_origins,json=allowedOrigins,proto3" json:"allowed_origins,omitempty"`
-	AllowedHeaders       []string `protobuf:"bytes,3,rep,name=allowed_headers,json=allowedHeaders,proto3" json:"allowed_headers,omitempty"`
-	AllowedMethods       []string `protobuf:"bytes,4,rep,name=allowed_methods,json=allowedMethods,proto3" json:"allowed_methods,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *HTTPConfig) Reset()         { *m = HTTPConfig{} }
-func (m *HTTPConfig) String() string { return proto.CompactTextString(m) }
-func (*HTTPConfig) ProtoMessage()    {}
-func (*HTTPConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{20}
-}
-
-func (m *HTTPConfig) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_HTTPConfig.Unmarshal(m, b)
-}
-func (m *HTTPConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_HTTPConfig.Marshal(b, m, deterministic)
-}
-func (m *HTTPConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_HTTPConfig.Merge(m, src)
-}
-func (m *HTTPConfig) XXX_Size() int {
-	return xxx_messageInfo_HTTPConfig.Size(m)
-}
-func (m *HTTPConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_HTTPConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_HTTPConfig proto.InternalMessageInfo
-
-func (m *HTTPConfig) GetBind() string {
-	if m != nil {
-		return m.Bind
-	}
-	return ""
-}
-
-func (m *HTTPConfig) GetAllowedOrigins() []string {
-	if m != nil {
-		return m.AllowedOrigins
-	}
-	return nil
-}
-
-func (m *HTTPConfig) GetAllowedHeaders() []string {
-	if m != nil {
-		return m.AllowedHeaders
-	}
-	return nil
-}
-
-func (m *HTTPConfig) GetAllowedMethods() []string {
-	if m != nil {
-		return m.AllowedMethods
-	}
-	return nil
-}
-
-type GRPCConfig struct {
-	Bind                 string   `protobuf:"bytes,1,opt,name=bind,proto3" json:"bind,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *GRPCConfig) Reset()         { *m = GRPCConfig{} }
-func (m *GRPCConfig) String() string { return proto.CompactTextString(m) }
-func (*GRPCConfig) ProtoMessage()    {}
-func (*GRPCConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{21}
-}
-
-func (m *GRPCConfig) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GRPCConfig.Unmarshal(m, b)
-}
-func (m *GRPCConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GRPCConfig.Marshal(b, m, deterministic)
-}
-func (m *GRPCConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GRPCConfig.Merge(m, src)
-}
-func (m *GRPCConfig) XXX_Size() int {
-	return xxx_messageInfo_GRPCConfig.Size(m)
-}
-func (m *GRPCConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_GRPCConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_GRPCConfig proto.InternalMessageInfo
-
-func (m *GRPCConfig) GetBind() string {
-	if m != nil {
-		return m.Bind
-	}
-	return ""
-}
-
-type Config struct {
-	Http                 *HTTPConfig `protobuf:"bytes,1,opt,name=http,proto3" json:"http,omitempty"`
-	Grpc                 *GRPCConfig `protobuf:"bytes,2,opt,name=grpc,proto3" json:"grpc,omitempty"`
-	Raft                 *RaftConfig `protobuf:"bytes,3,opt,name=raft,proto3" json:"raft,omitempty"`
-	Auth                 *AuthConfig `protobuf:"bytes,4,opt,name=auth,proto3" json:"auth,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
-	XXX_unrecognized     []byte      `json:"-"`
-	XXX_sizecache        int32       `json:"-"`
-}
-
-func (m *Config) Reset()         { *m = Config{} }
-func (m *Config) String() string { return proto.CompactTextString(m) }
-func (*Config) ProtoMessage()    {}
-func (*Config) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{22}
-}
-
-func (m *Config) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Config.Unmarshal(m, b)
-}
-func (m *Config) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Config.Marshal(b, m, deterministic)
-}
-func (m *Config) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Config.Merge(m, src)
-}
-func (m *Config) XXX_Size() int {
-	return xxx_messageInfo_Config.Size(m)
-}
-func (m *Config) XXX_DiscardUnknown() {
-	xxx_messageInfo_Config.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Config proto.InternalMessageInfo
-
-func (m *Config) GetHttp() *HTTPConfig {
-	if m != nil {
-		return m.Http
-	}
-	return nil
-}
-
-func (m *Config) GetGrpc() *GRPCConfig {
-	if m != nil {
-		return m.Grpc
-	}
-	return nil
-}
-
-func (m *Config) GetRaft() *RaftConfig {
-	if m != nil {
-		return m.Raft
-	}
-	return nil
-}
-
-func (m *Config) GetAuth() *AuthConfig {
-	if m != nil {
-		return m.Auth
-	}
-	return nil
-}
-
-type RequestIntercept struct {
-	FullPath             string          `protobuf:"bytes,1,opt,name=full_path,json=fullPath,proto3" json:"full_path,omitempty"`
-	User                 *Node           `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
-	Request              *_struct.Struct `protobuf:"bytes,3,opt,name=request,proto3" json:"request,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
-}
-
-func (m *RequestIntercept) Reset()         { *m = RequestIntercept{} }
-func (m *RequestIntercept) String() string { return proto.CompactTextString(m) }
-func (*RequestIntercept) ProtoMessage()    {}
-func (*RequestIntercept) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{23}
-}
-
-func (m *RequestIntercept) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RequestIntercept.Unmarshal(m, b)
-}
-func (m *RequestIntercept) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RequestIntercept.Marshal(b, m, deterministic)
-}
-func (m *RequestIntercept) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RequestIntercept.Merge(m, src)
-}
-func (m *RequestIntercept) XXX_Size() int {
-	return xxx_messageInfo_RequestIntercept.Size(m)
-}
-func (m *RequestIntercept) XXX_DiscardUnknown() {
-	xxx_messageInfo_RequestIntercept.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RequestIntercept proto.InternalMessageInfo
-
-func (m *RequestIntercept) GetFullPath() string {
-	if m != nil {
-		return m.FullPath
-	}
-	return ""
-}
-
-func (m *RequestIntercept) GetUser() *Node {
-	if m != nil {
-		return m.User
-	}
-	return nil
-}
-
-func (m *RequestIntercept) GetRequest() *_struct.Struct {
-	if m != nil {
-		return m.Request
+		return m.Extensions
 	}
 	return nil
 }
@@ -1516,7 +1862,7 @@ func (m *OutboundMessage) Reset()         { *m = OutboundMessage{} }
 func (m *OutboundMessage) String() string { return proto.CompactTextString(m) }
 func (*OutboundMessage) ProtoMessage()    {}
 func (*OutboundMessage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{24}
+	return fileDescriptor_063490d3009de3e6, []int{29}
 }
 
 func (m *OutboundMessage) XXX_Unmarshal(b []byte) error {
@@ -1565,7 +1911,7 @@ func (m *Message) Reset()         { *m = Message{} }
 func (m *Message) String() string { return proto.CompactTextString(m) }
 func (*Message) ProtoMessage()    {}
 func (*Message) Descriptor() ([]byte, []int) {
-	return fileDescriptor_063490d3009de3e6, []int{25}
+	return fileDescriptor_063490d3009de3e6, []int{30}
 }
 
 func (m *Message) XXX_Unmarshal(b []byte) error {
@@ -1614,144 +1960,264 @@ func (m *Message) GetTimestamp() int64 {
 	return 0
 }
 
+type Trigger struct {
+	Timing               Timing       `protobuf:"varint,1,opt,name=timing,proto3,enum=api.Timing" json:"timing,omitempty"`
+	State                *StateChange `protobuf:"bytes,2,opt,name=state,proto3" json:"state,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
+	XXX_unrecognized     []byte       `json:"-"`
+	XXX_sizecache        int32        `json:"-"`
+}
+
+func (m *Trigger) Reset()         { *m = Trigger{} }
+func (m *Trigger) String() string { return proto.CompactTextString(m) }
+func (*Trigger) ProtoMessage()    {}
+func (*Trigger) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{31}
+}
+
+func (m *Trigger) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Trigger.Unmarshal(m, b)
+}
+func (m *Trigger) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Trigger.Marshal(b, m, deterministic)
+}
+func (m *Trigger) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Trigger.Merge(m, src)
+}
+func (m *Trigger) XXX_Size() int {
+	return xxx_messageInfo_Trigger.Size(m)
+}
+func (m *Trigger) XXX_DiscardUnknown() {
+	xxx_messageInfo_Trigger.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Trigger proto.InternalMessageInfo
+
+func (m *Trigger) GetTiming() Timing {
+	if m != nil {
+		return m.Timing
+	}
+	return Timing_BEFORE
+}
+
+func (m *Trigger) GetState() *StateChange {
+	if m != nil {
+		return m.State
+	}
+	return nil
+}
+
+type Schema struct {
+	EdgeTypes            []string `protobuf:"bytes,1,rep,name=edge_types,json=edgeTypes,proto3" json:"edge_types,omitempty"`
+	NodeTypes            []string `protobuf:"bytes,2,rep,name=node_types,json=nodeTypes,proto3" json:"node_types,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Schema) Reset()         { *m = Schema{} }
+func (m *Schema) String() string { return proto.CompactTextString(m) }
+func (*Schema) ProtoMessage()    {}
+func (*Schema) Descriptor() ([]byte, []int) {
+	return fileDescriptor_063490d3009de3e6, []int{32}
+}
+
+func (m *Schema) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Schema.Unmarshal(m, b)
+}
+func (m *Schema) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Schema.Marshal(b, m, deterministic)
+}
+func (m *Schema) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Schema.Merge(m, src)
+}
+func (m *Schema) XXX_Size() int {
+	return xxx_messageInfo_Schema.Size(m)
+}
+func (m *Schema) XXX_DiscardUnknown() {
+	xxx_messageInfo_Schema.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Schema proto.InternalMessageInfo
+
+func (m *Schema) GetEdgeTypes() []string {
+	if m != nil {
+		return m.EdgeTypes
+	}
+	return nil
+}
+
+func (m *Schema) GetNodeTypes() []string {
+	if m != nil {
+		return m.NodeTypes
+	}
+	return nil
+}
+
 func init() {
+	proto.RegisterEnum("api.Timing", Timing_name, Timing_value)
 	proto.RegisterEnum("api.Op", Op_name, Op_value)
 	proto.RegisterEnum("api.Cascade", Cascade_name, Cascade_value)
-	proto.RegisterEnum("api.Keyword", Keyword_name, Keyword_value)
-	proto.RegisterType((*Counter)(nil), "api.Counter")
 	proto.RegisterType((*Path)(nil), "api.Path")
 	proto.RegisterType((*Paths)(nil), "api.Paths")
 	proto.RegisterType((*Node)(nil), "api.Node")
+	proto.RegisterType((*NodeConstructor)(nil), "api.NodeConstructor")
+	proto.RegisterType((*NodeConstructors)(nil), "api.NodeConstructors")
 	proto.RegisterType((*Nodes)(nil), "api.Nodes")
+	proto.RegisterType((*NodeDetail)(nil), "api.NodeDetail")
+	proto.RegisterMapType((map[string]*EdgeDetails)(nil), "api.NodeDetail.EdgesFromEntry")
+	proto.RegisterMapType((map[string]*EdgeDetails)(nil), "api.NodeDetail.EdgesToEntry")
+	proto.RegisterType((*NodeDetails)(nil), "api.NodeDetails")
+	proto.RegisterType((*NodeDetailFilter)(nil), "api.NodeDetailFilter")
 	proto.RegisterType((*Edge)(nil), "api.Edge")
+	proto.RegisterType((*EdgeConstructor)(nil), "api.EdgeConstructor")
+	proto.RegisterType((*EdgeConstructors)(nil), "api.EdgeConstructors")
 	proto.RegisterType((*Edges)(nil), "api.Edges")
+	proto.RegisterType((*EdgeDetail)(nil), "api.EdgeDetail")
+	proto.RegisterType((*EdgeDetails)(nil), "api.EdgeDetails")
 	proto.RegisterType((*EdgeFilter)(nil), "api.EdgeFilter")
-	proto.RegisterType((*TypeFilter)(nil), "api.TypeFilter")
+	proto.RegisterType((*Filter)(nil), "api.Filter")
+	proto.RegisterType((*MeFilter)(nil), "api.MeFilter")
 	proto.RegisterType((*ChangeFilter)(nil), "api.ChangeFilter")
 	proto.RegisterType((*ChannelFilter)(nil), "api.ChannelFilter")
+	proto.RegisterType((*SubGraphFilter)(nil), "api.SubGraphFilter")
 	proto.RegisterType((*StateChange)(nil), "api.StateChange")
-	proto.RegisterType((*Log)(nil), "api.Log")
-	proto.RegisterType((*Export)(nil), "api.Export")
+	proto.RegisterType((*Mutation)(nil), "api.Mutation")
+	proto.RegisterType((*Graph)(nil), "api.Graph")
 	proto.RegisterType((*Patch)(nil), "api.Patch")
 	proto.RegisterType((*Patches)(nil), "api.Patches")
 	proto.RegisterType((*Pong)(nil), "api.Pong")
 	proto.RegisterType((*RaftNode)(nil), "api.RaftNode")
-	proto.RegisterType((*AuthConfig)(nil), "api.AuthConfig")
-	proto.RegisterType((*RaftConfig)(nil), "api.RaftConfig")
-	proto.RegisterType((*HTTPConfig)(nil), "api.HTTPConfig")
-	proto.RegisterType((*GRPCConfig)(nil), "api.GRPCConfig")
-	proto.RegisterType((*Config)(nil), "api.Config")
-	proto.RegisterType((*RequestIntercept)(nil), "api.RequestIntercept")
+	proto.RegisterType((*RaftLog)(nil), "api.RaftLog")
 	proto.RegisterType((*OutboundMessage)(nil), "api.OutboundMessage")
 	proto.RegisterType((*Message)(nil), "api.Message")
+	proto.RegisterType((*Trigger)(nil), "api.Trigger")
+	proto.RegisterType((*Schema)(nil), "api.Schema")
 }
 
 func init() { proto.RegisterFile("api/graphik.proto", fileDescriptor_063490d3009de3e6) }
 
 var fileDescriptor_063490d3009de3e6 = []byte{
-	// 1624 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0xdf, 0x72, 0xdb, 0x4e,
-	0x15, 0xb6, 0x6c, 0xd9, 0xb2, 0x8f, 0xd3, 0x44, 0xbf, 0x9d, 0x0e, 0x75, 0xdd, 0x76, 0x92, 0x8a,
-	0xd2, 0xa6, 0xa1, 0x24, 0x6d, 0x60, 0xe8, 0x70, 0xc1, 0x85, 0xeb, 0x38, 0x7f, 0x68, 0xfe, 0x18,
-	0xd9, 0x61, 0xa0, 0x37, 0x46, 0x96, 0x36, 0xb2, 0x5a, 0xdb, 0x12, 0xd2, 0x8a, 0x36, 0x97, 0xf0,
-	0x06, 0x5c, 0xc3, 0x53, 0xf0, 0x36, 0xdc, 0xf1, 0x1c, 0x5c, 0x30, 0xcc, 0xd9, 0x5d, 0x59, 0x6b,
-	0xc5, 0x49, 0x60, 0x86, 0xdf, 0xdd, 0xea, 0x3b, 0x9f, 0xbe, 0xb3, 0xe7, 0xec, 0x9e, 0xb3, 0xbb,
-	0xf0, 0x9d, 0x13, 0x05, 0x7b, 0x7e, 0xec, 0x44, 0x93, 0xe0, 0xcb, 0x6e, 0x14, 0x87, 0x2c, 0x24,
-	0x15, 0x27, 0x0a, 0xda, 0x4f, 0xfd, 0x30, 0xf4, 0xa7, 0x74, 0x8f, 0x43, 0xe3, 0xf4, 0x6a, 0x2f,
-	0x61, 0x71, 0xea, 0x32, 0x41, 0x69, 0x6f, 0x16, 0xad, 0x2c, 0x98, 0xd1, 0x84, 0x39, 0xb3, 0x48,
-	0x12, 0x1e, 0x17, 0x09, 0xce, 0xfc, 0x5a, 0x9a, 0x9e, 0x14, 0x4d, 0x74, 0x16, 0x31, 0x69, 0xb4,
-	0x36, 0xc1, 0xe8, 0x86, 0xe9, 0x9c, 0xd1, 0x98, 0x3c, 0x84, 0xaa, 0x8b, 0xc3, 0x96, 0xb6, 0xa5,
-	0x6d, 0x57, 0x6c, 0xf1, 0x61, 0xed, 0x82, 0xde, 0x77, 0xd8, 0x04, 0xad, 0x3e, 0xbb, 0x8e, 0x28,
-	0xb7, 0x36, 0x6c, 0xf1, 0x41, 0x4c, 0xa8, 0xf8, 0x81, 0xd7, 0x2a, 0x73, 0x0c, 0x87, 0xd6, 0x36,
-	0x54, 0x91, 0x9f, 0x90, 0x4d, 0xa8, 0x46, 0x38, 0x68, 0x69, 0x5b, 0x95, 0xed, 0xe6, 0x7e, 0x63,
-	0xd7, 0x89, 0x82, 0x5d, 0x34, 0xd9, 0x02, 0xb7, 0xfe, 0xa6, 0x81, 0x7e, 0x1e, 0x7a, 0x94, 0x3c,
-	0x03, 0x1d, 0x11, 0xae, 0xbc, 0x44, 0xe4, 0x30, 0x79, 0x0f, 0xe0, 0x30, 0x16, 0x07, 0xe3, 0x94,
-	0xd1, 0xa4, 0x55, 0xe1, 0xa4, 0x47, 0xbb, 0x22, 0xa8, 0xdd, 0x2c, 0xa8, 0xdd, 0x01, 0x4f, 0x97,
-	0xad, 0x50, 0xc9, 0x33, 0x00, 0x37, 0xa6, 0x0e, 0xa3, 0xde, 0xc8, 0x61, 0x2d, 0x9d, 0x47, 0xd5,
-	0x90, 0x48, 0x87, 0xa1, 0x39, 0x8d, 0xbc, 0xcc, 0x5c, 0x15, 0x66, 0x89, 0x74, 0x18, 0x06, 0x82,
-	0xb3, 0xe3, 0x81, 0xcc, 0x71, 0xb0, 0x14, 0x08, 0x9a, 0x6c, 0x81, 0x5b, 0xff, 0xd6, 0x40, 0xef,
-	0x79, 0xfe, 0xf7, 0x17, 0xc8, 0x4b, 0x30, 0x5c, 0x27, 0x71, 0x1d, 0x8f, 0xf2, 0x28, 0xd6, 0xf7,
-	0xd7, 0xb8, 0x74, 0x57, 0x60, 0x76, 0x66, 0x44, 0xff, 0x57, 0x71, 0x38, 0xe3, 0xb1, 0x2c, 0xfb,
-	0x47, 0x98, 0x3c, 0x86, 0x32, 0x0b, 0x5b, 0xb5, 0xa2, 0xb1, 0xcc, 0xc2, 0x42, 0xaa, 0xe0, 0xee,
-	0x54, 0x35, 0x57, 0xa4, 0x0a, 0xe3, 0xe7, 0xa9, 0xa2, 0x38, 0x58, 0x4a, 0x15, 0x9a, 0x6c, 0x81,
-	0x5b, 0x7f, 0xd6, 0x00, 0xf0, 0xfb, 0x30, 0x98, 0xe2, 0x96, 0x7b, 0x09, 0x0d, 0x4c, 0xe1, 0x68,
-	0x75, 0xd6, 0xea, 0x68, 0x5b, 0xde, 0x7c, 0x65, 0x75, 0xf3, 0x6d, 0x41, 0x93, 0x7e, 0x8b, 0x62,
-	0x9a, 0x24, 0x41, 0x38, 0xc7, 0x84, 0x56, 0xb6, 0x1b, 0xb6, 0x0a, 0xe1, 0x7f, 0xd3, 0x60, 0x16,
-	0x88, 0xc5, 0xaf, 0xda, 0xe2, 0xc3, 0xfa, 0x04, 0x30, 0xbc, 0x8e, 0xb2, 0x39, 0xac, 0xde, 0xd8,
-	0x05, 0xed, 0xf2, 0x1d, 0xda, 0x15, 0x55, 0xfb, 0x2d, 0xac, 0x75, 0x27, 0xce, 0x7c, 0x11, 0x61,
-	0x41, 0x47, 0xbb, 0xa1, 0x63, 0x7d, 0x84, 0x07, 0xf8, 0xc7, 0x9c, 0x4e, 0xe5, 0x2f, 0x2d, 0x30,
-	0x5c, 0x01, 0xc8, 0x29, 0x65, 0x9f, 0xf7, 0x4f, 0xca, 0xfa, 0x3d, 0x34, 0x07, 0xcc, 0x61, 0x54,
-	0xcc, 0x81, 0x3c, 0x82, 0x72, 0x18, 0x71, 0x95, 0xf5, 0x7d, 0x83, 0x27, 0xf6, 0x22, 0xb2, 0xcb,
-	0x61, 0x44, 0xda, 0x50, 0x99, 0x86, 0x3e, 0x4f, 0x67, 0x73, 0xbf, 0xce, 0x2d, 0xa7, 0xa1, 0x6f,
-	0x23, 0x48, 0x9e, 0x42, 0x63, 0xd1, 0x5d, 0x78, 0x70, 0x15, 0x3b, 0x07, 0xac, 0x7f, 0x95, 0xa1,
-	0x72, 0x1a, 0xfa, 0x64, 0x13, 0x74, 0x5c, 0x9e, 0xa5, 0x55, 0xc3, 0xa2, 0x38, 0x2e, 0xd9, 0xdc,
-	0x40, 0xac, 0xac, 0x6c, 0x84, 0x13, 0x58, 0x30, 0x92, 0xe3, 0x92, 0xac, 0x1c, 0x14, 0xc1, 0x7d,
-	0x21, 0x6b, 0x21, 0xdf, 0x2e, 0x28, 0x82, 0x06, 0x14, 0x11, 0x1b, 0x4a, 0x57, 0x44, 0xf8, 0x5e,
-	0x43, 0x11, 0x2a, 0x37, 0x9d, 0xa8, 0xba, 0xe2, 0xae, 0x47, 0x11, 0x5e, 0x77, 0x56, 0xd6, 0x89,
-	0x6a, 0x8a, 0x08, 0x6f, 0x52, 0x28, 0xc2, 0x4d, 0xe4, 0x47, 0xa0, 0x3b, 0x29, 0x9b, 0xb4, 0x0c,
-	0x4e, 0xd9, 0xe0, 0x94, 0x4e, 0xca, 0x26, 0xdd, 0x70, 0x7e, 0x15, 0xf8, 0x28, 0x85, 0x66, 0xb2,
-	0x0d, 0x86, 0x2b, 0xda, 0x65, 0xab, 0xce, 0x99, 0xb2, 0x12, 0x05, 0x76, 0x5c, 0xb2, 0x33, 0xb3,
-	0x74, 0xea, 0x4e, 0x5a, 0x8d, 0x65, 0xa7, 0xee, 0x44, 0x3a, 0x75, 0xb9, 0x1a, 0x1f, 0xd0, 0x84,
-	0x97, 0x5c, 0xa6, 0xd6, 0x17, 0x18, 0xaa, 0x49, 0xf3, 0x87, 0x2a, 0x5f, 0x2f, 0xeb, 0x14, 0x6a,
-	0xbd, 0x6f, 0x51, 0x18, 0x33, 0xb2, 0x95, 0x37, 0xa5, 0x42, 0x76, 0xb3, 0xdc, 0x6e, 0x65, 0xa9,
-	0x2b, 0x17, 0x53, 0x97, 0x15, 0xe3, 0x88, 0xb7, 0x6a, 0x77, 0xf2, 0xbf, 0xf5, 0xad, 0xf2, 0x7f,
-	0xdd, 0xb7, 0xac, 0x3d, 0x30, 0x64, 0x2c, 0xe4, 0x45, 0x1e, 0xaa, 0xe8, 0x0d, 0x4a, 0x42, 0x16,
-	0x61, 0x5a, 0x5b, 0xa0, 0xf7, 0xc3, 0xb9, 0x8f, 0x25, 0x30, 0xa3, 0x49, 0xe2, 0xf8, 0x59, 0x55,
-	0x66, 0x9f, 0xd6, 0x2f, 0xa1, 0x6e, 0x3b, 0x57, 0x8c, 0x9f, 0x1b, 0x8f, 0xc0, 0xe0, 0xdd, 0x23,
-	0xf0, 0x24, 0xab, 0x86, 0x9f, 0x27, 0x1e, 0xfe, 0xee, 0x78, 0x1e, 0x16, 0x85, 0x6c, 0x18, 0xd9,
-	0x27, 0x96, 0x7e, 0xbe, 0xaa, 0xe4, 0x39, 0xac, 0x7d, 0xfe, 0xfa, 0x25, 0x19, 0x25, 0x61, 0x1a,
-	0xbb, 0x74, 0x51, 0x9d, 0x88, 0x0d, 0x04, 0x44, 0x5e, 0x83, 0x89, 0x0b, 0x3f, 0xba, 0x59, 0x77,
-	0x1b, 0x88, 0xf7, 0x94, 0xda, 0x8b, 0x00, 0x70, 0x6a, 0x52, 0x9b, 0x80, 0x3e, 0x0e, 0xe6, 0xd9,
-	0xcc, 0xf8, 0x18, 0xfd, 0x25, 0x2c, 0x8c, 0x1d, 0x5f, 0x76, 0x3c, 0x31, 0xb9, 0xa6, 0xc4, 0x78,
-	0xa7, 0x23, 0xa0, 0x7f, 0x0e, 0x83, 0x39, 0xaf, 0x88, 0x86, 0xcd, 0xc7, 0x6a, 0x9c, 0xba, 0x1a,
-	0xa7, 0xf5, 0x57, 0x0d, 0xe0, 0x78, 0x38, 0xec, 0xdf, 0xe1, 0xf2, 0x15, 0x6c, 0x38, 0xd3, 0x69,
-	0xf8, 0x95, 0x7a, 0xa3, 0x30, 0x0e, 0xfc, 0x60, 0x31, 0xfd, 0x75, 0x09, 0x5f, 0x08, 0x54, 0x25,
-	0x4e, 0xa8, 0xe3, 0xd1, 0x38, 0x6b, 0xa8, 0x19, 0xf1, 0x58, 0xa0, 0x2a, 0x71, 0x46, 0xd9, 0x24,
-	0xf4, 0xb0, 0x38, 0x55, 0xe2, 0x99, 0x40, 0xad, 0x2d, 0x80, 0x23, 0xbb, 0xdf, 0xbd, 0x7d, 0x72,
-	0x78, 0x03, 0xa8, 0x49, 0xf3, 0x0f, 0x41, 0x9f, 0x30, 0x16, 0xc9, 0x2d, 0x28, 0xea, 0x2f, 0x0f,
-	0xcd, 0xe6, 0x46, 0x24, 0xf9, 0x71, 0xe4, 0xca, 0x2d, 0x28, 0x48, 0xb9, 0x0b, 0x9b, 0x1b, 0x91,
-	0x14, 0x3b, 0x57, 0x4c, 0xf6, 0x14, 0x41, 0xca, 0xd7, 0xc5, 0xe6, 0x46, 0x24, 0xf1, 0x72, 0xd7,
-	0x57, 0x96, 0xbb, 0x28, 0x76, 0xeb, 0x4f, 0x1a, 0x98, 0x36, 0xfd, 0x43, 0x4a, 0x13, 0x76, 0x82,
-	0x35, 0xed, 0xd2, 0x88, 0x91, 0x27, 0xd0, 0xb8, 0x4a, 0xa7, 0xd3, 0xfc, 0xc8, 0x6a, 0xd8, 0x75,
-	0x04, 0xf8, 0xea, 0x3d, 0x03, 0x3d, 0x4d, 0x68, 0x2c, 0x27, 0xa8, 0xdc, 0x14, 0x38, 0x4c, 0xde,
-	0x81, 0x11, 0x0b, 0xbd, 0xfb, 0x4e, 0xff, 0x8c, 0x67, 0xfd, 0x16, 0x36, 0x2e, 0x52, 0x36, 0x0e,
-	0xd3, 0xb9, 0x77, 0x26, 0x4a, 0xe0, 0x8e, 0xf3, 0xe1, 0xc7, 0xa0, 0x7b, 0x0e, 0x73, 0xee, 0x2b,
-	0x51, 0x4e, 0xb2, 0xfe, 0xa2, 0x81, 0xf1, 0xff, 0x95, 0x24, 0xcf, 0xa1, 0x96, 0xd0, 0xb9, 0x47,
-	0xe3, 0xa5, 0x86, 0xce, 0x3b, 0x89, 0x34, 0x2c, 0x1f, 0x2e, 0x7a, 0xe1, 0x70, 0xd9, 0xf9, 0xa7,
-	0x06, 0xe5, 0x8b, 0x88, 0x98, 0xb0, 0xd6, 0xb5, 0x7b, 0x9d, 0x61, 0x6f, 0x74, 0x7e, 0x71, 0xd0,
-	0x1b, 0x98, 0x25, 0xb2, 0x01, 0x4d, 0x05, 0x31, 0x35, 0x04, 0xfa, 0x9d, 0x61, 0xf7, 0x58, 0x32,
-	0xca, 0x64, 0x1d, 0x20, 0x07, 0xcc, 0x0a, 0x6a, 0x1c, 0xf4, 0x4e, 0x7b, 0x0b, 0x0d, 0x1d, 0x7f,
-	0x51, 0x10, 0xb3, 0xaa, 0xb8, 0xe9, 0x1d, 0x1c, 0xf5, 0x06, 0x66, 0x4d, 0x71, 0x83, 0x88, 0x69,
-	0xe4, 0x6e, 0x04, 0xa3, 0x9e, 0xbb, 0xe1, 0x84, 0x86, 0xe2, 0x46, 0x30, 0x40, 0x71, 0xc3, 0x29,
-	0x4d, 0xb2, 0x06, 0xf5, 0x41, 0x6f, 0x38, 0xea, 0x5c, 0x0e, 0x8f, 0xcd, 0xb5, 0x9d, 0x5f, 0x83,
-	0x21, 0xef, 0x6d, 0xdc, 0x7f, 0x67, 0xd0, 0xed, 0x1c, 0xe0, 0x8c, 0xce, 0x7b, 0x66, 0x49, 0x45,
-	0x0e, 0xed, 0x8b, 0x33, 0x53, 0x43, 0x7f, 0x19, 0x32, 0xbc, 0x30, 0xcb, 0x84, 0xc0, 0x7a, 0xf6,
-	0x7d, 0x76, 0x39, 0xbc, 0xec, 0x9c, 0x9a, 0x95, 0x9d, 0x37, 0x60, 0x7c, 0xa4, 0xd7, 0x5f, 0xc3,
-	0xd8, 0x23, 0x4d, 0x30, 0x4e, 0xce, 0x7f, 0xd3, 0x39, 0x3d, 0x39, 0x30, 0x4b, 0xc4, 0x80, 0x4a,
-	0xe7, 0xfc, 0x77, 0xa6, 0x86, 0xe8, 0x41, 0xef, 0xb0, 0x73, 0x79, 0x3a, 0x34, 0xcb, 0xfb, 0xff,
-	0xd0, 0xe0, 0x81, 0xd8, 0xe6, 0x03, 0x1a, 0xff, 0x31, 0x70, 0x29, 0xae, 0x71, 0x3f, 0x98, 0xfb,
-	0xe4, 0x07, 0x37, 0x56, 0xb7, 0x87, 0x2f, 0x85, 0xb6, 0x5c, 0xc6, 0x70, 0xee, 0x5b, 0x25, 0xf2,
-	0x73, 0x68, 0xfe, 0x2a, 0x0c, 0xe6, 0xdd, 0x69, 0x9a, 0xe0, 0x31, 0xf7, 0x60, 0x51, 0x5f, 0xb8,
-	0xcf, 0xdb, 0xb7, 0x48, 0x58, 0x25, 0xf2, 0x33, 0x30, 0x8e, 0x28, 0xc3, 0x1a, 0xbb, 0xd5, 0x4f,
-	0xb1, 0x0c, 0xad, 0x12, 0xf9, 0x09, 0x18, 0x03, 0xf9, 0x57, 0xd1, 0xba, 0x82, 0xbe, 0xff, 0x77,
-	0x03, 0xd6, 0x8e, 0xf0, 0x6d, 0x95, 0x85, 0xf6, 0x1a, 0xca, 0x67, 0xf4, 0x9e, 0xc0, 0x70, 0xe2,
-	0x56, 0x89, 0xbc, 0x00, 0xe8, 0xf2, 0x0b, 0x2f, 0x3f, 0x5b, 0x72, 0xd3, 0x32, 0xeb, 0x15, 0x34,
-	0x73, 0x56, 0x42, 0x94, 0x73, 0xb7, 0xad, 0x8c, 0xad, 0x12, 0x79, 0xce, 0xe3, 0x55, 0xb4, 0xb0,
-	0x0c, 0x96, 0xb5, 0xde, 0x40, 0x73, 0x40, 0x9d, 0xd8, 0x9d, 0x08, 0x2d, 0x11, 0x4f, 0x7e, 0x33,
-	0x2d, 0x08, 0xbe, 0x80, 0x06, 0x3f, 0x2d, 0xb9, 0xa4, 0x72, 0x7a, 0x2e, 0x6b, 0x6e, 0x03, 0x2c,
-	0x58, 0x09, 0x59, 0xba, 0x4f, 0xdc, 0xd0, 0x33, 0x0e, 0xe8, 0xb4, 0x38, 0xc1, 0xa5, 0xfb, 0x8c,
-	0x55, 0x22, 0x2f, 0xa1, 0x2e, 0x59, 0x09, 0x51, 0x2e, 0x4e, 0x37, 0x78, 0x8b, 0xec, 0xf1, 0x87,
-	0x50, 0x7e, 0x93, 0x6b, 0xe7, 0x43, 0x35, 0x7b, 0xe2, 0xb9, 0xa0, 0xdc, 0x49, 0xda, 0xca, 0x78,
-	0x91, 0x3d, 0x45, 0x4b, 0xc9, 0x9e, 0xd4, 0x5a, 0x64, 0x4f, 0x68, 0xdd, 0x92, 0xbd, 0x4c, 0x30,
-	0xcb, 0x1e, 0x97, 0xbc, 0x99, 0x3d, 0xa9, 0x99, 0x65, 0x4f, 0x48, 0xae, 0xca, 0x5e, 0xae, 0x87,
-	0xd9, 0x2b, 0x4e, 0x70, 0x75, 0xf6, 0xd4, 0x60, 0x57, 0x67, 0x6f, 0x07, 0x1a, 0x9c, 0x74, 0x88,
-	0xcf, 0xb4, 0x8d, 0x85, 0xa3, 0x95, 0x91, 0x6c, 0x83, 0xc1, 0x87, 0xc3, 0xf0, 0x3e, 0xe6, 0xfb,
-	0xec, 0x2d, 0x32, 0x60, 0x31, 0x75, 0x66, 0xe4, 0x3b, 0xe1, 0x55, 0x79, 0x9e, 0xb4, 0x4d, 0x0e,
-	0x29, 0x4f, 0x06, 0xab, 0xf4, 0x56, 0x23, 0xbf, 0x00, 0xa3, 0x9f, 0x8e, 0xa7, 0x41, 0x32, 0x21,
-	0x0f, 0xc5, 0xab, 0x61, 0xf9, 0x08, 0xba, 0xa3, 0xcc, 0xdf, 0x41, 0x63, 0x90, 0x8e, 0x13, 0x37,
-	0x0e, 0xc6, 0x94, 0x90, 0x85, 0xc3, 0xc5, 0xeb, 0x46, 0x86, 0x2e, 0x85, 0xd0, 0xdb, 0x07, 0xe3,
-	0x53, 0xd5, 0x89, 0x82, 0x68, 0x3c, 0xae, 0x71, 0xb5, 0x9f, 0xfe, 0x27, 0x00, 0x00, 0xff, 0xff,
-	0xbd, 0x37, 0x47, 0xc0, 0x23, 0x11, 0x00, 0x00,
+	// 1897 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x5f, 0x73, 0x1b, 0x49,
+	0x11, 0xd7, 0xea, 0xdf, 0x4a, 0x2d, 0xd9, 0xde, 0x0c, 0x77, 0x44, 0x27, 0x92, 0xb3, 0xb3, 0x1c,
+	0x2e, 0x63, 0x0a, 0x39, 0x67, 0x28, 0x02, 0x54, 0x1d, 0x55, 0x8a, 0x2d, 0xc7, 0xc7, 0xc5, 0xb1,
+	0x59, 0xf9, 0x52, 0x14, 0x0f, 0xb8, 0x56, 0xd2, 0x44, 0x5a, 0x4e, 0xda, 0x5d, 0x76, 0x47, 0x57,
+	0x49, 0xf1, 0x46, 0xc1, 0x07, 0xe0, 0x89, 0x17, 0xbe, 0x04, 0x6f, 0x7c, 0x07, 0xde, 0xf8, 0x2a,
+	0xbc, 0x53, 0x54, 0xf7, 0xcc, 0xac, 0x66, 0xd7, 0xb2, 0x1d, 0x2a, 0x84, 0xe2, 0x6d, 0xa7, 0xbb,
+	0xa7, 0xbb, 0xe7, 0x37, 0x3d, 0xbf, 0x9e, 0x59, 0xb8, 0xe7, 0xc7, 0xc1, 0xc1, 0x34, 0xf1, 0xe3,
+	0x59, 0xf0, 0x55, 0x2f, 0x4e, 0x22, 0x11, 0xb1, 0x8a, 0x1f, 0x07, 0xdd, 0x07, 0xd3, 0x28, 0x9a,
+	0xce, 0xf9, 0x01, 0x89, 0x46, 0xcb, 0x57, 0x07, 0xa9, 0x48, 0x96, 0x63, 0x21, 0x4d, 0xba, 0xdb,
+	0x45, 0xad, 0x08, 0x16, 0x3c, 0x15, 0xfe, 0x22, 0x56, 0x06, 0x1f, 0x15, 0x0d, 0xfc, 0xf0, 0x8d,
+	0x52, 0x7d, 0xab, 0xa8, 0xe2, 0x8b, 0x58, 0x28, 0xa5, 0xdb, 0x83, 0xea, 0x85, 0x2f, 0x66, 0xec,
+	0x03, 0xa8, 0x4d, 0xc5, 0x9b, 0x98, 0x77, 0xac, 0x1d, 0x6b, 0xaf, 0xe9, 0xc9, 0x01, 0x73, 0xa0,
+	0x32, 0x0d, 0x26, 0x9d, 0x32, 0xc9, 0xf0, 0xd3, 0xdd, 0x83, 0x1a, 0xda, 0xa7, 0x6c, 0x1b, 0x6a,
+	0x31, 0x7e, 0x74, 0xac, 0x9d, 0xca, 0x5e, 0xeb, 0xb0, 0xd9, 0xf3, 0xe3, 0xa0, 0x87, 0x2a, 0x4f,
+	0xca, 0xdd, 0xbf, 0x58, 0x50, 0x7d, 0x11, 0x4d, 0x38, 0x7b, 0x08, 0x55, 0x94, 0x90, 0xe7, 0x9c,
+	0x21, 0x89, 0xd9, 0x13, 0x00, 0x5f, 0x88, 0x24, 0x18, 0x2d, 0x05, 0x4f, 0x3b, 0x15, 0x32, 0xba,
+	0xdf, 0x93, 0x39, 0xf7, 0x74, 0xce, 0xbd, 0x21, 0xa1, 0xe1, 0x19, 0xa6, 0xec, 0x21, 0xc0, 0x38,
+	0xe1, 0xbe, 0xe0, 0x93, 0x2b, 0x5f, 0x74, 0xaa, 0x3b, 0xd6, 0x5e, 0xc5, 0x6b, 0x2a, 0x49, 0x5f,
+	0xa0, 0x7a, 0x19, 0x4f, 0xb4, 0xba, 0x26, 0xd5, 0x4a, 0xd2, 0x17, 0x6e, 0x00, 0x5b, 0x98, 0xdd,
+	0x51, 0x14, 0x4a, 0xa0, 0xa3, 0xe4, 0x7d, 0x25, 0xea, 0xfe, 0x0c, 0x9c, 0x42, 0xa8, 0x94, 0xed,
+	0x43, 0x2d, 0x8c, 0x26, 0x5c, 0xc3, 0xf7, 0x01, 0x05, 0x2b, 0x58, 0x79, 0xd2, 0x04, 0x31, 0x47,
+	0x0d, 0x61, 0x6e, 0x4e, 0x6a, 0x66, 0x93, 0xb4, 0xe5, 0xdf, 0x2a, 0x00, 0x38, 0x3e, 0xe6, 0xc2,
+	0x0f, 0xe6, 0xff, 0xd9, 0x82, 0xca, 0x6f, 0x8f, 0xfc, 0x67, 0x00, 0x7c, 0x32, 0xe5, 0xe9, 0xd5,
+	0xab, 0x24, 0x5a, 0x74, 0x2a, 0x94, 0xcc, 0xc7, 0x59, 0x32, 0x32, 0x78, 0x6f, 0x80, 0x16, 0x27,
+	0x49, 0xb4, 0x18, 0x84, 0x22, 0x79, 0xe3, 0x35, 0xb9, 0x1e, 0xb3, 0x27, 0xd0, 0x90, 0xd3, 0x45,
+	0xd4, 0xa9, 0xd2, 0xe4, 0x07, 0x6b, 0x27, 0x5f, 0x46, 0x72, 0xaa, 0xcd, 0xe5, 0xa8, 0xb0, 0xe3,
+	0xb5, 0xdb, 0x77, 0xbc, 0x5e, 0xd8, 0xf1, 0xee, 0x0b, 0xd8, 0xcc, 0xe7, 0x84, 0xe5, 0xfd, 0x15,
+	0x7f, 0xa3, 0x4a, 0x1e, 0x3f, 0xd9, 0x2e, 0xd4, 0xbe, 0xf6, 0xe7, 0x4b, 0xae, 0xd0, 0x70, 0x28,
+	0x2f, 0x9c, 0x25, 0xf3, 0x4a, 0x3d, 0xa9, 0xfe, 0x69, 0xf9, 0xc7, 0x56, 0xf7, 0x39, 0xb4, 0xcd,
+	0x34, 0xdf, 0xcd, 0x9b, 0xdb, 0x87, 0xd6, 0x6a, 0xfd, 0x29, 0x3b, 0x84, 0x36, 0x6e, 0xe9, 0xd5,
+	0x44, 0x8e, 0xd5, 0x8e, 0x6f, 0x15, 0x70, 0xf2, 0x5a, 0xe1, 0x6a, 0x8e, 0xfb, 0x47, 0x4b, 0x16,
+	0x9a, 0x1c, 0x9f, 0x04, 0x73, 0xc1, 0xef, 0x2c, 0xea, 0xfd, 0xdc, 0x56, 0xca, 0x3c, 0x5b, 0x64,
+	0x24, 0xe7, 0x9b, 0xfb, 0xb6, 0x6b, 0xec, 0x5b, 0xe5, 0xba, 0xa5, 0xde, 0x26, 0xf7, 0x5f, 0x16,
+	0x54, 0x71, 0x95, 0xef, 0xed, 0xe4, 0xef, 0x82, 0x3d, 0xf6, 0xd3, 0xb1, 0x3f, 0xe1, 0x74, 0xec,
+	0x37, 0x0f, 0xdb, 0xe4, 0xfa, 0x48, 0xca, 0x3c, 0xad, 0xc4, 0xf8, 0xb4, 0xac, 0xda, 0xb5, 0xf8,
+	0x28, 0x66, 0x1f, 0x41, 0x59, 0x44, 0x54, 0x27, 0x39, 0x65, 0x59, 0x14, 0x2b, 0x0d, 0x6e, 0xaf,
+	0xb4, 0x56, 0x91, 0x5b, 0xfe, 0x6e, 0xc1, 0x16, 0x02, 0xf0, 0x3f, 0x20, 0x97, 0xf7, 0x8f, 0x05,
+	0xd2, 0x57, 0x61, 0x31, 0x44, 0x5f, 0xb4, 0xdb, 0x39, 0xfa, 0x2a, 0x58, 0x79, 0xd2, 0x04, 0xe9,
+	0x8b, 0xce, 0x09, 0xd2, 0x97, 0x39, 0xa9, 0x99, 0x4d, 0xd2, 0x96, 0x7f, 0x28, 0x03, 0xac, 0x8e,
+	0xc7, 0xff, 0x25, 0x64, 0xc4, 0xb6, 0x37, 0x41, 0x46, 0xca, 0x77, 0x2f, 0x9f, 0x1f, 0x42, 0xcb,
+	0x20, 0x09, 0xf6, 0x9d, 0x3c, 0x6c, 0x5b, 0x05, 0x16, 0xd1, 0xe0, 0xfd, 0xde, 0x92, 0xe0, 0xa9,
+	0x73, 0xbf, 0x0b, 0x4d, 0x22, 0x90, 0xf5, 0x08, 0x36, 0x50, 0x97, 0x6f, 0xfc, 0x65, 0xb3, 0xf1,
+	0xef, 0x40, 0x8b, 0xbf, 0x8e, 0x13, 0x9e, 0xa6, 0x41, 0x14, 0xa6, 0x44, 0xf1, 0x4d, 0xcf, 0x14,
+	0xe1, 0xbc, 0x79, 0xb0, 0x08, 0x64, 0xe3, 0xad, 0x79, 0x72, 0xe0, 0xbe, 0x84, 0xba, 0x8a, 0xbf,
+	0xfe, 0x42, 0x51, 0xf0, 0x5b, 0xbe, 0xc5, 0x6f, 0xc5, 0xf4, 0xfb, 0x6b, 0x68, 0x9c, 0xe9, 0x95,
+	0xe5, 0x29, 0xcb, 0x7a, 0x6b, 0xca, 0x2a, 0xdf, 0x42, 0x59, 0x8f, 0xa1, 0x7d, 0x34, 0xf3, 0xc3,
+	0x0c, 0xbd, 0x42, 0x9e, 0xd6, 0xb5, 0x3c, 0xdd, 0x2f, 0x60, 0x03, 0x67, 0x84, 0x5c, 0x13, 0x6d,
+	0x07, 0xec, 0xb1, 0x14, 0xa8, 0x25, 0xeb, 0xe1, 0xdd, 0x8b, 0x76, 0x5f, 0xc2, 0xe6, 0x70, 0x39,
+	0x7a, 0x86, 0xb7, 0x42, 0xe5, 0xed, 0xd1, 0xaa, 0xd5, 0x5f, 0xcb, 0x5a, 0x6a, 0xd0, 0x44, 0xd6,
+	0xc5, 0x9a, 0x85, 0xa9, 0x9a, 0xf8, 0xab, 0x05, 0xad, 0xa1, 0xf0, 0x05, 0x97, 0x8b, 0x63, 0x8f,
+	0xa0, 0x9d, 0xf0, 0xdf, 0x2e, 0x79, 0x2a, 0x56, 0x75, 0xd1, 0xf4, 0x5a, 0x4a, 0x46, 0xf5, 0xf0,
+	0x10, 0xaa, 0xcb, 0x94, 0x27, 0xca, 0xa9, 0x59, 0xf4, 0x28, 0x66, 0xf7, 0xa1, 0x1c, 0xc5, 0xb4,
+	0x37, 0x9b, 0x87, 0x36, 0x29, 0xcf, 0x63, 0xaf, 0x1c, 0xc5, 0xec, 0xbb, 0xd0, 0x58, 0x2c, 0x85,
+	0x2f, 0x82, 0x28, 0xa4, 0x92, 0x68, 0x1d, 0x6e, 0x90, 0xfa, 0x4c, 0x09, 0xbd, 0x4c, 0xcd, 0x1e,
+	0x40, 0x33, 0xbb, 0xbe, 0xea, 0x2e, 0x9e, 0x09, 0xdc, 0x7f, 0x56, 0xa1, 0xa1, 0x27, 0xb1, 0x6d,
+	0xa8, 0xe2, 0x62, 0x73, 0x05, 0x8c, 0xd9, 0x9c, 0x96, 0x3c, 0x52, 0x30, 0x57, 0xe3, 0x24, 0xf3,
+	0x85, 0xcc, 0x22, 0x3d, 0x2d, 0x69, 0xa0, 0xfa, 0xe0, 0xd0, 0x51, 0x18, 0xaf, 0xb8, 0x49, 0xd1,
+	0xc5, 0xda, 0x6b, 0xd7, 0x69, 0xc9, 0xdb, 0x0a, 0x0b, 0x57, 0xc3, 0x63, 0xb8, 0x57, 0x74, 0x91,
+	0xaa, 0x65, 0x7e, 0xb8, 0xce, 0x07, 0x46, 0x77, 0xc2, 0xe2, 0xa5, 0xaf, 0x0f, 0x0e, 0xee, 0x4b,
+	0x2e, 0x91, 0x9a, 0x91, 0x48, 0x81, 0x40, 0x31, 0x11, 0x5e, 0x68, 0x23, 0xc7, 0x70, 0xaf, 0xe8,
+	0x22, 0x55, 0x1c, 0xf4, 0xe1, 0x3a, 0x1f, 0x94, 0x08, 0x2f, 0xd2, 0xf7, 0x36, 0x54, 0x51, 0xd6,
+	0xb1, 0x0d, 0x58, 0x71, 0x22, 0xc2, 0x8a, 0x0a, 0x84, 0x55, 0xd6, 0x56, 0xc3, 0x80, 0x95, 0x58,
+	0x1c, 0x61, 0xe5, 0x8a, 0xce, 0x25, 0x3d, 0x37, 0x0b, 0xe4, 0x82, 0x4e, 0x88, 0xa0, 0x5d, 0xfd,
+	0x44, 0x00, 0xc3, 0x09, 0xbd, 0x1e, 0xd0, 0x09, 0xa9, 0x94, 0xcd, 0x78, 0xd6, 0xd9, 0xc8, 0xdb,
+	0x8c, 0x67, 0xca, 0x66, 0x3c, 0x63, 0x7b, 0x60, 0xd3, 0x07, 0x4f, 0x3b, 0x9b, 0x64, 0xd5, 0x5e,
+	0x59, 0x51, 0x42, 0x5a, 0xcd, 0x7a, 0x50, 0xa3, 0xc7, 0x4d, 0x67, 0x8b, 0xec, 0xbe, 0x79, 0xad,
+	0x1b, 0x0c, 0x50, 0x4b, 0x4b, 0xc0, 0x8f, 0xa7, 0x0d, 0xa8, 0x47, 0xa3, 0xdf, 0xf0, 0xb1, 0x70,
+	0xbf, 0x80, 0x1a, 0x1d, 0x3f, 0xb6, 0x93, 0x3f, 0x78, 0x46, 0x41, 0xe9, 0x72, 0xda, 0xc9, 0x9f,
+	0x3b, 0x03, 0x1b, 0x7d, 0xec, 0xae, 0xe8, 0x91, 0x34, 0x9e, 0xbd, 0xaf, 0x0b, 0xb8, 0x7b, 0x00,
+	0xb6, 0x5a, 0x3d, 0xfb, 0x64, 0x05, 0x8e, 0xec, 0x0f, 0x06, 0x84, 0x19, 0x30, 0xee, 0x0e, 0x54,
+	0x2f, 0xa2, 0x70, 0x8a, 0x24, 0xb5, 0xe0, 0x69, 0xea, 0x4f, 0x35, 0x2f, 0xeb, 0xa1, 0xfb, 0x19,
+	0x34, 0x3c, 0xff, 0x95, 0xa0, 0x17, 0xdb, 0x7d, 0xb0, 0xa9, 0xda, 0x83, 0x89, 0xb2, 0xaa, 0xe3,
+	0xf0, 0xf3, 0x09, 0x4e, 0xf7, 0x27, 0x13, 0xa4, 0x2d, 0xd5, 0x2e, 0xf4, 0xd0, 0xfd, 0x1d, 0xd8,
+	0x38, 0xfd, 0x79, 0x34, 0x45, 0x06, 0x0f, 0xc2, 0x09, 0x7f, 0x4d, 0x73, 0xab, 0x9e, 0x1c, 0x30,
+	0x06, 0x55, 0xc1, 0x93, 0x05, 0x1d, 0xbc, 0xaa, 0x47, 0xdf, 0x24, 0xc3, 0x16, 0x81, 0x07, 0x69,
+	0xc3, 0xa3, 0x6f, 0x94, 0x4d, 0x7c, 0xe1, 0x53, 0x55, 0xb5, 0x3d, 0xfa, 0x66, 0x1f, 0x03, 0xf0,
+	0xd7, 0x82, 0x87, 0x92, 0x3f, 0x81, 0x34, 0x86, 0xc4, 0xfd, 0x25, 0x6c, 0x9d, 0x2f, 0xc5, 0x28,
+	0x5a, 0x86, 0x93, 0x33, 0xb9, 0x9c, 0x5b, 0xd8, 0xf8, 0x7b, 0x2a, 0xc0, 0x1d, 0x70, 0x93, 0x91,
+	0xfb, 0x27, 0x0b, 0xec, 0xff, 0xae, 0x4b, 0xf6, 0x08, 0xea, 0x29, 0x0f, 0x27, 0x5c, 0x73, 0x90,
+	0x51, 0x15, 0x4a, 0x91, 0x27, 0xc8, 0x6a, 0x91, 0x20, 0x5f, 0x82, 0x7d, 0x99, 0x04, 0xd3, 0x29,
+	0x4f, 0xd8, 0xb7, 0xa1, 0x2e, 0x82, 0x45, 0x10, 0x4e, 0x29, 0xa3, 0x4d, 0xd5, 0x03, 0x2e, 0x49,
+	0xe4, 0x29, 0x15, 0xbe, 0x42, 0x52, 0xec, 0x01, 0xb9, 0x57, 0x88, 0xd1, 0x15, 0x3c, 0xa9, 0x76,
+	0x4f, 0xa0, 0x3e, 0x1c, 0xcf, 0xf8, 0xc2, 0xc7, 0xfb, 0x09, 0x91, 0x0c, 0x6e, 0x88, 0x6e, 0x7e,
+	0xd4, 0x54, 0x2f, 0x51, 0x80, 0x6a, 0x2a, 0x0f, 0xa9, 0x96, 0xed, 0x8c, 0x2e, 0x1b, 0xa4, 0xde,
+	0xdf, 0x86, 0xba, 0xcc, 0x80, 0x01, 0xd4, 0x9f, 0x0e, 0x4e, 0xce, 0xbd, 0x81, 0x53, 0x62, 0x4d,
+	0xa8, 0xf5, 0x4f, 0x2e, 0x07, 0x9e, 0x63, 0xed, 0xff, 0xc3, 0x82, 0xf2, 0x79, 0xcc, 0x1c, 0x68,
+	0x1f, 0x79, 0x83, 0xfe, 0xe5, 0xe0, 0xea, 0xc5, 0xf9, 0xf1, 0x60, 0xe8, 0x94, 0xd8, 0x16, 0xb4,
+	0x0c, 0x89, 0x63, 0xa1, 0xe0, 0xa2, 0x7f, 0x79, 0x74, 0xaa, 0x2c, 0xca, 0x6c, 0x13, 0x60, 0x25,
+	0x70, 0x2a, 0xe8, 0xe3, 0x78, 0xf0, 0x7c, 0x90, 0xf9, 0xa8, 0xe2, 0x14, 0x43, 0xe2, 0xd4, 0x8c,
+	0x30, 0x83, 0xe3, 0x67, 0x83, 0xa1, 0x53, 0x37, 0xc2, 0xa0, 0xc4, 0xb1, 0x57, 0x61, 0xa4, 0x45,
+	0x63, 0x15, 0x86, 0x0c, 0x9a, 0x46, 0x18, 0x69, 0x01, 0x46, 0x18, 0x32, 0x69, 0xed, 0xff, 0x02,
+	0x6c, 0x75, 0x81, 0xa4, 0x88, 0xfd, 0xe1, 0x51, 0xff, 0x18, 0x73, 0x78, 0x81, 0x8b, 0x37, 0x24,
+	0x27, 0xde, 0xf9, 0x99, 0x63, 0x61, 0x04, 0x2d, 0xb9, 0x3c, 0x77, 0xca, 0x8c, 0xc1, 0xa6, 0x1e,
+	0x9f, 0x7d, 0x79, 0xf9, 0x65, 0xff, 0xb9, 0x53, 0x39, 0xfc, 0x33, 0x40, 0x9b, 0x48, 0x69, 0xc8,
+	0x93, 0xaf, 0x83, 0x31, 0xc7, 0x3a, 0xbb, 0x40, 0x5c, 0x6f, 0xe0, 0xb5, 0xae, 0x2a, 0xa5, 0x28,
+	0x9c, 0xba, 0x25, 0xf6, 0x23, 0x68, 0xfd, 0x3c, 0x0a, 0xc2, 0xa3, 0xf9, 0x32, 0xc5, 0x0b, 0x85,
+	0xec, 0xc6, 0xfa, 0x88, 0x77, 0x6f, 0x70, 0xe1, 0x96, 0xd8, 0x21, 0x34, 0x9f, 0x71, 0xa1, 0x2a,
+	0xe1, 0xa6, 0x48, 0xb2, 0xd0, 0xa4, 0x91, 0x5b, 0x62, 0xbb, 0x50, 0x3e, 0xe3, 0x2a, 0x84, 0xbe,
+	0xa7, 0x75, 0x8b, 0x8f, 0x55, 0xb7, 0xc4, 0x0e, 0x00, 0x8e, 0xe8, 0x16, 0x4c, 0x34, 0xb3, 0xb6,
+	0xfb, 0x76, 0x57, 0x4d, 0x9e, 0x92, 0x69, 0xad, 0x26, 0xa4, 0x6c, 0x7d, 0xaf, 0xed, 0x1a, 0x24,
+	0xed, 0x96, 0xd8, 0x23, 0xb0, 0x9f, 0x71, 0x49, 0x64, 0xab, 0xb3, 0x95, 0x77, 0xbb, 0x07, 0xad,
+	0x21, 0xf7, 0x93, 0xf1, 0x4c, 0xba, 0x35, 0xaf, 0x4e, 0x05, 0x67, 0x9f, 0x40, 0x93, 0xa8, 0x94,
+	0xdc, 0x19, 0xd4, 0x5a, 0xf4, 0x07, 0x99, 0x55, 0xca, 0x72, 0xed, 0xa9, 0xe0, 0xaf, 0x07, 0xf6,
+	0x31, 0x9f, 0x17, 0x93, 0xbb, 0x79, 0x37, 0x1e, 0x43, 0x43, 0xd9, 0xa7, 0xcc, 0x68, 0xa0, 0xb7,
+	0xcc, 0xc8, 0x30, 0xa6, 0x27, 0xf8, 0xda, 0x8b, 0x45, 0x77, 0xd5, 0xf1, 0x4d, 0x8c, 0xe5, 0x2b,
+	0x6d, 0xfd, 0x35, 0xa2, 0x6b, 0xb4, 0xb9, 0x0c, 0x63, 0x8a, 0x70, 0x0d, 0x63, 0xe5, 0x36, 0xc3,
+	0x58, 0xba, 0x5d, 0x83, 0xb1, 0x76, 0xa6, 0x31, 0x26, 0x77, 0xd7, 0x31, 0xce, 0xfc, 0x41, 0x66,
+	0xb5, 0x1e, 0x63, 0xed, 0x4f, 0x62, 0x5c, 0x4c, 0xee, 0x2e, 0x8c, 0xa5, 0xdf, 0xb7, 0xc3, 0x78,
+	0x1f, 0x9a, 0xd9, 0xaf, 0x24, 0xb6, 0x7a, 0x90, 0xad, 0x5d, 0xdd, 0x1e, 0xd8, 0xea, 0x37, 0xd1,
+	0x5d, 0x96, 0x4f, 0xf4, 0x23, 0x64, 0x28, 0x12, 0xee, 0x2f, 0xd8, 0x3d, 0xf9, 0x2c, 0x35, 0xde,
+	0x25, 0xdd, 0x6b, 0xe4, 0xed, 0x96, 0x1e, 0x5b, 0xec, 0x27, 0x60, 0x5f, 0x2c, 0x47, 0xf3, 0x20,
+	0x9d, 0xa9, 0xfd, 0x2e, 0x74, 0xc3, 0x5b, 0x56, 0xf2, 0x29, 0x34, 0x87, 0xcb, 0x51, 0x3a, 0x4e,
+	0x82, 0x11, 0x67, 0x2c, 0x0b, 0x98, 0x3d, 0x6b, 0xba, 0x6d, 0x75, 0xa8, 0xe5, 0x2d, 0x01, 0xa3,
+	0xb9, 0x50, 0xff, 0x7c, 0x11, 0x47, 0x89, 0x50, 0x60, 0x11, 0x45, 0x75, 0x8d, 0x6f, 0xda, 0x82,
+	0xfa, 0xe0, 0x35, 0xd9, 0xdc, 0xc4, 0x20, 0x79, 0xfb, 0xef, 0x43, 0x43, 0x3f, 0x80, 0xd8, 0x37,
+	0xe4, 0x1a, 0x73, 0xef, 0xa1, 0xbc, 0xf9, 0xe1, 0x11, 0x6c, 0xaa, 0x16, 0xa8, 0xa9, 0xf1, 0x53,
+	0xd8, 0x38, 0xf5, 0xc3, 0xc9, 0x9c, 0xeb, 0xd6, 0x28, 0xf3, 0x56, 0xa3, 0x75, 0xb8, 0x3d, 0xb5,
+	0x7f, 0x55, 0xf3, 0xe3, 0x20, 0x1e, 0x8d, 0xea, 0x94, 0xda, 0x0f, 0xfe, 0x1d, 0x00, 0x00, 0xff,
+	0xff, 0xf5, 0x7e, 0x39, 0x17, 0x9b, 0x17, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1762,195 +2228,38 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// ConfigServiceClient is the client API for ConfigService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ConfigServiceClient interface {
-	Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error)
-	JoinCluster(ctx context.Context, in *RaftNode, opts ...grpc.CallOption) (*empty.Empty, error)
-	GetAuth(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*AuthConfig, error)
-	SetAuth(ctx context.Context, in *AuthConfig, opts ...grpc.CallOption) (*AuthConfig, error)
-}
-
-type configServiceClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewConfigServiceClient(cc *grpc.ClientConn) ConfigServiceClient {
-	return &configServiceClient{cc}
-}
-
-func (c *configServiceClient) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error) {
-	out := new(Pong)
-	err := c.cc.Invoke(ctx, "/api.ConfigService/Ping", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *configServiceClient) JoinCluster(ctx context.Context, in *RaftNode, opts ...grpc.CallOption) (*empty.Empty, error) {
-	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.ConfigService/JoinCluster", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *configServiceClient) GetAuth(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*AuthConfig, error) {
-	out := new(AuthConfig)
-	err := c.cc.Invoke(ctx, "/api.ConfigService/GetAuth", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *configServiceClient) SetAuth(ctx context.Context, in *AuthConfig, opts ...grpc.CallOption) (*AuthConfig, error) {
-	out := new(AuthConfig)
-	err := c.cc.Invoke(ctx, "/api.ConfigService/SetAuth", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// ConfigServiceServer is the server API for ConfigService service.
-type ConfigServiceServer interface {
-	Ping(context.Context, *empty.Empty) (*Pong, error)
-	JoinCluster(context.Context, *RaftNode) (*empty.Empty, error)
-	GetAuth(context.Context, *empty.Empty) (*AuthConfig, error)
-	SetAuth(context.Context, *AuthConfig) (*AuthConfig, error)
-}
-
-func RegisterConfigServiceServer(s *grpc.Server, srv ConfigServiceServer) {
-	s.RegisterService(&_ConfigService_serviceDesc, srv)
-}
-
-func _ConfigService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ConfigServiceServer).Ping(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.ConfigService/Ping",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConfigServiceServer).Ping(ctx, req.(*empty.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ConfigService_JoinCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RaftNode)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ConfigServiceServer).JoinCluster(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.ConfigService/JoinCluster",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConfigServiceServer).JoinCluster(ctx, req.(*RaftNode))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ConfigService_GetAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ConfigServiceServer).GetAuth(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.ConfigService/GetAuth",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConfigServiceServer).GetAuth(ctx, req.(*empty.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ConfigService_SetAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthConfig)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ConfigServiceServer).SetAuth(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.ConfigService/SetAuth",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConfigServiceServer).SetAuth(ctx, req.(*AuthConfig))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _ConfigService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "api.ConfigService",
-	HandlerType: (*ConfigServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Ping",
-			Handler:    _ConfigService_Ping_Handler,
-		},
-		{
-			MethodName: "JoinCluster",
-			Handler:    _ConfigService_JoinCluster_Handler,
-		},
-		{
-			MethodName: "GetAuth",
-			Handler:    _ConfigService_GetAuth_Handler,
-		},
-		{
-			MethodName: "SetAuth",
-			Handler:    _ConfigService_SetAuth_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/graphik.proto",
-}
-
 // GraphServiceClient is the client API for GraphService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type GraphServiceClient interface {
-	Me(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Node, error)
-	CreateNode(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Node, error)
-	CreateNodes(ctx context.Context, in *Nodes, opts ...grpc.CallOption) (*Nodes, error)
+	Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error)
+	JoinCluster(ctx context.Context, in *RaftNode, opts ...grpc.CallOption) (*empty.Empty, error)
+	GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Schema, error)
+	Me(ctx context.Context, in *MeFilter, opts ...grpc.CallOption) (*NodeDetail, error)
+	CreateNode(ctx context.Context, in *NodeConstructor, opts ...grpc.CallOption) (*Node, error)
+	CreateNodes(ctx context.Context, in *NodeConstructors, opts ...grpc.CallOption) (*Nodes, error)
 	GetNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Node, error)
-	SearchNodes(ctx context.Context, in *TypeFilter, opts ...grpc.CallOption) (*Nodes, error)
+	SearchNodes(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Nodes, error)
 	PatchNode(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Node, error)
 	PatchNodes(ctx context.Context, in *Patches, opts ...grpc.CallOption) (*Nodes, error)
-	DelNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Counter, error)
-	DelNodes(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*Counter, error)
-	CreateEdge(ctx context.Context, in *Edge, opts ...grpc.CallOption) (*Edge, error)
-	CreateEdges(ctx context.Context, in *Edges, opts ...grpc.CallOption) (*Edges, error)
+	DelNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error)
+	DelNodes(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*empty.Empty, error)
+	CreateEdge(ctx context.Context, in *EdgeConstructor, opts ...grpc.CallOption) (*Edge, error)
+	CreateEdges(ctx context.Context, in *EdgeConstructors, opts ...grpc.CallOption) (*Edges, error)
 	GetEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Edge, error)
-	SearchEdges(ctx context.Context, in *TypeFilter, opts ...grpc.CallOption) (*Edges, error)
+	SearchEdges(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Edges, error)
 	PatchEdge(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Edge, error)
 	PatchEdges(ctx context.Context, in *Patches, opts ...grpc.CallOption) (*Edges, error)
-	DelEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Counter, error)
-	DelEdges(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*Counter, error)
+	DelEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error)
+	DelEdges(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*empty.Empty, error)
 	EdgesFrom(ctx context.Context, in *EdgeFilter, opts ...grpc.CallOption) (*Edges, error)
 	EdgesTo(ctx context.Context, in *EdgeFilter, opts ...grpc.CallOption) (*Edges, error)
 	ChangeStream(ctx context.Context, in *ChangeFilter, opts ...grpc.CallOption) (GraphService_ChangeStreamClient, error)
 	Publish(ctx context.Context, in *OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error)
 	Subscribe(ctx context.Context, in *ChannelFilter, opts ...grpc.CallOption) (GraphService_SubscribeClient, error)
+	Import(ctx context.Context, in *Graph, opts ...grpc.CallOption) (*Graph, error)
+	Export(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Graph, error)
+	SubGraph(ctx context.Context, in *SubGraphFilter, opts ...grpc.CallOption) (*Graph, error)
 }
 
 type graphServiceClient struct {
@@ -1961,8 +2270,35 @@ func NewGraphServiceClient(cc *grpc.ClientConn) GraphServiceClient {
 	return &graphServiceClient{cc}
 }
 
-func (c *graphServiceClient) Me(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
+func (c *graphServiceClient) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error) {
+	out := new(Pong)
+	err := c.cc.Invoke(ctx, "/api.GraphService/Ping", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *graphServiceClient) JoinCluster(ctx context.Context, in *RaftNode, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/api.GraphService/JoinCluster", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *graphServiceClient) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Schema, error) {
+	out := new(Schema)
+	err := c.cc.Invoke(ctx, "/api.GraphService/GetSchema", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *graphServiceClient) Me(ctx context.Context, in *MeFilter, opts ...grpc.CallOption) (*NodeDetail, error) {
+	out := new(NodeDetail)
 	err := c.cc.Invoke(ctx, "/api.GraphService/Me", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -1970,7 +2306,7 @@ func (c *graphServiceClient) Me(ctx context.Context, in *empty.Empty, opts ...gr
 	return out, nil
 }
 
-func (c *graphServiceClient) CreateNode(ctx context.Context, in *Node, opts ...grpc.CallOption) (*Node, error) {
+func (c *graphServiceClient) CreateNode(ctx context.Context, in *NodeConstructor, opts ...grpc.CallOption) (*Node, error) {
 	out := new(Node)
 	err := c.cc.Invoke(ctx, "/api.GraphService/CreateNode", in, out, opts...)
 	if err != nil {
@@ -1979,7 +2315,7 @@ func (c *graphServiceClient) CreateNode(ctx context.Context, in *Node, opts ...g
 	return out, nil
 }
 
-func (c *graphServiceClient) CreateNodes(ctx context.Context, in *Nodes, opts ...grpc.CallOption) (*Nodes, error) {
+func (c *graphServiceClient) CreateNodes(ctx context.Context, in *NodeConstructors, opts ...grpc.CallOption) (*Nodes, error) {
 	out := new(Nodes)
 	err := c.cc.Invoke(ctx, "/api.GraphService/CreateNodes", in, out, opts...)
 	if err != nil {
@@ -1997,7 +2333,7 @@ func (c *graphServiceClient) GetNode(ctx context.Context, in *Path, opts ...grpc
 	return out, nil
 }
 
-func (c *graphServiceClient) SearchNodes(ctx context.Context, in *TypeFilter, opts ...grpc.CallOption) (*Nodes, error) {
+func (c *graphServiceClient) SearchNodes(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Nodes, error) {
 	out := new(Nodes)
 	err := c.cc.Invoke(ctx, "/api.GraphService/SearchNodes", in, out, opts...)
 	if err != nil {
@@ -2024,8 +2360,8 @@ func (c *graphServiceClient) PatchNodes(ctx context.Context, in *Patches, opts .
 	return out, nil
 }
 
-func (c *graphServiceClient) DelNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Counter, error) {
-	out := new(Counter)
+func (c *graphServiceClient) DelNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/api.GraphService/DelNode", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2033,8 +2369,8 @@ func (c *graphServiceClient) DelNode(ctx context.Context, in *Path, opts ...grpc
 	return out, nil
 }
 
-func (c *graphServiceClient) DelNodes(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*Counter, error) {
-	out := new(Counter)
+func (c *graphServiceClient) DelNodes(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/api.GraphService/DelNodes", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2042,7 +2378,7 @@ func (c *graphServiceClient) DelNodes(ctx context.Context, in *Paths, opts ...gr
 	return out, nil
 }
 
-func (c *graphServiceClient) CreateEdge(ctx context.Context, in *Edge, opts ...grpc.CallOption) (*Edge, error) {
+func (c *graphServiceClient) CreateEdge(ctx context.Context, in *EdgeConstructor, opts ...grpc.CallOption) (*Edge, error) {
 	out := new(Edge)
 	err := c.cc.Invoke(ctx, "/api.GraphService/CreateEdge", in, out, opts...)
 	if err != nil {
@@ -2051,7 +2387,7 @@ func (c *graphServiceClient) CreateEdge(ctx context.Context, in *Edge, opts ...g
 	return out, nil
 }
 
-func (c *graphServiceClient) CreateEdges(ctx context.Context, in *Edges, opts ...grpc.CallOption) (*Edges, error) {
+func (c *graphServiceClient) CreateEdges(ctx context.Context, in *EdgeConstructors, opts ...grpc.CallOption) (*Edges, error) {
 	out := new(Edges)
 	err := c.cc.Invoke(ctx, "/api.GraphService/CreateEdges", in, out, opts...)
 	if err != nil {
@@ -2069,7 +2405,7 @@ func (c *graphServiceClient) GetEdge(ctx context.Context, in *Path, opts ...grpc
 	return out, nil
 }
 
-func (c *graphServiceClient) SearchEdges(ctx context.Context, in *TypeFilter, opts ...grpc.CallOption) (*Edges, error) {
+func (c *graphServiceClient) SearchEdges(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Edges, error) {
 	out := new(Edges)
 	err := c.cc.Invoke(ctx, "/api.GraphService/SearchEdges", in, out, opts...)
 	if err != nil {
@@ -2096,8 +2432,8 @@ func (c *graphServiceClient) PatchEdges(ctx context.Context, in *Patches, opts .
 	return out, nil
 }
 
-func (c *graphServiceClient) DelEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Counter, error) {
-	out := new(Counter)
+func (c *graphServiceClient) DelEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/api.GraphService/DelEdge", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2105,8 +2441,8 @@ func (c *graphServiceClient) DelEdge(ctx context.Context, in *Path, opts ...grpc
 	return out, nil
 }
 
-func (c *graphServiceClient) DelEdges(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*Counter, error) {
-	out := new(Counter)
+func (c *graphServiceClient) DelEdges(ctx context.Context, in *Paths, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/api.GraphService/DelEdges", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -2205,38 +2541,125 @@ func (x *graphServiceSubscribeClient) Recv() (*Message, error) {
 	return m, nil
 }
 
+func (c *graphServiceClient) Import(ctx context.Context, in *Graph, opts ...grpc.CallOption) (*Graph, error) {
+	out := new(Graph)
+	err := c.cc.Invoke(ctx, "/api.GraphService/Import", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *graphServiceClient) Export(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Graph, error) {
+	out := new(Graph)
+	err := c.cc.Invoke(ctx, "/api.GraphService/Export", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *graphServiceClient) SubGraph(ctx context.Context, in *SubGraphFilter, opts ...grpc.CallOption) (*Graph, error) {
+	out := new(Graph)
+	err := c.cc.Invoke(ctx, "/api.GraphService/SubGraph", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GraphServiceServer is the server API for GraphService service.
 type GraphServiceServer interface {
-	Me(context.Context, *empty.Empty) (*Node, error)
-	CreateNode(context.Context, *Node) (*Node, error)
-	CreateNodes(context.Context, *Nodes) (*Nodes, error)
+	Ping(context.Context, *empty.Empty) (*Pong, error)
+	JoinCluster(context.Context, *RaftNode) (*empty.Empty, error)
+	GetSchema(context.Context, *empty.Empty) (*Schema, error)
+	Me(context.Context, *MeFilter) (*NodeDetail, error)
+	CreateNode(context.Context, *NodeConstructor) (*Node, error)
+	CreateNodes(context.Context, *NodeConstructors) (*Nodes, error)
 	GetNode(context.Context, *Path) (*Node, error)
-	SearchNodes(context.Context, *TypeFilter) (*Nodes, error)
+	SearchNodes(context.Context, *Filter) (*Nodes, error)
 	PatchNode(context.Context, *Patch) (*Node, error)
 	PatchNodes(context.Context, *Patches) (*Nodes, error)
-	DelNode(context.Context, *Path) (*Counter, error)
-	DelNodes(context.Context, *Paths) (*Counter, error)
-	CreateEdge(context.Context, *Edge) (*Edge, error)
-	CreateEdges(context.Context, *Edges) (*Edges, error)
+	DelNode(context.Context, *Path) (*empty.Empty, error)
+	DelNodes(context.Context, *Paths) (*empty.Empty, error)
+	CreateEdge(context.Context, *EdgeConstructor) (*Edge, error)
+	CreateEdges(context.Context, *EdgeConstructors) (*Edges, error)
 	GetEdge(context.Context, *Path) (*Edge, error)
-	SearchEdges(context.Context, *TypeFilter) (*Edges, error)
+	SearchEdges(context.Context, *Filter) (*Edges, error)
 	PatchEdge(context.Context, *Patch) (*Edge, error)
 	PatchEdges(context.Context, *Patches) (*Edges, error)
-	DelEdge(context.Context, *Path) (*Counter, error)
-	DelEdges(context.Context, *Paths) (*Counter, error)
+	DelEdge(context.Context, *Path) (*empty.Empty, error)
+	DelEdges(context.Context, *Paths) (*empty.Empty, error)
 	EdgesFrom(context.Context, *EdgeFilter) (*Edges, error)
 	EdgesTo(context.Context, *EdgeFilter) (*Edges, error)
 	ChangeStream(*ChangeFilter, GraphService_ChangeStreamServer) error
 	Publish(context.Context, *OutboundMessage) (*empty.Empty, error)
 	Subscribe(*ChannelFilter, GraphService_SubscribeServer) error
+	Import(context.Context, *Graph) (*Graph, error)
+	Export(context.Context, *empty.Empty) (*Graph, error)
+	SubGraph(context.Context, *SubGraphFilter) (*Graph, error)
 }
 
 func RegisterGraphServiceServer(s *grpc.Server, srv GraphServiceServer) {
 	s.RegisterService(&_GraphService_serviceDesc, srv)
 }
 
-func _GraphService_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GraphService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(empty.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GraphServiceServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.GraphService/Ping",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GraphServiceServer).Ping(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GraphService_JoinCluster_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RaftNode)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GraphServiceServer).JoinCluster(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.GraphService/JoinCluster",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GraphServiceServer).JoinCluster(ctx, req.(*RaftNode))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GraphService_GetSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GraphServiceServer).GetSchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.GraphService/GetSchema",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GraphServiceServer).GetSchema(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GraphService_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MeFilter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2248,13 +2671,13 @@ func _GraphService_Me_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/api.GraphService/Me",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).Me(ctx, req.(*empty.Empty))
+		return srv.(GraphServiceServer).Me(ctx, req.(*MeFilter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _GraphService_CreateNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Node)
+	in := new(NodeConstructor)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2266,13 +2689,13 @@ func _GraphService_CreateNode_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/api.GraphService/CreateNode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).CreateNode(ctx, req.(*Node))
+		return srv.(GraphServiceServer).CreateNode(ctx, req.(*NodeConstructor))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _GraphService_CreateNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Nodes)
+	in := new(NodeConstructors)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2284,7 +2707,7 @@ func _GraphService_CreateNodes_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/api.GraphService/CreateNodes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).CreateNodes(ctx, req.(*Nodes))
+		return srv.(GraphServiceServer).CreateNodes(ctx, req.(*NodeConstructors))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2308,7 +2731,7 @@ func _GraphService_GetNode_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _GraphService_SearchNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TypeFilter)
+	in := new(Filter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2320,7 +2743,7 @@ func _GraphService_SearchNodes_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/api.GraphService/SearchNodes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).SearchNodes(ctx, req.(*TypeFilter))
+		return srv.(GraphServiceServer).SearchNodes(ctx, req.(*Filter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2398,7 +2821,7 @@ func _GraphService_DelNodes_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _GraphService_CreateEdge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Edge)
+	in := new(EdgeConstructor)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2410,13 +2833,13 @@ func _GraphService_CreateEdge_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/api.GraphService/CreateEdge",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).CreateEdge(ctx, req.(*Edge))
+		return srv.(GraphServiceServer).CreateEdge(ctx, req.(*EdgeConstructor))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _GraphService_CreateEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Edges)
+	in := new(EdgeConstructors)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2428,7 +2851,7 @@ func _GraphService_CreateEdges_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/api.GraphService/CreateEdges",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).CreateEdges(ctx, req.(*Edges))
+		return srv.(GraphServiceServer).CreateEdges(ctx, req.(*EdgeConstructors))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2452,7 +2875,7 @@ func _GraphService_GetEdge_Handler(srv interface{}, ctx context.Context, dec fun
 }
 
 func _GraphService_SearchEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TypeFilter)
+	in := new(Filter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -2464,7 +2887,7 @@ func _GraphService_SearchEdges_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/api.GraphService/SearchEdges",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).SearchEdges(ctx, req.(*TypeFilter))
+		return srv.(GraphServiceServer).SearchEdges(ctx, req.(*Filter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2637,10 +3060,76 @@ func (x *graphServiceSubscribeServer) Send(m *Message) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _GraphService_Import_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Graph)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GraphServiceServer).Import(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.GraphService/Import",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GraphServiceServer).Import(ctx, req.(*Graph))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GraphService_Export_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GraphServiceServer).Export(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.GraphService/Export",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GraphServiceServer).Export(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GraphService_SubGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubGraphFilter)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GraphServiceServer).SubGraph(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.GraphService/SubGraph",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GraphServiceServer).SubGraph(ctx, req.(*SubGraphFilter))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _GraphService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "api.GraphService",
 	HandlerType: (*GraphServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Ping",
+			Handler:    _GraphService_Ping_Handler,
+		},
+		{
+			MethodName: "JoinCluster",
+			Handler:    _GraphService_JoinCluster_Handler,
+		},
+		{
+			MethodName: "GetSchema",
+			Handler:    _GraphService_GetSchema_Handler,
+		},
 		{
 			MethodName: "Me",
 			Handler:    _GraphService_Me_Handler,
@@ -2721,6 +3210,18 @@ var _GraphService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Publish",
 			Handler:    _GraphService_Publish_Handler,
 		},
+		{
+			MethodName: "Import",
+			Handler:    _GraphService_Import_Handler,
+		},
+		{
+			MethodName: "Export",
+			Handler:    _GraphService_Export_Handler,
+		},
+		{
+			MethodName: "SubGraph",
+			Handler:    _GraphService_SubGraph_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -2734,5 +3235,69 @@ var _GraphService_serviceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
+	Metadata: "api/graphik.proto",
+}
+
+// TriggerServiceClient is the client API for TriggerService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type TriggerServiceClient interface {
+	HandleTrigger(ctx context.Context, in *Trigger, opts ...grpc.CallOption) (*StateChange, error)
+}
+
+type triggerServiceClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewTriggerServiceClient(cc *grpc.ClientConn) TriggerServiceClient {
+	return &triggerServiceClient{cc}
+}
+
+func (c *triggerServiceClient) HandleTrigger(ctx context.Context, in *Trigger, opts ...grpc.CallOption) (*StateChange, error) {
+	out := new(StateChange)
+	err := c.cc.Invoke(ctx, "/api.TriggerService/HandleTrigger", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TriggerServiceServer is the server API for TriggerService service.
+type TriggerServiceServer interface {
+	HandleTrigger(context.Context, *Trigger) (*StateChange, error)
+}
+
+func RegisterTriggerServiceServer(s *grpc.Server, srv TriggerServiceServer) {
+	s.RegisterService(&_TriggerService_serviceDesc, srv)
+}
+
+func _TriggerService_HandleTrigger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Trigger)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TriggerServiceServer).HandleTrigger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.TriggerService/HandleTrigger",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TriggerServiceServer).HandleTrigger(ctx, req.(*Trigger))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _TriggerService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "api.TriggerService",
+	HandlerType: (*TriggerServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "HandleTrigger",
+			Handler:    _TriggerService_HandleTrigger_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "api/graphik.proto",
 }

@@ -18,10 +18,10 @@ func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{})
 		Gid:   payload[idClaim].(string),
 	}
 	var err error
-	n, ok := a.graph.GetNode(path)
-	if !ok {
+	n, err := a.graph.GetNode(ctx, path)
+	if err != nil || n == nil {
 		strct, _ := structpb.NewStruct(payload)
-		n, err = a.CreateNode(&apipb.Node{
+		n, err = a.CreateNode(ctx, &apipb.NodeConstructor{
 			Path:       path,
 			Attributes: strct,
 		})

@@ -6,10 +6,13 @@ import (
 	"github.com/autom8ter/graphik"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
 	"log"
+	"strings"
+	"time"
 )
 
 func init() {
@@ -56,7 +59,10 @@ func ExampleNewClient() {
 }
 
 func ExampleClient_Me() {
-	me, err := client.Me(context.Background(), &empty.Empty{})
+	me, err := client.Me(context.Background(), &apipb.MeFilter{
+		EdgesFrom: nil,
+		EdgesTo:   nil,
+	})
 	if err != nil {
 		log.Print(err)
 		return
@@ -67,7 +73,7 @@ func ExampleClient_Me() {
 }
 
 func ExampleClient_CreateNode() {
-	charlie, err := client.CreateNode(context.Background(), &apipb.Node{
+	charlie, err := client.CreateNode(context.Background(), &apipb.NodeConstructor{
 		Path: &apipb.Path{
 			Gtype: "dog",
 		},
@@ -85,7 +91,7 @@ func ExampleClient_CreateNode() {
 }
 
 func ExampleClient_SearchNodes() {
-	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
+	dogs, err := client.SearchNodes(context.Background(), &apipb.Filter{
 		Gtype: "dog",
 		Expressions: []string{
 			`attributes.name.contains("Charl")`,
@@ -103,7 +109,7 @@ func ExampleClient_SearchNodes() {
 }
 
 func ExampleClient_CreateEdge() {
-	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
+	dogs, err := client.SearchNodes(context.Background(), &apipb.Filter{
 		Gtype: "dog",
 		Expressions: []string{
 			`attributes.name.contains("Charl")`,
@@ -115,7 +121,7 @@ func ExampleClient_CreateEdge() {
 		return
 	}
 	charlie := dogs.GetNodes()[0]
-	coleman, err := client.CreateNode(context.Background(), &apipb.Node{
+	coleman, err := client.CreateNode(context.Background(), &apipb.NodeConstructor{
 		Path: &apipb.Path{
 			Gtype: "human",
 		},
@@ -127,7 +133,7 @@ func ExampleClient_CreateEdge() {
 		log.Print(err)
 		return
 	}
-	ownerEdge, err := client.CreateEdge(context.Background(), &apipb.Edge{
+	ownerEdge, err := client.CreateEdge(context.Background(), &apipb.EdgeConstructor{
 		Path: &apipb.Path{
 			Gtype: "owner",
 		},
@@ -148,7 +154,7 @@ func ExampleClient_CreateEdge() {
 }
 
 func ExampleClient_SearchEdges() {
-	owners, err := client.SearchEdges(context.Background(), &apipb.TypeFilter{
+	owners, err := client.SearchEdges(context.Background(), &apipb.Filter{
 		Gtype: "owner",
 		Expressions: []string{
 			`attributes.primary_owner`,
@@ -166,7 +172,7 @@ func ExampleClient_SearchEdges() {
 }
 
 func ExampleClient_PatchNode() {
-	dogs, err := client.SearchNodes(context.Background(), &apipb.TypeFilter{
+	dogs, err := client.SearchNodes(context.Background(), &apipb.Filter{
 		Gtype: "dog",
 		Expressions: []string{
 			`attributes.name.contains("Charl")`,
@@ -192,19 +198,86 @@ func ExampleClient_PatchNode() {
 	// Output: 25
 }
 
-func ExampleClient_SetAuth() {
-	auth, err := client.SetAuth(context.Background(), &apipb.AuthConfig{
-		JwksSources: []string{"https://www.googleapis.com/oauth2/v3/certs"},
-		//AuthExpressions:      []string{`user.attributes.email.contains("cole")`},
+func ExampleClient_Publish() {
+	m := machine.New(context.Background())
+	m.Go(func(routine machine.Routine) {
+		stream, err := client.Subscribe(routine.Context(), &apipb.ChannelFilter{
+			Channel:     "testing",
+			Expressions: nil,
+		})
+		if err != nil {
+			log.Print(err)
+			return
+		}
+		for {
+			msg, err := stream.Recv()
+			if err != nil {
+				log.Print(err)
+				return
+			}
+			fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
+			return
+		}
+	})
+	time.Sleep(1 * time.Second)
+	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
+		Channel: "testing",
+		Data: apipb.NewStruct(map[string]interface{}{
+			"text": "hello world",
+		}),
 	})
 	if err != nil {
 		log.Print(err)
 		return
 	}
-	fmt.Println(auth.GetJwksSources()[0])
-	// Output: https://www.googleapis.com/oauth2/v3/certs
+	m.Wait()
+	// Output: hello world
 }
 
-func ExampleClient_Publish() {
+func ExampleClient_Subscribe() {
+	m := machine.New(context.Background())
+	m.Go(func(routine machine.Routine) {
+		stream, err := client.Subscribe(routine.Context(), &apipb.ChannelFilter{
+			Channel:     "testing",
+			Expressions: nil,
+		})
+		if err != nil {
+			log.Print(err)
+			return
+		}
+		for {
+			msg, err := stream.Recv()
+			if err != nil {
+				log.Print(err)
+				return
+			}
+			fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
+			return
+		}
+	})
+	time.Sleep(1 * time.Second)
+	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
+		Channel: "testing",
+		Data: apipb.NewStruct(map[string]interface{}{
+			"text": "hello world",
+		}),
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	m.Wait()
+	// Output: hello world
+}
 
+func ExampleClient_GetSchema() {
+	schema, err := client.GetSchema(context.Background(), &empty.Empty{})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	fmt.Printf("node types: %s\n", strings.Join(schema.NodeTypes, ","))
+	fmt.Printf("edge types: %s", strings.Join(schema.EdgeTypes, ","))
+	// Output: node types: dog,human,identity
+	//edge types: owner
 }

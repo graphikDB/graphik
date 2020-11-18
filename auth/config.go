@@ -3,7 +3,6 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
-	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
@@ -13,30 +12,28 @@ import (
 	"sync"
 )
 
-func New(cfg *apipb.AuthConfig) (*Auth, error) {
+type Config struct {
+	mu      sync.RWMutex
+	jwksSet map[string]*jwk.Set
+}
+
+func New(jwks []string) (*Config, error) {
 	setMap := map[string]*jwk.Set{}
-	for _, source := range cfg.JwksSources {
+	for _, source := range jwks {
 		set, err := jwk.Fetch(source)
 		if err != nil {
 			return nil, err
 		}
 		setMap[source] = set
 	}
-	return &Auth{
-		set:         setMap,
-		mu:          sync.RWMutex{},
-		expressions: cfg.AuthExpressions,
-	}, nil
+	c := &Config{
+		mu:      sync.RWMutex{},
+		jwksSet: setMap,
+	}
+	return c, nil
 }
 
-type Auth struct {
-	mu          sync.RWMutex
-	set         map[string]*jwk.Set
-	expressions []string
-}
-
-func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
-
+func (a *Config) VerifyJWT(token string) (map[string]interface{}, error) {
 	message, err := jws.ParseString(token)
 	if err != nil {
 		return nil, err
@@ -55,7 +52,7 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	}
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for uri, set := range a.set {
+	for uri, set := range a.jwksSet {
 		keys := set.LookupKeyID(kid.(string))
 		if len(keys) == 0 {
 			continue
@@ -79,50 +76,15 @@ func (a *Auth) VerifyJWT(token string) (map[string]interface{}, error) {
 	return nil, errors.New("zero jwks matches")
 }
 
-func (a *Auth) Expressions() []string {
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	return a.expressions
-}
-
-func (a *Auth) RefreshKeys() error {
-	for uri, _ := range a.set {
+func (a *Config) RefreshKeys() error {
+	for uri, _ := range a.jwksSet {
 		set, err := jwk.Fetch(uri)
 		if err != nil {
 			return err
 		}
 		a.mu.Lock()
-		a.set[uri] = set
+		a.jwksSet[uri] = set
 		a.mu.Unlock()
 	}
 	return nil
-}
-
-func (a *Auth) Override(auth *apipb.AuthConfig) error {
-	for _, source := range auth.JwksSources {
-		set, err := jwk.Fetch(source)
-		if err != nil {
-			return err
-		}
-		a.mu.Lock()
-		a.set[source] = set
-		a.mu.Unlock()
-	}
-	a.mu.Lock()
-	a.expressions = auth.AuthExpressions
-	a.mu.Unlock()
-	return nil
-}
-
-func (a *Auth) Raw() *apipb.AuthConfig {
-	var jwksSources []string
-	a.mu.RLock()
-	defer a.mu.RUnlock()
-	for source, _ := range a.set {
-		jwksSources = append(jwksSources, source)
-	}
-	return &apipb.AuthConfig{
-		JwksSources:     jwksSources,
-		AuthExpressions: a.expressions,
-	}
 }

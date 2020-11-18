@@ -9,6 +9,11 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 
+enum Timing {
+  BEFORE =0;
+  AFTER =1;
+}
+
 enum Op {
   CREATE_NODES = 0;
   CREATE_NODE =1;
@@ -22,7 +27,6 @@ enum Op {
   PATCH_EDGE =9;
   DELETE_EDGES = 10;
   DELETE_EDGE =11;
-  SET_AUTH  = 12;
 }
 
 enum Cascade {
@@ -30,16 +34,6 @@ enum Cascade {
   CASCADE_FROM =1;
   CASCADE_TO=2;
   CASCADE_MUTUAL=3;
-}
-
-enum Keyword {
-  INVALID =0;
-  ANY =1;
-  DEFAULT =2;
-}
-
-message Counter {
-  int64 count =1;
 }
 
 message Path {
@@ -58,8 +52,36 @@ message Node {
   int64 updated_at =5;
 }
 
+message NodeConstructor {
+  Path path =1;
+  google.protobuf.Struct attributes =3;
+}
+
+message NodeConstructors {
+  repeated NodeConstructor nodes =1;
+}
+
 message Nodes {
   repeated Node nodes =1;
+}
+
+message NodeDetail {
+  Path path =1;
+  google.protobuf.Struct attributes =2;
+  map<string, EdgeDetails> edges_from =3;
+  map<string, EdgeDetails> edges_to =4;
+  int64 created_at =5;
+  int64 updated_at =6;
+}
+
+message NodeDetails {
+  repeated NodeDetail node_details =1;
+}
+
+message NodeDetailFilter {
+  Path path =1;
+  Filter edges_from =2;
+  Filter edges_to =3;
 }
 
 message Edge {
@@ -72,8 +94,35 @@ message Edge {
   int64 updated_at =11;
 }
 
+
+message EdgeConstructor {
+  Path path =1;
+  google.protobuf.Struct attributes =3;
+  Cascade cascade =4;
+  Path from =5;
+  Path to =6;
+}
+
+message EdgeConstructors {
+  repeated EdgeConstructor edges =1;
+}
+
 message Edges {
   repeated Edge edges =1;
+}
+
+message EdgeDetail {
+  Path path =1;
+  google.protobuf.Struct attributes =3;
+  Cascade cascade =4;
+  Node from =5;
+  Node to =6;
+  int64 created_at =10;
+  int64 updated_at =11;
+}
+
+message EdgeDetails {
+  repeated EdgeDetail edges =1;
 }
 
 message EdgeFilter {
@@ -83,10 +132,15 @@ message EdgeFilter {
   int32 limit =4;
 }
 
-message TypeFilter {
+message Filter {
   string gtype =1;
   repeated string expressions =2;
   int32 limit =3;
+}
+
+message MeFilter {
+  Filter edges_from =1;
+  Filter edges_to =2;
 }
 
 message ChangeFilter {
@@ -98,30 +152,40 @@ message ChannelFilter {
   repeated string expressions =2;
 }
 
-message StateChange {
-  Op op =1;
-  Log log =2;
-  int64 timestamp =3;
+message SubGraphFilter {
+  Filter nodes =1;
+  Filter edges =2;
 }
 
-message Log {
-  oneof log {
+message StateChange {
+  string request_path =1;
+  Node user =2;
+  Op op =3;
+  Mutation mutation =4;
+  int64 timestamp =5;
+}
+
+message Mutation {
+  oneof object {
     Node node =1;
     Nodes nodes =2;
-    Edge edge =3;
-    Edges edges =4;
-    Path path =5;
-    Paths paths =6;
-    AuthConfig auth =7;
-    Counter counter =8;
-    Patch patch =9;
-    Patches patches =10;
+    NodeConstructor node_constructor =3;
+    NodeConstructors node_constructors =4;
+    EdgeConstructor edge_constructor =5;
+    EdgeConstructors edge_constructors =6;
+    Edge edge =7;
+    Edges edges =8;
+    Path path =9;
+    Paths paths =10;
+    Patch patch =13;
+    Patches patches =14;
+    google.protobuf.Empty empty =15;
   }
 }
 
-message Export {
+message Graph {
   Nodes nodes =1;
-  Edges edges=2;
+  Edges edges =2;
 }
 
 message Patch {
@@ -142,40 +206,12 @@ message RaftNode {
   string address =2;
 }
 
-message AuthConfig {
-  repeated string jwks_sources =1;
-  repeated string auth_expressions =2;
-}
-
-message RaftConfig {
-  string bind =1;
-  string storage_path =2;
-  string join =3;
-  string node_id =4;
-}
-
-message HTTPConfig {
-  string bind =1;
-  repeated string allowed_origins=2;
-  repeated string allowed_headers =3;
-  repeated string allowed_methods =4;
-}
-
-message GRPCConfig {
-  string bind =1;
-}
-
-message Config {
-  HTTPConfig http =1;
-  GRPCConfig grpc =2;
-  RaftConfig raft =3;
-  AuthConfig auth =4;
-}
-
-message RequestIntercept {
-  string full_path =1;
-  Node user =2;
-  google.protobuf.Struct request =3;
+message RaftLog {
+  uint64 index =1;
+  uint64 term =3;
+  uint32 type =4;
+  bytes data =9;
+  bytes extensions =10;
 }
 
 message OutboundMessage {
@@ -190,38 +226,51 @@ message Message {
   int64 timestamp=4;
 }
 
-service ConfigService {
-  rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
-  rpc GetAuth(google.protobuf.Empty) returns(AuthConfig){}
-  rpc SetAuth(AuthConfig) returns(AuthConfig){}
+message Trigger {
+  Timing timing =1;
+  StateChange state =2;
+}
+
+message Schema {
+  repeated string edge_types =1;
+  repeated string node_types =2;
 }
 
 service GraphService {
-  rpc Me(google.protobuf.Empty) returns(Node){}
-  rpc CreateNode(Node) returns(Node){}
-  rpc CreateNodes(Nodes) returns(Nodes){}
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
+  rpc GetSchema(google.protobuf.Empty) returns(Schema){}
+
+  rpc Me(MeFilter) returns(NodeDetail){}
+  rpc CreateNode(NodeConstructor) returns(Node){}
+  rpc CreateNodes(NodeConstructors) returns(Nodes){}
   rpc GetNode(Path) returns(Node){}
-  rpc SearchNodes(TypeFilter) returns(Nodes){}
+  rpc SearchNodes(Filter) returns(Nodes){}
   rpc PatchNode(Patch) returns(Node){}
   rpc PatchNodes(Patches) returns(Nodes){}
-  rpc DelNode(Path) returns(Counter){}
-  rpc DelNodes(Paths) returns(Counter){}
+  rpc DelNode(Path) returns(google.protobuf.Empty){}
+  rpc DelNodes(Paths) returns(google.protobuf.Empty){}
 
-  rpc CreateEdge(Edge) returns(Edge){}
-  rpc CreateEdges(Edges) returns(Edges){}
+  rpc CreateEdge(EdgeConstructor) returns(Edge){}
+  rpc CreateEdges(EdgeConstructors) returns(Edges){}
   rpc GetEdge(Path) returns(Edge){}
-  rpc SearchEdges(TypeFilter) returns(Edges){}
+  rpc SearchEdges(Filter) returns(Edges){}
   rpc PatchEdge(Patch) returns(Edge){}
   rpc PatchEdges(Patches) returns(Edges){}
-  rpc DelEdge(Path) returns(Counter){}
-  rpc DelEdges(Paths) returns(Counter){}
-
+  rpc DelEdge(Path) returns(google.protobuf.Empty){}
+  rpc DelEdges(Paths) returns(google.protobuf.Empty){}
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   rpc EdgesTo(EdgeFilter) returns(Edges){}
 
   rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   rpc Subscribe(ChannelFilter) returns(stream Message){}
+
+  rpc Import(Graph) returns(Graph){}
+  rpc Export(google.protobuf.Empty) returns (Graph){}
+  rpc SubGraph(SubGraphFilter) returns(Graph){}
 }
 
+service TriggerService {
+  rpc HandleTrigger(Trigger) returns(StateChange){}
+}
