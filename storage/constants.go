@@ -16,4 +16,5 @@ var (
 	dbNodes = []byte("nodes")
 	// An error indicating a given key does not exist
 	ErrKeyNotFound = errors.New("not found")
+	Any = "*"
 )
