@@ -184,6 +184,9 @@ func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) error {
 	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		for _, node := range nodes {
+			if err := ctx.Err(); err != nil {
+				return err
+			}
 			bits, err := proto.Marshal(node)
 			if err != nil {
 				return err
