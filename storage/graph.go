@@ -54,7 +54,11 @@ func (g *GraphStore) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge
 	}
 	var edge apipb.Edge
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bits := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype)).Get([]byte(path.Gid))
+		bucket := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		bits := bucket.Get([]byte(path.Gid))
 		if err := proto.Unmarshal(bits, &edge); err != nil {
 			return err
 		}
@@ -85,7 +89,11 @@ func (g *GraphStore) RangeEdges(ctx context.Context, gType string, fn func(e *ap
 		return nil
 	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		return tx.Bucket(dbEdges).Bucket([]byte(gType)).ForEach(func(k, v []byte) error {
+		bucket := tx.Bucket(dbEdges).Bucket([]byte(gType))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		return bucket.ForEach(func(k, v []byte) error {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
@@ -110,7 +118,11 @@ func (g *GraphStore) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node
 	}
 	var node apipb.Node
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bits := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype)).Get([]byte(path.Gid))
+		bucket := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		bits := bucket.Get([]byte(path.Gid))
 		if err := proto.Unmarshal(bits, &node); err != nil {
 			return err
 		}
@@ -138,7 +150,12 @@ func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *ap
 			}
 			return nil
 		}
-		return tx.Bucket(dbNodes).Bucket([]byte(gType)).ForEach(func(k, v []byte) error {
+		bucket := tx.Bucket(dbNodes).Bucket([]byte(gType))
+		if bucket == nil {
+			return ErrNotFound
+		}
+
+		return bucket.ForEach(func(k, v []byte) error {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
@@ -263,7 +280,7 @@ func (g *GraphStore) DelEdges(ctx context.Context, paths ...*apipb.Path) error {
 			bucket := tx.Bucket(dbEdges)
 			bucket = bucket.Bucket([]byte(p.GetGtype()))
 			if bucket == nil {
-				return nil
+				return ErrNotFound
 			}
 			return bucket.Delete([]byte(p.GetGid()))
 		}
@@ -280,7 +297,7 @@ func (g *GraphStore) DelNodes(ctx context.Context, paths ...*apipb.Path) error {
 			bucket := tx.Bucket(dbNodes)
 			bucket = bucket.Bucket([]byte(p.GetGtype()))
 			if bucket == nil {
-				return nil
+				return ErrNotFound
 			}
 			return bucket.Delete([]byte(p.GetGid()))
 		}
