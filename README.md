@@ -1,21 +1,23 @@
 # Graphik [![GoDoc](https://godoc.org/github.com/autom8ter/graphik?status.svg)](https://godoc.org/github.com/autom8ter/graphik)
 
+![dag](images/dag.png)
+
     git@github.com:autom8ter/graphik.git
     
     docker pull colemanword/graphik
 
-An identity-aware, permissioned, persistant labelled property graph database written in Go
+An identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
 
 - [x] 100% Go
 - [x] Containerized
 - [x] Native gRPC Support
 - [x] Persistant(bbolt LMDB)
-- [x] Horizontally Scaleable (Raft)
+- [x] Horizontally Scaleable ([Raft](https://raft.github.io/))
 - [x] Loosely typed(mongo-esque)
-- [x] Prometheus Metrics
-- [x] Pprof Metrics
-- [x] Context-Based Timeouts
-- [x] Secure JWT based auth with remote JWKS support
+- [x] [Prometheus Metrics](https://prometheus.io/)
+- [x] [Pprof Metrics](https://blog.golang.org/pprof)
+- [x] [Context-Based Timeouts](https://blog.golang.org/context)
+- [x] Secure JWT based auth with remote [JWKS](https://auth0.com/docs/tokens/json-web-tokens/json-web-key-sets) support
 - [x] Auto JWKS refresh
 - [x] Bulk Export
 - [x] Bulk Import
@@ -66,6 +68,9 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 ```
 
 ## Graphik Plugins (optional)
+
+![plugins](images/graphdb-plugins.png)
+
 
 Graphik plugins are custom, single-method, grpc-based sidecars that the Graphik server integrates with. 
 This pattern is similar to Envoy external filters & Kubernetes mutating webhooks / admission controller
