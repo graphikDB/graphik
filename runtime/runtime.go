@@ -156,7 +156,7 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 	return s, nil
 }
 
-func (s *Runtime) execute(cmd *apipb.StateChange) (*apipb.StateChange, error) {
+func (s *Runtime) execute(ctx context.Context, cmd *apipb.StateChange) (*apipb.StateChange, error) {
 	if state := s.raft.State(); state != raft.Leader {
 		return nil, fmt.Errorf("not leader: %s", state.String())
 	}

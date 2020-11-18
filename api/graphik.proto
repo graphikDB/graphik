@@ -231,9 +231,23 @@ message Trigger {
   StateChange state =2;
 }
 
+message Schema {
+  EdgeSchema edge_schema =1;
+  NodeSchema node_schema =2;
+}
+
+message EdgeSchema {
+  repeated string types =1;
+}
+
+message NodeSchema {
+  repeated string types =1;
+}
+
 service GraphService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
+  rpc GetSchema(google.protobuf.Empty) returns(Schema){}
 
   rpc Me(MeFilter) returns(NodeDetail){}
   rpc CreateNode(NodeConstructor) returns(Node){}
@@ -253,7 +267,6 @@ service GraphService {
   rpc PatchEdges(Patches) returns(Edges){}
   rpc DelEdge(Path) returns(google.protobuf.Empty){}
   rpc DelEdges(Paths) returns(google.protobuf.Empty){}
-
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   rpc EdgesTo(EdgeFilter) returns(Edges){}
 

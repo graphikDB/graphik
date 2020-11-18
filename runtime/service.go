@@ -8,16 +8,16 @@ import (
 	"time"
 )
 
-func (f *Runtime) Node(input *apipb.Path) (*apipb.Node, error) {
+func (f *Runtime) Node(ctx context.Context, input *apipb.Path) (*apipb.Node, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.GetNode(input)
+	return f.graph.GetNode(ctx, input)
 }
 
-func (f *Runtime) Nodes(input *apipb.Filter) (*apipb.Nodes, error) {
+func (f *Runtime) Nodes(ctx context.Context, input *apipb.Filter) (*apipb.Nodes, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	nodes, err := f.graph.FilterSearchNodes(input)
+	nodes, err := f.graph.FilterSearchNodes(ctx, input)
 	if err != nil {
 		return nil, err
 	}
@@ -25,16 +25,16 @@ func (f *Runtime) Nodes(input *apipb.Filter) (*apipb.Nodes, error) {
 	return nodes, nil
 }
 
-func (f *Runtime) Edge(input *apipb.Path) (*apipb.Edge, error) {
+func (f *Runtime) Edge(ctx context.Context, input *apipb.Path) (*apipb.Edge, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	return f.graph.GetEdge(input)
+	return f.graph.GetEdge(ctx, input)
 }
 
-func (f *Runtime) Edges(input *apipb.Filter) (*apipb.Edges, error) {
+func (f *Runtime) Edges(ctx context.Context, input *apipb.Filter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edges, err := f.graph.FilterSearchEdges(input)
+	edges, err := f.graph.FilterSearchEdges(ctx, input)
 	if err != nil {
 		return nil, err
 	}
@@ -42,10 +42,10 @@ func (f *Runtime) Edges(input *apipb.Filter) (*apipb.Edges, error) {
 	return edges, nil
 }
 
-func (f *Runtime) EdgesFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+func (f *Runtime) EdgesFrom(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edges, err := f.graph.RangeFilterFrom(filter)
+	edges, err := f.graph.RangeFilterFrom(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -53,10 +53,10 @@ func (f *Runtime) EdgesFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	return edges, nil
 }
 
-func (f *Runtime) EdgesTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+func (f *Runtime) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	f.mu.RLock()
 	defer f.mu.RUnlock()
-	edges, err := f.graph.RangeFilterTo(filter)
+	edges, err := f.graph.RangeFilterTo(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (f *Runtime) EdgesTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	return edges, nil
 }
 
-func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, error) {
+func (r *Runtime) CreateNodes(ctx context.Context, nodes *apipb.NodeConstructors) (*apipb.Nodes, error) {
 	for _, n := range nodes.GetNodes() {
 		pathDefaults(n.Path)
 	}
@@ -76,7 +76,7 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -85,12 +85,12 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -104,7 +104,7 @@ func (r *Runtime) CreateNodes(nodes *apipb.NodeConstructors) (*apipb.Nodes, erro
 	return respNodes, nil
 }
 
-func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
+func (r *Runtime) CreateNode(ctx context.Context, node *apipb.NodeConstructor) (*apipb.Node, error) {
 	pathDefaults(node.GetPath())
 	change := &apipb.StateChange{
 		Op: apipb.Op_CREATE_NODE,
@@ -114,7 +114,7 @@ func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -123,12 +123,12 @@ func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -140,7 +140,7 @@ func (r *Runtime) CreateNode(node *apipb.NodeConstructor) (*apipb.Node, error) {
 	return resp.GetMutation().GetNode(), nil
 }
 
-func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
+func (r *Runtime) PatchNodes(ctx context.Context, patches *apipb.Patches) (*apipb.Nodes, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_PATCH_NODES,
 		Mutation: &apipb.Mutation{
@@ -149,7 +149,7 @@ func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -158,12 +158,12 @@ func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -177,7 +177,7 @@ func (r *Runtime) PatchNodes(patches *apipb.Patches) (*apipb.Nodes, error) {
 	return respNodes, nil
 }
 
-func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
+func (r *Runtime) PatchNode(ctx context.Context, patch *apipb.Patch) (*apipb.Node, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_PATCH_NODE,
 		Mutation: &apipb.Mutation{
@@ -186,7 +186,7 @@ func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -195,12 +195,12 @@ func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -212,7 +212,7 @@ func (r *Runtime) PatchNode(patch *apipb.Patch) (*apipb.Node, error) {
 	return resp.GetMutation().GetNode(), nil
 }
 
-func (r *Runtime) DelNodes(paths *apipb.Paths) (*empty.Empty, error) {
+func (r *Runtime) DelNodes(ctx context.Context, paths *apipb.Paths) (*empty.Empty, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
 		Mutation: &apipb.Mutation{
@@ -221,7 +221,7 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*empty.Empty, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -230,12 +230,12 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*empty.Empty, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -247,7 +247,7 @@ func (r *Runtime) DelNodes(paths *apipb.Paths) (*empty.Empty, error) {
 	return resp.GetMutation().GetEmpty(), nil
 }
 
-func (r *Runtime) DelNode(path *apipb.Path) (*empty.Empty, error) {
+func (r *Runtime) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_NODES,
 		Mutation: &apipb.Mutation{
@@ -256,7 +256,7 @@ func (r *Runtime) DelNode(path *apipb.Path) (*empty.Empty, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -265,12 +265,12 @@ func (r *Runtime) DelNode(path *apipb.Path) (*empty.Empty, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -282,7 +282,7 @@ func (r *Runtime) DelNode(path *apipb.Path) (*empty.Empty, error) {
 	return resp.GetMutation().GetEmpty(), nil
 }
 
-func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, error) {
+func (r *Runtime) CreateEdges(ctx context.Context, edges *apipb.EdgeConstructors) (*apipb.Edges, error) {
 	for _, n := range edges.GetEdges() {
 		pathDefaults(n.Path)
 	}
@@ -294,7 +294,7 @@ func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, erro
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -303,12 +303,12 @@ func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, erro
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -322,7 +322,7 @@ func (r *Runtime) CreateEdges(edges *apipb.EdgeConstructors) (*apipb.Edges, erro
 	return redges, nil
 }
 
-func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
+func (r *Runtime) CreateEdge(ctx context.Context, edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 	pathDefaults(edge.Path)
 	change := &apipb.StateChange{
 		Op: apipb.Op_CREATE_EDGE,
@@ -332,7 +332,7 @@ func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -341,12 +341,12 @@ func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -358,7 +358,7 @@ func (r *Runtime) CreateEdge(edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
 	return resp.GetMutation().GetEdge(), nil
 }
 
-func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
+func (r *Runtime) PatchEdges(ctx context.Context, patches *apipb.Patches) (*apipb.Edges, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGES,
 		Mutation: &apipb.Mutation{
@@ -367,7 +367,7 @@ func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -376,12 +376,12 @@ func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -395,7 +395,7 @@ func (r *Runtime) PatchEdges(patches *apipb.Patches) (*apipb.Edges, error) {
 	return redges, nil
 }
 
-func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
+func (r *Runtime) PatchEdge(ctx context.Context, patch *apipb.Patch) (*apipb.Edge, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_PATCH_EDGE,
 		Mutation: &apipb.Mutation{
@@ -404,7 +404,7 @@ func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -413,12 +413,12 @@ func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -430,7 +430,7 @@ func (r *Runtime) PatchEdge(patch *apipb.Patch) (*apipb.Edge, error) {
 	return resp.GetMutation().GetEdge(), nil
 }
 
-func (r *Runtime) DelEdges(paths *apipb.Paths) (*empty.Empty, error) {
+func (r *Runtime) DelEdges(ctx context.Context, paths *apipb.Paths) (*empty.Empty, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
 		Mutation: &apipb.Mutation{
@@ -439,7 +439,7 @@ func (r *Runtime) DelEdges(paths *apipb.Paths) (*empty.Empty, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -448,12 +448,12 @@ func (r *Runtime) DelEdges(paths *apipb.Paths) (*empty.Empty, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -465,7 +465,7 @@ func (r *Runtime) DelEdges(paths *apipb.Paths) (*empty.Empty, error) {
 	return resp.GetMutation().GetEmpty(), nil
 }
 
-func (r *Runtime) DelEdge(path *apipb.Path) (*empty.Empty, error) {
+func (r *Runtime) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
 	change := &apipb.StateChange{
 		Op: apipb.Op_DELETE_EDGES,
 		Mutation: &apipb.Mutation{
@@ -474,7 +474,7 @@ func (r *Runtime) DelEdge(path *apipb.Path) (*empty.Empty, error) {
 		Timestamp: time.Now().UnixNano(),
 	}
 	for _, plugin := range r.plugins {
-		resp, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		resp, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_BEFORE,
 			State:  change,
 		})
@@ -483,12 +483,12 @@ func (r *Runtime) DelEdge(path *apipb.Path) (*empty.Empty, error) {
 		}
 		change = resp
 	}
-	resp, err := r.execute(change)
+	resp, err := r.execute(ctx, change)
 	if err != nil {
 		return nil, err
 	}
 	for _, plugin := range r.plugins {
-		change, err := plugin.HandleTrigger(context.Background(), &apipb.Trigger{
+		change, err := plugin.HandleTrigger(ctx, &apipb.Trigger{
 			Timing: apipb.Timing_AFTER,
 			State:  resp,
 		})
@@ -512,14 +512,14 @@ func pathDefaults(path *apipb.Path) {
 	}
 }
 
-func (r *Runtime) Export() (*apipb.Graph, error) {
+func (r *Runtime) Export(ctx context.Context) (*apipb.Graph, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	nodes, err := r.graph.AllNodes()
+	nodes, err := r.graph.AllNodes(ctx)
 	if err != nil {
 		return nil, err
 	}
-	edges, err := r.graph.AllEdges()
+	edges, err := r.graph.AllEdges(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -529,14 +529,14 @@ func (r *Runtime) Export() (*apipb.Graph, error) {
 	}, nil
 }
 
-func (r *Runtime) Import(graph *apipb.Graph) (*apipb.Graph, error) {
+func (r *Runtime) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Graph, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	nodes, err := r.graph.SetNodes(graph.GetNodes().GetNodes())
 	if err != nil {
 		return nil, err
 	}
-	edges, err := r.graph.SetEdges(graph.GetEdges().GetEdges())
+	edges, err := r.graph.SetEdges(ctx, graph.GetEdges().GetEdges())
 	if err != nil {
 		return nil, err
 	}
@@ -546,20 +546,26 @@ func (r *Runtime) Import(graph *apipb.Graph) (*apipb.Graph, error) {
 	}, nil
 }
 
-func (r *Runtime) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
+func (r *Runtime) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	return r.graph.SubGraph(filter)
+	return r.graph.SubGraph(ctx, filter)
 }
 
-func (r *Runtime) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
+func (r *Runtime) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	return r.graph.GetNodeDetail(filter)
+	return r.graph.GetNodeDetail(ctx, filter)
 }
 
-func (r *Runtime) GetEdgeDetail(path *apipb.Path) (*apipb.EdgeDetail, error) {
+func (r *Runtime) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apipb.EdgeDetail, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	return r.graph.GetEdgeDetail(path)
+	return r.graph.GetEdgeDetail(ctx, path)
+}
+
+func (r *Runtime) Schema(ctx context.Context) (*apipb.Schema, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.graph.Schema(ctx), nil
 }

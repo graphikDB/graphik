@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
@@ -9,6 +10,7 @@ import (
 	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
+	"time"
 )
 
 func (s *Runtime) JoinNode(nodeID, addr string) error {
@@ -52,7 +54,7 @@ func (s *Runtime) JoinNode(nodeID, addr string) error {
 	return nil
 }
 
-func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
+func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange, error) {
 	var c = &apipb.StateChange{}
 	if err := proto.Unmarshal(log.Data, c); err != nil {
 		return nil, fmt.Errorf("failed to decode command: %s", err.Error())
@@ -60,7 +62,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 	switch c.Op {
 	case apipb.Op_CREATE_NODE:
 		n := c.Mutation.GetNodeConstructor()
-		node, err := f.graph.SetNode(&apipb.Node{
+		node, err := f.graph.SetNode(ctx, &apipb.Node{
 			Path:       n.Path,
 			Attributes: n.Attributes,
 			CreatedAt:  c.Timestamp,
@@ -74,7 +76,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 		}
 	case apipb.Op_CREATE_EDGE:
 		e := c.Mutation.GetEdgeConstructor()
-		edge, err := f.graph.SetEdge(&apipb.Edge{
+		edge, err := f.graph.SetEdge(ctx, &apipb.Edge{
 			Path:       e.Path,
 			Attributes: e.Attributes,
 			Cascade:    e.Cascade,
@@ -121,7 +123,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 				UpdatedAt:  c.Timestamp,
 			})
 		}
-		res, err := f.graph.SetEdges(edges)
+		res, err := f.graph.SetEdges(ctx, edges)
 		if err != nil {
 			return nil, err
 		}
@@ -129,7 +131,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			Object: &apipb.Mutation_Edges{Edges: res},
 		}
 	case apipb.Op_PATCH_NODE:
-		res, err := f.graph.PatchNode(c.Mutation.GetPatch())
+		res, err := f.graph.PatchNode(ctx, c.Mutation.GetPatch())
 		if err != nil {
 			return nil, err
 		}
@@ -137,7 +139,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			Object: &apipb.Mutation_Node{Node: res},
 		}
 	case apipb.Op_PATCH_EDGE:
-		res, err := f.graph.PatchEdge(c.Mutation.GetPatch())
+		res, err := f.graph.PatchEdge(ctx, c.Mutation.GetPatch())
 		if err != nil {
 			return nil, err
 		}
@@ -145,7 +147,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			Object: &apipb.Mutation_Edge{Edge: res},
 		}
 	case apipb.Op_PATCH_NODES:
-		res, err := f.graph.PatchNodes(c.Mutation.GetPatches())
+		res, err := f.graph.PatchNodes(ctx, c.Mutation.GetPatches())
 		if err != nil {
 			return nil, err
 		}
@@ -153,7 +155,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			Object: &apipb.Mutation_Nodes{Nodes: res},
 		}
 	case apipb.Op_PATCH_EDGES:
-		res, err := f.graph.PatchEdges(c.Mutation.GetPatches())
+		res, err := f.graph.PatchEdges(ctx, c.Mutation.GetPatches())
 		if err != nil {
 			return nil, err
 		}
@@ -161,7 +163,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			Object: &apipb.Mutation_Edges{Edges: res},
 		}
 	case apipb.Op_DELETE_NODE:
-		res, err := f.graph.DeleteNode(c.Mutation.GetPath())
+		res, err := f.graph.DeleteNode(ctx, c.Mutation.GetPath())
 		if err != nil {
 			return nil, err
 		}
@@ -169,7 +171,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			Object: &apipb.Mutation_Empty{Empty: res},
 		}
 	case apipb.Op_DELETE_EDGE:
-		res, err := f.graph.DeleteEdge(c.Mutation.GetPath())
+		res, err := f.graph.DeleteEdge(ctx, c.Mutation.GetPath())
 		if err != nil {
 			return nil, err
 		}
@@ -177,7 +179,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			Object: &apipb.Mutation_Empty{Empty: res},
 		}
 	case apipb.Op_DELETE_NODES:
-		res, err := f.graph.DeleteNodes(c.Mutation.GetPaths().GetPaths())
+		res, err := f.graph.DeleteNodes(ctx, c.Mutation.GetPaths().GetPaths())
 		if err != nil {
 			return nil, err
 		}
@@ -185,7 +187,7 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 			Object: &apipb.Mutation_Empty{Empty: res},
 		}
 	case apipb.Op_DELETE_EDGES:
-		res, err := f.graph.DeleteEdges(c.Mutation.GetPaths().GetPaths())
+		res, err := f.graph.DeleteEdges(ctx, c.Mutation.GetPaths().GetPaths())
 		if err != nil {
 			return nil, err
 		}
@@ -202,7 +204,9 @@ func (f *Runtime) apply(log *raft.Log) (*apipb.StateChange, error) {
 }
 
 func (f *Runtime) Apply(log *raft.Log) interface{} {
-	res, err := f.apply(log)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	res, err := f.apply(ctx, log)
 	if err != nil {
 		return err
 	}
@@ -214,6 +218,8 @@ func (f *Runtime) Snapshot() (raft.FSMSnapshot, error) {
 }
 
 func (f *Runtime) Restore(closer io.ReadCloser) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
 	export := &apipb.Graph{}
 	bits, err := ioutil.ReadAll(closer)
 	if err != nil {
@@ -222,7 +228,7 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 	if err := proto.Unmarshal(bits, export); err != nil {
 		return err
 	}
-	_, err = f.Import(export)
+	_, err = f.Import(ctx, export)
 	if err != nil {
 		return err
 	}
@@ -230,7 +236,9 @@ func (f *Runtime) Restore(closer io.ReadCloser) error {
 }
 
 func (f *Runtime) Persist(sink raft.SnapshotSink) error {
-	export, err := f.Export()
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	export, err := f.Export(ctx)
 	if err != nil {
 		return err
 	}

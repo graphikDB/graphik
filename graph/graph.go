@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/storage"
 	"github.com/autom8ter/graphik/vm"
@@ -42,9 +43,9 @@ func (g *Graph) Do(fn func(g *Graph)) {
 //	return nodeTypes
 //}
 
-func (n *Graph) AllNodes() (*apipb.Nodes, error) {
+func (n *Graph) AllNodes(ctx context.Context) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
-	if err := n.RangeNode("*", func(node *apipb.Node) bool {
+	if err := n.RangeNode(ctx, apipb.Any, func(node *apipb.Node) bool {
 		nodes = append(nodes, node)
 		return true
 	}); err != nil {
@@ -57,14 +58,14 @@ func (n *Graph) AllNodes() (*apipb.Nodes, error) {
 	return toReturn, nil
 }
 
-func (n *Graph) GetNode(path *apipb.Path) (*apipb.Node, error) {
-	if n.HasNode(path) {
-		return n.db.GetNode(path)
+func (n *Graph) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, error) {
+	if n.HasNode(ctx, path) {
+		return n.db.GetNode(ctx, path)
 	}
 	return nil, noExist(path)
 }
 
-func (n *Graph) SetNode(value *apipb.Node) (*apipb.Node, error) {
+func (n *Graph) SetNode(ctx context.Context, value *apipb.Node) (*apipb.Node, error) {
 	now := time.Now().UnixNano()
 	if value.GetPath() == nil {
 		value.Path = &apipb.Path{}
@@ -78,14 +79,14 @@ func (n *Graph) SetNode(value *apipb.Node) (*apipb.Node, error) {
 	if value.GetUpdatedAt() == 0 {
 		value.UpdatedAt = now
 	}
-	if err := n.db.SetNode(value); err != nil {
+	if err := n.db.SetNode(ctx, value); err != nil {
 		return nil, err
 	}
 	return value, nil
 }
 
-func (n *Graph) PatchNode(value *apipb.Patch) (*apipb.Node, error) {
-	node, err := n.db.GetNode(value.GetPath())
+func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.Node, error) {
+	node, err := n.db.GetNode(ctx, value.GetPath())
 	if err != nil {
 		return nil, err
 	}
@@ -93,13 +94,13 @@ func (n *Graph) PatchNode(value *apipb.Patch) (*apipb.Node, error) {
 		node.GetAttributes().GetFields()[k] = v
 	}
 	node.UpdatedAt = time.Now().UnixNano()
-	return node, n.db.SetNode(node)
+	return node, n.db.SetNode(ctx, node)
 }
 
-func (n *Graph) PatchNodes(values *apipb.Patches) (*apipb.Nodes, error) {
+func (n *Graph) PatchNodes(ctx context.Context, values *apipb.Patches) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
 	for _, val := range values.GetPatches() {
-		patch, err := n.PatchNode(val)
+		patch, err := n.PatchNode(ctx, val)
 		if err != nil {
 			return nil, err
 		}
@@ -112,19 +113,19 @@ func (n *Graph) PatchNodes(values *apipb.Patches) (*apipb.Nodes, error) {
 	return toReturn, nil
 }
 
-func (n *Graph) RangeNode(nodeType string, f func(node *apipb.Node) bool) error {
-	return n.db.RangeNodes(nodeType, f)
+func (n *Graph) RangeNode(ctx context.Context, nodeType string, f func(node *apipb.Node) bool) error {
+	return n.db.RangeNodes(ctx, nodeType, f)
 }
 
-func (n *Graph) DeleteNode(path *apipb.Path) (*empty.Empty, error) {
-	if !n.HasNode(path) {
+func (n *Graph) DeleteNode(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+	if !n.HasNode(ctx, path) {
 		return &empty.Empty{}, noExist(path)
 	}
 	var err error
-	if err := n.RangeFrom(path, func(e *apipb.Edge) bool {
-		_, err = n.DeleteEdge(e.GetPath())
+	if err := n.RangeFrom(ctx, path, func(e *apipb.Edge) bool {
+		_, err = n.DeleteEdge(ctx, e.GetPath())
 		if e.Cascade == apipb.Cascade_CASCADE_TO || e.Cascade == apipb.Cascade_CASCADE_MUTUAL {
-			if _, err = n.DeleteNode(e.To); err != nil {
+			if _, err = n.DeleteNode(ctx, e.To); err != nil {
 				err = errors.Wrap(err, err.Error())
 			}
 		}
@@ -132,10 +133,10 @@ func (n *Graph) DeleteNode(path *apipb.Path) (*empty.Empty, error) {
 	}); err != nil {
 		return nil, err
 	}
-	if err := n.RangeTo(path, func(e *apipb.Edge) bool {
-		_, err = n.DeleteEdge(e.GetPath())
+	if err := n.RangeTo(ctx, path, func(e *apipb.Edge) bool {
+		_, err = n.DeleteEdge(ctx, e.GetPath())
 		if e.Cascade == apipb.Cascade_CASCADE_FROM || e.Cascade == apipb.Cascade_CASCADE_MUTUAL {
-			if _, err = n.DeleteNode(e.From); err != nil {
+			if _, err = n.DeleteNode(ctx, e.From); err != nil {
 				err = errors.Wrap(err, err.Error())
 			}
 		}
@@ -143,20 +144,20 @@ func (n *Graph) DeleteNode(path *apipb.Path) (*empty.Empty, error) {
 	}); err != nil {
 		return nil, err
 	}
-	if _, err = n.DeleteNode(path); err != nil {
+	if _, err = n.DeleteNode(ctx, path); err != nil {
 		return &empty.Empty{}, err
 	}
 	return &empty.Empty{}, err
 }
 
-func (n *Graph) HasNode(path *apipb.Path) bool {
-	node, _ := n.db.GetNode(path)
+func (n *Graph) HasNode(ctx context.Context, path *apipb.Path) bool {
+	node, _ := n.db.GetNode(ctx, path)
 	return node != nil
 }
 
-func (n *Graph) FilterNode(nodeType string, filter func(node *apipb.Node) bool) (*apipb.Nodes, error) {
+func (n *Graph) FilterNode(ctx context.Context, nodeType string, filter func(node *apipb.Node) bool) (*apipb.Nodes, error) {
 	var filtered []*apipb.Node
-	if err := n.RangeNode(nodeType, func(node *apipb.Node) bool {
+	if err := n.RangeNode(ctx, nodeType, func(node *apipb.Node) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
@@ -180,21 +181,21 @@ func (n *Graph) SetNodes(nodes []*apipb.Node) (*apipb.Nodes, error) {
 	return toReturn, nil
 }
 
-func (n *Graph) DeleteNodes(nodes []*apipb.Path) (*empty.Empty, error) {
-	return &empty.Empty{}, n.db.DelNodes(nodes...)
+func (n *Graph) DeleteNodes(ctx context.Context, nodes []*apipb.Path) (*empty.Empty, error) {
+	return &empty.Empty{}, n.db.DelNodes(ctx, nodes...)
 }
 
-func (n *Graph) ClearNodes(nodeType string) error {
-	return n.db.DelNodeType(nodeType)
+func (n *Graph) ClearNodes(ctx context.Context, nodeType string) error {
+	return n.db.DelNodeType(ctx, nodeType)
 }
 
-func (n *Graph) FilterSearchNodes(filter *apipb.Filter) (*apipb.Nodes, error) {
+func (n *Graph) FilterSearchNodes(ctx context.Context, filter *apipb.Filter) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
 	programs, err := vm.Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
-	if err := n.RangeNode(filter.Gtype, func(node *apipb.Node) bool {
+	if err := n.RangeNode(ctx, filter.Gtype, func(node *apipb.Node) bool {
 		pass, err := vm.Eval(programs, node)
 		if err != nil {
 			return true
@@ -222,9 +223,9 @@ func (n *Graph) FilterSearchNodes(filter *apipb.Filter) (*apipb.Nodes, error) {
 //	return edgeTypes
 //}
 
-func (n *Graph) AllEdges() (*apipb.Edges, error) {
+func (n *Graph) AllEdges(ctx context.Context) (*apipb.Edges, error) {
 	var edges []*apipb.Edge
-	if err := n.RangeEdges("*", func(edge *apipb.Edge) bool {
+	if err := n.RangeEdges(ctx, apipb.Any, func(edge *apipb.Edge) bool {
 		edges = append(edges, edge)
 		return true
 	}); err != nil {
@@ -237,18 +238,18 @@ func (n *Graph) AllEdges() (*apipb.Edges, error) {
 	return toReturn, nil
 }
 
-func (n *Graph) GetEdge(path *apipb.Path) (*apipb.Edge, error) {
-	return n.db.GetEdge(path)
+func (n *Graph) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, error) {
+	return n.db.GetEdge(ctx, path)
 }
 
-func (n *Graph) SetEdge(value *apipb.Edge) (*apipb.Edge, error) {
+func (n *Graph) SetEdge(ctx context.Context, value *apipb.Edge) (*apipb.Edge, error) {
 	if value.Path == nil {
 		value.Path = &apipb.Path{}
 	}
 	if value.GetPath().GetGid() == "" {
 		value.Path.Gid = uuid.New().String()
 	}
-	if err := n.db.SetEdge(value); err != nil {
+	if err := n.db.SetEdge(ctx, value); err != nil {
 		return nil, err
 	}
 	n.edgesFrom[value.GetFrom().String()] = append(n.edgesFrom[value.GetFrom().String()], value.GetPath())
@@ -257,12 +258,12 @@ func (n *Graph) SetEdge(value *apipb.Edge) (*apipb.Edge, error) {
 	return value, nil
 }
 
-func (n *Graph) RangeEdges(edgeType string, f func(edge *apipb.Edge) bool) error {
-	return n.db.RangeEdges(edgeType, f)
+func (n *Graph) RangeEdges(ctx context.Context, edgeType string, f func(edge *apipb.Edge) bool) error {
+	return n.db.RangeEdges(ctx, edgeType, f)
 }
 
-func (n *Graph) DeleteEdge(path *apipb.Path) (*empty.Empty, error) {
-	edge, err := n.GetEdge(path)
+func (n *Graph) DeleteEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+	edge, err := n.GetEdge(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -270,20 +271,20 @@ func (n *Graph) DeleteEdge(path *apipb.Path) (*empty.Empty, error) {
 	n.edgesTo[edge.From.String()] = removeEdge(path, n.edgesTo[edge.From.String()])
 	n.edgesFrom[edge.To.String()] = removeEdge(path, n.edgesFrom[edge.To.String()])
 	n.edgesTo[edge.To.String()] = removeEdge(path, n.edgesTo[edge.To.String()])
-	if err := n.db.DelEdges(path); err != nil {
+	if err := n.db.DelEdges(ctx, path); err != nil {
 		return nil, err
 	}
 	return &empty.Empty{}, nil
 }
 
-func (n *Graph) HasEdge(path *apipb.Path) bool {
-	e, _ := n.db.GetEdge(path)
+func (n *Graph) HasEdge(ctx context.Context, path *apipb.Path) bool {
+	e, _ := n.db.GetEdge(ctx, path)
 	return e != nil
 }
 
-func (g *Graph) RangeFrom(path *apipb.Path, fn func(e *apipb.Edge) bool) error {
+func (g *Graph) RangeFrom(ctx context.Context, path *apipb.Path, fn func(e *apipb.Edge) bool) error {
 	for _, path := range g.edgesFrom[path.String()] {
-		edge, err := g.GetEdge(path)
+		edge, err := g.GetEdge(ctx, path)
 		if err != nil {
 			return err
 		}
@@ -294,9 +295,9 @@ func (g *Graph) RangeFrom(path *apipb.Path, fn func(e *apipb.Edge) bool) error {
 	return nil
 }
 
-func (g *Graph) RangeTo(path *apipb.Path, fn func(edge *apipb.Edge) bool) error {
+func (g *Graph) RangeTo(ctx context.Context, path *apipb.Path, fn func(edge *apipb.Edge) bool) error {
 	for _, edge := range g.edgesTo[path.String()] {
-		e, err := g.GetEdge(edge)
+		e, err := g.GetEdge(ctx, edge)
 		if err != nil {
 			return err
 		}
@@ -307,14 +308,14 @@ func (g *Graph) RangeTo(path *apipb.Path, fn func(edge *apipb.Edge) bool) error 
 	return nil
 }
 
-func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+func (g *Graph) RangeFilterFrom(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	programs, err := vm.Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
 	var edges []*apipb.Edge
 	var pass bool
-	if err = g.RangeFrom(filter.NodePath, func(edge *apipb.Edge) bool {
+	if err = g.RangeFrom(ctx, filter.NodePath, func(edge *apipb.Edge) bool {
 		if filter.Gtype != "*" {
 			if edge.GetPath().GetGtype() != filter.Gtype {
 				return true
@@ -339,14 +340,14 @@ func (g *Graph) RangeFilterFrom(filter *apipb.EdgeFilter) (*apipb.Edges, error) 
 	return toReturn, err
 }
 
-func (e *Graph) RangeFilterTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+func (e *Graph) RangeFilterTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	programs, err := vm.Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
 	var edges []*apipb.Edge
 	var pass bool
-	if err := e.RangeTo(filter.NodePath, func(edge *apipb.Edge) bool {
+	if err := e.RangeTo(ctx, filter.NodePath, func(edge *apipb.Edge) bool {
 		if filter.Gtype != "*" {
 			if edge.GetPath().GetGtype() != filter.Gtype {
 				return true
@@ -370,9 +371,9 @@ func (e *Graph) RangeFilterTo(filter *apipb.EdgeFilter) (*apipb.Edges, error) {
 	return toReturn, nil
 }
 
-func (n *Graph) FilterEdges(edgeType string, filter func(edge *apipb.Edge) bool) (*apipb.Edges, error) {
+func (n *Graph) FilterEdges(ctx context.Context, edgeType string, filter func(edge *apipb.Edge) bool) (*apipb.Edges, error) {
 	var filtered []*apipb.Edge
-	if err := n.RangeEdges(edgeType, func(node *apipb.Edge) bool {
+	if err := n.RangeEdges(ctx, edgeType, func(node *apipb.Edge) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
@@ -387,10 +388,10 @@ func (n *Graph) FilterEdges(edgeType string, filter func(edge *apipb.Edge) bool)
 	return toReturn, nil
 }
 
-func (n *Graph) SetEdges(edges []*apipb.Edge) (*apipb.Edges, error) {
+func (n *Graph) SetEdges(ctx context.Context, edges []*apipb.Edge) (*apipb.Edges, error) {
 	var returned []*apipb.Edge
 	for _, edge := range edges {
-		e, err := n.SetEdge(edge)
+		e, err := n.SetEdge(ctx, edge)
 		if err != nil {
 			return nil, err
 		}
@@ -403,9 +404,9 @@ func (n *Graph) SetEdges(edges []*apipb.Edge) (*apipb.Edges, error) {
 	return toReturn, nil
 }
 
-func (n *Graph) DeleteEdges(edges []*apipb.Path) (*empty.Empty, error) {
+func (n *Graph) DeleteEdges(ctx context.Context, edges []*apipb.Path) (*empty.Empty, error) {
 	for _, edge := range edges {
-		_, err := n.DeleteEdge(edge)
+		_, err := n.DeleteEdge(ctx, edge)
 		if err != nil {
 			return nil, err
 		}
@@ -413,29 +414,29 @@ func (n *Graph) DeleteEdges(edges []*apipb.Path) (*empty.Empty, error) {
 	return &empty.Empty{}, nil
 }
 
-func (n *Graph) ClearEdges(edgeType string) error {
-	return n.db.DelNodeType(edgeType)
+func (n *Graph) ClearEdges(ctx context.Context, edgeType string) error {
+	return n.db.DelNodeType(ctx, edgeType)
 }
 
-func (e *Graph) PatchEdge(value *apipb.Patch) (*apipb.Edge, error) {
-	edge, err := e.GetEdge(value.GetPath())
+func (e *Graph) PatchEdge(ctx context.Context, value *apipb.Patch) (*apipb.Edge, error) {
+	edge, err := e.GetEdge(ctx, value.GetPath())
 	if err != nil {
 		return nil, err
 	}
 	for k, v := range value.GetAttributes().GetFields() {
 		edge.GetAttributes().GetFields()[k] = v
 	}
-	edge, err = e.SetEdge(edge)
+	edge, err = e.SetEdge(ctx, edge)
 	if err != nil {
 		return nil, err
 	}
 	return edge, nil
 }
 
-func (e *Graph) PatchEdges(values *apipb.Patches) (*apipb.Edges, error) {
+func (e *Graph) PatchEdges(ctx context.Context, values *apipb.Patches) (*apipb.Edges, error) {
 	var edges []*apipb.Edge
 	for _, val := range values.GetPatches() {
-		patch, err := e.PatchEdge(val)
+		patch, err := e.PatchEdge(ctx, val)
 		if err != nil {
 			return nil, err
 		}
@@ -448,13 +449,13 @@ func (e *Graph) PatchEdges(values *apipb.Patches) (*apipb.Edges, error) {
 	return toReturn, nil
 }
 
-func (e *Graph) FilterSearchEdges(filter *apipb.Filter) (*apipb.Edges, error) {
+func (e *Graph) FilterSearchEdges(ctx context.Context, filter *apipb.Filter) (*apipb.Edges, error) {
 	programs, err := vm.Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
 	var edges []*apipb.Edge
-	if err := e.RangeEdges(filter.Gtype, func(edge *apipb.Edge) bool {
+	if err := e.RangeEdges(ctx, filter.Gtype, func(edge *apipb.Edge) bool {
 		pass, err := vm.Eval(programs, edge)
 		if err != nil {
 			return true
@@ -473,18 +474,18 @@ func (e *Graph) FilterSearchEdges(filter *apipb.Filter) (*apipb.Edges, error) {
 	return toReturn, nil
 }
 
-func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
+func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	graph := &apipb.Graph{
 		Nodes: &apipb.Nodes{},
 		Edges: &apipb.Edges{},
 	}
-	nodes, err := g.FilterSearchNodes(filter.Nodes)
+	nodes, err := g.FilterSearchNodes(ctx, filter.Nodes)
 	if err != nil {
 		return nil, err
 	}
 	for _, node := range nodes.GetNodes() {
 		graph.Nodes.Nodes = append(graph.Nodes.Nodes, node)
-		edges, err := g.RangeFilterFrom(&apipb.EdgeFilter{
+		edges, err := g.RangeFilterFrom(ctx, &apipb.EdgeFilter{
 			NodePath:    node.Path,
 			Gtype:       filter.GetEdges().GetGtype(),
 			Expressions: filter.GetEdges().GetExpressions(),
@@ -500,16 +501,16 @@ func (g *Graph) SubGraph(filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	return graph, err
 }
 
-func (g *Graph) GetEdgeDetail(path *apipb.Path) (*apipb.EdgeDetail, error) {
-	e, err := g.db.GetEdge(path)
+func (g *Graph) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apipb.EdgeDetail, error) {
+	e, err := g.db.GetEdge(ctx, path)
 	if err != nil {
 		return nil, err
 	}
-	from, err := g.db.GetNode(e.From)
+	from, err := g.db.GetNode(ctx, e.From)
 	if err != nil {
 		return nil, err
 	}
-	to, err := g.db.GetNode(e.To)
+	to, err := g.db.GetNode(ctx, e.To)
 	if err != nil {
 		return nil, err
 	}
@@ -524,13 +525,13 @@ func (g *Graph) GetEdgeDetail(path *apipb.Path) (*apipb.EdgeDetail, error) {
 	}, nil
 }
 
-func (g *Graph) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
+func (g *Graph) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
 	detail := &apipb.NodeDetail{
 		Path:      filter.GetPath(),
 		EdgesTo:   map[string]*apipb.EdgeDetails{},
 		EdgesFrom: map[string]*apipb.EdgeDetails{},
 	}
-	node, err := g.db.GetNode(filter.GetPath())
+	node, err := g.db.GetNode(ctx, filter.GetPath())
 	if err != nil {
 		return nil, err
 	}
@@ -538,7 +539,7 @@ func (g *Graph) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail
 	detail.CreatedAt = node.CreatedAt
 	detail.Attributes = node.Attributes
 	if filter.GetEdgesFrom() != nil {
-		edgesFrom, err := g.RangeFilterFrom(&apipb.EdgeFilter{
+		edgesFrom, err := g.RangeFilterFrom(ctx, &apipb.EdgeFilter{
 			NodePath:    node.Path,
 			Gtype:       filter.GetEdgesFrom().GetGtype(),
 			Expressions: filter.GetEdgesFrom().GetExpressions(),
@@ -548,7 +549,7 @@ func (g *Graph) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail
 			return nil, err
 		}
 		for _, edge := range edgesFrom.GetEdges() {
-			eDetail, err := g.GetEdgeDetail(edge.GetPath())
+			eDetail, err := g.GetEdgeDetail(ctx, edge.GetPath())
 			if err != nil {
 				return nil, err
 			}
@@ -557,7 +558,7 @@ func (g *Graph) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail
 	}
 
 	if filter.GetEdgesTo() != nil {
-		edgesTo, err := g.RangeFilterTo(&apipb.EdgeFilter{
+		edgesTo, err := g.RangeFilterTo(ctx, &apipb.EdgeFilter{
 			NodePath:    node.Path,
 			Gtype:       filter.GetEdgesTo().GetGtype(),
 			Expressions: filter.GetEdgesTo().GetExpressions(),
@@ -567,7 +568,7 @@ func (g *Graph) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail
 			return nil, err
 		}
 		for _, edge := range edgesTo.GetEdges() {
-			eDetail, err := g.GetEdgeDetail(edge.GetPath())
+			eDetail, err := g.GetEdgeDetail(ctx, edge.GetPath())
 			if err != nil {
 				return nil, err
 			}
@@ -585,4 +586,15 @@ func (g *Graph) GetNodeDetail(filter *apipb.NodeDetailFilter) (*apipb.NodeDetail
 
 func (g *Graph) Close() error {
 	return g.db.Close()
+}
+
+func (g *Graph) Schema(ctx context.Context) *apipb.Schema {
+	return &apipb.Schema{
+		EdgeSchema: &apipb.EdgeSchema{
+			Types: g.db.EdgeTypes(ctx),
+		},
+		NodeSchema: &apipb.NodeSchema{
+			Types: g.db.NodeTypes(ctx),
+		},
+	}
 }
