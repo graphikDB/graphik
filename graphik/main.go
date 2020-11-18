@@ -4,7 +4,6 @@ import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
-	"github.com/autom8ter/graphik/interceptors"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/runtime"
 	"github.com/autom8ter/graphik/service"
@@ -74,13 +73,13 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		grpc.ChainUnaryInterceptor(
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger.Logger()),
-			interceptors.UnaryAuth(runtim),
+			runtim.UnaryAuth(),
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(logger.Logger()),
-			interceptors.StreamAuth(runtim),
+			runtim.StreamAuth(),
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)

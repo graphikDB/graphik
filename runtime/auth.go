@@ -43,3 +43,7 @@ func (s *Runtime) NodeContext(ctx context.Context) *apipb.Node {
 	}
 	return nil
 }
+
+func (r *Runtime) Authorize() {
+
+}

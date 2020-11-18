@@ -29,25 +29,26 @@ const (
 )
 
 type Runtime struct {
-	machine   *machine.Machine
-	config    *auth.Config
-	mu        sync.RWMutex
-	raft      *raft.Raft
-	graph     *graph.Graph
-	close     sync.Once
-	triggers  []apipb.TriggerServiceClient
-	authorizers  []apipb.AuthorizationServiceClient
-	closed    bool
-	closers   []func()
-	logStore  *storage.LogStore
-	snapStore *storage.SnapshotStore
+	machine     *machine.Machine
+	config      *auth.Config
+	mu          sync.RWMutex
+	raft        *raft.Raft
+	graph       *graph.Graph
+	close       sync.Once
+	triggers    []apipb.TriggerServiceClient
+	authorizers []apipb.AuthorizationServiceClient
+	closed      bool
+	closers     []func()
+	logStore    *storage.LogStore
+	snapStore   *storage.SnapshotStore
 }
 
 func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 	os.MkdirAll(cfg.StoragePath, 0700)
 	var triggers []apipb.TriggerServiceClient
+	var authorizers []apipb.AuthorizationServiceClient
 	var closers []func()
-	for _, plugin := range cfg.Plugins {
+	for _, plugin := range cfg.Triggers {
 		if plugin == "" {
 			continue
 		}
@@ -60,9 +61,29 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 			grpc.WithInsecure(),
 		)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to dial plugin")
+			return nil, errors.Wrap(err, "failed to dial trigger")
 		}
 		triggers = append(triggers, apipb.NewTriggerServiceClient(conn))
+		closers = append(closers, func() {
+			conn.Close()
+		})
+	}
+	for _, plugin := range cfg.Authorizers {
+		if plugin == "" {
+			continue
+		}
+		tctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+		conn, err := grpc.DialContext(
+			tctx,
+			plugin,
+			grpc.WithChainUnaryInterceptor(grpc_zap.UnaryClientInterceptor(logger.Logger())),
+			grpc.WithInsecure(),
+		)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to dial authorizer")
+		}
+		authorizers = append(authorizers, apipb.NewAuthorizationServiceClient(conn))
 		closers = append(closers, func() {
 			conn.Close()
 		})
@@ -102,16 +123,17 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 		return nil, errors.Wrap(err, "failed to create graph")
 	}
 	s := &Runtime{
-		machine:   m,
-		config:    c,
-		raft:      nil,
-		mu:        sync.RWMutex{},
-		graph:     g,
-		close:     sync.Once{},
-		closers:   closers,
-		triggers:  triggers,
-		logStore:  logStore,
-		snapStore: snapshotStore,
+		machine:     m,
+		config:      c,
+		raft:        nil,
+		mu:          sync.RWMutex{},
+		graph:       g,
+		close:       sync.Once{},
+		closers:     closers,
+		triggers:    triggers,
+		logStore:    logStore,
+		snapStore:   snapshotStore,
+		authorizers: authorizers,
 	}
 	rft, err := raft.NewRaft(rconfig, s, logStore, snapshotStore, snapshots, transport)
 	if err != nil {
@@ -184,15 +206,23 @@ func (s *Runtime) execute(ctx context.Context, cmd *apipb.StateChange) (*apipb.S
 }
 
 func (s *Runtime) Close() error {
+	s.machine.Cancel()
 	for _, closer := range s.closers {
 		closer()
 	}
-	s.machine.Cancel()
 	defer s.machine.Close()
-	s.raft.Shutdown().Error()
-	s.graph.Close()
-	s.snapStore.Close()
-	s.logStore.Close()
+	if err := s.raft.Shutdown().Error(); err != nil {
+		logger.Error("raft shutdown failure", zap.Error(err))
+	}
+	if err := s.graph.Close(); err != nil {
+		logger.Error("graph storage shutdown failure", zap.Error(err))
+	}
+	if err := s.snapStore.Close(); err != nil {
+		logger.Error("raft snapshot storage shutdown failure", zap.Error(err))
+	}
+	if err := s.logStore.Close(); err != nil {
+		logger.Error("raft log storage shutdown failure", zap.Error(err))
+	}
 	return nil
 }
 

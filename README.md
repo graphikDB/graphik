@@ -19,7 +19,8 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Based Authorization
-- [x] gRPC Based Plugins/Triggers
+- [x] gRPC Based External Trigger Implementation(sidecar)
+- [x] gRPC Based External Authorizer Implementation(sidecar)
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
@@ -35,7 +36,7 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 
 ## Use Cases
 
-- relational state-machine fine-grained authorization
+- relational state-machine for identity-aware applications
 
 ## TODO
 
@@ -46,6 +47,7 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 ## Flags
 
 ```text
+      --authorizers strings    registered authorizers (env: GRAPHIK_AUTHORIZERS)
       --grpc.bind string       grpc server bind address (default ":7820")
       --http.bind string       http server bind address (default ":7830")
       --http.headers strings   cors allowed headers (env: GRAPHIK_HTTP_HEADERS)
@@ -53,11 +55,11 @@ An identity-aware, permissioned, persistant labelled property graph database wri
       --http.origins strings   cors allowed origins (env: GRAPHIK_HTTP_ORIGINS)
       --jwks strings           authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
       --metrics                enable prometheus & pprof metrics
-      --plugins strings        registered plugins (env: GRAPHIK_PLUGINS)
       --raft.bind string       raft protocol bind address (default "localhost:7840")
       --raft.id string         raft node id (env: GRAPHIK_RAFT_ID) (default "leader")
       --raft.join string       join raft at target address
       --storage string         persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
+      --triggers strings       registered triggers (env: GRAPHIK_TRIGGERS)
 
 
 ```

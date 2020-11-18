@@ -10,6 +10,7 @@ import (
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/mitchellh/mapstructure"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -95,5 +96,13 @@ func ToMap(obj interface{}) map[string]interface{} {
 		values := map[string]interface{}{}
 		mapstructure.WeakDecode(o, &values)
 		return values
+	}
+}
+
+func EnvOr(key string, defaul string) string {
+	if val := os.Getenv(key); val == "" {
+		return defaul
+	} else {
+		return val
 	}
 }

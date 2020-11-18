@@ -225,14 +225,14 @@ message Message {
 }
 
 message Trigger {
-  string request_path =1;
+  string method =1;
   Node user =2;
   Timing timing =3;
   StateChange state =4;
 }
 
 message RequestIntercept {
-  string request_path =1;
+  string method =1;
   Node user =2;
   google.protobuf.Any request =3;
   int64 timestamp =4;
@@ -280,6 +280,8 @@ service GraphService {
   rpc Import(Graph) returns(Graph){}
   rpc Export(google.protobuf.Empty) returns (Graph){}
   rpc SubGraph(SubGraphFilter) returns(Graph){}
+
+  rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
 }
 
 service TriggerService {

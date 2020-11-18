@@ -198,3 +198,8 @@ func (g *Graph) Export(ctx context.Context, empty *empty.Empty) (*apipb.Graph, e
 func (g *Graph) GetSchema(ctx context.Context, empty *empty.Empty) (*apipb.Schema, error) {
 	return g.runtime.Schema(ctx)
 }
+
+func (g *Graph) Shutdown(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+	go g.runtime.Close()
+	return &empty.Empty{}, nil
+}
