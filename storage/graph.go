@@ -59,12 +59,7 @@ func (b *GraphStore) Close() error {
 func (g *GraphStore) GetEdge(path *apipb.Path) (*apipb.Edge, error) {
 	var edge apipb.Edge
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbEdges)
-		bucket, err := bucket.CreateBucketIfNotExists([]byte(path.Gtype))
-		if err != nil {
-			return err
-		}
-		bits := bucket.Get([]byte(path.Gid))
+		bits := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype)).Get([]byte(path.Gid))
 		if err := proto.Unmarshal(bits, &edge); err != nil {
 			return err
 		}
@@ -76,9 +71,19 @@ func (g *GraphStore) GetEdge(path *apipb.Path) (*apipb.Edge, error) {
 }
 
 func (g *GraphStore) RangeEdges(gType string, fn func(e *apipb.Edge) bool) error {
+	if gType == Any {
+		for _, edgeType := range g.EdgeTypes() {
+			if edgeType == Any {
+				continue
+			}
+			if err := g.RangeEdges(edgeType, fn); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(gType))
-		return bucket.ForEach(func(k, v []byte) error {
+		return tx.Bucket(dbEdges).Bucket([]byte(gType)).ForEach(func(k, v []byte) error {
 			var edge apipb.Edge
 			if err := proto.Unmarshal(v, &edge); err != nil {
 				return err
@@ -97,12 +102,7 @@ func (g *GraphStore) RangeEdges(gType string, fn func(e *apipb.Edge) bool) error
 func (g *GraphStore) GetNode(path *apipb.Path) (*apipb.Node, error) {
 	var node apipb.Node
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbNodes)
-		bucket, err := bucket.CreateBucketIfNotExists([]byte(path.Gtype))
-		if err != nil {
-			return err
-		}
-		bits := bucket.Get([]byte(path.Gid))
+		bits := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype)).Get([]byte(path.Gid))
 		if err := proto.Unmarshal(bits, &node); err != nil {
 			return err
 		}
@@ -115,8 +115,18 @@ func (g *GraphStore) GetNode(path *apipb.Path) (*apipb.Node, error) {
 
 func (g *GraphStore) RangeNodes(gType string, fn func(n *apipb.Node) bool) error {
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbNodes).Bucket([]byte(gType))
-		return bucket.ForEach(func(k, v []byte) error {
+		if gType == Any {
+			for _, nodeType := range g.NodeTypes() {
+				if nodeType == Any {
+					continue
+				}
+				if err := g.RangeNodes(nodeType, fn); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+		return tx.Bucket(dbNodes).Bucket([]byte(gType)).ForEach(func(k, v []byte) error {
 			var node apipb.Node
 			if err := proto.Unmarshal(v, &node); err != nil {
 				return err
@@ -139,11 +149,39 @@ func (g *GraphStore) SetNode(node *apipb.Node) error {
 			return err
 		}
 		bucket := tx.Bucket(dbNodes)
-		bucket, err = bucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
-		if err != nil {
-			return err
+		if !g.hasNodeType(node.GetPath().GetGtype()) {
+			bucket, err = bucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
+			if err != nil {
+				return err
+			}
+		} else {
+			bucket = bucket.Bucket([]byte(node.GetPath().GetGtype()))
 		}
 		return bucket.Put([]byte(node.GetPath().GetGid()), bits)
+	})
+}
+
+func (g *GraphStore) SetNodes(nodes ...*apipb.Node) error {
+	return g.db.Update(func(tx *bbolt.Tx) error {
+		for _, node := range nodes {
+			bits, err := proto.Marshal(node)
+			if err != nil {
+				return err
+			}
+			bucket := tx.Bucket(dbNodes)
+			if !g.hasNodeType(node.GetPath().GetGtype()) {
+				bucket, err = bucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
+				if err != nil {
+					return err
+				}
+			} else {
+				bucket = bucket.Bucket([]byte(node.GetPath().GetGtype()))
+			}
+			if err := bucket.Put([]byte(node.GetPath().GetGid()), bits); err != nil {
+				return err
+			}
+		}
+		return nil
 	})
 }
 
@@ -154,11 +192,39 @@ func (g *GraphStore) SetEdge(edge *apipb.Edge) error {
 			return err
 		}
 		bucket := tx.Bucket(dbEdges)
-		bucket, err = bucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
-		if err != nil {
-			return err
+		if !g.hasEdgeType(edge.GetPath().GetGtype()) {
+			bucket, err = bucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
+			if err != nil {
+				return err
+			}
+		} else {
+			bucket = bucket.Bucket([]byte(edge.GetPath().GetGtype()))
 		}
 		return bucket.Put([]byte(edge.GetPath().GetGid()), bits)
+	})
+}
+
+func (g *GraphStore) SetEdges(edges ...*apipb.Edge) error {
+	return g.db.Update(func(tx *bbolt.Tx) error {
+		for _, edge := range edges {
+			bits, err := proto.Marshal(edge)
+			if err != nil {
+				return err
+			}
+			bucket := tx.Bucket(dbEdges)
+			if !g.hasEdgeType(edge.GetPath().GetGtype()) {
+				bucket, err = bucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
+				if err != nil {
+					return err
+				}
+			} else {
+				bucket = bucket.Bucket([]byte(edge.GetPath().GetGtype()))
+			}
+			if err := bucket.Put([]byte(edge.GetPath().GetGid()), bits); err != nil {
+				return err
+			}
+		}
+		return nil
 	})
 }
 
