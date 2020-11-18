@@ -38,12 +38,6 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 
 - relational state-machine for identity-aware applications
 
-## TODO
-
-- [ ] Auto redirect mutations to Raft leader
-- [ ] E2E Tests
-- [ ] Benchmarks Against Other Graph Databases
-
 ## Flags
 
 ```text
@@ -63,3 +57,28 @@ An identity-aware, permissioned, persistant labelled property graph database wri
 
 
 ```
+
+## Graphik Plugins (optional)
+
+Graphik plugins are custom, single-method, grpc-based sidecars that the Graphik server integrates with. 
+This pattern is similar to Envoy external filters & Kubernetes mutating webhooks / admission controller
+
+Plugin API Spec:
+
+```proto
+// Triggers are executed before & after all graph state changes
+service TriggerService {
+  rpc HandleTrigger(Trigger) returns(StateChange){}
+}
+
+// Authorizers are executed within a request middleware/interceptor to determine whether the request is permitted
+service AuthorizationService {
+ rpc Authorize(RequestIntercept) returns(Decision){}
+}
+```
+
+## TODO
+
+- [ ] Auto redirect mutations to Raft leader
+- [ ] E2E Tests
+- [ ] Benchmarks Against Other Graph Databases
