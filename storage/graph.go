@@ -5,18 +5,14 @@ import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/golang/protobuf/proto"
 	"go.etcd.io/bbolt"
-	"sync"
+	"sort"
 )
 
 type GraphStore struct {
 	// db is the underlying handle to the db.
 	db *bbolt.DB
 	// The path to the Bolt database file
-	path      string
-	nodeMu    sync.RWMutex
-	edgeMu    sync.RWMutex
-	nodeTypes map[string]struct{}
-	edgeTypes map[string]struct{}
+	path string
 }
 
 // NewGraphStore takes a file path and returns a connected Raft backend.
@@ -42,12 +38,8 @@ func NewGraphStore(path string) (*GraphStore, error) {
 		return nil, err
 	}
 	return &GraphStore{
-		db:        handle,
-		path:      path,
-		nodeMu:    sync.RWMutex{},
-		edgeMu:    sync.RWMutex{},
-		nodeTypes: map[string]struct{}{},
-		edgeTypes: map[string]struct{}{},
+		db:   handle,
+		path: path,
 	}, nil
 }
 
@@ -78,7 +70,11 @@ func (g *GraphStore) RangeEdges(ctx context.Context, gType string, fn func(e *ap
 		return ctx.Err()
 	}
 	if gType == apipb.Any {
-		for _, edgeType := range g.EdgeTypes(ctx) {
+		types, err := g.EdgeTypes(ctx)
+		if err != nil {
+			return err
+		}
+		for _, edgeType := range types {
 			if edgeType == apipb.Any {
 				continue
 			}
@@ -128,10 +124,11 @@ func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *ap
 	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		if gType == apipb.Any {
-			for _, nodeType := range g.NodeTypes(ctx) {
-				if nodeType == apipb.Any {
-					continue
-				}
+			types, err := g.NodeTypes(ctx)
+			if err != nil {
+				return err
+			}
+			for _, nodeType := range types {
 				if err := g.RangeNodes(ctx, nodeType, fn); err != nil {
 					return err
 				}
@@ -163,15 +160,13 @@ func (g *GraphStore) SetNode(ctx context.Context, node *apipb.Node) error {
 		if err != nil {
 			return err
 		}
-		bucket := tx.Bucket(dbNodes)
-		if !g.hasNodeType(node.GetPath().GetGtype()) {
-			bucket, err = bucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
+		nodeBucket := tx.Bucket(dbNodes)
+		bucket := nodeBucket.Bucket([]byte(node.GetPath().GetGtype()))
+		if bucket == nil {
+			bucket, err = nodeBucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
 			if err != nil {
 				return err
 			}
-			g.addNodeType(node.GetPath().GetGtype())
-		} else {
-			bucket = bucket.Bucket([]byte(node.GetPath().GetGtype()))
 		}
 		return bucket.Put([]byte(node.GetPath().GetGid()), bits)
 	})
@@ -187,15 +182,13 @@ func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) error {
 			if err != nil {
 				return err
 			}
-			bucket := tx.Bucket(dbNodes)
-			if !g.hasNodeType(node.GetPath().GetGtype()) {
-				bucket, err = bucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
+			nodeBucket := tx.Bucket(dbNodes)
+			bucket := nodeBucket.Bucket([]byte(node.GetPath().GetGtype()))
+			if bucket == nil {
+				bucket, err = nodeBucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
 				if err != nil {
 					return err
 				}
-				g.addNodeType(node.GetPath().GetGtype())
-			} else {
-				bucket = bucket.Bucket([]byte(node.GetPath().GetGtype()))
 			}
 			if err := bucket.Put([]byte(node.GetPath().GetGid()), bits); err != nil {
 				return err
@@ -214,15 +207,13 @@ func (g *GraphStore) SetEdge(ctx context.Context, edge *apipb.Edge) error {
 		if err != nil {
 			return err
 		}
-		bucket := tx.Bucket(dbEdges)
-		if !g.hasEdgeType(edge.GetPath().GetGtype()) {
-			bucket, err = bucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
+		edgeBucket := tx.Bucket(dbEdges)
+		bucket := edgeBucket.Bucket([]byte(edge.GetPath().GetGtype()))
+		if bucket == nil {
+			bucket, err = edgeBucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
 			if err != nil {
 				return err
 			}
-			g.addEdgeType(edge.GetPath().GetGtype())
-		} else {
-			bucket = bucket.Bucket([]byte(edge.GetPath().GetGtype()))
 		}
 		return bucket.Put([]byte(edge.GetPath().GetGid()), bits)
 	})
@@ -238,15 +229,13 @@ func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) error {
 			if err != nil {
 				return err
 			}
-			bucket := tx.Bucket(dbEdges)
-			if !g.hasEdgeType(edge.GetPath().GetGtype()) {
-				bucket, err = bucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
+			edgeBucket := tx.Bucket(dbEdges)
+			bucket := edgeBucket.Bucket([]byte(edge.GetPath().GetGtype()))
+			if bucket == nil {
+				bucket, err = edgeBucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
 				if err != nil {
 					return err
 				}
-				g.addEdgeType(edge.GetPath().GetGtype())
-			} else {
-				bucket = bucket.Bucket([]byte(edge.GetPath().GetGtype()))
 			}
 			if err := bucket.Put([]byte(edge.GetPath().GetGid()), bits); err != nil {
 				return err
@@ -310,48 +299,36 @@ func (g *GraphStore) DelEdgeType(ctx context.Context, typ string) error {
 	})
 }
 
-func (g *GraphStore) hasNodeType(ntype string) bool {
-	g.nodeMu.RLock()
-	defer g.nodeMu.RUnlock()
-	_, ok := g.nodeTypes[ntype]
-	return ok
-}
-
-func (g *GraphStore) addNodeType(ntype string) {
-	g.nodeMu.Lock()
-	defer g.nodeMu.Unlock()
-	g.nodeTypes[ntype] = struct{}{}
-}
-
-func (g *GraphStore) hasEdgeType(ntype string) bool {
-	g.edgeMu.RLock()
-	defer g.edgeMu.RUnlock()
-	_, ok := g.edgeTypes[ntype]
-	return ok
-}
-
-func (g *GraphStore) addEdgeType(ntype string) {
-	g.edgeMu.Lock()
-	defer g.edgeMu.Unlock()
-	g.edgeTypes[ntype] = struct{}{}
-}
-
-func (g *GraphStore) NodeTypes(ctx context.Context) []string {
-	g.nodeMu.RLock()
-	defer g.nodeMu.RUnlock()
-	var types []string
-	for k, _ := range g.nodeTypes {
-		types = append(types, k)
+func (g *GraphStore) EdgeTypes(ctx context.Context) ([]string, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
-	return types
+	var types []string
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		return tx.Bucket(dbEdges).ForEach(func(name []byte, _ []byte) error {
+			types = append(types, string(name))
+			return nil
+		})
+	}); err != nil {
+		return nil, err
+	}
+	sort.Strings(types)
+	return types, nil
 }
 
-func (g *GraphStore) EdgeTypes(ctx context.Context) []string {
-	g.edgeMu.RLock()
-	defer g.edgeMu.RUnlock()
-	var types []string
-	for k, _ := range g.edgeTypes {
-		types = append(types, k)
+func (g *GraphStore) NodeTypes(ctx context.Context) ([]string, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
-	return types
+	var types []string
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		return tx.Bucket(dbNodes).ForEach(func(name []byte, _ []byte) error {
+			types = append(types, string(name))
+			return nil
+		})
+	}); err != nil {
+		return nil, err
+	}
+	sort.Strings(types)
+	return types, nil
 }

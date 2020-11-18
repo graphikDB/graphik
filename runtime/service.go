@@ -567,5 +567,5 @@ func (r *Runtime) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apipb.E
 func (r *Runtime) Schema(ctx context.Context) (*apipb.Schema, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	return r.graph.Schema(ctx), nil
+	return r.graph.Schema(ctx)
 }

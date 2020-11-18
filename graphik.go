@@ -151,3 +151,7 @@ func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOpt
 func (c *Client) JoinCluster(ctx context.Context, in *apipb.RaftNode, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.JoinCluster(ctx, in, opts...)
 }
+
+func (c *Client) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Schema, error) {
+	return c.graph.GetSchema(ctx, in, opts...)
+}

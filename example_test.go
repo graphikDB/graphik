@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -269,25 +270,14 @@ func ExampleClient_Subscribe() {
 	// Output: hello world
 }
 
-func ExampleClient_SubGraph() {
-	g, err := client.SubGraph(context.Background(), &apipb.SubGraphFilter{
-		Nodes: &apipb.Filter{
-			Gtype: apipb.Any,
-			Expressions: []string{
-				`has(attributes.name)`,
-			},
-			Limit: 50,
-		},
-		Edges: &apipb.Filter{
-			Gtype:       apipb.Any,
-			Expressions: nil,
-			Limit:       10,
-		},
-	})
+func ExampleClient_GetSchema() {
+	schema, err := client.GetSchema(context.Background(), &empty.Empty{})
 	if err != nil {
 		log.Print(err)
 		return
 	}
-	fmt.Println(g.String())
-	// Output: hello world
+	fmt.Printf("node types: %s\n", strings.Join(schema.NodeTypes, ","))
+	fmt.Printf("edge types: %s", strings.Join(schema.EdgeTypes, ","))
+	// Output: node types: dog,human,identity
+	//edge types: owner
 }

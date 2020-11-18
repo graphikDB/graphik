@@ -588,13 +588,17 @@ func (g *Graph) Close() error {
 	return g.db.Close()
 }
 
-func (g *Graph) Schema(ctx context.Context) *apipb.Schema {
-	return &apipb.Schema{
-		EdgeSchema: &apipb.EdgeSchema{
-			Types: g.db.EdgeTypes(ctx),
-		},
-		NodeSchema: &apipb.NodeSchema{
-			Types: g.db.NodeTypes(ctx),
-		},
+func (g *Graph) Schema(ctx context.Context) (*apipb.Schema, error) {
+	etypes, err := g.db.EdgeTypes(ctx)
+	if err != nil {
+		return nil, err
 	}
+	ntypes, err := g.db.NodeTypes(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &apipb.Schema{
+		EdgeTypes: etypes,
+		NodeTypes: ntypes,
+	}, nil
 }

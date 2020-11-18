@@ -232,16 +232,8 @@ message Trigger {
 }
 
 message Schema {
-  EdgeSchema edge_schema =1;
-  NodeSchema node_schema =2;
-}
-
-message EdgeSchema {
-  repeated string types =1;
-}
-
-message NodeSchema {
-  repeated string types =1;
+  repeated string edge_types =1;
+  repeated string node_types =2;
 }
 
 service GraphService {
