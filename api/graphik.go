@@ -5,6 +5,10 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+const (
+	Any = "*"
+)
+
 func NewStruct(data map[string]interface{}) *structpb.Struct {
 	x, _ := structpb.NewStruct(data)
 	return x

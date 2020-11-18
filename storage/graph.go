@@ -71,9 +71,9 @@ func (g *GraphStore) GetEdge(path *apipb.Path) (*apipb.Edge, error) {
 }
 
 func (g *GraphStore) RangeEdges(gType string, fn func(e *apipb.Edge) bool) error {
-	if gType == Any {
+	if gType == apipb.Any {
 		for _, edgeType := range g.EdgeTypes() {
-			if edgeType == Any {
+			if edgeType == apipb.Any {
 				continue
 			}
 			if err := g.RangeEdges(edgeType, fn); err != nil {
@@ -115,9 +115,9 @@ func (g *GraphStore) GetNode(path *apipb.Path) (*apipb.Node, error) {
 
 func (g *GraphStore) RangeNodes(gType string, fn func(n *apipb.Node) bool) error {
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if gType == Any {
+		if gType == apipb.Any {
 			for _, nodeType := range g.NodeTypes() {
-				if nodeType == Any {
+				if nodeType == apipb.Any {
 					continue
 				}
 				if err := g.RangeNodes(nodeType, fn); err != nil {
@@ -154,6 +154,7 @@ func (g *GraphStore) SetNode(node *apipb.Node) error {
 			if err != nil {
 				return err
 			}
+			g.addNodeType(node.GetPath().GetGtype())
 		} else {
 			bucket = bucket.Bucket([]byte(node.GetPath().GetGtype()))
 		}
@@ -174,6 +175,7 @@ func (g *GraphStore) SetNodes(nodes ...*apipb.Node) error {
 				if err != nil {
 					return err
 				}
+				g.addNodeType(node.GetPath().GetGtype())
 			} else {
 				bucket = bucket.Bucket([]byte(node.GetPath().GetGtype()))
 			}
@@ -197,6 +199,7 @@ func (g *GraphStore) SetEdge(edge *apipb.Edge) error {
 			if err != nil {
 				return err
 			}
+			g.addEdgeType(edge.GetPath().GetGtype())
 		} else {
 			bucket = bucket.Bucket([]byte(edge.GetPath().GetGtype()))
 		}
@@ -217,6 +220,7 @@ func (g *GraphStore) SetEdges(edges ...*apipb.Edge) error {
 				if err != nil {
 					return err
 				}
+				g.addEdgeType(edge.GetPath().GetGtype())
 			} else {
 				bucket = bucket.Bucket([]byte(edge.GetPath().GetGtype()))
 			}
