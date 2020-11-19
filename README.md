@@ -37,6 +37,7 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] gRPC Based External Trigger Implementation(sidecar)
 - [x] gRPC Based External Authorizer Implementation(sidecar)
+- [x] Object metadata - Auto track created/updated timestamps & who is making updates to objects
 - [x] Loosely-Typed(mongo-esque)
 - [x] [Prometheus Metrics](https://prometheus.io/)
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
