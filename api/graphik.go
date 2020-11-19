@@ -38,7 +38,6 @@ func (m *Metadata) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"created_at": m.GetCreatedAt(),
 		"updated_at": m.GetUpdatedAt(),
-		"created_by": m.GetCreatedBy(),
 		"updated_by": m.GetUpdatedBy(),
 	}
 }
@@ -50,11 +49,10 @@ func (m *Metadata) FromMap(data map[string]interface{}) {
 	if val, ok := data["updated_at"]; ok {
 		m.UpdatedAt = val.(int64)
 	}
-	if val, ok := data["created_by"]; ok {
-		m.CreatedBy = val.(string)
-	}
 	if val, ok := data["updated_by"]; ok {
-		m.UpdatedBy = val.(string)
+		if val, ok := val.(map[string]interface{}); ok {
+			m.UpdatedBy.FromMap(val)
+		}
 	}
 }
 

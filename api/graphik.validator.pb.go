@@ -30,6 +30,11 @@ func (this *Path) Validate() error {
 	return nil
 }
 func (this *Metadata) Validate() error {
+	if this.UpdatedBy != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedBy); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedBy", err)
+		}
+	}
 	return nil
 }
 func (this *Paths) Validate() error {

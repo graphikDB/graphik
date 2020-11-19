@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
@@ -68,8 +69,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Metadata: &apipb.Metadata{
 				CreatedAt: c.Timestamp,
 				UpdatedAt: c.Timestamp,
-				CreatedBy: "",
-				UpdatedBy: "",
+				UpdatedBy: c.GetIdentity().GetPath(),
 			},
 		})
 		if err != nil {
@@ -89,8 +89,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Metadata: &apipb.Metadata{
 				CreatedAt: c.Timestamp,
 				UpdatedAt: c.Timestamp,
-				CreatedBy: "",
-				UpdatedBy: "",
+				UpdatedBy: c.GetIdentity().GetPath(),
 			},
 		})
 		if err != nil {
@@ -109,8 +108,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 				Metadata: &apipb.Metadata{
 					CreatedAt: c.Timestamp,
 					UpdatedAt: c.Timestamp,
-					CreatedBy: "",
-					UpdatedBy: "",
+					UpdatedBy: c.GetIdentity().GetPath(),
 				},
 			})
 		}
@@ -134,8 +132,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 				Metadata: &apipb.Metadata{
 					CreatedAt: c.Timestamp,
 					UpdatedAt: c.Timestamp,
-					CreatedBy: "",
-					UpdatedBy: "",
+					UpdatedBy: c.GetIdentity().GetPath(),
 				},
 			})
 		}
@@ -147,7 +144,10 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Edges{Edges: res},
 		}
 	case apipb.Op_PATCH_NODE:
-		res, err := f.graph.PatchNode(ctx, c.Mutation.GetPatch())
+		res, err := f.graph.PatchNode(ctx, c.Mutation.GetPatch(), graph.WithMetadata(&apipb.Metadata{
+			UpdatedAt: c.Timestamp,
+			UpdatedBy: c.GetIdentity().GetPath(),
+		}))
 		if err != nil {
 			return nil, err
 		}
@@ -155,7 +155,10 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Node{Node: res},
 		}
 	case apipb.Op_PATCH_EDGE:
-		res, err := f.graph.PatchEdge(ctx, c.Mutation.GetPatch())
+		res, err := f.graph.PatchEdge(ctx, c.Mutation.GetPatch(), graph.WithMetadata(&apipb.Metadata{
+			UpdatedAt: c.Timestamp,
+			UpdatedBy: c.GetIdentity().GetPath(),
+		}))
 		if err != nil {
 			return nil, err
 		}
@@ -163,7 +166,10 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Edge{Edge: res},
 		}
 	case apipb.Op_PATCH_NODES:
-		res, err := f.graph.PatchNodes(ctx, c.Mutation.GetPatches())
+		res, err := f.graph.PatchNodes(ctx, c.Mutation.GetPatches(), graph.WithMetadata(&apipb.Metadata{
+			UpdatedAt: c.Timestamp,
+			UpdatedBy: c.GetIdentity().GetPath(),
+		}))
 		if err != nil {
 			return nil, err
 		}
@@ -171,7 +177,10 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Nodes{Nodes: res},
 		}
 	case apipb.Op_PATCH_EDGES:
-		res, err := f.graph.PatchEdges(ctx, c.Mutation.GetPatches())
+		res, err := f.graph.PatchEdges(ctx, c.Mutation.GetPatches(), graph.WithMetadata(&apipb.Metadata{
+			UpdatedAt: c.Timestamp,
+			UpdatedBy: c.GetIdentity().GetPath(),
+		}))
 		if err != nil {
 			return nil, err
 		}
@@ -212,9 +221,6 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 		}
 	default:
 		return nil, fmt.Errorf("unsupported command: %v", c.Op)
-	}
-	if err := f.machine.PubSub().Publish(ChangeStreamChannel, c); err != nil {
-		return nil, err
 	}
 	return c, nil
 }

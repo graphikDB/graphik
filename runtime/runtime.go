@@ -24,8 +24,7 @@ import (
 )
 
 const (
-	raftTimeout         = 10 * time.Second
-	ChangeStreamChannel = "changes"
+	raftTimeout = 10 * time.Second
 )
 
 type Runtime struct {
