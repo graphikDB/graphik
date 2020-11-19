@@ -532,7 +532,7 @@ func (r *Runtime) Export(ctx context.Context) (*apipb.Graph, error) {
 func (r *Runtime) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Graph, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	nodes, err := r.graph.SetNodes(graph.GetNodes().GetNodes())
+	nodes, err := r.graph.SetNodes(ctx, graph.GetNodes().GetNodes())
 	if err != nil {
 		return nil, err
 	}

@@ -29,6 +29,9 @@ func (this *Path) Validate() error {
 	}
 	return nil
 }
+func (this *Metadata) Validate() error {
+	return nil
+}
 func (this *Paths) Validate() error {
 	for _, item := range this.Paths {
 		if item != nil {
@@ -48,6 +51,11 @@ func (this *Node) Validate() error {
 	if this.Attributes != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
+		}
+	}
+	if this.Metadata != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
 		}
 	}
 	return nil
@@ -101,6 +109,11 @@ func (this *NodeDetail) Validate() error {
 	}
 	// Validation of proto3 map<> fields is unsupported.
 	// Validation of proto3 map<> fields is unsupported.
+	if this.Metadata != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
+		}
+	}
 	return nil
 }
 func (this *NodeDetails) Validate() error {
@@ -150,6 +163,11 @@ func (this *Edge) Validate() error {
 	if this.To != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.To); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("To", err)
+		}
+	}
+	if this.Metadata != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
 		}
 	}
 	return nil
@@ -227,6 +245,11 @@ func (this *EdgeDetail) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("To", err)
 		}
 	}
+	if this.Metadata != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
+		}
+	}
 	return nil
 }
 func (this *EdgeDetails) Validate() error {
@@ -282,9 +305,6 @@ func (this *MeFilter) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("EdgesTo", err)
 		}
 	}
-	return nil
-}
-func (this *ChangeFilter) Validate() error {
 	return nil
 }
 
@@ -545,9 +565,109 @@ func (this *RequestIntercept) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
 		}
 	}
-	if this.Request != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Request); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Request", err)
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_Empty); ok {
+		if oneOfNester.Empty != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Empty); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Empty", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_SubgraphFilter); ok {
+		if oneOfNester.SubgraphFilter != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.SubgraphFilter); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("SubgraphFilter", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_Graph); ok {
+		if oneOfNester.Graph != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Graph); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Graph", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_ChannelFilter); ok {
+		if oneOfNester.ChannelFilter != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.ChannelFilter); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("ChannelFilter", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_OutboundMessage); ok {
+		if oneOfNester.OutboundMessage != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.OutboundMessage); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("OutboundMessage", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_EdgeFilter); ok {
+		if oneOfNester.EdgeFilter != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.EdgeFilter); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("EdgeFilter", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_Paths); ok {
+		if oneOfNester.Paths != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Paths); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Paths", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_Path); ok {
+		if oneOfNester.Path != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Path); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_Patches); ok {
+		if oneOfNester.Patches != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Patches); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Patches", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_Patch); ok {
+		if oneOfNester.Patch != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Patch); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Patch", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_Filter); ok {
+		if oneOfNester.Filter != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.Filter); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_NodeConstructors); ok {
+		if oneOfNester.NodeConstructors != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.NodeConstructors); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("NodeConstructors", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_NodeConstructor); ok {
+		if oneOfNester.NodeConstructor != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.NodeConstructor); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("NodeConstructor", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_MeFilter); ok {
+		if oneOfNester.MeFilter != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.MeFilter); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("MeFilter", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_RaftNode); ok {
+		if oneOfNester.RaftNode != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.RaftNode); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("RaftNode", err)
+			}
 		}
 	}
 	return nil

@@ -65,8 +65,12 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 		node, err := f.graph.SetNode(ctx, &apipb.Node{
 			Path:       n.Path,
 			Attributes: n.Attributes,
-			CreatedAt:  c.Timestamp,
-			UpdatedAt:  c.Timestamp,
+			Metadata: &apipb.Metadata{
+				CreatedAt: c.Timestamp,
+				UpdatedAt: c.Timestamp,
+				CreatedBy: "",
+				UpdatedBy: "",
+			},
 		})
 		if err != nil {
 			return nil, err
@@ -82,8 +86,12 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Cascade:    e.Cascade,
 			From:       e.From,
 			To:         e.To,
-			CreatedAt:  c.Timestamp,
-			UpdatedAt:  c.Timestamp,
+			Metadata: &apipb.Metadata{
+				CreatedAt: c.Timestamp,
+				UpdatedAt: c.Timestamp,
+				CreatedBy: "",
+				UpdatedBy: "",
+			},
 		})
 		if err != nil {
 			return nil, err
@@ -98,11 +106,15 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			nodes = append(nodes, &apipb.Node{
 				Path:       node.Path,
 				Attributes: node.Attributes,
-				CreatedAt:  c.Timestamp,
-				UpdatedAt:  c.Timestamp,
+				Metadata: &apipb.Metadata{
+					CreatedAt: c.Timestamp,
+					UpdatedAt: c.Timestamp,
+					CreatedBy: "",
+					UpdatedBy: "",
+				},
 			})
 		}
-		res, err := f.graph.SetNodes(nodes)
+		res, err := f.graph.SetNodes(ctx, nodes)
 		if err != nil {
 			return nil, err
 		}
@@ -119,8 +131,12 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 				Cascade:    edge.Cascade,
 				From:       edge.From,
 				To:         edge.To,
-				CreatedAt:  c.Timestamp,
-				UpdatedAt:  c.Timestamp,
+				Metadata: &apipb.Metadata{
+					CreatedAt: c.Timestamp,
+					UpdatedAt: c.Timestamp,
+					CreatedBy: "",
+					UpdatedBy: "",
+				},
 			})
 		}
 		res, err := f.graph.SetEdges(ctx, edges)

@@ -9,14 +9,22 @@
 Graphik is an identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
 
 - [Graphik [![GoDoc](https://godoc.org/github.com/autom8ter/graphik?status.svg)](https://godoc.org/github.com/autom8ter/graphik)](#graphik----godoc--https---godocorg-githubcom-autom8ter-graphik-statussvg---https---godocorg-githubcom-autom8ter-graphik-)
-  * [Features](#features)
   * [Helpful Links](#helpful-links)
+  * [Features](#features)
   * [Key Dependencies](#key-dependencies)
   * [Use Cases](#use-cases)
   * [API Spec](#api-spec)
   * [Flags](#flags)
   * [Graphik Plugins (optional)](#graphik-plugins--optional-)
   * [Roadmap](#roadmap)
+
+## Helpful Links
+
+- [GoDoc](https://godoc.org/github.com/autom8ter/graphik)
+- [API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
+- [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
+- [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
+- [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
 
 ## Features
 
@@ -26,27 +34,17 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - [x] Persistant(bbolt LMDB)
 - [x] Fault-Tolerant 
 - [x] Horizontally Scaleable ([Raft](https://raft.github.io/))
-- [x] Loosely-Typed(mongo-esque)
-- [x] [Prometheus Metrics](https://prometheus.io/)
-- [x] [Pprof Metrics](https://blog.golang.org/pprof)
-- [x] [Context-Based Timeouts](https://blog.golang.org/context)
-- [x] Secure JWT based auth with remote [JWKS](https://auth0.com/docs/tokens/json-web-tokens/json-web-key-sets) support
-- [x] Auto JWKS refresh
-- [x] Bulk Export
-- [x] Bulk Import
-- [x] Change Stream Subscriptions
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] gRPC Based External Trigger Implementation(sidecar)
 - [x] gRPC Based External Authorizer Implementation(sidecar)
-
-## Helpful Links
-
-- [GoDoc](https://godoc.org/github.com/autom8ter/graphik)
-- [API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
-- [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
-- [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
-- [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
+- [x] Loosely-Typed(mongo-esque)
+- [x] [Prometheus Metrics](https://prometheus.io/)
+- [x] [Pprof Metrics](https://blog.golang.org/pprof)
+- [x] Secure JWT based auth with remote [JWKS](https://auth0.com/docs/tokens/json-web-tokens/json-web-key-sets) support
+- [x] Auto JWKS refresh
+- [x] Bulk Export
+- [x] Bulk Import
 
 ## Key Dependencies
 
@@ -57,10 +55,6 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - go.etcd.io/bbolt
 - go.uber.org/zap
 - golang.org/x/oauth2
-
-## Use Cases
-
-- relational state-machine for identity-aware applications
 
 ## API Spec
 
@@ -160,14 +154,20 @@ This pattern is similar to Envoy external filters & Kubernetes mutating webhooks
 Plugin API Spec:
 
 ```proto
-// Triggers are executed before & after all graph state changes
+// TriggerService is an optional/custom external plugin that when added, mutates objects at runtime before & after state changes
 service TriggerService {
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // HandleTrigger mutates state changes
   rpc HandleTrigger(Trigger) returns(StateChange){}
 }
 
-// Authorizers are executed within a request middleware/interceptor to determine whether the request is permitted
+// AuthorizationService is an optional/custom external plugin that when added, authorizes inbound graph requests
 service AuthorizationService {
- rpc Authorize(RequestIntercept) returns(Decision){}
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // Authorize authorizes inbound graph requests
+  rpc Authorize(RequestIntercept) returns(Decision){}
 }
 ```
 
@@ -177,3 +177,4 @@ service AuthorizationService {
 - [ ] Database GUI with SSO
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
+

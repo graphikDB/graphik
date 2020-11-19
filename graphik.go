@@ -128,10 +128,6 @@ func (c *Client) EdgesTo(ctx context.Context, in *apipb.EdgeFilter, opts ...grpc
 	return c.graph.EdgesTo(ctx, in, opts...)
 }
 
-func (c *Client) ChangeStream(ctx context.Context, in *apipb.ChangeFilter, opts ...grpc.CallOption) (apipb.GraphService_ChangeStreamClient, error) {
-	return c.graph.ChangeStream(ctx, in, opts...)
-}
-
 func (c *Client) Publish(ctx context.Context, in *apipb.OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.Publish(ctx, in, opts...)
 }

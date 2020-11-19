@@ -8,6 +8,12 @@ import (
 	"strings"
 )
 
+type PluginFlags struct {
+	BindGrpc string
+	BindHTTP string
+	Metrics  bool
+}
+
 type Flags struct {
 	BindGrpc    string
 	BindHTTP    string
