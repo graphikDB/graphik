@@ -29,6 +29,9 @@ func (this *Path) Validate() error {
 	}
 	return nil
 }
+func (this *Metadata) Validate() error {
+	return nil
+}
 func (this *Paths) Validate() error {
 	for _, item := range this.Paths {
 		if item != nil {
@@ -48,6 +51,11 @@ func (this *Node) Validate() error {
 	if this.Attributes != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
+		}
+	}
+	if this.Metadata != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
 		}
 	}
 	return nil
@@ -101,6 +109,11 @@ func (this *NodeDetail) Validate() error {
 	}
 	// Validation of proto3 map<> fields is unsupported.
 	// Validation of proto3 map<> fields is unsupported.
+	if this.Metadata != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
+		}
+	}
 	return nil
 }
 func (this *NodeDetails) Validate() error {
@@ -150,6 +163,11 @@ func (this *Edge) Validate() error {
 	if this.To != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.To); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("To", err)
+		}
+	}
+	if this.Metadata != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
 		}
 	}
 	return nil
@@ -225,6 +243,11 @@ func (this *EdgeDetail) Validate() error {
 	if this.To != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.To); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("To", err)
+		}
+	}
+	if this.Metadata != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
 		}
 	}
 	return nil
