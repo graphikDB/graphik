@@ -21,7 +21,7 @@ func (f *Runtime) Nodes(ctx context.Context, input *apipb.Filter) (*apipb.Nodes,
 	if err != nil {
 		return nil, err
 	}
-	nodes.Sort()
+
 	return nodes, nil
 }
 
@@ -38,7 +38,7 @@ func (f *Runtime) Edges(ctx context.Context, input *apipb.Filter) (*apipb.Edges,
 	if err != nil {
 		return nil, err
 	}
-	edges.Sort()
+
 	return edges, nil
 }
 
@@ -49,7 +49,7 @@ func (f *Runtime) EdgesFrom(ctx context.Context, filter *apipb.EdgeFilter) (*api
 	if err != nil {
 		return nil, err
 	}
-	edges.Sort()
+
 	return edges, nil
 }
 
@@ -60,16 +60,19 @@ func (f *Runtime) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb
 	if err != nil {
 		return nil, err
 	}
-	edges.Sort()
+
 	return edges, nil
 }
 
 func (r *Runtime) CreateNodes(ctx context.Context, nodes *apipb.NodeConstructors) (*apipb.Nodes, error) {
+	identity := r.NodeContext(ctx)
 	for _, n := range nodes.GetNodes() {
 		pathDefaults(n.Path)
 	}
 	change := &apipb.StateChange{
-		Op: apipb.Op_CREATE_NODES,
+		Op:       apipb.Op_CREATE_NODES,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_NodeConstructors{NodeConstructors: nodes},
 		},
@@ -105,9 +108,12 @@ func (r *Runtime) CreateNodes(ctx context.Context, nodes *apipb.NodeConstructors
 }
 
 func (r *Runtime) CreateNode(ctx context.Context, node *apipb.NodeConstructor) (*apipb.Node, error) {
+	identity := r.NodeContext(ctx)
 	pathDefaults(node.GetPath())
 	change := &apipb.StateChange{
-		Op: apipb.Op_CREATE_NODE,
+		Op:       apipb.Op_CREATE_NODE,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_NodeConstructor{NodeConstructor: node},
 		},
@@ -141,8 +147,11 @@ func (r *Runtime) CreateNode(ctx context.Context, node *apipb.NodeConstructor) (
 }
 
 func (r *Runtime) PatchNodes(ctx context.Context, patches *apipb.Patches) (*apipb.Nodes, error) {
+	identity := r.NodeContext(ctx)
 	change := &apipb.StateChange{
-		Op: apipb.Op_PATCH_NODES,
+		Op:       apipb.Op_PATCH_NODES,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Patches{Patches: patches},
 		},
@@ -178,8 +187,11 @@ func (r *Runtime) PatchNodes(ctx context.Context, patches *apipb.Patches) (*apip
 }
 
 func (r *Runtime) PatchNode(ctx context.Context, patch *apipb.Patch) (*apipb.Node, error) {
+	identity := r.NodeContext(ctx)
 	change := &apipb.StateChange{
-		Op: apipb.Op_PATCH_NODE,
+		Op:       apipb.Op_PATCH_NODE,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Patch{Patch: patch},
 		},
@@ -213,8 +225,11 @@ func (r *Runtime) PatchNode(ctx context.Context, patch *apipb.Patch) (*apipb.Nod
 }
 
 func (r *Runtime) DelNodes(ctx context.Context, paths *apipb.Paths) (*empty.Empty, error) {
+	identity := r.NodeContext(ctx)
 	change := &apipb.StateChange{
-		Op: apipb.Op_DELETE_NODES,
+		Op:       apipb.Op_DELETE_NODES,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Paths{Paths: paths},
 		},
@@ -248,8 +263,11 @@ func (r *Runtime) DelNodes(ctx context.Context, paths *apipb.Paths) (*empty.Empt
 }
 
 func (r *Runtime) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+	identity := r.NodeContext(ctx)
 	change := &apipb.StateChange{
-		Op: apipb.Op_DELETE_NODES,
+		Op:       apipb.Op_DELETE_NODES,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Path{Path: path},
 		},
@@ -283,11 +301,14 @@ func (r *Runtime) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, 
 }
 
 func (r *Runtime) CreateEdges(ctx context.Context, edges *apipb.EdgeConstructors) (*apipb.Edges, error) {
+	identity := r.NodeContext(ctx)
 	for _, n := range edges.GetEdges() {
 		pathDefaults(n.Path)
 	}
 	change := &apipb.StateChange{
-		Op: apipb.Op_CREATE_EDGES,
+		Op:       apipb.Op_CREATE_EDGES,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_EdgeConstructors{EdgeConstructors: edges},
 		},
@@ -318,14 +339,16 @@ func (r *Runtime) CreateEdges(ctx context.Context, edges *apipb.EdgeConstructors
 		resp = change
 	}
 	redges := resp.GetMutation().GetEdges()
-	redges.Sort()
 	return redges, nil
 }
 
 func (r *Runtime) CreateEdge(ctx context.Context, edge *apipb.EdgeConstructor) (*apipb.Edge, error) {
+	identity := r.NodeContext(ctx)
 	pathDefaults(edge.Path)
 	change := &apipb.StateChange{
-		Op: apipb.Op_CREATE_EDGE,
+		Op:       apipb.Op_CREATE_EDGE,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_EdgeConstructor{EdgeConstructor: edge},
 		},
@@ -359,8 +382,11 @@ func (r *Runtime) CreateEdge(ctx context.Context, edge *apipb.EdgeConstructor) (
 }
 
 func (r *Runtime) PatchEdges(ctx context.Context, patches *apipb.Patches) (*apipb.Edges, error) {
+	identity := r.NodeContext(ctx)
 	change := &apipb.StateChange{
-		Op: apipb.Op_PATCH_EDGES,
+		Op:       apipb.Op_PATCH_EDGES,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Patches{Patches: patches},
 		},
@@ -391,13 +417,15 @@ func (r *Runtime) PatchEdges(ctx context.Context, patches *apipb.Patches) (*apip
 		resp = change
 	}
 	redges := resp.GetMutation().GetEdges()
-	redges.Sort()
 	return redges, nil
 }
 
 func (r *Runtime) PatchEdge(ctx context.Context, patch *apipb.Patch) (*apipb.Edge, error) {
+	identity := r.NodeContext(ctx)
 	change := &apipb.StateChange{
-		Op: apipb.Op_PATCH_EDGE,
+		Op:       apipb.Op_PATCH_EDGE,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Patch{Patch: patch},
 		},
@@ -431,8 +459,11 @@ func (r *Runtime) PatchEdge(ctx context.Context, patch *apipb.Patch) (*apipb.Edg
 }
 
 func (r *Runtime) DelEdges(ctx context.Context, paths *apipb.Paths) (*empty.Empty, error) {
+	identity := r.NodeContext(ctx)
 	change := &apipb.StateChange{
-		Op: apipb.Op_DELETE_EDGES,
+		Op:       apipb.Op_DELETE_EDGES,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Paths{Paths: paths},
 		},
@@ -466,8 +497,11 @@ func (r *Runtime) DelEdges(ctx context.Context, paths *apipb.Paths) (*empty.Empt
 }
 
 func (r *Runtime) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+	identity := r.NodeContext(ctx)
 	change := &apipb.StateChange{
-		Op: apipb.Op_DELETE_EDGES,
+		Op:       apipb.Op_DELETE_EDGES,
+		Method:   r.MethodContext(ctx),
+		Identity: identity,
 		Mutation: &apipb.Mutation{
 			Object: &apipb.Mutation_Path{Path: path},
 		},

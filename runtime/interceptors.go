@@ -46,7 +46,7 @@ func (r *Runtime) UnaryAuth() grpc.UnaryServerInterceptor {
 			now := time.Now()
 			intercept := &apipb.RequestIntercept{
 				Method:    info.FullMethod,
-				User:      identity,
+				Identity:  identity,
 				Timestamp: now.UnixNano(),
 			}
 			switch r := req.(type) {
@@ -113,7 +113,7 @@ func (r *Runtime) StreamAuth() grpc.StreamServerInterceptor {
 			now := time.Now()
 			intercept := &apipb.RequestIntercept{
 				Method:    info.FullMethod,
-				User:      identity,
+				Identity:  identity,
 				Timestamp: now.UnixNano(),
 			}
 			switch r := srv.(type) {

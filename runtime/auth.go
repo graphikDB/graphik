@@ -44,6 +44,10 @@ func (s *Runtime) NodeContext(ctx context.Context) *apipb.Node {
 	return nil
 }
 
-func (r *Runtime) Authorize() {
-
+func (r *Runtime) MethodContext(ctx context.Context) string {
+	val, ok := ctx.Value(methodCtxKey).(string)
+	if ok {
+		return val
+	}
+	return ""
 }

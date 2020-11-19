@@ -335,7 +335,18 @@ func (this *SubGraphFilter) Validate() error {
 	}
 	return nil
 }
+
+var _regex_StateChange_Method = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *StateChange) Validate() error {
+	if !_regex_StateChange_Method.MatchString(this.Method) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
+	}
+	if this.Identity != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Identity); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Identity", err)
+		}
+	}
 	if this.Mutation != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Mutation); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Mutation", err)
@@ -534,18 +545,7 @@ func (this *Message) Validate() error {
 	}
 	return nil
 }
-
-var _regex_Trigger_Method = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *Trigger) Validate() error {
-	if !_regex_Trigger_Method.MatchString(this.Method) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
-	}
-	if this.User != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
-		}
-	}
 	if this.State != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.State); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("State", err)
@@ -560,9 +560,9 @@ func (this *RequestIntercept) Validate() error {
 	if !_regex_RequestIntercept_Method.MatchString(this.Method) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
 	}
-	if this.User != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
+	if this.Identity != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Identity); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Identity", err)
 		}
 	}
 	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_Empty); ok {
