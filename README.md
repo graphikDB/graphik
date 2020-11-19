@@ -8,7 +8,6 @@
 
 Graphik is an identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
 
-- [Graphik [![GoDoc](https://godoc.org/github.com/autom8ter/graphik?status.svg)](https://godoc.org/github.com/autom8ter/graphik)](#graphik----godoc--https---godocorg-githubcom-autom8ter-graphik-statussvg---https---godocorg-githubcom-autom8ter-graphik-)
   * [Helpful Links](#helpful-links)
   * [Features](#features)
   * [Key Dependencies](#key-dependencies)
@@ -143,7 +142,7 @@ service GraphService {
 
 ```
 
-## Graphik Plugins (optional)
+## Plugins (optional)
 
 ![plugins](images/graphdb-plugins.png)
 
