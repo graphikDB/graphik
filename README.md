@@ -29,6 +29,19 @@ An identity-aware, permissioned, persistant [labelled property graph](https://en
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
+## Goals
+- Zero database administrative requirements(schema-less)
+- Model any number of complex relationships
+- Extensible via external plugin model
+- Built in identity awareness(Oauth2)
+- Integration with existing identity providers(ex: Google, Microsoft, etc)
+- Designed for microservice architecture
+- Flexible filtering/querying via interpreted expression language
+- Horizontally Scaleable
+- Fault Tolerant
+- Pubsub implementation
+- Events (change-streams) 
+
 ## API Spec
 
 [API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
@@ -154,8 +167,3 @@ service AuthorizationService {
 }
 ```
 
-## TODO
-
-- [ ] Auto redirect mutations to Raft leader
-- [ ] E2E Tests
-- [ ] Benchmarks Against Other Graph Databases
