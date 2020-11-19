@@ -99,6 +99,11 @@ func (this *Nodes) Validate() error {
 			}
 		}
 	}
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
 	return nil
 }
 func (this *NodeDetail) Validate() error {

@@ -82,6 +82,8 @@ message NodeConstructors {
 // Nodes is an array of nodes
 message Nodes {
   repeated Node nodes =1;
+  Filter filter =2;
+
 }
 
 // NodeDetail is a node with its connected edges
