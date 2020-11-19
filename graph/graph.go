@@ -3,11 +3,13 @@ package graph
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/storage"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -601,4 +603,36 @@ func (g *Graph) Schema(ctx context.Context) (*apipb.Schema, error) {
 		EdgeTypes: etypes,
 		NodeTypes: ntypes,
 	}, nil
+}
+
+func (g *Graph) DFS(ctx context.Context, reverse bool, fn func(node *apipb.Node) bool) func(node *apipb.Node) bool {
+	return func(node *apipb.Node) bool {
+		if reverse {
+			if err := g.RangeTo(ctx, node.Path, func(e *apipb.Edge) bool {
+				n, err := g.GetNode(ctx, e.From)
+				if err != nil {
+					logger.Error("dfs failure", zap.Error(err))
+					return true
+				}
+				return fn(n)
+			}); err != nil {
+				logger.Error("dfs failure", zap.Error(err))
+				return true
+			}
+		} else {
+			if err := g.RangeFrom(ctx, node.Path, func(e *apipb.Edge) bool {
+				n, err := g.GetNode(ctx, e.To)
+				if err != nil {
+					logger.Error("dfs failure", zap.Error(err))
+					return true
+				}
+				return fn(n)
+			}); err != nil {
+				logger.Error("dfs failure", zap.Error(err))
+				return true
+			}
+		}
+
+		return true
+	}
 }

@@ -13,6 +13,7 @@ type GraphStore struct {
 	db *bbolt.DB
 	// The path to the Bolt database file
 	path string
+
 }
 
 // NewGraphStore takes a file path and returns a connected Raft backend.
