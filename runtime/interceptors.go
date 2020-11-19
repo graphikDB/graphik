@@ -64,8 +64,6 @@ func (r *Runtime) UnaryAuth() grpc.UnaryServerInterceptor {
 				intercept.Request = &apipb.RequestIntercept_Patch{Patch: r}
 			case *apipb.Filter:
 				intercept.Request = &apipb.RequestIntercept_Filter{Filter: r}
-			case *apipb.ChangeFilter:
-				intercept.Request = &apipb.RequestIntercept_ChangeFilter{ChangeFilter: r}
 			case *apipb.ChannelFilter:
 				intercept.Request = &apipb.RequestIntercept_ChannelFilter{ChannelFilter: r}
 			case *apipb.RaftNode:
@@ -133,8 +131,6 @@ func (r *Runtime) StreamAuth() grpc.StreamServerInterceptor {
 				intercept.Request = &apipb.RequestIntercept_Patch{Patch: r}
 			case *apipb.Filter:
 				intercept.Request = &apipb.RequestIntercept_Filter{Filter: r}
-			case *apipb.ChangeFilter:
-				intercept.Request = &apipb.RequestIntercept_ChangeFilter{ChangeFilter: r}
 			case *apipb.ChannelFilter:
 				intercept.Request = &apipb.RequestIntercept_ChannelFilter{ChannelFilter: r}
 			case *apipb.RaftNode:

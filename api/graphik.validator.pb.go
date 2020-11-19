@@ -307,9 +307,6 @@ func (this *MeFilter) Validate() error {
 	}
 	return nil
 }
-func (this *ChangeFilter) Validate() error {
-	return nil
-}
 
 var _regex_ChannelFilter_Channel = regexp.MustCompile(`^.{1,225}$`)
 
@@ -600,13 +597,6 @@ func (this *RequestIntercept) Validate() error {
 		if oneOfNester.OutboundMessage != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.OutboundMessage); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("OutboundMessage", err)
-			}
-		}
-	}
-	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_ChangeFilter); ok {
-		if oneOfNester.ChangeFilter != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.ChangeFilter); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("ChangeFilter", err)
 			}
 		}
 	}

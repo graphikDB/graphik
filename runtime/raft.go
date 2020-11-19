@@ -66,10 +66,10 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Path:       n.Path,
 			Attributes: n.Attributes,
 			Metadata: &apipb.Metadata{
-				CreatedAt:            c.Timestamp,
-				UpdatedAt:            c.Timestamp,
-				CreatedBy:            "",
-				UpdatedBy:            "",
+				CreatedAt: c.Timestamp,
+				UpdatedAt: c.Timestamp,
+				CreatedBy: "",
+				UpdatedBy: "",
 			},
 		})
 		if err != nil {
@@ -87,10 +87,10 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			From:       e.From,
 			To:         e.To,
 			Metadata: &apipb.Metadata{
-				CreatedAt:            c.Timestamp,
-				UpdatedAt:            c.Timestamp,
-				CreatedBy:            "",
-				UpdatedBy:            "",
+				CreatedAt: c.Timestamp,
+				UpdatedAt: c.Timestamp,
+				CreatedBy: "",
+				UpdatedBy: "",
 			},
 		})
 		if err != nil {
@@ -107,10 +107,10 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 				Path:       node.Path,
 				Attributes: node.Attributes,
 				Metadata: &apipb.Metadata{
-					CreatedAt:            c.Timestamp,
-					UpdatedAt:            c.Timestamp,
-					CreatedBy:            "",
-					UpdatedBy:            "",
+					CreatedAt: c.Timestamp,
+					UpdatedAt: c.Timestamp,
+					CreatedBy: "",
+					UpdatedBy: "",
 				},
 			})
 		}
@@ -132,10 +132,10 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 				From:       edge.From,
 				To:         edge.To,
 				Metadata: &apipb.Metadata{
-					CreatedAt:            c.Timestamp,
-					UpdatedAt:            c.Timestamp,
-					CreatedBy:            "",
-					UpdatedBy:            "",
+					CreatedAt: c.Timestamp,
+					UpdatedAt: c.Timestamp,
+					CreatedBy: "",
+					UpdatedBy: "",
 				},
 			})
 		}

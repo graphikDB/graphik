@@ -52,6 +52,15 @@ func (n *Edge) AsMap() map[string]interface{} {
 	}
 }
 
+func (n *Message) AsMap() map[string]interface{} {
+	return map[string]interface{}{
+		"channel":   n.GetChannel(),
+		"sender":    n.GetSender().AsMap(),
+		"data":      n.Data,
+		"timestamp": n.GetTimestamp(),
+	}
+}
+
 func (n *Nodes) Sort() {
 	s := sortable.Sortable{
 		LenFunc: func() int {

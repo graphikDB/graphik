@@ -171,11 +171,6 @@ message MeFilter {
   Filter edges_to =2;
 }
 
-// ChangeFilter is used to filter changes in a change stream
-message ChangeFilter {
-  repeated string expressions =1;
-}
-
 // ChannelFilter is used to filter messages in a pubsub channel
 message ChannelFilter {
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
@@ -284,7 +279,6 @@ message RequestIntercept {
       Graph graph =6;
       ChannelFilter channel_filter =7;
       OutboundMessage outbound_message =8;
-      ChangeFilter change_filter =9;
       EdgeFilter   edge_filter =10;
       Paths paths =11;
       Path path =12;
@@ -355,8 +349,6 @@ service GraphService {
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   // EdgesTo returns edges that point to the given node path that pass the filter
   rpc EdgesTo(EdgeFilter) returns(Edges){}
-  // ChangeStream subscribes to filtered changes on a stream
-  rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
   // Publish publishes a message to a pubsub channel
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
