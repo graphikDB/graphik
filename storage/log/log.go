@@ -1,7 +1,8 @@
-package storage
+package log
 
 import (
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/storage"
 	"github.com/golang/protobuf/proto"
 	"github.com/hashicorp/raft"
 	"go.etcd.io/bbolt"
@@ -19,7 +20,7 @@ type LogStore struct {
 
 // NewLogStore takes a file path and returns a connected Raft backend.
 func NewLogStore(path string) (*LogStore, error) {
-	handle, err := bbolt.Open(path, dbFileMode, nil)
+	handle, err := bbolt.Open(path, storage.DbFileMode, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +31,7 @@ func NewLogStore(path string) (*LogStore, error) {
 	defer tx.Rollback()
 
 	// Create all the buckets
-	if _, err := tx.CreateBucketIfNotExists(dbLogs); err != nil {
+	if _, err := tx.CreateBucketIfNotExists(storage.DbLogs); err != nil {
 		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
@@ -55,11 +56,11 @@ func (b *LogStore) FirstIndex() (uint64, error) {
 	}
 	defer tx.Rollback()
 
-	curs := tx.Bucket(dbLogs).Cursor()
+	curs := tx.Bucket(storage.DbLogs).Cursor()
 	if first, _ := curs.First(); first == nil {
 		return 0, nil
 	} else {
-		return bytesToUint64(first), nil
+		return storage.BytesToUint64(first), nil
 	}
 }
 
@@ -71,11 +72,11 @@ func (b *LogStore) LastIndex() (uint64, error) {
 	}
 	defer tx.Rollback()
 
-	curs := tx.Bucket(dbLogs).Cursor()
+	curs := tx.Bucket(storage.DbLogs).Cursor()
 	if last, _ := curs.Last(); last == nil {
 		return 0, nil
 	} else {
-		return bytesToUint64(last), nil
+		return storage.BytesToUint64(last), nil
 	}
 }
 
@@ -87,8 +88,8 @@ func (b *LogStore) GetLog(idx uint64, log *raft.Log) error {
 	}
 	defer tx.Rollback()
 
-	bucket := tx.Bucket(dbLogs)
-	val := bucket.Get(uint64ToBytes(idx))
+	bucket := tx.Bucket(storage.DbLogs)
+	val := bucket.Get(storage.Uint64ToBytes(idx))
 
 	if val == nil {
 		return raft.ErrLogNotFound
@@ -119,7 +120,7 @@ func (b *LogStore) StoreLogs(logs []*raft.Log) error {
 	defer tx.Rollback()
 
 	for _, log := range logs {
-		key := uint64ToBytes(log.Index)
+		key := storage.Uint64ToBytes(log.Index)
 		protoLog := &apipb.RaftLog{
 			Index:      log.Index,
 			Term:       log.Term,
@@ -131,7 +132,7 @@ func (b *LogStore) StoreLogs(logs []*raft.Log) error {
 		if err != nil {
 			return err
 		}
-		bucket := tx.Bucket(dbLogs)
+		bucket := tx.Bucket(storage.DbLogs)
 		if err := bucket.Put(key, bits); err != nil {
 			return err
 		}
@@ -141,7 +142,7 @@ func (b *LogStore) StoreLogs(logs []*raft.Log) error {
 
 // DeleteRange is used to delete logs within a given range inclusively.
 func (b *LogStore) DeleteRange(min, max uint64) error {
-	minKey := uint64ToBytes(min)
+	minKey := storage.Uint64ToBytes(min)
 
 	tx, err := b.conn.Begin(true)
 	if err != nil {
@@ -149,10 +150,10 @@ func (b *LogStore) DeleteRange(min, max uint64) error {
 	}
 	defer tx.Rollback()
 
-	curs := tx.Bucket(dbLogs).Cursor()
+	curs := tx.Bucket(storage.DbLogs).Cursor()
 	for k, _ := curs.Seek(minKey); k != nil; k, _ = curs.Next() {
 		// Handle out-of-range log index
-		if bytesToUint64(k) > max {
+		if storage.BytesToUint64(k) > max {
 			break
 		}
 

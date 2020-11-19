@@ -1,6 +1,7 @@
-package storage
+package snap
 
 import (
+	"github.com/autom8ter/graphik/storage"
 	"go.etcd.io/bbolt"
 )
 
@@ -17,7 +18,7 @@ type SnapshotStore struct {
 
 // NewSnapshotStore takes a file path and returns a connected Raft backend.
 func NewSnapshotStore(path string) (*SnapshotStore, error) {
-	handle, err := bbolt.Open(path, dbFileMode, nil)
+	handle, err := bbolt.Open(path, storage.DbFileMode, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +29,7 @@ func NewSnapshotStore(path string) (*SnapshotStore, error) {
 	defer tx.Rollback()
 
 	// Create all the buckets
-	if _, err := tx.CreateBucketIfNotExists(dbSnaps); err != nil {
+	if _, err := tx.CreateBucketIfNotExists(storage.DbSnaps); err != nil {
 		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
@@ -53,7 +54,7 @@ func (b *SnapshotStore) Set(k, v []byte) error {
 	}
 	defer tx.Rollback()
 
-	bucket := tx.Bucket(dbSnaps)
+	bucket := tx.Bucket(storage.DbSnaps)
 	if err := bucket.Put(k, v); err != nil {
 		return err
 	}
@@ -69,18 +70,18 @@ func (b *SnapshotStore) Get(k []byte) ([]byte, error) {
 	}
 	defer tx.Rollback()
 
-	bucket := tx.Bucket(dbSnaps)
+	bucket := tx.Bucket(storage.DbSnaps)
 	val := bucket.Get(k)
 
 	if val == nil {
-		return nil, ErrNotFound
+		return nil, storage.ErrNotFound
 	}
 	return append([]byte(nil), val...), nil
 }
 
 // SetUint64 is like Set, but handles uint64 values
 func (b *SnapshotStore) SetUint64(key []byte, val uint64) error {
-	return b.Set(key, uint64ToBytes(val))
+	return b.Set(key, storage.Uint64ToBytes(val))
 }
 
 // GetUint64 is like Get, but handles uint64 values
@@ -89,7 +90,7 @@ func (b *SnapshotStore) GetUint64(key []byte) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return bytesToUint64(val), nil
+	return storage.BytesToUint64(val), nil
 }
 
 // Sync performs an fsync on the database file handle. This is not necessary

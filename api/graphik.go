@@ -27,7 +27,7 @@ func (m *Path) AsMap() map[string]interface{} {
 
 func (m *Path) FromMap(data map[string]interface{}) {
 	if val, ok := data["gid"]; ok {
-		m.Gid = val.(string)
+		m.Gid = val.(uint64)
 	}
 	if val, ok := data["gtype"]; ok {
 		m.Gtype = val.(string)

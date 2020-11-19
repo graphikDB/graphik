@@ -1,23 +1,30 @@
-package storage
+package graph
 
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/sortable"
+	"github.com/autom8ter/graphik/storage"
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"sort"
+	"sync"
 )
 
 type GraphStore struct {
 	// db is the underlying handle to the db.
 	db *bbolt.DB
 	// The path to the Bolt database file
-	path string
+	path      string
+	mu        sync.RWMutex
+	edgesTo   map[string][]*apipb.Path
+	edgesFrom map[string][]*apipb.Path
 }
 
 // NewGraphStore takes a file path and returns a connected Raft backend.
 func NewGraphStore(path string) (*GraphStore, error) {
-	handle, err := bbolt.Open(path, dbFileMode, nil)
+	handle, err := bbolt.Open(path, storage.DbFileMode, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -28,18 +35,21 @@ func NewGraphStore(path string) (*GraphStore, error) {
 	defer tx.Rollback()
 
 	// Create all the buckets
-	if _, err := tx.CreateBucketIfNotExists(dbNodes); err != nil {
+	if _, err := tx.CreateBucketIfNotExists(storage.DbNodes); err != nil {
 		return nil, err
 	}
-	if _, err := tx.CreateBucketIfNotExists(dbEdges); err != nil {
+	if _, err := tx.CreateBucketIfNotExists(storage.DbEdges); err != nil {
 		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 	return &GraphStore{
-		db:   handle,
-		path: path,
+		db:        handle,
+		path:      path,
+		mu:        sync.RWMutex{},
+		edgesTo:   map[string][]*apipb.Path{},
+		edgesFrom: map[string][]*apipb.Path{},
 	}, nil
 }
 
@@ -54,22 +64,22 @@ func (g *GraphStore) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge
 	}
 	var edge apipb.Edge
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype))
+		bucket := tx.Bucket(storage.DbEdges).Bucket([]byte(path.Gtype))
 		if bucket == nil {
-			return ErrNotFound
+			return storage.ErrNotFound
 		}
-		bits := bucket.Get([]byte(path.Gid))
+		bits := bucket.Get(storage.Uint64ToBytes(path.Gid))
 		if err := proto.Unmarshal(bits, &edge); err != nil {
 			return err
 		}
 		return nil
-	}); err != nil && err != DONE {
+	}); err != nil && err != storage.DONE {
 		return nil, err
 	}
 	return &edge, nil
 }
 
-func (g *GraphStore) RangeEdges(ctx context.Context, gType string, fn func(e *apipb.Edge) bool) error {
+func (g *GraphStore) RangeSeekEdges(ctx context.Context, gType, seek string, fn func(e *apipb.Edge) bool) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
@@ -82,18 +92,19 @@ func (g *GraphStore) RangeEdges(ctx context.Context, gType string, fn func(e *ap
 			if edgeType == apipb.Any {
 				continue
 			}
-			if err := g.RangeEdges(ctx, edgeType, fn); err != nil {
+			if err := g.RangeSeekEdges(ctx, edgeType, seek, fn); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(gType))
+		bucket := tx.Bucket(storage.DbEdges).Bucket([]byte(gType))
 		if bucket == nil {
-			return ErrNotFound
+			return storage.ErrNotFound
 		}
-		return bucket.ForEach(func(k, v []byte) error {
+		c := bucket.Cursor()
+		for k, v := c.Seek([]byte(seek)); k != nil; k, v = c.Next() {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
@@ -102,14 +113,18 @@ func (g *GraphStore) RangeEdges(ctx context.Context, gType string, fn func(e *ap
 				return err
 			}
 			if !fn(&edge) {
-				return DONE
+				return storage.DONE
 			}
-			return nil
-		})
-	}); err != nil && err != DONE {
+		}
+		return nil
+	}); err != nil && err != storage.DONE {
 		return err
 	}
 	return nil
+}
+
+func (g *GraphStore) RangeEdges() {
+
 }
 
 func (g *GraphStore) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, error) {
@@ -118,11 +133,11 @@ func (g *GraphStore) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node
 	}
 	var node apipb.Node
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype))
+		bucket := tx.Bucket(storage.DbNodes).Bucket([]byte(path.Gtype))
 		if bucket == nil {
-			return ErrNotFound
+			return storage.ErrNotFound
 		}
-		bits := bucket.Get([]byte(path.Gid))
+		bits := bucket.Get(storage.Uint64ToBytes(path.Gid))
 		if err := proto.Unmarshal(bits, &node); err != nil {
 			return err
 		}
@@ -150,9 +165,9 @@ func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *ap
 			}
 			return nil
 		}
-		bucket := tx.Bucket(dbNodes).Bucket([]byte(gType))
+		bucket := tx.Bucket(storage.DbNodes).Bucket([]byte(gType))
 		if bucket == nil {
-			return ErrNotFound
+			return storage.ErrNotFound
 		}
 
 		return bucket.ForEach(func(k, v []byte) error {
@@ -164,11 +179,11 @@ func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *ap
 				return err
 			}
 			if !fn(&node) {
-				return DONE
+				return storage.DONE
 			}
 			return nil
 		})
-	}); err != nil && err != DONE {
+	}); err != nil && err != storage.DONE {
 		return err
 	}
 	return nil
@@ -183,7 +198,7 @@ func (g *GraphStore) SetNode(ctx context.Context, node *apipb.Node) error {
 		if err != nil {
 			return err
 		}
-		nodeBucket := tx.Bucket(dbNodes)
+		nodeBucket := tx.Bucket(storage.DbNodes)
 		bucket := nodeBucket.Bucket([]byte(node.GetPath().GetGtype()))
 		if bucket == nil {
 			bucket, err = nodeBucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
@@ -191,7 +206,7 @@ func (g *GraphStore) SetNode(ctx context.Context, node *apipb.Node) error {
 				return err
 			}
 		}
-		return bucket.Put([]byte(node.GetPath().GetGid()), bits)
+		return bucket.Put(storage.Uint64ToBytes(node.GetPath().GetGid()), bits)
 	})
 }
 
@@ -208,7 +223,7 @@ func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) error {
 			if err != nil {
 				return err
 			}
-			nodeBucket := tx.Bucket(dbNodes)
+			nodeBucket := tx.Bucket(storage.DbNodes)
 			bucket := nodeBucket.Bucket([]byte(node.GetPath().GetGtype()))
 			if bucket == nil {
 				bucket, err = nodeBucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
@@ -216,7 +231,7 @@ func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) error {
 					return err
 				}
 			}
-			if err := bucket.Put([]byte(node.GetPath().GetGid()), bits); err != nil {
+			if err := bucket.Put(storage.Uint64ToBytes(node.GetPath().GetGid()), bits); err != nil {
 				return err
 			}
 		}
@@ -233,7 +248,7 @@ func (g *GraphStore) SetEdge(ctx context.Context, edge *apipb.Edge) error {
 		if err != nil {
 			return err
 		}
-		edgeBucket := tx.Bucket(dbEdges)
+		edgeBucket := tx.Bucket(storage.DbEdges)
 		bucket := edgeBucket.Bucket([]byte(edge.GetPath().GetGtype()))
 		if bucket == nil {
 			bucket, err = edgeBucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
@@ -241,7 +256,7 @@ func (g *GraphStore) SetEdge(ctx context.Context, edge *apipb.Edge) error {
 				return err
 			}
 		}
-		return bucket.Put([]byte(edge.GetPath().GetGid()), bits)
+		return bucket.Put(storage.Uint64ToBytes(edge.GetPath().GetGid()), bits)
 	})
 }
 
@@ -255,7 +270,7 @@ func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) error {
 			if err != nil {
 				return err
 			}
-			edgeBucket := tx.Bucket(dbEdges)
+			edgeBucket := tx.Bucket(storage.DbEdges)
 			bucket := edgeBucket.Bucket([]byte(edge.GetPath().GetGtype()))
 			if bucket == nil {
 				bucket, err = edgeBucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
@@ -263,7 +278,7 @@ func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) error {
 					return err
 				}
 			}
-			if err := bucket.Put([]byte(edge.GetPath().GetGid()), bits); err != nil {
+			if err := bucket.Put(storage.Uint64ToBytes(edge.GetPath().GetGid()), bits); err != nil {
 				return err
 			}
 		}
@@ -277,12 +292,12 @@ func (g *GraphStore) DelEdges(ctx context.Context, paths ...*apipb.Path) error {
 	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		for _, p := range paths {
-			bucket := tx.Bucket(dbEdges)
+			bucket := tx.Bucket(storage.DbEdges)
 			bucket = bucket.Bucket([]byte(p.GetGtype()))
 			if bucket == nil {
-				return ErrNotFound
+				return storage.ErrNotFound
 			}
-			return bucket.Delete([]byte(p.GetGid()))
+			return bucket.Delete(storage.Uint64ToBytes(p.GetGid()))
 		}
 		return nil
 	})
@@ -294,12 +309,12 @@ func (g *GraphStore) DelNodes(ctx context.Context, paths ...*apipb.Path) error {
 	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
 		for _, p := range paths {
-			bucket := tx.Bucket(dbNodes)
+			bucket := tx.Bucket(storage.DbNodes)
 			bucket = bucket.Bucket([]byte(p.GetGtype()))
 			if bucket == nil {
-				return ErrNotFound
+				return storage.ErrNotFound
 			}
-			return bucket.Delete([]byte(p.GetGid()))
+			return bucket.Delete(storage.Uint64ToBytes(p.GetGid()))
 		}
 		return nil
 	})
@@ -310,7 +325,7 @@ func (g *GraphStore) DelNodeType(ctx context.Context, typ string) error {
 		return err
 	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbNodes)
+		bucket := tx.Bucket(storage.DbNodes)
 		return bucket.DeleteBucket([]byte(typ))
 	})
 }
@@ -320,7 +335,7 @@ func (g *GraphStore) DelEdgeType(ctx context.Context, typ string) error {
 		return err
 	}
 	return g.db.Update(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbEdges)
+		bucket := tx.Bucket(storage.DbEdges)
 		return bucket.DeleteBucket([]byte(typ))
 	})
 }
@@ -331,7 +346,7 @@ func (g *GraphStore) EdgeTypes(ctx context.Context) ([]string, error) {
 	}
 	var types []string
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		return tx.Bucket(dbEdges).ForEach(func(name []byte, _ []byte) error {
+		return tx.Bucket(storage.DbEdges).ForEach(func(name []byte, _ []byte) error {
 			types = append(types, string(name))
 			return nil
 		})
@@ -348,7 +363,7 @@ func (g *GraphStore) NodeTypes(ctx context.Context) ([]string, error) {
 	}
 	var types []string
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		return tx.Bucket(dbNodes).ForEach(func(name []byte, _ []byte) error {
+		return tx.Bucket(storage.DbNodes).ForEach(func(name []byte, _ []byte) error {
 			types = append(types, string(name))
 			return nil
 		})
@@ -357,4 +372,33 @@ func (g *GraphStore) NodeTypes(ctx context.Context) ([]string, error) {
 	}
 	sort.Strings(types)
 	return types, nil
+}
+
+func removeEdge(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
+	var newPaths []*apipb.Path
+	for _, p := range paths {
+		if p != path {
+			newPaths = append(newPaths, p)
+		}
+	}
+	return newPaths
+}
+
+func noExist(path *apipb.Path) error {
+	return errors.Errorf("%s.%v does not exist", path.Gtype, path.Gid)
+}
+
+func sortPaths(paths []*apipb.Path) {
+	s := sortable.Sortable{
+		LenFunc: func() int {
+			return len(paths)
+		},
+		LessFunc: func(i, j int) bool {
+			return paths[i].String() < paths[j].String()
+		},
+		SwapFunc: func(i, j int) {
+			paths[i], paths[j] = paths[j], paths[i]
+		},
+	}
+	s.Sort()
 }

@@ -4,24 +4,22 @@ import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/sortable"
-	"github.com/autom8ter/graphik/storage"
+	"github.com/autom8ter/graphik/storage/graph"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"time"
 )
 
 type Graph struct {
-	db        *storage.GraphStore
+	db        *graph.GraphStore
 	edgesTo   map[string][]*apipb.Path
 	edgesFrom map[string][]*apipb.Path
 }
 
 func New(path string) (*Graph, error) {
-	db, err := storage.NewGraphStore(path)
+	db, err := graph.NewGraphStore(path)
 	if err != nil {
 		return nil, err
 	}
@@ -73,9 +71,6 @@ func (g *Graph) nodeDefaults(value *apipb.Node) {
 	if value.GetPath() == nil {
 		value.Path = &apipb.Path{}
 	}
-	if value.GetPath().GetGid() == "" {
-		value.Path.Gid = uuid.New().String()
-	}
 	if value.Metadata == nil {
 		value.Metadata = &apipb.Metadata{}
 	}
@@ -91,9 +86,6 @@ func (g *Graph) edgeDefaults(value *apipb.Edge) {
 	now := time.Now().UnixNano()
 	if value.GetPath() == nil {
 		value.Path = &apipb.Path{}
-	}
-	if value.GetPath().GetGid() == "" {
-		value.Path.Gid = uuid.New().String()
 	}
 	if value.Metadata == nil {
 		value.Metadata = &apipb.Metadata{}
@@ -730,19 +722,4 @@ func (g *Graph) DFS(ctx context.Context, reverse bool, fn func(node *apipb.Node)
 
 		return true
 	}
-}
-
-func sortPaths(paths []*apipb.Path) {
-	s := sortable.Sortable{
-		LenFunc: func() int {
-			return len(paths)
-		},
-		LessFunc: func(i, j int) bool {
-			return paths[i].String() < paths[j].String()
-		},
-		SwapFunc: func(i, j int) {
-			paths[i], paths[j] = paths[j], paths[i]
-		},
-	}
-	s.Sort()
 }

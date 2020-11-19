@@ -8,7 +8,8 @@ import (
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/storage"
+	"github.com/autom8ter/graphik/storage/log"
+	"github.com/autom8ter/graphik/storage/snap"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/proto"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
@@ -38,8 +39,8 @@ type Runtime struct {
 	authorizers []apipb.AuthorizationServiceClient
 	closed      bool
 	closers     []func()
-	logStore    *storage.LogStore
-	snapStore   *storage.SnapshotStore
+	logStore    *log.LogStore
+	snapStore   *snap.SnapshotStore
 }
 
 func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
@@ -105,11 +106,11 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create snapshot store")
 	}
-	logStore, err := storage.NewLogStore(filepath.Join(cfg.StoragePath, "logs.db"))
+	logStore, err := log.NewLogStore(filepath.Join(cfg.StoragePath, "logs.db"))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create bolt store")
 	}
-	snapshotStore, err := storage.NewSnapshotStore(filepath.Join(cfg.StoragePath, "snapshots.db"))
+	snapshotStore, err := snap.NewSnapshotStore(filepath.Join(cfg.StoragePath, "snapshots.db"))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create bolt store")
 	}
