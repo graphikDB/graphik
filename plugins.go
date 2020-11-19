@@ -1,4 +1,4 @@
-package plugins
+package graphik
 
 import (
 	"context"
@@ -23,6 +23,7 @@ import (
 	"time"
 )
 
+// TriggerFunc is an optional/custom external plugin that when added to a Graphik instance, mutates objects at runtime before & after state changes
 type TriggerFunc func(ctx context.Context, trigger *apipb.Trigger) (*apipb.StateChange, error)
 
 func NewTrigger(trigger func(ctx context.Context, trigger *apipb.Trigger) (*apipb.StateChange, error)) TriggerFunc {
@@ -132,6 +133,7 @@ func (t TriggerFunc) Serve(ctx context.Context, cfg *flags.PluginFlags) {
 	mach.Wait()
 }
 
+// AuthorizerFunc is an optional/custom external plugin that when added to a graphik instance,, authorizes inbound graph requests.
 type AuthorizerFunc func(ctx context.Context, intercept *apipb.RequestIntercept) (*apipb.Decision, error)
 
 func NewAuthorizer(auth func(ctx context.Context, intercept *apipb.RequestIntercept) (*apipb.Decision, error)) AuthorizerFunc {
