@@ -189,6 +189,21 @@ func (m *Message) FromMap(data map[string]interface{}) {
 	}
 }
 
+func (p *Paths) Sort() {
+	s := sortable.Sortable{
+		LenFunc: func() int {
+			return len(p.GetPaths())
+		},
+		LessFunc: func(i, j int) bool {
+			return p.GetPaths()[i].String() < p.GetPaths()[j].String()
+		},
+		SwapFunc: func(i, j int) {
+			p.GetPaths()[i], p.GetPaths()[j] = p.GetPaths()[j], p.GetPaths()[i]
+		},
+	}
+	s.Sort()
+}
+
 func (n *Nodes) Sort() {
 	s := sortable.Sortable{
 		LenFunc: func() int {

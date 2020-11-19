@@ -15,8 +15,8 @@ import (
 
 type Graph struct {
 	db        *storage.GraphStore
-	edgesTo   map[string][]*apipb.Path
-	edgesFrom map[string][]*apipb.Path
+	edgesTo   map[string]*apipb.Paths
+	edgesFrom map[string]*apipb.Paths
 }
 
 func New(path string) (*Graph, error) {
@@ -26,8 +26,8 @@ func New(path string) (*Graph, error) {
 	}
 	return &Graph{
 		db:        db,
-		edgesTo:   map[string][]*apipb.Path{},
-		edgesFrom: map[string][]*apipb.Path{},
+		edgesTo:   map[string]*apipb.Paths{},
+		edgesFrom: map[string]*apipb.Paths{},
 	}, nil
 }
 
@@ -328,9 +328,10 @@ func (n *Graph) SetEdge(ctx context.Context, value *apipb.Edge) (*apipb.Edge, er
 	if err := n.db.SetEdge(ctx, value); err != nil {
 		return nil, err
 	}
-	n.edgesFrom[value.GetFrom().String()] = append(n.edgesFrom[value.GetFrom().String()], value.GetPath())
-	n.edgesTo[value.GetTo().String()] = append(n.edgesTo[value.GetTo().String()], value.GetPath())
-
+	n.edgesFrom[value.GetFrom().String()].Paths = append(n.edgesFrom[value.GetFrom().String()].Paths, value.GetPath())
+	n.edgesTo[value.GetTo().String()].Paths = append(n.edgesTo[value.GetTo().String()].Paths, value.GetPath())
+	n.edgesFrom[value.GetFrom().String()].Sort()
+	n.edgesTo[value.GetTo().String()].Sort()
 	return value, nil
 }
 
@@ -343,10 +344,10 @@ func (n *Graph) DeleteEdge(ctx context.Context, path *apipb.Path) (*empty.Empty,
 	if err != nil {
 		return nil, err
 	}
-	n.edgesFrom[edge.From.String()] = removeEdge(path, n.edgesFrom[edge.From.String()])
-	n.edgesTo[edge.From.String()] = removeEdge(path, n.edgesTo[edge.From.String()])
-	n.edgesFrom[edge.To.String()] = removeEdge(path, n.edgesFrom[edge.To.String()])
-	n.edgesTo[edge.To.String()] = removeEdge(path, n.edgesTo[edge.To.String()])
+	n.edgesFrom[edge.From.String()].Paths = removeEdge(path, n.edgesFrom[edge.From.String()].Paths)
+	n.edgesTo[edge.From.String()].Paths = removeEdge(path, n.edgesTo[edge.From.String()].Paths)
+	n.edgesFrom[edge.To.String()].Paths = removeEdge(path, n.edgesFrom[edge.To.String()].Paths)
+	n.edgesTo[edge.To.String()].Paths = removeEdge(path, n.edgesTo[edge.To.String()].Paths)
 	if err := n.db.DelEdges(ctx, path); err != nil {
 		return nil, err
 	}
@@ -359,7 +360,7 @@ func (n *Graph) HasEdge(ctx context.Context, path *apipb.Path) bool {
 }
 
 func (g *Graph) RangeFrom(ctx context.Context, path *apipb.Path, fn func(e *apipb.Edge) bool) error {
-	for _, path := range g.edgesFrom[path.String()] {
+	for _, path := range g.edgesFrom[path.String()].Paths {
 		edge, err := g.GetEdge(ctx, path)
 		if err != nil {
 			return err
@@ -372,7 +373,7 @@ func (g *Graph) RangeFrom(ctx context.Context, path *apipb.Path, fn func(e *apip
 }
 
 func (g *Graph) RangeTo(ctx context.Context, path *apipb.Path, fn func(edge *apipb.Edge) bool) error {
-	for _, edge := range g.edgesTo[path.String()] {
+	for _, edge := range g.edgesTo[path.String()].Paths {
 		e, err := g.GetEdge(ctx, edge)
 		if err != nil {
 			return err
@@ -467,8 +468,10 @@ func (n *Graph) FilterEdges(ctx context.Context, edgeType string, filter func(ed
 func (n *Graph) SetEdges(ctx context.Context, edges []*apipb.Edge) (*apipb.Edges, error) {
 	for _, value := range edges {
 		n.edgeDefaults(value)
-		n.edgesFrom[value.GetFrom().String()] = append(n.edgesFrom[value.GetFrom().String()], value.GetPath())
-		n.edgesTo[value.GetTo().String()] = append(n.edgesTo[value.GetTo().String()], value.GetPath())
+		n.edgesFrom[value.GetFrom().String()].Paths = append(n.edgesFrom[value.GetFrom().String()].Paths, value.GetPath())
+		n.edgesTo[value.GetTo().String()].Paths = append(n.edgesTo[value.GetTo().String()].Paths, value.GetPath())
+		n.edgesFrom[value.GetFrom().String()].Sort()
+		n.edgesTo[value.GetTo().String()].Sort()
 	}
 	if err := n.db.SetEdges(ctx, edges...); err != nil {
 		return nil, err
