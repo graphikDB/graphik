@@ -105,8 +105,15 @@ func (g *Graph) edgeDefaults(value *apipb.Edge) {
 	}
 }
 
-func (n *Graph) SetNode(ctx context.Context, value *apipb.Node) (*apipb.Node, error) {
+func (n *Graph) SetNode(ctx context.Context, value *apipb.Node, opts ...Opt) (*apipb.Node, error) {
 	n.nodeDefaults(value)
+	if len(opts) > 0 {
+		o := &Options{}
+		for _, opt := range opts {
+			opt(o)
+		}
+		value.Metadata = o.metadata
+	}
 	if err := n.db.SetNode(ctx, value); err != nil {
 		return nil, err
 	}
@@ -122,11 +129,11 @@ func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch, opts ...Opt) 
 		node.GetAttributes().GetFields()[k] = v
 	}
 	if len(opts) > 0 {
-		options := &Options{}
-		for _, o := range opts {
-			o(options)
+		o := &Options{}
+		for _, opt := range opts {
+			opt(o)
 		}
-		node.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+		node.Metadata = o.metadata
 	} else {
 		node.GetMetadata().UpdatedAt = time.Now().UnixNano()
 	}
@@ -152,7 +159,7 @@ func (n *Graph) PatchNodes(ctx context.Context, values *apipb.Patches, opts ...O
 			o(options)
 		}
 		for _, node := range nodes {
-			node.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+			node.Metadata = options.metadata
 		}
 	} else {
 		for _, node := range nodes {
@@ -238,7 +245,7 @@ func (n *Graph) SetNodes(ctx context.Context, nodes []*apipb.Node, opts ...Opt) 
 			o(options)
 		}
 		for _, node := range nodes {
-			node.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+			node.Metadata = options.metadata
 		}
 	} else {
 		for _, node := range nodes {
@@ -494,7 +501,7 @@ func (n *Graph) PatchEdge(ctx context.Context, value *apipb.Patch, opts ...Opt) 
 		for _, o := range opts {
 			o(options)
 		}
-		edge.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+		edge.Metadata = options.metadata
 	} else {
 		edge.GetMetadata().UpdatedAt = time.Now().UnixNano()
 	}
@@ -520,7 +527,7 @@ func (n *Graph) PatchEdges(ctx context.Context, values *apipb.Patches, opts ...O
 			o(options)
 		}
 		for _, edge := range edges {
-			edge.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+			edge.Metadata = options.metadata
 		}
 	} else {
 		for _, edge := range edges {

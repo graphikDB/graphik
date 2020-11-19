@@ -1,22 +1,17 @@
 package graph
 
-import "time"
+import (
+	apipb "github.com/autom8ter/graphik/api"
+)
 
 type Options struct {
-	updatedAt time.Time
-	createdAt time.Time
+	metadata *apipb.Metadata
 }
 
 type Opt func(o *Options)
 
-func WithUpdatedAt(time time.Time) Opt {
+func WithMetadata(metadata *apipb.Metadata) Opt {
 	return func(o *Options) {
-		o.updatedAt = time
-	}
-}
-
-func WithCreatedAt(time time.Time) Opt {
-	return func(o *Options) {
-		o.createdAt = time
+		o.metadata = metadata
 	}
 }
