@@ -2,18 +2,31 @@
 
 ![dag](images/dag.png)
 
-    git@github.com:autom8ter/graphik.git
+    git clone git@github.com:autom8ter/graphik.git
     
     docker pull colemanword/graphik
 
-An identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
+Graphik is an identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
+
+- [Graphik [![GoDoc](https://godoc.org/github.com/autom8ter/graphik?status.svg)](https://godoc.org/github.com/autom8ter/graphik)](#graphik----godoc--https---godocorg-githubcom-autom8ter-graphik-statussvg---https---godocorg-githubcom-autom8ter-graphik-)
+  * [Features](#features)
+  * [Helpful Links](#helpful-links)
+  * [Key Dependencies](#key-dependencies)
+  * [Use Cases](#use-cases)
+  * [API Spec](#api-spec)
+  * [Flags](#flags)
+  * [Graphik Plugins (optional)](#graphik-plugins--optional-)
+  * [Roadmap](#roadmap)
+
+## Features
 
 - [x] 100% Go
-- [x] Containerized
 - [x] Native gRPC Support
+- [x] Native OAuth Support
 - [x] Persistant(bbolt LMDB)
+- [x] Fault-Tolerant 
 - [x] Horizontally Scaleable ([Raft](https://raft.github.io/))
-- [x] Loosely typed(mongo-esque)
+- [x] Loosely-Typed(mongo-esque)
 - [x] [Prometheus Metrics](https://prometheus.io/)
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
 - [x] [Context-Based Timeouts](https://blog.golang.org/context)
@@ -26,14 +39,30 @@ An identity-aware, permissioned, persistant [labelled property graph](https://en
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] gRPC Based External Trigger Implementation(sidecar)
 - [x] gRPC Based External Authorizer Implementation(sidecar)
-- [ ] Kubernetes Operator
-- [ ] Helm Chart
+
+## Helpful Links
+
+- [GoDoc](https://godoc.org/github.com/autom8ter/graphik)
+- [API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
+- [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
+- [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
+- [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
+
+## Key Dependencies
+
+- google.golang.org/grpc
+- github.com/hashicorp/raft
+- github.com/autom8ter/machine
+- github.com/google/cel-go/cel
+- go.etcd.io/bbolt
+- go.uber.org/zap
+- golang.org/x/oauth2
+
+## Use Cases
+
+- relational state-machine for identity-aware applications
 
 ## API Spec
-
-[API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
-
-[Examples](https://github.com/autom8ter/graphik/blob/master/example_test.go)
 
 ```proto
 // GraphService is the primary Graph service
@@ -98,19 +127,7 @@ service GraphService {
   rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
 }
 ```
-## Key Dependencies
 
-- google.golang.org/grpc
-- github.com/hashicorp/raft
-- github.com/autom8ter/machine
-- github.com/google/cel-go/cel
-- go.etcd.io/bbolt
-- go.uber.org/zap
-- golang.org/x/oauth2
-
-## Use Cases
-
-- relational state-machine for identity-aware applications
 
 ## Flags
 
@@ -154,8 +171,9 @@ service AuthorizationService {
 }
 ```
 
-## TODO
+## Roadmap
 
-- [ ] Auto redirect mutations to Raft leader
-- [ ] E2E Tests
-- [ ] Benchmarks Against Other Graph Databases
+- [ ] Graphql Federated [BFF](https://www.kennethlange.com/backends-for-frontends-pattern/)
+- [ ] Database GUI with SSO
+- [ ] Kubernetes Operator
+- [ ] Helm Chart
