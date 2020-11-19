@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
@@ -44,22 +43,38 @@ func (r *Runtime) UnaryAuth() grpc.UnaryServerInterceptor {
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = context.WithValue(ctx, methodCtxKey, info.FullMethod)
 		if len(r.authorizers) > 0 {
-			msg, ok := req.(proto.Message)
-			if !ok {
-				return nil, status.Error(codes.InvalidArgument, "bad request")
-			}
-			anny, err := ptypes.MarshalAny(msg)
-			if err != nil {
-				return nil, err
-			}
 			now := time.Now()
+			intercept := &apipb.RequestIntercept{
+				Method:    info.FullMethod,
+				User:      identity,
+				Timestamp: now.UnixNano(),
+			}
+			switch r := req.(type) {
+			case *apipb.NodeConstructor:
+				intercept.Request = &apipb.RequestIntercept_NodeConstructor{NodeConstructor: r}
+			case *apipb.NodeConstructors:
+				intercept.Request = &apipb.RequestIntercept_NodeConstructors{NodeConstructors: r}
+			case *apipb.Paths:
+				intercept.Request = &apipb.RequestIntercept_Paths{Paths: r}
+			case *apipb.Path:
+				intercept.Request = &apipb.RequestIntercept_Path{Path: r}
+			case *apipb.Patches:
+				intercept.Request = &apipb.RequestIntercept_Patches{Patches: r}
+			case *apipb.Patch:
+				intercept.Request = &apipb.RequestIntercept_Patch{Patch: r}
+			case *apipb.Filter:
+				intercept.Request = &apipb.RequestIntercept_Filter{Filter: r}
+			case *apipb.ChannelFilter:
+				intercept.Request = &apipb.RequestIntercept_ChannelFilter{ChannelFilter: r}
+			case *apipb.RaftNode:
+				intercept.Request = &apipb.RequestIntercept_RaftNode{RaftNode: r}
+			case *apipb.SubGraphFilter:
+				intercept.Request = &apipb.RequestIntercept_SubgraphFilter{SubgraphFilter: r}
+			case *empty.Empty:
+				intercept.Request = &apipb.RequestIntercept_Empty{Empty: r}
+			}
 			for _, plugin := range r.authorizers {
-				resp, err := plugin.Authorize(ctx, &apipb.RequestIntercept{
-					Method:    info.FullMethod,
-					User:      identity,
-					Request:   anny,
-					Timestamp: now.UnixNano(),
-				})
+				resp, err := plugin.Authorize(ctx, intercept)
 				if err != nil {
 					return nil, err
 				}
@@ -95,28 +110,35 @@ func (r *Runtime) StreamAuth() grpc.StreamServerInterceptor {
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = context.WithValue(ctx, methodCtxKey, info.FullMethod)
 		if len(r.authorizers) > 0 {
-			msg, ok := srv.(proto.Message)
-			if !ok {
-				return status.Error(codes.InvalidArgument, "bad request")
-			}
-			anny, err := ptypes.MarshalAny(msg)
-			if err != nil {
-				return err
-			}
 			now := time.Now()
-			for _, plugin := range r.authorizers {
-				resp, err := plugin.Authorize(ctx, &apipb.RequestIntercept{
-					Method:    info.FullMethod,
-					User:      identity,
-					Request:   anny,
-					Timestamp: now.UnixNano(),
-				})
-				if err != nil {
-					return err
-				}
-				if !resp.Value {
-					return status.Error(codes.PermissionDenied, "request authorization = denied")
-				}
+			intercept := &apipb.RequestIntercept{
+				Method:    info.FullMethod,
+				User:      identity,
+				Timestamp: now.UnixNano(),
+			}
+			switch r := srv.(type) {
+			case *apipb.NodeConstructor:
+				intercept.Request = &apipb.RequestIntercept_NodeConstructor{NodeConstructor: r}
+			case *apipb.NodeConstructors:
+				intercept.Request = &apipb.RequestIntercept_NodeConstructors{NodeConstructors: r}
+			case *apipb.Paths:
+				intercept.Request = &apipb.RequestIntercept_Paths{Paths: r}
+			case *apipb.Path:
+				intercept.Request = &apipb.RequestIntercept_Path{Path: r}
+			case *apipb.Patches:
+				intercept.Request = &apipb.RequestIntercept_Patches{Patches: r}
+			case *apipb.Patch:
+				intercept.Request = &apipb.RequestIntercept_Patch{Patch: r}
+			case *apipb.Filter:
+				intercept.Request = &apipb.RequestIntercept_Filter{Filter: r}
+			case *apipb.ChannelFilter:
+				intercept.Request = &apipb.RequestIntercept_ChannelFilter{ChannelFilter: r}
+			case *apipb.RaftNode:
+				intercept.Request = &apipb.RequestIntercept_RaftNode{RaftNode: r}
+			case *apipb.SubGraphFilter:
+				intercept.Request = &apipb.RequestIntercept_SubgraphFilter{SubgraphFilter: r}
+			case *empty.Empty:
+				intercept.Request = &apipb.RequestIntercept_Empty{Empty: r}
 			}
 		}
 		wrapped := grpc_middleware.WrapServerStream(ss)

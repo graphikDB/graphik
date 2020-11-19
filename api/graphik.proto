@@ -50,6 +50,13 @@ message Path {
   string gid =2;
 }
 
+message Metadata {
+  int64 created_at =1;
+  int64 updated_at =2;
+  string created_by =3;
+  string updated_by =4;
+}
+
 // Paths is an array of paths
 message Paths {
   repeated Path paths =1;
@@ -58,9 +65,8 @@ message Paths {
 // Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
 message Node {
   Path path =1;
-  google.protobuf.Struct attributes =3;
-  int64 created_at =4;
-  int64 updated_at =5;
+  google.protobuf.Struct attributes =2;
+  Metadata metadata =3;
 }
 
 // NodeConstructor is used to create a node
@@ -85,8 +91,7 @@ message NodeDetail {
   google.protobuf.Struct attributes =2;
   map<string, EdgeDetails> edges_from =3;
   map<string, EdgeDetails> edges_to =4;
-  int64 created_at =5;
-  int64 updated_at =6;
+  Metadata metadata =5;
 }
 
 // NodeDetails is an array of NodeDetail
@@ -104,12 +109,11 @@ message NodeDetailFilter {
 // Edge is a graph primitive that represents a relationship between two nodes
 message Edge {
   Path path =1;
-  google.protobuf.Struct attributes =3;
-  Cascade cascade =4;
-  Path from =5;
-  Path to =6;
-  int64 created_at =10;
-  int64 updated_at =11;
+  google.protobuf.Struct attributes =2;
+  Cascade cascade =3;
+  Path from =4;
+  Path to =5;
+  Metadata metadata =6;
 }
 
 // EdgeConstructor is used to create an Edge
@@ -134,12 +138,11 @@ message Edges {
 // EdgeDetail is an edge with both of it's connected nodes fully loaded
 message EdgeDetail {
   Path path =1;
-  google.protobuf.Struct attributes =3;
-  Cascade cascade =4;
-  Node from =5;
-  Node to =6;
-  int64 created_at =10;
-  int64 updated_at =11;
+  google.protobuf.Struct attributes =2;
+  Cascade cascade =3;
+  Node from =4;
+  Node to =5;
+  Metadata metadata =6;
 }
 
 // EdgeDetails is an array of EdgeDetail
@@ -166,11 +169,6 @@ message Filter {
 message MeFilter {
   Filter edges_from =1;
   Filter edges_to =2;
-}
-
-// ChangeFilter is used to filter changes in a change stream
-message ChangeFilter {
-  repeated string expressions =1;
 }
 
 // ChannelFilter is used to filter messages in a pubsub channel
@@ -274,8 +272,24 @@ message Trigger {
 message RequestIntercept {
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
   Node user =2;
-  google.protobuf.Any request =3;
-  int64 timestamp =4;
+  int64 timestamp =3;
+  oneof request {
+      google.protobuf.Empty empty =4;
+      SubGraphFilter subgraph_filter =5;
+      Graph graph =6;
+      ChannelFilter channel_filter =7;
+      OutboundMessage outbound_message =8;
+      EdgeFilter   edge_filter =10;
+      Paths paths =11;
+      Path path =12;
+      Patches patches =13;
+      Patch patch =14;
+      Filter filter =15;
+      NodeConstructors node_constructors =16;
+      NodeConstructor node_constructor =17;
+      MeFilter me_filter =18;
+      RaftNode raft_node =19;
+  }
 }
 
 // Decision is returned by registered external authorizers
@@ -335,8 +349,6 @@ service GraphService {
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   // EdgesTo returns edges that point to the given node path that pass the filter
   rpc EdgesTo(EdgeFilter) returns(Edges){}
-  // ChangeStream subscribes to filtered changes on a stream
-  rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
   // Publish publishes a message to a pubsub channel
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
@@ -351,12 +363,18 @@ service GraphService {
   rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
 }
 
-// TriggerService is an optional/custom external plugin that when added, mutates objects at runtime before & after state changes
+// TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates objects at runtime before & after state changes
 service TriggerService {
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // HandleTrigger mutates state changes
   rpc HandleTrigger(Trigger) returns(StateChange){}
 }
 
-// AuthorizationService is an optional/custom external plugin that when added, authorizes inbound graph requests
+// AuthorizationService is an optional/custom external plugin that when added to a graphik instance,, authorizes inbound graph requests
 service AuthorizationService {
- rpc Authorize(RequestIntercept) returns(Decision){}
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // Authorize authorizes inbound graph requests
+  rpc Authorize(RequestIntercept) returns(Decision){}
 }

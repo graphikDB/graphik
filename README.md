@@ -29,6 +29,19 @@ An identity-aware, permissioned, persistant [labelled property graph](https://en
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
+## Goals
+- Zero database administrative requirements(schema-less)
+- Model any number of complex relationships
+- Extensible via external plugin model
+- Built in identity awareness(Oauth2)
+- Integration with existing identity providers(ex: Google, Microsoft, etc)
+- Designed for microservice architecture
+- Flexible filtering/querying via interpreted expression language
+- Horizontally Scaleable
+- Fault Tolerant
+- Pubsub implementation
+- Events (change-streams) 
+
 ## API Spec
 
 [API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
@@ -143,19 +156,20 @@ This pattern is similar to Envoy external filters & Kubernetes mutating webhooks
 Plugin API Spec:
 
 ```proto
-// Triggers are executed before & after all graph state changes
+// TriggerService is an optional/custom external plugin that when added, mutates objects at runtime before & after state changes
 service TriggerService {
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // HandleTrigger mutates state changes
   rpc HandleTrigger(Trigger) returns(StateChange){}
 }
 
-// Authorizers are executed within a request middleware/interceptor to determine whether the request is permitted
+// AuthorizationService is an optional/custom external plugin that when added, authorizes inbound graph requests
 service AuthorizationService {
- rpc Authorize(RequestIntercept) returns(Decision){}
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // Authorize authorizes inbound graph requests
+  rpc Authorize(RequestIntercept) returns(Decision){}
 }
 ```
 
-## TODO
-
-- [ ] Auto redirect mutations to Raft leader
-- [ ] E2E Tests
-- [ ] Benchmarks Against Other Graph Databases

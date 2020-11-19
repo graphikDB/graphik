@@ -107,35 +107,6 @@ func (g *Graph) DelEdges(ctx context.Context, paths *apipb.Paths) (*empty.Empty,
 	return g.runtime.DelEdges(ctx, paths)
 }
 
-func (g *Graph) ChangeStream(filter *apipb.ChangeFilter, server apipb.GraphService_ChangeStreamServer) error {
-	programs, err := vm.Programs(filter.Expressions)
-	if err != nil {
-		return err
-	}
-	var pass bool
-	filterFunc := func(msg interface{}) bool {
-		pass, err = vm.Eval(programs, msg)
-		if err != nil {
-			logger.Error("subscription filter failure", zap.Error(err))
-			return false
-		}
-		return pass
-	}
-	if err := g.runtime.Machine().PubSub().SubscribeFilter(server.Context(), runtime.ChangeStreamChannel, filterFunc, func(msg interface{}) {
-		if err, ok := msg.(error); ok && err != nil {
-			logger.Error("failed to send subscription", zap.Error(err))
-			return
-		}
-		if err := server.Send(msg.(*apipb.StateChange)); err != nil {
-			logger.Error("failed to send subscription", zap.Error(err))
-			return
-		}
-	}); err != nil {
-		return err
-	}
-	return err
-}
-
 func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
 	return &empty.Empty{}, g.runtime.Machine().PubSub().Publish(message.Channel, &apipb.Message{
 		Channel:   message.Channel,
@@ -151,12 +122,15 @@ func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphService
 		return err
 	}
 	filterFunc := func(msg interface{}) bool {
-		result, err := vm.Eval(programs, msg)
-		if err != nil {
-			logger.Error("subscription filter failure", zap.Error(err))
-			return false
+		if val, ok := msg.(apipb.Mapper); ok {
+			result, err := vm.Eval(programs, val)
+			if err != nil {
+				logger.Error("subscription filter failure", zap.Error(err))
+				return false
+			}
+			return result
 		}
-		return result
+		return false
 	}
 	if err := g.runtime.Machine().PubSub().SubscribeFilter(server.Context(), filter.Channel, filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {

@@ -73,7 +73,7 @@ func (b *SnapshotStore) Get(k []byte) ([]byte, error) {
 	val := bucket.Get(k)
 
 	if val == nil {
-		return nil, ErrKeyNotFound
+		return nil, ErrNotFound
 	}
 	return append([]byte(nil), val...), nil
 }

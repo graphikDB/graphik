@@ -3,11 +3,13 @@ package graph
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/storage"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -65,7 +67,7 @@ func (n *Graph) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, err
 	return nil, noExist(path)
 }
 
-func (n *Graph) SetNode(ctx context.Context, value *apipb.Node) (*apipb.Node, error) {
+func (g *Graph) nodeDefaults(value *apipb.Node) {
 	now := time.Now().UnixNano()
 	if value.GetPath() == nil {
 		value.Path = &apipb.Path{}
@@ -73,19 +75,45 @@ func (n *Graph) SetNode(ctx context.Context, value *apipb.Node) (*apipb.Node, er
 	if value.GetPath().GetGid() == "" {
 		value.Path.Gid = uuid.New().String()
 	}
-	if value.GetCreatedAt() == 0 {
-		value.CreatedAt = now
+	if value.Metadata == nil {
+		value.Metadata = &apipb.Metadata{}
 	}
-	if value.GetUpdatedAt() == 0 {
-		value.UpdatedAt = now
+	if value.GetMetadata().GetCreatedAt() == 0 {
+		value.Metadata.CreatedAt = now
 	}
+	if value.GetMetadata().GetUpdatedAt() == 0 {
+		value.Metadata.UpdatedAt = now
+	}
+}
+
+func (g *Graph) edgeDefaults(value *apipb.Edge) {
+	now := time.Now().UnixNano()
+	if value.GetPath() == nil {
+		value.Path = &apipb.Path{}
+	}
+	if value.GetPath().GetGid() == "" {
+		value.Path.Gid = uuid.New().String()
+	}
+	if value.Metadata == nil {
+		value.Metadata = &apipb.Metadata{}
+	}
+	if value.GetMetadata().GetCreatedAt() == 0 {
+		value.Metadata.CreatedAt = now
+	}
+	if value.GetMetadata().GetUpdatedAt() == 0 {
+		value.Metadata.UpdatedAt = now
+	}
+}
+
+func (n *Graph) SetNode(ctx context.Context, value *apipb.Node) (*apipb.Node, error) {
+	n.nodeDefaults(value)
 	if err := n.db.SetNode(ctx, value); err != nil {
 		return nil, err
 	}
 	return value, nil
 }
 
-func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.Node, error) {
+func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch, opts ...Opt) (*apipb.Node, error) {
 	node, err := n.db.GetNode(ctx, value.GetPath())
 	if err != nil {
 		return nil, err
@@ -93,18 +121,46 @@ func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.Node,
 	for k, v := range value.GetAttributes().GetFields() {
 		node.GetAttributes().GetFields()[k] = v
 	}
-	node.UpdatedAt = time.Now().UnixNano()
+	if len(opts) > 0 {
+		options := &Options{}
+		for _, o := range opts {
+			o(options)
+		}
+		node.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+	} else {
+		node.GetMetadata().UpdatedAt = time.Now().UnixNano()
+	}
+
 	return node, n.db.SetNode(ctx, node)
 }
 
-func (n *Graph) PatchNodes(ctx context.Context, values *apipb.Patches) (*apipb.Nodes, error) {
+func (n *Graph) PatchNodes(ctx context.Context, values *apipb.Patches, opts ...Opt) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
 	for _, val := range values.GetPatches() {
-		patch, err := n.PatchNode(ctx, val)
+		node, err := n.GetNode(ctx, val.Path)
 		if err != nil {
 			return nil, err
 		}
-		nodes = append(nodes, patch)
+		for k, v := range val.GetAttributes().GetFields() {
+			node.Attributes.GetFields()[k] = v
+		}
+		nodes = append(nodes, node)
+	}
+	if len(opts) > 0 {
+		options := &Options{}
+		for _, o := range opts {
+			o(options)
+		}
+		for _, node := range nodes {
+			node.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+		}
+	} else {
+		for _, node := range nodes {
+			node.GetMetadata().UpdatedAt = time.Now().UnixNano()
+		}
+	}
+	if err := n.db.SetNodes(ctx, nodes...); err != nil {
+		return nil, err
 	}
 	toReturn := &apipb.Nodes{
 		Nodes: nodes,
@@ -172,10 +228,28 @@ func (n *Graph) FilterNode(ctx context.Context, nodeType string, filter func(nod
 	return toreturn, nil
 }
 
-func (n *Graph) SetNodes(nodes []*apipb.Node) (*apipb.Nodes, error) {
-	toReturn, err := n.SetNodes(nodes)
-	if err != nil {
+func (n *Graph) SetNodes(ctx context.Context, nodes []*apipb.Node, opts ...Opt) (*apipb.Nodes, error) {
+	for _, node := range nodes {
+		n.nodeDefaults(node)
+	}
+	if len(opts) > 0 {
+		options := &Options{}
+		for _, o := range opts {
+			o(options)
+		}
+		for _, node := range nodes {
+			node.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+		}
+	} else {
+		for _, node := range nodes {
+			node.GetMetadata().UpdatedAt = time.Now().UnixNano()
+		}
+	}
+	if err := n.db.SetNodes(ctx, nodes...); err != nil {
 		return nil, err
+	}
+	toReturn := &apipb.Nodes{
+		Nodes: nodes,
 	}
 	toReturn.Sort()
 	return toReturn, nil
@@ -243,12 +317,7 @@ func (n *Graph) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, err
 }
 
 func (n *Graph) SetEdge(ctx context.Context, value *apipb.Edge) (*apipb.Edge, error) {
-	if value.Path == nil {
-		value.Path = &apipb.Path{}
-	}
-	if value.GetPath().GetGid() == "" {
-		value.Path.Gid = uuid.New().String()
-	}
+	n.edgeDefaults(value)
 	if err := n.db.SetEdge(ctx, value); err != nil {
 		return nil, err
 	}
@@ -389,58 +458,77 @@ func (n *Graph) FilterEdges(ctx context.Context, edgeType string, filter func(ed
 }
 
 func (n *Graph) SetEdges(ctx context.Context, edges []*apipb.Edge) (*apipb.Edges, error) {
-	var returned []*apipb.Edge
-	for _, edge := range edges {
-		e, err := n.SetEdge(ctx, edge)
-		if err != nil {
-			return nil, err
-		}
-		returned = append(returned, e)
+	for _, value := range edges {
+		n.edgeDefaults(value)
+		n.edgesFrom[value.GetFrom().String()] = append(n.edgesFrom[value.GetFrom().String()], value.GetPath())
+		n.edgesTo[value.GetTo().String()] = append(n.edgesTo[value.GetTo().String()], value.GetPath())
+	}
+	if err := n.db.SetEdges(ctx, edges...); err != nil {
+		return nil, err
 	}
 	toReturn := &apipb.Edges{
-		Edges: returned,
+		Edges: edges,
 	}
 	toReturn.Sort()
 	return toReturn, nil
 }
 
 func (n *Graph) DeleteEdges(ctx context.Context, edges []*apipb.Path) (*empty.Empty, error) {
-	for _, edge := range edges {
-		_, err := n.DeleteEdge(ctx, edge)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return &empty.Empty{}, nil
+	return &empty.Empty{}, n.db.DelEdges(ctx, edges...)
 }
 
 func (n *Graph) ClearEdges(ctx context.Context, edgeType string) error {
 	return n.db.DelNodeType(ctx, edgeType)
 }
 
-func (e *Graph) PatchEdge(ctx context.Context, value *apipb.Patch) (*apipb.Edge, error) {
-	edge, err := e.GetEdge(ctx, value.GetPath())
+func (n *Graph) PatchEdge(ctx context.Context, value *apipb.Patch, opts ...Opt) (*apipb.Edge, error) {
+	edge, err := n.db.GetEdge(ctx, value.GetPath())
 	if err != nil {
 		return nil, err
 	}
 	for k, v := range value.GetAttributes().GetFields() {
 		edge.GetAttributes().GetFields()[k] = v
 	}
-	edge, err = e.SetEdge(ctx, edge)
-	if err != nil {
-		return nil, err
+	if len(opts) > 0 {
+		options := &Options{}
+		for _, o := range opts {
+			o(options)
+		}
+		edge.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+	} else {
+		edge.GetMetadata().UpdatedAt = time.Now().UnixNano()
 	}
-	return edge, nil
+
+	return edge, n.db.SetEdge(ctx, edge)
 }
 
-func (e *Graph) PatchEdges(ctx context.Context, values *apipb.Patches) (*apipb.Edges, error) {
+func (n *Graph) PatchEdges(ctx context.Context, values *apipb.Patches, opts ...Opt) (*apipb.Edges, error) {
 	var edges []*apipb.Edge
 	for _, val := range values.GetPatches() {
-		patch, err := e.PatchEdge(ctx, val)
+		edge, err := n.GetEdge(ctx, val.Path)
 		if err != nil {
 			return nil, err
 		}
-		edges = append(edges, patch)
+		for k, v := range val.GetAttributes().GetFields() {
+			edge.Attributes.GetFields()[k] = v
+		}
+		edges = append(edges, edge)
+	}
+	if len(opts) > 0 {
+		options := &Options{}
+		for _, o := range opts {
+			o(options)
+		}
+		for _, edge := range edges {
+			edge.GetMetadata().UpdatedAt = options.updatedAt.UnixNano()
+		}
+	} else {
+		for _, edge := range edges {
+			edge.GetMetadata().UpdatedAt = time.Now().UnixNano()
+		}
+	}
+	if err := n.db.SetEdges(ctx, edges...); err != nil {
+		return nil, err
 	}
 	toReturn := &apipb.Edges{
 		Edges: edges,
@@ -515,13 +603,12 @@ func (g *Graph) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apipb.Edg
 		return nil, err
 	}
 	return &apipb.EdgeDetail{
-		Path:       e.Path,
-		Attributes: e.Attributes,
-		Cascade:    e.Cascade,
+		Path:       e.GetPath(),
+		Attributes: e.GetAttributes(),
+		Cascade:    e.GetCascade(),
 		From:       from,
 		To:         to,
-		CreatedAt:  e.CreatedAt,
-		UpdatedAt:  e.UpdatedAt,
+		Metadata:   e.GetMetadata(),
 	}, nil
 }
 
@@ -535,8 +622,7 @@ func (g *Graph) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilte
 	if err != nil {
 		return nil, err
 	}
-	detail.UpdatedAt = node.UpdatedAt
-	detail.CreatedAt = node.CreatedAt
+	detail.Metadata = node.Metadata
 	detail.Attributes = node.Attributes
 	if filter.GetEdgesFrom() != nil {
 		edgesFrom, err := g.RangeFilterFrom(ctx, &apipb.EdgeFilter{
@@ -601,4 +687,36 @@ func (g *Graph) Schema(ctx context.Context) (*apipb.Schema, error) {
 		EdgeTypes: etypes,
 		NodeTypes: ntypes,
 	}, nil
+}
+
+func (g *Graph) DFS(ctx context.Context, reverse bool, fn func(node *apipb.Node) bool) func(node *apipb.Node) bool {
+	return func(node *apipb.Node) bool {
+		if reverse {
+			if err := g.RangeTo(ctx, node.Path, func(e *apipb.Edge) bool {
+				n, err := g.GetNode(ctx, e.From)
+				if err != nil {
+					logger.Error("dfs failure", zap.Error(err))
+					return true
+				}
+				return fn(n)
+			}); err != nil {
+				logger.Error("dfs failure", zap.Error(err))
+				return true
+			}
+		} else {
+			if err := g.RangeFrom(ctx, node.Path, func(e *apipb.Edge) bool {
+				n, err := g.GetNode(ctx, e.To)
+				if err != nil {
+					logger.Error("dfs failure", zap.Error(err))
+					return true
+				}
+				return fn(n)
+			}); err != nil {
+				logger.Error("dfs failure", zap.Error(err))
+				return true
+			}
+		}
+
+		return true
+	}
 }

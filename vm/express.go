@@ -1,7 +1,7 @@
 package vm
 
 import (
-	"github.com/autom8ter/graphik/helpers"
+	apipb "github.com/autom8ter/graphik/api"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
 )
@@ -44,14 +44,13 @@ func Programs(expressions []string) ([]cel.Program, error) {
 	return programs, nil
 }
 
-func Eval(programs []cel.Program, obj interface{}) (bool, error) {
+func Eval(programs []cel.Program, mapper apipb.Mapper) (bool, error) {
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}
-	values := helpers.ToMap(obj)
 	var passes = true
 	for _, program := range programs {
-		out, _, err := program.Eval(values)
+		out, _, err := program.Eval(mapper.AsMap())
 		if err != nil {
 			return false, err
 		}
