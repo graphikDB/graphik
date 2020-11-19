@@ -18,6 +18,10 @@ type Mapper interface {
 	AsMap() map[string]interface{}
 }
 
+type FromMapper interface {
+	FromMap(data map[string]interface{})
+}
+
 func (m *Path) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"gid":   m.GetGid(),
@@ -34,12 +38,10 @@ func (m *Path) FromMap(data map[string]interface{}) {
 	}
 }
 
-
 func (m *Metadata) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"created_at": m.GetCreatedAt(),
 		"updated_at": m.GetUpdatedAt(),
-		"created_by": m.GetCreatedBy(),
 		"updated_by": m.GetUpdatedBy(),
 	}
 }
@@ -51,11 +53,10 @@ func (m *Metadata) FromMap(data map[string]interface{}) {
 	if val, ok := data["updated_at"]; ok {
 		m.UpdatedAt = val.(int64)
 	}
-	if val, ok := data["created_by"]; ok {
-		m.CreatedBy = val.(string)
-	}
 	if val, ok := data["updated_by"]; ok {
-		m.UpdatedBy = val.(string)
+		if val, ok := val.(map[string]interface{}); ok {
+			m.UpdatedBy.FromMap(val)
+		}
 	}
 }
 
@@ -72,16 +73,31 @@ func (m *Node) FromMap(data map[string]interface{}) {
 		if m.Metadata == nil {
 			m.Metadata = &Metadata{}
 		}
-		m.Metadata.FromMap(val.(map[string]interface{}))
+		if val, ok := val.(map[string]interface{}); ok {
+			m.Metadata.FromMap(val)
+		}
+		if val, ok := val.(*Metadata); ok {
+			m.Metadata = val
+		}
 	}
 	if val, ok := data["path"]; ok {
 		if m.Path == nil {
 			m.Path = &Path{}
 		}
-		m.Path.FromMap(val.(map[string]interface{}))
+		if val, ok := val.(map[string]interface{}); ok {
+			m.Path.FromMap(val)
+		}
+		if val, ok := val.(*Path); ok {
+			m.Path = val
+		}
 	}
 	if val, ok := data["attributes"]; ok {
-		m.Attributes = NewStruct(val.(map[string]interface{}))
+		if val, ok := val.(map[string]interface{}); ok {
+			m.Attributes = NewStruct(val)
+		}
+		if val, ok := val.(*structpb.Struct); ok {
+			m.Attributes = val
+		}
 	}
 }
 
@@ -95,7 +111,6 @@ func (n *Edge) AsMap() map[string]interface{} {
 	}
 }
 
-
 func (m *Edge) FromMap(data map[string]interface{}) {
 	if val, ok := data["metadata"]; ok {
 		if m.Metadata == nil {
@@ -107,22 +122,42 @@ func (m *Edge) FromMap(data map[string]interface{}) {
 		if m.Path == nil {
 			m.Path = &Path{}
 		}
-		m.Path.FromMap(val.(map[string]interface{}))
+		if val, ok := val.(map[string]interface{}); ok {
+			m.Path.FromMap(val)
+		}
+		if val, ok := val.(*Path); ok {
+			m.Path = val
+		}
 	}
 	if val, ok := data["from"]; ok {
 		if m.From == nil {
 			m.From = &Path{}
 		}
-		m.From.FromMap(val.(map[string]interface{}))
+		if val, ok := val.(map[string]interface{}); ok {
+			m.From.FromMap(val)
+		}
+		if val, ok := val.(*Path); ok {
+			m.From = val
+		}
 	}
 	if val, ok := data["to"]; ok {
 		if m.To == nil {
 			m.To = &Path{}
 		}
-		m.To.FromMap(val.(map[string]interface{}))
+		if val, ok := val.(map[string]interface{}); ok {
+			m.To.FromMap(val)
+		}
+		if val, ok := val.(*Path); ok {
+			m.To = val
+		}
 	}
 	if val, ok := data["attributes"]; ok {
-		m.Attributes = NewStruct(val.(map[string]interface{}))
+		if val, ok := val.(map[string]interface{}); ok {
+			m.Attributes = NewStruct(val)
+		}
+		if val, ok := val.(*structpb.Struct); ok {
+			m.Attributes = val
+		}
 	}
 }
 
@@ -140,7 +175,12 @@ func (m *Message) FromMap(data map[string]interface{}) {
 		if m.Sender == nil {
 			m.Sender = &Path{}
 		}
-		m.Sender.FromMap(val.(map[string]interface{}))
+		if val, ok := val.(map[string]interface{}); ok {
+			m.Sender.FromMap(val)
+		}
+		if val, ok := val.(*Path); ok {
+			m.Sender = val
+		}
 	}
 	if val, ok := data["timestamp"]; ok {
 		m.Timestamp = val.(int64)
@@ -151,6 +191,21 @@ func (m *Message) FromMap(data map[string]interface{}) {
 	if val, ok := data["channel"]; ok {
 		m.Channel = val.(string)
 	}
+}
+
+func (p *Paths) Sort() {
+	s := sortable.Sortable{
+		LenFunc: func() int {
+			return len(p.GetPaths())
+		},
+		LessFunc: func(i, j int) bool {
+			return p.GetPaths()[i].String() < p.GetPaths()[j].String()
+		},
+		SwapFunc: func(i, j int) {
+			p.GetPaths()[i], p.GetPaths()[j] = p.GetPaths()[j], p.GetPaths()[i]
+		},
+	}
+	s.Sort()
 }
 
 func (n *Nodes) Sort() {

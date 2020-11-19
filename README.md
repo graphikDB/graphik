@@ -11,11 +11,11 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
   * [Helpful Links](#helpful-links)
   * [Features](#features)
   * [Key Dependencies](#key-dependencies)
-  * [Use Cases](#use-cases)
   * [API Spec](#api-spec)
   * [Flags](#flags)
-  * [Graphik Plugins (optional)](#graphik-plugins--optional-)
+  * [Triggers (optional)](#triggers--optional-)
   * [Roadmap](#roadmap)
+
 
 ## Helpful Links
 
@@ -31,12 +31,11 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - [x] Native gRPC Support
 - [x] Native OAuth Support
 - [x] Persistant(bbolt LMDB)
-- [x] Fault-Tolerant 
-- [x] Horizontally Scaleable ([Raft](https://raft.github.io/))
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
-- [x] gRPC Based External Trigger Implementation(sidecar)
-- [x] gRPC Based External Authorizer Implementation(sidecar)
+- [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
+- [x] gRPC Based External Triggers
+- [x] Object metadata - Auto track created/updated timestamps & who is making updates to objects
 - [x] Loosely-Typed(mongo-esque)
 - [x] [Prometheus Metrics](https://prometheus.io/)
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
@@ -48,7 +47,6 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 ## Key Dependencies
 
 - google.golang.org/grpc
-- github.com/hashicorp/raft
 - github.com/autom8ter/machine
 - github.com/google/cel-go/cel
 - go.etcd.io/bbolt
@@ -62,11 +60,9 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 service GraphService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // JoinCluster Joins the raft node to the cluster
-  rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
   // GetSchema gets schema about the Graph node & edge types
   rpc GetSchema(google.protobuf.Empty) returns(Schema){}
- // Me returns a NodeDetail of the currently logged in user(the subject of the JWT)
+ // Me returns a NodeDetail of the currently logged in identity(the subject of the JWT)
   rpc Me(MeFilter) returns(NodeDetail){}
   // CreateNode creates a node in the graph
   rpc CreateNode(NodeConstructor) returns(Node){}
@@ -104,8 +100,6 @@ service GraphService {
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   // EdgesTo returns edges that point to the given node path that pass the filter
   rpc EdgesTo(EdgeFilter) returns(Edges){}
-  // ChangeStream subscribes to filtered changes on a stream
-  rpc ChangeStream(ChangeFilter) returns (stream StateChange) {}
   // Publish publishes a message to a pubsub channel
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
@@ -125,55 +119,73 @@ service GraphService {
 ## Flags
 
 ```text
-      --authorizers strings    registered authorizers (env: GRAPHIK_AUTHORIZERS)
-      --grpc.bind string       grpc server bind address (default ":7820")
-      --http.bind string       http server bind address (default ":7830")
-      --http.headers strings   cors allowed headers (env: GRAPHIK_HTTP_HEADERS)
-      --http.methods strings   cors allowed methods (env: GRAPHIK_HTTP_METHODS)
-      --http.origins strings   cors allowed origins (env: GRAPHIK_HTTP_ORIGINS)
-      --jwks strings           authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
-      --metrics                enable prometheus & pprof metrics
-      --raft.bind string       raft protocol bind address (default "localhost:7840")
-      --raft.id string         raft node id (env: GRAPHIK_RAFT_ID) (default "leader")
-      --raft.join string       join raft at target address
-      --storage string         persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
-      --triggers strings       registered triggers (env: GRAPHIK_TRIGGERS)
-
+      --authorizers strings   registered authorizers (env: GRAPHIK_AUTHORIZERS)
+      --grpc.bind string      grpc server bind address (default ":7820")
+      --http.bind string      http server bind address (default ":7830")
+      --jwks strings          authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
+      --metrics               enable prometheus & pprof metrics
+      --storage string        persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
+      --triggers strings      registered triggers (env: GRAPHIK_TRIGGERS)
 
 ```
 
-## Plugins (optional)
+## Triggers (optional)
 
-![plugins](images/graphdb-plugins.png)
+![triggers](images/graphik_triggers.png)
 
 
-Graphik plugins are custom, single-method, grpc-based sidecars that the Graphik server integrates with. 
+Graphik triggers are custom, single-method, grpc-based sidecars that the Graphik server integrates with. 
 This pattern is similar to Envoy external filters & Kubernetes mutating webhooks / admission controller
 
-Plugin API Spec:
+Trigger API Spec:
 
 ```proto
-// TriggerService is an optional/custom external plugin that when added, mutates objects at runtime before & after state changes
+// TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
 service TriggerService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // HandleTrigger mutates state changes
-  rpc HandleTrigger(Trigger) returns(StateChange){}
+  // Mutate mutates request/responses
+  rpc Mutate(Interception) returns(Interception){}
+  // Match returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
+  // These expressions are cached by the Graphik server
+  rpc Match(google.protobuf.Empty) returns(TriggerMatch){}
 }
+```
 
-// AuthorizationService is an optional/custom external plugin that when added, authorizes inbound graph requests
-service AuthorizationService {
-  // Ping returns PONG if the server is health
-  rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // Authorize authorizes inbound graph requests
-  rpc Authorize(RequestIntercept) returns(Decision){}
-}
+Example:
+
+```go
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    triggerFn := func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error) {
+    	if ptypes.Is(trigger.Request, &apipb.NodeConstructor{}) {
+    		constructor := &apipb.NodeConstructor{}
+    		if err := ptypes.UnmarshalAny(trigger.Request, constructor); err != nil {
+    			return nil, err
+    		}
+    		constructor.GetAttributes().Fields["testing"] = structpb.NewBoolValue(true)
+    		nything, err := ptypes.MarshalAny(constructor)
+    		if err != nil {
+    			return nil, err
+    		}
+    		trigger.Request = nything
+    	}
+    	return trigger, nil
+    }
+    trigger := graphik.NewTrigger(triggerFn, []string{
+    	`attributes.name.contains("Bob")`,
+    })
+    trigger.Serve(ctx, &flags.PluginFlags{
+    	BindGrpc: ":8080",
+    	BindHTTP: ":8081",
+    	Metrics:  true,
+    })
 ```
 
 ## Roadmap
 
-- [ ] Graphql Federated [BFF](https://www.kennethlange.com/backends-for-frontends-pattern/)
-- [ ] Database GUI with SSO
+- [ ] Fault-Tolerance/Horizontal Scaleability(Raft protocol)
+- [ ] Graphql API Gateway w/ Graphql GUI
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 

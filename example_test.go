@@ -8,6 +8,7 @@ import (
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
@@ -201,28 +202,7 @@ func ExampleClient_PatchNode() {
 }
 
 func ExampleClient_Publish() {
-	m := machine.New(context.Background())
-	m.Go(func(routine machine.Routine) {
-		stream, err := client.Subscribe(routine.Context(), &apipb.ChannelFilter{
-			Channel:     "testing",
-			Expressions: nil,
-		})
-		if err != nil {
-			log.Print(err)
-			return
-		}
-		for {
-			msg, err := stream.Recv()
-			if err != nil {
-				log.Print(err)
-				return
-			}
-			fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
-			return
-		}
-	})
-	time.Sleep(1 * time.Second)
-	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
+	res, err := client.Publish(context.Background(), &apipb.OutboundMessage{
 		Channel: "testing",
 		Data: apipb.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -232,14 +212,14 @@ func ExampleClient_Publish() {
 		log.Print(err)
 		return
 	}
-	m.Wait()
-	// Output: hello world
+	fmt.Println(res.String())
+	// Output:
 }
 
 func ExampleClient_Subscribe() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
-		stream, err := client.Subscribe(routine.Context(), &apipb.ChannelFilter{
+		stream, err := client.Subscribe(context.Background(), &apipb.ChannelFilter{
 			Channel:     "testing",
 			Expressions: nil,
 		})
@@ -284,42 +264,26 @@ func ExampleClient_GetSchema() {
 	//edge types: owner
 }
 
-func ExampleAuthorizerFunc_Serve() {
+func ExampleTrigger_Serve() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	authorizer := graphik.NewAuthorizer(func(ctx context.Context, r *apipb.RequestIntercept) (*apipb.Decision, error) {
-		switch val := r.Request.(type) {
-		case *apipb.RequestIntercept_Filter:
-			// block all filters from being > 50
-			if val.Filter.GetLimit() > 50 {
-				return &apipb.Decision{
-					Value: false,
-				}, nil
+	triggerFn := func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error) {
+		if ptypes.Is(trigger.Request, &apipb.NodeConstructor{}) {
+			constructor := &apipb.NodeConstructor{}
+			if err := ptypes.UnmarshalAny(trigger.Request, constructor); err != nil {
+				return nil, err
 			}
+			constructor.GetAttributes().Fields["testing"] = structpb.NewBoolValue(true)
+			nything, err := ptypes.MarshalAny(constructor)
+			if err != nil {
+				return nil, err
+			}
+			trigger.Request = nything
 		}
-		return &apipb.Decision{
-			Value: true,
-		}, nil
-	})
-	authorizer.Serve(ctx, &flags.PluginFlags{
-		BindGrpc: ":8080",
-		BindHTTP: ":8081",
-		Metrics:  true,
-	})
-	fmt.Println("Done")
-	// Output: Done
-}
-
-func ExampleTriggerFunc_Serve() {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	trigger := graphik.NewTrigger(func(ctx context.Context, trigger *apipb.Trigger) (*apipb.StateChange, error) {
-		state := trigger.State
-		switch state.GetMutation().GetObject().(type) {
-		case *apipb.Mutation_NodeConstructor:
-			state.Mutation.GetNodeConstructor().GetAttributes().GetFields()["testing"] = structpb.NewBoolValue(true)
-		}
-		return state, nil
+		return trigger, nil
+	}
+	trigger := graphik.NewTrigger(triggerFn, []string{
+		`attributes.name.contains("Bob")`,
 	})
 	trigger.Serve(ctx, &flags.PluginFlags{
 		BindGrpc: ":8080",

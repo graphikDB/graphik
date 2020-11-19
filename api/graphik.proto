@@ -16,22 +16,6 @@ enum Timing {
   AFTER =1;
 }
 
-// Op is a mutation that will be applied to the raft
-enum Op {
-  CREATE_NODES = 0;
-  CREATE_NODE =1;
-  PATCH_NODES = 2;
-  PATCH_NODE = 3;
-  DELETE_NODES = 4;
-  DELETE_NODE =5;
-  CREATE_EDGES = 6;
-  CREATE_EDGE =7;
-  PATCH_EDGES = 8;
-  PATCH_EDGE =9;
-  DELETE_EDGES = 10;
-  DELETE_EDGE =11;
-}
-
 // Cascade describes how connected nodes will behave when one is deleted
 enum Cascade {
   // no cascade
@@ -53,8 +37,8 @@ message Path {
 message Metadata {
   int64 created_at =1;
   int64 updated_at =2;
-  string created_by =3;
-  string updated_by =4;
+  Path updated_by =3;
+  uint64 sequence =4;
 }
 
 // Paths is an array of paths
@@ -165,7 +149,7 @@ message Filter {
   int32 limit =3 [(validator.field) = {int_gt : 0}];
 }
 
-// MeFilter is used to fetch a NodeDetail representing the user in the inbound JWT token
+// MeFilter is used to fetch a NodeDetail representing the identity in the inbound JWT token
 message MeFilter {
   Filter edges_from =1;
   Filter edges_to =2;
@@ -181,32 +165,6 @@ message ChannelFilter {
 message SubGraphFilter {
   Filter nodes =1 [(validator.field) = {msg_exists : true}];
   Filter edges =2 [(validator.field) = {msg_exists : true}];
-}
-
-// StateChange represents any mutation in the Graph
-message StateChange {
-  Op op =3;
-  Mutation mutation =4;
-  int64 timestamp =5;
-}
-
-// Mutation is oneOf many state change mutations
-message Mutation {
-  oneof object {
-    Node node =1;
-    Nodes nodes =2;
-    NodeConstructor node_constructor =3;
-    NodeConstructors node_constructors =4;
-    EdgeConstructor edge_constructor =5;
-    EdgeConstructors edge_constructors =6;
-    Edge edge =7;
-    Edges edges =8;
-    Path path =9;
-    Paths paths =10;
-    Patch patch =13;
-    Patches patches =14;
-    google.protobuf.Empty empty =15;
-  }
 }
 
 // Graph is an array of nodes and edges
@@ -231,21 +189,6 @@ message Pong {
   string message =1;
 }
 
-// RaftNode is the identifier of a distinct raft node in the cluster
-message RaftNode {
-  string node_id =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  string address =2 [(validator.field) = {regex : "^.{1,225}$"}];
-}
-
-// RaftLog is a raft log
-message RaftLog {
-  uint64 index =1;
-  uint64 term =3;
-  uint32 type =4;
-  bytes data =9;
-  bytes extensions =10;
-}
-
 // OutboundMessage is a message to be published to a pubsub channel
 message OutboundMessage {
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
@@ -260,43 +203,6 @@ message Message {
   int64 timestamp=4;
 }
 
-// Trigger is sent to registered external triggers before & after all graph state changes
-message Trigger {
-  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Node user =2;
-  Timing timing =3;
-  StateChange state =4;
-}
-
-// RequestIntercept is sent to registered external authorizers within a request middleware/interceptor
-message RequestIntercept {
-  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Node user =2;
-  int64 timestamp =3;
-  oneof request {
-      google.protobuf.Empty empty =4;
-      SubGraphFilter subgraph_filter =5;
-      Graph graph =6;
-      ChannelFilter channel_filter =7;
-      OutboundMessage outbound_message =8;
-      EdgeFilter   edge_filter =10;
-      Paths paths =11;
-      Path path =12;
-      Patches patches =13;
-      Patch patch =14;
-      Filter filter =15;
-      NodeConstructors node_constructors =16;
-      NodeConstructor node_constructor =17;
-      MeFilter me_filter =18;
-      RaftNode raft_node =19;
-  }
-}
-
-// Decision is returned by registered external authorizers
-message Decision {
-  bool value =1;
-}
-
 // Schema returns registered edge & node types
 message Schema {
   repeated string edge_types =1;
@@ -307,11 +213,9 @@ message Schema {
 service GraphService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // JoinCluster Joins the raft node to the cluster
-  rpc JoinCluster(RaftNode) returns(google.protobuf.Empty) {}
   // GetSchema gets schema about the Graph node & edge types
   rpc GetSchema(google.protobuf.Empty) returns(Schema){}
- // Me returns a NodeDetail of the currently logged in user(the subject of the JWT)
+ // Me returns a NodeDetail of the currently logged in identity(the subject of the JWT)
   rpc Me(MeFilter) returns(NodeDetail){}
   // CreateNode creates a node in the graph
   rpc CreateNode(NodeConstructor) returns(Node){}
@@ -363,18 +267,25 @@ service GraphService {
   rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
 }
 
-// TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates objects at runtime before & after state changes
+message Interception {
+  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  Node identity =2;
+  int64 timestamp =3;
+  google.protobuf.Any request = 4;
+  Timing timing =5;
+}
+
+message TriggerMatch {
+  repeated string expressions =1;
+}
+
+// TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
 service TriggerService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // HandleTrigger mutates state changes
-  rpc HandleTrigger(Trigger) returns(StateChange){}
-}
-
-// AuthorizationService is an optional/custom external plugin that when added to a graphik instance,, authorizes inbound graph requests
-service AuthorizationService {
-  // Ping returns PONG if the server is health
-  rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // Authorize authorizes inbound graph requests
-  rpc Authorize(RequestIntercept) returns(Decision){}
+  // Mutate mutates request/responses
+  rpc Mutate(Interception) returns(Interception){}
+  // Match returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
+  // These expressions are cached by the Graphik server
+  rpc Match(google.protobuf.Empty) returns(TriggerMatch){}
 }

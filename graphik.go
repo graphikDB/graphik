@@ -4,10 +4,26 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/flags"
+	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"net"
+	"net/http"
+	"net/http/pprof"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func NewClient(ctx context.Context, target string, tokenSource oauth2.TokenSource) (*Client, error) {
@@ -48,7 +64,11 @@ func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Con
 		return ctx, err
 	}
 	id := token.Extra("id_token")
-	ctx = metadata.AppendToOutgoingContext(context.Background(), "Authorization", fmt.Sprintf("Bearer %v", id))
+	if id != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %v", id))
+	} else {
+		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %v", token.AccessToken))
+	}
 	return ctx, nil
 }
 
@@ -144,14 +164,130 @@ func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOpt
 	return c.graph.Ping(ctx, in, opts...)
 }
 
-func (c *Client) JoinCluster(ctx context.Context, in *apipb.RaftNode, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.JoinCluster(ctx, in, opts...)
-}
-
 func (c *Client) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Schema, error) {
 	return c.graph.GetSchema(ctx, in, opts...)
 }
 
 func (c *Client) Shutdown(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.Shutdown(ctx, in, opts...)
+}
+
+type TriggerFunc func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error)
+
+// Trigger is an optional/custom external plugin that when added to a Graphik instance, mutates objects at runtime before & after state changes.
+// It should be deployed as a side car to a graphik instance(see Serve())
+type Trigger struct {
+	fn          TriggerFunc
+	expressions []string
+}
+
+func NewTrigger(fn TriggerFunc, expressions []string) *Trigger {
+	return &Trigger{fn: fn, expressions: expressions}
+}
+
+func (t Trigger) Match(ctx context.Context, _ *empty.Empty) (*apipb.TriggerMatch, error) {
+	return &apipb.TriggerMatch{}, nil
+}
+
+func (t Trigger) Mutate(ctx context.Context, interception *apipb.Interception) (*apipb.Interception, error) {
+	return t.fn(ctx, interception)
+}
+
+func (t Trigger) Ping(ctx context.Context, _ *empty.Empty) (*apipb.Pong, error) {
+	return &apipb.Pong{
+		Message: "PONG",
+	}, nil
+}
+
+func (t Trigger) Serve(ctx context.Context, cfg *flags.PluginFlags) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+	defer signal.Stop(interrupt)
+	mach := machine.New(ctx)
+	defer mach.Close()
+	router := http.NewServeMux()
+	if cfg.Metrics {
+		router.Handle("/metrics", promhttp.Handler())
+		router.HandleFunc("/debug/pprof/", pprof.Index)
+		router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+		router.HandleFunc("/debug/pprof/profile", pprof.Profile)
+		router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	}
+
+	server := &http.Server{
+		Handler: router,
+	}
+
+	mach.Go(func(routine machine.Routine) {
+		lis, err := net.Listen("tcp", cfg.BindHTTP)
+		if err != nil {
+			logger.Error("failed to create http server listener", zap.Error(err))
+			return
+		}
+		defer lis.Close()
+		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
+			logger.Error("http server failure", zap.Error(err))
+		}
+	})
+
+	gserver := grpc.NewServer(
+		grpc.ChainUnaryInterceptor(
+			grpc_prometheus.UnaryServerInterceptor,
+			grpc_zap.UnaryServerInterceptor(logger.Logger()),
+			grpc_validator.UnaryServerInterceptor(),
+			grpc_recovery.UnaryServerInterceptor(),
+		),
+		grpc.ChainStreamInterceptor(
+			grpc_prometheus.StreamServerInterceptor,
+			grpc_zap.StreamServerInterceptor(logger.Logger()),
+			grpc_validator.StreamServerInterceptor(),
+			grpc_recovery.StreamServerInterceptor(),
+		),
+	)
+
+	apipb.RegisterTriggerServiceServer(gserver, t)
+	grpc_prometheus.Register(gserver)
+
+	mach.Go(func(routine machine.Routine) {
+		lis, err := net.Listen("tcp", cfg.BindGrpc)
+		if err != nil {
+			logger.Error("failed to create gRPC server listener", zap.Error(err))
+			return
+		}
+		defer lis.Close()
+		if err := gserver.Serve(lis); err != nil && err != http.ErrServerClosed {
+			logger.Error("gRPC server failure", zap.Error(err))
+		}
+	})
+	select {
+	case <-interrupt:
+		mach.Cancel()
+		break
+	case <-ctx.Done():
+		mach.Cancel()
+		break
+	}
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+
+	_ = server.Shutdown(shutdownCtx)
+	stopped := make(chan struct{})
+	go func() {
+		gserver.GracefulStop()
+		close(stopped)
+	}()
+
+	timer := time.NewTimer(5 * time.Second)
+
+	select {
+	case <-timer.C:
+		gserver.Stop()
+	case <-stopped:
+		timer.Stop()
+	}
+	mach.Wait()
 }
