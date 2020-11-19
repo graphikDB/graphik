@@ -156,14 +156,20 @@ This pattern is similar to Envoy external filters & Kubernetes mutating webhooks
 Plugin API Spec:
 
 ```proto
-// Triggers are executed before & after all graph state changes
+// TriggerService is an optional/custom external plugin that when added, mutates objects at runtime before & after state changes
 service TriggerService {
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // HandleTrigger mutates state changes
   rpc HandleTrigger(Trigger) returns(StateChange){}
 }
 
-// Authorizers are executed within a request middleware/interceptor to determine whether the request is permitted
+// AuthorizationService is an optional/custom external plugin that when added, authorizes inbound graph requests
 service AuthorizationService {
- rpc Authorize(RequestIntercept) returns(Decision){}
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // Authorize authorizes inbound graph requests
+  rpc Authorize(RequestIntercept) returns(Decision){}
 }
 ```
 

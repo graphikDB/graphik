@@ -370,10 +370,16 @@ service GraphService {
 
 // TriggerService is an optional/custom external plugin that when added, mutates objects at runtime before & after state changes
 service TriggerService {
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // HandleTrigger mutates state changes
   rpc HandleTrigger(Trigger) returns(StateChange){}
 }
 
 // AuthorizationService is an optional/custom external plugin that when added, authorizes inbound graph requests
 service AuthorizationService {
- rpc Authorize(RequestIntercept) returns(Decision){}
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // Authorize authorizes inbound graph requests
+  rpc Authorize(RequestIntercept) returns(Decision){}
 }

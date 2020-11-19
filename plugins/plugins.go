@@ -6,6 +6,7 @@ import (
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
+	"github.com/golang/protobuf/ptypes/empty"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
@@ -30,6 +31,12 @@ func NewTrigger(trigger func(ctx context.Context, trigger *apipb.Trigger) (*apip
 
 func (t TriggerFunc) HandleTrigger(ctx context.Context, trigger *apipb.Trigger) (*apipb.StateChange, error) {
 	return t(ctx, trigger)
+}
+
+func (t TriggerFunc) Ping(ctx context.Context, _ *empty.Empty) (*apipb.Pong, error) {
+	return &apipb.Pong{
+		Message: "PONG",
+	}, nil
 }
 
 func (t TriggerFunc) Serve(ctx context.Context, cfg *flags.PluginFlags) {
@@ -133,6 +140,12 @@ func NewAuthorizer(auth func(ctx context.Context, intercept *apipb.RequestInterc
 
 func (a AuthorizerFunc) Authorize(ctx context.Context, intercept *apipb.RequestIntercept) (*apipb.Decision, error) {
 	return a(ctx, intercept)
+}
+
+func (a AuthorizerFunc) Ping(ctx context.Context, _ *empty.Empty) (*apipb.Pong, error) {
+	return &apipb.Pong{
+		Message: "PONG",
+	}, nil
 }
 
 func (a AuthorizerFunc) Serve(ctx context.Context, cfg *flags.PluginFlags) {
