@@ -2,10 +2,9 @@ package gql
 
 import (
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/autom8ter/graphik"
 	"github.com/autom8ter/graphik/gql/generated"
-	"golang.org/x/oauth2"
+	"google.golang.org/grpc/metadata"
 	"net/http"
 )
 
@@ -14,7 +13,6 @@ import (
 
 type Resolver struct {
 	client *graphik.Client
-	config *oauth2.Config
 }
 
 func NewResolver(client *graphik.Client) *Resolver {
@@ -22,23 +20,21 @@ func NewResolver(client *graphik.Client) *Resolver {
 }
 
 func (r *Resolver) QueryHandler() http.Handler {
-	return handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
+	return r.authMiddleware(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
 		Resolvers:  r,
 		Directives: generated.DirectiveRoot{},
 		Complexity: generated.ComplexityRoot{},
-	}))
+	})))
 }
 
-func (r *Resolver) Playground(endpoint string) http.Handler {
-	return playground.Handler("Graphik Playground", endpoint)
-}
-
-const usrCtx = "user-context"
-
-func (r *Resolver) AuthMiddleware(handler http.Handler) http.HandlerFunc {
+func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-
-		handler.ServeHTTP(w, req)
+		ctx := req.Context()
+		for k, arr := range req.Header {
+			if len(arr) > 0 {
+				ctx = metadata.AppendToOutgoingContext(ctx, k, arr[0])
+			}
+		}
+		handler.ServeHTTP(w, req.WithContext(ctx))
 	}
 }
-

@@ -56,14 +56,13 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	}
 	if cfg.Graphql {
-		client, err := graphik.NewClient(context.Background(), self, graphik.WithRetry(3))
+		client, err := graphik.NewClient(context.Background(), self, graphik.WithRetry(1))
 		if err != nil {
 			logger.Error("failed to setup graphql", zap.Error(err))
 			return
 		}
 		resolver := gql.NewResolver(client)
 		router.Handle("/query", resolver.QueryHandler())
-		router.Handle("/playground", resolver.Playground("/query"))
 	}
 	server := &http.Server{
 		Handler: router,
