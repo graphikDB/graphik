@@ -178,6 +178,7 @@ Example:
 
 ## Roadmap
 
+- [ ] Fault-Tolerance/Horizontal Scaleability(Raft protocol)
 - [ ] Graphql API Gateway w/ Graphql GUI
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
