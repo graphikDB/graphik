@@ -361,8 +361,8 @@ func (g *GraphStore) Publish(ctx context.Context, message *apipb.OutboundMessage
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
 	return &empty.Empty{}, g.machine.PubSub().Publish(message.Channel, &apipb.Message{
-		Channel:   "",
-		Data:      nil,
+		Channel:   message.Channel,
+		Data:      message.Data,
 		Sender:    identity.GetPath(),
 		Timestamp: time.Now().UnixNano(),
 	})

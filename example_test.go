@@ -201,7 +201,7 @@ func ExampleClient_PatchNode() {
 }
 
 func ExampleClient_Publish() {
-	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
+	res, err := client.Publish(context.Background(), &apipb.OutboundMessage{
 		Channel: "testing",
 		Data: apipb.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -211,7 +211,8 @@ func ExampleClient_Publish() {
 		log.Print(err)
 		return
 	}
-	// Output: hello world
+	fmt.Println(res.String())
+	// Output:
 }
 
 func ExampleClient_Subscribe() {
