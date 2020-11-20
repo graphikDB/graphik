@@ -13,7 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/gql/scalar"
+	"github.com/autom8ter/graphik/gql/scalars"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -39,6 +39,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
+	NodeDetail() NodeDetailResolver
 	Query() QueryResolver
 }
 
@@ -89,6 +90,14 @@ type ComplexityRoot struct {
 		Path       func(childComplexity int) int
 	}
 
+	NodeDetail struct {
+		Attributes func(childComplexity int) int
+		EdgesFrom  func(childComplexity int) int
+		EdgesTo    func(childComplexity int) int
+		Metadata   func(childComplexity int) int
+		Path       func(childComplexity int) int
+	}
+
 	Nodes struct {
 		Nodes func(childComplexity int) int
 	}
@@ -122,6 +131,10 @@ type MutationResolver interface {
 	CreateEdge(ctx context.Context, input apipb.EdgeConstructor) (*apipb.Edge, error)
 	PatchEdge(ctx context.Context, input apipb.Patch) (*apipb.Edge, error)
 	DelEdge(ctx context.Context, input apipb.Path) (*emptypb.Empty, error)
+}
+type NodeDetailResolver interface {
+	EdgesFrom(ctx context.Context, obj *apipb.NodeDetail) ([]*apipb.EdgeDetail, error)
+	EdgesTo(ctx context.Context, obj *apipb.NodeDetail) ([]*apipb.EdgeDetail, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error)
@@ -350,6 +363,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Node.Path(childComplexity), true
 
+	case "NodeDetail.attributes":
+		if e.complexity.NodeDetail.Attributes == nil {
+			break
+		}
+
+		return e.complexity.NodeDetail.Attributes(childComplexity), true
+
+	case "NodeDetail.edges_from":
+		if e.complexity.NodeDetail.EdgesFrom == nil {
+			break
+		}
+
+		return e.complexity.NodeDetail.EdgesFrom(childComplexity), true
+
+	case "NodeDetail.edges_to":
+		if e.complexity.NodeDetail.EdgesTo == nil {
+			break
+		}
+
+		return e.complexity.NodeDetail.EdgesTo(childComplexity), true
+
+	case "NodeDetail.metadata":
+		if e.complexity.NodeDetail.Metadata == nil {
+			break
+		}
+
+		return e.complexity.NodeDetail.Metadata(childComplexity), true
+
+	case "NodeDetail.path":
+		if e.complexity.NodeDetail.Path == nil {
+			break
+		}
+
+		return e.complexity.NodeDetail.Path(childComplexity), true
+
 	case "Nodes.nodes":
 		if e.complexity.Nodes.Nodes == nil {
 			break
@@ -504,7 +552,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema.graphqls", Input: `# GraphQL schema example
+	{Name: "api/schema.graphqls", Input: `# GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
 
@@ -557,6 +605,14 @@ type EdgeDetail {
   cascade: Cascade
   from: Node!
   to: Node!
+  metadata: Metadata
+}
+
+type NodeDetail {
+  path: Path!
+  attributes: Struct
+  edges_from: [EdgeDetail!]
+  edges_to: [EdgeDetail!]
   metadata: Metadata
 }
 
@@ -1683,6 +1739,169 @@ func (ec *executionContext) _Node_metadata(ctx context.Context, field graphql.Co
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "Node",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Metadata, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Metadata)
+	fc.Result = res
+	return ec.marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMetadata(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NodeDetail_path(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NodeDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Path, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Path)
+	fc.Result = res
+	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NodeDetail_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NodeDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Attributes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*structpb.Struct)
+	fc.Result = res
+	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NodeDetail_edges_from(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NodeDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NodeDetail().EdgesFrom(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*apipb.EdgeDetail)
+	fc.Result = res
+	return ec.marshalOEdgeDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetailᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NodeDetail_edges_to(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NodeDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.NodeDetail().EdgesTo(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*apipb.EdgeDetail)
+	fc.Result = res
+	return ec.marshalOEdgeDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetailᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NodeDetail_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NodeDetail",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -3666,6 +3885,59 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var nodeDetailImplementors = []string{"NodeDetail"}
+
+func (ec *executionContext) _NodeDetail(ctx context.Context, sel ast.SelectionSet, obj *apipb.NodeDetail) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, nodeDetailImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NodeDetail")
+		case "path":
+			out.Values[i] = ec._NodeDetail_path(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "attributes":
+			out.Values[i] = ec._NodeDetail_attributes(ctx, field, obj)
+		case "edges_from":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NodeDetail_edges_from(ctx, field, obj)
+				return res
+			})
+		case "edges_to":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._NodeDetail_edges_to(ctx, field, obj)
+				return res
+			})
+		case "metadata":
+			out.Values[i] = ec._NodeDetail_metadata(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var nodesImplementors = []string{"Nodes"}
 
 func (ec *executionContext) _Nodes(ctx context.Context, sel ast.SelectionSet, obj *apipb.Nodes) graphql.Marshaler {
@@ -4140,8 +4412,18 @@ func (ec *executionContext) unmarshalNEdgeConstructor2githubᚗcomᚋautom8ter�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNEdgeDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetail(ctx context.Context, sel ast.SelectionSet, v *apipb.EdgeDetail) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._EdgeDetail(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx context.Context, v interface{}) (*emptypb.Empty, error) {
-	res, err := scalar.UnmarshalEmptyScalar(v)
+	res, err := scalars.UnmarshalEmptyScalar(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -4152,7 +4434,7 @@ func (ec *executionContext) marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋ
 		}
 		return graphql.Null
 	}
-	res := scalar.MarshalEmptyScalar(v)
+	res := scalars.MarshalEmptyScalar(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -4283,7 +4565,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 }
 
 func (ec *executionContext) unmarshalNStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx context.Context, v interface{}) (*structpb.Struct, error) {
-	res, err := scalar.UnmarshalStructScalar(v)
+	res, err := scalars.UnmarshalStructScalar(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -4294,7 +4576,7 @@ func (ec *executionContext) marshalNStruct2ᚖgoogleᚗgolangᚗorgᚋprotobuf�
 		}
 		return graphql.Null
 	}
-	res := scalar.MarshalStructScalar(v)
+	res := scalars.MarshalStructScalar(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -4557,12 +4839,12 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 }
 
 func (ec *executionContext) unmarshalOCascade2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐCascade(ctx context.Context, v interface{}) (apipb.Cascade, error) {
-	res, err := scalar.UnmarshalCascadeScalar(v)
+	res, err := scalars.UnmarshalCascadeScalar(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOCascade2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐCascade(ctx context.Context, sel ast.SelectionSet, v apipb.Cascade) graphql.Marshaler {
-	return scalar.MarshalCascadeScalar(v)
+	return scalars.MarshalCascadeScalar(v)
 }
 
 func (ec *executionContext) marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Edge) graphql.Marshaler {
@@ -4605,11 +4887,51 @@ func (ec *executionContext) marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphi
 	return ret
 }
 
+func (ec *executionContext) marshalOEdgeDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetailᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.EdgeDetail) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNEdgeDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetail(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
 func (ec *executionContext) unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx context.Context, v interface{}) (*emptypb.Empty, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := scalar.UnmarshalEmptyScalar(v)
+	res, err := scalars.UnmarshalEmptyScalar(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -4617,7 +4939,7 @@ func (ec *executionContext) marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋ
 	if v == nil {
 		return graphql.Null
 	}
-	return scalar.MarshalEmptyScalar(v)
+	return scalars.MarshalEmptyScalar(v)
 }
 
 func (ec *executionContext) unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx context.Context, v interface{}) (*apipb.Filter, error) {
@@ -4755,7 +5077,7 @@ func (ec *executionContext) unmarshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobuf
 	if v == nil {
 		return nil, nil
 	}
-	res, err := scalar.UnmarshalStructScalar(v)
+	res, err := scalars.UnmarshalStructScalar(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -4763,7 +5085,7 @@ func (ec *executionContext) marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobuf�
 	if v == nil {
 		return graphql.Null
 	}
-	return scalar.MarshalStructScalar(v)
+	return scalars.MarshalStructScalar(v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

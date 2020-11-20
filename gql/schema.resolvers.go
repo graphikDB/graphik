@@ -5,6 +5,7 @@ package gql
 
 import (
 	"context"
+	"fmt"
 
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/gql/generated"
@@ -35,6 +36,14 @@ func (r *mutationResolver) DelEdge(ctx context.Context, input apipb.Path) (*empt
 	return r.client.DelEdge(ctx, &input)
 }
 
+func (r *nodeDetailResolver) EdgesFrom(ctx context.Context, obj *apipb.NodeDetail) ([]*apipb.EdgeDetail, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *nodeDetailResolver) EdgesTo(ctx context.Context, obj *apipb.NodeDetail) ([]*apipb.EdgeDetail, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {
 	return r.client.Ping(ctx, &emptypb.Empty{})
 }
@@ -54,8 +63,12 @@ func (r *queryResolver) SearchNodes(ctx context.Context, input apipb.Filter) (*a
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
+// NodeDetail returns generated.NodeDetailResolver implementation.
+func (r *Resolver) NodeDetail() generated.NodeDetailResolver { return &nodeDetailResolver{r} }
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+type nodeDetailResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

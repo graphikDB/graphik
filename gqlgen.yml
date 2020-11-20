@@ -1,6 +1,6 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - gql/*.graphqls
+  - api/*.graphqls
 
 # Where should the generated server code go?
 exec:
@@ -20,8 +20,8 @@ model:
 # Where should the resolver implementations go?
 resolver:
   layout: follow-schema
-  dir: graph
-  package: graph
+  dir: gql
+  package: gql
 
 # Optional: turn on use `gqlgen:"fieldName"` tags in your models
 # struct_tag: json
@@ -43,6 +43,12 @@ autobind:
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
 models:
+  Struct:
+    model: github.com/autom8ter/graphik/gql/scalars.StructScalar
+  Empty:
+    model: github.com/autom8ter/graphik/gql/scalars.EmptyScalar
+  Cascade:
+    model: github.com/autom8ter/graphik/gql/scalars.CascadeScalar
   PathInput:
     model: github.com/autom8ter/graphik/api.Path
 
