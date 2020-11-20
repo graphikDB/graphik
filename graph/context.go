@@ -42,7 +42,7 @@ func (r *intercept) AsMap() map[string]interface{} {
 	}
 }
 
-func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
+func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
@@ -69,16 +69,16 @@ func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = g.MethodToContext(ctx, info.FullMethod)
 		now := time.Now()
+		interceptEval := &intercept{
+			Method:    info.FullMethod,
+			Identity:  identity.AsMap(),
+			Timestamp: now.UnixNano(),
+		}
+		if val, ok := req.(apipb.Mapper); ok {
+			interceptEval.Request = val.AsMap()
+		}
 		if len(g.authorizers) > 0 {
-			intercept := &intercept{
-				Method:    info.FullMethod,
-				Identity:  identity.AsMap(),
-				Timestamp: now.UnixNano(),
-			}
-			if val, ok := req.(apipb.Mapper); ok {
-				intercept.Request = val.AsMap()
-			}
-			result, err := vm.Eval(g.authorizers, intercept)
+			result, err := vm.Eval(g.authorizers, interceptEval)
 			if err != nil {
 				return nil, err
 			}
@@ -112,6 +112,7 @@ func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 		if err != nil {
 			return resp, err
 		}
+		now = time.Now()
 		if len(g.triggers) > 0 {
 			a, err := ptypes.MarshalAny(resp.(proto.Message))
 			if err != nil {
@@ -124,10 +125,17 @@ func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 				Request:   a,
 				Timing:    apipb.Timing_AFTER,
 			}
+			interceptEval.Timing = apipb.Timing_AFTER
 			for _, trigger := range g.triggers {
-				intercept, err = trigger.Mutate(ctx, intercept)
+				should, err := trigger.shouldTrigger(interceptEval)
 				if err != nil {
 					return nil, err
+				}
+				if should {
+					intercept, err = trigger.Mutate(ctx, intercept)
+					if err != nil {
+						return nil, err
+					}
 				}
 			}
 			if err := ptypes.UnmarshalAny(intercept.Request, resp.(proto.Message)); err != nil {
@@ -138,7 +146,7 @@ func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 	}
 }
 
-func (g *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
+func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
@@ -162,16 +170,16 @@ func (g *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = g.MethodToContext(ss.Context(), info.FullMethod)
 		now := time.Now()
+		interceptEval := &intercept{
+			Method:    info.FullMethod,
+			Identity:  identity.AsMap(),
+			Timestamp: now.UnixNano(),
+		}
+		if val, ok := srv.(apipb.Mapper); ok {
+			interceptEval.Request = val.AsMap()
+		}
 		if len(g.authorizers) > 0 {
-			intercept := &intercept{
-				Method:    info.FullMethod,
-				Identity:  identity.AsMap(),
-				Timestamp: now.UnixNano(),
-			}
-			if val, ok := srv.(apipb.Mapper); ok {
-				intercept.Request = val.AsMap()
-			}
-			result, err := vm.Eval(g.authorizers, intercept)
+			result, err := vm.Eval(g.authorizers, interceptEval)
 			if err != nil {
 				return err
 			}
@@ -179,31 +187,8 @@ func (g *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
 				return status.Error(codes.PermissionDenied, "request authorization = denied")
 			}
 		}
-		if len(g.triggers) > 0 {
-			a, err := ptypes.MarshalAny(srv.(proto.Message))
-			if err != nil {
-				return err
-			}
-			intercept := &apipb.Interception{
-				Method:    info.FullMethod,
-				Identity:  identity,
-				Timestamp: now.UnixNano(),
-				Request:   a,
-				Timing:    apipb.Timing_BEFORE,
-			}
-			for _, trigger := range g.triggers {
-				intercept, err = trigger.Mutate(ctx, intercept)
-				if err != nil {
-					return err
-				}
-			}
-			if err := ptypes.UnmarshalAny(intercept.Request, srv.(proto.Message)); err != nil {
-				return status.Error(codes.Internal, fmt.Sprintf("trigger failure: %s", err.Error()))
-			}
-		}
 		wrapped := grpc_middleware.WrapServerStream(ss)
 		wrapped.WrappedContext = ctx
-
 		return handler(srv, wrapped)
 	}
 }

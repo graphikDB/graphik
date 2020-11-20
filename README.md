@@ -140,12 +140,15 @@ This pattern is similar to Envoy external filters & Kubernetes mutating webhooks
 Trigger API Spec:
 
 ```proto
-    // TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
-    service TriggerService {
-    // Ping returns PONG if the server is health
-    rpc Ping(google.protobuf.Empty) returns(Pong) {}
-    // Mutate mutates request/responses
-    rpc Mutate(Interception) returns(Interception){}
+// TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
+service TriggerService {
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // Mutate mutates request/responses
+  rpc Mutate(Interception) returns(Interception){}
+  // Match returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
+  // These expressions are cached by the Graphik server
+  rpc Match(google.protobuf.Empty) returns(TriggerMatch){}
 }
 ```
 

@@ -75,14 +75,14 @@ func run(ctx context.Context, cfg *flags.Flags) {
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger.Logger()),
 			grpc_validator.UnaryServerInterceptor(),
-			g.UnaryAuth(),
+			g.Unary(),
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(logger.Logger()),
 			grpc_validator.StreamServerInterceptor(),
-			g.StreamAuth(),
+			g.Stream(),
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)

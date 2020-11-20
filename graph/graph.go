@@ -42,11 +42,6 @@ var (
 	ErrNotFound = errors.New("not found")
 )
 
-type triggerClient struct {
-	apipb.TriggerServiceClient
-	matchers []string
-}
-
 type GraphStore struct {
 	// db is the underlying handle to the db.
 	db *bbolt.DB
@@ -109,9 +104,13 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to dial trigger")
 		}
+		programs, err := vm.Programs(matchers.GetExpressions())
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to compile trigger matchers")
+		}
 		triggers = append(triggers, &triggerClient{
 			TriggerServiceClient: trig,
-			matchers:             matchers.GetExpressions(),
+			matchers:             programs,
 		})
 		closers = append(closers, func() {
 			conn.Close()
