@@ -156,27 +156,30 @@ Example:
 
 ```go
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	trigger := graphik.NewTrigger(func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error) {
-		if ptypes.Is(trigger.Request, &apipb.NodeConstructor{}) {
-			constructor := &apipb.NodeConstructor{}
-			if err := ptypes.UnmarshalAny(trigger.Request, constructor); err != nil {
-				return nil, err
-			}
-			constructor.GetAttributes().Fields["testing"] = structpb.NewBoolValue(true)
-			nything, err := ptypes.MarshalAny(constructor)
-			if err != nil {
-				return nil, err
-			}
-			trigger.Request = nything
-		}
-		return trigger, nil
-	})
-	trigger.Serve(ctx, &flags.PluginFlags{
-		BindGrpc: ":8080",
-		BindHTTP: ":8081",
-		Metrics:  true,
-	})
+    defer cancel()
+    triggerFn := func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error) {
+    	if ptypes.Is(trigger.Request, &apipb.NodeConstructor{}) {
+    		constructor := &apipb.NodeConstructor{}
+    		if err := ptypes.UnmarshalAny(trigger.Request, constructor); err != nil {
+    			return nil, err
+    		}
+    		constructor.GetAttributes().Fields["testing"] = structpb.NewBoolValue(true)
+    		nything, err := ptypes.MarshalAny(constructor)
+    		if err != nil {
+    			return nil, err
+    		}
+    		trigger.Request = nything
+    	}
+    	return trigger, nil
+    }
+    trigger := graphik.NewTrigger(triggerFn, []string{
+    	`attributes.name.contains("Bob")`,
+    })
+    trigger.Serve(ctx, &flags.PluginFlags{
+    	BindGrpc: ":8080",
+    	BindHTTP: ":8081",
+    	Metrics:  true,
+    })
 ```
 
 ## Roadmap
