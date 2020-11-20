@@ -178,8 +178,8 @@ func (g *GraphStore) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.Nod
 		Path:       identity.Path,
 		Attributes: identity.Attributes,
 		Metadata:   identity.Metadata,
-		EdgesTo:    map[string]*apipb.EdgeDetails{},
-		EdgesFrom:  map[string]*apipb.EdgeDetails{},
+		EdgesTo:    &apipb.EdgeDetails{},
+		EdgesFrom:  &apipb.EdgeDetails{},
 	}
 	if filter.EdgesFrom != nil {
 		from, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
@@ -208,10 +208,7 @@ func (g *GraphStore) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.Nod
 				To:         toNode,
 				Metadata:   f.Metadata,
 			}
-			if _, ok := detail.EdgesFrom[f.GetPath().GetGtype()]; !ok {
-				detail.EdgesFrom[f.GetPath().GetGtype()] = &apipb.EdgeDetails{}
-			}
-			detail.EdgesFrom[f.GetPath().GetGtype()].Edges = append(detail.EdgesFrom[f.GetPath().GetGtype()].Edges, edetail)
+			detail.EdgesFrom.Edges = append(detail.EdgesFrom.Edges, edetail)
 		}
 	}
 	if filter.EdgesTo != nil {
@@ -241,10 +238,7 @@ func (g *GraphStore) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.Nod
 				To:         toNode,
 				Metadata:   f.Metadata,
 			}
-			if _, ok := detail.EdgesTo[f.GetPath().GetGtype()]; !ok {
-				detail.EdgesTo[f.GetPath().GetGtype()] = &apipb.EdgeDetails{}
-			}
-			detail.EdgesTo[f.GetPath().GetGtype()].Edges = append(detail.EdgesTo[f.GetPath().GetGtype()].Edges, edetail)
+			detail.EdgesTo.Edges = append(detail.EdgesTo.Edges, edetail)
 		}
 	}
 	return detail, nil
@@ -1222,8 +1216,8 @@ func (g *GraphStore) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apip
 func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
 	detail := &apipb.NodeDetail{
 		Path:      filter.GetPath(),
-		EdgesTo:   map[string]*apipb.EdgeDetails{},
-		EdgesFrom: map[string]*apipb.EdgeDetails{},
+		EdgesTo:   &apipb.EdgeDetails{},
+		EdgesFrom: &apipb.EdgeDetails{},
 	}
 	node, err := g.GetNode(ctx, filter.GetPath())
 	if err != nil {
@@ -1246,7 +1240,7 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 			if err != nil {
 				return nil, err
 			}
-			detail.EdgesFrom[edge.GetPath().GetGtype()].Edges = append(detail.EdgesFrom[edge.GetPath().GetGtype()].Edges, eDetail)
+			detail.EdgesFrom.Edges = append(detail.EdgesFrom.Edges, eDetail)
 		}
 	}
 
@@ -1265,15 +1259,11 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 			if err != nil {
 				return nil, err
 			}
-			detail.EdgesTo[edge.GetPath().GetGtype()].Edges = append(detail.EdgesTo[edge.GetPath().GetGtype()].Edges, eDetail)
+			detail.EdgesTo.Edges = append(detail.EdgesTo.Edges, eDetail)
 		}
 	}
-	for _, d := range detail.EdgesTo {
-		d.Sort()
-	}
-	for _, d := range detail.EdgesFrom {
-		d.Sort()
-	}
+	detail.EdgesTo.Sort()
+	detail.EdgesFrom.Sort()
 	return detail, nil
 }
 
