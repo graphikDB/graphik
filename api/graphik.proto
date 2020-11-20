@@ -296,7 +296,7 @@ service GraphService {
   rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
 }
 
-// TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates objects at runtime before & after state changes
+// TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
 service TriggerService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
