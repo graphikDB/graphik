@@ -185,8 +185,10 @@ func NewTrigger(fn TriggerFunc, expressions []string) *Trigger {
 	return &Trigger{fn: fn, expressions: expressions}
 }
 
-func (t Trigger) Match(ctx context.Context, _ *empty.Empty) (*apipb.TriggerMatch, error) {
-	return &apipb.TriggerMatch{}, nil
+func (t Trigger) Filter(ctx context.Context, _ *empty.Empty) (*apipb.TriggerFilter, error) {
+	return &apipb.TriggerFilter{
+		Expressions: t.expressions,
+	}, nil
 }
 
 func (t Trigger) Mutate(ctx context.Context, interception *apipb.Interception) (*apipb.Interception, error) {
