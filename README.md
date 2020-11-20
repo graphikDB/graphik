@@ -28,7 +28,7 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 ## Features
 
 - [x] 100% Go
-- [x] Native gRPC Support
+- [x] Native gRPC & graphql Support
 - [x] Native OAuth Support
 - [x] Persistant(bbolt LMDB)
 - [x] Channel Based PubSub
@@ -189,3 +189,104 @@ Example:
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
+
+## Example GraphQL Queries
+
+Ping
+
+```graphql
+query {
+  ping(input: {}) {
+    message
+  }
+}
+
+"""
+{
+  "data": {
+    "ping": {
+      "message": "PONG"
+    }
+  }
+}
+"""
+```
+
+Get Schema
+
+```graphql
+query {
+  getSchema(input: {}) {
+    node_types
+    edge_types
+  }
+}
+
+"""
+{
+  "data": {
+    "getSchema": {
+      "node_types": [
+        "cat",
+        "dog",
+        "human",
+        "identity"
+      ],
+      "edge_types": [
+        "owner"
+      ]
+    }
+  }
+}
+"""
+```
+Create Node
+```graphql
+mutation {
+  createNode(input: {
+    path: {
+      gtype: "cat"
+    }
+  	attributes: {
+      name: "pippen"
+    }
+  }){
+    attributes
+  }
+}
+```
+
+Get Node
+```graphql
+query {
+  getNode(input: {
+    gtype: "identity",
+    gid: "107146673535247272789"
+  }){
+   	path {
+      gid
+      gtype
+    }
+    attributes
+    metadata {
+      created_at
+      
+    }
+  }
+}
+```
+
+Search Nodes
+```graphql
+query {
+  searchNodes(input: {
+    gtype: "identity",
+    expressions: ["attributes.email.contains('coleman')"]
+    limit: 1
+  }){
+   	nodes {
+      attributes
+    }
+  }
+}
+```

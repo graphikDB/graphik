@@ -2,8 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/autom8ter/graphik"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
+	"github.com/autom8ter/graphik/gql"
 	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
@@ -41,6 +45,8 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		return
 	}
 	defer g.Close()
+	self := fmt.Sprintf("localhost%v", cfg.BindGrpc)
+
 	router := http.NewServeMux()
 	if cfg.Metrics {
 		router.Handle("/metrics", promhttp.Handler())
@@ -50,7 +56,16 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	}
-
+	if cfg.Graphql {
+		client, err := graphik.NewClient(context.Background(), self, graphik.WithRetry(3))
+		if err != nil {
+			logger.Error("failed to setup graphql", zap.Error(err))
+			return
+		}
+		resolver := gql.NewResolver(client)
+		router.Handle("/query", resolver.Handler())
+		router.Handle("/dashboard", playground.Handler("GraphQL playground", "/query"))
+	}
 	server := &http.Server{
 		Handler: router,
 	}

@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	cloud.google.com/go v0.46.3 // indirect
+	github.com/99designs/gqlgen v0.13.0
 	github.com/autom8ter/machine v1.1.2
 	github.com/golang/protobuf v1.4.3
 	github.com/google/cel-go v0.6.0
@@ -17,6 +18,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v0.9.3
 	github.com/spf13/pflag v1.0.3
+	github.com/vektah/gqlparser/v2 v2.1.0
 	go.etcd.io/bbolt v1.3.5
 	go.uber.org/zap v1.16.0
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45

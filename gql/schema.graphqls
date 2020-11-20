@@ -1,0 +1,118 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar Time
+scalar Struct
+scalar Empty
+scalar Cascade
+
+type Pong {
+  message: String!
+}
+
+type Path {
+  gtype: String!
+  gid: String!
+}
+
+type Metadata {
+  created_at: Int
+  updated_at: Int
+  updated_by: Path
+}
+
+type Node {
+  path: Path!
+  attributes: Struct
+  metadata: Metadata
+}
+
+type Nodes {
+  nodes: [Node!]
+}
+
+type Edge {
+  path: Path!
+  attributes: Struct
+  cascade: Cascade
+  from: Path!
+  to: Path!
+  metadata: Metadata
+}
+
+type Edges {
+  edges: [Edge!]
+}
+
+type EdgeDetail {
+  path: Path!
+  attributes: Struct
+  cascade: Cascade
+  from: Node!
+  to: Node!
+  metadata: Metadata
+}
+
+type NodeDetail {
+  path: Path!
+  attributes: Struct
+  edges_from: [EdgeDetail!]
+  edges_to: [EdgeDetail!]
+  metadata: Metadata
+}
+
+type Schema {
+  edge_types: [String!]
+  node_types: [String!]
+}
+
+input NodeConstructor {
+  path: PathInput!
+  attributes: Struct
+}
+
+input EdgeConstructor {
+  path: PathInput!
+  attributes: Struct
+  cascade: Cascade
+  from: PathInput!
+  to: PathInput!
+}
+
+input PathInput {
+  gtype: String!
+  gid: String
+}
+
+input Filter {
+  gtype: String!
+  expressions: [String!]
+  limit: Int!
+}
+
+input MeFilter {
+  edges_from: Filter
+  edges_to: Filter
+}
+
+input Patch {
+  path: PathInput!
+  attributes: Struct!
+}
+
+type Mutation {
+  createNode(input: NodeConstructor!): Node!
+  patchNode(input: Patch!): Node!
+  delNode(input: PathInput!): Empty!
+  createEdge(input: EdgeConstructor!): Edge!
+  patchEdge(input: Patch!): Edge!
+  delEdge(input: PathInput!): Empty!
+}
+
+type Query {
+  ping(input: Empty): Pong!
+  getSchema(input: Empty): Schema!
+  getNode(input: PathInput!): Node!
+  searchNodes(input: Filter!): Nodes!
+}
