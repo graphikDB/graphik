@@ -10,6 +10,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,36 +27,80 @@ import (
 	"time"
 )
 
-func NewClient(ctx context.Context, target string, tokenSource oauth2.TokenSource) (*Client, error) {
-	conn, err := grpc.DialContext(ctx, target,
-		grpc.WithInsecure(),
-		grpc.WithChainUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-			ctx, err := toContext(ctx, tokenSource)
-			if err != nil {
-				return err
-			}
-			return invoker(ctx, method, req, reply, cc, opts...)
-		}),
-		grpc.WithChainStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-			ctx, err := toContext(ctx, tokenSource)
-			if err != nil {
-				return nil, err
-			}
-			return streamer(ctx, desc, cc, method, opts...)
-		}),
+type Options struct {
+	retry       uint
+	tokenSource oauth2.TokenSource
+}
+
+type Opt func(o *Options)
+
+func WithRetry(retry uint) Opt {
+	return func(o *Options) {
+		o.retry = retry
+	}
+}
+
+func WithTokenSource(tokenSource oauth2.TokenSource) Opt {
+	return func(o *Options) {
+		o.tokenSource = tokenSource
+	}
+}
+
+func unaryAuth(tokenSource oauth2.TokenSource) grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		ctx, err := toContext(ctx, tokenSource)
+		if err != nil {
+			return err
+		}
+		return invoker(ctx, method, req, reply, cc, opts...)
+	}
+}
+
+func streamAuth(tokenSource oauth2.TokenSource) grpc.StreamClientInterceptor {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		ctx, err := toContext(ctx, tokenSource)
+		if err != nil {
+			return nil, err
+		}
+		return streamer(ctx, desc, cc, method, opts...)
+	}
+}
+
+func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error) {
+	dialopts := []grpc.DialOption{grpc.WithInsecure()}
+	var uinterceptors []grpc.UnaryClientInterceptor
+	var sinterceptors []grpc.StreamClientInterceptor
+	options := &Options{}
+	for _, o := range opts {
+		o(options)
+	}
+	if options.tokenSource != nil {
+		uinterceptors = append(uinterceptors, unaryAuth(options.tokenSource))
+		sinterceptors = append(sinterceptors, streamAuth(options.tokenSource))
+	}
+	if options.retry > 0 {
+		uinterceptors = append(uinterceptors, grpc_retry.UnaryClientInterceptor(
+			grpc_retry.WithMax(options.retry),
+		))
+		sinterceptors = append(sinterceptors, grpc_retry.StreamClientInterceptor(
+			grpc_retry.WithMax(options.retry),
+		))
+	}
+	dialopts = append(dialopts,
+		grpc.WithChainUnaryInterceptor(uinterceptors...),
+		grpc.WithChainStreamInterceptor(sinterceptors...),
 	)
+	conn, err := grpc.DialContext(ctx, target, dialopts...)
 	if err != nil {
 		return nil, err
 	}
 	return &Client{
-		graph:       apipb.NewGraphServiceClient(conn),
-		tokenSource: tokenSource,
+		graph: apipb.NewGraphServiceClient(conn),
 	}, nil
 }
 
 type Client struct {
-	graph       apipb.GraphServiceClient
-	tokenSource oauth2.TokenSource
+	graph apipb.GraphServiceClient
 }
 
 func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Context, error) {
