@@ -443,6 +443,6 @@ func (this *Interception) Validate() error {
 	}
 	return nil
 }
-func (this *TriggerMatch) Validate() error {
+func (this *TriggerFilter) Validate() error {
 	return nil
 }

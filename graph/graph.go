@@ -100,7 +100,7 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 			return nil, errors.Wrap(err, "failed to dial trigger")
 		}
 		trig := apipb.NewTriggerServiceClient(conn)
-		matchers, err := trig.Match(ctx, &empty.Empty{})
+		matchers, err := trig.Filter(ctx, &empty.Empty{})
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to dial trigger")
 		}

@@ -275,7 +275,7 @@ message Interception {
   Timing timing =5;
 }
 
-message TriggerMatch {
+message TriggerFilter {
   repeated string expressions =1;
 }
 
@@ -285,7 +285,7 @@ service TriggerService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   // Mutate mutates request/responses
   rpc Mutate(Interception) returns(Interception){}
-  // Match returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
+  // Filter returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
   // These expressions are cached by the Graphik server
-  rpc Match(google.protobuf.Empty) returns(TriggerMatch){}
+  rpc Filter(google.protobuf.Empty) returns(TriggerFilter){}
 }
