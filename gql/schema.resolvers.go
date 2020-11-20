@@ -13,6 +13,7 @@ import (
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input apipb.NodeConstructor) (*apipb.Node, error) {
+
 	return r.client.CreateNode(ctx, &input)
 }
 

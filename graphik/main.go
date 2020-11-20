@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/autom8ter/graphik"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
@@ -64,7 +63,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		}
 		resolver := gql.NewResolver(client)
 		router.Handle("/query", resolver.Handler())
-		router.Handle("/dashboard", playground.Handler("GraphQL playground", "/query"))
+		router.Handle("/playground", resolver.Playground())
 	}
 	server := &http.Server{
 		Handler: router,
