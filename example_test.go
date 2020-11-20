@@ -76,7 +76,9 @@ func ExampleClient_Me() {
 
 func ExampleClient_CreateNode() {
 	charlie, err := client.CreateNode(context.Background(), &apipb.NodeConstructor{
-		Gtype: "dog",
+		Path: &apipb.Path{
+			Gtype: "dog",
+		},
 		Attributes: apipb.NewStruct(map[string]interface{}{
 			"name": "Charlie",
 		}),
@@ -122,7 +124,9 @@ func ExampleClient_CreateEdge() {
 	}
 	charlie := dogs.GetNodes()[0]
 	coleman, err := client.CreateNode(context.Background(), &apipb.NodeConstructor{
-		Gtype: "human",
+		Path: &apipb.Path{
+			Gtype: "human",
+		},
 		Attributes: apipb.NewStruct(map[string]interface{}{
 			"name": "Coleman",
 		}),
@@ -132,7 +136,9 @@ func ExampleClient_CreateEdge() {
 		return
 	}
 	ownerEdge, err := client.CreateEdge(context.Background(), &apipb.EdgeConstructor{
-		Gtype: "owner",
+		Path: &apipb.Path{
+			Gtype: "owner",
+		},
 		Attributes: apipb.NewStruct(map[string]interface{}{
 			"primary_owner": true,
 		}),

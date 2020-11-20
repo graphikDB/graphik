@@ -65,12 +65,14 @@ func (this *Node) Validate() error {
 	}
 	return nil
 }
-
-var _regex_NodeConstructor_Gtype = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *NodeConstructor) Validate() error {
-	if !_regex_NodeConstructor_Gtype.MatchString(this.Gtype) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
+	if this.Path != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
+		}
 	}
 	if this.Attributes != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
@@ -175,12 +177,14 @@ func (this *Edge) Validate() error {
 	}
 	return nil
 }
-
-var _regex_EdgeConstructor_Gtype = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *EdgeConstructor) Validate() error {
-	if !_regex_EdgeConstructor_Gtype.MatchString(this.Gtype) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
+	if this.Path != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
+		}
 	}
 	if this.Attributes != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {

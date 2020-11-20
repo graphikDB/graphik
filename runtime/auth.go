@@ -13,16 +13,18 @@ const (
 )
 
 func (a *Runtime) ToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
-	path := &apipb.Path{
+	var err error
+	n, err := a.graph.GetNode(ctx, &apipb.Path{
 		Gtype: identityType,
 		Gid:   payload[idClaim].(string),
-	}
-	var err error
-	n, err := a.graph.GetNode(ctx, path)
+	})
 	if err != nil || n == nil {
 		strct, _ := structpb.NewStruct(payload)
 		n, err = a.CreateNode(ctx, &apipb.NodeConstructor{
-			Path:       path,
+			Path: &apipb.Path{
+				Gtype: identityType,
+				Gid:   payload[idClaim].(string),
+			},
 			Attributes: strct,
 		})
 		if err != nil {

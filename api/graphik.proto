@@ -47,13 +47,14 @@ enum Cascade {
 // Path describes a node/edge type & id
 message Path {
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  uint64 gid =2;
+  string gid =2;
 }
 
 message Metadata {
   int64 created_at =1;
   int64 updated_at =2;
-  Path updated_by =4;
+  Path updated_by =3;
+  uint64 sequence =4;
 }
 
 // Paths is an array of paths
@@ -70,8 +71,8 @@ message Node {
 
 // NodeConstructor is used to create a node
 message NodeConstructor {
-  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  google.protobuf.Struct attributes =2;
+  Path path =1 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Struct attributes =3;
 }
 
 // NodeConstructor is used to create a batch of nodes
@@ -117,7 +118,7 @@ message Edge {
 
 // EdgeConstructor is used to create an Edge
 message EdgeConstructor {
-  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =3;
   Cascade cascade =4;
   Path from =5 [(validator.field) = {msg_exists : true}];

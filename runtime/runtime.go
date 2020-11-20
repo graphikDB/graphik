@@ -6,8 +6,8 @@ import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/auth"
 	"github.com/autom8ter/graphik/flags"
-	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/autom8ter/graphik/storage/graph"
 	"github.com/autom8ter/graphik/storage/log"
 	"github.com/autom8ter/graphik/storage/snap"
 	"github.com/autom8ter/machine"
@@ -33,7 +33,7 @@ type Runtime struct {
 	config      *auth.Config
 	mu          sync.RWMutex
 	raft        *raft.Raft
-	graph       *graph.Graph
+	graph       *graph.GraphStore
 	close       sync.Once
 	triggers    []apipb.TriggerServiceClient
 	authorizers []apipb.AuthorizationServiceClient
@@ -118,7 +118,7 @@ func New(ctx context.Context, cfg *flags.Flags) (*Runtime, error) {
 	if err != nil {
 		return nil, err
 	}
-	g, err := graph.New(filepath.Join(cfg.StoragePath, "graph.db"))
+	g, err := graph.NewGraphStore(filepath.Join(cfg.StoragePath, "graph.db"))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create graph")
 	}

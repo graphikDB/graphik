@@ -66,9 +66,6 @@ func (f *Runtime) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb
 
 func (r *Runtime) CreateNodes(ctx context.Context, nodes *apipb.NodeConstructors) (*apipb.Nodes, error) {
 	identity := r.NodeContext(ctx)
-	for _, n := range nodes.GetNodes() {
-		pathDefaults(n.Path)
-	}
 	change := &apipb.StateChange{
 		Op:       apipb.Op_CREATE_NODES,
 		Method:   r.MethodContext(ctx),
@@ -566,11 +563,11 @@ func (r *Runtime) Export(ctx context.Context) (*apipb.Graph, error) {
 func (r *Runtime) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Graph, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	nodes, err := r.graph.SetNodes(ctx, graph.GetNodes().GetNodes())
+	nodes, err := r.graph.SetNodes(ctx, graph.GetNodes().GetNodes()...)
 	if err != nil {
 		return nil, err
 	}
-	edges, err := r.graph.SetEdges(ctx, graph.GetEdges().GetEdges())
+	edges, err := r.graph.SetEdges(ctx, graph.GetEdges().GetEdges()...)
 	if err != nil {
 		return nil, err
 	}
@@ -601,5 +598,16 @@ func (r *Runtime) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apipb.E
 func (r *Runtime) Schema(ctx context.Context) (*apipb.Schema, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	return r.graph.Schema(ctx)
+	etypes, err := r.graph.EdgeTypes(ctx)
+	if err != nil {
+		return nil, err
+	}
+	ntypes, err := r.graph.NodeTypes(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &apipb.Schema{
+		EdgeTypes: etypes,
+		NodeTypes: ntypes,
+	}, nil
 }

@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
+	graph2 "github.com/autom8ter/graphik/storage/graph"
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/hashicorp/raft"
 	"go.uber.org/zap"
 	"io"
@@ -112,7 +113,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 				},
 			})
 		}
-		res, err := f.graph.SetNodes(ctx, nodes)
+		res, err := f.graph.SetNodes(ctx, nodes...)
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +137,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 				},
 			})
 		}
-		res, err := f.graph.SetEdges(ctx, edges)
+		res, err := f.graph.SetEdges(ctx, edges...)
 		if err != nil {
 			return nil, err
 		}
@@ -144,7 +145,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Edges{Edges: res},
 		}
 	case apipb.Op_PATCH_NODE:
-		res, err := f.graph.PatchNode(ctx, c.Mutation.GetPatch(), graph.WithMetadata(&apipb.Metadata{
+		res, err := f.graph.PatchNode(ctx, c.Mutation.GetPatch(), graph2.WithMetadata(&apipb.Metadata{
 			UpdatedAt: c.Timestamp,
 			UpdatedBy: c.GetIdentity().GetPath(),
 		}))
@@ -155,7 +156,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Node{Node: res},
 		}
 	case apipb.Op_PATCH_EDGE:
-		res, err := f.graph.PatchEdge(ctx, c.Mutation.GetPatch(), graph.WithMetadata(&apipb.Metadata{
+		res, err := f.graph.PatchEdge(ctx, c.Mutation.GetPatch(), graph2.WithMetadata(&apipb.Metadata{
 			UpdatedAt: c.Timestamp,
 			UpdatedBy: c.GetIdentity().GetPath(),
 		}))
@@ -166,7 +167,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Edge{Edge: res},
 		}
 	case apipb.Op_PATCH_NODES:
-		res, err := f.graph.PatchNodes(ctx, c.Mutation.GetPatches(), graph.WithMetadata(&apipb.Metadata{
+		res, err := f.graph.PatchNodes(ctx, c.Mutation.GetPatches(), graph2.WithMetadata(&apipb.Metadata{
 			UpdatedAt: c.Timestamp,
 			UpdatedBy: c.GetIdentity().GetPath(),
 		}))
@@ -177,7 +178,7 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Nodes{Nodes: res},
 		}
 	case apipb.Op_PATCH_EDGES:
-		res, err := f.graph.PatchEdges(ctx, c.Mutation.GetPatches(), graph.WithMetadata(&apipb.Metadata{
+		res, err := f.graph.PatchEdges(ctx, c.Mutation.GetPatches(), graph2.WithMetadata(&apipb.Metadata{
 			UpdatedAt: c.Timestamp,
 			UpdatedBy: c.GetIdentity().GetPath(),
 		}))
@@ -188,36 +189,36 @@ func (f *Runtime) apply(ctx context.Context, log *raft.Log) (*apipb.StateChange,
 			Object: &apipb.Mutation_Edges{Edges: res},
 		}
 	case apipb.Op_DELETE_NODE:
-		res, err := f.graph.DeleteNode(ctx, c.Mutation.GetPath())
+		err := f.graph.DelNodes(ctx, c.Mutation.GetPath())
 		if err != nil {
 			return nil, err
 		}
 		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Empty{Empty: res},
+			Object: &apipb.Mutation_Empty{Empty: &empty.Empty{}},
 		}
 	case apipb.Op_DELETE_EDGE:
-		res, err := f.graph.DeleteEdge(ctx, c.Mutation.GetPath())
+		err := f.graph.DelEdges(ctx, c.Mutation.GetPath())
 		if err != nil {
 			return nil, err
 		}
 		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Empty{Empty: res},
+			Object: &apipb.Mutation_Empty{Empty: &empty.Empty{}},
 		}
 	case apipb.Op_DELETE_NODES:
-		res, err := f.graph.DeleteNodes(ctx, c.Mutation.GetPaths().GetPaths())
+		err := f.graph.DelNodes(ctx, c.Mutation.GetPaths().GetPaths()...)
 		if err != nil {
 			return nil, err
 		}
 		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Empty{Empty: res},
+			Object: &apipb.Mutation_Empty{Empty: &empty.Empty{}},
 		}
 	case apipb.Op_DELETE_EDGES:
-		res, err := f.graph.DeleteEdges(ctx, c.Mutation.GetPaths().GetPaths())
+		err := f.graph.DelEdges(ctx, c.Mutation.GetPaths().GetPaths()...)
 		if err != nil {
 			return nil, err
 		}
 		c.Mutation = &apipb.Mutation{
-			Object: &apipb.Mutation_Empty{Empty: res},
+			Object: &apipb.Mutation_Empty{Empty: &empty.Empty{}},
 		}
 	default:
 		return nil, fmt.Errorf("unsupported command: %v", c.Op)
