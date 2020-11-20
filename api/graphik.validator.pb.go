@@ -496,22 +496,6 @@ func (this *Pong) Validate() error {
 	return nil
 }
 
-var _regex_RaftNode_NodeId = regexp.MustCompile(`^.{1,225}$`)
-var _regex_RaftNode_Address = regexp.MustCompile(`^.{1,225}$`)
-
-func (this *RaftNode) Validate() error {
-	if !_regex_RaftNode_NodeId.MatchString(this.NodeId) {
-		return github_com_mwitkow_go_proto_validators.FieldError("NodeId", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.NodeId))
-	}
-	if !_regex_RaftNode_Address.MatchString(this.Address) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Address", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Address))
-	}
-	return nil
-}
-func (this *RaftLog) Validate() error {
-	return nil
-}
-
 var _regex_OutboundMessage_Channel = regexp.MustCompile(`^.{1,225}$`)
 
 func (this *OutboundMessage) Validate() error {
@@ -665,13 +649,6 @@ func (this *RequestIntercept) Validate() error {
 		if oneOfNester.MeFilter != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.MeFilter); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("MeFilter", err)
-			}
-		}
-	}
-	if oneOfNester, ok := this.GetRequest().(*RequestIntercept_RaftNode); ok {
-		if oneOfNester.RaftNode != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.RaftNode); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("RaftNode", err)
 			}
 		}
 	}

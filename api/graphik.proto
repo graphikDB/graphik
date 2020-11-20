@@ -233,21 +233,6 @@ message Pong {
   string message =1;
 }
 
-// RaftNode is the identifier of a distinct raft node in the cluster
-message RaftNode {
-  string node_id =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  string address =2 [(validator.field) = {regex : "^.{1,225}$"}];
-}
-
-// RaftLog is a raft log
-message RaftLog {
-  uint64 index =1;
-  uint64 term =3;
-  uint32 type =4;
-  bytes data =9;
-  bytes extensions =10;
-}
-
 // OutboundMessage is a message to be published to a pubsub channel
 message OutboundMessage {
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
@@ -288,7 +273,6 @@ message RequestIntercept {
       NodeConstructors node_constructors =16;
       NodeConstructor node_constructor =17;
       MeFilter me_filter =18;
-      RaftNode raft_node =19;
   }
 }
 
