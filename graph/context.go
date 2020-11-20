@@ -5,6 +5,8 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/vm"
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
@@ -22,8 +24,26 @@ const (
 	methodCtxKey = "x-grpc-full-method"
 )
 
+type intercept struct {
+	Method    string
+	Identity  map[string]interface{}
+	Timestamp int64
+	Request   map[string]interface{}
+	Timing    apipb.Timing
+}
+
+func (r *intercept) AsMap() map[string]interface{} {
+	return map[string]interface{}{
+		"method":    r.Method,
+		"identity":  r.Identity,
+		"request":   r.Request,
+		"timestamp": r.Timestamp,
+		"timing":    r.Timing,
+	}
+}
+
 func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
@@ -48,15 +68,15 @@ func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = g.MethodToContext(ctx, info.FullMethod)
+		now := time.Now()
 		if len(g.authorizers) > 0 {
-			now := time.Now()
-			intercept := &apipb.Interception{
+			intercept := &intercept{
 				Method:    info.FullMethod,
-				Identity:  identity,
+				Identity:  identity.AsMap(),
 				Timestamp: now.UnixNano(),
 			}
 			if val, ok := req.(apipb.Mapper); ok {
-				intercept.Request = apipb.NewStruct(val.AsMap())
+				intercept.Request = val.AsMap()
 			}
 			result, err := vm.Eval(g.authorizers, intercept)
 			if err != nil {
@@ -66,7 +86,55 @@ func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 				return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
 			}
 		}
-		return handler(ctx, req)
+		if len(g.triggers) > 0 {
+			a, err := ptypes.MarshalAny(req.(proto.Message))
+			if err != nil {
+				return nil, err
+			}
+			intercept := &apipb.Interception{
+				Method:    info.FullMethod,
+				Identity:  identity,
+				Timestamp: now.UnixNano(),
+				Request:   a,
+				Timing:    apipb.Timing_BEFORE,
+			}
+			for _, trigger := range g.triggers {
+				intercept, err = trigger.Mutate(ctx, intercept)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if err := ptypes.UnmarshalAny(intercept.Request, req.(proto.Message)); err != nil {
+				return nil, status.Error(codes.Internal, fmt.Sprintf("trigger failure: %s", err.Error()))
+			}
+		}
+		resp, err := handler(ctx, req)
+		if err != nil {
+			return resp, err
+		}
+		if len(g.triggers) > 0 {
+			a, err := ptypes.MarshalAny(resp.(proto.Message))
+			if err != nil {
+				return nil, err
+			}
+			intercept := &apipb.Interception{
+				Method:    info.FullMethod,
+				Identity:  identity,
+				Timestamp: now.UnixNano(),
+				Request:   a,
+				Timing:    apipb.Timing_AFTER,
+			}
+			for _, trigger := range g.triggers {
+				intercept, err = trigger.Mutate(ctx, intercept)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if err := ptypes.UnmarshalAny(intercept.Request, resp.(proto.Message)); err != nil {
+				return nil, status.Error(codes.Internal, fmt.Sprintf("trigger failure: %s", err.Error()))
+			}
+		}
+		return resp, nil
 	}
 }
 
@@ -93,15 +161,15 @@ func (g *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = g.MethodToContext(ss.Context(), info.FullMethod)
+		now := time.Now()
 		if len(g.authorizers) > 0 {
-			now := time.Now()
-			intercept := &apipb.Interception{
+			intercept := &intercept{
 				Method:    info.FullMethod,
-				Identity:  identity,
+				Identity:  identity.AsMap(),
 				Timestamp: now.UnixNano(),
 			}
 			if val, ok := srv.(apipb.Mapper); ok {
-				intercept.Request = apipb.NewStruct(val.AsMap())
+				intercept.Request = val.AsMap()
 			}
 			result, err := vm.Eval(g.authorizers, intercept)
 			if err != nil {
@@ -109,6 +177,28 @@ func (g *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
 			}
 			if !result {
 				return status.Error(codes.PermissionDenied, "request authorization = denied")
+			}
+		}
+		if len(g.triggers) > 0 {
+			a, err := ptypes.MarshalAny(srv.(proto.Message))
+			if err != nil {
+				return err
+			}
+			intercept := &apipb.Interception{
+				Method:    info.FullMethod,
+				Identity:  identity,
+				Timestamp: now.UnixNano(),
+				Request:   a,
+				Timing:    apipb.Timing_BEFORE,
+			}
+			for _, trigger := range g.triggers {
+				intercept, err = trigger.Mutate(ctx, intercept)
+				if err != nil {
+					return err
+				}
+			}
+			if err := ptypes.UnmarshalAny(intercept.Request, srv.(proto.Message)); err != nil {
+				return status.Error(codes.Internal, fmt.Sprintf("trigger failure: %s", err.Error()))
 			}
 		}
 		wrapped := grpc_middleware.WrapServerStream(ss)

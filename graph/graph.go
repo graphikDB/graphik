@@ -113,13 +113,19 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 	if err != nil {
 		return nil, err
 	}
+	m := machine.New(ctx)
+	m.Go(func(routine machine.Routine) {
+		if err := jwks.RefreshKeys(); err != nil {
+			logger.Error("failed to refresh jwks", zap.Error(err))
+		}
+	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(5 *time.Minute))))
 	return &GraphStore{
 		db:          handle,
 		path:        path,
 		mu:          sync.RWMutex{},
 		edgesTo:     map[string][]*apipb.Path{},
 		edgesFrom:   map[string][]*apipb.Path{},
-		machine:     machine.New(ctx),
+		machine:     m,
 		triggers:    triggers,
 		authorizers: programs,
 		auth:        jwks,

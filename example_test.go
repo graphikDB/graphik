@@ -8,6 +8,7 @@ import (
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
@@ -267,7 +268,18 @@ func ExampleTriggerFunc_Serve() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	trigger := graphik.NewTrigger(func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error) {
-		trigger.Request.GetFields()["testing"] = structpb.NewBoolValue(true)
+		if ptypes.Is(trigger.Request, &apipb.NodeConstructor{}) {
+			constructor := &apipb.NodeConstructor{}
+			if err := ptypes.UnmarshalAny(trigger.Request, constructor); err != nil {
+				return nil, err
+			}
+			constructor.GetAttributes().Fields["testing"] = structpb.NewBoolValue(true)
+			nything, err := ptypes.MarshalAny(constructor)
+			if err != nil {
+				return nil, err
+			}
+			trigger.Request = nything
+		}
 		return trigger, nil
 	})
 	trigger.Serve(ctx, &flags.PluginFlags{

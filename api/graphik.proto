@@ -223,7 +223,7 @@ message Interception {
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
   Node identity =2;
   int64 timestamp =3;
-  google.protobuf.Struct request = 4;
+  google.protobuf.Any request = 4;
   Timing timing =5;
 }
 
@@ -300,6 +300,6 @@ service GraphService {
 service TriggerService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // HandleTrigger mutates state changes
+  // Mutate mutates request/responses
   rpc Mutate(Interception) returns(Interception){}
 }

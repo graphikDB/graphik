@@ -18,6 +18,10 @@ type Mapper interface {
 	AsMap() map[string]interface{}
 }
 
+type FromMapper interface {
+	FromMap(data map[string]interface{})
+}
+
 func (m *Path) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"gid":   m.GetGid(),
@@ -186,16 +190,6 @@ func (m *Message) FromMap(data map[string]interface{}) {
 	}
 	if val, ok := data["channel"]; ok {
 		m.Channel = val.(string)
-	}
-}
-
-func (r *Interception) AsMap() map[string]interface{} {
-	return map[string]interface{}{
-		"method":    r.GetMethod(),
-		"identity":  r.GetIdentity().AsMap(),
-		"request":   r.GetRequest().AsMap(),
-		"timestamp": r.GetTimestamp(),
-		"timing":    r.GetTiming(),
 	}
 }
 
