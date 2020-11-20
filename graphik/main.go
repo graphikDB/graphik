@@ -62,8 +62,8 @@ func run(ctx context.Context, cfg *flags.Flags) {
 			return
 		}
 		resolver := gql.NewResolver(client)
-		router.Handle("/query", resolver.Handler())
-		router.Handle("/playground", resolver.Playground())
+		router.Handle("/query", resolver.QueryHandler())
+		router.Handle("/playground", resolver.Playground("/query"))
 	}
 	server := &http.Server{
 		Handler: router,

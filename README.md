@@ -28,13 +28,14 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 ## Features
 
 - [x] 100% Go
-- [x] Native gRPC & graphql Support
-- [x] Native OAuth Support
+- [x] Native gRPC & GraphQl Support
+- [x] Built in GraphQl Playground
+- [x] Native OAuth Support & Single Sign On
 - [x] Persistant(bbolt LMDB)
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
-- [x] gRPC Based External Triggers
+- [x] gRPC Based External [Triggers](#triggers--optional-)
 - [x] Object metadata - Auto track created/updated timestamps & who is making updates to objects
 - [x] Loosely-Typed(mongo-esque)
 - [x] [Prometheus Metrics](https://prometheus.io/)

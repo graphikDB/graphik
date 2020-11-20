@@ -5,35 +5,40 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/autom8ter/graphik"
 	"github.com/autom8ter/graphik/gql/generated"
+	"golang.org/x/oauth2"
 	"net/http"
 )
 
 // This file will not be regenerated automatically.
-//
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
 	client *graphik.Client
+	config *oauth2.Config
 }
 
 func NewResolver(client *graphik.Client) *Resolver {
 	return &Resolver{client: client}
 }
 
-func (r *Resolver) Handler() http.Handler {
-	return r.authMiddleware(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
+func (r *Resolver) QueryHandler() http.Handler {
+	return handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
 		Resolvers:  r,
 		Directives: generated.DirectiveRoot{},
 		Complexity: generated.ComplexityRoot{},
-	})))
+	}))
 }
 
-func (r *Resolver) Playground() http.Handler {
-	return r.authMiddleware(playground.Handler("GraphQL playground", "/query"))
+func (r *Resolver) Playground(endpoint string) http.Handler {
+	return playground.Handler("Graphik Playground", endpoint)
 }
 
-func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		handler.ServeHTTP(w, r)
+const usrCtx = "user-context"
+
+func (r *Resolver) AuthMiddleware(handler http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+
+		handler.ServeHTTP(w, req)
 	}
 }
+
