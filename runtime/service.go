@@ -66,6 +66,9 @@ func (f *Runtime) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb
 
 func (r *Runtime) CreateNodes(ctx context.Context, nodes *apipb.NodeConstructors) (*apipb.Nodes, error) {
 	identity := r.NodeContext(ctx)
+	for _, n := range nodes.GetNodes() {
+		pathDefaults(n.GetPath())
+	}
 	change := &apipb.StateChange{
 		Op:       apipb.Op_CREATE_NODES,
 		Method:   r.MethodContext(ctx),
@@ -537,9 +540,6 @@ func pathDefaults(path *apipb.Path) {
 	}
 	if path.GetGid() == "" {
 		path.Gid = uuid.New().String()
-	}
-	if path.GetGtype() == "" {
-		path.Gtype = "default"
 	}
 }
 
