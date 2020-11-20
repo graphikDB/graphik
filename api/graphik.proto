@@ -16,22 +16,6 @@ enum Timing {
   AFTER =1;
 }
 
-// Op is a mutation that will be applied to the raft
-enum Op {
-  CREATE_NODES = 0;
-  CREATE_NODE =1;
-  PATCH_NODES = 2;
-  PATCH_NODE = 3;
-  DELETE_NODES = 4;
-  DELETE_NODE =5;
-  CREATE_EDGES = 6;
-  CREATE_EDGE =7;
-  PATCH_EDGES = 8;
-  PATCH_EDGE =9;
-  DELETE_EDGES = 10;
-  DELETE_EDGE =11;
-}
-
 // Cascade describes how connected nodes will behave when one is deleted
 enum Cascade {
   // no cascade
@@ -219,19 +203,6 @@ message Message {
   int64 timestamp=4;
 }
 
-message Interception {
-  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Node identity =2;
-  int64 timestamp =3;
-  google.protobuf.Any request = 4;
-  Timing timing =5;
-}
-
-// Decision is returned by registered external authorizers
-message Decision {
-  bool value =1;
-}
-
 // Schema returns registered edge & node types
 message Schema {
   repeated string edge_types =1;
@@ -296,10 +267,25 @@ service GraphService {
   rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
 }
 
+message Interception {
+  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  Node identity =2;
+  int64 timestamp =3;
+  google.protobuf.Any request = 4;
+  Timing timing =5;
+}
+
+message TriggerMatch {
+  repeated string expressions =1;
+}
+
 // TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
 service TriggerService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   // Mutate mutates request/responses
   rpc Mutate(Interception) returns(Interception){}
+  // Match returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
+  // These expressions are cached by the Graphik server
+  rpc Match(google.protobuf.Empty) returns(TriggerMatch){}
 }

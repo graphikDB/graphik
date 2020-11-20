@@ -172,26 +172,34 @@ func (c *Client) Shutdown(ctx context.Context, in *empty.Empty, opts ...grpc.Cal
 	return c.graph.Shutdown(ctx, in, opts...)
 }
 
-
-// TriggerFunc is an optional/custom external plugin that when added to a Graphik instance, mutates objects at runtime before & after state changes.
-// It should be deployed as a side car to a graphik instance(see Serve())
 type TriggerFunc func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error)
 
-func NewTrigger(trigger func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error)) TriggerFunc {
-	return TriggerFunc(trigger)
+// Trigger is an optional/custom external plugin that when added to a Graphik instance, mutates objects at runtime before & after state changes.
+// It should be deployed as a side car to a graphik instance(see Serve())
+type Trigger struct {
+	fn          TriggerFunc
+	expressions []string
 }
 
-func (t TriggerFunc) Mutate(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error) {
-	return t(ctx, trigger)
+func NewTrigger(fn TriggerFunc, expressions []string) *Trigger {
+	return &Trigger{fn: fn, expressions: expressions}
 }
 
-func (t TriggerFunc) Ping(ctx context.Context, _ *empty.Empty) (*apipb.Pong, error) {
+func (t Trigger) Match(ctx context.Context, _ *empty.Empty) (*apipb.TriggerMatch, error) {
+	return &apipb.TriggerMatch{}, nil
+}
+
+func (t Trigger) Mutate(ctx context.Context, interception *apipb.Interception) (*apipb.Interception, error) {
+	return t.fn(ctx, interception)
+}
+
+func (t Trigger) Ping(ctx context.Context, _ *empty.Empty) (*apipb.Pong, error) {
 	return &apipb.Pong{
 		Message: "PONG",
 	}, nil
 }
 
-func (t TriggerFunc) Serve(ctx context.Context, cfg *flags.PluginFlags) {
+func (t Trigger) Serve(ctx context.Context, cfg *flags.PluginFlags) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)

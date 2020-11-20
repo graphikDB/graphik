@@ -42,6 +42,11 @@ var (
 	ErrNotFound = errors.New("not found")
 )
 
+type triggerClient struct {
+	apipb.TriggerServiceClient
+	matchers []string
+}
+
 type GraphStore struct {
 	// db is the underlying handle to the db.
 	db *bbolt.DB
@@ -51,9 +56,11 @@ type GraphStore struct {
 	edgesTo     map[string][]*apipb.Path
 	edgesFrom   map[string][]*apipb.Path
 	machine     *machine.Machine
-	triggers    []apipb.TriggerServiceClient
+	triggers    []*triggerClient
 	authorizers []cel.Program
 	auth        *auth.Config
+	closers     []func()
+	closeOnce   sync.Once
 }
 
 // NewGraphStore takes a file path and returns a connected Raft backend.
@@ -80,7 +87,7 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
-	var triggers []apipb.TriggerServiceClient
+	var triggers []*triggerClient
 	var closers []func()
 	for _, plugin := range flgs.Triggers {
 		if plugin == "" {
@@ -97,7 +104,15 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to dial trigger")
 		}
-		triggers = append(triggers, apipb.NewTriggerServiceClient(conn))
+		trig := apipb.NewTriggerServiceClient(conn)
+		matchers, err := trig.Match(ctx, &empty.Empty{})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to dial trigger")
+		}
+		triggers = append(triggers, &triggerClient{
+			TriggerServiceClient: trig,
+			matchers:             matchers.GetExpressions(),
+		})
 		closers = append(closers, func() {
 			conn.Close()
 		})
@@ -129,6 +144,8 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 		triggers:    triggers,
 		authorizers: programs,
 		auth:        jwks,
+		closers:     closers,
+		closeOnce:   sync.Once{},
 	}, nil
 }
 
@@ -450,9 +467,18 @@ func (g *GraphStore) Shutdown(ctx context.Context, e *empty.Empty) (*empty.Empty
 	return &empty.Empty{}, nil
 }
 
-// Close is used to gracefully close the DB connection.
-func (b *GraphStore) Close() error {
-	return b.db.Close()
+// Close is used to gracefully close the Database.
+func (b *GraphStore) Close() {
+	b.closeOnce.Do(func() {
+		b.machine.Close()
+		for _, closer := range b.closers {
+			closer()
+		}
+		b.machine.Wait()
+		if err := b.db.Close(); err != nil {
+			logger.Error("failed to close db", zap.Error(err))
+		}
+	})
 }
 
 func (g *GraphStore) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, error) {
@@ -780,6 +806,8 @@ func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb
 			if err := bucket.Put([]byte(edge.GetPath().GetGid()), bits); err != nil {
 				return err
 			}
+			g.mu.Lock()
+			defer g.mu.Unlock()
 			g.edgesFrom[edge.GetFrom().String()] = append(g.edgesFrom[edge.GetFrom().String()], edge.GetPath())
 			g.edgesTo[edge.GetTo().String()] = append(g.edgesTo[edge.GetTo().String()], edge.GetPath())
 			sortPaths(g.edgesFrom[edge.GetFrom().String()])
@@ -816,6 +844,8 @@ func (g *GraphStore) DelEdges(ctx context.Context, paths *apipb.Paths) (*empty.E
 			if err := bucket.Delete([]byte(path.GetGid())); err != nil {
 				return err
 			}
+			g.mu.Lock()
+			defer g.mu.Unlock()
 			g.edgesFrom[edge.From.String()] = removeEdge(path, g.edgesFrom[edge.From.String()])
 			g.edgesTo[edge.From.String()] = removeEdge(path, g.edgesTo[edge.From.String()])
 			g.edgesFrom[edge.To.String()] = removeEdge(path, g.edgesFrom[edge.To.String()])
@@ -926,7 +956,10 @@ func (g *GraphStore) NodeTypes(ctx context.Context) ([]string, error) {
 }
 
 func (g *GraphStore) RangeFrom(ctx context.Context, path *apipb.Path, fn func(e *apipb.Edge) bool) error {
-	for _, path := range g.edgesFrom[path.String()] {
+	g.mu.RLock()
+	paths := g.edgesFrom[path.String()]
+	g.mu.RUnlock()
+	for _, path := range paths {
 		edge, err := g.GetEdge(ctx, path)
 		if err != nil {
 			return err
@@ -939,7 +972,10 @@ func (g *GraphStore) RangeFrom(ctx context.Context, path *apipb.Path, fn func(e 
 }
 
 func (g *GraphStore) RangeTo(ctx context.Context, path *apipb.Path, fn func(edge *apipb.Edge) bool) error {
-	for _, edge := range g.edgesTo[path.String()] {
+	g.mu.RLock()
+	paths := g.edgesTo[path.String()]
+	g.mu.RUnlock()
+	for _, edge := range paths {
 		e, err := g.GetEdge(ctx, edge)
 		if err != nil {
 			return err
@@ -1197,7 +1233,7 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 	detail.Metadata = node.Metadata
 	detail.Attributes = node.Attributes
 	if filter.GetEdgesFrom() != nil {
-		edgesFrom, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
+		edges, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
 			NodePath:    node.Path,
 			Gtype:       filter.GetEdgesFrom().GetGtype(),
 			Expressions: filter.GetEdgesFrom().GetExpressions(),
@@ -1206,7 +1242,7 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 		if err != nil {
 			return nil, err
 		}
-		for _, edge := range edgesFrom.GetEdges() {
+		for _, edge := range edges.GetEdges() {
 			eDetail, err := g.GetEdgeDetail(ctx, edge.GetPath())
 			if err != nil {
 				return nil, err
@@ -1216,7 +1252,7 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 	}
 
 	if filter.GetEdgesTo() != nil {
-		edgesTo, err := g.EdgesTo(ctx, &apipb.EdgeFilter{
+		edges, err := g.EdgesTo(ctx, &apipb.EdgeFilter{
 			NodePath:    node.Path,
 			Gtype:       filter.GetEdgesTo().GetGtype(),
 			Expressions: filter.GetEdgesTo().GetExpressions(),
@@ -1225,7 +1261,7 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 		if err != nil {
 			return nil, err
 		}
-		for _, edge := range edgesTo.GetEdges() {
+		for _, edge := range edges.GetEdges() {
 			eDetail, err := g.GetEdgeDetail(ctx, edge.GetPath())
 			if err != nil {
 				return nil, err

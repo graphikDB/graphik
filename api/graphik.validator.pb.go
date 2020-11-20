@@ -421,6 +421,9 @@ func (this *Message) Validate() error {
 	}
 	return nil
 }
+func (this *Schema) Validate() error {
+	return nil
+}
 
 var _regex_Interception_Method = regexp.MustCompile(`^.{1,225}$`)
 
@@ -440,9 +443,6 @@ func (this *Interception) Validate() error {
 	}
 	return nil
 }
-func (this *Decision) Validate() error {
-	return nil
-}
-func (this *Schema) Validate() error {
+func (this *TriggerMatch) Validate() error {
 	return nil
 }

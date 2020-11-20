@@ -264,10 +264,10 @@ func ExampleClient_GetSchema() {
 	//edge types: owner
 }
 
-func ExampleTriggerFunc_Serve() {
+func ExampleTrigger_Serve() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	trigger := graphik.NewTrigger(func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error) {
+	triggerFn := func(ctx context.Context, trigger *apipb.Interception) (*apipb.Interception, error) {
 		if ptypes.Is(trigger.Request, &apipb.NodeConstructor{}) {
 			constructor := &apipb.NodeConstructor{}
 			if err := ptypes.UnmarshalAny(trigger.Request, constructor); err != nil {
@@ -281,6 +281,9 @@ func ExampleTriggerFunc_Serve() {
 			trigger.Request = nything
 		}
 		return trigger, nil
+	}
+	trigger := graphik.NewTrigger(triggerFn, []string{
+		`attributes.name.contains("Bob")`,
 	})
 	trigger.Serve(ctx, &flags.PluginFlags{
 		BindGrpc: ":8080",
