@@ -11,10 +11,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
 	"time"
 )
-
-const methodCtxKey = "x-grpc-full-method"
 
 func (r *Runtime) UnaryAuth() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
@@ -36,12 +35,12 @@ func (r *Runtime) UnaryAuth() grpc.UnaryServerInterceptor {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
-		ctx, identity, err := r.ToContext(ctx, payload)
+		ctx, identity, err := r.NodeToContext(ctx, payload)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
-		ctx = context.WithValue(ctx, methodCtxKey, info.FullMethod)
+		ctx = r.MethodToContext(ctx, info.FullMethod)
 		if len(r.authorizers) > 0 {
 			now := time.Now()
 			intercept := &apipb.RequestIntercept{
@@ -103,12 +102,12 @@ func (r *Runtime) StreamAuth() grpc.StreamServerInterceptor {
 		if val, ok := payload["exp"].(float64); ok && int64(val) < time.Now().Unix() {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
-		ctx, identity, err := r.ToContext(ss.Context(), payload)
+		ctx, identity, err := r.NodeToContext(ss.Context(), payload)
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
-		ctx = context.WithValue(ctx, methodCtxKey, info.FullMethod)
+		ctx = r.MethodToContext(ss.Context(), info.FullMethod)
 		if len(r.authorizers) > 0 {
 			now := time.Now()
 			intercept := &apipb.RequestIntercept{
@@ -146,4 +145,57 @@ func (r *Runtime) StreamAuth() grpc.StreamServerInterceptor {
 
 		return handler(srv, wrapped)
 	}
+}
+
+const (
+	authCtxKey   = "x-graphik-auth-ctx"
+	identityType = "identity"
+	idClaim      = "sub"
+	methodCtxKey = "x-grpc-full-method"
+)
+
+func (a *Runtime) NodeToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
+	var err error
+	n, err := a.graph.GetNode(ctx, &apipb.Path{
+		Gtype: identityType,
+		Gid:   payload[idClaim].(string),
+	})
+	if err != nil || n == nil {
+		strct, _ := structpb.NewStruct(payload)
+		n, err = a.graph.CreateNode(ctx, &apipb.NodeConstructor{
+			Path: &apipb.Path{
+				Gtype: identityType,
+				Gid:   payload[idClaim].(string),
+			},
+			Attributes: strct,
+		})
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	return context.WithValue(ctx, authCtxKey, n), n, nil
+}
+
+func (s *Runtime) NodeContext(ctx context.Context) *apipb.Node {
+	val, ok := ctx.Value(authCtxKey).(*apipb.Node)
+	if ok {
+		return val
+	}
+	val2, ok := ctx.Value(authCtxKey).(apipb.Node)
+	if ok {
+		return &val2
+	}
+	return nil
+}
+
+func (r *Runtime) MethodContext(ctx context.Context) string {
+	val, ok := ctx.Value(methodCtxKey).(string)
+	if ok {
+		return val
+	}
+	return ""
+}
+
+func (r *Runtime) MethodToContext(ctx context.Context, path string) context.Context {
+	return context.WithValue(ctx, methodCtxKey, path)
 }

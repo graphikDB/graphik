@@ -244,6 +244,49 @@ func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *ap
 	return nil
 }
 
+func (g *GraphStore) CreateNode(ctx context.Context, constructor *apipb.NodeConstructor) (*apipb.Node, error) {
+	var err error
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	now := time.Now()
+	if constructor.Path.GetGid() == "" {
+		constructor.Path.Gid = uuid.New().String()
+	}
+
+	node := &apipb.Node{
+		Path:       constructor.GetPath(),
+		Attributes: constructor.GetAttributes(),
+		Metadata: &apipb.Metadata{
+			CreatedAt: now.UnixNano(),
+			UpdatedAt: now.UnixNano(),
+			UpdatedBy: nil,
+			Sequence:  0,
+		},
+	}
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+
+		nodeBucket := tx.Bucket(storage.DbNodes)
+		bucket := nodeBucket.Bucket([]byte(node.GetPath().GetGtype()))
+		if bucket == nil {
+			bucket, err = nodeBucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
+			if err != nil {
+				return err
+			}
+		}
+		seq, _ := bucket.NextSequence()
+		node.Metadata.Sequence = seq
+		bits, err := proto.Marshal(node)
+		if err != nil {
+			return err
+		}
+		return bucket.Put([]byte(node.GetPath().GetGid()), bits)
+	}); err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
 func (g *GraphStore) SetNode(ctx context.Context, node *apipb.Node) (*apipb.Node, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
