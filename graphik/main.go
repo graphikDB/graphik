@@ -35,12 +35,9 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
-	runtim, err := runtime.New(ctx, cfg)
-	if err != nil {
-		logger.Error("failed to create runtime", zap.Error(errors.WithStack(err)))
-		return
-	}
-	defer runtim.Close()
+	m := machine.New(ctx)
+	defer m.Close()
+	service.NewGraphStore(ctx)
 	router := http.NewServeMux()
 	if cfg.Metrics {
 		router.Handle("/metrics", promhttp.Handler())
@@ -55,7 +52,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		Handler: router,
 	}
 
-	runtim.Go(func(routine machine.Routine) {
+	m.Go(func(routine machine.Routine) {
 		lis, err := net.Listen("tcp", cfg.BindHTTP)
 		if err != nil {
 			logger.Error("failed to create http server listener", zap.Error(err))

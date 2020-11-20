@@ -1,4 +1,4 @@
-package runtime
+package service
 
 import (
 	"context"
@@ -15,13 +15,20 @@ import (
 	"time"
 )
 
-func (r *Runtime) UnaryAuth() grpc.UnaryServerInterceptor {
+const (
+	authCtxKey   = "x-graphik-auth-ctx"
+	identityType = "identity"
+	idClaim      = "sub"
+	methodCtxKey = "x-grpc-full-method"
+)
+
+func (r *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
-		payload, err := r.Config().VerifyJWT(token)
+		payload, err := r.auth.VerifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -86,13 +93,13 @@ func (r *Runtime) UnaryAuth() grpc.UnaryServerInterceptor {
 	}
 }
 
-func (r *Runtime) StreamAuth() grpc.StreamServerInterceptor {
+func (r *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
 			return err
 		}
-		payload, err := r.Config().VerifyJWT(token)
+		payload, err := r.auth.VerifyJWT(token)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -147,22 +154,15 @@ func (r *Runtime) StreamAuth() grpc.StreamServerInterceptor {
 	}
 }
 
-const (
-	authCtxKey   = "x-graphik-auth-ctx"
-	identityType = "identity"
-	idClaim      = "sub"
-	methodCtxKey = "x-grpc-full-method"
-)
-
-func (a *Runtime) NodeToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
+func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
 	var err error
-	n, err := a.graph.GetNode(ctx, &apipb.Path{
+	n, err := a.GetNode(ctx, &apipb.Path{
 		Gtype: identityType,
 		Gid:   payload[idClaim].(string),
 	})
 	if err != nil || n == nil {
 		strct, _ := structpb.NewStruct(payload)
-		n, err = a.graph.CreateNode(ctx, &apipb.NodeConstructor{
+		n, err = a.CreateNode(ctx, &apipb.NodeConstructor{
 			Path: &apipb.Path{
 				Gtype: identityType,
 				Gid:   payload[idClaim].(string),
@@ -176,7 +176,7 @@ func (a *Runtime) NodeToContext(ctx context.Context, payload map[string]interfac
 	return context.WithValue(ctx, authCtxKey, n), n, nil
 }
 
-func (s *Runtime) NodeContext(ctx context.Context) *apipb.Node {
+func (s *GraphStore) NodeContext(ctx context.Context) *apipb.Node {
 	val, ok := ctx.Value(authCtxKey).(*apipb.Node)
 	if ok {
 		return val
@@ -188,7 +188,7 @@ func (s *Runtime) NodeContext(ctx context.Context) *apipb.Node {
 	return nil
 }
 
-func (r *Runtime) MethodContext(ctx context.Context) string {
+func (r *GraphStore) MethodContext(ctx context.Context) string {
 	val, ok := ctx.Value(methodCtxKey).(string)
 	if ok {
 		return val
@@ -196,6 +196,6 @@ func (r *Runtime) MethodContext(ctx context.Context) string {
 	return ""
 }
 
-func (r *Runtime) MethodToContext(ctx context.Context, path string) context.Context {
+func (r *GraphStore) MethodToContext(ctx context.Context, path string) context.Context {
 	return context.WithValue(ctx, methodCtxKey, path)
 }
