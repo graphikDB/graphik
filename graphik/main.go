@@ -31,7 +31,7 @@ func main() {
 }
 
 func run(ctx context.Context, cfg *flags.Flags) {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
