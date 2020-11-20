@@ -189,6 +189,16 @@ func (m *Message) FromMap(data map[string]interface{}) {
 	}
 }
 
+func (r *Interception) AsMap() map[string]interface{} {
+	return map[string]interface{}{
+		"method":    r.GetMethod(),
+		"identity":  r.GetIdentity().AsMap(),
+		"request":   r.GetRequest().AsMap(),
+		"timestamp": r.GetTimestamp(),
+		"timing":    r.GetTiming(),
+	}
+}
+
 func (p *Paths) Sort() {
 	s := sortable.Sortable{
 		LenFunc: func() int {

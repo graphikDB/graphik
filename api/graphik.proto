@@ -183,15 +183,6 @@ message SubGraphFilter {
   Filter edges =2 [(validator.field) = {msg_exists : true}];
 }
 
-// StateChange represents any mutation in the Graph
-message StateChange {
-  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Op op =2;
-  Node identity =3;
-  google.protobuf.Any mutation =4;
-  int64 timestamp =5;
-}
-
 // Graph is an array of nodes and edges
 message Graph {
   Nodes nodes =1;
@@ -228,18 +219,12 @@ message Message {
   int64 timestamp=4;
 }
 
-// Trigger is sent to registered external triggers before & after all graph state changes
-message Trigger {
-  StateChange state =1;
-  Timing timing =2;
-}
-
-// RequestIntercept is sent to registered external authorizers within a request middleware/interceptor
-message RequestIntercept {
+message Interception {
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
   Node identity =2;
   int64 timestamp =3;
-  google.protobuf.Any request = 4;
+  google.protobuf.Struct request = 4;
+  Timing timing =5;
 }
 
 // Decision is returned by registered external authorizers
@@ -316,13 +301,5 @@ service TriggerService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   // HandleTrigger mutates state changes
-  rpc HandleTrigger(Trigger) returns(StateChange){}
-}
-
-// AuthorizationService is an optional/custom external plugin that when added to a graphik instance,, authorizes inbound graph requests
-service AuthorizationService {
-  // Ping returns PONG if the server is health
-  rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // Authorize authorizes inbound graph requests
-  rpc Authorize(RequestIntercept) returns(Decision){}
+  rpc Mutate(Interception) returns(Interception){}
 }

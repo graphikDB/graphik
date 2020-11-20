@@ -340,25 +340,6 @@ func (this *SubGraphFilter) Validate() error {
 	}
 	return nil
 }
-
-var _regex_StateChange_Method = regexp.MustCompile(`^.{1,225}$`)
-
-func (this *StateChange) Validate() error {
-	if !_regex_StateChange_Method.MatchString(this.Method) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
-	}
-	if this.Identity != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Identity); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Identity", err)
-		}
-	}
-	if this.Mutation != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Mutation); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Mutation", err)
-		}
-	}
-	return nil
-}
 func (this *Graph) Validate() error {
 	if this.Nodes != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Nodes); err != nil {
@@ -440,19 +421,11 @@ func (this *Message) Validate() error {
 	}
 	return nil
 }
-func (this *Trigger) Validate() error {
-	if this.State != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.State); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("State", err)
-		}
-	}
-	return nil
-}
 
-var _regex_RequestIntercept_Method = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Interception_Method = regexp.MustCompile(`^.{1,225}$`)
 
-func (this *RequestIntercept) Validate() error {
-	if !_regex_RequestIntercept_Method.MatchString(this.Method) {
+func (this *Interception) Validate() error {
+	if !_regex_Interception_Method.MatchString(this.Method) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
 	}
 	if this.Identity != nil {

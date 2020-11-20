@@ -1,10 +1,10 @@
-package service
+package graph
 
 import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/autom8ter/graphik/vm"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
@@ -22,13 +22,13 @@ const (
 	methodCtxKey = "x-grpc-full-method"
 )
 
-func (r *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
+func (g *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
-		payload, err := r.auth.VerifyJWT(token)
+		payload, err := g.auth.VerifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -42,64 +42,42 @@ func (r *GraphStore) UnaryAuth() grpc.UnaryServerInterceptor {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
-		ctx, identity, err := r.NodeToContext(ctx, payload)
+		ctx, identity, err := g.NodeToContext(ctx, payload)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
-		ctx = r.MethodToContext(ctx, info.FullMethod)
-		if len(r.authorizers) > 0 {
+		ctx = g.MethodToContext(ctx, info.FullMethod)
+		if len(g.authorizers) > 0 {
 			now := time.Now()
-			intercept := &apipb.RequestIntercept{
+			intercept := &apipb.Interception{
 				Method:    info.FullMethod,
 				Identity:  identity,
 				Timestamp: now.UnixNano(),
 			}
-			switch r := req.(type) {
-			case *apipb.NodeConstructor:
-				intercept.Request = &apipb.RequestIntercept_NodeConstructor{NodeConstructor: r}
-			case *apipb.NodeConstructors:
-				intercept.Request = &apipb.RequestIntercept_NodeConstructors{NodeConstructors: r}
-			case *apipb.Paths:
-				intercept.Request = &apipb.RequestIntercept_Paths{Paths: r}
-			case *apipb.Path:
-				intercept.Request = &apipb.RequestIntercept_Path{Path: r}
-			case *apipb.Patches:
-				intercept.Request = &apipb.RequestIntercept_Patches{Patches: r}
-			case *apipb.Patch:
-				intercept.Request = &apipb.RequestIntercept_Patch{Patch: r}
-			case *apipb.Filter:
-				intercept.Request = &apipb.RequestIntercept_Filter{Filter: r}
-			case *apipb.ChannelFilter:
-				intercept.Request = &apipb.RequestIntercept_ChannelFilter{ChannelFilter: r}
-			case *apipb.RaftNode:
-				intercept.Request = &apipb.RequestIntercept_RaftNode{RaftNode: r}
-			case *apipb.SubGraphFilter:
-				intercept.Request = &apipb.RequestIntercept_SubgraphFilter{SubgraphFilter: r}
-			case *empty.Empty:
-				intercept.Request = &apipb.RequestIntercept_Empty{Empty: r}
+			if val, ok := req.(apipb.Mapper); ok {
+				intercept.Request = apipb.NewStruct(val.AsMap())
 			}
-			for _, plugin := range r.authorizers {
-				resp, err := plugin.Authorize(ctx, intercept)
-				if err != nil {
-					return nil, err
-				}
-				if !resp.Value {
-					return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
-				}
+			result, err := vm.Eval(g.authorizers, intercept)
+			if err != nil {
+				return nil, err
+			}
+			if !result {
+				return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
 			}
 		}
 		return handler(ctx, req)
 	}
 }
 
-func (r *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
+func (g *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
 			return err
 		}
-		payload, err := r.auth.VerifyJWT(token)
+
+		payload, err := g.auth.VerifyJWT(token)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -109,42 +87,28 @@ func (r *GraphStore) StreamAuth() grpc.StreamServerInterceptor {
 		if val, ok := payload["exp"].(float64); ok && int64(val) < time.Now().Unix() {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
-		ctx, identity, err := r.NodeToContext(ss.Context(), payload)
+		ctx, identity, err := g.NodeToContext(ss.Context(), payload)
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
-		ctx = r.MethodToContext(ss.Context(), info.FullMethod)
-		if len(r.authorizers) > 0 {
+		ctx = g.MethodToContext(ss.Context(), info.FullMethod)
+		if len(g.authorizers) > 0 {
 			now := time.Now()
-			intercept := &apipb.RequestIntercept{
+			intercept := &apipb.Interception{
 				Method:    info.FullMethod,
 				Identity:  identity,
 				Timestamp: now.UnixNano(),
 			}
-			switch r := srv.(type) {
-			case *apipb.NodeConstructor:
-				intercept.Request = &apipb.RequestIntercept_NodeConstructor{NodeConstructor: r}
-			case *apipb.NodeConstructors:
-				intercept.Request = &apipb.RequestIntercept_NodeConstructors{NodeConstructors: r}
-			case *apipb.Paths:
-				intercept.Request = &apipb.RequestIntercept_Paths{Paths: r}
-			case *apipb.Path:
-				intercept.Request = &apipb.RequestIntercept_Path{Path: r}
-			case *apipb.Patches:
-				intercept.Request = &apipb.RequestIntercept_Patches{Patches: r}
-			case *apipb.Patch:
-				intercept.Request = &apipb.RequestIntercept_Patch{Patch: r}
-			case *apipb.Filter:
-				intercept.Request = &apipb.RequestIntercept_Filter{Filter: r}
-			case *apipb.ChannelFilter:
-				intercept.Request = &apipb.RequestIntercept_ChannelFilter{ChannelFilter: r}
-			case *apipb.RaftNode:
-				intercept.Request = &apipb.RequestIntercept_RaftNode{RaftNode: r}
-			case *apipb.SubGraphFilter:
-				intercept.Request = &apipb.RequestIntercept_SubgraphFilter{SubgraphFilter: r}
-			case *empty.Empty:
-				intercept.Request = &apipb.RequestIntercept_Empty{Empty: r}
+			if val, ok := srv.(apipb.Mapper); ok {
+				intercept.Request = apipb.NewStruct(val.AsMap())
+			}
+			result, err := vm.Eval(g.authorizers, intercept)
+			if err != nil {
+				return err
+			}
+			if !result {
+				return status.Error(codes.PermissionDenied, "request authorization = denied")
 			}
 		}
 		wrapped := grpc_middleware.WrapServerStream(ss)
@@ -162,7 +126,7 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 	})
 	if err != nil || n == nil {
 		strct, _ := structpb.NewStruct(payload)
-		n, err = a.CreateNode(ctx, &apipb.NodeConstructor{
+		n, err = a.createIdentity(ctx, &apipb.NodeConstructor{
 			Path: &apipb.Path{
 				Gtype: identityType,
 				Gid:   payload[idClaim].(string),
@@ -172,6 +136,9 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 		if err != nil {
 			return nil, nil, err
 		}
+	}
+	if n == nil {
+		panic("empty node")
 	}
 	return context.WithValue(ctx, authCtxKey, n), n, nil
 }

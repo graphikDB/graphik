@@ -48,7 +48,11 @@ func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Con
 		return ctx, err
 	}
 	id := token.Extra("id_token")
-	ctx = metadata.AppendToOutgoingContext(context.Background(), "Authorization", fmt.Sprintf("Bearer %v", id))
+	if id != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %v", id))
+	} else {
+		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %v", token.AccessToken))
+	}
 	return ctx, nil
 }
 
@@ -142,10 +146,6 @@ func (c *Client) SubGraph(ctx context.Context, in *apipb.SubGraphFilter) (*apipb
 
 func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {
 	return c.graph.Ping(ctx, in, opts...)
-}
-
-func (c *Client) JoinCluster(ctx context.Context, in *apipb.RaftNode, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.JoinCluster(ctx, in, opts...)
 }
 
 func (c *Client) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Schema, error) {

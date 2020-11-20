@@ -4,15 +4,13 @@ import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
+	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/runtime"
-	"github.com/autom8ter/graphik/service"
 	"github.com/autom8ter/machine"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -37,7 +35,12 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	defer signal.Stop(interrupt)
 	m := machine.New(ctx)
 	defer m.Close()
-	service.NewGraphStore(ctx)
+	g, err := graph.NewGraphStore(ctx, cfg)
+	if err != nil {
+		logger.Error("failed to create graph", zap.Error(err))
+		return
+	}
+	defer g.Close()
 	router := http.NewServeMux()
 	if cfg.Metrics {
 		router.Handle("/metrics", promhttp.Handler())
@@ -72,22 +75,22 @@ func run(ctx context.Context, cfg *flags.Flags) {
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger.Logger()),
 			grpc_validator.UnaryServerInterceptor(),
-			runtim.UnaryAuth(),
+			g.UnaryAuth(),
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(logger.Logger()),
 			grpc_validator.StreamServerInterceptor(),
-			runtim.StreamAuth(),
+			g.StreamAuth(),
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
 
-	apipb.RegisterGraphServiceServer(gserver, service.NewGraph(runtim))
+	apipb.RegisterGraphServiceServer(gserver, g)
 	grpc_prometheus.Register(gserver)
 
-	runtim.Go(func(routine machine.Routine) {
+	m.Go(func(routine machine.Routine) {
 		lis, err := net.Listen("tcp", cfg.BindGrpc)
 		if err != nil {
 			logger.Error("failed to create gRPC server listener", zap.Error(err))
@@ -103,10 +106,10 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	})
 	select {
 	case <-interrupt:
-		runtim.Cancel()
+		m.Cancel()
 		break
 	case <-ctx.Done():
-		runtim.Cancel()
+		m.Cancel()
 		break
 	}
 
@@ -129,6 +132,6 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	case <-stopped:
 		t.Stop()
 	}
-	runtim.Wait()
+	m.Wait()
 	logger.Info("shutdown successful")
 }
