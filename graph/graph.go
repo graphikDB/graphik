@@ -124,7 +124,7 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 		auth:        jwks,
 		closers:     closers,
 		closeOnce:   sync.Once{},
-		initOnce: sync.Once{},
+		initOnce:    sync.Once{},
 	}
 	if err := g.init(ctx); err != nil {
 		return nil, err
@@ -1286,7 +1286,7 @@ func (g *GraphStore) init(ctx context.Context) error {
 		defer tx.Rollback()
 
 		// Create all the buckets
-		_, err = tx.CreateBucketIfNotExists(dbNodes);
+		_, err = tx.CreateBucketIfNotExists(dbNodes)
 		if err != nil {
 			return
 		}
@@ -1305,8 +1305,8 @@ func (g *GraphStore) init(ctx context.Context) error {
 		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(5*time.Minute))))
 		err = g.RangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
 			g.mu.Lock()
-			g.edgesFrom[e.From.String()]= append(g.edgesFrom[e.From.String()], e.Path)
-			g.edgesTo[e.To.String()]= append(g.edgesTo[e.To.String()], e.Path)
+			g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
+			g.edgesTo[e.To.String()] = append(g.edgesTo[e.To.String()], e.Path)
 			g.mu.Unlock()
 			return true
 		})

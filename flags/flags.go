@@ -15,7 +15,6 @@ type PluginFlags struct {
 }
 
 type Flags struct {
-
 	JWKS        []string
 	StoragePath string
 	Metrics     bool

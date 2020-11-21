@@ -118,7 +118,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		}
 	})
 	m.Go(func(routine machine.Routine) {
-		if err := cm.Serve(); err !=nil {
+		if err := cm.Serve(); err != nil {
 			logger.Error("", zap.Error(err))
 		}
 	})

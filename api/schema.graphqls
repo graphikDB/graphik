@@ -54,11 +54,15 @@ type EdgeDetail {
   metadata: Metadata
 }
 
+type EdgeDetails {
+  edges: [EdgeDetail!]
+}
+
 type NodeDetail {
   path: Path!
   attributes: Struct
-  edges_from: [EdgeDetail!]
-  edges_to: [EdgeDetail!]
+  edges_from: EdgeDetails
+  edges_to: EdgeDetails
   metadata: Metadata
 }
 
@@ -96,6 +100,13 @@ input MeFilter {
   edges_to: Filter
 }
 
+input EdgeFilter {
+  node_path: PathInput!
+  gtype: String!
+  expressions: [String!],
+  limit: Int!
+}
+
 input Patch {
   path: PathInput!
   attributes: Struct!
@@ -113,6 +124,11 @@ type Mutation {
 type Query {
   ping(input: Empty): Pong!
   getSchema(input: Empty): Schema!
+  me(input: MeFilter): NodeDetail!
   getNode(input: PathInput!): Node!
   searchNodes(input: Filter!): Nodes!
+  getEdge(input: PathInput!): Edge!
+  searchEdges(input: Filter!): Edges!
+  edgesFrom(input: EdgeFilter!): Edges!
+  edgesTo(input: EdgeFilter!): Edges!
 }

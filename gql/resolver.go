@@ -14,7 +14,7 @@ import (
 
 type Resolver struct {
 	client *graphik.Client
-	cors *cors.Cors
+	cors   *cors.Cors
 }
 
 func NewResolver(client *graphik.Client, cors *cors.Cors) *Resolver {

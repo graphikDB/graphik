@@ -5,15 +5,12 @@ package gql
 
 import (
 	"context"
-	"fmt"
-
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/gql/generated"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input apipb.NodeConstructor) (*apipb.Node, error) {
-
 	return r.client.CreateNode(ctx, &input)
 }
 
@@ -37,20 +34,16 @@ func (r *mutationResolver) DelEdge(ctx context.Context, input apipb.Path) (*empt
 	return r.client.DelEdge(ctx, &input)
 }
 
-func (r *nodeDetailResolver) EdgesFrom(ctx context.Context, obj *apipb.NodeDetail) ([]*apipb.EdgeDetail, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-func (r *nodeDetailResolver) EdgesTo(ctx context.Context, obj *apipb.NodeDetail) ([]*apipb.EdgeDetail, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {
 	return r.client.Ping(ctx, &emptypb.Empty{})
 }
 
 func (r *queryResolver) GetSchema(ctx context.Context, input *emptypb.Empty) (*apipb.Schema, error) {
 	return r.client.GetSchema(ctx, &emptypb.Empty{})
+}
+
+func (r *queryResolver) Me(ctx context.Context, input *apipb.MeFilter) (*apipb.NodeDetail, error) {
+	return r.client.Me(ctx, input)
 }
 
 func (r *queryResolver) GetNode(ctx context.Context, input apipb.Path) (*apipb.Node, error) {
@@ -61,15 +54,27 @@ func (r *queryResolver) SearchNodes(ctx context.Context, input apipb.Filter) (*a
 	return r.client.SearchNodes(ctx, &input)
 }
 
+func (r *queryResolver) GetEdge(ctx context.Context, input apipb.Path) (*apipb.Edge, error) {
+	return r.client.GetEdge(ctx, &input)
+}
+
+func (r *queryResolver) SearchEdges(ctx context.Context, input apipb.Filter) (*apipb.Edges, error) {
+	return r.client.SearchEdges(ctx, &input)
+}
+
+func (r *queryResolver) EdgesFrom(ctx context.Context, input apipb.EdgeFilter) (*apipb.Edges, error) {
+	return r.client.EdgesFrom(ctx, &input)
+}
+
+func (r *queryResolver) EdgesTo(ctx context.Context, input apipb.EdgeFilter) (*apipb.Edges, error) {
+	return r.client.EdgesFrom(ctx, &input)
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-
-// NodeDetail returns generated.NodeDetailResolver implementation.
-func (r *Resolver) NodeDetail() generated.NodeDetailResolver { return &nodeDetailResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
-type nodeDetailResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
