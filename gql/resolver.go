@@ -4,6 +4,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/autom8ter/graphik"
 	"github.com/autom8ter/graphik/gql/generated"
+	"github.com/rs/cors"
 	"google.golang.org/grpc/metadata"
 	"net/http"
 )
@@ -13,18 +14,19 @@ import (
 
 type Resolver struct {
 	client *graphik.Client
+	cors *cors.Cors
 }
 
-func NewResolver(client *graphik.Client) *Resolver {
-	return &Resolver{client: client}
+func NewResolver(client *graphik.Client, cors *cors.Cors) *Resolver {
+	return &Resolver{client: client, cors: cors}
 }
 
 func (r *Resolver) QueryHandler() http.Handler {
-	return r.authMiddleware(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
+	return r.cors.Handler(r.authMiddleware(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
 		Resolvers:  r,
 		Directives: generated.DirectiveRoot{},
 		Complexity: generated.ComplexityRoot{},
-	})))
+	}))))
 }
 
 func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {

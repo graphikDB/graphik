@@ -15,6 +15,8 @@ import (
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/cors"
+	"github.com/soheilhy/cmux"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"net"
@@ -30,6 +32,8 @@ func main() {
 	run(context.Background(), flags.Global)
 }
 
+const bind = ":7820"
+
 func run(ctx context.Context, cfg *flags.Flags) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -44,7 +48,6 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		return
 	}
 	defer g.Close()
-	self := fmt.Sprintf("localhost%v", cfg.BindGrpc)
 
 	router := http.NewServeMux()
 	if cfg.Metrics {
@@ -55,30 +58,31 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	}
-	if cfg.Graphql {
-		client, err := graphik.NewClient(context.Background(), self, graphik.WithRetry(1))
-		if err != nil {
-			logger.Error("failed to setup graphql", zap.Error(err))
-			return
-		}
-		resolver := gql.NewResolver(client)
-		router.Handle("/query", resolver.QueryHandler())
+	lis, err := net.Listen("tcp", bind)
+	if err != nil {
+		logger.Error("failed to create http server listener", zap.Error(err))
+		return
 	}
+	defer lis.Close()
+	self := fmt.Sprintf("localhost%v", bind)
+	client, err := graphik.NewClient(context.Background(), self, graphik.WithRetry(1))
+	if err != nil {
+		logger.Error("failed to setup graphql", zap.Error(err))
+		return
+	}
+	resolver := gql.NewResolver(client, cors.AllowAll())
+	router.Handle("/query", resolver.QueryHandler())
 	server := &http.Server{
 		Handler: router,
 	}
-
+	cm := cmux.New(lis)
 	m.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", cfg.BindHTTP)
-		if err != nil {
-			logger.Error("failed to create http server listener", zap.Error(err))
-			return
-		}
-		defer lis.Close()
+		hmatcher := cm.Match(cmux.HTTP1())
+		defer hmatcher.Close()
 		logger.Info("starting http server",
-			zap.String("address", lis.Addr().String()),
+			zap.String("address", hmatcher.Addr().String()),
 		)
-		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
+		if err := server.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
 			logger.Error("http server failure", zap.Error(err))
 		}
 	})
@@ -104,17 +108,18 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	grpc_prometheus.Register(gserver)
 
 	m.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", cfg.BindGrpc)
-		if err != nil {
-			logger.Error("failed to create gRPC server listener", zap.Error(err))
-			return
-		}
-		defer lis.Close()
+		gmatcher := cm.Match(cmux.HTTP2())
+		defer gmatcher.Close()
 		logger.Info("starting gRPC server",
 			zap.String("address", lis.Addr().String()),
 		)
-		if err := gserver.Serve(lis); err != nil && err != http.ErrServerClosed {
+		if err := gserver.Serve(gmatcher); err != nil && err != http.ErrServerClosed {
 			logger.Error("gRPC server failure", zap.Error(err))
+		}
+	})
+	m.Go(func(routine machine.Routine) {
+		if err := cm.Serve(); err !=nil {
+			logger.Error("", zap.Error(err))
 		}
 	})
 	select {

@@ -17,6 +17,8 @@ require (
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v0.9.3
+	github.com/rs/cors v1.6.0
+	github.com/soheilhy/cmux v0.1.4
 	github.com/spf13/pflag v1.0.3
 	github.com/vektah/gqlparser/v2 v2.1.0
 	go.etcd.io/bbolt v1.3.5

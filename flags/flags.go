@@ -15,12 +15,10 @@ type PluginFlags struct {
 }
 
 type Flags struct {
-	BindGrpc    string
-	BindHTTP    string
+
 	JWKS        []string
 	StoragePath string
 	Metrics     bool
-	Graphql     bool
 	Triggers    []string
 	Authorizers []string
 }
@@ -29,12 +27,9 @@ var Global = &Flags{}
 
 func init() {
 	godotenv.Load()
-	pflag.CommandLine.StringVar(&Global.BindGrpc, "grpc.bind", ":7820", "grpc server bind address")
-	pflag.CommandLine.StringVar(&Global.BindHTTP, "http.bind", ":7830", "http server bind address")
 	pflag.CommandLine.StringVar(&Global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
 	pflag.CommandLine.StringSliceVar(&Global.JWKS, "jwks", strings.Split(os.Getenv("GRAPHIK_JWKS_URIS"), ","), "authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)")
 	pflag.CommandLine.BoolVar(&Global.Metrics, "metrics", os.Getenv("GRAPHIK_METRICS") == "true", "enable prometheus & pprof metrics")
-	pflag.CommandLine.BoolVar(&Global.Graphql, "graphql", true, "enable graphql endpoints & playground")
 	pflag.CommandLine.StringSliceVar(&Global.Triggers, "triggers", strings.Split(os.Getenv("GRAPHIK_TRIGGERS"), ","), "registered triggers (env: GRAPHIK_TRIGGERS)")
 	pflag.CommandLine.StringSliceVar(&Global.Authorizers, "authorizers", strings.Split(os.Getenv("GRAPHIK_AUTHORIZERS"), ","), "registered authorizers (env: GRAPHIK_AUTHORIZERS)")
 	pflag.Parse()
