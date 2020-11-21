@@ -71,6 +71,13 @@ type Schema {
   node_types: [String!]
 }
 
+type Message {
+  channel: String!
+  data: Struct!
+  sender: Path!
+  timestamp: Int!
+}
+
 input NodeConstructor {
   path: PathInput!
   attributes: Struct
@@ -107,9 +114,19 @@ input EdgeFilter {
   limit: Int!
 }
 
+input ChannelFilter {
+  channel: String!
+  expressions: [String]
+}
+
 input Patch {
   path: PathInput!
   attributes: Struct!
+}
+
+input OutboundMessage {
+  channel: String!
+  data: Struct!
 }
 
 type Mutation {
@@ -119,6 +136,7 @@ type Mutation {
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
   delEdge(input: PathInput!): Empty!
+  publish(input: OutboundMessage): Empty!
 }
 
 type Query {
@@ -131,4 +149,8 @@ type Query {
   searchEdges(input: Filter!): Edges!
   edgesFrom(input: EdgeFilter!): Edges!
   edgesTo(input: EdgeFilter!): Edges!
+}
+
+type Subscription {
+  subscribe(input: ChannelFilter!): Message!
 }

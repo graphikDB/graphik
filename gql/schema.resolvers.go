@@ -5,8 +5,11 @@ package gql
 
 import (
 	"context"
+
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/gql/generated"
+	"github.com/autom8ter/graphik/logger"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -32,6 +35,10 @@ func (r *mutationResolver) PatchEdge(ctx context.Context, input apipb.Patch) (*a
 
 func (r *mutationResolver) DelEdge(ctx context.Context, input apipb.Path) (*emptypb.Empty, error) {
 	return r.client.DelEdge(ctx, &input)
+}
+
+func (r *mutationResolver) Publish(ctx context.Context, input *apipb.OutboundMessage) (*emptypb.Empty, error) {
+	return r.client.Publish(ctx, input)
 }
 
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {
@@ -70,11 +77,40 @@ func (r *queryResolver) EdgesTo(ctx context.Context, input apipb.EdgeFilter) (*a
 	return r.client.EdgesFrom(ctx, &input)
 }
 
+func (r *subscriptionResolver) Subscribe(ctx context.Context, input apipb.ChannelFilter) (<-chan *apipb.Message, error) {
+	ch := make(chan *apipb.Message)
+	stream, err := r.client.Subscribe(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				close(ch)
+				return
+			default:
+				msg, err := stream.Recv()
+				if err != nil {
+					logger.Error("failed to receive subsription message", zap.Error(err))
+					continue
+				}
+				ch <- msg
+			}
+		}
+	}()
+	return ch, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// Subscription returns generated.SubscriptionResolver implementation.
+func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }

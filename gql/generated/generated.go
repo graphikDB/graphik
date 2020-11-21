@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -40,6 +41,7 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
+	Subscription() SubscriptionResolver
 }
 
 type DirectiveRoot struct {
@@ -72,6 +74,13 @@ type ComplexityRoot struct {
 		Edges func(childComplexity int) int
 	}
 
+	Message struct {
+		Channel   func(childComplexity int) int
+		Data      func(childComplexity int) int
+		Sender    func(childComplexity int) int
+		Timestamp func(childComplexity int) int
+	}
+
 	Metadata struct {
 		CreatedAt func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
@@ -85,6 +94,7 @@ type ComplexityRoot struct {
 		DelNode    func(childComplexity int, input apipb.Path) int
 		PatchEdge  func(childComplexity int, input apipb.Patch) int
 		PatchNode  func(childComplexity int, input apipb.Patch) int
+		Publish    func(childComplexity int, input *apipb.OutboundMessage) int
 	}
 
 	Node struct {
@@ -130,6 +140,10 @@ type ComplexityRoot struct {
 		EdgeTypes func(childComplexity int) int
 		NodeTypes func(childComplexity int) int
 	}
+
+	Subscription struct {
+		Subscribe func(childComplexity int, input apipb.ChannelFilter) int
+	}
 }
 
 type MutationResolver interface {
@@ -139,6 +153,7 @@ type MutationResolver interface {
 	CreateEdge(ctx context.Context, input apipb.EdgeConstructor) (*apipb.Edge, error)
 	PatchEdge(ctx context.Context, input apipb.Patch) (*apipb.Edge, error)
 	DelEdge(ctx context.Context, input apipb.Path) (*emptypb.Empty, error)
+	Publish(ctx context.Context, input *apipb.OutboundMessage) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error)
@@ -150,6 +165,9 @@ type QueryResolver interface {
 	SearchEdges(ctx context.Context, input apipb.Filter) (*apipb.Edges, error)
 	EdgesFrom(ctx context.Context, input apipb.EdgeFilter) (*apipb.Edges, error)
 	EdgesTo(ctx context.Context, input apipb.EdgeFilter) (*apipb.Edges, error)
+}
+type SubscriptionResolver interface {
+	Subscribe(ctx context.Context, input apipb.ChannelFilter) (<-chan *apipb.Message, error)
 }
 
 type executableSchema struct {
@@ -265,6 +283,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Edges.Edges(childComplexity), true
 
+	case "Message.channel":
+		if e.complexity.Message.Channel == nil {
+			break
+		}
+
+		return e.complexity.Message.Channel(childComplexity), true
+
+	case "Message.data":
+		if e.complexity.Message.Data == nil {
+			break
+		}
+
+		return e.complexity.Message.Data(childComplexity), true
+
+	case "Message.sender":
+		if e.complexity.Message.Sender == nil {
+			break
+		}
+
+		return e.complexity.Message.Sender(childComplexity), true
+
+	case "Message.timestamp":
+		if e.complexity.Message.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.Message.Timestamp(childComplexity), true
+
 	case "Metadata.created_at":
 		if e.complexity.Metadata.CreatedAt == nil {
 			break
@@ -357,6 +403,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.PatchNode(childComplexity, args["input"].(apipb.Patch)), true
+
+	case "Mutation.publish":
+		if e.complexity.Mutation.Publish == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_publish_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Publish(childComplexity, args["input"].(*apipb.OutboundMessage)), true
 
 	case "Node.attributes":
 		if e.complexity.Node.Attributes == nil {
@@ -564,6 +622,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Schema.NodeTypes(childComplexity), true
 
+	case "Subscription.subscribe":
+		if e.complexity.Subscription.Subscribe == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_subscribe_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.Subscribe(childComplexity, args["input"].(apipb.ChannelFilter)), true
+
 	}
 	return 0, false
 }
@@ -596,6 +666,23 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			first = false
 			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
 			var buf bytes.Buffer
+			data.MarshalGQL(&buf)
+
+			return &graphql.Response{
+				Data: buf.Bytes(),
+			}
+		}
+	case ast.Subscription:
+		next := ec._Subscription(ctx, rc.Operation.SelectionSet)
+
+		var buf bytes.Buffer
+		return func(ctx context.Context) *graphql.Response {
+			buf.Reset()
+			data := next()
+
+			if data == nil {
+				return nil
+			}
 			data.MarshalGQL(&buf)
 
 			return &graphql.Response{
@@ -701,6 +788,13 @@ type Schema {
   node_types: [String!]
 }
 
+type Message {
+  channel: String!
+  data: Struct!
+  sender: Path!
+  timestamp: Int!
+}
+
 input NodeConstructor {
   path: PathInput!
   attributes: Struct
@@ -737,9 +831,19 @@ input EdgeFilter {
   limit: Int!
 }
 
+input ChannelFilter {
+  channel: String!
+  expressions: [String]
+}
+
 input Patch {
   path: PathInput!
   attributes: Struct!
+}
+
+input OutboundMessage {
+  channel: String!
+  data: Struct!
 }
 
 type Mutation {
@@ -749,6 +853,7 @@ type Mutation {
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
   delEdge(input: PathInput!): Empty!
+  publish(input: OutboundMessage): Empty!
 }
 
 type Query {
@@ -762,7 +867,10 @@ type Query {
   edgesFrom(input: EdgeFilter!): Edges!
   edgesTo(input: EdgeFilter!): Edges!
 }
-`, BuiltIn: false},
+
+type Subscription {
+  subscribe(input: ChannelFilter!): Message!
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -852,6 +960,21 @@ func (ec *executionContext) field_Mutation_patchNode_args(ctx context.Context, r
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatch(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *apipb.OutboundMessage
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOOutboundMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐOutboundMessage(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1002,6 +1125,21 @@ func (ec *executionContext) field_Query_searchNodes_args(ctx context.Context, ra
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_subscribe_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 apipb.ChannelFilter
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNChannelFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐChannelFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1514,6 +1652,146 @@ func (ec *executionContext) _Edges_edges(ctx context.Context, field graphql.Coll
 	return ec.marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Message_channel(ctx context.Context, field graphql.CollectedField, obj *apipb.Message) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Message",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Channel, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Message_data(ctx context.Context, field graphql.CollectedField, obj *apipb.Message) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Message",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*structpb.Struct)
+	fc.Result = res
+	return ec.marshalNStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Message_sender(ctx context.Context, field graphql.CollectedField, obj *apipb.Message) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Message",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Sender, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Path)
+	fc.Result = res
+	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Message_timestamp(ctx context.Context, field graphql.CollectedField, obj *apipb.Message) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Message",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int64)
+	fc.Result = res
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Metadata_created_at(ctx context.Context, field graphql.CollectedField, obj *apipb.Metadata) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1846,6 +2124,48 @@ func (ec *executionContext) _Mutation_delEdge(ctx context.Context, field graphql
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().DelEdge(rctx, args["input"].(apipb.Path))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_publish_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Publish(rctx, args["input"].(*apipb.OutboundMessage))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2772,6 +3092,58 @@ func (ec *executionContext) _Schema_node_types(ctx context.Context, field graphq
 	res := resTmp.([]string)
 	fc.Result = res
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_subscribe_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().Subscribe(rctx, args["input"].(apipb.ChannelFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *apipb.Message)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMessage(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -3861,6 +4233,34 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputChannelFilter(ctx context.Context, obj interface{}) (apipb.ChannelFilter, error) {
+	var it apipb.ChannelFilter
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channel":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
+			it.Channel, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "expressions":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
+			it.Expressions, err = ec.unmarshalOString2ᚕstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, obj interface{}) (apipb.EdgeConstructor, error) {
 	var it apipb.EdgeConstructor
 	var asMap = obj.(map[string]interface{})
@@ -4040,6 +4440,34 @@ func (ec *executionContext) unmarshalInputNodeConstructor(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
 			it.Attributes, err = ec.unmarshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputOutboundMessage(ctx context.Context, obj interface{}) (apipb.OutboundMessage, error) {
+	var it apipb.OutboundMessage
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channel":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
+			it.Channel, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "data":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+			it.Data, err = ec.unmarshalNStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4247,6 +4675,48 @@ func (ec *executionContext) _Edges(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
+var messageImplementors = []string{"Message"}
+
+func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, obj *apipb.Message) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, messageImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Message")
+		case "channel":
+			out.Values[i] = ec._Message_channel(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "data":
+			out.Values[i] = ec._Message_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sender":
+			out.Values[i] = ec._Message_sender(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._Message_timestamp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var metadataImplementors = []string{"Metadata"}
 
 func (ec *executionContext) _Metadata(ctx context.Context, sel ast.SelectionSet, obj *apipb.Metadata) graphql.Marshaler {
@@ -4317,6 +4787,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "delEdge":
 			out.Values[i] = ec._Mutation_delEdge(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "publish":
+			out.Values[i] = ec._Mutation_publish(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4662,6 +5137,26 @@ func (ec *executionContext) _Schema(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
+var subscriptionImplementors = []string{"Subscription"}
+
+func (ec *executionContext) _Subscription(ctx context.Context, sel ast.SelectionSet) func() graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, subscriptionImplementors)
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Subscription",
+	})
+	if len(fields) != 1 {
+		ec.Errorf(ctx, "must subscribe to exactly one stream")
+		return nil
+	}
+
+	switch fields[0].Name {
+	case "subscribe":
+		return ec._Subscription_subscribe(ctx, fields[0])
+	default:
+		panic("unknown field " + strconv.Quote(fields[0].Name))
+	}
+}
+
 var __DirectiveImplementors = []string{"__Directive"}
 
 func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionSet, obj *introspection.Directive) graphql.Marshaler {
@@ -4922,6 +5417,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNChannelFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐChannelFilter(ctx context.Context, v interface{}) (apipb.ChannelFilter, error) {
+	res, err := ec.unmarshalInputChannelFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNEdge2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx context.Context, sel ast.SelectionSet, v apipb.Edge) graphql.Marshaler {
 	return ec._Edge(ctx, sel, &v)
 }
@@ -5009,6 +5509,35 @@ func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int64(ctx context.Context, v interface{}) (int64, error) {
+	res, err := graphql.UnmarshalInt64(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
+	res := graphql.MarshalInt64(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) marshalNMessage2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐMessage(ctx context.Context, sel ast.SelectionSet, v apipb.Message) graphql.Marshaler {
+	return ec._Message(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMessage(ctx context.Context, sel ast.SelectionSet, v *apipb.Message) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Message(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNNode2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx context.Context, sel ast.SelectionSet, v apipb.Node) graphql.Marshaler {
@@ -5583,6 +6112,14 @@ func (ec *executionContext) marshalONode2ᚕᚖgithubᚗcomᚋautom8terᚋgraphi
 	return ret
 }
 
+func (ec *executionContext) unmarshalOOutboundMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐOutboundMessage(ctx context.Context, v interface{}) (*apipb.OutboundMessage, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputOutboundMessage(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalOPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx context.Context, sel ast.SelectionSet, v *apipb.Path) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -5597,6 +6134,42 @@ func (ec *executionContext) unmarshalOString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v interface{}) ([]string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstring(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOString2string(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {

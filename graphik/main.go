@@ -70,7 +70,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		logger.Error("failed to setup graphql", zap.Error(err))
 		return
 	}
-	resolver := gql.NewResolver(client, cors.AllowAll())
+	resolver := gql.NewResolver(ctx, client, cors.AllowAll())
 	router.Handle("/query", resolver.QueryHandler())
 	server := &http.Server{
 		Handler: router,
