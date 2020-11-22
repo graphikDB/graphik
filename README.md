@@ -28,13 +28,14 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 ## Features
 
 - [x] 100% Go
-- [x] Native gRPC Support
-- [x] Native OAuth Support
+- [x] Native gRPC & GraphQl Support
+- [x] Built in GraphQl Playground
+- [x] Native OAuth Support & Single Sign On
 - [x] Persistant(bbolt LMDB)
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
-- [x] gRPC Based External Triggers
+- [x] gRPC Based External [Triggers](#triggers--optional-)
 - [x] Object metadata - Auto track created/updated timestamps & who is making updates to objects
 - [x] Loosely-Typed(mongo-esque)
 - [x] [Prometheus Metrics](https://prometheus.io/)
@@ -52,6 +53,7 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - go.etcd.io/bbolt
 - go.uber.org/zap
 - golang.org/x/oauth2
+- github.com/99designs/gqlgen
 
 ## API Spec
 
@@ -119,13 +121,14 @@ service GraphService {
 ## Flags
 
 ```text
-      --authorizers strings   registered authorizers (env: GRAPHIK_AUTHORIZERS)
-      --grpc.bind string      grpc server bind address (default ":7820")
-      --http.bind string      http server bind address (default ":7830")
-      --jwks strings          authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
-      --metrics               enable prometheus & pprof metrics
-      --storage string        persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
-      --triggers strings      registered triggers (env: GRAPHIK_TRIGGERS)
+      --allow-headers strings   cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
+      --allow-methods strings   cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
+      --allow-origins strings   cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
+      --authorizers strings     registered authorizers (env: GRAPHIK_AUTHORIZERS)
+      --jwks strings            authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
+      --metrics                 enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
+      --storage string          persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
+      --triggers strings        registered triggers (env: GRAPHIK_TRIGGERS)
 
 ```
 
@@ -189,3 +192,104 @@ Example:
 - [ ] Kubernetes Operator
 - [ ] Helm Chart
 
+
+## Example GraphQL Queries
+
+Ping
+
+```graphql
+query {
+  ping(input: {}) {
+    message
+  }
+}
+
+"""
+{
+  "data": {
+    "ping": {
+      "message": "PONG"
+    }
+  }
+}
+"""
+```
+
+Get Schema
+
+```graphql
+query {
+  getSchema(input: {}) {
+    node_types
+    edge_types
+  }
+}
+
+"""
+{
+  "data": {
+    "getSchema": {
+      "node_types": [
+        "cat",
+        "dog",
+        "human",
+        "identity"
+      ],
+      "edge_types": [
+        "owner"
+      ]
+    }
+  }
+}
+"""
+```
+Create Node
+```graphql
+mutation {
+  createNode(input: {
+    path: {
+      gtype: "cat"
+    }
+  	attributes: {
+      name: "pippen"
+    }
+  }){
+    attributes
+  }
+}
+```
+
+Get Node
+```graphql
+query {
+  getNode(input: {
+    gtype: "identity",
+    gid: "107146673535247272789"
+  }){
+   	path {
+      gid
+      gtype
+    }
+    attributes
+    metadata {
+      created_at
+      
+    }
+  }
+}
+```
+
+Search Nodes
+```graphql
+query {
+  searchNodes(input: {
+    gtype: "identity",
+    expressions: ["attributes.email.contains('coleman')"]
+    limit: 1
+  }){
+   	nodes {
+      attributes
+    }
+  }
+}
+```

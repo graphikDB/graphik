@@ -1,0 +1,156 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar Time
+scalar Struct
+scalar Empty
+scalar Cascade
+
+type Pong {
+  message: String!
+}
+
+type Path {
+  gtype: String!
+  gid: String!
+}
+
+type Metadata {
+  created_at: Int
+  updated_at: Int
+  updated_by: Path
+}
+
+type Node {
+  path: Path!
+  attributes: Struct
+  metadata: Metadata
+}
+
+type Nodes {
+  nodes: [Node!]
+}
+
+type Edge {
+  path: Path!
+  attributes: Struct
+  cascade: Cascade
+  from: Path!
+  to: Path!
+  metadata: Metadata
+}
+
+type Edges {
+  edges: [Edge!]
+}
+
+type EdgeDetail {
+  path: Path!
+  attributes: Struct
+  cascade: Cascade
+  from: Node!
+  to: Node!
+  metadata: Metadata
+}
+
+type EdgeDetails {
+  edges: [EdgeDetail!]
+}
+
+type NodeDetail {
+  path: Path!
+  attributes: Struct
+  edges_from: EdgeDetails
+  edges_to: EdgeDetails
+  metadata: Metadata
+}
+
+type Schema {
+  edge_types: [String!]
+  node_types: [String!]
+}
+
+type Message {
+  channel: String!
+  data: Struct!
+  sender: Path!
+  timestamp: Int!
+}
+
+input NodeConstructor {
+  path: PathInput!
+  attributes: Struct
+}
+
+input EdgeConstructor {
+  path: PathInput!
+  attributes: Struct
+  cascade: Cascade
+  from: PathInput!
+  to: PathInput!
+}
+
+input PathInput {
+  gtype: String!
+  gid: String
+}
+
+input Filter {
+  gtype: String!
+  expressions: [String!]
+  limit: Int!
+}
+
+input MeFilter {
+  edges_from: Filter
+  edges_to: Filter
+}
+
+input EdgeFilter {
+  node_path: PathInput!
+  gtype: String!
+  expressions: [String!],
+  limit: Int!
+}
+
+input ChannelFilter {
+  channel: String!
+  expressions: [String]
+}
+
+input Patch {
+  path: PathInput!
+  attributes: Struct!
+}
+
+input OutboundMessage {
+  channel: String!
+  data: Struct!
+}
+
+type Mutation {
+  createNode(input: NodeConstructor!): Node!
+  patchNode(input: Patch!): Node!
+  delNode(input: PathInput!): Empty!
+  createEdge(input: EdgeConstructor!): Edge!
+  patchEdge(input: Patch!): Edge!
+  delEdge(input: PathInput!): Empty!
+  publish(input: OutboundMessage): Empty!
+}
+
+type Query {
+  ping(input: Empty): Pong!
+  getSchema(input: Empty): Schema!
+  me(input: MeFilter): NodeDetail!
+  getNode(input: PathInput!): Node!
+  searchNodes(input: Filter!): Nodes!
+  getEdge(input: PathInput!): Edge!
+  searchEdges(input: Filter!): Edges!
+  edgesFrom(input: EdgeFilter!): Edges!
+  edgesTo(input: EdgeFilter!): Edges!
+}
+
+type Subscription {
+  subscribe(input: ChannelFilter!): Message!
+}

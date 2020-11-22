@@ -73,8 +73,8 @@ message Nodes {
 message NodeDetail {
   Path path =1;
   google.protobuf.Struct attributes =2;
-  map<string, EdgeDetails> edges_from =3;
-  map<string, EdgeDetails> edges_to =4;
+  EdgeDetails edges_from =3;
+  EdgeDetails edges_to =4;
   Metadata metadata =5;
 }
 

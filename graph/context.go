@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"go.etcd.io/bbolt"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -194,28 +197,44 @@ func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 }
 
 func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
-	var err error
-	n, err := a.GetNode(ctx, &apipb.Path{
+	path := &apipb.Path{
 		Gtype: identityType,
 		Gid:   payload[idClaim].(string),
-	})
-	if err != nil || n == nil {
+	}
+	var node apipb.Node
+	if err := a.db.View(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		bits := bucket.Get([]byte(path.Gid))
+		if err := proto.Unmarshal(bits, &node); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil && err != ErrNotFound {
+		return ctx, nil, err
+	}
+
+	if node.GetPath() == nil {
+		logger.Info("creating identity",
+			zap.String("gtype", path.GetGtype()),
+			zap.String("gid", path.GetGid()),
+		)
 		strct, _ := structpb.NewStruct(payload)
-		n, err = a.createIdentity(ctx, &apipb.NodeConstructor{
-			Path: &apipb.Path{
-				Gtype: identityType,
-				Gid:   payload[idClaim].(string),
-			},
+		nodeP, err := a.createIdentity(ctx, &apipb.NodeConstructor{
+			Path:       path,
 			Attributes: strct,
 		})
 		if err != nil {
 			return nil, nil, err
 		}
+		node = *nodeP
 	}
-	if n == nil {
+	if node.GetPath() == nil {
 		panic("empty node")
 	}
-	return context.WithValue(ctx, authCtxKey, n), n, nil
+	return context.WithValue(ctx, authCtxKey, node), &node, nil
 }
 
 func (s *GraphStore) NodeContext(ctx context.Context) *apipb.Node {

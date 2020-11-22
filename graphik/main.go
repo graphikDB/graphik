@@ -2,16 +2,24 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/autom8ter/graphik"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
+	"github.com/autom8ter/graphik/gql"
 	"github.com/autom8ter/graphik/graph"
+	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/cors"
+	"github.com/soheilhy/cmux"
+	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"net"
@@ -19,16 +27,46 @@ import (
 	"net/http/pprof"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 )
 
-func main() {
-	run(context.Background(), flags.Global)
+var global = &flags.Flags{}
+
+func init() {
+	godotenv.Load()
+	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
+	pflag.CommandLine.StringSliceVar(&global.JWKS, "jwks", stringSliceEnvOr("GRAPHIK_JWKS_URIS", nil), "authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)")
+	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", os.Getenv("GRAPHIK_METRICS") == "true", "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
+	pflag.CommandLine.StringSliceVar(&global.Triggers, "triggers", stringSliceEnvOr("GRAPHIK_TRIGGERS", nil), "registered triggers (env: GRAPHIK_TRIGGERS)")
+	pflag.CommandLine.StringSliceVar(&global.Authorizers, "authorizers", stringSliceEnvOr("GRAPHIK_AUTHORIZERS", nil), "registered authorizers (env: GRAPHIK_AUTHORIZERS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowedHeaders, "allow-headers", stringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowedOrigins, "allow-origins", stringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowedMethods, "allow-methods", stringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
+	pflag.Parse()
 }
 
+func stringSliceEnvOr(key string, defaul []string) []string {
+	if value := os.Getenv(key); value != "" {
+		values := strings.Split(value, ",")
+		if len(value) > 0 && values[0] != "" {
+			return values
+		}
+	} else {
+		return defaul
+	}
+	return nil
+}
+
+func main() {
+	run(context.Background(), global)
+}
+
+const bind = ":7820"
+
 func run(ctx context.Context, cfg *flags.Flags) {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
@@ -41,6 +79,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		return
 	}
 	defer g.Close()
+
 	router := http.NewServeMux()
 	if cfg.Metrics {
 		router.Handle("/metrics", promhttp.Handler())
@@ -50,22 +89,35 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 	}
-
+	lis, err := net.Listen("tcp", bind)
+	if err != nil {
+		logger.Error("failed to create http server listener", zap.Error(err))
+		return
+	}
+	defer lis.Close()
+	self := fmt.Sprintf("localhost%v", bind)
+	client, err := graphik.NewClient(context.Background(), self, graphik.WithRetry(1))
+	if err != nil {
+		logger.Error("failed to setup graphql", zap.Error(err))
+		return
+	}
+	resolver := gql.NewResolver(ctx, client, cors.New(cors.Options{
+		AllowedOrigins: global.AllowedOrigins,
+		AllowedMethods: global.AllowedMethods,
+		AllowedHeaders: global.AllowedMethods,
+	}))
+	router.Handle("/query", resolver.QueryHandler())
 	server := &http.Server{
 		Handler: router,
 	}
-
+	cm := cmux.New(lis)
 	m.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", cfg.BindHTTP)
-		if err != nil {
-			logger.Error("failed to create http server listener", zap.Error(err))
-			return
-		}
-		defer lis.Close()
+		hmatcher := cm.Match(cmux.HTTP1())
+		defer hmatcher.Close()
 		logger.Info("starting http server",
-			zap.String("address", lis.Addr().String()),
+			zap.String("address", hmatcher.Addr().String()),
 		)
-		if err := server.Serve(lis); err != nil && err != http.ErrServerClosed {
+		if err := server.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
 			logger.Error("http server failure", zap.Error(err))
 		}
 	})
@@ -91,17 +143,18 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	grpc_prometheus.Register(gserver)
 
 	m.Go(func(routine machine.Routine) {
-		lis, err := net.Listen("tcp", cfg.BindGrpc)
-		if err != nil {
-			logger.Error("failed to create gRPC server listener", zap.Error(err))
-			return
-		}
-		defer lis.Close()
+		gmatcher := cm.Match(cmux.HTTP2())
+		defer gmatcher.Close()
 		logger.Info("starting gRPC server",
 			zap.String("address", lis.Addr().String()),
 		)
-		if err := gserver.Serve(lis); err != nil && err != http.ErrServerClosed {
+		if err := gserver.Serve(gmatcher); err != nil && err != http.ErrServerClosed {
 			logger.Error("gRPC server failure", zap.Error(err))
+		}
+	})
+	m.Go(func(routine machine.Routine) {
+		if err := cm.Serve(); err != nil {
+			logger.Error("", zap.Error(err))
 		}
 	})
 	select {

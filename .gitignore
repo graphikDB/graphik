@@ -3,3 +3,4 @@ vendor
 graphik/.env
 bin
 .env
+graphik-ui/node_modules
