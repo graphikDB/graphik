@@ -11,12 +11,26 @@ func init() {
 	e, err = cel.NewEnv(cel.Declarations(
 		decls.NewVar("path", decls.NewMapType(decls.String, decls.Any)),
 		decls.NewVar("attributes", decls.NewMapType(decls.String, decls.Any)),
-		decls.NewVar("created_at", decls.Int),
-		decls.NewVar("updated_at", decls.Int),
 		decls.NewVar("from", decls.NewMapType(decls.String, decls.Any)),
 		decls.NewVar("to", decls.NewMapType(decls.String, decls.Any)),
 		decls.NewVar("cascade", decls.String),
+		decls.NewVar("metadata", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("channel", decls.String),
+		decls.NewVar("sender", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("data", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("timestamp", decls.Timestamp),
+		decls.NewVar("paths", decls.NewListType(decls.NewMapType(decls.String, decls.Any))),
+		decls.NewVar("edges", decls.NewListType(decls.NewMapType(decls.String, decls.Any))),
+		decls.NewVar("nodes", decls.NewListType(decls.NewMapType(decls.String, decls.Any))),
+
+		/*
+			"channel":   n.GetChannel(),
+				"sender":    n.GetSender().AsMap(),
+				"data":      n.Data.AsMap(),
+				"timestamp": n.GetTimestamp(),
+		*/
 	))
+
 	if err != nil {
 		panic(err)
 	}
