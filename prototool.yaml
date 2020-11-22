@@ -3,6 +3,11 @@ excludes:
   - gen
   - .idea
   - .git
+  - gql
+  - helpers
+  - sortable
+  - vm
+  - graphik-ui
 
 protoc:
   version: 3.6.1
