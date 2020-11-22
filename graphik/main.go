@@ -38,7 +38,7 @@ func init() {
 	godotenv.Load()
 	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
 	pflag.CommandLine.StringSliceVar(&global.JWKS, "jwks", stringSliceEnvOr("GRAPHIK_JWKS_URIS", nil), "authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)")
-	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", os.Getenv("GRAPHIK_METRICS") == "true", "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
+	pflag.CommandLine.BoolVar(&global.Metrics, "metrics",  boolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
 	pflag.CommandLine.StringSliceVar(&global.Triggers, "triggers", stringSliceEnvOr("GRAPHIK_TRIGGERS", nil), "registered triggers (env: GRAPHIK_TRIGGERS)")
 	pflag.CommandLine.StringSliceVar(&global.Authorizers, "authorizers", stringSliceEnvOr("GRAPHIK_AUTHORIZERS", nil), "registered authorizers (env: GRAPHIK_AUTHORIZERS)")
 	pflag.CommandLine.StringSliceVar(&global.AllowedHeaders, "allow-headers", stringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
@@ -57,6 +57,18 @@ func stringSliceEnvOr(key string, defaul []string) []string {
 		return defaul
 	}
 	return nil
+}
+
+func boolEnvOr(key string, defaul bool) bool {
+	if value := os.Getenv(key); value != "" {
+		switch value {
+		case "true", "y", "t", "yes":
+			return true
+		default:
+			return false
+		}
+	}
+	return defaul
 }
 
 func main() {
@@ -104,7 +116,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	resolver := gql.NewResolver(ctx, client, cors.New(cors.Options{
 		AllowedOrigins: global.AllowedOrigins,
 		AllowedMethods: global.AllowedMethods,
-		AllowedHeaders: global.AllowedMethods,
+		AllowedHeaders: global.AllowedHeaders,
 	}))
 	router.Handle("/query", resolver.QueryHandler())
 	server := &http.Server{
