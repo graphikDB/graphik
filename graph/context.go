@@ -42,7 +42,7 @@ func (r *intercept) AsMap() map[string]interface{} {
 		"identity":  r.Identity,
 		"request":   r.Request,
 		"timestamp": r.Timestamp,
-		"timing":    r.Timing,
+		"timing":    r.Timing.String(),
 	}
 }
 
