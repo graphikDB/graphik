@@ -48,6 +48,7 @@ type GraphStore struct {
 	// The path to the Bolt database file
 	path        string
 	mu          sync.RWMutex
+	triggerMu sync.RWMutex
 	edgesTo     map[string][]*apipb.Path
 	edgesFrom   map[string][]*apipb.Path
 	machine     *machine.Machine
@@ -1302,7 +1303,16 @@ func (g *GraphStore) init(ctx context.Context) error {
 			if err := g.auth.RefreshKeys(); err != nil {
 				logger.Error("failed to refresh jwks", zap.Error(err))
 			}
-		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(5*time.Minute))))
+		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
+		g.machine.Go(func(routine machine.Routine) {
+			g.triggerMu.Lock()
+			for _, trigger := range g.triggers {
+				if err := trigger.refresh(routine.Context()); err != nil {
+					logger.Error("failed to refresh trigger matcher", zap.Error(err))
+				}
+			}
+			g.triggerMu.Unlock()
+		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 		err = g.RangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
 			g.mu.Lock()
 			g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
