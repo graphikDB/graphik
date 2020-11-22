@@ -3,7 +3,7 @@ package gql
 import (
 	"context"
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/autom8ter/graphik"
+	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/gql/generated"
 	"github.com/autom8ter/machine"
 	"github.com/rs/cors"
@@ -15,12 +15,12 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	client  *graphik.Client
+	client  apipb.GraphServiceClient
 	cors    *cors.Cors
 	machine *machine.Machine
 }
 
-func NewResolver(ctx context.Context, client *graphik.Client, cors *cors.Cors) *Resolver {
+func NewResolver(ctx context.Context, client apipb.GraphServiceClient, cors *cors.Cors) *Resolver {
 	return &Resolver{client: client, cors: cors, machine: machine.New(ctx)}
 }
 

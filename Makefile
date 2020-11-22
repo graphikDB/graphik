@@ -1,4 +1,4 @@
-version := "0.0.6"
+version := "0.0.8"
 
 .DEFAULT_GOAL := help
 
@@ -10,10 +10,9 @@ help:
 	@echo "----------------------------------------------------------------"
 
 run:
-	@go run graphik/main.go  --jwks=https://www.googleapis.com/oauth2/v3/certs
+	@go run main.go  --jwks=https://www.googleapis.com/oauth2/v3/certs
 
-gen:
-	@go generate ./...
+gen: proto gql
 
 patch: ## bump version by 1 patch
 	bumpversion patch --allow-dirty

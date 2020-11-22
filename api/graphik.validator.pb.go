@@ -29,21 +29,42 @@ func (this *Path) Validate() error {
 	}
 	return nil
 }
+
+var _regex_Metadata_Hash = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *Metadata) Validate() error {
+	if nil == this.CreatedAt {
+		return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", fmt.Errorf("message must exist"))
+	}
 	if this.CreatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
 		}
+	}
+	if nil == this.UpdatedAt {
+		return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", fmt.Errorf("message must exist"))
 	}
 	if this.UpdatedAt != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
 		}
 	}
+	if nil == this.UpdatedBy {
+		return github_com_mwitkow_go_proto_validators.FieldError("UpdatedBy", fmt.Errorf("message must exist"))
+	}
 	if this.UpdatedBy != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedBy); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedBy", err)
 		}
+	}
+	if !(this.Sequence > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Sequence", fmt.Errorf(`value '%v' must be greater than '0'`, this.Sequence))
+	}
+	if !(this.Version > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Version", fmt.Errorf(`value '%v' must be greater than '0'`, this.Version))
+	}
+	if !_regex_Metadata_Hash.MatchString(this.Hash) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Hash", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Hash))
 	}
 	return nil
 }
@@ -58,6 +79,9 @@ func (this *Paths) Validate() error {
 	return nil
 }
 func (this *Node) Validate() error {
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
 	if this.Path != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
@@ -67,6 +91,9 @@ func (this *Node) Validate() error {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
 		}
+	}
+	if nil == this.Metadata {
+		return github_com_mwitkow_go_proto_validators.FieldError("Metadata", fmt.Errorf("message must exist"))
 	}
 	if this.Metadata != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
@@ -112,6 +139,9 @@ func (this *Nodes) Validate() error {
 	return nil
 }
 func (this *NodeDetail) Validate() error {
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
 	if this.Path != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
@@ -131,6 +161,9 @@ func (this *NodeDetail) Validate() error {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EdgesTo); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("EdgesTo", err)
 		}
+	}
+	if nil == this.Metadata {
+		return github_com_mwitkow_go_proto_validators.FieldError("Metadata", fmt.Errorf("message must exist"))
 	}
 	if this.Metadata != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
@@ -150,24 +183,30 @@ func (this *NodeDetails) Validate() error {
 	return nil
 }
 func (this *NodeDetailFilter) Validate() error {
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
 	if this.Path != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
 		}
 	}
-	if this.EdgesFrom != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EdgesFrom); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("EdgesFrom", err)
+	if this.FromEdges != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.FromEdges); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("FromEdges", err)
 		}
 	}
-	if this.EdgesTo != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EdgesTo); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("EdgesTo", err)
+	if this.ToEdges != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ToEdges); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("ToEdges", err)
 		}
 	}
 	return nil
 }
 func (this *Edge) Validate() error {
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
 	if this.Path != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
@@ -178,15 +217,24 @@ func (this *Edge) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
 		}
 	}
+	if nil == this.From {
+		return github_com_mwitkow_go_proto_validators.FieldError("From", fmt.Errorf("message must exist"))
+	}
 	if this.From != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.From); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("From", err)
 		}
 	}
+	if nil == this.To {
+		return github_com_mwitkow_go_proto_validators.FieldError("To", fmt.Errorf("message must exist"))
+	}
 	if this.To != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.To); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("To", err)
 		}
+	}
+	if nil == this.Metadata {
+		return github_com_mwitkow_go_proto_validators.FieldError("Metadata", fmt.Errorf("message must exist"))
 	}
 	if this.Metadata != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
@@ -248,6 +296,9 @@ func (this *Edges) Validate() error {
 	return nil
 }
 func (this *EdgeDetail) Validate() error {
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
 	if this.Path != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
@@ -258,15 +309,24 @@ func (this *EdgeDetail) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
 		}
 	}
+	if nil == this.From {
+		return github_com_mwitkow_go_proto_validators.FieldError("From", fmt.Errorf("message must exist"))
+	}
 	if this.From != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.From); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("From", err)
 		}
 	}
+	if nil == this.To {
+		return github_com_mwitkow_go_proto_validators.FieldError("To", fmt.Errorf("message must exist"))
+	}
 	if this.To != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.To); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("To", err)
 		}
+	}
+	if nil == this.Metadata {
+		return github_com_mwitkow_go_proto_validators.FieldError("Metadata", fmt.Errorf("message must exist"))
 	}
 	if this.Metadata != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
@@ -387,12 +447,15 @@ func (this *Patch) Validate() error {
 	}
 	return nil
 }
-func (this *Patches) Validate() error {
-	for _, item := range this.Patches {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Patches", err)
-			}
+func (this *PatchFilter) Validate() error {
+	if this.Patch != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Patch); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Patch", err)
+		}
+	}
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
 		}
 	}
 	return nil
@@ -432,10 +495,16 @@ func (this *Message) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
+	if nil == this.Sender {
+		return github_com_mwitkow_go_proto_validators.FieldError("Sender", fmt.Errorf("message must exist"))
+	}
 	if this.Sender != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Sender); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Sender", err)
 		}
+	}
+	if nil == this.Timestamp {
+		return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", fmt.Errorf("message must exist"))
 	}
 	if this.Timestamp != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Timestamp); err != nil {
@@ -447,6 +516,74 @@ func (this *Message) Validate() error {
 func (this *Schema) Validate() error {
 	return nil
 }
+func (this *NodeChange) Validate() error {
+	if this.Before != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Before); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Before", err)
+		}
+	}
+	if this.After != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.After); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("After", err)
+		}
+	}
+	return nil
+}
+func (this *EdgeChange) Validate() error {
+	if this.Before != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Before); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Before", err)
+		}
+	}
+	if this.After != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.After); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("After", err)
+		}
+	}
+	return nil
+}
+
+var _regex_Change_Method = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *Change) Validate() error {
+	if !_regex_Change_Method.MatchString(this.Method) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
+	}
+	if nil == this.Identity {
+		return github_com_mwitkow_go_proto_validators.FieldError("Identity", fmt.Errorf("message must exist"))
+	}
+	if this.Identity != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Identity); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Identity", err)
+		}
+	}
+	if nil == this.Timestamp {
+		return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", fmt.Errorf("message must exist"))
+	}
+	if this.Timestamp != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Timestamp); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", err)
+		}
+	}
+	for _, item := range this.EdgeChanges {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("EdgeChanges", err)
+			}
+		}
+	}
+	for _, item := range this.NodeChanges {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("NodeChanges", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *ExpressionFilter) Validate() error {
+	return nil
+}
 
 var _regex_Interception_Method = regexp.MustCompile(`^.{1,225}$`)
 
@@ -454,23 +591,37 @@ func (this *Interception) Validate() error {
 	if !_regex_Interception_Method.MatchString(this.Method) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
 	}
+	if nil == this.Identity {
+		return github_com_mwitkow_go_proto_validators.FieldError("Identity", fmt.Errorf("message must exist"))
+	}
 	if this.Identity != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Identity); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Identity", err)
 		}
+	}
+	if nil == this.Timestamp {
+		return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", fmt.Errorf("message must exist"))
 	}
 	if this.Timestamp != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Timestamp); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", err)
 		}
 	}
+	if nil == this.Request {
+		return github_com_mwitkow_go_proto_validators.FieldError("Request", fmt.Errorf("message must exist"))
+	}
 	if this.Request != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Request); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Request", err)
 		}
 	}
-	return nil
-}
-func (this *TriggerFilter) Validate() error {
+	if nil == this.Response {
+		return github_com_mwitkow_go_proto_validators.FieldError("Response", fmt.Errorf("message must exist"))
+	}
+	if this.Response != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Response); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Response", err)
+		}
+	}
 	return nil
 }

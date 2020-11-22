@@ -16,18 +16,6 @@ enum Timing {
   AFTER =1;
 }
 
-// Cascade describes how connected nodes will behave when one is deleted
-enum Cascade {
-  // no cascade
-  CASCADE_NONE =0;
-  // the source node in the connection will be deleted if the destination is deleted
-  CASCADE_FROM =1;
-  // the destination node in the connection will be deleted if the source node is
-  CASCADE_TO=2;
-  // if either node is deleted, both will be deleted
-  CASCADE_MUTUAL=3;
-}
-
 // Path describes a node/edge type & id
 message Path {
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
@@ -35,10 +23,12 @@ message Path {
 }
 
 message Metadata {
-  google.protobuf.Timestamp created_at =1;
-  google.protobuf.Timestamp updated_at =2;
-  Path updated_by =3;
-  uint64 sequence =4;
+  google.protobuf.Timestamp created_at =1 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Timestamp updated_at =2 [(validator.field) = {msg_exists : true}];
+  Path updated_by =3 [(validator.field) = {msg_exists : true}];
+  uint64 sequence =4 [(validator.field) = {int_gt : 0}];
+  uint64 version =5 [(validator.field) = {int_gt : 0}];
+  string hash =6 [(validator.field) = {regex : "^.{1,225}$"}];
 }
 
 // Paths is an array of paths
@@ -48,9 +38,9 @@ message Paths {
 
 // Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
 message Node {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =2;
-  Metadata metadata =3;
+  Metadata metadata =3 [(validator.field) = {msg_exists : true}];
 }
 
 // NodeConstructor is used to create a node
@@ -71,11 +61,11 @@ message Nodes {
 
 // NodeDetail is a node with its connected edges
 message NodeDetail {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =2;
   EdgeDetails edges_from =3;
   EdgeDetails edges_to =4;
-  Metadata metadata =5;
+  Metadata metadata =5 [(validator.field) = {msg_exists : true}];
 }
 
 // NodeDetails is an array of NodeDetail
@@ -85,26 +75,26 @@ message NodeDetails {
 
 // NodeDetailFilter is used to fetch node details
 message NodeDetailFilter {
-  Path path =1;
-  Filter edges_from =2;
-  Filter edges_to =3;
+  Path path =1 [(validator.field) = {msg_exists : true}];
+  Filter from_edges =2;
+  Filter to_edges =3;
 }
 
 // Edge is a graph primitive that represents a relationship between two nodes
 message Edge {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =2;
-  Cascade cascade =3;
-  Path from =4;
-  Path to =5;
-  Metadata metadata =6;
+  bool directed =3;
+  Path from =4 [(validator.field) = {msg_exists : true}];
+  Path to =5 [(validator.field) = {msg_exists : true}];
+  Metadata metadata =6 [(validator.field) = {msg_exists : true}];
 }
 
 // EdgeConstructor is used to create an Edge
 message EdgeConstructor {
   Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =3;
-  Cascade cascade =4;
+  bool directed =4;
   Path from =5 [(validator.field) = {msg_exists : true}];
   Path to =6 [(validator.field) = {msg_exists : true}];
 }
@@ -121,12 +111,12 @@ message Edges {
 
 // EdgeDetail is an edge with both of it's connected nodes fully loaded
 message EdgeDetail {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =2;
-  Cascade cascade =3;
-  Node from =4;
-  Node to =5;
-  Metadata metadata =6;
+  bool directed =3;
+  Node from =4 [(validator.field) = {msg_exists : true}];
+  Node to =5 [(validator.field) = {msg_exists : true}];
+  Metadata metadata =6 [(validator.field) = {msg_exists : true}];
 }
 
 // EdgeDetails is an array of EdgeDetail
@@ -179,9 +169,9 @@ message Patch {
   google.protobuf.Struct attributes =2;
 }
 
-// Patches is an array of Patch
-message Patches {
-  repeated Patch patches =1;
+message PatchFilter {
+  Patch patch =1;
+  Filter filter =2;
 }
 
 // Pong returns PONG if the server is healthy
@@ -199,14 +189,36 @@ message OutboundMessage {
 message Message {
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
-  Path sender =3;
-  google.protobuf.Timestamp timestamp=4;
+  Path sender =3 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
 }
 
 // Schema returns registered edge & node types
 message Schema {
   repeated string edge_types =1;
   repeated string node_types =2;
+}
+
+message NodeChange {
+  Node before = 4;
+  Node after = 5;
+}
+
+message EdgeChange {
+  Edge before = 4;
+  Edge after = 5;
+}
+
+message Change {
+  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  Node identity =2 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  repeated EdgeChange edge_changes =4;
+  repeated  NodeChange node_changes =5;
+}
+
+message ExpressionFilter {
+  repeated string expressions =1;
 }
 
 // GraphService is the primary Graph service
@@ -228,11 +240,7 @@ service GraphService {
   // PatchNode patches a nodes attributes
   rpc PatchNode(Patch) returns(Node){}
   // PatchNodes patches a batch of nodes attributes
-  rpc PatchNodes(Patches) returns(Nodes){}
-  // DelNode deletes a node from the graph
-  rpc DelNode(Path) returns(google.protobuf.Empty){}
-  // DelNodes deletes a batch of nodes from the graph
-  rpc DelNodes(Paths) returns(google.protobuf.Empty){}
+  rpc PatchNodes(PatchFilter) returns(Nodes){}
   // CreateEdge creates an edge in the graph
   rpc CreateEdge(EdgeConstructor) returns(Edge){}
   // CreateEdges creates a batch of edges in the graph
@@ -244,11 +252,7 @@ service GraphService {
   // PatchEdge patches an edges attributes
   rpc PatchEdge(Patch) returns(Edge){}
   // PatchEdges patches a batch of edges attributes
-  rpc PatchEdges(Patches) returns(Edges){}
-  // DelEdge deletes an edge from the graph
-  rpc DelEdge(Path) returns(google.protobuf.Empty){}
-  // DelEdges deletes a batch of edges from the graph
-  rpc DelEdges(Paths) returns(google.protobuf.Empty){}
+  rpc PatchEdges(PatchFilter) returns(Edges){}
   // EdgesFrom returns edges that source from the given node path that pass the filter
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   // EdgesTo returns edges that point to the given node path that pass the filter
@@ -257,6 +261,7 @@ service GraphService {
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
   rpc Subscribe(ChannelFilter) returns(stream Message){}
+  rpc SubscribeChanges(ExpressionFilter) returns(stream Change){}
   // Import imports the Graph into the database
   rpc Import(Graph) returns(Graph){}
   // Export returns the Graph data
@@ -269,14 +274,11 @@ service GraphService {
 
 message Interception {
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Node identity =2;
-  google.protobuf.Timestamp timestamp =3;
-  google.protobuf.Any request = 4;
-  Timing timing =5;
-}
-
-message TriggerFilter {
-  repeated string expressions =1;
+  Node identity =2 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Any request = 4 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Any response = 5 [(validator.field) = {msg_exists : true}];
+  Timing timing =6;
 }
 
 // TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
@@ -287,5 +289,5 @@ service TriggerService {
   rpc Mutate(Interception) returns(Interception){}
   // Filter returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
   // These expressions are cached by the Graphik server
-  rpc Filter(google.protobuf.Empty) returns(TriggerFilter){}
+  rpc Filter(google.protobuf.Empty) returns(ExpressionFilter){}
 }

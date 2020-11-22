@@ -1,10 +1,10 @@
-# Graphik [![GoDoc](https://godoc.org/github.com/autom8ter/graphik?status.svg)](https://godoc.org/github.com/autom8ter/graphik)
+# Graphik
 
 ![dag](images/dag.png)
 
     git clone git@github.com:autom8ter/graphik.git
     
-    docker pull colemanword/graphik
+    docker pull colemanword/graphik:v0.0.8
 
 Graphik is an identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
 
@@ -15,15 +15,19 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
   * [Flags](#flags)
   * [Triggers (optional)](#triggers--optional-)
   * [Roadmap](#roadmap)
+  * [Example Graphql Queries](#example-graphql-queries)
 
 
 ## Helpful Links
 
-- [GoDoc](https://godoc.org/github.com/autom8ter/graphik)
 - [API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
 - [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
 - [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
+
+## Client SDKs
+
+- [graphik-client-go](https://github.com/autom8ter/graphik-client-go)
 
 ## Features
 
@@ -33,6 +37,7 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - [x] Native OAuth Support & Single Sign On
 - [x] Persistant(bbolt LMDB)
 - [x] Channel Based PubSub
+- [x] Change Stream Subscriptions
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
 - [x] gRPC Based External [Triggers](#triggers--optional-)
@@ -187,6 +192,7 @@ Example:
 
 ## Roadmap
 
+- [ ] Encryption At Rest
 - [ ] Fault-Tolerance/Horizontal Scaleability(Raft protocol)
 - [ ] Graphql API Gateway w/ Graphql GUI
 - [ ] Kubernetes Operator

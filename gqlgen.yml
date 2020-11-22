@@ -47,8 +47,8 @@ models:
     model: github.com/autom8ter/graphik/gql/scalars.StructScalar
   Empty:
     model: github.com/autom8ter/graphik/gql/scalars.EmptyScalar
-  Cascade:
-    model: github.com/autom8ter/graphik/gql/scalars.CascadeScalar
+  Timestamp:
+    model: github.com/autom8ter/graphik/gql/scalars.TimestampScalar
   PathInput:
     model: github.com/autom8ter/graphik/api.Path
 

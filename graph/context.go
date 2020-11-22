@@ -33,6 +33,7 @@ type intercept struct {
 	Identity  map[string]interface{}
 	Timestamp *timestamppb.Timestamp
 	Request   map[string]interface{}
+	Response  map[string]interface{}
 	Timing    apipb.Timing
 }
 
@@ -42,7 +43,7 @@ func (r *intercept) AsMap() map[string]interface{} {
 		"identity":  r.Identity,
 		"request":   r.Request,
 		"timestamp": r.Timestamp,
-		"timing":    r.Timing,
+		"timing":    r.Timing.String(),
 	}
 }
 
@@ -90,22 +91,28 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 				return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
 			}
 		}
+		intercept := &apipb.Interception{
+			Method:    info.FullMethod,
+			Identity:  identity,
+			Timestamp: timestamppb.New(now),
+			Timing:    apipb.Timing_BEFORE,
+		}
 		if len(g.triggers) > 0 {
 			a, err := ptypes.MarshalAny(req.(proto.Message))
 			if err != nil {
 				return nil, err
 			}
-			intercept := &apipb.Interception{
-				Method:    info.FullMethod,
-				Identity:  identity,
-				Timestamp: timestamppb.New(now),
-				Request:   a,
-				Timing:    apipb.Timing_BEFORE,
-			}
+			intercept.Request = a
 			for _, trigger := range g.triggers {
-				intercept, err = trigger.Mutate(ctx, intercept)
+				should, err := trigger.shouldTrigger(interceptEval)
 				if err != nil {
 					return nil, err
+				}
+				if should {
+					intercept, err = trigger.Mutate(ctx, intercept)
+					if err != nil {
+						return nil, err
+					}
 				}
 			}
 			if err := ptypes.UnmarshalAny(intercept.Request, req.(proto.Message)); err != nil {
@@ -122,14 +129,11 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 			if err != nil {
 				return nil, err
 			}
-			intercept := &apipb.Interception{
-				Method:    info.FullMethod,
-				Identity:  identity,
-				Timestamp: timestamppb.New(now),
-				Request:   a,
-				Timing:    apipb.Timing_AFTER,
-			}
+			intercept.Response = a
 			interceptEval.Timing = apipb.Timing_AFTER
+			if val, ok := resp.(apipb.Mapper); ok {
+				interceptEval.Response = val.AsMap()
+			}
 			for _, trigger := range g.triggers {
 				should, err := trigger.shouldTrigger(interceptEval)
 				if err != nil {
@@ -174,15 +178,19 @@ func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = g.MethodToContext(ss.Context(), info.FullMethod)
 		now := time.Now()
-		interceptEval := &intercept{
-			Method:    info.FullMethod,
-			Identity:  identity.AsMap(),
-			Timestamp: timestamppb.New(now),
-		}
-		if val, ok := srv.(apipb.Mapper); ok {
-			interceptEval.Request = val.AsMap()
-		}
 		if len(g.authorizers) > 0 {
+			interceptEval := &intercept{
+				Method:    info.FullMethod,
+				Identity:  identity.AsMap(),
+				Timestamp: timestamppb.New(now),
+			}
+			if val, ok := srv.(apipb.Mapper); ok {
+				if info.IsServerStream {
+					interceptEval.Response = val.AsMap()
+				} else {
+					interceptEval.Request = val.AsMap()
+				}
+			}
 			result, err := vm.Eval(g.authorizers, interceptEval)
 			if err != nil {
 				return err
