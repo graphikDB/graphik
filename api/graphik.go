@@ -3,6 +3,8 @@ package apipb
 import (
 	"github.com/autom8ter/graphik/sortable"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 )
 
 const (
@@ -48,10 +50,10 @@ func (m *Metadata) AsMap() map[string]interface{} {
 
 func (m *Metadata) FromMap(data map[string]interface{}) {
 	if val, ok := data["created_at"]; ok {
-		m.CreatedAt = val.(int64)
+		m.CreatedAt = timestamppb.New(val.(time.Time))
 	}
 	if val, ok := data["updated_at"]; ok {
-		m.UpdatedAt = val.(int64)
+		m.UpdatedAt = timestamppb.New(val.(time.Time))
 	}
 	if val, ok := data["updated_by"]; ok {
 		if val, ok := val.(map[string]interface{}); ok {
@@ -183,7 +185,7 @@ func (m *Message) FromMap(data map[string]interface{}) {
 		}
 	}
 	if val, ok := data["timestamp"]; ok {
-		m.Timestamp = val.(int64)
+		m.Timestamp = timestamppb.New(val.(time.Time))
 	}
 	if val, ok := data["data"]; ok {
 		m.Data = NewStruct(val.(map[string]interface{}))
@@ -214,7 +216,7 @@ func (n *Nodes) Sort() {
 			return len(n.GetNodes())
 		},
 		LessFunc: func(i, j int) bool {
-			return n.GetNodes()[i].GetMetadata().GetUpdatedAt() < n.GetNodes()[j].GetMetadata().GetUpdatedAt()
+			return n.GetNodes()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < n.GetNodes()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		},
 		SwapFunc: func(i, j int) {
 			n.GetNodes()[i], n.GetNodes()[j] = n.GetNodes()[j], n.GetNodes()[i]
@@ -229,7 +231,7 @@ func (e *Edges) Sort() {
 			return len(e.GetEdges())
 		},
 		LessFunc: func(i, j int) bool {
-			return e.GetEdges()[i].GetMetadata().GetUpdatedAt() < e.GetEdges()[j].GetMetadata().GetUpdatedAt()
+			return e.GetEdges()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetEdges()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		},
 		SwapFunc: func(i, j int) {
 			e.GetEdges()[i], e.GetEdges()[j] = e.GetEdges()[j], e.GetEdges()[i]
@@ -244,7 +246,7 @@ func (e *EdgeDetails) Sort() {
 			return len(e.GetEdges())
 		},
 		LessFunc: func(i, j int) bool {
-			return e.GetEdges()[i].GetMetadata().GetUpdatedAt() < e.GetEdges()[j].GetMetadata().GetUpdatedAt()
+			return e.GetEdges()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetEdges()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		},
 		SwapFunc: func(i, j int) {
 			e.GetEdges()[i], e.GetEdges()[j] = e.GetEdges()[j], e.GetEdges()[i]

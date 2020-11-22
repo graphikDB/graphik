@@ -30,6 +30,16 @@ func (this *Path) Validate() error {
 	return nil
 }
 func (this *Metadata) Validate() error {
+	if this.CreatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", err)
+		}
+	}
+	if this.UpdatedAt != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedAt); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
+		}
+	}
 	if this.UpdatedBy != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedBy); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedBy", err)
@@ -427,6 +437,11 @@ func (this *Message) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Sender", err)
 		}
 	}
+	if this.Timestamp != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Timestamp); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", err)
+		}
+	}
 	return nil
 }
 func (this *Schema) Validate() error {
@@ -442,6 +457,11 @@ func (this *Interception) Validate() error {
 	if this.Identity != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Identity); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Identity", err)
+		}
+	}
+	if this.Timestamp != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Timestamp); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", err)
 		}
 	}
 	if this.Request != nil {

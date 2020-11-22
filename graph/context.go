@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
 
@@ -30,7 +31,7 @@ const (
 type intercept struct {
 	Method    string
 	Identity  map[string]interface{}
-	Timestamp int64
+	Timestamp *timestamppb.Timestamp
 	Request   map[string]interface{}
 	Timing    apipb.Timing
 }
@@ -75,7 +76,7 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 		interceptEval := &intercept{
 			Method:    info.FullMethod,
 			Identity:  identity.AsMap(),
-			Timestamp: now.UnixNano(),
+			Timestamp: timestamppb.New(now),
 		}
 		if val, ok := req.(apipb.Mapper); ok {
 			interceptEval.Request = val.AsMap()
@@ -97,7 +98,7 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 			intercept := &apipb.Interception{
 				Method:    info.FullMethod,
 				Identity:  identity,
-				Timestamp: now.UnixNano(),
+				Timestamp: timestamppb.New(now),
 				Request:   a,
 				Timing:    apipb.Timing_BEFORE,
 			}
@@ -124,7 +125,7 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 			intercept := &apipb.Interception{
 				Method:    info.FullMethod,
 				Identity:  identity,
-				Timestamp: now.UnixNano(),
+				Timestamp: timestamppb.New(now),
 				Request:   a,
 				Timing:    apipb.Timing_AFTER,
 			}
@@ -176,7 +177,7 @@ func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 		interceptEval := &intercept{
 			Method:    info.FullMethod,
 			Identity:  identity.AsMap(),
-			Timestamp: now.UnixNano(),
+			Timestamp: timestamppb.New(now),
 		}
 		if val, ok := srv.(apipb.Mapper); ok {
 			interceptEval.Request = val.AsMap()

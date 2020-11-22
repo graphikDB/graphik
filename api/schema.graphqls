@@ -2,7 +2,7 @@
 #
 # https://gqlgen.com/getting-started/
 
-scalar Time
+scalar Timestamp
 scalar Struct
 scalar Empty
 scalar Cascade
@@ -17,8 +17,8 @@ type Path {
 }
 
 type Metadata {
-  created_at: Int
-  updated_at: Int
+  created_at: Timestamp
+  updated_at: Timestamp
   updated_by: Path
 }
 
@@ -75,7 +75,7 @@ type Message {
   channel: String!
   data: Struct!
   sender: Path!
-  timestamp: Int!
+  timestamp: Timestamp!
 }
 
 input NodeConstructor {

@@ -35,8 +35,8 @@ message Path {
 }
 
 message Metadata {
-  int64 created_at =1;
-  int64 updated_at =2;
+  google.protobuf.Timestamp created_at =1;
+  google.protobuf.Timestamp updated_at =2;
   Path updated_by =3;
   uint64 sequence =4;
 }
@@ -200,7 +200,7 @@ message Message {
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
   Path sender =3;
-  int64 timestamp=4;
+  google.protobuf.Timestamp timestamp=4;
 }
 
 // Schema returns registered edge & node types
@@ -270,7 +270,7 @@ service GraphService {
 message Interception {
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
   Node identity =2;
-  int64 timestamp =3;
+  google.protobuf.Timestamp timestamp =3;
   google.protobuf.Any request = 4;
   Timing timing =5;
 }

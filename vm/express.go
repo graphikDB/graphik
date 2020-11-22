@@ -22,7 +22,10 @@ func init() {
 		decls.NewVar("paths", decls.NewListType(decls.NewMapType(decls.String, decls.Any))),
 		decls.NewVar("edges", decls.NewListType(decls.NewMapType(decls.String, decls.Any))),
 		decls.NewVar("nodes", decls.NewListType(decls.NewMapType(decls.String, decls.Any))),
-
+		decls.NewVar("edges_from", decls.NewListType(decls.NewMapType(decls.String, decls.Any))),
+		decls.NewVar("edges_to", decls.NewListType(decls.NewMapType(decls.String, decls.Any))),
+		decls.NewVar("request", decls.NewMapType(decls.String, decls.Any)),
+		decls.NewVar("limit", decls.Int),
 		/*
 			"channel":   n.GetChannel(),
 				"sender":    n.GetSender().AsMap(),

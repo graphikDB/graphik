@@ -20,6 +20,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
 	"path/filepath"
 	"sort"
@@ -48,7 +49,7 @@ type GraphStore struct {
 	// The path to the Bolt database file
 	path        string
 	mu          sync.RWMutex
-	triggerMu sync.RWMutex
+	triggerMu   sync.RWMutex
 	edgesTo     map[string][]*apipb.Path
 	edgesFrom   map[string][]*apipb.Path
 	machine     *machine.Machine
@@ -251,8 +252,8 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 				Path:       constructor.GetPath(),
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
-					CreatedAt: now.UnixNano(),
-					UpdatedAt: now.UnixNano(),
+					CreatedAt: timestamppb.New(now),
+					UpdatedAt: timestamppb.New(now),
 					UpdatedBy: identity.GetPath(),
 				},
 			}
@@ -323,8 +324,8 @@ func (g *GraphStore) CreateEdges(ctx context.Context, constructors *apipb.EdgeCo
 				Path:       constructor.GetPath(),
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
-					CreatedAt: now.UnixNano(),
-					UpdatedAt: now.UnixNano(),
+					CreatedAt: timestamppb.New(now),
+					UpdatedAt: timestamppb.New(now),
 					UpdatedBy: identity.GetPath(),
 				},
 				From:    constructor.From,
@@ -365,7 +366,7 @@ func (g *GraphStore) Publish(ctx context.Context, message *apipb.OutboundMessage
 		Channel:   message.Channel,
 		Data:      message.Data,
 		Sender:    identity.GetPath(),
-		Timestamp: time.Now().UnixNano(),
+		Timestamp: timestamppb.New(time.Now()),
 	})
 }
 
@@ -667,8 +668,8 @@ func (g *GraphStore) createIdentity(ctx context.Context, constructor *apipb.Node
 			Path:       constructor.GetPath(),
 			Attributes: constructor.GetAttributes(),
 			Metadata: &apipb.Metadata{
-				CreatedAt: now.UnixNano(),
-				UpdatedAt: now.UnixNano(),
+				CreatedAt: timestamppb.New(now),
+				UpdatedAt: timestamppb.New(now),
 				UpdatedBy: constructor.GetPath(),
 			},
 		}
@@ -872,7 +873,7 @@ func (n *GraphStore) PatchNodes(ctx context.Context, values *apipb.Patches) (*ap
 		nodes = append(nodes, node)
 	}
 	for _, node := range nodes {
-		node.GetMetadata().UpdatedAt = time.Now().UnixNano()
+		node.GetMetadata().UpdatedAt = timestamppb.Now()
 		node.GetMetadata().UpdatedBy = identity.GetPath()
 	}
 
@@ -1117,7 +1118,7 @@ func (n *GraphStore) PatchEdges(ctx context.Context, values *apipb.Patches) (*ap
 		edges = append(edges, edge)
 	}
 	for _, edge := range edges {
-		edge.GetMetadata().UpdatedAt = time.Now().UnixNano()
+		edge.GetMetadata().UpdatedAt = timestamppb.Now()
 		edge.GetMetadata().UpdatedBy = identity.GetPath()
 	}
 	return n.SetEdges(ctx, edges...)
