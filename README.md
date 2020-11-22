@@ -53,6 +53,7 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - go.etcd.io/bbolt
 - go.uber.org/zap
 - golang.org/x/oauth2
+- github.com/99designs/gqlgen
 
 ## API Spec
 
@@ -120,13 +121,14 @@ service GraphService {
 ## Flags
 
 ```text
-      --authorizers strings   registered authorizers (env: GRAPHIK_AUTHORIZERS)
-      --grpc.bind string      grpc server bind address (default ":7820")
-      --http.bind string      http server bind address (default ":7830")
-      --jwks strings          authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
-      --metrics               enable prometheus & pprof metrics
-      --storage string        persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
-      --triggers strings      registered triggers (env: GRAPHIK_TRIGGERS)
+      --allow-headers strings   cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
+      --allow-methods strings   cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
+      --allow-origins strings   cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
+      --authorizers strings     registered authorizers (env: GRAPHIK_AUTHORIZERS)
+      --jwks strings            authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
+      --metrics                 enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
+      --storage string          persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
+      --triggers strings        registered triggers (env: GRAPHIK_TRIGGERS)
 
 ```
 
