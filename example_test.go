@@ -28,7 +28,7 @@ func init() {
 		return
 	}
 
-	client, err = graphik.NewClient(ctx, "localhost:7820", tokenSource)
+	client, err = graphik.NewClient(ctx, "localhost:7820", graphik.WithTokenSource(tokenSource))
 	if err != nil {
 		log.Print(err)
 		return
@@ -41,13 +41,13 @@ func ExampleNewClient() {
 	ctx := context.Background()
 
 	// ensure graphik server is started with --auth.jwks=https://www.googleapis.com/oauth2/v3/certs
-	j, err := google.DefaultTokenSource(context.Background(), "https://www.googleapis.com/auth/devstorage.full_control")
+	source, err := google.DefaultTokenSource(context.Background(), "https://www.googleapis.com/auth/devstorage.full_control")
 	if err != nil {
 		log.Print(err)
 		return
 	}
 
-	cli, err := graphik.NewClient(ctx, "localhost:7820", j)
+	cli, err := graphik.NewClient(ctx, "localhost:7820", graphik.WithTokenSource(source))
 	if err != nil {
 		log.Print(err)
 		return

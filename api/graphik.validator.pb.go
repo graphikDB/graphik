@@ -112,8 +112,16 @@ func (this *NodeDetail) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
 		}
 	}
-	// Validation of proto3 map<> fields is unsupported.
-	// Validation of proto3 map<> fields is unsupported.
+	if this.EdgesFrom != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EdgesFrom); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("EdgesFrom", err)
+		}
+	}
+	if this.EdgesTo != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EdgesTo); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("EdgesTo", err)
+		}
+	}
 	if this.Metadata != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)

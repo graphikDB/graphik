@@ -56,6 +56,7 @@ type GraphStore struct {
 	auth        *auth.Config
 	closers     []func()
 	closeOnce   sync.Once
+	initOnce    sync.Once
 }
 
 // NewGraphStore takes a file path and returns a connected Raft backend.
@@ -64,22 +65,6 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 	path := filepath.Join(flgs.StoragePath, "graph.db")
 	handle, err := bbolt.Open(path, dbFileMode, nil)
 	if err != nil {
-		return nil, err
-	}
-	tx, err := handle.Begin(true)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	// Create all the buckets
-	if _, err := tx.CreateBucketIfNotExists(dbNodes); err != nil {
-		return nil, err
-	}
-	if _, err := tx.CreateBucketIfNotExists(dbEdges); err != nil {
-		return nil, err
-	}
-	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 	var triggers []*triggerClient
@@ -127,25 +112,24 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 	if err != nil {
 		return nil, err
 	}
-	m := machine.New(ctx)
-	m.Go(func(routine machine.Routine) {
-		if err := jwks.RefreshKeys(); err != nil {
-			logger.Error("failed to refresh jwks", zap.Error(err))
-		}
-	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(5*time.Minute))))
-	return &GraphStore{
+	g := &GraphStore{
 		db:          handle,
 		path:        path,
 		mu:          sync.RWMutex{},
 		edgesTo:     map[string][]*apipb.Path{},
 		edgesFrom:   map[string][]*apipb.Path{},
-		machine:     m,
+		machine:     machine.New(ctx),
 		triggers:    triggers,
 		authorizers: programs,
 		auth:        jwks,
 		closers:     closers,
 		closeOnce:   sync.Once{},
-	}, nil
+		initOnce:    sync.Once{},
+	}
+	if err := g.init(ctx); err != nil {
+		return nil, err
+	}
+	return g, nil
 }
 
 func (g *GraphStore) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
@@ -178,8 +162,8 @@ func (g *GraphStore) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.Nod
 		Path:       identity.Path,
 		Attributes: identity.Attributes,
 		Metadata:   identity.Metadata,
-		EdgesTo:    map[string]*apipb.EdgeDetails{},
-		EdgesFrom:  map[string]*apipb.EdgeDetails{},
+		EdgesTo:    &apipb.EdgeDetails{},
+		EdgesFrom:  &apipb.EdgeDetails{},
 	}
 	if filter.EdgesFrom != nil {
 		from, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
@@ -208,10 +192,7 @@ func (g *GraphStore) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.Nod
 				To:         toNode,
 				Metadata:   f.Metadata,
 			}
-			if _, ok := detail.EdgesFrom[f.GetPath().GetGtype()]; !ok {
-				detail.EdgesFrom[f.GetPath().GetGtype()] = &apipb.EdgeDetails{}
-			}
-			detail.EdgesFrom[f.GetPath().GetGtype()].Edges = append(detail.EdgesFrom[f.GetPath().GetGtype()].Edges, edetail)
+			detail.EdgesFrom.Edges = append(detail.EdgesFrom.Edges, edetail)
 		}
 	}
 	if filter.EdgesTo != nil {
@@ -241,10 +222,7 @@ func (g *GraphStore) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.Nod
 				To:         toNode,
 				Metadata:   f.Metadata,
 			}
-			if _, ok := detail.EdgesTo[f.GetPath().GetGtype()]; !ok {
-				detail.EdgesTo[f.GetPath().GetGtype()] = &apipb.EdgeDetails{}
-			}
-			detail.EdgesTo[f.GetPath().GetGtype()].Edges = append(detail.EdgesTo[f.GetPath().GetGtype()].Edges, edetail)
+			detail.EdgesTo.Edges = append(detail.EdgesTo.Edges, edetail)
 		}
 	}
 	return detail, nil
@@ -1222,8 +1200,8 @@ func (g *GraphStore) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apip
 func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
 	detail := &apipb.NodeDetail{
 		Path:      filter.GetPath(),
-		EdgesTo:   map[string]*apipb.EdgeDetails{},
-		EdgesFrom: map[string]*apipb.EdgeDetails{},
+		EdgesTo:   &apipb.EdgeDetails{},
+		EdgesFrom: &apipb.EdgeDetails{},
 	}
 	node, err := g.GetNode(ctx, filter.GetPath())
 	if err != nil {
@@ -1246,7 +1224,7 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 			if err != nil {
 				return nil, err
 			}
-			detail.EdgesFrom[edge.GetPath().GetGtype()].Edges = append(detail.EdgesFrom[edge.GetPath().GetGtype()].Edges, eDetail)
+			detail.EdgesFrom.Edges = append(detail.EdgesFrom.Edges, eDetail)
 		}
 	}
 
@@ -1265,15 +1243,11 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 			if err != nil {
 				return nil, err
 			}
-			detail.EdgesTo[edge.GetPath().GetGtype()].Edges = append(detail.EdgesTo[edge.GetPath().GetGtype()].Edges, eDetail)
+			detail.EdgesTo.Edges = append(detail.EdgesTo.Edges, eDetail)
 		}
 	}
-	for _, d := range detail.EdgesTo {
-		d.Sort()
-	}
-	for _, d := range detail.EdgesFrom {
-		d.Sort()
-	}
+	detail.EdgesTo.Sort()
+	detail.EdgesFrom.Sort()
 	return detail, nil
 }
 
@@ -1300,4 +1274,42 @@ func sortPaths(paths []*apipb.Path) {
 		},
 	}
 	s.Sort()
+}
+
+func (g *GraphStore) init(ctx context.Context) error {
+	var err error
+	g.initOnce.Do(func() {
+		tx, err := g.db.Begin(true)
+		if err != nil {
+			return
+		}
+		defer tx.Rollback()
+
+		// Create all the buckets
+		_, err = tx.CreateBucketIfNotExists(dbNodes)
+		if err != nil {
+			return
+		}
+		_, err = tx.CreateBucketIfNotExists(dbEdges)
+		if err != nil {
+			return
+		}
+		err = tx.Commit()
+		if err != nil {
+			return
+		}
+		g.machine.Go(func(routine machine.Routine) {
+			if err := g.auth.RefreshKeys(); err != nil {
+				logger.Error("failed to refresh jwks", zap.Error(err))
+			}
+		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(5*time.Minute))))
+		err = g.RangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
+			g.mu.Lock()
+			g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
+			g.edgesTo[e.To.String()] = append(g.edgesTo[e.To.String()], e.Path)
+			g.mu.Unlock()
+			return true
+		})
+	})
+	return err
 }
