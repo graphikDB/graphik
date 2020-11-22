@@ -260,7 +260,7 @@ func ExampleClient_GetSchema() {
 	}
 	fmt.Printf("node types: %s\n", strings.Join(schema.NodeTypes, ","))
 	fmt.Printf("edge types: %s", strings.Join(schema.EdgeTypes, ","))
-	// Output: node types: dog,human,identity
+	// Output: node types: cat,dog,human,identity
 	//edge types: owner
 }
 
