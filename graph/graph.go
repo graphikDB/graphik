@@ -281,16 +281,14 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 	var changes []*apipb.NodeChange
 	for _, node := range nodes {
 		changes = append(changes, &apipb.NodeChange{
-			After:                node,
+			After: node,
 		})
 	}
-	g.machine.Go(func(routine machine.Routine) {
-		routine.Publish(changeChannel, &apipb.Change{
-			Method:               method,
-			Identity:             identity,
-			Timestamp:            now,
-			NodeChanges:          changes,
-		})
+	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		Method:      method,
+		Identity:    identity,
+		Timestamp:   now,
+		NodeChanges: changes,
 	})
 	nodess.Sort()
 	return nodess, nil
@@ -320,7 +318,6 @@ func (g *GraphStore) CreateEdges(ctx context.Context, constructors *apipb.EdgeCo
 	now := timestamppb.Now()
 	method := g.MethodContext(ctx)
 	var edges = []*apipb.Edge{}
-	var changes []*apipb.Change
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		edgeBucket := tx.Bucket(dbEdges)
 		for _, constructor := range constructors.GetEdges() {
@@ -348,17 +345,6 @@ func (g *GraphStore) CreateEdges(ctx context.Context, constructors *apipb.EdgeCo
 			}
 			seq, _ := bucket.NextSequence()
 			edge.Metadata.Sequence = seq
-			changes = append(changes, &apipb.Change{
-				Method:    method,
-				Identity:  identity,
-				Timestamp: edge.GetMetadata().GetCreatedAt(),
-				Change: &apipb.Change_EdgeChange{
-					EdgeChange: &apipb.EdgeChange{
-						Before: nil,
-						After:  edge,
-					},
-				},
-			})
 			edges = append(edges, edge)
 		}
 		return nil
@@ -369,10 +355,17 @@ func (g *GraphStore) CreateEdges(ctx context.Context, constructors *apipb.EdgeCo
 	if err != nil {
 		return nil, err
 	}
-	g.machine.Go(func(routine machine.Routine) {
-		for _, change := range changes {
-			routine.Publish(changeChannel, change)
-		}
+	var changes []*apipb.EdgeChange
+	for _, node := range edges {
+		changes = append(changes, &apipb.EdgeChange{
+			After: node,
+		})
+	}
+	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		Method:      method,
+		Identity:    identity,
+		Timestamp:   now,
+		EdgeChanges: changes,
 	})
 	edgess.Sort()
 	return edgess, nil
@@ -904,8 +897,8 @@ func (n *GraphStore) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.
 
 func (n *GraphStore) PatchNodes(ctx context.Context, values *apipb.Patches) (*apipb.Nodes, error) {
 	identity := n.NodeContext(ctx)
+	var changes []*apipb.NodeChange
 	var nodes []*apipb.Node
-	var changes []*apipb.Change
 	method := n.MethodContext(ctx)
 	now := timestamppb.Now()
 	for _, val := range values.GetPatches() {
@@ -913,21 +906,15 @@ func (n *GraphStore) PatchNodes(ctx context.Context, values *apipb.Patches) (*ap
 		if err != nil {
 			return nil, err
 		}
-		change := &apipb.Change{
-			Method:    method,
-			Identity:  identity,
-			Timestamp: now,
-			Change: &apipb.Change_NodeChange{NodeChange: &apipb.NodeChange{
-				Before: node,
-				After:  nil,
-			}},
+		change := &apipb.NodeChange{
+			Before: node,
 		}
 		for k, v := range val.GetAttributes().GetFields() {
 			node.Attributes.GetFields()[k] = v
 		}
 		node.GetMetadata().UpdatedAt = now
 		node.GetMetadata().UpdatedBy = identity.GetPath()
-		change.GetNodeChange().After = node
+		change.After = node
 		nodes = append(nodes, node)
 		changes = append(changes, change)
 	}
@@ -936,10 +923,12 @@ func (n *GraphStore) PatchNodes(ctx context.Context, values *apipb.Patches) (*ap
 	if err != nil {
 		return nil, err
 	}
-	n.machine.Go(func(routine machine.Routine) {
-		for _, change := range changes {
-			routine.Publish(changeChannel, change)
-		}
+	n.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		Method:      method,
+		Identity:    identity,
+		Timestamp:   now,
+		EdgeChanges: nil,
+		NodeChanges: changes,
 	})
 	return nodess, nil
 }
@@ -1151,7 +1140,7 @@ func (n *GraphStore) PatchEdge(ctx context.Context, value *apipb.Patch) (*apipb.
 func (n *GraphStore) PatchEdges(ctx context.Context, values *apipb.Patches) (*apipb.Edges, error) {
 	identity := n.NodeContext(ctx)
 	var edges []*apipb.Edge
-	var changes []*apipb.Change
+	var changes []*apipb.EdgeChange
 	method := n.MethodContext(ctx)
 	now := timestamppb.Now()
 	for _, val := range values.GetPatches() {
@@ -1159,21 +1148,15 @@ func (n *GraphStore) PatchEdges(ctx context.Context, values *apipb.Patches) (*ap
 		if err != nil {
 			return nil, err
 		}
-		change := &apipb.Change{
-			Method:    method,
-			Identity:  identity,
-			Timestamp: now,
-			Change: &apipb.Change_EdgeChange{EdgeChange: &apipb.EdgeChange{
-				Before: edge,
-				After:  nil,
-			}},
+		change := &apipb.EdgeChange{
+			Before: edge,
 		}
 		for k, v := range val.GetAttributes().GetFields() {
 			edge.Attributes.GetFields()[k] = v
 		}
 		edge.GetMetadata().UpdatedAt = now
 		edge.GetMetadata().UpdatedBy = identity.GetPath()
-		change.GetEdgeChange().After = edge
+		change.After = edge
 		edges = append(edges, edge)
 		changes = append(changes, change)
 	}
@@ -1182,10 +1165,11 @@ func (n *GraphStore) PatchEdges(ctx context.Context, values *apipb.Patches) (*ap
 	if err != nil {
 		return nil, err
 	}
-	n.machine.Go(func(routine machine.Routine) {
-		for _, change := range changes {
-			routine.Publish(changeChannel, change)
-		}
+	n.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		Method:      method,
+		Identity:    identity,
+		Timestamp:   now,
+		EdgeChanges: changes,
 	})
 	return edgess, nil
 }
