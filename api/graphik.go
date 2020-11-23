@@ -52,6 +52,8 @@ func (m *Metadata) AsMap() map[string]interface{} {
 		"updated_at": m.GetUpdatedAt(),
 		"updated_by": m.GetUpdatedBy(),
 		"sequence":   m.GetSequence(),
+		"version":    m.GetVersion(),
+		"hash":       m.GetHash(),
 	}
 }
 
@@ -219,32 +221,26 @@ func (c *Change) AsMap() map[string]interface{} {
 	if c == nil {
 		return map[string]interface{}{}
 	}
-	switch v := c.Change.(type) {
-	case *Change_NodeChange:
-		return map[string]interface{}{
-			"method":    c.Method,
-			"timestamp": c.Timestamp,
-			"identity":  c.Identity,
-			"change": map[string]interface{}{
-				"before": v.NodeChange.GetBefore().AsMap(),
-				"after":  v.NodeChange.GetAfter().AsMap(),
-			},
-		}
-	case *Change_EdgeChange:
-		return map[string]interface{}{
-			"method":    c.Method,
-			"timestamp": c.Timestamp,
-			"identity":  c.Identity,
-			"change": map[string]interface{}{
-				"before": v.EdgeChange.GetBefore().AsMap(),
-				"after":  v.EdgeChange.GetAfter().AsMap(),
-			},
-		}
+	var edgeChanges []interface{}
+	var nodeChanges []interface{}
+	for _, change := range c.GetEdgeChanges() {
+		edgeChanges = append(edgeChanges, map[string]interface{}{
+			"before": change.GetBefore().AsMap(),
+			"after":  change.GetAfter().AsMap(),
+		})
+	}
+	for _, change := range c.GetNodeChanges() {
+		nodeChanges = append(nodeChanges, map[string]interface{}{
+			"before": change.GetBefore().AsMap(),
+			"after":  change.GetAfter().AsMap(),
+		})
 	}
 	return map[string]interface{}{
-		"method":    c.Method,
-		"timestamp": c.Timestamp,
-		"identity":  c.Identity,
+		"method":       c.Method,
+		"timestamp":    c.Timestamp,
+		"identity":     c.Identity,
+		"edge_changes": edgeChanges,
+		"node_changes": nodeChanges,
 	}
 }
 

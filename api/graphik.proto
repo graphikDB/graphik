@@ -23,10 +23,12 @@ message Path {
 }
 
 message Metadata {
-  google.protobuf.Timestamp created_at =1;
-  google.protobuf.Timestamp updated_at =2;
-  Path updated_by =3;
-  uint64 sequence =4;
+  google.protobuf.Timestamp created_at =1 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Timestamp updated_at =2 [(validator.field) = {msg_exists : true}];
+  Path updated_by =3 [(validator.field) = {msg_exists : true}];
+  uint64 sequence =4 [(validator.field) = {int_gt : 0}];
+  uint64 version =5 [(validator.field) = {int_gt : 0}];
+  string hash =6 [(validator.field) = {regex : "^.{1,225}$"}];
 }
 
 // Paths is an array of paths
@@ -36,9 +38,9 @@ message Paths {
 
 // Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
 message Node {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =2;
-  Metadata metadata =3;
+  Metadata metadata =3 [(validator.field) = {msg_exists : true}];
 }
 
 // NodeConstructor is used to create a node
@@ -59,11 +61,11 @@ message Nodes {
 
 // NodeDetail is a node with its connected edges
 message NodeDetail {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =2;
   EdgeDetails edges_from =3;
   EdgeDetails edges_to =4;
-  Metadata metadata =5;
+  Metadata metadata =5 [(validator.field) = {msg_exists : true}];
 }
 
 // NodeDetails is an array of NodeDetail
@@ -73,19 +75,19 @@ message NodeDetails {
 
 // NodeDetailFilter is used to fetch node details
 message NodeDetailFilter {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   Filter edges_from =2;
   Filter edges_to =3;
 }
 
 // Edge is a graph primitive that represents a relationship between two nodes
 message Edge {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =2;
   bool directed =3;
-  Path from =4;
-  Path to =5;
-  Metadata metadata =6;
+  Path from =4 [(validator.field) = {msg_exists : true}];
+  Path to =5 [(validator.field) = {msg_exists : true}];
+  Metadata metadata =6 [(validator.field) = {msg_exists : true}];
 }
 
 // EdgeConstructor is used to create an Edge
@@ -109,12 +111,12 @@ message Edges {
 
 // EdgeDetail is an edge with both of it's connected nodes fully loaded
 message EdgeDetail {
-  Path path =1;
+  Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =2;
   bool directed =3;
-  Node from =4;
-  Node to =5;
-  Metadata metadata =6;
+  Node from =4 [(validator.field) = {msg_exists : true}];
+  Node to =5 [(validator.field) = {msg_exists : true}];
+  Metadata metadata =6 [(validator.field) = {msg_exists : true}];
 }
 
 // EdgeDetails is an array of EdgeDetail
@@ -187,8 +189,8 @@ message OutboundMessage {
 message Message {
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
-  Path sender =3;
-  google.protobuf.Timestamp timestamp=4;
+  Path sender =3 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
 }
 
 // Schema returns registered edge & node types
@@ -209,12 +211,10 @@ message EdgeChange {
 
 message Change {
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Node identity =2;
-  google.protobuf.Timestamp timestamp =3;
-  oneof change {
-    EdgeChange edge_change =4;
-    NodeChange node_change =5;
-  }
+  Node identity =2 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  repeated EdgeChange edge_changes =4;
+  repeated  NodeChange node_changes =5;
 }
 
 message ExpressionFilter {
@@ -274,9 +274,9 @@ service GraphService {
 
 message Interception {
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Node identity =2;
-  google.protobuf.Timestamp timestamp =3;
-  google.protobuf.Any request = 4;
+  Node identity =2 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Any request = 4 [(validator.field) = {msg_exists : true}];
   Timing timing =5;
 }
 

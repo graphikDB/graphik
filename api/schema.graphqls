@@ -16,15 +16,18 @@ type Path {
 }
 
 type Metadata {
-  created_at: Timestamp
-  updated_at: Timestamp
-  updated_by: Path
+  created_at: Timestamp!
+  updated_at: Timestamp!
+  updated_by: Path!
+  sequence: Int!
+  version: Int!
+  hash: String!
 }
 
 type Node {
   path: Path!
   attributes: Struct
-  metadata: Metadata
+  metadata: Metadata!
 }
 
 type Nodes {
@@ -36,7 +39,7 @@ type Edge {
   attributes: Struct
   from: Path!
   to: Path!
-  metadata: Metadata
+  metadata: Metadata!
 }
 
 type Edges {
@@ -87,6 +90,25 @@ input EdgeConstructor {
   to: PathInput!
 }
 
+type NodeChange {
+  before: Node
+  after: Node
+}
+
+type EdgeChange {
+  before: Edge
+  after: Edge
+}
+
+type Change {
+  method: String!
+  identity: Node!
+  timestamp: Timestamp!
+  edge_changes: [EdgeChange!]
+  node_changes: [EdgeChange!]
+
+}
+
 input PathInput {
   gtype: String!
   gid: String
@@ -125,6 +147,10 @@ input OutboundMessage {
   data: Struct!
 }
 
+input ExpressionFilter {
+  expressions: [String!]
+}
+
 type Mutation {
   createNode(input: NodeConstructor!): Node!
   patchNode(input: Patch!): Node!
@@ -147,4 +173,5 @@ type Query {
 
 type Subscription {
   subscribe(input: ChannelFilter!): Message!
+  subscribeChanges(input: ExpressionFilter): Change!
 }

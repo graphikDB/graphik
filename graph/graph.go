@@ -2,6 +2,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/auth"
 	"github.com/autom8ter/graphik/flags"
@@ -242,8 +243,7 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 	}
 	now := timestamppb.Now()
 	method := g.MethodContext(ctx)
-	var nodes = []*apipb.Node{}
-	var changes []*apipb.Change
+	var nodes []*apipb.Node
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		nodeBucket := tx.Bucket(dbNodes)
 		for _, constructor := range constructors.GetNodes() {
@@ -268,17 +268,6 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 			}
 			seq, _ := bucket.NextSequence()
 			node.Metadata.Sequence = seq
-			changes = append(changes, &apipb.Change{
-				Method:    method,
-				Identity:  identity,
-				Timestamp: node.GetMetadata().GetCreatedAt(),
-				Change: &apipb.Change_NodeChange{
-					NodeChange: &apipb.NodeChange{
-						Before: nil,
-						After:  node,
-					},
-				},
-			})
 			nodes = append(nodes, node)
 		}
 		return nil
@@ -289,10 +278,19 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 	if err != nil {
 		return nil, err
 	}
+	var changes []*apipb.NodeChange
+	for _, node := range nodes {
+		changes = append(changes, &apipb.NodeChange{
+			After:                node,
+		})
+	}
 	g.machine.Go(func(routine machine.Routine) {
-		for _, change := range changes {
-			routine.Publish(changeChannel, change)
-		}
+		routine.Publish(changeChannel, &apipb.Change{
+			Method:               method,
+			Identity:             identity,
+			Timestamp:            now,
+			NodeChanges:          changes,
+		})
 	})
 	nodess.Sort()
 	return nodess, nil
@@ -344,8 +342,9 @@ func (g *GraphStore) CreateEdges(ctx context.Context, constructors *apipb.EdgeCo
 					UpdatedAt: now,
 					UpdatedBy: identity.GetPath(),
 				},
-				From: constructor.GetFrom(),
-				To:   constructor.GetTo(),
+				Directed: constructor.Directed,
+				From:     constructor.GetFrom(),
+				To:       constructor.GetTo(),
 			}
 			seq, _ := bucket.NextSequence()
 			edge.Metadata.Sequence = seq
@@ -781,6 +780,14 @@ func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) (*apipb
 			if err := ctx.Err(); err != nil {
 				return err
 			}
+			if node.GetMetadata().GetCreatedAt() == nil {
+				node.GetMetadata().CreatedAt = timestamppb.Now()
+			}
+			if node.GetMetadata().GetUpdatedAt() == nil {
+				node.GetMetadata().UpdatedAt = timestamppb.Now()
+			}
+			node.GetMetadata().Version += 1
+			node.GetMetadata().Hash = fmt.Sprintf("%x", node.String())
 			bits, err := proto.Marshal(node)
 			if err != nil {
 				return err
@@ -823,25 +830,58 @@ func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb
 	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		for _, edge := range edges {
+			nodeBucket := tx.Bucket(dbNodes)
+			{
+				fromBucket := nodeBucket.Bucket([]byte(edge.From.Gtype))
+				if fromBucket == nil {
+					return errors.Errorf("from node %s does not exist", edge.From.String())
+				}
+				val := fromBucket.Get([]byte(edge.From.Gid))
+				if val == nil {
+					return errors.Errorf("from node %s does not exist", edge.From.String())
+				}
+			}
+			{
+				toBucket := nodeBucket.Bucket([]byte(edge.To.Gtype))
+				if toBucket == nil {
+					return errors.Errorf("to node %s does not exist", edge.To.String())
+				}
+				val := toBucket.Get([]byte(edge.To.Gid))
+				if val == nil {
+					return errors.Errorf("to node %s does not exist", edge.To.String())
+				}
+			}
+			if edge.GetMetadata().GetCreatedAt() == nil {
+				edge.GetMetadata().CreatedAt = timestamppb.Now()
+			}
+			if edge.GetMetadata().GetUpdatedAt() == nil {
+				edge.GetMetadata().UpdatedAt = timestamppb.Now()
+			}
+			edge.GetMetadata().Version += 1
+			edge.GetMetadata().Hash = fmt.Sprintf("%x", edge.String())
 			bits, err := proto.Marshal(edge)
 			if err != nil {
 				return err
 			}
 			edgeBucket := tx.Bucket(dbEdges)
-			bucket := edgeBucket.Bucket([]byte(edge.GetPath().GetGtype()))
-			if bucket == nil {
-				bucket, err = edgeBucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
+			edgeBucket = edgeBucket.Bucket([]byte(edge.GetPath().GetGtype()))
+			if edgeBucket == nil {
+				edgeBucket, err = edgeBucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
 				if err != nil {
 					return err
 				}
 			}
-			if err := bucket.Put([]byte(edge.GetPath().GetGid()), bits); err != nil {
+			if err := edgeBucket.Put([]byte(edge.GetPath().GetGid()), bits); err != nil {
 				return err
 			}
 			g.mu.Lock()
 			defer g.mu.Unlock()
 			g.edgesFrom[edge.GetFrom().String()] = append(g.edgesFrom[edge.GetFrom().String()], edge.GetPath())
 			g.edgesTo[edge.GetTo().String()] = append(g.edgesTo[edge.GetTo().String()], edge.GetPath())
+			if !edge.Directed {
+				g.edgesTo[edge.GetFrom().String()] = append(g.edgesTo[edge.GetFrom().String()], edge.GetPath())
+				g.edgesFrom[edge.GetTo().String()] = append(g.edgesFrom[edge.GetTo().String()], edge.GetPath())
+			}
 			sortPaths(g.edgesFrom[edge.GetFrom().String()])
 			sortPaths(g.edgesTo[edge.GetTo().String()])
 		}

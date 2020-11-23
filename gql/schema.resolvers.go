@@ -14,16 +14,16 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (r *messageResolver) Timestamp(ctx context.Context, obj *apipb.Message) (string, error) {
+func (r *changeResolver) NodeChanges(ctx context.Context, obj *apipb.Change) ([]*apipb.EdgeChange, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *metadataResolver) CreatedAt(ctx context.Context, obj *apipb.Metadata) (*string, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *metadataResolver) Sequence(ctx context.Context, obj *apipb.Metadata) (int, error) {
+	return int(obj.Sequence), nil
 }
 
-func (r *metadataResolver) UpdatedAt(ctx context.Context, obj *apipb.Metadata) (*string, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *metadataResolver) Version(ctx context.Context, obj *apipb.Metadata) (int, error) {
+	return int(obj.Version), nil
 }
 
 func (r *mutationResolver) CreateNode(ctx context.Context, input apipb.NodeConstructor) (*apipb.Node, error) {
@@ -107,8 +107,12 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, input apipb.Channe
 	return ch, nil
 }
 
-// Message returns generated.MessageResolver implementation.
-func (r *Resolver) Message() generated.MessageResolver { return &messageResolver{r} }
+func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input *apipb.ExpressionFilter) (<-chan *apipb.Change, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+// Change returns generated.ChangeResolver implementation.
+func (r *Resolver) Change() generated.ChangeResolver { return &changeResolver{r} }
 
 // Metadata returns generated.MetadataResolver implementation.
 func (r *Resolver) Metadata() generated.MetadataResolver { return &metadataResolver{r} }
@@ -122,7 +126,7 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 // Subscription returns generated.SubscriptionResolver implementation.
 func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
 
-type messageResolver struct{ *Resolver }
+type changeResolver struct{ *Resolver }
 type metadataResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
