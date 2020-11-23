@@ -5,18 +5,12 @@ package gql
 
 import (
 	"context"
-	"fmt"
-
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/gql/generated"
 	"github.com/autom8ter/graphik/logger"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
-
-func (r *changeResolver) NodeChanges(ctx context.Context, obj *apipb.Change) ([]*apipb.EdgeChange, error) {
-	panic(fmt.Errorf("not implemented"))
-}
 
 func (r *metadataResolver) Sequence(ctx context.Context, obj *apipb.Metadata) (int, error) {
 	return int(obj.Sequence), nil
@@ -89,6 +83,8 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, input apipb.Channe
 		return nil, err
 	}
 	go func() {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
 		for {
 			select {
 			case <-ctx.Done():
@@ -107,12 +103,32 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, input apipb.Channe
 	return ch, nil
 }
 
-func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input *apipb.ExpressionFilter) (<-chan *apipb.Change, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input apipb.ExpressionFilter) (<-chan *apipb.Change, error) {
+	ch := make(chan *apipb.Change)
+	stream, err := r.client.SubscribeChanges(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		for {
+			select {
+			case <-ctx.Done():
+				close(ch)
+				return
+			default:
+				msg, err := stream.Recv()
+				if err != nil {
+					logger.Error("failed to receive change", zap.Error(err))
+					continue
+				}
+				ch <- msg
+			}
+		}
+	}()
+	return ch, nil
 }
-
-// Change returns generated.ChangeResolver implementation.
-func (r *Resolver) Change() generated.ChangeResolver { return &changeResolver{r} }
 
 // Metadata returns generated.MetadataResolver implementation.
 func (r *Resolver) Metadata() generated.MetadataResolver { return &metadataResolver{r} }
@@ -126,7 +142,6 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 // Subscription returns generated.SubscriptionResolver implementation.
 func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
 
-type changeResolver struct{ *Resolver }
 type metadataResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

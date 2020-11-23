@@ -105,8 +105,7 @@ type Change {
   identity: Node!
   timestamp: Timestamp!
   edge_changes: [EdgeChange!]
-  node_changes: [EdgeChange!]
-
+  node_changes: [NodeChange!]
 }
 
 input PathInput {
@@ -173,5 +172,5 @@ type Query {
 
 type Subscription {
   subscribe(input: ChannelFilter!): Message!
-  subscribeChanges(input: ExpressionFilter): Change!
+  subscribeChanges(input: ExpressionFilter!): Change!
 }
