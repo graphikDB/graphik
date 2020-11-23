@@ -51,6 +51,7 @@ func (m *Metadata) AsMap() map[string]interface{} {
 		"created_at": m.GetCreatedAt(),
 		"updated_at": m.GetUpdatedAt(),
 		"updated_by": m.GetUpdatedBy(),
+		"sequence":   m.GetSequence(),
 	}
 }
 
@@ -60,6 +61,9 @@ func (m *Metadata) FromMap(data map[string]interface{}) {
 	}
 	if val, ok := data["updated_at"]; ok {
 		m.UpdatedAt = timestamppb.New(val.(time.Time))
+	}
+	if val, ok := data["sequence"]; ok {
+		m.Sequence = val.(uint64)
 	}
 	if val, ok := data["updated_by"]; ok {
 		if val, ok := val.(map[string]interface{}); ok {
@@ -119,6 +123,7 @@ func (n *Edge) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"path":       n.GetPath().AsMap(),
 		"attributes": n.GetAttributes().AsMap(),
+		"directed":   n.GetDirected(),
 		"from":       n.GetFrom().AsMap(),
 		"to":         n.GetTo().AsMap(),
 		"metadata":   n.GetMetadata().AsMap(),

@@ -5,7 +5,6 @@
 scalar Timestamp
 scalar Struct
 scalar Empty
-scalar Cascade
 
 type Pong {
   message: String!
@@ -35,7 +34,6 @@ type Nodes {
 type Edge {
   path: Path!
   attributes: Struct
-  cascade: Cascade
   from: Path!
   to: Path!
   metadata: Metadata
@@ -48,7 +46,6 @@ type Edges {
 type EdgeDetail {
   path: Path!
   attributes: Struct
-  cascade: Cascade
   from: Node!
   to: Node!
   metadata: Metadata
@@ -86,7 +83,6 @@ input NodeConstructor {
 input EdgeConstructor {
   path: PathInput!
   attributes: Struct
-  cascade: Cascade
   from: PathInput!
   to: PathInput!
 }
@@ -132,10 +128,8 @@ input OutboundMessage {
 type Mutation {
   createNode(input: NodeConstructor!): Node!
   patchNode(input: Patch!): Node!
-  delNode(input: PathInput!): Empty!
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
-  delEdge(input: PathInput!): Empty!
   publish(input: OutboundMessage): Empty!
 }
 

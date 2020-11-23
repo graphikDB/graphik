@@ -16,18 +16,6 @@ enum Timing {
   AFTER =1;
 }
 
-// Cascade describes how connected nodes will behave when one is deleted
-enum Cascade {
-  // no cascade
-  CASCADE_NONE =0;
-  // the source node in the connection will be deleted if the destination is deleted
-  CASCADE_FROM =1;
-  // the destination node in the connection will be deleted if the source node is
-  CASCADE_TO=2;
-  // if either node is deleted, both will be deleted
-  CASCADE_MUTUAL=3;
-}
-
 // Path describes a node/edge type & id
 message Path {
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
@@ -94,7 +82,7 @@ message NodeDetailFilter {
 message Edge {
   Path path =1;
   google.protobuf.Struct attributes =2;
-  Cascade cascade =3;
+  bool directed =3;
   Path from =4;
   Path to =5;
   Metadata metadata =6;
@@ -104,7 +92,7 @@ message Edge {
 message EdgeConstructor {
   Path path =1 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct attributes =3;
-  Cascade cascade =4;
+  bool directed =4;
   Path from =5 [(validator.field) = {msg_exists : true}];
   Path to =6 [(validator.field) = {msg_exists : true}];
 }
@@ -123,7 +111,7 @@ message Edges {
 message EdgeDetail {
   Path path =1;
   google.protobuf.Struct attributes =2;
-  Cascade cascade =3;
+  bool directed =3;
   Node from =4;
   Node to =5;
   Metadata metadata =6;
@@ -215,8 +203,8 @@ message NodeChange {
 }
 
 message EdgeChange {
-  Node before = 4;
-  Node after = 5;
+  Edge before = 4;
+  Edge after = 5;
 }
 
 message Change {
@@ -253,10 +241,6 @@ service GraphService {
   rpc PatchNode(Patch) returns(Node){}
   // PatchNodes patches a batch of nodes attributes
   rpc PatchNodes(Patches) returns(Nodes){}
-  // DelNode deletes a node from the graph
-  rpc DelNode(Path) returns(google.protobuf.Empty){}
-  // DelNodes deletes a batch of nodes from the graph
-  rpc DelNodes(Paths) returns(google.protobuf.Empty){}
   // CreateEdge creates an edge in the graph
   rpc CreateEdge(EdgeConstructor) returns(Edge){}
   // CreateEdges creates a batch of edges in the graph
@@ -269,10 +253,6 @@ service GraphService {
   rpc PatchEdge(Patch) returns(Edge){}
   // PatchEdges patches a batch of edges attributes
   rpc PatchEdges(Patches) returns(Edges){}
-  // DelEdge deletes an edge from the graph
-  rpc DelEdge(Path) returns(google.protobuf.Empty){}
-  // DelEdges deletes a batch of edges from the graph
-  rpc DelEdges(Paths) returns(google.protobuf.Empty){}
   // EdgesFrom returns edges that source from the given node path that pass the filter
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   // EdgesTo returns edges that point to the given node path that pass the filter
