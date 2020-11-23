@@ -103,9 +103,15 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 				Timing:    apipb.Timing_BEFORE,
 			}
 			for _, trigger := range g.triggers {
-				intercept, err = trigger.Mutate(ctx, intercept)
+				should, err := trigger.shouldTrigger(interceptEval)
 				if err != nil {
 					return nil, err
+				}
+				if should {
+					intercept, err = trigger.Mutate(ctx, intercept)
+					if err != nil {
+						return nil, err
+					}
 				}
 			}
 			if err := ptypes.UnmarshalAny(intercept.Request, req.(proto.Message)); err != nil {

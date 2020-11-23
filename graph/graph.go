@@ -31,7 +31,8 @@ import (
 const (
 	// Permissions to use on the db file. This is only used if the
 	// database file does not exist and needs to be created.
-	dbFileMode = 0600
+	dbFileMode    = 0600
+	changeChannel = "changes"
 )
 
 var (
@@ -239,8 +240,10 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	now := time.Now()
+	now := timestamppb.Now()
+	method := g.MethodContext(ctx)
 	var nodes = &apipb.Nodes{Nodes: []*apipb.Node{}}
+	var changes []*apipb.Change
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		nodeBucket := tx.Bucket(dbNodes)
 		for _, constructor := range constructors.GetNodes() {
@@ -252,8 +255,8 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 				Path:       constructor.GetPath(),
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
-					CreatedAt: timestamppb.New(now),
-					UpdatedAt: timestamppb.New(now),
+					CreatedAt: now,
+					UpdatedAt: now,
 					UpdatedBy: identity.GetPath(),
 				},
 			}
@@ -272,12 +275,28 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 			if err := bucket.Put([]byte(node.GetPath().GetGid()), bits); err != nil {
 				return err
 			}
+			changes = append(changes, &apipb.Change{
+				Method:    method,
+				Identity:  identity,
+				Timestamp: node.GetMetadata().GetUpdatedAt(),
+				Change: &apipb.Change_NodeChange{
+					NodeChange: &apipb.NodeChange{
+						Before: nil,
+						After:  node,
+					},
+				},
+			})
 			nodes.Nodes = append(nodes.Nodes, node)
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
+	g.machine.Go(func(routine machine.Routine) {
+		for _, change := range changes {
+			routine.Publish(changeChannel, change)
+		}
+	})
 	nodes.Sort()
 	return nodes, nil
 }
@@ -311,7 +330,7 @@ func (g *GraphStore) CreateEdges(ctx context.Context, constructors *apipb.EdgeCo
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	now := time.Now()
+	now := timestamppb.Now()
 	var edges = &apipb.Edges{Edges: []*apipb.Edge{}}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		edgeBucket := tx.Bucket(dbEdges)
@@ -324,8 +343,8 @@ func (g *GraphStore) CreateEdges(ctx context.Context, constructors *apipb.EdgeCo
 				Path:       constructor.GetPath(),
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
-					CreatedAt: timestamppb.New(now),
-					UpdatedAt: timestamppb.New(now),
+					CreatedAt: now,
+					UpdatedAt: now,
 					UpdatedBy: identity.GetPath(),
 				},
 				From:    constructor.From,
@@ -366,7 +385,7 @@ func (g *GraphStore) Publish(ctx context.Context, message *apipb.OutboundMessage
 		Channel:   message.Channel,
 		Data:      message.Data,
 		Sender:    identity.GetPath(),
-		Timestamp: timestamppb.New(time.Now()),
+		Timestamp: timestamppb.Now(),
 	})
 }
 
@@ -376,15 +395,17 @@ func (g *GraphStore) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphSe
 		return err
 	}
 	filterFunc := func(msg interface{}) bool {
-		if val, ok := msg.(apipb.Mapper); ok {
-			result, err := vm.Eval(programs, val)
-			if err != nil {
-				logger.Error("subscription filter failure", zap.Error(err))
-				return false
-			}
-			return result
+		val, ok := msg.(*apipb.Message)
+		if !ok {
+			logger.Error("invalid message type received during subscription")
+			return false
 		}
-		return false
+		result, err := vm.Eval(programs, val)
+		if err != nil {
+			logger.Error("subscription filter failure", zap.Error(err))
+			return false
+		}
+		return result
 	}
 	if err := g.machine.PubSub().SubscribeFilter(server.Context(), filter.Channel, filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
@@ -394,6 +415,41 @@ func (g *GraphStore) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphSe
 		if val, ok := msg.(*apipb.Message); ok && val != nil {
 			if err := server.Send(val); err != nil {
 				logger.Error("failed to send subscription", zap.Error(err))
+				return
+			}
+		}
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *GraphStore) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.GraphService_SubscribeChangesServer) error {
+	programs, err := vm.Programs(filter.Expressions)
+	if err != nil {
+		return err
+	}
+	filterFunc := func(msg interface{}) bool {
+		val, ok := msg.(*apipb.Change)
+		if !ok {
+			logger.Error("invalid message type received during change subscription")
+			return false
+		}
+		result, err := vm.Eval(programs, val)
+		if err != nil {
+			logger.Error("subscription change failure", zap.Error(err))
+			return false
+		}
+		return result
+	}
+	if err := g.machine.PubSub().SubscribeFilter(server.Context(), changeChannel, filterFunc, func(msg interface{}) {
+		if err, ok := msg.(error); ok && err != nil {
+			logger.Error("failed to send subscription", zap.Error(err))
+			return
+		}
+		if val, ok := msg.(*apipb.Change); ok && val != nil {
+			if err := server.Send(val); err != nil {
+				logger.Error("failed to send change", zap.Error(err))
 				return
 			}
 		}
@@ -657,7 +713,7 @@ func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *ap
 }
 
 func (g *GraphStore) createIdentity(ctx context.Context, constructor *apipb.NodeConstructor) (*apipb.Node, error) {
-	now := time.Now()
+	now := timestamppb.Now()
 	var node *apipb.Node
 	var err error
 	if constructor.Path.Gid == "" {
@@ -668,8 +724,8 @@ func (g *GraphStore) createIdentity(ctx context.Context, constructor *apipb.Node
 			Path:       constructor.GetPath(),
 			Attributes: constructor.GetAttributes(),
 			Metadata: &apipb.Metadata{
-				CreatedAt: timestamppb.New(now),
-				UpdatedAt: timestamppb.New(now),
+				CreatedAt: now,
+				UpdatedAt: now,
 				UpdatedBy: constructor.GetPath(),
 			},
 		}

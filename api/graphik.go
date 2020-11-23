@@ -25,6 +25,9 @@ type FromMapper interface {
 }
 
 func (m *Path) AsMap() map[string]interface{} {
+	if m == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"gid":   m.GetGid(),
 		"gtype": m.GetGtype(),
@@ -41,6 +44,9 @@ func (m *Path) FromMap(data map[string]interface{}) {
 }
 
 func (m *Metadata) AsMap() map[string]interface{} {
+	if m == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"created_at": m.GetCreatedAt(),
 		"updated_at": m.GetUpdatedAt(),
@@ -63,6 +69,9 @@ func (m *Metadata) FromMap(data map[string]interface{}) {
 }
 
 func (n *Node) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"path":       n.GetPath().AsMap(),
 		"attributes": n.GetAttributes().AsMap(),
@@ -104,6 +113,9 @@ func (m *Node) FromMap(data map[string]interface{}) {
 }
 
 func (n *Edge) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"path":       n.GetPath().AsMap(),
 		"attributes": n.GetAttributes().AsMap(),
@@ -164,6 +176,9 @@ func (m *Edge) FromMap(data map[string]interface{}) {
 }
 
 func (n *Message) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"channel":   n.GetChannel(),
 		"sender":    n.GetSender().AsMap(),
@@ -192,6 +207,39 @@ func (m *Message) FromMap(data map[string]interface{}) {
 	}
 	if val, ok := data["channel"]; ok {
 		m.Channel = val.(string)
+	}
+}
+
+func (c *Change) AsMap() map[string]interface{} {
+	if c == nil {
+		return map[string]interface{}{}
+	}
+	switch v := c.Change.(type) {
+	case *Change_NodeChange:
+		return map[string]interface{}{
+			"method":    c.Method,
+			"timestamp": c.Timestamp,
+			"identity":  c.Identity,
+			"change": map[string]interface{}{
+				"before": v.NodeChange.GetBefore().AsMap(),
+				"after":  v.NodeChange.GetAfter().AsMap(),
+			},
+		}
+	case *Change_EdgeChange:
+		return map[string]interface{}{
+			"method":    c.Method,
+			"timestamp": c.Timestamp,
+			"identity":  c.Identity,
+			"change": map[string]interface{}{
+				"before": v.EdgeChange.GetBefore().AsMap(),
+				"after":  v.EdgeChange.GetAfter().AsMap(),
+			},
+		}
+	}
+	return map[string]interface{}{
+		"method":    c.Method,
+		"timestamp": c.Timestamp,
+		"identity":  c.Identity,
 	}
 }
 

@@ -37,6 +37,7 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - [x] Native OAuth Support & Single Sign On
 - [x] Persistant(bbolt LMDB)
 - [x] Channel Based PubSub
+- [x] Change Stream Subscriptions
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
 - [x] gRPC Based External [Triggers](#triggers--optional-)

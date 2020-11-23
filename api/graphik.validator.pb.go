@@ -447,6 +447,68 @@ func (this *Message) Validate() error {
 func (this *Schema) Validate() error {
 	return nil
 }
+func (this *NodeChange) Validate() error {
+	if this.Before != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Before); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Before", err)
+		}
+	}
+	if this.After != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.After); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("After", err)
+		}
+	}
+	return nil
+}
+func (this *EdgeChange) Validate() error {
+	if this.Before != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Before); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Before", err)
+		}
+	}
+	if this.After != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.After); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("After", err)
+		}
+	}
+	return nil
+}
+
+var _regex_Change_Method = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *Change) Validate() error {
+	if !_regex_Change_Method.MatchString(this.Method) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
+	}
+	if this.Identity != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Identity); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Identity", err)
+		}
+	}
+	if this.Timestamp != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Timestamp); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", err)
+		}
+	}
+	if oneOfNester, ok := this.GetChange().(*Change_EdgeChange); ok {
+		if oneOfNester.EdgeChange != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.EdgeChange); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("EdgeChange", err)
+			}
+		}
+	}
+	if oneOfNester, ok := this.GetChange().(*Change_NodeChange); ok {
+		if oneOfNester.NodeChange != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(oneOfNester.NodeChange); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("NodeChange", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *ExpressionFilter) Validate() error {
+	return nil
+}
 
 var _regex_Interception_Method = regexp.MustCompile(`^.{1,225}$`)
 
@@ -469,8 +531,5 @@ func (this *Interception) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Request", err)
 		}
 	}
-	return nil
-}
-func (this *TriggerFilter) Validate() error {
 	return nil
 }

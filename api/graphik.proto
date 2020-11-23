@@ -209,6 +209,30 @@ message Schema {
   repeated string node_types =2;
 }
 
+message NodeChange {
+  Node before = 4;
+  Node after = 5;
+}
+
+message EdgeChange {
+  Node before = 4;
+  Node after = 5;
+}
+
+message Change {
+  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  Node identity =2;
+  google.protobuf.Timestamp timestamp =3;
+  oneof change {
+    EdgeChange edge_change =4;
+    NodeChange node_change =5;
+  }
+}
+
+message ExpressionFilter {
+  repeated string expressions =1;
+}
+
 // GraphService is the primary Graph service
 service GraphService {
   // Ping returns PONG if the server is health
@@ -257,6 +281,7 @@ service GraphService {
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
   rpc Subscribe(ChannelFilter) returns(stream Message){}
+  rpc SubscribeChanges(ExpressionFilter) returns(stream Change){}
   // Import imports the Graph into the database
   rpc Import(Graph) returns(Graph){}
   // Export returns the Graph data
@@ -275,10 +300,6 @@ message Interception {
   Timing timing =5;
 }
 
-message TriggerFilter {
-  repeated string expressions =1;
-}
-
 // TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
 service TriggerService {
   // Ping returns PONG if the server is health
@@ -287,5 +308,5 @@ service TriggerService {
   rpc Mutate(Interception) returns(Interception){}
   // Filter returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
   // These expressions are cached by the Graphik server
-  rpc Filter(google.protobuf.Empty) returns(TriggerFilter){}
+  rpc Filter(google.protobuf.Empty) returns(ExpressionFilter){}
 }

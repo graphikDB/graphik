@@ -10,7 +10,7 @@ help:
 	@echo "----------------------------------------------------------------"
 
 run:
-	@go run graphik/main.go  --jwks=https://www.googleapis.com/oauth2/v3/certs
+	@go run main.go  --jwks=https://www.googleapis.com/oauth2/v3/certs
 
 gen: proto gql
 
