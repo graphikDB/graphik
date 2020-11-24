@@ -1245,7 +1245,7 @@ func (g *GraphStore) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter)
 		Nodes: &apipb.Nodes{},
 		Edges: &apipb.Edges{},
 	}
-	nodes, err := g.SearchNodes(ctx, filter.Nodes)
+	nodes, err := g.SearchNodes(ctx, filter.GetNodeFilter())
 	if err != nil {
 		return nil, err
 	}
@@ -1253,9 +1253,9 @@ func (g *GraphStore) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter)
 		graph.Nodes.Nodes = append(graph.Nodes.Nodes, node)
 		edges, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
 			NodePath:    node.Path,
-			Gtype:       filter.GetEdges().GetGtype(),
-			Expressions: filter.GetEdges().GetExpressions(),
-			Limit:       filter.GetEdges().GetLimit(),
+			Gtype:       filter.GetEdgeFilter().GetGtype(),
+			Expressions: filter.GetEdgeFilter().GetExpressions(),
+			Limit:       filter.GetEdgeFilter().GetLimit(),
 		})
 		if err != nil {
 			return nil, err
