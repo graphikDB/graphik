@@ -169,9 +169,9 @@ message Patch {
   google.protobuf.Struct attributes =2;
 }
 
-// Patches is an array of Patch
-message Patches {
-  repeated Patch patches =1;
+message FilterPatch {
+  Patch patch =1;
+  Filter filter =2;
 }
 
 // Pong returns PONG if the server is healthy
@@ -240,7 +240,7 @@ service GraphService {
   // PatchNode patches a nodes attributes
   rpc PatchNode(Patch) returns(Node){}
   // PatchNodes patches a batch of nodes attributes
-  rpc PatchNodes(Patches) returns(Nodes){}
+  rpc PatchNodes(FilterPatch) returns(Nodes){}
   // CreateEdge creates an edge in the graph
   rpc CreateEdge(EdgeConstructor) returns(Edge){}
   // CreateEdges creates a batch of edges in the graph
@@ -252,7 +252,7 @@ service GraphService {
   // PatchEdge patches an edges attributes
   rpc PatchEdge(Patch) returns(Edge){}
   // PatchEdges patches a batch of edges attributes
-  rpc PatchEdges(Patches) returns(Edges){}
+  rpc PatchEdges(FilterPatch) returns(Edges){}
   // EdgesFrom returns edges that source from the given node path that pass the filter
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   // EdgesTo returns edges that point to the given node path that pass the filter

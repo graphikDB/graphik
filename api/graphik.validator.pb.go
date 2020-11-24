@@ -447,12 +447,15 @@ func (this *Patch) Validate() error {
 	}
 	return nil
 }
-func (this *Patches) Validate() error {
-	for _, item := range this.Patches {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Patches", err)
-			}
+func (this *FilterPatch) Validate() error {
+	if this.Patch != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Patch); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Patch", err)
+		}
+	}
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
 		}
 	}
 	return nil

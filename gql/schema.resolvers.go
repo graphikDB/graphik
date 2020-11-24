@@ -5,6 +5,7 @@ package gql
 
 import (
 	"context"
+
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/gql/generated"
 	"github.com/autom8ter/graphik/logger"
@@ -28,12 +29,20 @@ func (r *mutationResolver) PatchNode(ctx context.Context, input apipb.Patch) (*a
 	return r.client.PatchNode(ctx, &input)
 }
 
+func (r *mutationResolver) PatchNodes(ctx context.Context, input apipb.FilterPatch) (*apipb.Nodes, error) {
+	return r.client.PatchNodes(ctx, &input)
+}
+
 func (r *mutationResolver) CreateEdge(ctx context.Context, input apipb.EdgeConstructor) (*apipb.Edge, error) {
 	return r.client.CreateEdge(ctx, &input)
 }
 
 func (r *mutationResolver) PatchEdge(ctx context.Context, input apipb.Patch) (*apipb.Edge, error) {
 	return r.client.PatchEdge(ctx, &input)
+}
+
+func (r *mutationResolver) PatchEdges(ctx context.Context, input apipb.FilterPatch) (*apipb.Edges, error) {
+	return r.client.PatchEdges(ctx, &input)
 }
 
 func (r *mutationResolver) Publish(ctx context.Context, input *apipb.OutboundMessage) (*emptypb.Empty, error) {
