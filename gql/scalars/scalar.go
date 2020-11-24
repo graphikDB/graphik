@@ -3,7 +3,6 @@ package scalars
 import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql"
-	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes/empty"
@@ -45,25 +44,6 @@ func MarshalEmptyScalar(n *empty.Empty) graphql.Marshaler {
 
 func UnmarshalEmptyScalar(v interface{}) (*empty.Empty, error) {
 	return &empty.Empty{}, nil
-}
-
-func UnmarshalCascadeScalar(v interface{}) (apipb.Cascade, error) {
-	switch v := v.(type) {
-	case string:
-		return apipb.Cascade(apipb.Cascade_value[v]), nil
-	case int:
-		return apipb.Cascade(v), nil
-	case int32:
-		return apipb.Cascade(v), nil
-	default:
-		return apipb.Cascade_CASCADE_NONE, fmt.Errorf("%T is not a Cascade", v)
-	}
-}
-
-func MarshalCascadeScalar(c apipb.Cascade) graphql.Marshaler {
-	return graphql.WriterFunc(func(w io.Writer) {
-		w.Write([]byte(c.String()))
-	})
 }
 
 func MarshalTimestampScalar(t *timestamp.Timestamp) graphql.Marshaler {

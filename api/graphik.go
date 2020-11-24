@@ -25,6 +25,9 @@ type FromMapper interface {
 }
 
 func (m *Path) AsMap() map[string]interface{} {
+	if m == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"gid":   m.GetGid(),
 		"gtype": m.GetGtype(),
@@ -41,10 +44,16 @@ func (m *Path) FromMap(data map[string]interface{}) {
 }
 
 func (m *Metadata) AsMap() map[string]interface{} {
+	if m == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"created_at": m.GetCreatedAt(),
 		"updated_at": m.GetUpdatedAt(),
 		"updated_by": m.GetUpdatedBy(),
+		"sequence":   m.GetSequence(),
+		"version":    m.GetVersion(),
+		"hash":       m.GetHash(),
 	}
 }
 
@@ -55,6 +64,9 @@ func (m *Metadata) FromMap(data map[string]interface{}) {
 	if val, ok := data["updated_at"]; ok {
 		m.UpdatedAt = timestamppb.New(val.(time.Time))
 	}
+	if val, ok := data["sequence"]; ok {
+		m.Sequence = val.(uint64)
+	}
 	if val, ok := data["updated_by"]; ok {
 		if val, ok := val.(map[string]interface{}); ok {
 			m.UpdatedBy.FromMap(val)
@@ -63,6 +75,9 @@ func (m *Metadata) FromMap(data map[string]interface{}) {
 }
 
 func (n *Node) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"path":       n.GetPath().AsMap(),
 		"attributes": n.GetAttributes().AsMap(),
@@ -104,9 +119,13 @@ func (m *Node) FromMap(data map[string]interface{}) {
 }
 
 func (n *Edge) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"path":       n.GetPath().AsMap(),
 		"attributes": n.GetAttributes().AsMap(),
+		"directed":   n.GetDirected(),
 		"from":       n.GetFrom().AsMap(),
 		"to":         n.GetTo().AsMap(),
 		"metadata":   n.GetMetadata().AsMap(),
@@ -164,6 +183,9 @@ func (m *Edge) FromMap(data map[string]interface{}) {
 }
 
 func (n *Message) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
 	return map[string]interface{}{
 		"channel":   n.GetChannel(),
 		"sender":    n.GetSender().AsMap(),
@@ -192,6 +214,128 @@ func (m *Message) FromMap(data map[string]interface{}) {
 	}
 	if val, ok := data["channel"]; ok {
 		m.Channel = val.(string)
+	}
+}
+
+func (c *Change) AsMap() map[string]interface{} {
+	if c == nil {
+		return map[string]interface{}{}
+	}
+	var edgeChanges []interface{}
+	var nodeChanges []interface{}
+	for _, change := range c.GetEdgeChanges() {
+		edgeChanges = append(edgeChanges, map[string]interface{}{
+			"before": change.GetBefore().AsMap(),
+			"after":  change.GetAfter().AsMap(),
+		})
+	}
+	for _, change := range c.GetNodeChanges() {
+		nodeChanges = append(nodeChanges, map[string]interface{}{
+			"before": change.GetBefore().AsMap(),
+			"after":  change.GetAfter().AsMap(),
+		})
+	}
+	return map[string]interface{}{
+		"method":       c.Method,
+		"timestamp":    c.Timestamp,
+		"identity":     c.Identity,
+		"edge_changes": edgeChanges,
+		"node_changes": nodeChanges,
+	}
+}
+
+func (n *Filter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"gtype":       n.GetGtype(),
+		"expressions": n.GetExpressions(),
+		"limit":       n.GetLimit(),
+	}
+}
+
+func (n *EdgeFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"gtype":       n.GetGtype(),
+		"expressions": n.GetExpressions(),
+		"limit":       n.GetLimit(),
+		"node_path":   n.GetNodePath(),
+	}
+}
+
+func (n *ChannelFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"channel":     n.GetChannel(),
+		"expressions": n.GetExpressions(),
+	}
+}
+
+func (n *ExpressionFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"expressions": n.GetExpressions(),
+	}
+}
+
+func (p *Patch) AsMap() map[string]interface{} {
+	if p == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"path":       p.GetPath(),
+		"attributes": p.GetAttributes(),
+	}
+}
+
+func (n *PatchFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"patch":  n.GetPatch().AsMap(),
+		"filter": n.GetFilter().AsMap(),
+	}
+}
+
+func (m *MeFilter) AsMap() map[string]interface{} {
+	if m == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"from_edges": m.GetEdgesFrom().AsMap(),
+		"to_edges":   m.GetEdgesTo().AsMap(),
+	}
+}
+
+func (e *EdgeConstructor) AsMap() map[string]interface{} {
+	if e == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"path":       e.GetPath().AsMap(),
+		"attributes": e.GetAttributes().AsMap(),
+		"directed":   e.GetDirected(),
+		"from":       e.GetFrom().AsMap(),
+		"to":         e.GetTo().AsMap(),
+	}
+}
+
+func (e *NodeConstructor) AsMap() map[string]interface{} {
+	if e == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"path":       e.GetPath().AsMap(),
+		"attributes": e.GetAttributes().AsMap(),
 	}
 }
 

@@ -8,5 +8,5 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN mkdir -p bin && cd graphik; go build -o ../bin/graphik
+RUN mkdir -p bin && go build -o bin/graphik
 ENTRYPOINT ["./bin/graphik"]

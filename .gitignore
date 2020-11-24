@@ -1,6 +1,6 @@
 vendor
 .idea
-graphik/.env
+.env
 bin
 .env
 graphik-ui/node_modules

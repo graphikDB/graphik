@@ -5,7 +5,6 @@
 scalar Timestamp
 scalar Struct
 scalar Empty
-scalar Cascade
 
 type Pong {
   message: String!
@@ -17,15 +16,18 @@ type Path {
 }
 
 type Metadata {
-  created_at: Timestamp
-  updated_at: Timestamp
-  updated_by: Path
+  created_at: Timestamp!
+  updated_at: Timestamp!
+  updated_by: Path!
+  sequence: Int!
+  version: Int!
+  hash: String!
 }
 
 type Node {
   path: Path!
   attributes: Struct
-  metadata: Metadata
+  metadata: Metadata!
 }
 
 type Nodes {
@@ -35,10 +37,9 @@ type Nodes {
 type Edge {
   path: Path!
   attributes: Struct
-  cascade: Cascade
   from: Path!
   to: Path!
-  metadata: Metadata
+  metadata: Metadata!
 }
 
 type Edges {
@@ -48,7 +49,6 @@ type Edges {
 type EdgeDetail {
   path: Path!
   attributes: Struct
-  cascade: Cascade
   from: Node!
   to: Node!
   metadata: Metadata
@@ -86,9 +86,26 @@ input NodeConstructor {
 input EdgeConstructor {
   path: PathInput!
   attributes: Struct
-  cascade: Cascade
   from: PathInput!
   to: PathInput!
+}
+
+type NodeChange {
+  before: Node
+  after: Node
+}
+
+type EdgeChange {
+  before: Edge
+  after: Edge
+}
+
+type Change {
+  method: String!
+  identity: Node!
+  timestamp: Timestamp!
+  edge_changes: [EdgeChange!]
+  node_changes: [NodeChange!]
 }
 
 input PathInput {
@@ -124,18 +141,27 @@ input Patch {
   attributes: Struct!
 }
 
+input PatchFilter {
+  patch: Patch!
+  filter: Filter!
+}
+
 input OutboundMessage {
   channel: String!
   data: Struct!
 }
 
+input ExpressionFilter {
+  expressions: [String!]
+}
+
 type Mutation {
   createNode(input: NodeConstructor!): Node!
   patchNode(input: Patch!): Node!
-  delNode(input: PathInput!): Empty!
+  patchNodes(input: PatchFilter!): Nodes!
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
-  delEdge(input: PathInput!): Empty!
+  patchEdges(input: PatchFilter!): Edges!
   publish(input: OutboundMessage): Empty!
 }
 
@@ -153,4 +179,5 @@ type Query {
 
 type Subscription {
   subscribe(input: ChannelFilter!): Message!
+  subscribeChanges(input: ExpressionFilter!): Change!
 }
