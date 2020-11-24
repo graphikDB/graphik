@@ -16,7 +16,8 @@ import (
 
 func MarshalStructScalar(n *structpb.Struct) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		w.Write([]byte(helpers.JSONString(n)))
+		bits, _ := helpers.MarshalJSON(n)
+		w.Write(bits)
 	})
 }
 
@@ -38,7 +39,8 @@ func UnmarshalStructScalar(v interface{}) (*structpb.Struct, error) {
 
 func MarshalEmptyScalar(n *empty.Empty) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		w.Write([]byte(helpers.JSONString(n)))
+		bits, _ := helpers.MarshalJSON(n)
+		w.Write(bits)
 	})
 }
 

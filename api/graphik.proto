@@ -8,27 +8,30 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
-import "go-proto-validators/validator.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
 
-// Timing describes timing
-enum Timing {
-  BEFORE =0;
-  AFTER =1;
-}
-
-// Path describes a node/edge type & id
+// Path describes a doc/connection type & id
 message Path {
+  // gtype is the type of the doc/connection ex: pet
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // gid is the unique id of the doc/connection within the context of it's type
   string gid =2;
 }
 
+// Metadata is general metadata collected on docs/connections
 message Metadata {
+  // created_at is the unix timestamp when the doc/connection was created
   google.protobuf.Timestamp created_at =1 [(validator.field) = {msg_exists : true}];
+  // updated_at is the unix timestamp when the doc/connection was last updated
   google.protobuf.Timestamp updated_at =2 [(validator.field) = {msg_exists : true}];
-  Path updated_by =3 [(validator.field) = {msg_exists : true}];
-  uint64 sequence =4 [(validator.field) = {int_gt : 0}];
-  uint64 version =5 [(validator.field) = {int_gt : 0}];
-  string hash =6 [(validator.field) = {regex : "^.{1,225}$"}];
+  // created_by is the identity that initially created the doc/connection
+  Path created_by =3;
+  // updated_by is the identity that last modified the doc/connection
+  Path updated_by =4 [(validator.field) = {msg_exists : true}];
+  // sequence is the sequence within the context of the doc/connection type
+  uint64 sequence =5 [(validator.field) = {int_gt : 0}];
+  // version iterates by 1 every time the doc/connection is modified
+  uint64 version =6 [(validator.field) = {int_gt : 0}];
 }
 
 // Paths is an array of paths
@@ -36,227 +39,316 @@ message Paths {
   repeated Path paths =1;
 }
 
-// Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
-message Node {
+// Doc is a Graph primitive representing a single entity/resource. It is connected to other docs via Connections
+message Doc {
+  // path is the path to the doc
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // k/v pairs
   google.protobuf.Struct attributes =2;
+  // metadata is general metadata collected about the doc
   Metadata metadata =3 [(validator.field) = {msg_exists : true}];
 }
 
-// NodeConstructor is used to create a node
-message NodeConstructor {
+// DocConstructor is used to create a doc
+message DocConstructor {
+  // path is the path to the doc. If an id is not provided, a unique id will be generated
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // arbitrary k/v pairs
   google.protobuf.Struct attributes =3;
 }
 
-// NodeConstructor is used to create a batch of nodes
-message NodeConstructors {
-  repeated NodeConstructor nodes =1;
+// DocConstructor is used to create a batch of docs
+message DocConstructors {
+  // docs is an array of doc constructors
+  repeated DocConstructor docs =1;
 }
 
-// Nodes is an array of nodes
-message Nodes {
-  repeated Node nodes =1;
+// Docs is an array of docs
+message Docs {
+  // docs is an array of docs
+  repeated Doc docs =1;
 }
 
-// NodeDetail is a node with its connected edges
-message NodeDetail {
+// DocDetail is a doc with its connected connections
+message DocDetail {
+  // path is the path to the doc
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // arbitrary k/v pairs
   google.protobuf.Struct attributes =2;
-  EdgeDetails edges_from =3;
-  EdgeDetails edges_to =4;
+  // connections_from are connections that source from this doc
+  ConnectionDetails connections_from =3;
+  // connections_to are connections that point toward this doc
+  ConnectionDetails connections_to =4;
+  // metadata is general metadata collected about the doc
   Metadata metadata =5 [(validator.field) = {msg_exists : true}];
 }
 
-// NodeDetails is an array of NodeDetail
-message NodeDetails {
-  repeated NodeDetail node_details =1;
+// DocDetails is an array of DocDetail
+message DocDetails {
+  repeated DocDetail doc_details =1;
 }
 
-// NodeDetailFilter is used to fetch node details
-message NodeDetailFilter {
+// DocDetailFilter is used to fetch doc details
+message DocDetailFilter {
+  // path is the path to the doc
   Path path =1 [(validator.field) = {msg_exists : true}];
-  Filter from_edges =2;
-  Filter to_edges =3;
+  Filter from_connections =2;
+  Filter to_connections =3;
 }
 
-// Edge is a graph primitive that represents a relationship between two nodes
-message Edge {
+// Connection is a graph primitive that represents a relationship between two docs
+message Connection {
+  // path is the path to the connection
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
   google.protobuf.Struct attributes =2;
+  // directed is false if the connection is bi-directional
   bool directed =3;
+  // from is the doc path that is the source of the connection
   Path from =4 [(validator.field) = {msg_exists : true}];
+  // to is the doc path that is the destination of the connection
   Path to =5 [(validator.field) = {msg_exists : true}];
+  // metadata is general metadata collected about the connection
   Metadata metadata =6 [(validator.field) = {msg_exists : true}];
 }
 
-// EdgeConstructor is used to create an Edge
-message EdgeConstructor {
+// ConnectionConstructor is used to create an Connection
+message ConnectionConstructor {
+  // path is the path to the connection. If an id is not provided, a unique id will be generated
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
   google.protobuf.Struct attributes =3;
+  // directed is false if the connection is bi-directional
   bool directed =4;
+  // from is the doc path that is the root of the connection
   Path from =5 [(validator.field) = {msg_exists : true}];
+  // to is the doc path that is the destination of the connection
   Path to =6 [(validator.field) = {msg_exists : true}];
 }
 
-// EdgeConstructors is an array of EdgeConstructor
-message EdgeConstructors {
-  repeated EdgeConstructor edges =1;
+// ConnectionConstructors is an array of ConnectionConstructor
+message ConnectionConstructors {
+  repeated ConnectionConstructor connections =1;
 }
 
-// Edges is an array of Edge
-message Edges {
-  repeated Edge edges =1;
+// Connections is an array of Connection
+message Connections {
+  repeated Connection connections =1;
 }
 
-// EdgeDetail is an edge with both of it's connected nodes fully loaded
-message EdgeDetail {
+// ConnectionDetail is an connection with both of it's connected docs fully loaded
+message ConnectionDetail {
+  // path is the path to the connection
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
   google.protobuf.Struct attributes =2;
+  // directed is false if the connection is bi-directional
   bool directed =3;
-  Node from =4 [(validator.field) = {msg_exists : true}];
-  Node to =5 [(validator.field) = {msg_exists : true}];
+  // from is the full doc that is the root of the connection
+  Doc from =4 [(validator.field) = {msg_exists : true}];
+  // to is the full doc that is the destination of the connection
+  Doc to =5 [(validator.field) = {msg_exists : true}];
+  // metadata is general metadata collected about the connection
   Metadata metadata =6 [(validator.field) = {msg_exists : true}];
 }
 
-// EdgeDetails is an array of EdgeDetail
-message EdgeDetails {
-  repeated EdgeDetail edges =1;
+// ConnectionDetails is an array of ConnectionDetail
+message ConnectionDetails {
+  repeated ConnectionDetail connections =1;
 }
 
-// EdgeFilter is used to fetch edges
-message EdgeFilter {
-  Path node_path =1 [(validator.field) = {msg_exists : true}];
+// ConnectionFilter is used to fetch connections related to a single noted
+message ConnectionFilter {
+  // doc_path is the path to the target doc
+  Path doc_path =1 [(validator.field) = {msg_exists : true}];
+  // gtype is the type of connections to return
   string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
-  repeated string expressions =3;
+  // expression is a CEL expression used to filter connections/modes
+  string expression =3;
+  // limit is the maximum number of connections to return
   int32 limit =4 [(validator.field) = {int_gt : 0}];
 }
 
 // Filter is a generic filter using Common Expression Language
 message Filter {
+  // gtype is the doc/connection type to be filtered
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  repeated string expressions =2;
+  // expression is a CEL expression used to filter connections/modes
+  string expression =2;
+  // limit is the maximum number of items to return
   int32 limit =3 [(validator.field) = {int_gt : 0}];
+  string sort =4;
 }
 
-// MeFilter is used to fetch a NodeDetail representing the identity in the inbound JWT token
+// MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
 message MeFilter {
-  Filter edges_from =1;
-  Filter edges_to =2;
+  // connections_from is a filter used to filter connections from the identity making the request
+  Filter connections_from =1;
+  // connections_to is a filter used to filter connections to the identity making the request
+  Filter connections_to =2;
 }
 
 // ChannelFilter is used to filter messages in a pubsub channel
 message ChannelFilter {
+  // channel is the target channel to filter from
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  repeated string expressions =2;
+  // expression is CEL expression used to filter messages
+  string expression =2;
 }
 
-// SubGraphFilter is used to filter nodes/edges in the graph
+// SubGraphFilter is used to filter docs/connections in the graph
 message SubGraphFilter {
-  Filter node_filter =1 [(validator.field) = {msg_exists : true}];
-  Filter edge_filter =2 [(validator.field) = {msg_exists : true}];
+  // doc_filter is a filter used to filter docs in the graph
+  Filter doc_filter =1 [(validator.field) = {msg_exists : true}];
+  // connection_filter is a filter used to filter the connections of each doc returned by the doc_filter
+  Filter connection_filter =2 [(validator.field) = {msg_exists : true}];
 }
 
-// Graph is an array of nodes and edges
+// Graph is an array of docs and connections
 message Graph {
-  Nodes nodes =1;
-  Edges edges =2;
+  // docs are docs present in the graph
+  Docs docs =1;
+  // connections are connections present in the graph
+  Connections connections =2;
 }
 
-// Patch patches the attributes of a Node or Edge
+// Patch patches the attributes of a Doc or Connection
 message Patch {
+  // path is the path to the target doc/connection to patch
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   google.protobuf.Struct attributes =2;
 }
 
+// PatchFilter is used to patch docs/connections
 message PatchFilter {
-  Patch patch =1;
-  Filter filter =2;
+  // filter is used to filter docs/connections to patch
+  Filter filter =1;
+  // attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter
+  google.protobuf.Struct attributes =2;
 }
 
 // Pong returns PONG if the server is healthy
 message Pong {
+  // message returns PONG if healthy
   string message =1;
 }
 
 // OutboundMessage is a message to be published to a pubsub channel
 message OutboundMessage {
+  // channel is the target channel to send the message to
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // data is the data to send with the message
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
 }
 
 // Message is received on PubSub subscriptions
 message Message {
+  // channel is the channel the message was sent to
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // data is the data sent with the message
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
+  // sender is the identity that sent the message
   Path sender =3 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the message was sent
   google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
 }
 
-// Schema returns registered edge & node types
+// Schema returns registered connection & doc types
 message Schema {
-  repeated string edge_types =1;
-  repeated string node_types =2;
+  // connection_types are the types of connections in the graph
+  repeated string connection_types =1;
+  // doc_types are the types of docs in the graph
+  repeated string doc_types =2;
 }
 
-message NodeChange {
-  Node before = 4;
-  Node after = 5;
+// DocChange is a single state change to a doc
+message DocChange {
+  // before is the doc before state change
+  Doc before = 4;
+  // after is the doc after state change
+  Doc after = 5;
 }
 
-message EdgeChange {
-  Edge before = 4;
-  Edge after = 5;
+message ConnectionChange {
+  Connection before = 4;
+  Connection after = 5;
 }
 
+// Change represents a set of state changes in the graph
 message Change {
+  // method is the gRPC method invoked
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Node identity =2 [(validator.field) = {msg_exists : true}];
+  // identity is the identity invoking the change
+  Doc identity =2 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the change was made
   google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
-  repeated EdgeChange edge_changes =4;
-  repeated  NodeChange node_changes =5;
+  // connection_changes are state changes to connections
+  repeated ConnectionChange connection_changes =4;
+  // doc_changes are state changes to docs
+  repeated  DocChange doc_changes =5;
 }
 
 message ExpressionFilter {
-  repeated string expressions =1;
+  // expression is a CEL expression used to filter connections/nodes
+  string expression =1;
 }
 
-// GraphService is the primary Graph service
-service GraphService {
+message Request {
+  // method is the rpc method
+  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // identity is the identity making the request
+  Doc identity =2 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the intercept was received
+  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  // request is the intercepted request
+  google.protobuf.Struct request = 4;
+}
+
+// DatabaseService is the primary database service
+service DatabaseService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // GetSchema gets schema about the Graph node & edge types
+  // GetSchema gets schema about the Graph doc & connection types
   rpc GetSchema(google.protobuf.Empty) returns(Schema){}
- // Me returns a NodeDetail of the currently logged in identity(the subject of the JWT)
-  rpc Me(MeFilter) returns(NodeDetail){}
-  // CreateNode creates a node in the graph
-  rpc CreateNode(NodeConstructor) returns(Node){}
-  // CreateNodes creates a batch of nodes in the graph
-  rpc CreateNodes(NodeConstructors) returns(Nodes){}
-  // GetNode gets a single node in the graph
-  rpc GetNode(Path) returns(Node){}
-  // SearchNodes searches the graph for nodes
-  rpc SearchNodes(Filter) returns(Nodes){}
-  // PatchNode patches a nodes attributes
-  rpc PatchNode(Patch) returns(Node){}
-  // PatchNodes patches a batch of nodes attributes
-  rpc PatchNodes(PatchFilter) returns(Nodes){}
-  // CreateEdge creates an edge in the graph
-  rpc CreateEdge(EdgeConstructor) returns(Edge){}
-  // CreateEdges creates a batch of edges in the graph
-  rpc CreateEdges(EdgeConstructors) returns(Edges){}
-  // GetEdge gets a single edge in the graph
-  rpc GetEdge(Path) returns(Edge){}
-  // SearchEdges searches the graph for edges
-  rpc SearchEdges(Filter) returns(Edges){}
-  // PatchEdge patches an edges attributes
-  rpc PatchEdge(Patch) returns(Edge){}
-  // PatchEdges patches a batch of edges attributes
-  rpc PatchEdges(PatchFilter) returns(Edges){}
-  // EdgesFrom returns edges that source from the given node path that pass the filter
-  rpc EdgesFrom(EdgeFilter) returns(Edges){}
-  // EdgesTo returns edges that point to the given node path that pass the filter
-  rpc EdgesTo(EdgeFilter) returns(Edges){}
+ // Me returns a DocDetail of the currently logged in identity(the subject of the JWT)
+  rpc Me(MeFilter) returns(DocDetail){}
+  // CreateDoc creates a doc in the graph
+  rpc CreateDoc(DocConstructor) returns(Doc){}
+  // CreateDocs creates a batch of docs in the graph
+  rpc CreateDocs(DocConstructors) returns(Docs){}
+  // GetDoc gets a single doc in the graph
+  rpc GetDoc(Path) returns(Doc){}
+  // SearchDocs searches the graph for docs
+  rpc SearchDocs(Filter) returns(Docs){}
+  // PatchDoc patches a docs attributes
+  rpc PatchDoc(Patch) returns(Doc){}
+  // PatchDocs patches a batch of docs attributes that pass the patch filter
+  rpc PatchDocs(PatchFilter) returns(Docs){}
+  // DelDoc deletes a doc & all of it's connected connections
+  rpc DelDoc(Path) returns(google.protobuf.Empty){}
+  // DelDocs deletes a batch of docs that pass the filter
+  rpc DelDocs(Filter) returns(google.protobuf.Empty){}
+  // CreateConnection creates an connection in the graph
+  rpc CreateConnection(ConnectionConstructor) returns(Connection){}
+  // CreateConnections creates a batch of connections in the graph
+  rpc CreateConnections(ConnectionConstructors) returns(Connections){}
+  // GetConnection gets a single connection in the graph
+  rpc GetConnection(Path) returns(Connection){}
+  // SearchConnections searches the graph for connections
+  rpc SearchConnections(Filter) returns(Connections){}
+  // PatchConnection patches an connections attributes
+  rpc PatchConnection(Patch) returns(Connection){}
+  // PatchConnections patches a batch of connections attributes that pass the patch filter
+  rpc PatchConnections(PatchFilter) returns(Connections){}
+  // DelConnection deletes an connection from the graph
+  rpc DelConnection(Path) returns(google.protobuf.Empty){}
+  // DelConnections deletes a batch of connections that pass the filter
+  rpc DelConnections(Filter) returns(google.protobuf.Empty){}
+  // ConnectionsFrom returns connections that source from the given doc path that pass the filter
+  rpc ConnectionsFrom(ConnectionFilter) returns(Connections){}
+  // ConnectionsTo returns connections that point to the given doc path that pass the filter
+  rpc ConnectionsTo(ConnectionFilter) returns(Connections){}
   // Publish publishes a message to a pubsub channel
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
@@ -270,24 +362,4 @@ service GraphService {
   rpc SubGraph(SubGraphFilter) returns(Graph){}
   // Shutdown shuts down the database
   rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
-}
-
-message Interception {
-  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  Node identity =2 [(validator.field) = {msg_exists : true}];
-  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
-  google.protobuf.Any request = 4 [(validator.field) = {msg_exists : true}];
-  google.protobuf.Any response = 5 [(validator.field) = {msg_exists : true}];
-  Timing timing =6;
-}
-
-// TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
-service TriggerService {
-  // Ping returns PONG if the server is health
-  rpc Ping(google.protobuf.Empty) returns(Pong) {}
-  // Mutate mutates request/responses
-  rpc Mutate(Interception) returns(Interception){}
-  // Filter returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
-  // These expressions are cached by the Graphik server
-  rpc Filter(google.protobuf.Empty) returns(ExpressionFilter){}
 }

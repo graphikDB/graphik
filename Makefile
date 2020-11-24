@@ -1,4 +1,4 @@
-version := "0.0.11"
+version := "0.0.20"
 
 .DEFAULT_GOAL := help
 
@@ -10,7 +10,7 @@ help:
 	@echo "----------------------------------------------------------------"
 
 run:
-	@go run main.go  --jwks=https://www.googleapis.com/oauth2/v3/certs
+	@go run main.go
 
 gen: proto gql
 
@@ -32,8 +32,7 @@ docker-push:
 .PHONY: proto
 proto: ## regenerate gRPC code
 	@echo "generating protobuf code..."
-	@rm -rf gen
-	@docker run -v `pwd`:/tmp colemanword/prototool:latest prototool generate
+	@docker run -v `pwd`:/defs namely/prototool:latest generate
 	@go fmt ./...
 
 .PHONY: gql

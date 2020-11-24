@@ -14,6 +14,7 @@ protoc:
   allow_unused_imports: true
   includes:
     - /usr/local/include
+    - /opt/include
 
 lint:
   rules:
@@ -34,11 +35,20 @@ generate:
     - name: go
       type: go
       flags: plugins=grpc
-      output: .
+      output: gen/go
 #    - name: grpc-gateway
 #      output: gen/go
 #    - name: swagger
 #      output: .
     - name: govalidators
       type: go
-      output: .
+      output: gen/go
+    - name: doc
+      flags: markdown,README.md
+      output: docs
+    - flags: binary,import_style=commonjs
+      name: js
+      output: gen/js
+    - name: python
+      flags: plugins=grpc
+      output: gen/python

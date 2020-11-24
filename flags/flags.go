@@ -7,10 +7,9 @@ type PluginFlags struct {
 }
 
 type Flags struct {
-	JWKS           []string
+	JWKS           string
 	StoragePath    string
 	Metrics        bool
-	Triggers       []string
 	Authorizers    []string
 	AllowedHeaders []string
 	AllowedMethods []string

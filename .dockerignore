@@ -1,0 +1,6 @@
+vendor
+images
+*.md
+Makefile
+gen/js
+gen/python

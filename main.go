@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/database"
 	"github.com/autom8ter/graphik/flags"
+	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/gql"
-	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"net"
 	"net/http"
 	"net/http/pprof"
@@ -36,9 +37,8 @@ var global = &flags.Flags{}
 func init() {
 	godotenv.Load()
 	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
-	pflag.CommandLine.StringSliceVar(&global.JWKS, "jwks", stringSliceEnvOr("GRAPHIK_JWKS_URIS", nil), "authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)")
+	pflag.CommandLine.StringVar(&global.JWKS, "jwks", helpers.EnvOr("GRAPHIK_JWKS_URI", ""), "authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URI)")
 	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", boolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
-	pflag.CommandLine.StringSliceVar(&global.Triggers, "triggers", stringSliceEnvOr("GRAPHIK_TRIGGERS", nil), "registered triggers (env: GRAPHIK_TRIGGERS)")
 	pflag.CommandLine.StringSliceVar(&global.Authorizers, "authorizers", stringSliceEnvOr("GRAPHIK_AUTHORIZERS", nil), "registered authorizers (env: GRAPHIK_AUTHORIZERS)")
 	pflag.CommandLine.StringSliceVar(&global.AllowedHeaders, "allow-headers", stringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
 	pflag.CommandLine.StringSliceVar(&global.AllowedOrigins, "allow-origins", stringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
@@ -83,8 +83,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
 	m := machine.New(ctx)
-	defer m.Close()
-	g, err := graph.NewGraphStore(ctx, cfg)
+	g, err := database.NewGraph(ctx, cfg)
 	if err != nil {
 		logger.Error("failed to create graph", zap.Error(err))
 		return
@@ -112,7 +111,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		logger.Error("failed to setup graphql endpoint", zap.Error(err))
 		return
 	}
-	resolver := gql.NewResolver(ctx, apipb.NewGraphServiceClient(conn), cors.New(cors.Options{
+	resolver := gql.NewResolver(ctx, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
 		AllowedOrigins: global.AllowedOrigins,
 		AllowedMethods: global.AllowedMethods,
 		AllowedHeaders: global.AllowedHeaders,
@@ -138,19 +137,20 @@ func run(ctx context.Context, cfg *flags.Flags) {
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger.Logger()),
 			grpc_validator.UnaryServerInterceptor(),
-			g.Unary(),
+			g.UnaryInterceptor(),
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_prometheus.StreamServerInterceptor,
 			grpc_zap.StreamServerInterceptor(logger.Logger()),
 			grpc_validator.StreamServerInterceptor(),
-			g.Stream(),
+			g.StreamInterceptor(),
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
 
-	apipb.RegisterGraphServiceServer(gserver, g)
+	apipb.RegisterDatabaseServiceServer(gserver, g)
+	reflection.Register(gserver)
 	grpc_prometheus.Register(gserver)
 
 	m.Go(func(routine machine.Routine) {
@@ -189,7 +189,6 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	}()
 
 	t := time.NewTimer(5 * time.Second)
-
 	select {
 	case <-t.C:
 		gserver.Stop()

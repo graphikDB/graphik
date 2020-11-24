@@ -1,183 +1,302 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
-
+# Timestamp directly corresponds to google's well known timestamppb protobuf
 scalar Timestamp
+# Struct directly corresponds to google's well known structpb protobuf
 scalar Struct
+# Empty directly corresponds to google's well known emptypb protobuf
 scalar Empty
 
+# Pong returns PONG if the server is healthy
 type Pong {
   message: String!
 }
 
+# Path describes a doc/connection type & id
 type Path {
+  # gtype is the type of the doc/connection ex: pet
   gtype: String!
+  # gid is the unique id of the doc/connection within the context of it's type
   gid: String!
 }
 
+# Metadata is general metadata collected about the doc
 type Metadata {
+  # created_at is the unix timestamp when the doc/connection was created
   created_at: Timestamp!
+  # updated_at is the unix timestamp when the doc/connection was last updated
   updated_at: Timestamp!
+  # created_by is the identity that initially created the doc/connection
+  createdBy: Path!
+  # updated_by is the identity that last modified the doc/connection
   updated_by: Path!
+  # sequence is the sequence within the context of the doc/connection type
   sequence: Int!
+  # version iterates by 1 every time the doc/connection is modified
   version: Int!
-  hash: String!
 }
 
-type Node {
+# Doc is a Graph primitive representing a single entity/resource. It is connected to other docs via Connections
+type Doc {
+  # path is the path to the doc
   path: Path!
+  # k/v pairs
   attributes: Struct
+  # metadata is general metadata collected about the doc
   metadata: Metadata!
 }
 
-type Nodes {
-  nodes: [Node!]
+# Docs is an array of docs
+type Docs {
+  # docs is an array of docs
+  docs: [Doc!]
 }
 
-type Edge {
+# Connection is a graph primitive that represents a relationship between two docs
+type Connection {
+  # path is the path to the connection
   path: Path!
+  # k/v pairs
   attributes: Struct
+  # directed is false if the connection is bi-directional
+  directed: Boolean
+  # from is the doc path that is the source of the connection
   from: Path!
+  # to is the doc path that is the destination of the connection
   to: Path!
+  # metadata is general metadata collected about the connection
   metadata: Metadata!
 }
 
-type Edges {
-  edges: [Edge!]
+# Connections is an array of connections
+type Connections {
+  connections: [Connection!]
 }
 
-type EdgeDetail {
+# ConnectionDetail is an connection with both of it's connected docs fully loaded
+type ConnectionDetail {
+  # path is the path to the connection
   path: Path!
+  # attributes are k/v pairs
   attributes: Struct
-  from: Node!
-  to: Node!
+  # directed is false if the connection is bi-directional
+  directed: Boolean
+  # from is the full doc that is the root of the connection
+  from: Doc!
+  # to is the full doc that is the destination of the connection
+  to: Doc!
+  # metadata is general metadata collected about the connection
   metadata: Metadata
 }
 
-type EdgeDetails {
-  edges: [EdgeDetail!]
+# ConnectionDetails details is an array of connection details
+type ConnectionDetails {
+  connections: [ConnectionDetail!]
 }
 
-type NodeDetail {
+# DocDetail is a doc with its connected connections
+type DocDetail {
+  # path is the path to the doc
   path: Path!
+  # arbitrary k/v pairs
   attributes: Struct
-  edges_from: EdgeDetails
-  edges_to: EdgeDetails
+  # connections_from are connections that source from this doc
+  connections_from: ConnectionDetails
+  # connections_to are connections that point toward this doc
+  connections_to: ConnectionDetails
+  # metadata is general metadata collected about the doc
   metadata: Metadata
 }
 
+# Schema returns registered connection & doc types
 type Schema {
-  edge_types: [String!]
-  node_types: [String!]
+  # connection_types are the types of connections in the graph
+  connection_types: [String!]
+  # doc_types are the types of docs in the graph
+  doc_types: [String!]
 }
 
+# Message is received on PubSub subscriptions
 type Message {
+  # channel is the channel the message was sent to
   channel: String!
+  # data is the data sent with the message
   data: Struct!
+  # sender is the identity that sent the message
   sender: Path!
+  # timestamp is when the message was sent
   timestamp: Timestamp!
 }
 
-input NodeConstructor {
+# DocConstructor is used to create a Doc
+input DocConstructor {
+  # path is the path to the doc.
+  # if an id is not present in the path, a unique id will be generated
   path: PathInput!
+  # attributes are k/v pairs
   attributes: Struct
 }
 
-input EdgeConstructor {
+# ConnectionConstructor is used to create an Connection
+input ConnectionConstructor {
+  # path is the path to the connection.
+  # if an id is not present in the path, a unique id will be generated
   path: PathInput!
+  # directed is false if the connection is bi-directional
+  directed: Boolean
+
   attributes: Struct
+  # from is the doc path that is the source of the connection
   from: PathInput!
+  # to is the doc path that is the destination of the connection
   to: PathInput!
 }
 
-type NodeChange {
-  before: Node
-  after: Node
+# DocChange is a single state change to a doc
+type DocChange {
+  # before is the doc before state change
+  before: Doc
+  # after is the doc after state change
+  after: Doc
 }
 
-type EdgeChange {
-  before: Edge
-  after: Edge
+# ConnectionChange is a single state change to an connection
+type ConnectionChange {
+  # before is the connection before state change
+  before: Connection
+  # after is the connection after state change
+  after: Connection
 }
 
+# Change represents a set of state changes in the graph
 type Change {
+  # method is the gRPC method invoked
   method: String!
-  identity: Node!
+  # identity is the identity invoking the change
+  identity: Doc!
+  # timestamp is when the change was made
   timestamp: Timestamp!
-  edge_changes: [EdgeChange!]
-  node_changes: [NodeChange!]
+  # connection_changes are state changes to connections
+  connection_changes: [ConnectionChange!]
+  # doc_changes are state changes to docs
+  doc_changes: [DocChange!]
 }
 
+# PathInput is the path to a doc/connection
 input PathInput {
+  # path is the path to the target doc/connection to patch
   gtype: String!
+  # path is the path to the target doc/connection to patch
   gid: String
 }
 
+# Filter is a generic filter using Common Expression Language
 input Filter {
+  # gtype is the doc/connection type to be filtered
   gtype: String!
-  expressions: [String!]
+  # expression is a CEL expression used to filter connections/nodes
+  expression: String
+  # limit is the maximum number of items to return
   limit: Int!
+  sort: String
 }
 
+# MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
 input MeFilter {
-  edges_from: Filter
-  edges_to: Filter
+  # connections_from is a filter used to filter connections from the identity making the request
+  connections_from: Filter
+  # connections_to is a filter used to filter connections to the identity making the request
+  connections_to: Filter
 }
 
-input EdgeFilter {
-  node_path: PathInput!
+# ConnectionFilter is used to fetch connections related to a single noted
+input ConnectionFilter {
+  # doc_path is the path to the target doc
+  doc_path: PathInput!
+  # gtype is the type of connections to return
   gtype: String!
-  expressions: [String!],
+  # expression is a CEL expression used to filter connections
+  expression: String,
+  # limit is the maximum number of connections to return
   limit: Int!
 }
 
+# ChannelFilter is used to filter messages in a pubsub channel
 input ChannelFilter {
+  # channel is the target channel to listen on
   channel: String!
-  expressions: [String]
+  # expression is a CEL expression used to filter messages
+  expression: String
 }
 
+# Patch patches the attributes of a Doc or Connection
 input Patch {
+  # path is the path to the target doc/connection to patch
   path: PathInput!
+  # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Struct!
 }
 
+# PatchFilter is used to patch docs/connections
 input PatchFilter {
-  patch: Patch!
+  # filter is used to filter docs/connections to patch
   filter: Filter!
+  # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
+  attributes: Struct!
 }
 
+# OutboundMessage is a message to be published to a pubsub channel
 input OutboundMessage {
+  # channel is the target channel to send the message to
   channel: String!
+  # data is the data to send with the message
   data: Struct!
 }
 
 input ExpressionFilter {
-  expressions: [String!]
+  # expression is a CEL expression used to filter messages/docs/connections
+  expression: String
 }
 
 type Mutation {
-  createNode(input: NodeConstructor!): Node!
-  patchNode(input: Patch!): Node!
-  patchNodes(input: PatchFilter!): Nodes!
-  createEdge(input: EdgeConstructor!): Edge!
-  patchEdge(input: Patch!): Edge!
-  patchEdges(input: PatchFilter!): Edges!
-  publish(input: OutboundMessage): Empty!
+  # createDoc creates a single doc in the graph
+  createDoc(input: DocConstructor!): Doc!
+  # patchDoc patches a single doc in the graph
+  patchDoc(input: Patch!): Doc!
+  # patchDocs patches 0-many docs in the graph
+  patchDocs(input: PatchFilter!): Docs!
+  # createConnection creates a single connection in the graph
+  createConnection(input: ConnectionConstructor!): Connection!
+  # patchConnection patches a single connection in the graph
+  patchConnection(input: Patch!): Connection!
+  # patchConnections patches 0-many connections in the graph
+  patchConnections(input: PatchFilter!): Connections!
+  # publish publishes a mesage to a pubsub channel
+  publish(input: OutboundMessage!): Empty!
 }
 
 type Query {
+  # ping checks if the server is healthy
   ping(input: Empty): Pong!
+  # getSchema gets information about the graph schema
   getSchema(input: Empty): Schema!
-  me(input: MeFilter): NodeDetail!
-  getNode(input: PathInput!): Node!
-  searchNodes(input: Filter!): Nodes!
-  getEdge(input: PathInput!): Edge!
-  searchEdges(input: Filter!): Edges!
-  edgesFrom(input: EdgeFilter!): Edges!
-  edgesTo(input: EdgeFilter!): Edges!
+  # me returns your identity + connections
+  me(input: MeFilter): DocDetail!
+  # getDoc gets a doc at the given path
+  getDoc(input: PathInput!): Doc!
+  # searchDocs searches for 0-many docs
+  searchDocs(input: Filter!): Docs!
+  # getConnection gets a connection at the given path
+  getConnection(input: PathInput!): Connection!
+  # searchConnections searches for 0-many connections
+  searchConnections(input: Filter!): Connections!
+  # connectionsFrom returns connections from the given doc that pass the filter
+  connectionsFrom(input: ConnectionFilter!): Connections!
+  # connectionsTo returns connections to the given doc that pass the filter
+  connectionsTo(input: ConnectionFilter!): Connections!
 }
 
 type Subscription {
+  # subscribe subscribes to a pubsub channel
   subscribe(input: ChannelFilter!): Message!
+  # subscribeChanges subscribes to state changes in the graph
   subscribeChanges(input: ExpressionFilter!): Change!
 }

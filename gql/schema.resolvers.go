@@ -6,7 +6,7 @@ package gql
 import (
 	"context"
 
-	apipb "github.com/autom8ter/graphik/api"
+	apipb "github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/gql/generated"
 	"github.com/autom8ter/graphik/logger"
 	"go.uber.org/zap"
@@ -21,32 +21,32 @@ func (r *metadataResolver) Version(ctx context.Context, obj *apipb.Metadata) (in
 	return int(obj.Version), nil
 }
 
-func (r *mutationResolver) CreateNode(ctx context.Context, input apipb.NodeConstructor) (*apipb.Node, error) {
-	return r.client.CreateNode(ctx, &input)
+func (r *mutationResolver) CreateDoc(ctx context.Context, input apipb.DocConstructor) (*apipb.Doc, error) {
+	return r.client.CreateDoc(ctx, &input)
 }
 
-func (r *mutationResolver) PatchNode(ctx context.Context, input apipb.Patch) (*apipb.Node, error) {
-	return r.client.PatchNode(ctx, &input)
+func (r *mutationResolver) PatchDoc(ctx context.Context, input apipb.Patch) (*apipb.Doc, error) {
+	return r.client.PatchDoc(ctx, &input)
 }
 
-func (r *mutationResolver) PatchNodes(ctx context.Context, input apipb.PatchFilter) (*apipb.Nodes, error) {
-	return r.client.PatchNodes(ctx, &input)
+func (r *mutationResolver) PatchDocs(ctx context.Context, input apipb.PatchFilter) (*apipb.Docs, error) {
+	return r.client.PatchDocs(ctx, &input)
 }
 
-func (r *mutationResolver) CreateEdge(ctx context.Context, input apipb.EdgeConstructor) (*apipb.Edge, error) {
-	return r.client.CreateEdge(ctx, &input)
+func (r *mutationResolver) CreateConnection(ctx context.Context, input apipb.ConnectionConstructor) (*apipb.Connection, error) {
+	return r.client.CreateConnection(ctx, &input)
 }
 
-func (r *mutationResolver) PatchEdge(ctx context.Context, input apipb.Patch) (*apipb.Edge, error) {
-	return r.client.PatchEdge(ctx, &input)
+func (r *mutationResolver) PatchConnection(ctx context.Context, input apipb.Patch) (*apipb.Connection, error) {
+	return r.client.PatchConnection(ctx, &input)
 }
 
-func (r *mutationResolver) PatchEdges(ctx context.Context, input apipb.PatchFilter) (*apipb.Edges, error) {
-	return r.client.PatchEdges(ctx, &input)
+func (r *mutationResolver) PatchConnections(ctx context.Context, input apipb.PatchFilter) (*apipb.Connections, error) {
+	return r.client.PatchConnections(ctx, &input)
 }
 
-func (r *mutationResolver) Publish(ctx context.Context, input *apipb.OutboundMessage) (*emptypb.Empty, error) {
-	return r.client.Publish(ctx, input)
+func (r *mutationResolver) Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error) {
+	return r.client.Publish(ctx, &input)
 }
 
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {
@@ -57,32 +57,32 @@ func (r *queryResolver) GetSchema(ctx context.Context, input *emptypb.Empty) (*a
 	return r.client.GetSchema(ctx, &emptypb.Empty{})
 }
 
-func (r *queryResolver) Me(ctx context.Context, input *apipb.MeFilter) (*apipb.NodeDetail, error) {
+func (r *queryResolver) Me(ctx context.Context, input *apipb.MeFilter) (*apipb.DocDetail, error) {
 	return r.client.Me(ctx, input)
 }
 
-func (r *queryResolver) GetNode(ctx context.Context, input apipb.Path) (*apipb.Node, error) {
-	return r.client.GetNode(ctx, &input)
+func (r *queryResolver) GetDoc(ctx context.Context, input apipb.Path) (*apipb.Doc, error) {
+	return r.client.GetDoc(ctx, &input)
 }
 
-func (r *queryResolver) SearchNodes(ctx context.Context, input apipb.Filter) (*apipb.Nodes, error) {
-	return r.client.SearchNodes(ctx, &input)
+func (r *queryResolver) SearchDocs(ctx context.Context, input apipb.Filter) (*apipb.Docs, error) {
+	return r.client.SearchDocs(ctx, &input)
 }
 
-func (r *queryResolver) GetEdge(ctx context.Context, input apipb.Path) (*apipb.Edge, error) {
-	return r.client.GetEdge(ctx, &input)
+func (r *queryResolver) GetConnection(ctx context.Context, input apipb.Path) (*apipb.Connection, error) {
+	return r.client.GetConnection(ctx, &input)
 }
 
-func (r *queryResolver) SearchEdges(ctx context.Context, input apipb.Filter) (*apipb.Edges, error) {
-	return r.client.SearchEdges(ctx, &input)
+func (r *queryResolver) SearchConnections(ctx context.Context, input apipb.Filter) (*apipb.Connections, error) {
+	return r.client.SearchConnections(ctx, &input)
 }
 
-func (r *queryResolver) EdgesFrom(ctx context.Context, input apipb.EdgeFilter) (*apipb.Edges, error) {
-	return r.client.EdgesFrom(ctx, &input)
+func (r *queryResolver) ConnectionsFrom(ctx context.Context, input apipb.ConnectionFilter) (*apipb.Connections, error) {
+	return r.client.ConnectionsFrom(ctx, &input)
 }
 
-func (r *queryResolver) EdgesTo(ctx context.Context, input apipb.EdgeFilter) (*apipb.Edges, error) {
-	return r.client.EdgesFrom(ctx, &input)
+func (r *queryResolver) ConnectionsTo(ctx context.Context, input apipb.ConnectionFilter) (*apipb.Connections, error) {
+	return r.client.ConnectionsFrom(ctx, &input)
 }
 
 func (r *subscriptionResolver) Subscribe(ctx context.Context, input apipb.ChannelFilter) (<-chan *apipb.Message, error) {
