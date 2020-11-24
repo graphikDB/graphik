@@ -2,7 +2,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/logger"
@@ -781,7 +780,6 @@ func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) (*apipb
 				node.GetMetadata().UpdatedAt = timestamppb.Now()
 			}
 			node.GetMetadata().Version += 1
-			node.GetMetadata().Hash = fmt.Sprintf("%x", node.String())
 			bits, err := proto.Marshal(node)
 			if err != nil {
 				return err
@@ -852,7 +850,6 @@ func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb
 				edge.GetMetadata().UpdatedAt = timestamppb.Now()
 			}
 			edge.GetMetadata().Version += 1
-			edge.GetMetadata().Hash = fmt.Sprintf("%x", edge.String())
 			bits, err := proto.Marshal(edge)
 			if err != nil {
 				return err

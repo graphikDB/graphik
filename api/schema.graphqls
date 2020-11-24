@@ -21,7 +21,6 @@ type Metadata {
   updated_by: Path!
   sequence: Int!
   version: Int!
-  hash: String!
 }
 
 type Node {

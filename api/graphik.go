@@ -53,7 +53,6 @@ func (m *Metadata) AsMap() map[string]interface{} {
 		"updated_by": m.GetUpdatedBy(),
 		"sequence":   m.GetSequence(),
 		"version":    m.GetVersion(),
-		"hash":       m.GetHash(),
 	}
 }
 

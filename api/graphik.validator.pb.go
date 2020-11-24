@@ -29,9 +29,6 @@ func (this *Path) Validate() error {
 	}
 	return nil
 }
-
-var _regex_Metadata_Hash = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *Metadata) Validate() error {
 	if nil == this.CreatedAt {
 		return github_com_mwitkow_go_proto_validators.FieldError("CreatedAt", fmt.Errorf("message must exist"))
@@ -62,9 +59,6 @@ func (this *Metadata) Validate() error {
 	}
 	if !(this.Version > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Version", fmt.Errorf(`value '%v' must be greater than '0'`, this.Version))
-	}
-	if !_regex_Metadata_Hash.MatchString(this.Hash) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Hash", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Hash))
 	}
 	return nil
 }

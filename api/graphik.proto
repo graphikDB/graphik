@@ -18,17 +18,24 @@ enum Timing {
 
 // Path describes a node/edge type & id
 message Path {
+  // gtype is the type of the node/edge ex: pet
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // gid is the unique id of the node/edge within the context of it's type
   string gid =2;
 }
 
+// Metadata is general metadata collected on nodes/edges
 message Metadata {
+  // created_at is the unix timestamp when the node/edge was created
   google.protobuf.Timestamp created_at =1 [(validator.field) = {msg_exists : true}];
+  // updated_at is the unix timestamp when the node/edge was last updated
   google.protobuf.Timestamp updated_at =2 [(validator.field) = {msg_exists : true}];
+  // updated_by is the identity that last modified the node/edge
   Path updated_by =3 [(validator.field) = {msg_exists : true}];
+  // sequence is the sequence within the context of the node/edge type
   uint64 sequence =4 [(validator.field) = {int_gt : 0}];
+  // version iterates by 1 every time the node/edge is modified
   uint64 version =5 [(validator.field) = {int_gt : 0}];
-  string hash =6 [(validator.field) = {regex : "^.{1,225}$"}];
 }
 
 // Paths is an array of paths
@@ -39,6 +46,7 @@ message Paths {
 // Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
 message Node {
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // arbitrary k/v pairs
   google.protobuf.Struct attributes =2;
   Metadata metadata =3 [(validator.field) = {msg_exists : true}];
 }
