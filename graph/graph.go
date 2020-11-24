@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
-	"github.com/autom8ter/graphik/auth"
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/sortable"
@@ -15,6 +14,7 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/google/uuid"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
@@ -47,20 +47,20 @@ var (
 
 type GraphStore struct {
 	// db is the underlying handle to the db.
-	db *bbolt.DB
-	// The path to the Bolt database file
-	path        string
-	mu          sync.RWMutex
-	triggerMu   sync.RWMutex
-	edgesTo     map[string][]*apipb.Path
-	edgesFrom   map[string][]*apipb.Path
-	machine     *machine.Machine
-	triggers    []*triggerClient
+	db          *bbolt.DB
+	jwksSet     *jwk.Set
+	jwksSource  string
 	authorizers []cel.Program
-	auth        *auth.Config
-	closers     []func()
-	closeOnce   sync.Once
-	initOnce    sync.Once
+	// The path to the Bolt database file
+	path      string
+	mu        sync.RWMutex
+	triggerMu sync.RWMutex
+	edgesTo   map[string][]*apipb.Path
+	edgesFrom map[string][]*apipb.Path
+	machine   *machine.Machine
+	triggers  []*triggerClient
+	closers   []func()
+	closeOnce sync.Once
 }
 
 // NewGraphStore takes a file path and returns a connected Raft backend.
@@ -112,10 +112,6 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 			return nil, err
 		}
 	}
-	jwks, err := auth.New(flgs.JWKS)
-	if err != nil {
-		return nil, err
-	}
 	g := &GraphStore{
 		db:          handle,
 		path:        path,
@@ -125,10 +121,15 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 		machine:     machine.New(ctx),
 		triggers:    triggers,
 		authorizers: programs,
-		auth:        jwks,
 		closers:     closers,
 		closeOnce:   sync.Once{},
-		initOnce:    sync.Once{},
+	}
+	if flgs.JWKS != "" {
+		set, err := jwk.Fetch(flgs.JWKS)
+		if err != nil {
+			return nil, err
+		}
+		g.jwksSet = set
 	}
 	if err := g.init(ctx); err != nil {
 		return nil, err
@@ -1370,48 +1371,52 @@ func sortPaths(paths []*apipb.Path) {
 }
 
 func (g *GraphStore) init(ctx context.Context) error {
-	var err error
-	g.initOnce.Do(func() {
-		tx, err := g.db.Begin(true)
-		if err != nil {
-			return
-		}
-		defer tx.Rollback()
+	tx, err := g.db.Begin(true)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
 
-		// Create all the buckets
-		_, err = tx.CreateBucketIfNotExists(dbNodes)
-		if err != nil {
-			return
-		}
-		_, err = tx.CreateBucketIfNotExists(dbEdges)
-		if err != nil {
-			return
-		}
-		err = tx.Commit()
-		if err != nil {
-			return
-		}
-		g.machine.Go(func(routine machine.Routine) {
-			if err := g.auth.RefreshKeys(); err != nil {
-				logger.Error("failed to refresh jwks", zap.Error(err))
+	// Create all the buckets
+	_, err = tx.CreateBucketIfNotExists(dbNodes)
+	if err != nil {
+		return err
+	}
+	_, err = tx.CreateBucketIfNotExists(dbEdges)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	g.machine.Go(func(routine machine.Routine) {
+		if g.jwksSource != "" {
+			set, err := jwk.Fetch(g.jwksSource)
+			if err != nil {
+				logger.Error("failed to fetch jwks", zap.Error(err))
+				return
 			}
-		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-		g.machine.Go(func(routine machine.Routine) {
-			g.triggerMu.Lock()
-			for _, trigger := range g.triggers {
-				if err := trigger.refresh(routine.Context()); err != nil {
-					logger.Error("failed to refresh trigger matcher", zap.Error(err))
-				}
-			}
-			g.triggerMu.Unlock()
-		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-		err = g.RangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
 			g.mu.Lock()
-			g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
-			g.edgesTo[e.To.String()] = append(g.edgesTo[e.To.String()], e.Path)
+			g.jwksSet = set
 			g.mu.Unlock()
-			return true
-		})
+		}
+	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
+	g.machine.Go(func(routine machine.Routine) {
+		g.triggerMu.Lock()
+		for _, trigger := range g.triggers {
+			if err := trigger.refresh(routine.Context()); err != nil {
+				logger.Error("failed to refresh trigger matcher", zap.Error(err))
+			}
+		}
+		g.triggerMu.Unlock()
+	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
+	err = g.RangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
+		g.mu.Lock()
+		g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
+		g.edgesTo[e.To.String()] = append(g.edgesTo[e.To.String()], e.Path)
+		g.mu.Unlock()
+		return true
 	})
 	return err
 }

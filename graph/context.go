@@ -53,7 +53,7 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, err
 		}
-		payload, err := g.auth.VerifyJWT(token)
+		payload, err := g.VerifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -161,7 +161,7 @@ func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 			return err
 		}
 
-		payload, err := g.auth.VerifyJWT(token)
+		payload, err := g.VerifyJWT(token)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
