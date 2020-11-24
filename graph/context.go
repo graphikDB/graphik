@@ -34,7 +34,6 @@ type intercept struct {
 	Timestamp *timestamppb.Timestamp
 	Request   map[string]interface{}
 	Response  map[string]interface{}
-	Timing    apipb.Timing
 }
 
 func (r *intercept) AsMap() map[string]interface{} {
@@ -43,7 +42,6 @@ func (r *intercept) AsMap() map[string]interface{} {
 		"identity":  r.Identity,
 		"request":   r.Request,
 		"timestamp": r.Timestamp,
-		"timing":    r.Timing.String(),
 	}
 }
 
@@ -95,7 +93,6 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 			Method:    info.FullMethod,
 			Identity:  identity,
 			Timestamp: timestamppb.New(now),
-			Timing:    apipb.Timing_BEFORE,
 		}
 		if len(g.triggers) > 0 {
 			a, err := ptypes.MarshalAny(req.(proto.Message))
@@ -130,7 +127,6 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 				return nil, err
 			}
 			intercept.Response = a
-			interceptEval.Timing = apipb.Timing_AFTER
 			if val, ok := resp.(apipb.Mapper); ok {
 				interceptEval.Response = val.AsMap()
 			}

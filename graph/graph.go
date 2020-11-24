@@ -928,7 +928,7 @@ func (n *GraphStore) PatchNodes(ctx context.Context, patch *apipb.PatchFilter) (
 		change := &apipb.NodeChange{
 			Before: node,
 		}
-		for k, v := range patch.GetPatch().GetAttributes().GetFields() {
+		for k, v := range patch.GetAttributes().GetFields() {
 			node.Attributes.GetFields()[k] = v
 		}
 		node.GetMetadata().UpdatedAt = now
@@ -1190,7 +1190,7 @@ func (n *GraphStore) PatchEdges(ctx context.Context, patch *apipb.PatchFilter) (
 		change := &apipb.EdgeChange{
 			Before: edge,
 		}
-		for k, v := range patch.GetPatch().GetAttributes().GetFields() {
+		for k, v := range patch.GetAttributes().GetFields() {
 			edge.Attributes.GetFields()[k] = v
 		}
 		edge.GetMetadata().UpdatedAt = now

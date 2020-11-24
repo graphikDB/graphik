@@ -310,7 +310,7 @@ func (n *PatchFilter) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"patch":  n.GetPatch().AsMap(),
+		"patch":  n.GetAttributes().AsMap(),
 		"filter": n.GetFilter().AsMap(),
 	}
 }

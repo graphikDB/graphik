@@ -141,8 +141,8 @@ input Patch {
 }
 
 input PatchFilter {
-  patch: Patch!
   filter: Filter!
+  attributes: Struct!
 }
 
 input OutboundMessage {

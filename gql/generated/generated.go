@@ -959,8 +959,8 @@ input Patch {
 }
 
 input PatchFilter {
-  patch: Patch!
   filter: Filter!
+  attributes: Struct!
 }
 
 input OutboundMessage {
@@ -5035,19 +5035,19 @@ func (ec *executionContext) unmarshalInputPatchFilter(ctx context.Context, obj i
 
 	for k, v := range asMap {
 		switch k {
-		case "patch":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("patch"))
-			it.Patch, err = ec.unmarshalNPatch2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatch(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "filter":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
 			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "attributes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+			it.Attributes, err = ec.unmarshalNStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6330,11 +6330,6 @@ func (ec *executionContext) marshalNNodes2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 func (ec *executionContext) unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatch(ctx context.Context, v interface{}) (apipb.Patch, error) {
 	res, err := ec.unmarshalInputPatch(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNPatch2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatch(ctx context.Context, v interface{}) (*apipb.Patch, error) {
-	res, err := ec.unmarshalInputPatch(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNPatchFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatchFilter(ctx context.Context, v interface{}) (apipb.PatchFilter, error) {

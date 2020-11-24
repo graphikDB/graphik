@@ -442,14 +442,14 @@ func (this *Patch) Validate() error {
 	return nil
 }
 func (this *PatchFilter) Validate() error {
-	if this.Patch != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Patch); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Patch", err)
-		}
-	}
 	if this.Filter != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	if this.Attributes != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
 		}
 	}
 	return nil
