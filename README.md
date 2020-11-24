@@ -4,7 +4,7 @@
 
     git clone git@github.com:autom8ter/graphik.git
     
-    docker pull colemanword/graphik:v0.0.8
+    docker pull colemanword/graphik:v0.0.9
 
 Graphik is an identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
 
