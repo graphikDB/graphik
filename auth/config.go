@@ -38,40 +38,47 @@ func (a *Config) VerifyJWT(token string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	kid, ok := message.Signatures()[0].ProtectedHeaders().Get("kid")
-	if !ok {
-		return nil, fmt.Errorf("kid not found")
-	}
-	algI, ok := message.Signatures()[0].ProtectedHeaders().Get("alg")
-	if !ok {
-		return nil, fmt.Errorf("alg not found")
-	}
-	alg, ok := algI.(jwa.SignatureAlgorithm)
-	if !ok {
-		return nil, fmt.Errorf("alg type cast error")
-	}
 	a.mu.RLock()
 	defer a.mu.RUnlock()
-	for uri, set := range a.jwksSet {
-		keys := set.LookupKeyID(kid.(string))
-		if len(keys) == 0 {
-			continue
-		}
-		var key interface{}
-		if err := keys[0].Raw(&key); err != nil {
-			logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(errors.WithStack(err)))
-			continue
-		}
-		payload, err := jws.Verify([]byte(token), alg, key)
-		if err != nil {
-			logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(errors.WithStack(err)))
-			continue
-		}
+	if len(a.jwksSet) == 0 {
 		data := map[string]interface{}{}
-		if err := json.Unmarshal(payload, &data); err != nil {
+		if err := json.Unmarshal(message.Payload(), &data); err != nil {
 			return nil, err
 		}
-		return data, nil
+	} else {
+		kid, ok := message.Signatures()[0].ProtectedHeaders().Get("kid")
+		if !ok {
+			return nil, fmt.Errorf("kid not found")
+		}
+		algI, ok := message.Signatures()[0].ProtectedHeaders().Get("alg")
+		if !ok {
+			return nil, fmt.Errorf("alg not found")
+		}
+		alg, ok := algI.(jwa.SignatureAlgorithm)
+		if !ok {
+			return nil, fmt.Errorf("alg type cast error")
+		}
+		for uri, set := range a.jwksSet {
+			keys := set.LookupKeyID(kid.(string))
+			if len(keys) == 0 {
+				continue
+			}
+			var key interface{}
+			if err := keys[0].Raw(&key); err != nil {
+				logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(errors.WithStack(err)))
+				continue
+			}
+			payload, err := jws.Verify([]byte(token), alg, key)
+			if err != nil {
+				logger.Error("jwks validation failure", zap.String("uri", uri), zap.Error(errors.WithStack(err)))
+				continue
+			}
+			data := map[string]interface{}{}
+			if err := json.Unmarshal(payload, &data); err != nil {
+				return nil, err
+			}
+			return data, nil
+		}
 	}
 	return nil, errors.New("zero jwks matches")
 }
