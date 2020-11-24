@@ -916,7 +916,7 @@ func (n *GraphStore) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.
 	return node, nil
 }
 
-func (n *GraphStore) PatchNodes(ctx context.Context, patch *apipb.FilterPatch) (*apipb.Nodes, error) {
+func (n *GraphStore) PatchNodes(ctx context.Context, patch *apipb.PatchFilter) (*apipb.Nodes, error) {
 	identity := n.NodeContext(ctx)
 	var changes []*apipb.NodeChange
 	var nodes []*apipb.Node
@@ -1178,7 +1178,7 @@ func (n *GraphStore) PatchEdge(ctx context.Context, value *apipb.Patch) (*apipb.
 	return edge, nil
 }
 
-func (n *GraphStore) PatchEdges(ctx context.Context, patch *apipb.FilterPatch) (*apipb.Edges, error) {
+func (n *GraphStore) PatchEdges(ctx context.Context, patch *apipb.PatchFilter) (*apipb.Edges, error) {
 	identity := n.NodeContext(ctx)
 	var changes []*apipb.EdgeChange
 	var edges []*apipb.Edge
@@ -1302,12 +1302,12 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 	}
 	detail.Metadata = node.Metadata
 	detail.Attributes = node.Attributes
-	if filter.GetEdgesFrom() != nil {
+	if val := filter.GetFromEdges(); val != nil {
 		edges, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
 			NodePath:    node.Path,
-			Gtype:       filter.GetEdgesFrom().GetGtype(),
-			Expressions: filter.GetEdgesFrom().GetExpressions(),
-			Limit:       filter.GetEdgesFrom().GetLimit(),
+			Gtype:       val.GetGtype(),
+			Expressions: val.GetExpressions(),
+			Limit:       val.GetLimit(),
 		})
 		if err != nil {
 			return nil, err
@@ -1321,12 +1321,12 @@ func (g *GraphStore) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetail
 		}
 	}
 
-	if filter.GetEdgesTo() != nil {
+	if val := filter.GetToEdges(); val != nil {
 		edges, err := g.EdgesTo(ctx, &apipb.EdgeFilter{
 			NodePath:    node.Path,
-			Gtype:       filter.GetEdgesTo().GetGtype(),
-			Expressions: filter.GetEdgesTo().GetExpressions(),
-			Limit:       filter.GetEdgesTo().GetLimit(),
+			Gtype:       val.GetGtype(),
+			Expressions: val.GetExpressions(),
+			Limit:       val.GetLimit(),
 		})
 		if err != nil {
 			return nil, err

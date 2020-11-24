@@ -141,7 +141,7 @@ input Patch {
   attributes: Struct!
 }
 
-input FilterPatch {
+input PatchFilter {
   patch: Patch!
   filter: Filter!
 }
@@ -158,10 +158,10 @@ input ExpressionFilter {
 type Mutation {
   createNode(input: NodeConstructor!): Node!
   patchNode(input: Patch!): Node!
-  patchNodes(input: FilterPatch!): Nodes!
+  patchNodes(input: PatchFilter!): Nodes!
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
-  patchEdges(input: FilterPatch!): Edges!
+  patchEdges(input: PatchFilter!): Edges!
   publish(input: OutboundMessage): Empty!
 }
 

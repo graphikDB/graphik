@@ -29,7 +29,7 @@ func (r *mutationResolver) PatchNode(ctx context.Context, input apipb.Patch) (*a
 	return r.client.PatchNode(ctx, &input)
 }
 
-func (r *mutationResolver) PatchNodes(ctx context.Context, input apipb.FilterPatch) (*apipb.Nodes, error) {
+func (r *mutationResolver) PatchNodes(ctx context.Context, input apipb.PatchFilter) (*apipb.Nodes, error) {
 	return r.client.PatchNodes(ctx, &input)
 }
 
@@ -41,7 +41,7 @@ func (r *mutationResolver) PatchEdge(ctx context.Context, input apipb.Patch) (*a
 	return r.client.PatchEdge(ctx, &input)
 }
 
-func (r *mutationResolver) PatchEdges(ctx context.Context, input apipb.FilterPatch) (*apipb.Edges, error) {
+func (r *mutationResolver) PatchEdges(ctx context.Context, input apipb.PatchFilter) (*apipb.Edges, error) {
 	return r.client.PatchEdges(ctx, &input)
 }
 

@@ -27,6 +27,7 @@ func init() {
 		decls.NewVar("edges_from", decls.NewListType(anyMap)),
 		decls.NewVar("edges_to", decls.NewListType(anyMap)),
 		decls.NewVar("request", anyMap),
+		decls.NewVar("response", anyMap),
 		decls.NewVar("limit", decls.Int),
 		decls.NewVar("identity", anyMap),
 		decls.NewVar("expressions", decls.NewListType(decls.String)),

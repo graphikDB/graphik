@@ -191,14 +191,14 @@ func (this *NodeDetailFilter) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
 		}
 	}
-	if this.EdgesFrom != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EdgesFrom); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("EdgesFrom", err)
+	if this.FromEdges != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.FromEdges); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("FromEdges", err)
 		}
 	}
-	if this.EdgesTo != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EdgesTo); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("EdgesTo", err)
+	if this.ToEdges != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ToEdges); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("ToEdges", err)
 		}
 	}
 	return nil
@@ -447,7 +447,7 @@ func (this *Patch) Validate() error {
 	}
 	return nil
 }
-func (this *FilterPatch) Validate() error {
+func (this *PatchFilter) Validate() error {
 	if this.Patch != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Patch); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Patch", err)
@@ -613,6 +613,14 @@ func (this *Interception) Validate() error {
 	if this.Request != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Request); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Request", err)
+		}
+	}
+	if nil == this.Response {
+		return github_com_mwitkow_go_proto_validators.FieldError("Response", fmt.Errorf("message must exist"))
+	}
+	if this.Response != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Response); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Response", err)
 		}
 	}
 	return nil

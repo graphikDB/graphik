@@ -107,9 +107,9 @@ type ComplexityRoot struct {
 		CreateEdge func(childComplexity int, input apipb.EdgeConstructor) int
 		CreateNode func(childComplexity int, input apipb.NodeConstructor) int
 		PatchEdge  func(childComplexity int, input apipb.Patch) int
-		PatchEdges func(childComplexity int, input apipb.FilterPatch) int
+		PatchEdges func(childComplexity int, input apipb.PatchFilter) int
 		PatchNode  func(childComplexity int, input apipb.Patch) int
-		PatchNodes func(childComplexity int, input apipb.FilterPatch) int
+		PatchNodes func(childComplexity int, input apipb.PatchFilter) int
 		Publish    func(childComplexity int, input *apipb.OutboundMessage) int
 	}
 
@@ -175,10 +175,10 @@ type MetadataResolver interface {
 type MutationResolver interface {
 	CreateNode(ctx context.Context, input apipb.NodeConstructor) (*apipb.Node, error)
 	PatchNode(ctx context.Context, input apipb.Patch) (*apipb.Node, error)
-	PatchNodes(ctx context.Context, input apipb.FilterPatch) (*apipb.Nodes, error)
+	PatchNodes(ctx context.Context, input apipb.PatchFilter) (*apipb.Nodes, error)
 	CreateEdge(ctx context.Context, input apipb.EdgeConstructor) (*apipb.Edge, error)
 	PatchEdge(ctx context.Context, input apipb.Patch) (*apipb.Edge, error)
-	PatchEdges(ctx context.Context, input apipb.FilterPatch) (*apipb.Edges, error)
+	PatchEdges(ctx context.Context, input apipb.PatchFilter) (*apipb.Edges, error)
 	Publish(ctx context.Context, input *apipb.OutboundMessage) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
@@ -461,7 +461,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchEdges(childComplexity, args["input"].(apipb.FilterPatch)), true
+		return e.complexity.Mutation.PatchEdges(childComplexity, args["input"].(apipb.PatchFilter)), true
 
 	case "Mutation.patchNode":
 		if e.complexity.Mutation.PatchNode == nil {
@@ -485,7 +485,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchNodes(childComplexity, args["input"].(apipb.FilterPatch)), true
+		return e.complexity.Mutation.PatchNodes(childComplexity, args["input"].(apipb.PatchFilter)), true
 
 	case "Mutation.publish":
 		if e.complexity.Mutation.Publish == nil {
@@ -967,7 +967,7 @@ input Patch {
   attributes: Struct!
 }
 
-input FilterPatch {
+input PatchFilter {
   patch: Patch!
   filter: Filter!
 }
@@ -984,10 +984,10 @@ input ExpressionFilter {
 type Mutation {
   createNode(input: NodeConstructor!): Node!
   patchNode(input: Patch!): Node!
-  patchNodes(input: FilterPatch!): Nodes!
+  patchNodes(input: PatchFilter!): Nodes!
   createEdge(input: EdgeConstructor!): Edge!
   patchEdge(input: Patch!): Edge!
-  patchEdges(input: FilterPatch!): Edges!
+  patchEdges(input: PatchFilter!): Edges!
   publish(input: OutboundMessage): Empty!
 }
 
@@ -1062,10 +1062,10 @@ func (ec *executionContext) field_Mutation_patchEdge_args(ctx context.Context, r
 func (ec *executionContext) field_Mutation_patchEdges_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 apipb.FilterPatch
+	var arg0 apipb.PatchFilter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNFilterPatch2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilterPatch(ctx, tmp)
+		arg0, err = ec.unmarshalNPatchFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatchFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1092,10 +1092,10 @@ func (ec *executionContext) field_Mutation_patchNode_args(ctx context.Context, r
 func (ec *executionContext) field_Mutation_patchNodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 apipb.FilterPatch
+	var arg0 apipb.PatchFilter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNFilterPatch2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilterPatch(ctx, tmp)
+		arg0, err = ec.unmarshalNPatchFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatchFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2434,7 +2434,7 @@ func (ec *executionContext) _Mutation_patchNodes(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchNodes(rctx, args["input"].(apipb.FilterPatch))
+		return ec.resolvers.Mutation().PatchNodes(rctx, args["input"].(apipb.PatchFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2560,7 +2560,7 @@ func (ec *executionContext) _Mutation_patchEdges(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchEdges(rctx, args["input"].(apipb.FilterPatch))
+		return ec.resolvers.Mutation().PatchEdges(rctx, args["input"].(apipb.PatchFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4961,34 +4961,6 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputFilterPatch(ctx context.Context, obj interface{}) (apipb.FilterPatch, error) {
-	var it apipb.FilterPatch
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "patch":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("patch"))
-			it.Patch, err = ec.unmarshalNPatch2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatch(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "filter":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputMeFilter(ctx context.Context, obj interface{}) (apipb.MeFilter, error) {
 	var it apipb.MeFilter
 	var asMap = obj.(map[string]interface{})
@@ -5092,6 +5064,34 @@ func (ec *executionContext) unmarshalInputPatch(ctx context.Context, obj interfa
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
 			it.Attributes, err = ec.unmarshalNStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPatchFilter(ctx context.Context, obj interface{}) (apipb.PatchFilter, error) {
+	var it apipb.PatchFilter
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "patch":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("patch"))
+			it.Patch, err = ec.unmarshalNPatch2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatch(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "filter":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6265,11 +6265,6 @@ func (ec *executionContext) unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraph
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNFilterPatch2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilterPatch(ctx context.Context, v interface{}) (apipb.FilterPatch, error) {
-	res, err := ec.unmarshalInputFilterPatch(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6389,6 +6384,11 @@ func (ec *executionContext) unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphik�
 func (ec *executionContext) unmarshalNPatch2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatch(ctx context.Context, v interface{}) (*apipb.Patch, error) {
 	res, err := ec.unmarshalInputPatch(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNPatchFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatchFilter(ctx context.Context, v interface{}) (apipb.PatchFilter, error) {
+	res, err := ec.unmarshalInputPatchFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx context.Context, sel ast.SelectionSet, v *apipb.Path) graphql.Marshaler {

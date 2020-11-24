@@ -244,6 +244,101 @@ func (c *Change) AsMap() map[string]interface{} {
 	}
 }
 
+func (n *Filter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"gtype":       n.GetGtype(),
+		"expressions": n.GetExpressions(),
+		"limit":       n.GetLimit(),
+	}
+}
+
+func (n *EdgeFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"gtype":       n.GetGtype(),
+		"expressions": n.GetExpressions(),
+		"limit":       n.GetLimit(),
+		"node_path":   n.GetNodePath(),
+	}
+}
+
+func (n *ChannelFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"channel":     n.GetChannel(),
+		"expressions": n.GetExpressions(),
+	}
+}
+
+func (n *ExpressionFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"expressions": n.GetExpressions(),
+	}
+}
+
+func (p *Patch) AsMap() map[string]interface{} {
+	if p == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"path":       p.GetPath(),
+		"attributes": p.GetAttributes(),
+	}
+}
+
+func (n *PatchFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"patch":  n.GetPatch().AsMap(),
+		"filter": n.GetFilter().AsMap(),
+	}
+}
+
+func (m *MeFilter) AsMap() map[string]interface{} {
+	if m == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"from_edges": m.GetEdgesFrom().AsMap(),
+		"to_edges":   m.GetEdgesTo().AsMap(),
+	}
+}
+
+func (e *EdgeConstructor) AsMap() map[string]interface{} {
+	if e == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"path":       e.GetPath().AsMap(),
+		"attributes": e.GetAttributes().AsMap(),
+		"directed":   e.GetDirected(),
+		"from":       e.GetFrom().AsMap(),
+		"to":         e.GetTo().AsMap(),
+	}
+}
+
+func (e *NodeConstructor) AsMap() map[string]interface{} {
+	if e == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"path":       e.GetPath().AsMap(),
+		"attributes": e.GetAttributes().AsMap(),
+	}
+}
+
 func (p *Paths) Sort() {
 	s := sortable.Sortable{
 		LenFunc: func() int {

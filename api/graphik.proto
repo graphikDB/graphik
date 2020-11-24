@@ -76,8 +76,8 @@ message NodeDetails {
 // NodeDetailFilter is used to fetch node details
 message NodeDetailFilter {
   Path path =1 [(validator.field) = {msg_exists : true}];
-  Filter edges_from =2;
-  Filter edges_to =3;
+  Filter from_edges =2;
+  Filter to_edges =3;
 }
 
 // Edge is a graph primitive that represents a relationship between two nodes
@@ -169,7 +169,7 @@ message Patch {
   google.protobuf.Struct attributes =2;
 }
 
-message FilterPatch {
+message PatchFilter {
   Patch patch =1;
   Filter filter =2;
 }
@@ -240,7 +240,7 @@ service GraphService {
   // PatchNode patches a nodes attributes
   rpc PatchNode(Patch) returns(Node){}
   // PatchNodes patches a batch of nodes attributes
-  rpc PatchNodes(FilterPatch) returns(Nodes){}
+  rpc PatchNodes(PatchFilter) returns(Nodes){}
   // CreateEdge creates an edge in the graph
   rpc CreateEdge(EdgeConstructor) returns(Edge){}
   // CreateEdges creates a batch of edges in the graph
@@ -252,7 +252,7 @@ service GraphService {
   // PatchEdge patches an edges attributes
   rpc PatchEdge(Patch) returns(Edge){}
   // PatchEdges patches a batch of edges attributes
-  rpc PatchEdges(FilterPatch) returns(Edges){}
+  rpc PatchEdges(PatchFilter) returns(Edges){}
   // EdgesFrom returns edges that source from the given node path that pass the filter
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   // EdgesTo returns edges that point to the given node path that pass the filter
@@ -277,7 +277,8 @@ message Interception {
   Node identity =2 [(validator.field) = {msg_exists : true}];
   google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
   google.protobuf.Any request = 4 [(validator.field) = {msg_exists : true}];
-  Timing timing =5;
+  google.protobuf.Any response = 5 [(validator.field) = {msg_exists : true}];
+  Timing timing =6;
 }
 
 // TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime
