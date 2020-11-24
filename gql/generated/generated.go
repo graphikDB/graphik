@@ -60,6 +60,7 @@ type ComplexityRoot struct {
 
 	Edge struct {
 		Attributes func(childComplexity int) int
+		Directed   func(childComplexity int) int
 		From       func(childComplexity int) int
 		Metadata   func(childComplexity int) int
 		Path       func(childComplexity int) int
@@ -73,6 +74,7 @@ type ComplexityRoot struct {
 
 	EdgeDetail struct {
 		Attributes func(childComplexity int) int
+		Directed   func(childComplexity int) int
 		From       func(childComplexity int) int
 		Metadata   func(childComplexity int) int
 		Path       func(childComplexity int) int
@@ -253,6 +255,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Edge.Attributes(childComplexity), true
 
+	case "Edge.directed":
+		if e.complexity.Edge.Directed == nil {
+			break
+		}
+
+		return e.complexity.Edge.Directed(childComplexity), true
+
 	case "Edge.from":
 		if e.complexity.Edge.From == nil {
 			break
@@ -301,6 +310,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.EdgeDetail.Attributes(childComplexity), true
+
+	case "EdgeDetail.directed":
+		if e.complexity.EdgeDetail.Directed == nil {
+			break
+		}
+
+		return e.complexity.EdgeDetail.Directed(childComplexity), true
 
 	case "EdgeDetail.from":
 		if e.complexity.EdgeDetail.From == nil {
@@ -816,186 +832,303 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "api/schema.graphqls", Input: `# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
-
+	{Name: "api/schema.graphqls", Input: `# Timestamp directly corresponds to google's well known timestamppb protobuf
 scalar Timestamp
+# Struct directly corresponds to google's well known structpb protobuf
 scalar Struct
+# Empty directly corresponds to google's well known emptypb protobuf
 scalar Empty
 
+# Pong returns PONG if the server is healthy
 type Pong {
   message: String!
 }
 
+# Path describes a node/edge type & id
 type Path {
+  # gtype is the type of the node/edge ex: pet
   gtype: String!
+  # gid is the unique id of the node/edge within the context of it's type
   gid: String!
 }
 
+# Metadata is general metadata collected about the node
 type Metadata {
+  # created_at is the unix timestamp when the node/edge was created
   created_at: Timestamp!
+  # updated_at is the unix timestamp when the node/edge was last updated
   updated_at: Timestamp!
+  # updated_by is the identity that last modified the node/edge
   updated_by: Path!
+  # sequence is the sequence within the context of the node/edge type
   sequence: Int!
+  # version iterates by 1 every time the node/edge is modified
   version: Int!
 }
 
+# Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
 type Node {
+  # path is the path to the node
   path: Path!
+  # k/v pairs
   attributes: Struct
+  # metadata is general metadata collected about the node
   metadata: Metadata!
 }
 
+# Nodes is an array of nodes
 type Nodes {
+  # nodes is an array of nodes
   nodes: [Node!]
 }
 
+# Edge is a graph primitive that represents a relationship between two nodes
 type Edge {
+  # path is the path to the edge
   path: Path!
+  # k/v pairs
   attributes: Struct
+  # directed is false if the edge is bi-directional
+  directed: Boolean
+  # from is the node path that is the source of the edge
   from: Path!
+  # to is the node path that is the destination of the edge
   to: Path!
+  # metadata is general metadata collected about the edge
   metadata: Metadata!
 }
 
+# Edges is an array of edges
 type Edges {
   edges: [Edge!]
 }
 
+# EdgeDetail is an edge with both of it's connected nodes fully loaded
 type EdgeDetail {
+  # path is the path to the edge
   path: Path!
+  # attributes are k/v pairs
   attributes: Struct
+  # directed is false if the edge is bi-directional
+  directed: Boolean
+  # from is the full node that is the root of the edge
   from: Node!
+  # to is the full node that is the destination of the edge
   to: Node!
+  # metadata is general metadata collected about the edge
   metadata: Metadata
 }
 
+# EdgeDetails details is an array of edge details
 type EdgeDetails {
   edges: [EdgeDetail!]
 }
 
+# NodeDetail is a node with its connected edges
 type NodeDetail {
+  # path is the path to the node
   path: Path!
+  # arbitrary k/v pairs
   attributes: Struct
+  # edges_from are edges that source from this node
   edges_from: EdgeDetails
+  # edges_to are edges that point toward this node
   edges_to: EdgeDetails
+  # metadata is general metadata collected about the node
   metadata: Metadata
 }
 
+# Schema returns registered edge & node types
 type Schema {
+  # edge_types are the types of edges in the graph
   edge_types: [String!]
+  # node_types are the types of nodes in the graph
   node_types: [String!]
 }
 
+# Message is received on PubSub subscriptions
 type Message {
+  # channel is the channel the message was sent to
   channel: String!
+  # data is the data sent with the message
   data: Struct!
+  # sender is the identity that sent the message
   sender: Path!
+  # timestamp is when the message was sent
   timestamp: Timestamp!
 }
 
+# NodeConstructor is used to create a Node
 input NodeConstructor {
+  # path is the path to the node.
+  # if an id is not present in the path, a unique id will be generated
   path: PathInput!
+  # attributes are k/v pairs
   attributes: Struct
 }
 
+# EdgeConstructor is used to create an Edge
 input EdgeConstructor {
+  # path is the path to the edge.
+  # if an id is not present in the path, a unique id will be generated
   path: PathInput!
+  # directed is false if the edge is bi-directional
+  directed: Boolean
+
   attributes: Struct
+  # from is the node path that is the source of the edge
   from: PathInput!
+  # to is the node path that is the destination of the edge
   to: PathInput!
 }
 
+# NodeChange is a single state change to a node
 type NodeChange {
+  # before is the node before state change
   before: Node
+  # after is the node after state change
   after: Node
 }
 
+# EdgeChange is a single state change to an edge
 type EdgeChange {
+  # before is the edge before state change
   before: Edge
+  # after is the edge after state change
   after: Edge
 }
 
+# Change represents a set of state changes in the graph
 type Change {
+  # method is the gRPC method invoked
   method: String!
+  # identity is the identity invoking the change
   identity: Node!
+  # timestamp is when the change was made
   timestamp: Timestamp!
+  # edge_changes are state changes to edges
   edge_changes: [EdgeChange!]
+  # node_changes are state changes to nodes
   node_changes: [NodeChange!]
 }
 
+# PathInput is the path to a node/edge
 input PathInput {
+  # path is the path to the target node/edge to patch
   gtype: String!
+  # path is the path to the target node/edge to patch
   gid: String
 }
 
+# Filter is a generic filter using Common Expression Language
 input Filter {
+  # gtype is the node/edge type to be filtered
   gtype: String!
+  # expressions are CEL expressions used to filter edges
   expressions: [String!]
+  # limit is the maximum number of items to return
   limit: Int!
 }
 
+# MeFilter is used to fetch a NodeDetail representing the identity in the inbound JWT token
 input MeFilter {
+  # edges_from is a filter used to filter edges from the identity making the request
   edges_from: Filter
+  # edges_to is a filter used to filter edges to the identity making the request
   edges_to: Filter
 }
 
+# EdgeFilter is used to fetch edges related to a single noted
 input EdgeFilter {
+  # node_path is the path to the target node
   node_path: PathInput!
+  # gtype is the type of edges to return
   gtype: String!
+  # expressions are CEL expressions used to filter edges
   expressions: [String!],
+  # limit is the maximum number of edges to return
   limit: Int!
 }
 
+# ChannelFilter is used to filter messages in a pubsub channel
 input ChannelFilter {
+  # channel is the target channel to filter from
   channel: String!
+  # expressions are CEL expressions used to filter messages
   expressions: [String]
 }
 
+# Patch patches the attributes of a Node or Edge
 input Patch {
+  # path is the path to the target node/edge to patch
   path: PathInput!
+  # attributes are k/v pairs used to overwrite k/v pairs on a node/edge
   attributes: Struct!
 }
 
+# PatchFilter is used to patch nodes/edges
 input PatchFilter {
+  # filter is used to filter nodes/edges to patch
   filter: Filter!
+  # attributes are k/v pairs used to overwrite k/v pairs on a node/edge
   attributes: Struct!
 }
 
+# OutboundMessage is a message to be published to a pubsub channel
 input OutboundMessage {
+  # channel is the target channel to send the message to
   channel: String!
+  # data is the data to send with the message
   data: Struct!
 }
 
 input ExpressionFilter {
+  # expressions are CEL expressions used to filter messages/nodes/edges
   expressions: [String!]
 }
 
 type Mutation {
+  # createNode creates a single node in the graph
   createNode(input: NodeConstructor!): Node!
+  # patchNode patches a single node in the graph
   patchNode(input: Patch!): Node!
+  # patchNodes patches 0-many nodes in the graph
   patchNodes(input: PatchFilter!): Nodes!
+  # createEdge creates a single edge in the graph
   createEdge(input: EdgeConstructor!): Edge!
+  # patchEdge patches a single edge in the graph
   patchEdge(input: Patch!): Edge!
+  # patchEdges patches 0-many edges in the graph
   patchEdges(input: PatchFilter!): Edges!
+  # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage): Empty!
 }
 
 type Query {
+  # ping checks if the server is healthy
   ping(input: Empty): Pong!
+  # getSchema gets information about the graph schema
   getSchema(input: Empty): Schema!
+  # me returns your identity + edges
   me(input: MeFilter): NodeDetail!
+  # getNode gets a node at the given path
   getNode(input: PathInput!): Node!
+  # searchNodes searches for 0-many nodes
   searchNodes(input: Filter!): Nodes!
+  # getEdge gets a edge at the given path
   getEdge(input: PathInput!): Edge!
+  # searchEdges searches for 0-many edges
   searchEdges(input: Filter!): Edges!
+  # edgesFrom returns edges from the given node that pass the filter
   edgesFrom(input: EdgeFilter!): Edges!
+  # edgesTo returns edges to the given node that pass the filter
   edgesTo(input: EdgeFilter!): Edges!
 }
 
 type Subscription {
+  # subscribe subscribes to a pubsub channel
   subscribe(input: ChannelFilter!): Message!
+  # subscribeChanges subscribes to state changes in the graph
   subscribeChanges(input: ExpressionFilter!): Change!
 }`, BuiltIn: false},
 }
@@ -1564,6 +1697,38 @@ func (ec *executionContext) _Edge_attributes(ctx context.Context, field graphql.
 	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Edge_directed(ctx context.Context, field graphql.CollectedField, obj *apipb.Edge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Edge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Directed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Edge_from(ctx context.Context, field graphql.CollectedField, obj *apipb.Edge) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1798,6 +1963,38 @@ func (ec *executionContext) _EdgeDetail_attributes(ctx context.Context, field gr
 	res := resTmp.(*structpb.Struct)
 	fc.Result = res
 	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EdgeDetail_directed(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EdgeDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Directed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _EdgeDetail_from(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetail) (ret graphql.Marshaler) {
@@ -4787,6 +4984,14 @@ func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
+		case "directed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directed"))
+			it.Directed, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "attributes":
 			var err error
 
@@ -5152,6 +5357,8 @@ func (ec *executionContext) _Edge(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "attributes":
 			out.Values[i] = ec._Edge_attributes(ctx, field, obj)
+		case "directed":
+			out.Values[i] = ec._Edge_directed(ctx, field, obj)
 		case "from":
 			out.Values[i] = ec._Edge_from(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -5222,6 +5429,8 @@ func (ec *executionContext) _EdgeDetail(ctx context.Context, sel ast.SelectionSe
 			}
 		case "attributes":
 			out.Values[i] = ec._EdgeDetail_attributes(ctx, field, obj)
+		case "directed":
+			out.Values[i] = ec._EdgeDetail_directed(ctx, field, obj)
 		case "from":
 			out.Values[i] = ec._EdgeDetail_from(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

@@ -198,7 +198,7 @@ func (m *Paths) GetPaths() []*Path {
 type Node struct {
 	// path is the path to the node
 	Path *Path `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	// arbitrary k/v pairs
+	// k/v pairs
 	Attributes *_struct.Struct `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	// metadata is general metadata collected about the node
 	Metadata             *Metadata `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -393,7 +393,7 @@ type NodeDetail struct {
 	Attributes *_struct.Struct `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 	// edges_from are edges that source from this node
 	EdgesFrom *EdgeDetails `protobuf:"bytes,3,opt,name=edges_from,json=edgesFrom,proto3" json:"edges_from,omitempty"`
-	// edges_from are edges that point toward this node
+	// edges_to are edges that point toward this node
 	EdgesTo *EdgeDetails `protobuf:"bytes,4,opt,name=edges_to,json=edgesTo,proto3" json:"edges_to,omitempty"`
 	// metadata is general metadata collected about the node
 	Metadata             *Metadata `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -1109,7 +1109,7 @@ func (m *MeFilter) GetEdgesTo() *Filter {
 type ChannelFilter struct {
 	// channel is the target channel to filter from
 	Channel string `protobuf:"bytes,1,opt,name=channel,proto3" json:"channel,omitempty"`
-	// expressions are CEL expressions used to filter edges
+	// expressions are CEL expressions used to filter messages
 	Expressions          []string `protobuf:"bytes,2,rep,name=expressions,proto3" json:"expressions,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -1305,6 +1305,7 @@ func (m *Patch) GetAttributes() *_struct.Struct {
 	return nil
 }
 
+// PatchFilter is used to patch nodes/edges
 type PatchFilter struct {
 	// filter is used to filter nodes/edges to patch
 	Filter *Filter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
@@ -1563,8 +1564,11 @@ func (m *Schema) GetNodeTypes() []string {
 	return nil
 }
 
+// NodeChange is a single state change to a node
 type NodeChange struct {
-	Before               *Node    `protobuf:"bytes,4,opt,name=before,proto3" json:"before,omitempty"`
+	// before is the node before state change
+	Before *Node `protobuf:"bytes,4,opt,name=before,proto3" json:"before,omitempty"`
+	// after is the node after state change
 	After                *Node    `protobuf:"bytes,5,opt,name=after,proto3" json:"after,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -1657,15 +1661,21 @@ func (m *EdgeChange) GetAfter() *Edge {
 	return nil
 }
 
+// Change represents a set of state changes in the graph
 type Change struct {
-	Method               string               `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
-	Identity             *Node                `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
-	Timestamp            *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	EdgeChanges          []*EdgeChange        `protobuf:"bytes,4,rep,name=edge_changes,json=edgeChanges,proto3" json:"edge_changes,omitempty"`
-	NodeChanges          []*NodeChange        `protobuf:"bytes,5,rep,name=node_changes,json=nodeChanges,proto3" json:"node_changes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
-	XXX_unrecognized     []byte               `json:"-"`
-	XXX_sizecache        int32                `json:"-"`
+	// method is the gRPC method invoked
+	Method string `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
+	// identity is the identity invoking the change
+	Identity *Node `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
+	// timestamp is when the change was made
+	Timestamp *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// edge_changes are state changes to edges
+	EdgeChanges []*EdgeChange `protobuf:"bytes,4,rep,name=edge_changes,json=edgeChanges,proto3" json:"edge_changes,omitempty"`
+	// node_changes are state changes to nodes
+	NodeChanges          []*NodeChange `protobuf:"bytes,5,rep,name=node_changes,json=nodeChanges,proto3" json:"node_changes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
+	XXX_unrecognized     []byte        `json:"-"`
+	XXX_sizecache        int32         `json:"-"`
 }
 
 func (m *Change) Reset()         { *m = Change{} }

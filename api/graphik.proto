@@ -41,7 +41,7 @@ message Paths {
 message Node {
   // path is the path to the node
   Path path =1 [(validator.field) = {msg_exists : true}];
-  // arbitrary k/v pairs
+  // k/v pairs
   google.protobuf.Struct attributes =2;
   // metadata is general metadata collected about the node
   Metadata metadata =3 [(validator.field) = {msg_exists : true}];
@@ -75,7 +75,7 @@ message NodeDetail {
   google.protobuf.Struct attributes =2;
   // edges_from are edges that source from this node
   EdgeDetails edges_from =3;
-  // edges_from are edges that point toward this node
+  // edges_to are edges that point toward this node
   EdgeDetails edges_to =4;
   // metadata is general metadata collected about the node
   Metadata metadata =5 [(validator.field) = {msg_exists : true}];
@@ -189,7 +189,7 @@ message MeFilter {
 message ChannelFilter {
   // channel is the target channel to filter from
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  // expressions are CEL expressions used to filter edges
+  // expressions are CEL expressions used to filter messages
   repeated string expressions =2;
 }
 
@@ -217,6 +217,7 @@ message Patch {
   google.protobuf.Struct attributes =2;
 }
 
+// PatchFilter is used to patch nodes/edges
 message PatchFilter {
   // filter is used to filter nodes/edges to patch
   Filter filter =1;
@@ -258,8 +259,11 @@ message Schema {
   repeated string node_types =2;
 }
 
+// NodeChange is a single state change to a node
 message NodeChange {
+  // before is the node before state change
   Node before = 4;
+  // after is the node after state change
   Node after = 5;
 }
 
@@ -268,11 +272,17 @@ message EdgeChange {
   Edge after = 5;
 }
 
+// Change represents a set of state changes in the graph
 message Change {
+  // method is the gRPC method invoked
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // identity is the identity invoking the change
   Node identity =2 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the change was made
   google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  // edge_changes are state changes to edges
   repeated EdgeChange edge_changes =4;
+  // node_changes are state changes to nodes
   repeated  NodeChange node_changes =5;
 }
 
