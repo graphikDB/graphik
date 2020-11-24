@@ -34,6 +34,8 @@ func init() {
 		decls.NewVar("directed", decls.Bool),
 		decls.NewVar("edge_changes", decls.NewListType(anyMap)),
 		decls.NewVar("node_changes", decls.NewListType(anyMap)),
+		decls.NewVar("node_filter", anyMap),
+		decls.NewVar("edge_filter", anyMap),
 		/*
 			"channel":   n.GetChannel(),
 				"sender":    n.GetSender().AsMap(),

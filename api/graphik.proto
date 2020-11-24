@@ -153,8 +153,8 @@ message ChannelFilter {
 
 // SubGraphFilter is used to filter nodes/edges in the graph
 message SubGraphFilter {
-  Filter nodes =1 [(validator.field) = {msg_exists : true}];
-  Filter edges =2 [(validator.field) = {msg_exists : true}];
+  Filter node_filter =1 [(validator.field) = {msg_exists : true}];
+  Filter edge_filter =2 [(validator.field) = {msg_exists : true}];
 }
 
 // Graph is an array of nodes and edges

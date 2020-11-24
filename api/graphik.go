@@ -267,6 +267,16 @@ func (n *EdgeFilter) AsMap() map[string]interface{} {
 	}
 }
 
+func (n *SubGraphFilter) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"edge_filter": n.GetEdgeFilter().AsMap(),
+		"node_filter": n.GetNodeFilter().AsMap(),
+	}
+}
+
 func (n *ChannelFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
@@ -336,6 +346,43 @@ func (e *NodeConstructor) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"path":       e.GetPath().AsMap(),
 		"attributes": e.GetAttributes().AsMap(),
+	}
+}
+
+func (o *OutboundMessage) AsMap() map[string]interface{} {
+	if o == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"channel": o.Channel,
+		"data":    o.Data.AsMap(),
+	}
+}
+
+func (e *Edges) AsMap() map[string]interface{} {
+	var edges []interface{}
+	for _, edge := range e.GetEdges() {
+		edges = append(edges, edge.AsMap())
+	}
+	return map[string]interface{}{
+		"edges": edges,
+	}
+}
+
+func (e *Nodes) AsMap() map[string]interface{} {
+	var nodes []interface{}
+	for _, edge := range e.GetNodes() {
+		nodes = append(nodes, edge.AsMap())
+	}
+	return map[string]interface{}{
+		"nodes": nodes,
+	}
+}
+
+func (g *Graph) AsMap() map[string]interface{} {
+	return map[string]interface{}{
+		"edges": g.GetEdges().AsMap(),
+		"nodes": g.GetNodes().AsMap(),
 	}
 }
 

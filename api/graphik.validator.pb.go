@@ -400,20 +400,20 @@ func (this *ChannelFilter) Validate() error {
 	return nil
 }
 func (this *SubGraphFilter) Validate() error {
-	if nil == this.Nodes {
-		return github_com_mwitkow_go_proto_validators.FieldError("Nodes", fmt.Errorf("message must exist"))
+	if nil == this.NodeFilter {
+		return github_com_mwitkow_go_proto_validators.FieldError("NodeFilter", fmt.Errorf("message must exist"))
 	}
-	if this.Nodes != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Nodes); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Nodes", err)
+	if this.NodeFilter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.NodeFilter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("NodeFilter", err)
 		}
 	}
-	if nil == this.Edges {
-		return github_com_mwitkow_go_proto_validators.FieldError("Edges", fmt.Errorf("message must exist"))
+	if nil == this.EdgeFilter {
+		return github_com_mwitkow_go_proto_validators.FieldError("EdgeFilter", fmt.Errorf("message must exist"))
 	}
-	if this.Edges != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Edges); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Edges", err)
+	if this.EdgeFilter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.EdgeFilter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("EdgeFilter", err)
 		}
 	}
 	return nil
