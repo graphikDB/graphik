@@ -45,6 +45,7 @@ var (
 )
 
 type GraphStore struct {
+	vm *vm.VM
 	// db is the underlying handle to the db.
 	db          *bbolt.DB
 	jwksSet     *jwk.Set
@@ -70,6 +71,10 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 	if err != nil {
 		return nil, err
 	}
+	vMachine, err := vm.NewVM()
+	if err != nil {
+		return nil, err
+	}
 	var triggers []*triggerClient
 	var closers []func()
 	for _, plugin := range flgs.Triggers {
@@ -92,13 +97,14 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to dial trigger")
 		}
-		programs, err := vm.Programs(matchers.GetExpressions())
+		programs, err := vMachine.Change().Programs(matchers.GetExpressions())
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to compile trigger matchers")
 		}
 		triggers = append(triggers, &triggerClient{
 			TriggerServiceClient: trig,
 			matchers:             programs,
+			vm:                   vMachine.Change(),
 		})
 		closers = append(closers, func() {
 			conn.Close()
@@ -106,20 +112,24 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 	}
 	var programs []cel.Program
 	if len(flgs.Authorizers) > 0 && flgs.Authorizers[0] != "" {
-		programs, err = vm.Programs(flgs.Authorizers)
+		programs, err = vMachine.Auth().Programs(flgs.Authorizers)
 		if err != nil {
 			return nil, err
 		}
 	}
 	g := &GraphStore{
+		vm:          vMachine,
 		db:          handle,
+		jwksSet:     nil,
+		jwksSource:  "",
+		authorizers: programs,
 		path:        path,
 		mu:          sync.RWMutex{},
+		triggerMu:   sync.RWMutex{},
 		edgesTo:     map[string][]*apipb.Path{},
 		edgesFrom:   map[string][]*apipb.Path{},
 		machine:     machine.New(ctx),
 		triggers:    triggers,
-		authorizers: programs,
 		closers:     closers,
 		closeOnce:   sync.Once{},
 	}
@@ -385,7 +395,7 @@ func (g *GraphStore) Publish(ctx context.Context, message *apipb.OutboundMessage
 }
 
 func (g *GraphStore) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphService_SubscribeServer) error {
-	programs, err := vm.Programs(filter.Expressions)
+	programs, err := g.vm.Message().Programs(filter.Expressions)
 	if err != nil {
 		return err
 	}
@@ -395,7 +405,7 @@ func (g *GraphStore) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphSe
 			logger.Error("invalid message type received during subscription")
 			return false
 		}
-		result, err := vm.Eval(programs, val)
+		result, err := g.vm.Message().Eval(programs, val)
 		if err != nil {
 			logger.Error("subscription filter failure", zap.Error(err))
 			return false
@@ -420,7 +430,7 @@ func (g *GraphStore) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphSe
 }
 
 func (g *GraphStore) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.GraphService_SubscribeChangesServer) error {
-	programs, err := vm.Programs(filter.Expressions)
+	programs, err := g.vm.Change().Programs(filter.Expressions)
 	if err != nil {
 		return err
 	}
@@ -430,7 +440,7 @@ func (g *GraphStore) SubscribeChanges(filter *apipb.ExpressionFilter, server api
 			logger.Error("invalid message type received during change subscription")
 			return false
 		}
-		result, err := vm.Eval(programs, val)
+		result, err := g.vm.Change().Eval(programs, val)
 		if err != nil {
 			logger.Error("subscription change failure", zap.Error(err))
 			return false
@@ -1019,7 +1029,7 @@ func (g *GraphStore) RangeTo(ctx context.Context, path *apipb.Path, fn func(edge
 }
 
 func (g *GraphStore) EdgesFrom(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
-	programs, err := vm.Programs(filter.Expressions)
+	programs, err := g.vm.Edge().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
@@ -1032,7 +1042,7 @@ func (g *GraphStore) EdgesFrom(ctx context.Context, filter *apipb.EdgeFilter) (*
 			}
 		}
 
-		pass, err = vm.Eval(programs, edge)
+		pass, err = g.vm.Edge().Eval(programs, edge)
 		if err != nil {
 			return true
 		}
@@ -1062,12 +1072,12 @@ func (n *GraphStore) HasEdge(ctx context.Context, path *apipb.Path) bool {
 
 func (n *GraphStore) SearchNodes(ctx context.Context, filter *apipb.Filter) (*apipb.Nodes, error) {
 	var nodes []*apipb.Node
-	programs, err := vm.Programs(filter.Expressions)
+	programs, err := n.vm.Node().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
 	if err := n.RangeNodes(ctx, filter.Gtype, func(node *apipb.Node) bool {
-		pass, err := vm.Eval(programs, node)
+		pass, err := n.vm.Node().Eval(programs, node)
 		if err != nil {
 			return true
 		}
@@ -1103,7 +1113,7 @@ func (n *GraphStore) FilterNode(ctx context.Context, nodeType string, filter fun
 }
 
 func (e *GraphStore) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
-	programs, err := vm.Programs(filter.Expressions)
+	programs, err := e.vm.Edge().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
@@ -1115,7 +1125,7 @@ func (e *GraphStore) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*ap
 				return true
 			}
 		}
-		pass, err = vm.Eval(programs, edge)
+		pass, err = e.vm.Edge().Eval(programs, edge)
 		if err != nil {
 			return true
 		}
@@ -1214,13 +1224,13 @@ func (n *GraphStore) PatchEdges(ctx context.Context, patch *apipb.PatchFilter) (
 }
 
 func (e *GraphStore) SearchEdges(ctx context.Context, filter *apipb.Filter) (*apipb.Edges, error) {
-	programs, err := vm.Programs(filter.Expressions)
+	programs, err := e.vm.Edge().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
 	var edges []*apipb.Edge
 	if err := e.RangeEdges(ctx, filter.Gtype, func(edge *apipb.Edge) bool {
-		pass, err := vm.Eval(programs, edge)
+		pass, err := e.vm.Edge().Eval(programs, edge)
 		if err != nil {
 			return true
 		}

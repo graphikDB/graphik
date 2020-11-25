@@ -2,12 +2,12 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/vm"
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.etcd.io/bbolt"
@@ -18,6 +18,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"strings"
 	"time"
 )
 
@@ -71,17 +72,20 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = g.MethodToContext(ctx, info.FullMethod)
-		now := time.Now()
-		interceptEval := &intercept{
-			Method:    info.FullMethod,
-			Identity:  identity.AsMap(),
-			Timestamp: timestamppb.New(now),
-		}
-		if val, ok := req.(apipb.Mapper); ok {
-			interceptEval.Request = val.AsMap()
-		}
 		if len(g.authorizers) > 0 {
-			result, err := vm.Eval(g.authorizers, interceptEval)
+			now := time.Now()
+			request := &apipb.Request{
+				Method:    info.FullMethod,
+				Identity:  identity,
+				Timestamp: timestamppb.New(now),
+			}
+			if val, ok := req.(proto.Message); ok {
+				str := helpers.JSONString(val)
+				reqMap := map[string]interface{}{}
+				json.NewDecoder(strings.NewReader(str)).Decode(&reqMap)
+				request.Request = apipb.NewStruct(reqMap)
+			}
+			result, err := g.vm.Auth().Eval(g.authorizers, request)
 			if err != nil {
 				return nil, err
 			}
@@ -89,64 +93,7 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 				return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
 			}
 		}
-		intercept := &apipb.Interception{
-			Method:    info.FullMethod,
-			Identity:  identity,
-			Timestamp: timestamppb.New(now),
-		}
-		if len(g.triggers) > 0 {
-			a, err := ptypes.MarshalAny(req.(proto.Message))
-			if err != nil {
-				return nil, err
-			}
-			intercept.Request = a
-			for _, trigger := range g.triggers {
-				should, err := trigger.shouldTrigger(interceptEval)
-				if err != nil {
-					return nil, err
-				}
-				if should {
-					intercept, err = trigger.Mutate(ctx, intercept)
-					if err != nil {
-						return nil, err
-					}
-				}
-			}
-			if err := ptypes.UnmarshalAny(intercept.Request, req.(proto.Message)); err != nil {
-				return nil, status.Error(codes.Internal, fmt.Sprintf("trigger failure: %s", err.Error()))
-			}
-		}
-		resp, err := handler(ctx, req)
-		if err != nil {
-			return resp, err
-		}
-		now = time.Now()
-		if len(g.triggers) > 0 {
-			a, err := ptypes.MarshalAny(resp.(proto.Message))
-			if err != nil {
-				return nil, err
-			}
-			intercept.Response = a
-			if val, ok := resp.(apipb.Mapper); ok {
-				interceptEval.Response = val.AsMap()
-			}
-			for _, trigger := range g.triggers {
-				should, err := trigger.shouldTrigger(interceptEval)
-				if err != nil {
-					return nil, err
-				}
-				if should {
-					intercept, err = trigger.Mutate(ctx, intercept)
-					if err != nil {
-						return nil, err
-					}
-				}
-			}
-			if err := ptypes.UnmarshalAny(intercept.Request, resp.(proto.Message)); err != nil {
-				return nil, status.Error(codes.Internal, fmt.Sprintf("trigger failure: %s", err.Error()))
-			}
-		}
-		return resp, nil
+		return handler(ctx, req)
 	}
 }
 
@@ -173,21 +120,20 @@ func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
 		ctx = g.MethodToContext(ss.Context(), info.FullMethod)
-		now := time.Now()
 		if len(g.authorizers) > 0 {
-			interceptEval := &intercept{
+			now := time.Now()
+			request := &apipb.Request{
 				Method:    info.FullMethod,
-				Identity:  identity.AsMap(),
+				Identity:  identity,
 				Timestamp: timestamppb.New(now),
 			}
-			if val, ok := srv.(apipb.Mapper); ok {
-				if info.IsServerStream {
-					interceptEval.Response = val.AsMap()
-				} else {
-					interceptEval.Request = val.AsMap()
-				}
+			if val, ok := srv.(proto.Message); ok {
+				str := helpers.JSONString(val)
+				reqMap := map[string]interface{}{}
+				json.NewDecoder(strings.NewReader(str)).Decode(&reqMap)
+				request.Request = apipb.NewStruct(reqMap)
 			}
-			result, err := vm.Eval(g.authorizers, interceptEval)
+			result, err := g.vm.Auth().Eval(g.authorizers, request)
 			if err != nil {
 				return err
 			}
