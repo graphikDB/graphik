@@ -8,27 +8,28 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
-import "go-proto-validators/validator.proto";
-
-// Timing describes timing
-enum Timing {
-  BEFORE =0;
-  AFTER =1;
-}
+import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 // Path describes a node/edge type & id
 message Path {
+  // gtype is the type of the node/edge ex: pet
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // gid is the unique id of the node/edge within the context of it's type
   string gid =2;
 }
 
+// Metadata is general metadata collected on nodes/edges
 message Metadata {
+  // created_at is the unix timestamp when the node/edge was created
   google.protobuf.Timestamp created_at =1 [(validator.field) = {msg_exists : true}];
+  // updated_at is the unix timestamp when the node/edge was last updated
   google.protobuf.Timestamp updated_at =2 [(validator.field) = {msg_exists : true}];
+  // updated_by is the identity that last modified the node/edge
   Path updated_by =3 [(validator.field) = {msg_exists : true}];
+  // sequence is the sequence within the context of the node/edge type
   uint64 sequence =4 [(validator.field) = {int_gt : 0}];
+  // version iterates by 1 every time the node/edge is modified
   uint64 version =5 [(validator.field) = {int_gt : 0}];
-  string hash =6 [(validator.field) = {regex : "^.{1,225}$"}];
 }
 
 // Paths is an array of paths
@@ -38,33 +39,45 @@ message Paths {
 
 // Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
 message Node {
+  // path is the path to the node
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // k/v pairs
   google.protobuf.Struct attributes =2;
+  // metadata is general metadata collected about the node
   Metadata metadata =3 [(validator.field) = {msg_exists : true}];
 }
 
 // NodeConstructor is used to create a node
 message NodeConstructor {
+  // path is the path to the node. If an id is not provided, a unique id will be generated
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // arbitrary k/v pairs
   google.protobuf.Struct attributes =3;
 }
 
 // NodeConstructor is used to create a batch of nodes
 message NodeConstructors {
+  // nodes is an array of node constructors
   repeated NodeConstructor nodes =1;
 }
 
 // Nodes is an array of nodes
 message Nodes {
+  // nodes is an array of nodes
   repeated Node nodes =1;
 }
 
 // NodeDetail is a node with its connected edges
 message NodeDetail {
+  // path is the path to the node
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // arbitrary k/v pairs
   google.protobuf.Struct attributes =2;
+  // edges_from are edges that source from this node
   EdgeDetails edges_from =3;
+  // edges_to are edges that point toward this node
   EdgeDetails edges_to =4;
+  // metadata is general metadata collected about the node
   Metadata metadata =5 [(validator.field) = {msg_exists : true}];
 }
 
@@ -75,6 +88,7 @@ message NodeDetails {
 
 // NodeDetailFilter is used to fetch node details
 message NodeDetailFilter {
+  // path is the path to the node
   Path path =1 [(validator.field) = {msg_exists : true}];
   Filter from_edges =2;
   Filter to_edges =3;
@@ -82,20 +96,31 @@ message NodeDetailFilter {
 
 // Edge is a graph primitive that represents a relationship between two nodes
 message Edge {
+  // path is the path to the edge
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
   google.protobuf.Struct attributes =2;
+  // directed is false if the edge is bi-directional
   bool directed =3;
+  // from is the node path that is the source of the edge
   Path from =4 [(validator.field) = {msg_exists : true}];
+  // to is the node path that is the destination of the edge
   Path to =5 [(validator.field) = {msg_exists : true}];
+  // metadata is general metadata collected about the edge
   Metadata metadata =6 [(validator.field) = {msg_exists : true}];
 }
 
 // EdgeConstructor is used to create an Edge
 message EdgeConstructor {
+  // path is the path to the edge. If an id is not provided, a unique id will be generated
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
   google.protobuf.Struct attributes =3;
+  // directed is false if the edge is bi-directional
   bool directed =4;
+  // from is the node path that is the root of the edge
   Path from =5 [(validator.field) = {msg_exists : true}];
+  // to is the node path that is the destination of the edge
   Path to =6 [(validator.field) = {msg_exists : true}];
 }
 
@@ -111,11 +136,17 @@ message Edges {
 
 // EdgeDetail is an edge with both of it's connected nodes fully loaded
 message EdgeDetail {
+  // path is the path to the edge
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
   google.protobuf.Struct attributes =2;
+  // directed is false if the edge is bi-directional
   bool directed =3;
+  // from is the full node that is the root of the edge
   Node from =4 [(validator.field) = {msg_exists : true}];
+  // to is the full node that is the destination of the edge
   Node to =5 [(validator.field) = {msg_exists : true}];
+  // metadata is general metadata collected about the edge
   Metadata metadata =6 [(validator.field) = {msg_exists : true}];
 }
 
@@ -124,83 +155,115 @@ message EdgeDetails {
   repeated EdgeDetail edges =1;
 }
 
-// EdgeFilter is used to fetch edges
+// EdgeFilter is used to fetch edges related to a single noted
 message EdgeFilter {
+  // node_path is the path to the target node
   Path node_path =1 [(validator.field) = {msg_exists : true}];
+  // gtype is the type of edges to return
   string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expressions are CEL expressions used to filter edges
   repeated string expressions =3;
+  // limit is the maximum number of edges to return
   int32 limit =4 [(validator.field) = {int_gt : 0}];
 }
 
 // Filter is a generic filter using Common Expression Language
 message Filter {
+  // gtype is the node/edge type to be filtered
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expressions are CEL expressions used to filter edges
   repeated string expressions =2;
+  // limit is the maximum number of items to return
   int32 limit =3 [(validator.field) = {int_gt : 0}];
 }
 
 // MeFilter is used to fetch a NodeDetail representing the identity in the inbound JWT token
 message MeFilter {
+  // edges_from is a filter used to filter edges from the identity making the request
   Filter edges_from =1;
+  // edges_to is a filter used to filter edges to the identity making the request
   Filter edges_to =2;
 }
 
 // ChannelFilter is used to filter messages in a pubsub channel
 message ChannelFilter {
+  // channel is the target channel to filter from
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expressions are CEL expressions used to filter messages
   repeated string expressions =2;
 }
 
 // SubGraphFilter is used to filter nodes/edges in the graph
 message SubGraphFilter {
+  // node_filter is a filter used to filter nodes in the graph
   Filter node_filter =1 [(validator.field) = {msg_exists : true}];
+  // edge_filter is a filter used to filter the edges of each node returned by the node_filter
   Filter edge_filter =2 [(validator.field) = {msg_exists : true}];
 }
 
 // Graph is an array of nodes and edges
 message Graph {
+  // nodes are nodes present in the graph
   Nodes nodes =1;
+  // edges are edges present in the graph
   Edges edges =2;
 }
 
 // Patch patches the attributes of a Node or Edge
 message Patch {
+  // path is the path to the target node/edge to patch
   Path path =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs used to overwrite k/v pairs on a node/edge
   google.protobuf.Struct attributes =2;
 }
 
+// PatchFilter is used to patch nodes/edges
 message PatchFilter {
-  Patch patch =1;
-  Filter filter =2;
+  // filter is used to filter nodes/edges to patch
+  Filter filter =1;
+  // attributes are k/v pairs used to overwrite k/v pairs on all nodes/edges that pass the filter
+  google.protobuf.Struct attributes =2;
 }
 
 // Pong returns PONG if the server is healthy
 message Pong {
+  // message returns PONG if healthy
   string message =1;
 }
 
 // OutboundMessage is a message to be published to a pubsub channel
 message OutboundMessage {
+  // channel is the target channel to send the message to
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // data is the data to send with the message
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
 }
 
 // Message is received on PubSub subscriptions
 message Message {
+  // channel is the channel the message was sent to
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // data is the data sent with the message
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
+  // sender is the identity that sent the message
   Path sender =3 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the message was sent
   google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
 }
 
 // Schema returns registered edge & node types
 message Schema {
+  // edge_types are the types of edges in the graph
   repeated string edge_types =1;
+  // node_types are the types of nodes in the graph
   repeated string node_types =2;
 }
 
+// NodeChange is a single state change to a node
 message NodeChange {
+  // before is the node before state change
   Node before = 4;
+  // after is the node after state change
   Node after = 5;
 }
 
@@ -209,15 +272,22 @@ message EdgeChange {
   Edge after = 5;
 }
 
+// Change represents a set of state changes in the graph
 message Change {
+  // method is the gRPC method invoked
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // identity is the identity invoking the change
   Node identity =2 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the change was made
   google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  // edge_changes are state changes to edges
   repeated EdgeChange edge_changes =4;
+  // node_changes are state changes to nodes
   repeated  NodeChange node_changes =5;
 }
 
 message ExpressionFilter {
+  // expressions are CEL expressions used to filter edges
   repeated string expressions =1;
 }
 
@@ -273,12 +343,16 @@ service GraphService {
 }
 
 message Interception {
+  // method is the rpc method
   string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // identity is the identity making the request
   Node identity =2 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the intercept was received
   google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  // request is the intercepted request
   google.protobuf.Any request = 4 [(validator.field) = {msg_exists : true}];
+  // response is the intercepted response
   google.protobuf.Any response = 5 [(validator.field) = {msg_exists : true}];
-  Timing timing =6;
 }
 
 // TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime

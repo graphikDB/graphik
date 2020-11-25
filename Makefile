@@ -1,4 +1,4 @@
-version := "0.0.13"
+version := "0.0.14"
 
 .DEFAULT_GOAL := help
 
@@ -33,7 +33,7 @@ docker-push:
 proto: ## regenerate gRPC code
 	@echo "generating protobuf code..."
 	@rm -rf gen
-	@docker run -v `pwd`:/tmp colemanword/prototool:latest prototool generate
+	@docker run -v `pwd`:/defs namely/prototool:latest generate
 	@go fmt ./...
 
 .PHONY: gql

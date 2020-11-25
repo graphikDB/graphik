@@ -53,7 +53,6 @@ func (m *Metadata) AsMap() map[string]interface{} {
 		"updated_by": m.GetUpdatedBy(),
 		"sequence":   m.GetSequence(),
 		"version":    m.GetVersion(),
-		"hash":       m.GetHash(),
 	}
 }
 
@@ -311,7 +310,7 @@ func (n *PatchFilter) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"patch":  n.GetPatch().AsMap(),
+		"patch":  n.GetAttributes().AsMap(),
 		"filter": n.GetFilter().AsMap(),
 	}
 }

@@ -34,7 +34,6 @@ type intercept struct {
 	Timestamp *timestamppb.Timestamp
 	Request   map[string]interface{}
 	Response  map[string]interface{}
-	Timing    apipb.Timing
 }
 
 func (r *intercept) AsMap() map[string]interface{} {
@@ -43,7 +42,6 @@ func (r *intercept) AsMap() map[string]interface{} {
 		"identity":  r.Identity,
 		"request":   r.Request,
 		"timestamp": r.Timestamp,
-		"timing":    r.Timing.String(),
 	}
 }
 
@@ -95,7 +93,6 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 			Method:    info.FullMethod,
 			Identity:  identity,
 			Timestamp: timestamppb.New(now),
-			Timing:    apipb.Timing_BEFORE,
 		}
 		if len(g.triggers) > 0 {
 			a, err := ptypes.MarshalAny(req.(proto.Message))
@@ -130,7 +127,6 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 				return nil, err
 			}
 			intercept.Response = a
-			interceptEval.Timing = apipb.Timing_AFTER
 			if val, ok := resp.(apipb.Mapper); ok {
 				interceptEval.Response = val.AsMap()
 			}
@@ -210,14 +206,14 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 		Gtype: identityType,
 		Gid:   payload[idClaim].(string),
 	}
-	var node apipb.Node
+	var node = &apipb.Node{}
 	if err := a.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype))
 		if bucket == nil {
 			return ErrNotFound
 		}
 		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, &node); err != nil {
+		if err := proto.Unmarshal(bits, node); err != nil {
 			return err
 		}
 		return nil
@@ -238,12 +234,12 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 		if err != nil {
 			return nil, nil, err
 		}
-		node = *nodeP
+		node = nodeP
 	}
 	if node.GetPath() == nil {
 		panic("empty node")
 	}
-	return context.WithValue(ctx, authCtxKey, node), &node, nil
+	return context.WithValue(ctx, authCtxKey, node), node, nil
 }
 
 func (s *GraphStore) NodeContext(ctx context.Context) *apipb.Node {
