@@ -111,7 +111,7 @@ type ComplexityRoot struct {
 		PatchEdges func(childComplexity int, input apipb.PatchFilter) int
 		PatchNode  func(childComplexity int, input apipb.Patch) int
 		PatchNodes func(childComplexity int, input apipb.PatchFilter) int
-		Publish    func(childComplexity int, input *apipb.OutboundMessage) int
+		Publish    func(childComplexity int, input apipb.OutboundMessage) int
 	}
 
 	Node struct {
@@ -180,7 +180,7 @@ type MutationResolver interface {
 	CreateEdge(ctx context.Context, input apipb.EdgeConstructor) (*apipb.Edge, error)
 	PatchEdge(ctx context.Context, input apipb.Patch) (*apipb.Edge, error)
 	PatchEdges(ctx context.Context, input apipb.PatchFilter) (*apipb.Edges, error)
-	Publish(ctx context.Context, input *apipb.OutboundMessage) (*emptypb.Empty, error)
+	Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error)
@@ -505,7 +505,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.Publish(childComplexity, args["input"].(*apipb.OutboundMessage)), true
+		return e.complexity.Mutation.Publish(childComplexity, args["input"].(apipb.OutboundMessage)), true
 
 	case "Node.attributes":
 		if e.complexity.Node.Attributes == nil {
@@ -1101,7 +1101,7 @@ type Mutation {
   # patchEdges patches 0-many edges in the graph
   patchEdges(input: PatchFilter!): Edges!
   # publish publishes a mesage to a pubsub channel
-  publish(input: OutboundMessage): Empty!
+  publish(input: OutboundMessage!): Empty!
 }
 
 type Query {
@@ -1231,10 +1231,10 @@ func (ec *executionContext) field_Mutation_patchNodes_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *apipb.OutboundMessage
+	var arg0 apipb.OutboundMessage
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOOutboundMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐOutboundMessage(ctx, tmp)
+		arg0, err = ec.unmarshalNOutboundMessage2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐOutboundMessage(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2755,7 +2755,7 @@ func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Publish(rctx, args["input"].(*apipb.OutboundMessage))
+		return ec.resolvers.Mutation().Publish(rctx, args["input"].(apipb.OutboundMessage))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6536,6 +6536,11 @@ func (ec *executionContext) marshalNNodes2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 	return ec._Nodes(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNOutboundMessage2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐOutboundMessage(ctx context.Context, v interface{}) (apipb.OutboundMessage, error) {
+	res, err := ec.unmarshalInputOutboundMessage(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNPatch2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐPatch(ctx context.Context, v interface{}) (apipb.Patch, error) {
 	res, err := ec.unmarshalInputPatch(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7161,14 +7166,6 @@ func (ec *executionContext) marshalONodeChange2ᚕᚖgithubᚗcomᚋautom8terᚋ
 	}
 	wg.Wait()
 	return ret
-}
-
-func (ec *executionContext) unmarshalOOutboundMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐOutboundMessage(ctx context.Context, v interface{}) (*apipb.OutboundMessage, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputOutboundMessage(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

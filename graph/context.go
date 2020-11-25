@@ -206,14 +206,14 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 		Gtype: identityType,
 		Gid:   payload[idClaim].(string),
 	}
-	var node apipb.Node
+	var node = &apipb.Node{}
 	if err := a.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype))
 		if bucket == nil {
 			return ErrNotFound
 		}
 		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, &node); err != nil {
+		if err := proto.Unmarshal(bits, node); err != nil {
 			return err
 		}
 		return nil
@@ -234,12 +234,12 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 		if err != nil {
 			return nil, nil, err
 		}
-		node = *nodeP
+		node = nodeP
 	}
 	if node.GetPath() == nil {
 		panic("empty node")
 	}
-	return context.WithValue(ctx, authCtxKey, node), &node, nil
+	return context.WithValue(ctx, authCtxKey, node), node, nil
 }
 
 func (s *GraphStore) NodeContext(ctx context.Context) *apipb.Node {

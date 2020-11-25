@@ -45,8 +45,8 @@ func (r *mutationResolver) PatchEdges(ctx context.Context, input apipb.PatchFilt
 	return r.client.PatchEdges(ctx, &input)
 }
 
-func (r *mutationResolver) Publish(ctx context.Context, input *apipb.OutboundMessage) (*emptypb.Empty, error) {
-	return r.client.Publish(ctx, input)
+func (r *mutationResolver) Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error) {
+	return r.client.Publish(ctx, &input)
 }
 
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {

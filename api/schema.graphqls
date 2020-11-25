@@ -267,7 +267,7 @@ type Mutation {
   # patchEdges patches 0-many edges in the graph
   patchEdges(input: PatchFilter!): Edges!
   # publish publishes a mesage to a pubsub channel
-  publish(input: OutboundMessage): Empty!
+  publish(input: OutboundMessage!): Empty!
 }
 
 type Query {
