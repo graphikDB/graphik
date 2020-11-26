@@ -13,8 +13,8 @@ func (g *GraphStore) VerifyJWT(token string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	g.mu.RLock()
-	defer g.mu.RUnlock()
+	g.triggerMu.RLock()
+	defer g.triggerMu.RUnlock()
 	if g.jwksSet == nil {
 		data := map[string]interface{}{}
 		if err := json.Unmarshal(message.Payload(), &data); err != nil {

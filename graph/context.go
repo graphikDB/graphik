@@ -7,18 +7,18 @@ import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/golang/protobuf/proto"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"strings"
 	"time"
 )
 
@@ -80,9 +80,11 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 				Timestamp: timestamppb.New(now),
 			}
 			if val, ok := req.(proto.Message); ok {
-				str := helpers.JSONString(val)
+				bits, _ := helpers.MarshalJSON(val)
 				reqMap := map[string]interface{}{}
-				json.NewDecoder(strings.NewReader(str)).Decode(&reqMap)
+				if err := json.Unmarshal(bits, &reqMap); err != nil {
+					return nil, status.Error(codes.Internal, err.Error())
+				}
 				request.Request = apipb.NewStruct(reqMap)
 			}
 			result, err := g.vm.Auth().Eval(g.authorizers, request)
@@ -128,9 +130,11 @@ func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 				Timestamp: timestamppb.New(now),
 			}
 			if val, ok := srv.(proto.Message); ok {
-				str := helpers.JSONString(val)
+				bits, _ := helpers.MarshalJSON(val)
 				reqMap := map[string]interface{}{}
-				json.NewDecoder(strings.NewReader(str)).Decode(&reqMap)
+				if err := json.Unmarshal(bits, &reqMap); err != nil {
+					return status.Error(codes.Internal, err.Error())
+				}
 				request.Request = apipb.NewStruct(reqMap)
 			}
 			result, err := g.vm.Auth().Eval(g.authorizers, request)
@@ -172,7 +176,10 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 			zap.String("gtype", path.GetGtype()),
 			zap.String("gid", path.GetGid()),
 		)
-		strct, _ := structpb.NewStruct(payload)
+		strct, err := structpb.NewStruct(payload)
+		if err != nil {
+			return nil, nil, err
+		}
 		nodeP, err := a.createIdentity(ctx, &apipb.NodeConstructor{
 			Path:       path,
 			Attributes: strct,
@@ -183,7 +190,7 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 		node = nodeP
 	}
 	if node.GetPath() == nil {
-		panic("empty node")
+		return nil, nil, errors.New("empty node")
 	}
 	return context.WithValue(ctx, authCtxKey, node), node, nil
 }

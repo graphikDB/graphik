@@ -1,41 +1,17 @@
 package helpers
 
 import (
-	"bytes"
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
-	"io"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"os"
-	"strings"
 )
 
-var (
-	marshaller = &jsonpb.Marshaler{
-		EnumsAsInts:  false,
-		EmitDefaults: false,
-		Indent:       "",
-		OrigName:     false,
-		AnyResolver:  nil,
-	}
-	unmarshaller = &jsonpb.Unmarshaler{}
-)
-
-func JSONEncode(w io.Writer, msg proto.Message) error {
-	return marshaller.Marshal(w, msg)
+func MarshalJSON(msg proto.Message) ([]byte, error) {
+	return protojson.Marshal(msg)
 }
 
-func JSONDecode(r io.Reader, msg proto.Message) error {
-	return unmarshaller.Unmarshal(r, msg)
-}
-
-func JSONString(msg proto.Message) string {
-	buf := bytes.NewBuffer(nil)
-	JSONEncode(buf, msg)
-	return buf.String()
-}
-
-func FromJSONString(str string, msg proto.Message) error {
-	return JSONDecode(strings.NewReader(str), msg)
+func UnmarshalJSON(bits []byte, msg proto.Message) error {
+	return protojson.Unmarshal(bits, msg)
 }
 
 func EnvOr(key string, defaul string) string {
