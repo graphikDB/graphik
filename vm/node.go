@@ -12,14 +12,8 @@ type NodeVM struct {
 
 func NewNodeVM() (*NodeVM, error) {
 	e, err := cel.NewEnv(
-		cel.Types(
-			_node,
-			_path,
-			_structp,
-			_meta,
-		),
 		cel.Declarations(
-			decls.NewVar("node", decls.NewObjectType(string(_node.ProtoReflect().Descriptor().FullName()))),
+			decls.NewVar("node", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -55,7 +49,7 @@ func (n *NodeVM) Eval(programs []cel.Program, node *apipb.Node) (bool, error) {
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"node": node,
+			"node": node.AsMap(),
 		})
 		if err != nil {
 			return false, err

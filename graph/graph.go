@@ -121,7 +121,7 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 		vm:          vMachine,
 		db:          handle,
 		jwksSet:     nil,
-		jwksSource:  "",
+		jwksSource:  flgs.JWKS,
 		authorizers: programs,
 		path:        path,
 		mu:          sync.RWMutex{},
@@ -140,9 +140,52 @@ func NewGraphStore(ctx context.Context, flgs *flags.Flags) (*GraphStore, error) 
 		}
 		g.jwksSet = set
 	}
-	if err := g.init(ctx); err != nil {
+	err = g.db.Update(func(tx *bbolt.Tx) error {
+		// Create all the buckets
+		_, err = tx.CreateBucketIfNotExists(dbNodes)
+		if err != nil {
+			return err
+		}
+		_, err = tx.CreateBucketIfNotExists(dbEdges)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
+	err = g.RangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
+		g.mu.Lock()
+		defer g.mu.Unlock()
+		g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
+		g.edgesTo[e.To.String()] = append(g.edgesTo[e.To.String()], e.Path)
+		return true
+	})
+	if err != nil {
+		return nil, err
+	}
+	g.machine.Go(func(routine machine.Routine) {
+		g.triggerMu.Lock()
+		defer g.triggerMu.Unlock()
+		if g.jwksSource != "" {
+			set, err := jwk.Fetch(g.jwksSource)
+			if err != nil {
+				logger.Error("failed to fetch jwks", zap.Error(err))
+				return
+			}
+			g.jwksSet = set
+		}
+	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
+	g.machine.Go(func(routine machine.Routine) {
+		g.triggerMu.Lock()
+		defer g.triggerMu.Unlock()
+		for _, trigger := range g.triggers {
+			if err := trigger.refresh(routine.Context()); err != nil {
+				logger.Error("failed to refresh trigger matcher", zap.Error(err))
+			}
+		}
+	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 	return g, nil
 }
 
@@ -1375,55 +1418,4 @@ func sortPaths(paths []*apipb.Path) {
 		},
 	}
 	s.Sort()
-}
-
-func (g *GraphStore) init(ctx context.Context) error {
-	tx, err := g.db.Begin(true)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	// Create all the buckets
-	_, err = tx.CreateBucketIfNotExists(dbNodes)
-	if err != nil {
-		return err
-	}
-	_, err = tx.CreateBucketIfNotExists(dbEdges)
-	if err != nil {
-		return err
-	}
-	err = tx.Commit()
-	if err != nil {
-		return err
-	}
-	g.machine.Go(func(routine machine.Routine) {
-		if g.jwksSource != "" {
-			set, err := jwk.Fetch(g.jwksSource)
-			if err != nil {
-				logger.Error("failed to fetch jwks", zap.Error(err))
-				return
-			}
-			g.mu.Lock()
-			g.jwksSet = set
-			g.mu.Unlock()
-		}
-	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-	g.machine.Go(func(routine machine.Routine) {
-		g.triggerMu.Lock()
-		for _, trigger := range g.triggers {
-			if err := trigger.refresh(routine.Context()); err != nil {
-				logger.Error("failed to refresh trigger matcher", zap.Error(err))
-			}
-		}
-		g.triggerMu.Unlock()
-	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-	err = g.RangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
-		g.mu.Lock()
-		g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
-		g.edgesTo[e.To.String()] = append(g.edgesTo[e.To.String()], e.Path)
-		g.mu.Unlock()
-		return true
-	})
-	return err
 }

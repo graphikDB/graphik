@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
@@ -12,17 +11,9 @@ type EdgeVM struct {
 }
 
 func NewEdgeVM() (*EdgeVM, error) {
-	fmt.Println(_edge.ProtoReflect().Descriptor().FullName())
 	e, err := cel.NewEnv(
-		cel.Types(
-			_structp,
-			_node,
-			_path,
-			_meta,
-			_edge,
-		),
 		cel.Declarations(
-			decls.NewVar("edge", decls.NewObjectType(string(_edge.ProtoReflect().Descriptor().FullName()))),
+			decls.NewVar("edge", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -58,7 +49,7 @@ func (n *EdgeVM) Eval(programs []cel.Program, edge *apipb.Edge) (bool, error) {
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"edge": edge,
+			"edge": edge.AsMap(),
 		})
 		if err != nil {
 			return false, err

@@ -12,13 +12,8 @@ type AuthVM struct {
 
 func NewAuthVM() (*AuthVM, error) {
 	e, err := cel.NewEnv(
-		cel.Types(
-			_node,
-			_path,
-			_meta,
-		),
 		cel.Declarations(
-			decls.NewVar("request", decls.NewObjectType(string(_request.ProtoReflect().Descriptor().FullName()))),
+			decls.NewVar("request", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -54,7 +49,12 @@ func (n *AuthVM) Eval(programs []cel.Program, req *apipb.Request) (bool, error) 
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"request": req,
+			"request": map[string]interface{}{
+				"method":    req.GetMethod(),
+				"request":   req.GetRequest().AsMap(),
+				"identity":  req.GetIdentity().AsMap(),
+				"timestamp": req.GetTimestamp().Seconds,
+			},
 		})
 		if err != nil {
 			return false, err

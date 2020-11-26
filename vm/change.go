@@ -12,17 +12,8 @@ type ChangeVM struct {
 
 func NewChangeVM() (*ChangeVM, error) {
 	e, err := cel.NewEnv(
-		cel.Types(
-			_path,
-			_meta,
-			_node,
-			_edge,
-			_change,
-			_edgeChange,
-			_nodeChange,
-		),
 		cel.Declarations(
-			decls.NewVar("change", decls.NewObjectType(string(_change.ProtoReflect().Descriptor().FullName()))),
+			decls.NewVar("change", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -58,7 +49,7 @@ func (n *ChangeVM) Eval(programs []cel.Program, change *apipb.Change) (bool, err
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"change": change,
+			"change": change.AsMap(),
 		})
 		if err != nil {
 			return false, err

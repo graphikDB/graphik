@@ -12,13 +12,8 @@ type MessageVM struct {
 
 func NewMessageVM() (*MessageVM, error) {
 	e, err := cel.NewEnv(
-		cel.Types(
-			_path,
-			_meta,
-			_message,
-		),
 		cel.Declarations(
-			decls.NewVar("message", decls.NewObjectType(string(_message.ProtoReflect().Descriptor().FullName()))),
+			decls.NewVar("message", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -54,7 +49,7 @@ func (n *MessageVM) Eval(programs []cel.Program, message *apipb.Message) (bool, 
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"message": message,
+			"message": message.AsMap(),
 		})
 		if err != nil {
 			return false, err
