@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"net"
 	"net/http"
 	"net/http/pprof"
@@ -151,6 +152,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	)
 
 	apipb.RegisterGraphServiceServer(gserver, g)
+	reflection.Register(gserver)
 	grpc_prometheus.Register(gserver)
 
 	m.Go(func(routine machine.Routine) {

@@ -12,10 +12,11 @@ import (
 type triggerClient struct {
 	apipb.TriggerServiceClient
 	matchers []cel.Program
+	vm       *vm.ChangeVM
 }
 
-func (t *triggerClient) shouldTrigger(m apipb.Mapper) (bool, error) {
-	return vm.Eval(t.matchers, m)
+func (t *triggerClient) shouldTrigger(change *apipb.Change) (bool, error) {
+	return t.vm.Eval(t.matchers, change)
 }
 
 func (t *triggerClient) refresh(ctx context.Context) error {
@@ -23,7 +24,7 @@ func (t *triggerClient) refresh(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	programs, err := vm.Programs(matchers.GetExpressions())
+	programs, err := t.vm.Programs(matchers.GetExpressions())
 	if err != nil {
 		return errors.Wrap(err, "failed to compile trigger matchers")
 	}

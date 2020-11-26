@@ -579,10 +579,10 @@ func (this *ExpressionFilter) Validate() error {
 	return nil
 }
 
-var _regex_Interception_Method = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Request_Method = regexp.MustCompile(`^.{1,225}$`)
 
-func (this *Interception) Validate() error {
-	if !_regex_Interception_Method.MatchString(this.Method) {
+func (this *Request) Validate() error {
+	if !_regex_Request_Method.MatchString(this.Method) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
 	}
 	if nil == this.Identity {
@@ -601,20 +601,9 @@ func (this *Interception) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", err)
 		}
 	}
-	if nil == this.Request {
-		return github_com_mwitkow_go_proto_validators.FieldError("Request", fmt.Errorf("message must exist"))
-	}
 	if this.Request != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Request); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Request", err)
-		}
-	}
-	if nil == this.Response {
-		return github_com_mwitkow_go_proto_validators.FieldError("Response", fmt.Errorf("message must exist"))
-	}
-	if this.Response != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Response); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Response", err)
 		}
 	}
 	return nil
