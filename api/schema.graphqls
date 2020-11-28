@@ -24,6 +24,8 @@ type Metadata {
   created_at: Timestamp!
   # updated_at is the unix timestamp when the node/edge was last updated
   updated_at: Timestamp!
+  # created_by is the identity that initially created the node/edge
+  createdBy: Path!
   # updated_by is the identity that last modified the node/edge
   updated_by: Path!
   # sequence is the sequence within the context of the node/edge type

@@ -9,6 +9,8 @@ import (
 	"github.com/autom8ter/graphik/logger"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"github.com/lestrrat-go/jwx/jwa"
+	"github.com/lestrrat-go/jwx/jws"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
@@ -29,30 +31,13 @@ const (
 	methodCtxKey = "x-grpc-full-method"
 )
 
-type intercept struct {
-	Method    string
-	Identity  map[string]interface{}
-	Timestamp *timestamppb.Timestamp
-	Request   map[string]interface{}
-	Response  map[string]interface{}
-}
-
-func (r *intercept) AsMap() map[string]interface{} {
-	return map[string]interface{}{
-		"method":    r.Method,
-		"identity":  r.Identity,
-		"request":   r.Request,
-		"timestamp": r.Timestamp,
-	}
-}
-
-func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
+func (g *GraphStore) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
-		payload, err := g.VerifyJWT(token)
+		payload, err := g.verifyJWT(token)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -66,12 +51,12 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
-		ctx, identity, err := g.NodeToContext(ctx, payload)
+		ctx, identity, err := g.identityToContext(ctx, payload)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
-		ctx = g.MethodToContext(ctx, info.FullMethod)
+		ctx = g.methodToContext(ctx, info.FullMethod)
 		if len(g.authorizers) > 0 {
 			now := time.Now()
 			request := &apipb.Request{
@@ -99,14 +84,14 @@ func (g *GraphStore) Unary() grpc.UnaryServerInterceptor {
 	}
 }
 
-func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
+func (g *GraphStore) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
 			return err
 		}
 
-		payload, err := g.VerifyJWT(token)
+		payload, err := g.verifyJWT(token)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -116,12 +101,12 @@ func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 		if val, ok := payload["exp"].(float64); ok && int64(val) < time.Now().Unix() {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
-		ctx, identity, err := g.NodeToContext(ss.Context(), payload)
+		ctx, identity, err := g.identityToContext(ss.Context(), payload)
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
 		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
-		ctx = g.MethodToContext(ss.Context(), info.FullMethod)
+		ctx = g.methodToContext(ss.Context(), info.FullMethod)
 		if len(g.authorizers) > 0 {
 			now := time.Now()
 			request := &apipb.Request{
@@ -151,26 +136,21 @@ func (g *GraphStore) Stream() grpc.StreamServerInterceptor {
 	}
 }
 
-func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
+func (a *GraphStore) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
 	path := &apipb.Path{
 		Gtype: identityType,
 		Gid:   payload[idClaim].(string),
 	}
-	var node = &apipb.Node{}
-	if err := a.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype))
-		if bucket == nil {
-			return ErrNotFound
-		}
-		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, node); err != nil {
-			return err
-		}
-		return nil
+	var (
+		node *apipb.Node
+		err  error
+	)
+	if err = a.db.View(func(tx *bbolt.Tx) error {
+		node, err = a.getNode(ctx, tx, path)
+		return err
 	}); err != nil && err != ErrNotFound {
 		return ctx, nil, err
 	}
-
 	if node.GetPath() == nil {
 		logger.Info("creating identity",
 			zap.String("gtype", path.GetGtype()),
@@ -195,7 +175,7 @@ func (a *GraphStore) NodeToContext(ctx context.Context, payload map[string]inter
 	return context.WithValue(ctx, authCtxKey, node), node, nil
 }
 
-func (s *GraphStore) NodeContext(ctx context.Context) *apipb.Node {
+func (s *GraphStore) getIdentity(ctx context.Context) *apipb.Node {
 	val, ok := ctx.Value(authCtxKey).(*apipb.Node)
 	if ok {
 		return val
@@ -207,7 +187,7 @@ func (s *GraphStore) NodeContext(ctx context.Context) *apipb.Node {
 	return nil
 }
 
-func (r *GraphStore) MethodContext(ctx context.Context) string {
+func (r *GraphStore) getMethod(ctx context.Context) string {
 	val, ok := ctx.Value(methodCtxKey).(string)
 	if ok {
 		return val
@@ -215,6 +195,54 @@ func (r *GraphStore) MethodContext(ctx context.Context) string {
 	return ""
 }
 
-func (r *GraphStore) MethodToContext(ctx context.Context, path string) context.Context {
+func (r *GraphStore) methodToContext(ctx context.Context, path string) context.Context {
 	return context.WithValue(ctx, methodCtxKey, path)
+}
+
+func (g *GraphStore) verifyJWT(token string) (map[string]interface{}, error) {
+	message, err := jws.ParseString(token)
+	if err != nil {
+		return nil, err
+	}
+	g.triggerMu.RLock()
+	defer g.triggerMu.RUnlock()
+	if g.jwksSet == nil {
+		data := map[string]interface{}{}
+		if err := json.Unmarshal(message.Payload(), &data); err != nil {
+			return nil, err
+		}
+		return data, nil
+	}
+	if len(message.Signatures()) == 0 {
+		return nil, fmt.Errorf("zero jws signatures")
+	}
+	kid, ok := message.Signatures()[0].ProtectedHeaders().Get("kid")
+	if !ok {
+		return nil, fmt.Errorf("jws kid not found")
+	}
+	algI, ok := message.Signatures()[0].ProtectedHeaders().Get("alg")
+	if !ok {
+		return nil, fmt.Errorf("jw alg not found")
+	}
+	alg, ok := algI.(jwa.SignatureAlgorithm)
+	if !ok {
+		return nil, fmt.Errorf("alg type cast error")
+	}
+	keys := g.jwksSet.LookupKeyID(kid.(string))
+	if len(keys) == 0 {
+		return nil, errors.Errorf("failed to lookup kid: %s - zero keys", kid.(string))
+	}
+	var key interface{}
+	if err := keys[0].Raw(&key); err != nil {
+		return nil, err
+	}
+	payload, err := jws.Verify([]byte(token), alg, key)
+	if err != nil {
+		return nil, err
+	}
+	data := map[string]interface{}{}
+	if err := json.Unmarshal(payload, &data); err != nil {
+		return nil, err
+	}
+	return data, nil
 }

@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"google.golang.org/grpc/codes"
@@ -15,8 +16,18 @@ func (g *GraphStore) setNode(ctx context.Context, tx *bbolt.Tx, node *apipb.Node
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	if err := ctx.Err(); err != nil {
-		return nil, err
+	if node.GetPath() == nil {
+		node.Path = &apipb.Path{}
+	}
+	if node.GetPath().Gid == "" {
+		node.Path.Gid = uuid.New().String()
+	}
+	identity := g.getIdentity(ctx)
+	if node.Metadata == nil {
+		node.Metadata = &apipb.Metadata{}
+	}
+	if node.GetMetadata().GetUpdatedBy() == nil {
+		identity.GetMetadata().UpdatedBy = identity.GetPath()
 	}
 	if node.GetMetadata().GetCreatedAt() == nil {
 		node.GetMetadata().CreatedAt = timestamppb.Now()
@@ -85,11 +96,28 @@ func (g *GraphStore) setEdge(ctx context.Context, tx *bbolt.Tx, edge *apipb.Edge
 			return nil, errors.Errorf("to node %s does not exist", edge.To.String())
 		}
 	}
+	if edge.GetPath() == nil {
+		edge.Path = &apipb.Path{}
+	}
+	if edge.GetPath().Gid == "" {
+		edge.Path.Gid = uuid.New().String()
+	}
+	identity := g.getIdentity(ctx)
+	if edge.Metadata == nil {
+		edge.Metadata = &apipb.Metadata{}
+	}
+	now := timestamppb.Now()
+	if edge.GetMetadata().GetCreatedBy() == nil {
+		identity.GetMetadata().CreatedBy = identity.GetPath()
+	}
+	if edge.GetMetadata().GetUpdatedBy() == nil {
+		identity.GetMetadata().UpdatedBy = identity.GetPath()
+	}
 	if edge.GetMetadata().GetCreatedAt() == nil {
-		edge.GetMetadata().CreatedAt = timestamppb.Now()
+		edge.GetMetadata().CreatedAt = now
 	}
 	if edge.GetMetadata().GetUpdatedAt() == nil {
-		edge.GetMetadata().UpdatedAt = timestamppb.Now()
+		edge.GetMetadata().UpdatedAt = now
 	}
 	edge.GetMetadata().Version += 1
 	bits, err := proto.Marshal(edge)
@@ -145,7 +173,7 @@ func (g *GraphStore) getNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
-	identity := g.NodeContext(ctx)
+	identity := g.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}

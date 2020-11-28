@@ -24,12 +24,14 @@ message Metadata {
   google.protobuf.Timestamp created_at =1 [(validator.field) = {msg_exists : true}];
   // updated_at is the unix timestamp when the node/edge was last updated
   google.protobuf.Timestamp updated_at =2 [(validator.field) = {msg_exists : true}];
+  // created_by is the identity that initially created the node/edge
+  Path created_by =3;
   // updated_by is the identity that last modified the node/edge
-  Path updated_by =3 [(validator.field) = {msg_exists : true}];
+  Path updated_by =4 [(validator.field) = {msg_exists : true}];
   // sequence is the sequence within the context of the node/edge type
-  uint64 sequence =4 [(validator.field) = {int_gt : 0}];
+  uint64 sequence =5 [(validator.field) = {int_gt : 0}];
   // version iterates by 1 every time the node/edge is modified
-  uint64 version =5 [(validator.field) = {int_gt : 0}];
+  uint64 version =6 [(validator.field) = {int_gt : 0}];
 }
 
 // Paths is an array of paths

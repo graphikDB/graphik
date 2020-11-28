@@ -46,6 +46,11 @@ func (this *Metadata) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
 		}
 	}
+	if this.CreatedBy != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedBy); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("CreatedBy", err)
+		}
+	}
 	if nil == this.UpdatedBy {
 		return github_com_mwitkow_go_proto_validators.FieldError("UpdatedBy", fmt.Errorf("message must exist"))
 	}
