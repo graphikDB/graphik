@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/sortable"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
@@ -10,6 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"reflect"
 )
 
 func (g *Graph) metaDefaults(ctx context.Context, meta *apipb.Metadata) {
@@ -170,6 +172,9 @@ func (g *Graph) getNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*a
 		return nil, ErrNotFound
 	}
 	bits := bucket.Get([]byte(path.Gid))
+	if len(bits) == 0 {
+		return nil, ErrNotFound
+	}
 	if err := proto.Unmarshal(bits, &node); err != nil {
 		return nil, err
 	}
@@ -186,6 +191,9 @@ func (g *Graph) getEdge(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*a
 		return nil, ErrNotFound
 	}
 	bits := bucket.Get([]byte(path.Gid))
+	if len(bits) == 0 {
+		return nil, ErrNotFound
+	}
 	if err := proto.Unmarshal(bits, &edge); err != nil {
 		return nil, err
 	}
@@ -231,4 +239,150 @@ func (g *Graph) rangeEdges(ctx context.Context, gType string, fn func(n *apipb.E
 		return err
 	}
 	return nil
+}
+
+func (g *Graph) rangeNodes(ctx context.Context, gType string, fn func(n *apipb.Node) bool) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		if gType == apipb.Any {
+			types, err := g.NodeTypes(ctx)
+			if err != nil {
+				return err
+			}
+			for _, nodeType := range types {
+				if err := g.rangeNodes(ctx, nodeType, fn); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+		bucket := tx.Bucket(dbNodes).Bucket([]byte(gType))
+		if bucket == nil {
+			return ErrNotFound
+		}
+
+		return bucket.ForEach(func(k, v []byte) error {
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+			var node apipb.Node
+			if err := proto.Unmarshal(v, &node); err != nil {
+				return err
+			}
+			if !fn(&node) {
+				return DONE
+			}
+			return nil
+		})
+	}); err != nil && err != DONE {
+		return err
+	}
+	return nil
+}
+
+func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.NodeConstructor) (*apipb.Node, error) {
+	now := timestamppb.Now()
+	var node *apipb.Node
+	var err error
+	if constructor.Path.Gid == "" {
+		constructor.Path.Gid = uuid.New().String()
+	}
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+		node = &apipb.Node{
+			Path:       constructor.GetPath(),
+			Attributes: constructor.GetAttributes(),
+			Metadata: &apipb.Metadata{
+				CreatedAt: now,
+				UpdatedAt: now,
+				UpdatedBy: constructor.GetPath(),
+			},
+		}
+
+		if constructor.Path.GetGid() == "" {
+			constructor.Path.Gid = uuid.New().String()
+		}
+		nodeBucket := tx.Bucket(dbNodes)
+		bucket := nodeBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+		if bucket == nil {
+			bucket, err = nodeBucket.CreateBucket([]byte(node.GetPath().GetGtype()))
+			if err != nil {
+				return err
+			}
+		}
+		seq, err := bucket.NextSequence()
+		if err != nil {
+			return err
+		}
+		node.Metadata.Sequence = seq
+
+		node, err = g.setNode(ctx, tx, node)
+		if err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (g *Graph) delNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
+	node, err := g.getNode(ctx, tx, path)
+	if err != nil {
+		return err
+	}
+	bucket := tx.Bucket(dbNodes).Bucket([]byte(node.GetPath().GetGtype()))
+
+	g.rangeFrom(ctx, tx, path, func(e *apipb.Edge) bool {
+		g.delEdge(ctx, tx, e.GetPath())
+		return true
+	})
+	g.rangeTo(ctx, tx, path, func(e *apipb.Edge) bool {
+		g.delEdge(ctx, tx, e.GetPath())
+		return true
+	})
+	return bucket.Delete([]byte(node.GetPath().GetGid()))
+}
+
+func (g *Graph) delEdge(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
+	edge, err := g.getEdge(ctx, tx, path)
+	if err != nil {
+		return err
+	}
+	g.mu.Lock()
+	fromPaths := removeEdge(path, g.edgesFrom[edge.GetFrom().String()])
+	g.edgesFrom[edge.GetFrom().String()] = fromPaths
+	toPaths := removeEdge(path, g.edgesTo[edge.GetTo().String()])
+	g.edgesTo[edge.GetTo().String()] = toPaths
+	g.mu.Unlock()
+	return tx.Bucket(dbEdges).Bucket([]byte(edge.GetPath().GetGtype())).Delete([]byte(edge.GetPath().GetGid()))
+}
+
+func removeEdge(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
+	var newPaths []*apipb.Path
+	for _, p := range paths {
+		if !reflect.DeepEqual(p, path) {
+			newPaths = append(newPaths, p)
+		}
+	}
+	sortPaths(newPaths)
+	return newPaths
+}
+
+func sortPaths(paths []*apipb.Path) {
+	s := sortable.Sortable{
+		LenFunc: func() int {
+			return len(paths)
+		},
+		LessFunc: func(i, j int) bool {
+			return paths[i].String() < paths[j].String()
+		},
+		SwapFunc: func(i, j int) {
+			paths[i], paths[j] = paths[j], paths[i]
+		},
+	}
+	s.Sort()
 }

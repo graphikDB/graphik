@@ -5,7 +5,6 @@ import (
 	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/sortable"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
@@ -596,7 +595,7 @@ func (n *Graph) AllNodes(ctx context.Context) (*apipb.Nodes, error) {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
 	var nodes []*apipb.Node
-	if err := n.RangeNodes(ctx, apipb.Any, func(node *apipb.Node) bool {
+	if err := n.rangeNodes(ctx, apipb.Any, func(node *apipb.Node) bool {
 		nodes = append(nodes, node)
 		return true
 	}); err != nil {
@@ -623,94 +622,6 @@ func (g *Graph) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, err
 	)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		node, err = g.getNode(ctx, tx, path)
-		if err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	return node, nil
-}
-
-func (g *Graph) RangeNodes(ctx context.Context, gType string, fn func(n *apipb.Node) bool) error {
-	if err := ctx.Err(); err != nil {
-		return err
-	}
-
-	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if gType == apipb.Any {
-			types, err := g.NodeTypes(ctx)
-			if err != nil {
-				return err
-			}
-			for _, nodeType := range types {
-				if err := g.RangeNodes(ctx, nodeType, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-		bucket := tx.Bucket(dbNodes).Bucket([]byte(gType))
-		if bucket == nil {
-			return ErrNotFound
-		}
-
-		return bucket.ForEach(func(k, v []byte) error {
-			if ctx.Err() != nil {
-				return ctx.Err()
-			}
-			var node apipb.Node
-			if err := proto.Unmarshal(v, &node); err != nil {
-				return err
-			}
-			if !fn(&node) {
-				return DONE
-			}
-			return nil
-		})
-	}); err != nil && err != DONE {
-		return err
-	}
-	return nil
-}
-
-func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.NodeConstructor) (*apipb.Node, error) {
-	now := timestamppb.Now()
-	var node *apipb.Node
-	var err error
-	if constructor.Path.Gid == "" {
-		constructor.Path.Gid = uuid.New().String()
-	}
-	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		node = &apipb.Node{
-			Path:       constructor.GetPath(),
-			Attributes: constructor.GetAttributes(),
-			Metadata: &apipb.Metadata{
-				CreatedAt: now,
-				UpdatedAt: now,
-				UpdatedBy: constructor.GetPath(),
-			},
-		}
-
-		if constructor.Path.GetGid() == "" {
-			constructor.Path.Gid = uuid.New().String()
-		}
-		nodeBucket := tx.Bucket(dbNodes)
-		bucket := nodeBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
-		if bucket == nil {
-			bucket, err = nodeBucket.CreateBucket([]byte(node.GetPath().GetGtype()))
-			if err != nil {
-				return err
-			}
-		}
-		seq, err := bucket.NextSequence()
-		if err != nil {
-			return err
-		}
-		node.Metadata.Sequence = seq
-
-		node, err = g.setNode(ctx, tx, node)
 		if err != nil {
 			return err
 		}
@@ -939,7 +850,7 @@ func (n *Graph) SearchNodes(ctx context.Context, filter *apipb.Filter) (*apipb.N
 	if err != nil {
 		return nil, err
 	}
-	if err := n.RangeNodes(ctx, filter.Gtype, func(node *apipb.Node) bool {
+	if err := n.rangeNodes(ctx, filter.Gtype, func(node *apipb.Node) bool {
 		pass, err := n.vm.Node().Eval(programs, node)
 		if err != nil {
 			return true
@@ -960,7 +871,7 @@ func (n *Graph) SearchNodes(ctx context.Context, filter *apipb.Filter) (*apipb.N
 
 func (n *Graph) FilterNode(ctx context.Context, nodeType string, filter func(node *apipb.Node) bool) (*apipb.Nodes, error) {
 	var filtered []*apipb.Node
-	if err := n.RangeNodes(ctx, nodeType, func(node *apipb.Node) bool {
+	if err := n.rangeNodes(ctx, nodeType, func(node *apipb.Node) bool {
 		if filter(node) {
 			filtered = append(filtered, node)
 		}
@@ -1255,27 +1166,117 @@ func (g *Graph) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilte
 	return detail, err
 }
 
-func removeEdge(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
-	var newPaths []*apipb.Path
-	for _, p := range paths {
-		if p != path {
-			newPaths = append(newPaths, p)
+
+func (g *Graph) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+	var (
+		n *apipb.Node
+		err error
+	)
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+		n, err = g.getNode(ctx, tx, path)
+		if err != nil {
+			return err
 		}
+		if err := g.delNode(ctx, tx, path); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return nil, err
 	}
-	return newPaths
+	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		Method:      g.getMethod(ctx),
+		Identity:    g.getIdentity(ctx),
+		Timestamp:   timestamppb.Now(),
+		NodeChanges: []*apipb.NodeChange{{
+			Before: n,
+			After:  nil,
+		}},
+	})
+	return &empty.Empty{}, nil
 }
 
-func sortPaths(paths []*apipb.Path) {
-	s := sortable.Sortable{
-		LenFunc: func() int {
-			return len(paths)
-		},
-		LessFunc: func(i, j int) bool {
-			return paths[i].String() < paths[j].String()
-		},
-		SwapFunc: func(i, j int) {
-			paths[i], paths[j] = paths[j], paths[i]
-		},
+func (g *Graph) DelNodes(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
+	var changes []*apipb.NodeChange
+	before, err := g.SearchNodes(ctx, filter)
+	if err != nil {
+		return nil, err
 	}
-	s.Sort()
+	if len(before.GetNodes()) == 0 {
+		return nil, ErrNotFound
+	}
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+		for _, node := range before.GetNodes() {
+			if err := g.delNode(ctx, tx, node.GetPath()); err != nil {
+				return err
+			}
+			changes = append(changes, &apipb.NodeChange{Before: node})
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return &empty.Empty{}, g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		Method:      g.getMethod(ctx),
+		Identity:    g.getIdentity(ctx),
+		Timestamp:   timestamppb.Now(),
+		NodeChanges: changes,
+	})
+}
+
+func (g *Graph) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+	var (
+		n *apipb.Edge
+		err error
+	)
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+		n, err = g.getEdge(ctx, tx, path)
+		if err != nil {
+			return err
+		}
+		if err := g.delEdge(ctx, tx, path); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		Method:      g.getMethod(ctx),
+		Identity:    g.getIdentity(ctx),
+		Timestamp:   timestamppb.Now(),
+		EdgeChanges: []*apipb.EdgeChange{{
+			Before: n,
+			After:  nil,
+		}},
+	})
+	return &empty.Empty{}, nil
+}
+
+func (g *Graph) DelEdges(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
+	var changes []*apipb.EdgeChange
+	before, err := g.SearchEdges(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	if len(before.GetEdges()) == 0 {
+		return nil, ErrNotFound
+	}
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+		for _, node := range before.GetEdges() {
+			if err := g.delEdge(ctx, tx, node.GetPath()); err != nil {
+				return err
+			}
+			changes = append(changes, &apipb.EdgeChange{Before: node})
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return &empty.Empty{}, g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		Method:      g.getMethod(ctx),
+		Identity:    g.getIdentity(ctx),
+		Timestamp:   timestamppb.Now(),
+		EdgeChanges: changes,
+	})
 }

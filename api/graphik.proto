@@ -322,8 +322,12 @@ service GraphService {
   rpc SearchNodes(Filter) returns(Nodes){}
   // PatchNode patches a nodes attributes
   rpc PatchNode(Patch) returns(Node){}
-  // PatchNodes patches a batch of nodes attributes
+  // PatchNodes patches a batch of nodes attributes that pass the patch filter
   rpc PatchNodes(PatchFilter) returns(Nodes){}
+  // DelNode deletes a node & all of it's connected edges
+  rpc DelNode(Path) returns(google.protobuf.Empty){}
+  // DelNodes deletes a batch of nodes that pass the filter
+  rpc DelNodes(Filter) returns(google.protobuf.Empty){}
   // CreateEdge creates an edge in the graph
   rpc CreateEdge(EdgeConstructor) returns(Edge){}
   // CreateEdges creates a batch of edges in the graph
@@ -334,8 +338,12 @@ service GraphService {
   rpc SearchEdges(Filter) returns(Edges){}
   // PatchEdge patches an edges attributes
   rpc PatchEdge(Patch) returns(Edge){}
-  // PatchEdges patches a batch of edges attributes
+  // PatchEdges patches a batch of edges attributes that pass the patch filter
   rpc PatchEdges(PatchFilter) returns(Edges){}
+  // DelEdge deletes an edge from the graph
+  rpc DelEdge(Path) returns(google.protobuf.Empty){}
+  // DelEdges deletes a batch of edges that pass the filter
+  rpc DelEdges(Filter) returns(google.protobuf.Empty){}
   // EdgesFrom returns edges that source from the given node path that pass the filter
   rpc EdgesFrom(EdgeFilter) returns(Edges){}
   // EdgesTo returns edges that point to the given node path that pass the filter
