@@ -10,6 +10,7 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 
 ## Helpful Links
 
+- [API Docs]([api](docs/README.md))
 - [Protobuf API Spec](https://github.com/autom8ter/graphik/blob/master/api/graphik.proto)
 - [Graphql API Spec](https://github.com/autom8ter/graphik/blob/master/api/schema.graphqls)
 - [Common Expression Language Code Lab](https://codelabs.developers.google.com/codelabs/cel-go/index.html#0)

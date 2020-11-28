@@ -43,3 +43,6 @@ generate:
     - name: govalidators
       type: go
       output: .
+    - name: doc
+      flags: markdown,README.md
+      output: docs

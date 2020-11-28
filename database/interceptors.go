@@ -27,7 +27,7 @@ import (
 const (
 	authCtxKey   = "x-graphik-auth-ctx"
 	identityType = "identity"
-	emailClaim      = "email"
+	emailClaim   = "email"
 	methodCtxKey = "x-grpc-full-method"
 )
 
