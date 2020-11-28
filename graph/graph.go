@@ -321,7 +321,7 @@ func (g *GraphStore) CreateNodes(ctx context.Context, constructors *apipb.NodeCo
 			}
 			seq, _ := bucket.NextSequence()
 			node.Metadata.Sequence = seq
-			node, err := g.SetNode(ctx, tx, node)
+			node, err := g.setNode(ctx, tx, node)
 			if err != nil {
 				return err
 			}
@@ -404,7 +404,7 @@ func (g *GraphStore) CreateEdges(ctx context.Context, constructors *apipb.EdgeCo
 	}); err != nil {
 		return nil, err
 	}
-	edgess, err := g.SetEdges(ctx, edges...)
+	edgess, err := g.setEdges(ctx, edges...)
 	if err != nil {
 		return nil, err
 	}
@@ -531,11 +531,11 @@ func (r *GraphStore) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Gra
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	nodes, err := r.SetNodes(ctx, graph.GetNodes().GetNodes()...)
+	nodes, err := r.setNodes(ctx, graph.GetNodes().GetNodes()...)
 	if err != nil {
 		return nil, err
 	}
-	edges, err := r.SetEdges(ctx, graph.GetEdges().GetEdges()...)
+	edges, err := r.setEdges(ctx, graph.GetEdges().GetEdges()...)
 	if err != nil {
 		return nil, err
 	}
@@ -572,21 +572,20 @@ func (g *GraphStore) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	var edge apipb.Edge
+	var (
+		edge *apipb.Edge
+		err  error
+	)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype))
-		if bucket == nil {
-			return ErrNotFound
-		}
-		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, &edge); err != nil {
+		edge, err = g.getEdge(ctx, tx, path)
+		if err != nil {
 			return err
 		}
 		return nil
 	}); err != nil && err != DONE {
 		return nil, err
 	}
-	return &edge, nil
+	return edge, err
 }
 
 func (g *GraphStore) RangeSeekEdges(ctx context.Context, gType, seek string, fn func(e *apipb.Edge) bool) error {
@@ -701,21 +700,20 @@ func (g *GraphStore) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	var node apipb.Node
+	var (
+		node *apipb.Node
+		err  error
+	)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype))
-		if bucket == nil {
-			return ErrNotFound
-		}
-		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, &node); err != nil {
+		node, err = g.getNode(ctx, tx, path)
+		if err != nil {
 			return err
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	return &node, nil
+	return node, nil
 }
 
 func (g *GraphStore) RangeNodes(ctx context.Context, gType string, fn func(n *apipb.Node) bool) error {
@@ -795,7 +793,7 @@ func (g *GraphStore) createIdentity(ctx context.Context, constructor *apipb.Node
 		}
 		node.Metadata.Sequence = seq
 
-		node, err = g.SetNode(ctx, tx, node)
+		node, err = g.setNode(ctx, tx, node)
 		if err != nil {
 			return err
 		}
@@ -812,136 +810,6 @@ func (g *GraphStore) CreateNode(ctx context.Context, constructor *apipb.NodeCons
 		return nil, err
 	}
 	return nodes.GetNodes()[0], nil
-}
-
-func (g *GraphStore) SetNodes(ctx context.Context, nodes ...*apipb.Node) (*apipb.Nodes, error) {
-	var nds = &apipb.Nodes{}
-	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		for _, node := range nodes {
-			n, err := g.SetNode(ctx, tx, node)
-			if err != nil {
-				return err
-			}
-			nds.Nodes = append(nds.Nodes, n)
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	return nds, nil
-}
-
-func (g *GraphStore) SetNode(ctx context.Context, tx *bbolt.Tx, node *apipb.Node) (*apipb.Node, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	if node.GetMetadata().GetCreatedAt() == nil {
-		node.GetMetadata().CreatedAt = timestamppb.Now()
-	}
-	if node.GetMetadata().GetUpdatedAt() == nil {
-		node.GetMetadata().UpdatedAt = timestamppb.Now()
-	}
-	node.GetMetadata().Version += 1
-	bits, err := proto.Marshal(node)
-	if err != nil {
-		return nil, err
-	}
-	nodeBucket := tx.Bucket(dbNodes)
-	bucket := nodeBucket.Bucket([]byte(node.GetPath().GetGtype()))
-	if bucket == nil {
-		bucket, err = nodeBucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
-		if err != nil {
-			return nil, err
-		}
-	}
-	if err := bucket.Put([]byte(node.GetPath().GetGid()), bits); err != nil {
-		return nil, err
-	}
-	return node, nil
-}
-
-func (g *GraphStore) SetEdge(ctx context.Context, tx *bbolt.Tx, edge *apipb.Edge) (*apipb.Edge, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	nodeBucket := tx.Bucket(dbNodes)
-	{
-		fromBucket := nodeBucket.Bucket([]byte(edge.From.Gtype))
-		if fromBucket == nil {
-			return nil, errors.Errorf("from node %s does not exist", edge.From.String())
-		}
-		val := fromBucket.Get([]byte(edge.From.Gid))
-		if val == nil {
-			return nil, errors.Errorf("from node %s does not exist", edge.From.String())
-		}
-	}
-	{
-		toBucket := nodeBucket.Bucket([]byte(edge.To.Gtype))
-		if toBucket == nil {
-			return nil, errors.Errorf("to node %s does not exist", edge.To.String())
-		}
-		val := toBucket.Get([]byte(edge.To.Gid))
-		if val == nil {
-			return nil, errors.Errorf("to node %s does not exist", edge.To.String())
-		}
-	}
-	if edge.GetMetadata().GetCreatedAt() == nil {
-		edge.GetMetadata().CreatedAt = timestamppb.Now()
-	}
-	if edge.GetMetadata().GetUpdatedAt() == nil {
-		edge.GetMetadata().UpdatedAt = timestamppb.Now()
-	}
-	edge.GetMetadata().Version += 1
-	bits, err := proto.Marshal(edge)
-	if err != nil {
-		return nil, err
-	}
-	edgeBucket := tx.Bucket(dbEdges)
-	edgeBucket = edgeBucket.Bucket([]byte(edge.GetPath().GetGtype()))
-	if edgeBucket == nil {
-		edgeBucket, err = edgeBucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
-		if err != nil {
-			return nil, err
-		}
-	}
-	if err := edgeBucket.Put([]byte(edge.GetPath().GetGid()), bits); err != nil {
-		return nil, err
-	}
-	g.mu.Lock()
-	defer g.mu.Unlock()
-	g.edgesFrom[edge.GetFrom().String()] = append(g.edgesFrom[edge.GetFrom().String()], edge.GetPath())
-	g.edgesTo[edge.GetTo().String()] = append(g.edgesTo[edge.GetTo().String()], edge.GetPath())
-	if !edge.Directed {
-		g.edgesTo[edge.GetFrom().String()] = append(g.edgesTo[edge.GetFrom().String()], edge.GetPath())
-		g.edgesFrom[edge.GetTo().String()] = append(g.edgesFrom[edge.GetTo().String()], edge.GetPath())
-	}
-	sortPaths(g.edgesFrom[edge.GetFrom().String()])
-	sortPaths(g.edgesTo[edge.GetTo().String()])
-	return edge, nil
-}
-
-func (g *GraphStore) SetEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb.Edges, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	var edgs = &apipb.Edges{}
-	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		for _, edge := range edges {
-			e, err := g.SetEdge(ctx, tx, edge)
-			if err != nil {
-				return err
-			}
-			edgs.Edges = append(edgs.Edges, e)
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	edgs.Sort()
-	return edgs, nil
 }
 
 func (n *GraphStore) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.Node, error) {
@@ -962,7 +830,7 @@ func (n *GraphStore) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.
 		node.GetMetadata().UpdatedAt = timestamppb.Now()
 		node.GetMetadata().UpdatedBy = identity.GetPath()
 		change.After = node
-		node, err = n.SetNode(ctx, tx, node)
+		node, err = n.setNode(ctx, tx, node)
 		if err != nil {
 			return err
 		}
@@ -1005,7 +873,7 @@ func (n *GraphStore) PatchNodes(ctx context.Context, patch *apipb.PatchFilter) (
 		changes = append(changes, change)
 	}
 
-	nodess, err := n.SetNodes(ctx, nodes...)
+	nodess, err := n.setNodes(ctx, nodes...)
 	if err != nil {
 		return nil, err
 	}
@@ -1053,32 +921,48 @@ func (g *GraphStore) NodeTypes(ctx context.Context) ([]string, error) {
 	return types, nil
 }
 
-func (g *GraphStore) RangeFrom(ctx context.Context, path *apipb.Path, fn func(e *apipb.Edge) bool) error {
+func (g *GraphStore) rangeFrom(ctx context.Context, tx *bbolt.Tx, nodePath *apipb.Path, fn func(e *apipb.Edge) bool) error {
 	g.mu.RLock()
-	paths := g.edgesFrom[path.String()]
+	paths := g.edgesFrom[nodePath.String()]
 	g.mu.RUnlock()
 	for _, path := range paths {
-		edge, err := g.GetEdge(ctx, path)
-		if err != nil {
+		if err := ctx.Err(); err != nil {
 			return err
 		}
-		if !fn(edge) {
+		bucket := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		var edge apipb.Edge
+		bits := bucket.Get([]byte(path.Gid))
+		if err := proto.Unmarshal(bits, &edge); err != nil {
+			return err
+		}
+		if !fn(&edge) {
 			return nil
 		}
 	}
 	return nil
 }
 
-func (g *GraphStore) RangeTo(ctx context.Context, path *apipb.Path, fn func(edge *apipb.Edge) bool) error {
+func (g *GraphStore) rangeTo(ctx context.Context, tx *bbolt.Tx, nodePath *apipb.Path, fn func(e *apipb.Edge) bool) error {
 	g.mu.RLock()
-	paths := g.edgesTo[path.String()]
+	paths := g.edgesTo[nodePath.String()]
 	g.mu.RUnlock()
-	for _, edge := range paths {
-		e, err := g.GetEdge(ctx, edge)
-		if err != nil {
+	for _, path := range paths {
+		if err := ctx.Err(); err != nil {
 			return err
 		}
-		if !fn(e) {
+		bucket := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		var edge apipb.Edge
+		bits := bucket.Get([]byte(path.Gid))
+		if err := proto.Unmarshal(bits, &edge); err != nil {
+			return err
+		}
+		if !fn(&edge) {
 			return nil
 		}
 	}
@@ -1092,24 +976,30 @@ func (g *GraphStore) EdgesFrom(ctx context.Context, filter *apipb.EdgeFilter) (*
 	}
 	var edges []*apipb.Edge
 	var pass bool
-	if err = g.RangeFrom(ctx, filter.NodePath, func(edge *apipb.Edge) bool {
-		if filter.Gtype != "*" {
-			if edge.GetPath().GetGtype() != filter.Gtype {
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		if err = g.rangeFrom(ctx, tx, filter.NodePath, func(edge *apipb.Edge) bool {
+			if filter.Gtype != "*" {
+				if edge.GetPath().GetGtype() != filter.Gtype {
+					return true
+				}
+			}
+
+			pass, err = g.vm.Edge().Eval(programs, edge)
+			if err != nil {
 				return true
 			}
+			if pass {
+				edges = append(edges, edge)
+			}
+			return len(edges) < int(filter.Limit)
+		}); err != nil {
+			return err
 		}
-
-		pass, err = g.vm.Edge().Eval(programs, edge)
-		if err != nil {
-			return true
-		}
-		if pass {
-			edges = append(edges, edge)
-		}
-		return len(edges) < int(filter.Limit)
+		return nil
 	}); err != nil {
 		return nil, err
 	}
+
 	toReturn := &apipb.Edges{
 		Edges: edges,
 	}
@@ -1169,35 +1059,42 @@ func (n *GraphStore) FilterNode(ctx context.Context, nodeType string, filter fun
 	return toreturn, nil
 }
 
-func (e *GraphStore) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
-	programs, err := e.vm.Edge().Programs(filter.Expressions)
+func (g *GraphStore) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
+	programs, err := g.vm.Edge().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
 	var edges []*apipb.Edge
 	var pass bool
-	if err := e.RangeTo(ctx, filter.NodePath, func(edge *apipb.Edge) bool {
-		if filter.Gtype != apipb.Any {
-			if edge.GetPath().GetGtype() != filter.Gtype {
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		if err = g.rangeTo(ctx, tx, filter.NodePath, func(edge *apipb.Edge) bool {
+			if filter.Gtype != "*" {
+				if edge.GetPath().GetGtype() != filter.Gtype {
+					return true
+				}
+			}
+
+			pass, err = g.vm.Edge().Eval(programs, edge)
+			if err != nil {
 				return true
 			}
+			if pass {
+				edges = append(edges, edge)
+			}
+			return len(edges) < int(filter.Limit)
+		}); err != nil {
+			return err
 		}
-		pass, err = e.vm.Edge().Eval(programs, edge)
-		if err != nil {
-			return true
-		}
-		if pass {
-			edges = append(edges, edge)
-		}
-		return len(edges) < int(filter.Limit)
+		return nil
 	}); err != nil {
 		return nil, err
 	}
+
 	toReturn := &apipb.Edges{
 		Edges: edges,
 	}
 	toReturn.Sort()
-	return toReturn, nil
+	return toReturn, err
 }
 
 func (n *GraphStore) AllEdges(ctx context.Context) (*apipb.Edges, error) {
@@ -1238,7 +1135,7 @@ func (n *GraphStore) PatchEdge(ctx context.Context, value *apipb.Patch) (*apipb.
 		edge.GetMetadata().UpdatedAt = timestamppb.Now()
 		edge.GetMetadata().UpdatedBy = identity.GetPath()
 		change.After = &e
-		edge, err = n.SetEdge(ctx, tx, edge)
+		edge, err = n.setEdge(ctx, tx, edge)
 		if err != nil {
 			return err
 		}
@@ -1279,7 +1176,7 @@ func (n *GraphStore) PatchEdges(ctx context.Context, patch *apipb.PatchFilter) (
 		changes = append(changes, change)
 	}
 
-	edgess, err := n.SetEdges(ctx, edges...)
+	edgess, err := n.setEdges(ctx, edges...)
 	if err != nil {
 		return nil, err
 	}
