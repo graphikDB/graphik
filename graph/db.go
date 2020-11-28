@@ -23,8 +23,12 @@ func (g *Graph) metaDefaults(ctx context.Context, meta *apipb.Metadata) {
 	if meta.GetCreatedBy() == nil {
 		meta.CreatedBy = identity.GetPath()
 	}
-	meta.UpdatedBy = identity.GetPath()
+	if identity != nil {
+		meta.UpdatedBy = identity.GetPath()
+	}
+
 	meta.UpdatedAt = timestamppb.Now()
+
 	meta.Version += 1
 }
 
@@ -288,6 +292,7 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 		Metadata: &apipb.Metadata{
 			CreatedAt: now,
 			UpdatedAt: now,
+			CreatedBy: constructor.GetPath(),
 			UpdatedBy: constructor.GetPath(),
 		},
 	}
