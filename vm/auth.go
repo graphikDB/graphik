@@ -1,7 +1,7 @@
 package vm
 
 import (
-	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
 )

@@ -2,8 +2,8 @@ package database
 
 import (
 	"context"
-	apipb "github.com/autom8ter/graphik/api"
 	"github.com/autom8ter/graphik/flags"
+	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"

@@ -6,7 +6,7 @@ package gql
 import (
 	"context"
 
-	apipb "github.com/autom8ter/graphik/api"
+	apipb "github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/gql/generated"
 	"github.com/autom8ter/graphik/logger"
 	"go.uber.org/zap"

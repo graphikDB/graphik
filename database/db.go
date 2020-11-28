@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/sortable"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"

@@ -32,7 +32,6 @@ docker-push:
 .PHONY: proto
 proto: ## regenerate gRPC code
 	@echo "generating protobuf code..."
-	@rm -rf gen
 	@docker run -v `pwd`:/defs namely/prototool:latest generate
 	@go fmt ./...
 

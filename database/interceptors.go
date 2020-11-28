@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
