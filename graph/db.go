@@ -12,6 +12,23 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func (g *Graph) metaDefaults(ctx context.Context, meta *apipb.Metadata) {
+	identity := g.getIdentity(ctx)
+	if meta == nil {
+		meta = &apipb.Metadata{}
+	}
+	if meta.GetUpdatedBy() == nil {
+		identity.GetMetadata().UpdatedBy = identity.GetPath()
+	}
+	if meta.GetCreatedAt() == nil {
+		meta.CreatedAt = timestamppb.Now()
+	}
+	if meta.GetUpdatedAt() == nil {
+		meta.UpdatedAt = timestamppb.Now()
+	}
+	meta.Version += 1
+}
+
 func (g *Graph) setNode(ctx context.Context, tx *bbolt.Tx, node *apipb.Node) (*apipb.Node, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
@@ -22,20 +39,7 @@ func (g *Graph) setNode(ctx context.Context, tx *bbolt.Tx, node *apipb.Node) (*a
 	if node.GetPath().Gid == "" {
 		node.Path.Gid = uuid.New().String()
 	}
-	identity := g.getIdentity(ctx)
-	if node.Metadata == nil {
-		node.Metadata = &apipb.Metadata{}
-	}
-	if node.GetMetadata().GetUpdatedBy() == nil {
-		identity.GetMetadata().UpdatedBy = identity.GetPath()
-	}
-	if node.GetMetadata().GetCreatedAt() == nil {
-		node.GetMetadata().CreatedAt = timestamppb.Now()
-	}
-	if node.GetMetadata().GetUpdatedAt() == nil {
-		node.GetMetadata().UpdatedAt = timestamppb.Now()
-	}
-	node.GetMetadata().Version += 1
+	g.metaDefaults(ctx, node.Metadata)
 	bits, err := proto.Marshal(node)
 	if err != nil {
 		return nil, err
@@ -102,24 +106,7 @@ func (g *Graph) setEdge(ctx context.Context, tx *bbolt.Tx, edge *apipb.Edge) (*a
 	if edge.GetPath().Gid == "" {
 		edge.Path.Gid = uuid.New().String()
 	}
-	identity := g.getIdentity(ctx)
-	if edge.Metadata == nil {
-		edge.Metadata = &apipb.Metadata{}
-	}
-	now := timestamppb.Now()
-	if edge.GetMetadata().GetCreatedBy() == nil {
-		identity.GetMetadata().CreatedBy = identity.GetPath()
-	}
-	if edge.GetMetadata().GetUpdatedBy() == nil {
-		identity.GetMetadata().UpdatedBy = identity.GetPath()
-	}
-	if edge.GetMetadata().GetCreatedAt() == nil {
-		edge.GetMetadata().CreatedAt = now
-	}
-	if edge.GetMetadata().GetUpdatedAt() == nil {
-		edge.GetMetadata().UpdatedAt = now
-	}
-	edge.GetMetadata().Version += 1
+	g.metaDefaults(ctx, edge.Metadata)
 	bits, err := proto.Marshal(edge)
 	if err != nil {
 		return nil, err
@@ -203,4 +190,45 @@ func (g *Graph) getEdge(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*a
 		return nil, err
 	}
 	return &edge, nil
+}
+
+func (g *Graph) rangeEdges(ctx context.Context, gType string, fn func(n *apipb.Edge) bool) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		if gType == apipb.Any {
+			types, err := g.EdgeTypes(ctx)
+			if err != nil {
+				return err
+			}
+			for _, edgeType := range types {
+				if err := g.rangeEdges(ctx, edgeType, fn); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+		bucket := tx.Bucket(dbEdges).Bucket([]byte(gType))
+		if bucket == nil {
+			return ErrNotFound
+		}
+
+		return bucket.ForEach(func(k, v []byte) error {
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+			var edge apipb.Edge
+			if err := proto.Unmarshal(v, &edge); err != nil {
+				return err
+			}
+			if !fn(&edge) {
+				return DONE
+			}
+			return nil
+		})
+	}); err != nil && err != DONE {
+		return err
+	}
+	return nil
 }

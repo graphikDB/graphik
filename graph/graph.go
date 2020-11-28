@@ -11,12 +11,10 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/cel-go/cel"
 	"github.com/google/uuid"
-	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -48,17 +46,16 @@ type Graph struct {
 	vm *vm.VM
 	// db is the underlying handle to the db.
 	db          *bbolt.DB
+	jwksMu      sync.RWMutex
 	jwksSet     *jwk.Set
 	jwksSource  string
 	authorizers []cel.Program
 	// The path to the Bolt database file
 	path      string
 	mu        sync.RWMutex
-	triggerMu sync.RWMutex
 	edgesTo   map[string][]*apipb.Path
 	edgesFrom map[string][]*apipb.Path
 	machine   *machine.Machine
-	triggers  []*triggerClient
 	closers   []func()
 	closeOnce sync.Once
 }
@@ -75,41 +72,7 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 	if err != nil {
 		return nil, err
 	}
-	var triggers []*triggerClient
 	var closers []func()
-	for _, plugin := range flgs.Triggers {
-		if plugin == "" {
-			continue
-		}
-		tctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
-		conn, err := grpc.DialContext(
-			tctx,
-			plugin,
-			grpc.WithChainUnaryInterceptor(grpc_zap.UnaryClientInterceptor(logger.Logger())),
-			grpc.WithInsecure(),
-		)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to dial trigger")
-		}
-		trig := apipb.NewTriggerServiceClient(conn)
-		matchers, err := trig.Filter(ctx, &empty.Empty{})
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to dial trigger")
-		}
-		programs, err := vMachine.Change().Programs(matchers.GetExpressions())
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to compile trigger matchers")
-		}
-		triggers = append(triggers, &triggerClient{
-			TriggerServiceClient: trig,
-			matchers:             programs,
-			vm:                   vMachine.Change(),
-		})
-		closers = append(closers, func() {
-			conn.Close()
-		})
-	}
 	var programs []cel.Program
 	if len(flgs.Authorizers) > 0 && flgs.Authorizers[0] != "" {
 		programs, err = vMachine.Auth().Programs(flgs.Authorizers)
@@ -120,16 +83,15 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 	g := &Graph{
 		vm:          vMachine,
 		db:          handle,
+		jwksMu:      sync.RWMutex{},
 		jwksSet:     nil,
 		jwksSource:  flgs.JWKS,
 		authorizers: programs,
 		path:        path,
 		mu:          sync.RWMutex{},
-		triggerMu:   sync.RWMutex{},
 		edgesTo:     map[string][]*apipb.Path{},
 		edgesFrom:   map[string][]*apipb.Path{},
 		machine:     machine.New(ctx),
-		triggers:    triggers,
 		closers:     closers,
 		closeOnce:   sync.Once{},
 	}
@@ -155,7 +117,7 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = g.RangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
+	err = g.rangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
 		g.mu.Lock()
 		defer g.mu.Unlock()
 		g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
@@ -166,24 +128,15 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		return nil, err
 	}
 	g.machine.Go(func(routine machine.Routine) {
-		g.triggerMu.Lock()
-		defer g.triggerMu.Unlock()
 		if g.jwksSource != "" {
 			set, err := jwk.Fetch(g.jwksSource)
 			if err != nil {
 				logger.Error("failed to fetch jwks", zap.Error(err))
 				return
 			}
+			g.jwksMu.Lock()
 			g.jwksSet = set
-		}
-	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-	g.machine.Go(func(routine machine.Routine) {
-		g.triggerMu.Lock()
-		defer g.triggerMu.Unlock()
-		for _, trigger := range g.triggers {
-			if err := trigger.refresh(routine.Context()); err != nil {
-				logger.Error("failed to refresh trigger matcher", zap.Error(err))
-			}
+			g.jwksMu.Unlock()
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 	return g, nil
@@ -656,47 +609,6 @@ func (n *Graph) AllNodes(ctx context.Context) (*apipb.Nodes, error) {
 	return toReturn, nil
 }
 
-func (g *Graph) RangeEdges(ctx context.Context, gType string, fn func(n *apipb.Edge) bool) error {
-	if err := ctx.Err(); err != nil {
-		return err
-	}
-	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if gType == apipb.Any {
-			types, err := g.EdgeTypes(ctx)
-			if err != nil {
-				return err
-			}
-			for _, edgeType := range types {
-				if err := g.RangeEdges(ctx, edgeType, fn); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(gType))
-		if bucket == nil {
-			return ErrNotFound
-		}
-
-		return bucket.ForEach(func(k, v []byte) error {
-			if ctx.Err() != nil {
-				return ctx.Err()
-			}
-			var edge apipb.Edge
-			if err := proto.Unmarshal(v, &edge); err != nil {
-				return err
-			}
-			if !fn(&edge) {
-				return DONE
-			}
-			return nil
-		})
-	}); err != nil && err != DONE {
-		return err
-	}
-	return nil
-}
-
 func (g *Graph) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
@@ -826,7 +738,7 @@ func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.Node,
 		if err != nil {
 			return err
 		}
-		change := &apipb.NodeChange{
+		nodeChange := &apipb.NodeChange{
 			Before: node,
 		}
 		for k, v := range value.GetAttributes().GetFields() {
@@ -836,14 +748,15 @@ func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.Node,
 		if err != nil {
 			return err
 		}
-		change.After = node
+		nodeChange.After = node
 		n.machine.PubSub().Publish(changeChannel, &apipb.Change{
 			Method:      n.getMethod(ctx),
 			Identity:    identity,
 			Timestamp:   node.Metadata.UpdatedAt,
 			EdgeChanges: nil,
-			NodeChanges: []*apipb.NodeChange{change},
+			NodeChanges: []*apipb.NodeChange{nodeChange},
 		})
+
 		return nil
 	}); err != nil {
 		return nil, err
@@ -1102,7 +1015,7 @@ func (g *Graph) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.E
 
 func (n *Graph) AllEdges(ctx context.Context) (*apipb.Edges, error) {
 	var edges []*apipb.Edge
-	if err := n.RangeEdges(ctx, apipb.Any, func(edge *apipb.Edge) bool {
+	if err := n.rangeEdges(ctx, apipb.Any, func(edge *apipb.Edge) bool {
 		edges = append(edges, edge)
 		return true
 	}); err != nil {
@@ -1198,7 +1111,7 @@ func (e *Graph) SearchEdges(ctx context.Context, filter *apipb.Filter) (*apipb.E
 		return nil, err
 	}
 	var edges []*apipb.Edge
-	if err := e.RangeEdges(ctx, filter.Gtype, func(edge *apipb.Edge) bool {
+	if err := e.rangeEdges(ctx, filter.Gtype, func(edge *apipb.Edge) bool {
 		pass, err := e.vm.Edge().Eval(programs, edge)
 		if err != nil {
 			return true

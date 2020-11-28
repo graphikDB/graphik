@@ -10,7 +10,6 @@ type Flags struct {
 	JWKS           string
 	StoragePath    string
 	Metrics        bool
-	Triggers       []string
 	Authorizers    []string
 	AllowedHeaders []string
 	AllowedMethods []string

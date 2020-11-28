@@ -204,8 +204,8 @@ func (g *Graph) verifyJWT(token string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	g.triggerMu.RLock()
-	defer g.triggerMu.RUnlock()
+	g.jwksMu.RLock()
+	defer g.jwksMu.RUnlock()
 	if g.jwksSet == nil {
 		data := map[string]interface{}{}
 		if err := json.Unmarshal(message.Payload(), &data); err != nil {

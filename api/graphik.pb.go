@@ -2468,18 +2468,8 @@ var file_api_graphik_proto_rawDesc = []byte{
 	0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
 	0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79,
-	0x22, 0x00, 0x32, 0x9e, 0x01, 0x0a, 0x0e, 0x54, 0x72, 0x69, 0x67, 0x67, 0x65, 0x72, 0x53, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x2b, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x16, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
-	0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x6f, 0x6e, 0x67,
-	0x22, 0x00, 0x12, 0x24, 0x0a, 0x06, 0x4d, 0x75, 0x74, 0x61, 0x74, 0x65, 0x12, 0x0b, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x1a, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x22, 0x00, 0x12, 0x39, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74,
-	0x65, 0x72, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x15, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x45, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x46, 0x69, 0x6c, 0x74, 0x65,
-	0x72, 0x22, 0x00, 0x42, 0x07, 0x5a, 0x05, 0x61, 0x70, 0x69, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0x00, 0x42, 0x07, 0x5a, 0x05, 0x61, 0x70, 0x69, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2622,38 +2612,32 @@ var file_api_graphik_proto_depIdxs = []int32{
 	35, // 85: api.GraphService.Export:input_type -> google.protobuf.Empty
 	20, // 86: api.GraphService.SubGraph:input_type -> api.SubGraphFilter
 	35, // 87: api.GraphService.Shutdown:input_type -> google.protobuf.Empty
-	35, // 88: api.TriggerService.Ping:input_type -> google.protobuf.Empty
-	30, // 89: api.TriggerService.Mutate:input_type -> api.Change
-	35, // 90: api.TriggerService.Filter:input_type -> google.protobuf.Empty
-	24, // 91: api.GraphService.Ping:output_type -> api.Pong
-	27, // 92: api.GraphService.GetSchema:output_type -> api.Schema
-	7,  // 93: api.GraphService.Me:output_type -> api.NodeDetail
-	3,  // 94: api.GraphService.CreateNode:output_type -> api.Node
-	6,  // 95: api.GraphService.CreateNodes:output_type -> api.Nodes
-	3,  // 96: api.GraphService.GetNode:output_type -> api.Node
-	6,  // 97: api.GraphService.SearchNodes:output_type -> api.Nodes
-	3,  // 98: api.GraphService.PatchNode:output_type -> api.Node
-	6,  // 99: api.GraphService.PatchNodes:output_type -> api.Nodes
-	10, // 100: api.GraphService.CreateEdge:output_type -> api.Edge
-	13, // 101: api.GraphService.CreateEdges:output_type -> api.Edges
-	10, // 102: api.GraphService.GetEdge:output_type -> api.Edge
-	13, // 103: api.GraphService.SearchEdges:output_type -> api.Edges
-	10, // 104: api.GraphService.PatchEdge:output_type -> api.Edge
-	13, // 105: api.GraphService.PatchEdges:output_type -> api.Edges
-	13, // 106: api.GraphService.EdgesFrom:output_type -> api.Edges
-	13, // 107: api.GraphService.EdgesTo:output_type -> api.Edges
-	35, // 108: api.GraphService.Publish:output_type -> google.protobuf.Empty
-	26, // 109: api.GraphService.Subscribe:output_type -> api.Message
-	30, // 110: api.GraphService.SubscribeChanges:output_type -> api.Change
-	21, // 111: api.GraphService.Import:output_type -> api.Graph
-	21, // 112: api.GraphService.Export:output_type -> api.Graph
-	21, // 113: api.GraphService.SubGraph:output_type -> api.Graph
-	35, // 114: api.GraphService.Shutdown:output_type -> google.protobuf.Empty
-	24, // 115: api.TriggerService.Ping:output_type -> api.Pong
-	30, // 116: api.TriggerService.Mutate:output_type -> api.Change
-	31, // 117: api.TriggerService.Filter:output_type -> api.ExpressionFilter
-	91, // [91:118] is the sub-list for method output_type
-	64, // [64:91] is the sub-list for method input_type
+	24, // 88: api.GraphService.Ping:output_type -> api.Pong
+	27, // 89: api.GraphService.GetSchema:output_type -> api.Schema
+	7,  // 90: api.GraphService.Me:output_type -> api.NodeDetail
+	3,  // 91: api.GraphService.CreateNode:output_type -> api.Node
+	6,  // 92: api.GraphService.CreateNodes:output_type -> api.Nodes
+	3,  // 93: api.GraphService.GetNode:output_type -> api.Node
+	6,  // 94: api.GraphService.SearchNodes:output_type -> api.Nodes
+	3,  // 95: api.GraphService.PatchNode:output_type -> api.Node
+	6,  // 96: api.GraphService.PatchNodes:output_type -> api.Nodes
+	10, // 97: api.GraphService.CreateEdge:output_type -> api.Edge
+	13, // 98: api.GraphService.CreateEdges:output_type -> api.Edges
+	10, // 99: api.GraphService.GetEdge:output_type -> api.Edge
+	13, // 100: api.GraphService.SearchEdges:output_type -> api.Edges
+	10, // 101: api.GraphService.PatchEdge:output_type -> api.Edge
+	13, // 102: api.GraphService.PatchEdges:output_type -> api.Edges
+	13, // 103: api.GraphService.EdgesFrom:output_type -> api.Edges
+	13, // 104: api.GraphService.EdgesTo:output_type -> api.Edges
+	35, // 105: api.GraphService.Publish:output_type -> google.protobuf.Empty
+	26, // 106: api.GraphService.Subscribe:output_type -> api.Message
+	30, // 107: api.GraphService.SubscribeChanges:output_type -> api.Change
+	21, // 108: api.GraphService.Import:output_type -> api.Graph
+	21, // 109: api.GraphService.Export:output_type -> api.Graph
+	21, // 110: api.GraphService.SubGraph:output_type -> api.Graph
+	35, // 111: api.GraphService.Shutdown:output_type -> google.protobuf.Empty
+	88, // [88:112] is the sub-list for method output_type
+	64, // [64:88] is the sub-list for method input_type
 	64, // [64:64] is the sub-list for extension type_name
 	64, // [64:64] is the sub-list for extension extendee
 	0,  // [0:64] is the sub-list for field type_name
@@ -3070,7 +3054,7 @@ func file_api_graphik_proto_init() {
 			NumEnums:      0,
 			NumMessages:   33,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   1,
 		},
 		GoTypes:           file_api_graphik_proto_goTypes,
 		DependencyIndexes: file_api_graphik_proto_depIdxs,
@@ -4088,157 +4072,5 @@ var _GraphService_serviceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "api/graphik.proto",
-}
-
-// TriggerServiceClient is the client API for TriggerService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type TriggerServiceClient interface {
-	// Ping returns PONG if the server is health
-	Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error)
-	// Mutate mutates state changes before they are commited
-	Mutate(ctx context.Context, in *Change, opts ...grpc.CallOption) (*Change, error)
-	// Filter returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
-	// These expressions are cached by the Graphik server
-	Filter(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ExpressionFilter, error)
-}
-
-type triggerServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewTriggerServiceClient(cc grpc.ClientConnInterface) TriggerServiceClient {
-	return &triggerServiceClient{cc}
-}
-
-func (c *triggerServiceClient) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error) {
-	out := new(Pong)
-	err := c.cc.Invoke(ctx, "/api.TriggerService/Ping", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *triggerServiceClient) Mutate(ctx context.Context, in *Change, opts ...grpc.CallOption) (*Change, error) {
-	out := new(Change)
-	err := c.cc.Invoke(ctx, "/api.TriggerService/Mutate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *triggerServiceClient) Filter(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ExpressionFilter, error) {
-	out := new(ExpressionFilter)
-	err := c.cc.Invoke(ctx, "/api.TriggerService/Filter", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// TriggerServiceServer is the server API for TriggerService service.
-type TriggerServiceServer interface {
-	// Ping returns PONG if the server is health
-	Ping(context.Context, *empty.Empty) (*Pong, error)
-	// Mutate mutates state changes before they are commited
-	Mutate(context.Context, *Change) (*Change, error)
-	// Filter returns a set of expressions used to determine whether the request/response will be sent to the Mutation function.
-	// These expressions are cached by the Graphik server
-	Filter(context.Context, *empty.Empty) (*ExpressionFilter, error)
-}
-
-// UnimplementedTriggerServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedTriggerServiceServer struct {
-}
-
-func (*UnimplementedTriggerServiceServer) Ping(context.Context, *empty.Empty) (*Pong, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
-}
-func (*UnimplementedTriggerServiceServer) Mutate(context.Context, *Change) (*Change, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Mutate not implemented")
-}
-func (*UnimplementedTriggerServiceServer) Filter(context.Context, *empty.Empty) (*ExpressionFilter, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Filter not implemented")
-}
-
-func RegisterTriggerServiceServer(s *grpc.Server, srv TriggerServiceServer) {
-	s.RegisterService(&_TriggerService_serviceDesc, srv)
-}
-
-func _TriggerService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TriggerServiceServer).Ping(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.TriggerService/Ping",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TriggerServiceServer).Ping(ctx, req.(*empty.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TriggerService_Mutate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Change)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TriggerServiceServer).Mutate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.TriggerService/Mutate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TriggerServiceServer).Mutate(ctx, req.(*Change))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _TriggerService_Filter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(empty.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TriggerServiceServer).Filter(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.TriggerService/Filter",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TriggerServiceServer).Filter(ctx, req.(*empty.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _TriggerService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "api.TriggerService",
-	HandlerType: (*TriggerServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Ping",
-			Handler:    _TriggerService_Ping_Handler,
-		},
-		{
-			MethodName: "Mutate",
-			Handler:    _TriggerService_Mutate_Handler,
-		},
-		{
-			MethodName: "Filter",
-			Handler:    _TriggerService_Filter_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "api/graphik.proto",
 }
