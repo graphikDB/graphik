@@ -1,4 +1,4 @@
-package graph
+package database
 
 import (
 	"context"

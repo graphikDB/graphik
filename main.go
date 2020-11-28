@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/autom8ter/graphik/api"
+	"github.com/autom8ter/graphik/database"
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/gql"
-	"github.com/autom8ter/graphik/graph"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
@@ -83,7 +83,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
 	m := machine.New(ctx)
-	g, err := graph.NewGraph(ctx, cfg)
+	g, err := database.NewGraph(ctx, cfg)
 	if err != nil {
 		logger.Error("failed to create graph", zap.Error(err))
 		return
