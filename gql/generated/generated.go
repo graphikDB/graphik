@@ -51,14 +51,14 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Change struct {
-		EdgeChanges func(childComplexity int) int
-		Identity    func(childComplexity int) int
-		Method      func(childComplexity int) int
-		NodeChanges func(childComplexity int) int
-		Timestamp   func(childComplexity int) int
+		ConnectionChanges func(childComplexity int) int
+		DocChanges        func(childComplexity int) int
+		Identity          func(childComplexity int) int
+		Method            func(childComplexity int) int
+		Timestamp         func(childComplexity int) int
 	}
 
-	Edge struct {
+	Connection struct {
 		Attributes func(childComplexity int) int
 		Directed   func(childComplexity int) int
 		From       func(childComplexity int) int
@@ -67,12 +67,12 @@ type ComplexityRoot struct {
 		To         func(childComplexity int) int
 	}
 
-	EdgeChange struct {
+	ConnectionChange struct {
 		After  func(childComplexity int) int
 		Before func(childComplexity int) int
 	}
 
-	EdgeDetail struct {
+	ConnectionDetail struct {
 		Attributes func(childComplexity int) int
 		Directed   func(childComplexity int) int
 		From       func(childComplexity int) int
@@ -81,12 +81,35 @@ type ComplexityRoot struct {
 		To         func(childComplexity int) int
 	}
 
-	EdgeDetails struct {
-		Edges func(childComplexity int) int
+	ConnectionDetails struct {
+		Connections func(childComplexity int) int
 	}
 
-	Edges struct {
-		Edges func(childComplexity int) int
+	Connections struct {
+		Connections func(childComplexity int) int
+	}
+
+	Doc struct {
+		Attributes func(childComplexity int) int
+		Metadata   func(childComplexity int) int
+		Path       func(childComplexity int) int
+	}
+
+	DocChange struct {
+		After  func(childComplexity int) int
+		Before func(childComplexity int) int
+	}
+
+	DocDetail struct {
+		Attributes      func(childComplexity int) int
+		ConnectionsFrom func(childComplexity int) int
+		ConnectionsTo   func(childComplexity int) int
+		Metadata        func(childComplexity int) int
+		Path            func(childComplexity int) int
+	}
+
+	Docs struct {
+		Docs func(childComplexity int) int
 	}
 
 	Message struct {
@@ -98,6 +121,7 @@ type ComplexityRoot struct {
 
 	Metadata struct {
 		CreatedAt func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
 		Sequence  func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UpdatedBy func(childComplexity int) int
@@ -105,36 +129,13 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateEdge func(childComplexity int, input apipb.EdgeConstructor) int
-		CreateNode func(childComplexity int, input apipb.NodeConstructor) int
-		PatchEdge  func(childComplexity int, input apipb.Patch) int
-		PatchEdges func(childComplexity int, input apipb.PatchFilter) int
-		PatchNode  func(childComplexity int, input apipb.Patch) int
-		PatchNodes func(childComplexity int, input apipb.PatchFilter) int
-		Publish    func(childComplexity int, input apipb.OutboundMessage) int
-	}
-
-	Node struct {
-		Attributes func(childComplexity int) int
-		Metadata   func(childComplexity int) int
-		Path       func(childComplexity int) int
-	}
-
-	NodeChange struct {
-		After  func(childComplexity int) int
-		Before func(childComplexity int) int
-	}
-
-	NodeDetail struct {
-		Attributes func(childComplexity int) int
-		EdgesFrom  func(childComplexity int) int
-		EdgesTo    func(childComplexity int) int
-		Metadata   func(childComplexity int) int
-		Path       func(childComplexity int) int
-	}
-
-	Nodes struct {
-		Nodes func(childComplexity int) int
+		CreateConnection func(childComplexity int, input apipb.ConnectionConstructor) int
+		CreateDoc        func(childComplexity int, input apipb.DocConstructor) int
+		PatchConnection  func(childComplexity int, input apipb.Patch) int
+		PatchConnections func(childComplexity int, input apipb.PatchFilter) int
+		PatchDoc         func(childComplexity int, input apipb.Patch) int
+		PatchDocs        func(childComplexity int, input apipb.PatchFilter) int
+		Publish          func(childComplexity int, input apipb.OutboundMessage) int
 	}
 
 	Path struct {
@@ -147,20 +148,20 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		EdgesFrom   func(childComplexity int, input apipb.EdgeFilter) int
-		EdgesTo     func(childComplexity int, input apipb.EdgeFilter) int
-		GetEdge     func(childComplexity int, input apipb.Path) int
-		GetNode     func(childComplexity int, input apipb.Path) int
-		GetSchema   func(childComplexity int, input *emptypb.Empty) int
-		Me          func(childComplexity int, input *apipb.MeFilter) int
-		Ping        func(childComplexity int, input *emptypb.Empty) int
-		SearchEdges func(childComplexity int, input apipb.Filter) int
-		SearchNodes func(childComplexity int, input apipb.Filter) int
+		ConnectionsFrom   func(childComplexity int, input apipb.ConnectionFilter) int
+		ConnectionsTo     func(childComplexity int, input apipb.ConnectionFilter) int
+		GetConnection     func(childComplexity int, input apipb.Path) int
+		GetDoc            func(childComplexity int, input apipb.Path) int
+		GetSchema         func(childComplexity int, input *emptypb.Empty) int
+		Me                func(childComplexity int, input *apipb.MeFilter) int
+		Ping              func(childComplexity int, input *emptypb.Empty) int
+		SearchConnections func(childComplexity int, input apipb.Filter) int
+		SearchDocs        func(childComplexity int, input apipb.Filter) int
 	}
 
 	Schema struct {
-		EdgeTypes func(childComplexity int) int
-		NodeTypes func(childComplexity int) int
+		ConnectionTypes func(childComplexity int) int
+		DocTypes        func(childComplexity int) int
 	}
 
 	Subscription struct {
@@ -174,24 +175,24 @@ type MetadataResolver interface {
 	Version(ctx context.Context, obj *apipb.Metadata) (int, error)
 }
 type MutationResolver interface {
-	CreateNode(ctx context.Context, input apipb.NodeConstructor) (*apipb.Node, error)
-	PatchNode(ctx context.Context, input apipb.Patch) (*apipb.Node, error)
-	PatchNodes(ctx context.Context, input apipb.PatchFilter) (*apipb.Nodes, error)
-	CreateEdge(ctx context.Context, input apipb.EdgeConstructor) (*apipb.Edge, error)
-	PatchEdge(ctx context.Context, input apipb.Patch) (*apipb.Edge, error)
-	PatchEdges(ctx context.Context, input apipb.PatchFilter) (*apipb.Edges, error)
+	CreateDoc(ctx context.Context, input apipb.DocConstructor) (*apipb.Doc, error)
+	PatchDoc(ctx context.Context, input apipb.Patch) (*apipb.Doc, error)
+	PatchDocs(ctx context.Context, input apipb.PatchFilter) (*apipb.Docs, error)
+	CreateConnection(ctx context.Context, input apipb.ConnectionConstructor) (*apipb.Connection, error)
+	PatchConnection(ctx context.Context, input apipb.Patch) (*apipb.Connection, error)
+	PatchConnections(ctx context.Context, input apipb.PatchFilter) (*apipb.Connections, error)
 	Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error)
 	GetSchema(ctx context.Context, input *emptypb.Empty) (*apipb.Schema, error)
-	Me(ctx context.Context, input *apipb.MeFilter) (*apipb.NodeDetail, error)
-	GetNode(ctx context.Context, input apipb.Path) (*apipb.Node, error)
-	SearchNodes(ctx context.Context, input apipb.Filter) (*apipb.Nodes, error)
-	GetEdge(ctx context.Context, input apipb.Path) (*apipb.Edge, error)
-	SearchEdges(ctx context.Context, input apipb.Filter) (*apipb.Edges, error)
-	EdgesFrom(ctx context.Context, input apipb.EdgeFilter) (*apipb.Edges, error)
-	EdgesTo(ctx context.Context, input apipb.EdgeFilter) (*apipb.Edges, error)
+	Me(ctx context.Context, input *apipb.MeFilter) (*apipb.DocDetail, error)
+	GetDoc(ctx context.Context, input apipb.Path) (*apipb.Doc, error)
+	SearchDocs(ctx context.Context, input apipb.Filter) (*apipb.Docs, error)
+	GetConnection(ctx context.Context, input apipb.Path) (*apipb.Connection, error)
+	SearchConnections(ctx context.Context, input apipb.Filter) (*apipb.Connections, error)
+	ConnectionsFrom(ctx context.Context, input apipb.ConnectionFilter) (*apipb.Connections, error)
+	ConnectionsTo(ctx context.Context, input apipb.ConnectionFilter) (*apipb.Connections, error)
 }
 type SubscriptionResolver interface {
 	Subscribe(ctx context.Context, input apipb.ChannelFilter) (<-chan *apipb.Message, error)
@@ -213,12 +214,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Change.edge_changes":
-		if e.complexity.Change.EdgeChanges == nil {
+	case "Change.connection_changes":
+		if e.complexity.Change.ConnectionChanges == nil {
 			break
 		}
 
-		return e.complexity.Change.EdgeChanges(childComplexity), true
+		return e.complexity.Change.ConnectionChanges(childComplexity), true
+
+	case "Change.doc_changes":
+		if e.complexity.Change.DocChanges == nil {
+			break
+		}
+
+		return e.complexity.Change.DocChanges(childComplexity), true
 
 	case "Change.identity":
 		if e.complexity.Change.Identity == nil {
@@ -234,13 +242,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Change.Method(childComplexity), true
 
-	case "Change.node_changes":
-		if e.complexity.Change.NodeChanges == nil {
-			break
-		}
-
-		return e.complexity.Change.NodeChanges(childComplexity), true
-
 	case "Change.timestamp":
 		if e.complexity.Change.Timestamp == nil {
 			break
@@ -248,117 +249,194 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Change.Timestamp(childComplexity), true
 
-	case "Edge.attributes":
-		if e.complexity.Edge.Attributes == nil {
+	case "Connection.attributes":
+		if e.complexity.Connection.Attributes == nil {
 			break
 		}
 
-		return e.complexity.Edge.Attributes(childComplexity), true
+		return e.complexity.Connection.Attributes(childComplexity), true
 
-	case "Edge.directed":
-		if e.complexity.Edge.Directed == nil {
+	case "Connection.directed":
+		if e.complexity.Connection.Directed == nil {
 			break
 		}
 
-		return e.complexity.Edge.Directed(childComplexity), true
+		return e.complexity.Connection.Directed(childComplexity), true
 
-	case "Edge.from":
-		if e.complexity.Edge.From == nil {
+	case "Connection.from":
+		if e.complexity.Connection.From == nil {
 			break
 		}
 
-		return e.complexity.Edge.From(childComplexity), true
+		return e.complexity.Connection.From(childComplexity), true
 
-	case "Edge.metadata":
-		if e.complexity.Edge.Metadata == nil {
+	case "Connection.metadata":
+		if e.complexity.Connection.Metadata == nil {
 			break
 		}
 
-		return e.complexity.Edge.Metadata(childComplexity), true
+		return e.complexity.Connection.Metadata(childComplexity), true
 
-	case "Edge.path":
-		if e.complexity.Edge.Path == nil {
+	case "Connection.path":
+		if e.complexity.Connection.Path == nil {
 			break
 		}
 
-		return e.complexity.Edge.Path(childComplexity), true
+		return e.complexity.Connection.Path(childComplexity), true
 
-	case "Edge.to":
-		if e.complexity.Edge.To == nil {
+	case "Connection.to":
+		if e.complexity.Connection.To == nil {
 			break
 		}
 
-		return e.complexity.Edge.To(childComplexity), true
+		return e.complexity.Connection.To(childComplexity), true
 
-	case "EdgeChange.after":
-		if e.complexity.EdgeChange.After == nil {
+	case "ConnectionChange.after":
+		if e.complexity.ConnectionChange.After == nil {
 			break
 		}
 
-		return e.complexity.EdgeChange.After(childComplexity), true
+		return e.complexity.ConnectionChange.After(childComplexity), true
 
-	case "EdgeChange.before":
-		if e.complexity.EdgeChange.Before == nil {
+	case "ConnectionChange.before":
+		if e.complexity.ConnectionChange.Before == nil {
 			break
 		}
 
-		return e.complexity.EdgeChange.Before(childComplexity), true
+		return e.complexity.ConnectionChange.Before(childComplexity), true
 
-	case "EdgeDetail.attributes":
-		if e.complexity.EdgeDetail.Attributes == nil {
+	case "ConnectionDetail.attributes":
+		if e.complexity.ConnectionDetail.Attributes == nil {
 			break
 		}
 
-		return e.complexity.EdgeDetail.Attributes(childComplexity), true
+		return e.complexity.ConnectionDetail.Attributes(childComplexity), true
 
-	case "EdgeDetail.directed":
-		if e.complexity.EdgeDetail.Directed == nil {
+	case "ConnectionDetail.directed":
+		if e.complexity.ConnectionDetail.Directed == nil {
 			break
 		}
 
-		return e.complexity.EdgeDetail.Directed(childComplexity), true
+		return e.complexity.ConnectionDetail.Directed(childComplexity), true
 
-	case "EdgeDetail.from":
-		if e.complexity.EdgeDetail.From == nil {
+	case "ConnectionDetail.from":
+		if e.complexity.ConnectionDetail.From == nil {
 			break
 		}
 
-		return e.complexity.EdgeDetail.From(childComplexity), true
+		return e.complexity.ConnectionDetail.From(childComplexity), true
 
-	case "EdgeDetail.metadata":
-		if e.complexity.EdgeDetail.Metadata == nil {
+	case "ConnectionDetail.metadata":
+		if e.complexity.ConnectionDetail.Metadata == nil {
 			break
 		}
 
-		return e.complexity.EdgeDetail.Metadata(childComplexity), true
+		return e.complexity.ConnectionDetail.Metadata(childComplexity), true
 
-	case "EdgeDetail.path":
-		if e.complexity.EdgeDetail.Path == nil {
+	case "ConnectionDetail.path":
+		if e.complexity.ConnectionDetail.Path == nil {
 			break
 		}
 
-		return e.complexity.EdgeDetail.Path(childComplexity), true
+		return e.complexity.ConnectionDetail.Path(childComplexity), true
 
-	case "EdgeDetail.to":
-		if e.complexity.EdgeDetail.To == nil {
+	case "ConnectionDetail.to":
+		if e.complexity.ConnectionDetail.To == nil {
 			break
 		}
 
-		return e.complexity.EdgeDetail.To(childComplexity), true
+		return e.complexity.ConnectionDetail.To(childComplexity), true
 
-	case "EdgeDetails.edges":
-		if e.complexity.EdgeDetails.Edges == nil {
+	case "ConnectionDetails.connections":
+		if e.complexity.ConnectionDetails.Connections == nil {
 			break
 		}
 
-		return e.complexity.EdgeDetails.Edges(childComplexity), true
+		return e.complexity.ConnectionDetails.Connections(childComplexity), true
 
-	case "Edges.edges":
-		if e.complexity.Edges.Edges == nil {
+	case "Connections.connections":
+		if e.complexity.Connections.Connections == nil {
 			break
 		}
 
-		return e.complexity.Edges.Edges(childComplexity), true
+		return e.complexity.Connections.Connections(childComplexity), true
+
+	case "Doc.attributes":
+		if e.complexity.Doc.Attributes == nil {
+			break
+		}
+
+		return e.complexity.Doc.Attributes(childComplexity), true
+
+	case "Doc.metadata":
+		if e.complexity.Doc.Metadata == nil {
+			break
+		}
+
+		return e.complexity.Doc.Metadata(childComplexity), true
+
+	case "Doc.path":
+		if e.complexity.Doc.Path == nil {
+			break
+		}
+
+		return e.complexity.Doc.Path(childComplexity), true
+
+	case "DocChange.after":
+		if e.complexity.DocChange.After == nil {
+			break
+		}
+
+		return e.complexity.DocChange.After(childComplexity), true
+
+	case "DocChange.before":
+		if e.complexity.DocChange.Before == nil {
+			break
+		}
+
+		return e.complexity.DocChange.Before(childComplexity), true
+
+	case "DocDetail.attributes":
+		if e.complexity.DocDetail.Attributes == nil {
+			break
+		}
+
+		return e.complexity.DocDetail.Attributes(childComplexity), true
+
+	case "DocDetail.connections_from":
+		if e.complexity.DocDetail.ConnectionsFrom == nil {
+			break
+		}
+
+		return e.complexity.DocDetail.ConnectionsFrom(childComplexity), true
+
+	case "DocDetail.connections_to":
+		if e.complexity.DocDetail.ConnectionsTo == nil {
+			break
+		}
+
+		return e.complexity.DocDetail.ConnectionsTo(childComplexity), true
+
+	case "DocDetail.metadata":
+		if e.complexity.DocDetail.Metadata == nil {
+			break
+		}
+
+		return e.complexity.DocDetail.Metadata(childComplexity), true
+
+	case "DocDetail.path":
+		if e.complexity.DocDetail.Path == nil {
+			break
+		}
+
+		return e.complexity.DocDetail.Path(childComplexity), true
+
+	case "Docs.docs":
+		if e.complexity.Docs.Docs == nil {
+			break
+		}
+
+		return e.complexity.Docs.Docs(childComplexity), true
 
 	case "Message.channel":
 		if e.complexity.Message.Channel == nil {
@@ -395,6 +473,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Metadata.CreatedAt(childComplexity), true
 
+	case "Metadata.createdBy":
+		if e.complexity.Metadata.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Metadata.CreatedBy(childComplexity), true
+
 	case "Metadata.sequence":
 		if e.complexity.Metadata.Sequence == nil {
 			break
@@ -423,77 +508,77 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Metadata.Version(childComplexity), true
 
-	case "Mutation.createEdge":
-		if e.complexity.Mutation.CreateEdge == nil {
+	case "Mutation.createConnection":
+		if e.complexity.Mutation.CreateConnection == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createEdge_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createConnection_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateEdge(childComplexity, args["input"].(apipb.EdgeConstructor)), true
+		return e.complexity.Mutation.CreateConnection(childComplexity, args["input"].(apipb.ConnectionConstructor)), true
 
-	case "Mutation.createNode":
-		if e.complexity.Mutation.CreateNode == nil {
+	case "Mutation.createDoc":
+		if e.complexity.Mutation.CreateDoc == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createNode_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createDoc_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateNode(childComplexity, args["input"].(apipb.NodeConstructor)), true
+		return e.complexity.Mutation.CreateDoc(childComplexity, args["input"].(apipb.DocConstructor)), true
 
-	case "Mutation.patchEdge":
-		if e.complexity.Mutation.PatchEdge == nil {
+	case "Mutation.patchConnection":
+		if e.complexity.Mutation.PatchConnection == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_patchEdge_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_patchConnection_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchEdge(childComplexity, args["input"].(apipb.Patch)), true
+		return e.complexity.Mutation.PatchConnection(childComplexity, args["input"].(apipb.Patch)), true
 
-	case "Mutation.patchEdges":
-		if e.complexity.Mutation.PatchEdges == nil {
+	case "Mutation.patchConnections":
+		if e.complexity.Mutation.PatchConnections == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_patchEdges_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_patchConnections_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchEdges(childComplexity, args["input"].(apipb.PatchFilter)), true
+		return e.complexity.Mutation.PatchConnections(childComplexity, args["input"].(apipb.PatchFilter)), true
 
-	case "Mutation.patchNode":
-		if e.complexity.Mutation.PatchNode == nil {
+	case "Mutation.patchDoc":
+		if e.complexity.Mutation.PatchDoc == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_patchNode_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_patchDoc_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchNode(childComplexity, args["input"].(apipb.Patch)), true
+		return e.complexity.Mutation.PatchDoc(childComplexity, args["input"].(apipb.Patch)), true
 
-	case "Mutation.patchNodes":
-		if e.complexity.Mutation.PatchNodes == nil {
+	case "Mutation.patchDocs":
+		if e.complexity.Mutation.PatchDocs == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_patchNodes_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_patchDocs_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchNodes(childComplexity, args["input"].(apipb.PatchFilter)), true
+		return e.complexity.Mutation.PatchDocs(childComplexity, args["input"].(apipb.PatchFilter)), true
 
 	case "Mutation.publish":
 		if e.complexity.Mutation.Publish == nil {
@@ -506,83 +591,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Publish(childComplexity, args["input"].(apipb.OutboundMessage)), true
-
-	case "Node.attributes":
-		if e.complexity.Node.Attributes == nil {
-			break
-		}
-
-		return e.complexity.Node.Attributes(childComplexity), true
-
-	case "Node.metadata":
-		if e.complexity.Node.Metadata == nil {
-			break
-		}
-
-		return e.complexity.Node.Metadata(childComplexity), true
-
-	case "Node.path":
-		if e.complexity.Node.Path == nil {
-			break
-		}
-
-		return e.complexity.Node.Path(childComplexity), true
-
-	case "NodeChange.after":
-		if e.complexity.NodeChange.After == nil {
-			break
-		}
-
-		return e.complexity.NodeChange.After(childComplexity), true
-
-	case "NodeChange.before":
-		if e.complexity.NodeChange.Before == nil {
-			break
-		}
-
-		return e.complexity.NodeChange.Before(childComplexity), true
-
-	case "NodeDetail.attributes":
-		if e.complexity.NodeDetail.Attributes == nil {
-			break
-		}
-
-		return e.complexity.NodeDetail.Attributes(childComplexity), true
-
-	case "NodeDetail.edges_from":
-		if e.complexity.NodeDetail.EdgesFrom == nil {
-			break
-		}
-
-		return e.complexity.NodeDetail.EdgesFrom(childComplexity), true
-
-	case "NodeDetail.edges_to":
-		if e.complexity.NodeDetail.EdgesTo == nil {
-			break
-		}
-
-		return e.complexity.NodeDetail.EdgesTo(childComplexity), true
-
-	case "NodeDetail.metadata":
-		if e.complexity.NodeDetail.Metadata == nil {
-			break
-		}
-
-		return e.complexity.NodeDetail.Metadata(childComplexity), true
-
-	case "NodeDetail.path":
-		if e.complexity.NodeDetail.Path == nil {
-			break
-		}
-
-		return e.complexity.NodeDetail.Path(childComplexity), true
-
-	case "Nodes.nodes":
-		if e.complexity.Nodes.Nodes == nil {
-			break
-		}
-
-		return e.complexity.Nodes.Nodes(childComplexity), true
 
 	case "Path.gid":
 		if e.complexity.Path.Gid == nil {
@@ -605,53 +613,53 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Pong.Message(childComplexity), true
 
-	case "Query.edgesFrom":
-		if e.complexity.Query.EdgesFrom == nil {
+	case "Query.connectionsFrom":
+		if e.complexity.Query.ConnectionsFrom == nil {
 			break
 		}
 
-		args, err := ec.field_Query_edgesFrom_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_connectionsFrom_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.EdgesFrom(childComplexity, args["input"].(apipb.EdgeFilter)), true
+		return e.complexity.Query.ConnectionsFrom(childComplexity, args["input"].(apipb.ConnectionFilter)), true
 
-	case "Query.edgesTo":
-		if e.complexity.Query.EdgesTo == nil {
+	case "Query.connectionsTo":
+		if e.complexity.Query.ConnectionsTo == nil {
 			break
 		}
 
-		args, err := ec.field_Query_edgesTo_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_connectionsTo_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.EdgesTo(childComplexity, args["input"].(apipb.EdgeFilter)), true
+		return e.complexity.Query.ConnectionsTo(childComplexity, args["input"].(apipb.ConnectionFilter)), true
 
-	case "Query.getEdge":
-		if e.complexity.Query.GetEdge == nil {
+	case "Query.getConnection":
+		if e.complexity.Query.GetConnection == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getEdge_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_getConnection_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetEdge(childComplexity, args["input"].(apipb.Path)), true
+		return e.complexity.Query.GetConnection(childComplexity, args["input"].(apipb.Path)), true
 
-	case "Query.getNode":
-		if e.complexity.Query.GetNode == nil {
+	case "Query.getDoc":
+		if e.complexity.Query.GetDoc == nil {
 			break
 		}
 
-		args, err := ec.field_Query_getNode_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_getDoc_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.GetNode(childComplexity, args["input"].(apipb.Path)), true
+		return e.complexity.Query.GetDoc(childComplexity, args["input"].(apipb.Path)), true
 
 	case "Query.getSchema":
 		if e.complexity.Query.GetSchema == nil {
@@ -689,43 +697,43 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Ping(childComplexity, args["input"].(*emptypb.Empty)), true
 
-	case "Query.searchEdges":
-		if e.complexity.Query.SearchEdges == nil {
+	case "Query.searchConnections":
+		if e.complexity.Query.SearchConnections == nil {
 			break
 		}
 
-		args, err := ec.field_Query_searchEdges_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_searchConnections_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.SearchEdges(childComplexity, args["input"].(apipb.Filter)), true
+		return e.complexity.Query.SearchConnections(childComplexity, args["input"].(apipb.Filter)), true
 
-	case "Query.searchNodes":
-		if e.complexity.Query.SearchNodes == nil {
+	case "Query.searchDocs":
+		if e.complexity.Query.SearchDocs == nil {
 			break
 		}
 
-		args, err := ec.field_Query_searchNodes_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_searchDocs_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.SearchNodes(childComplexity, args["input"].(apipb.Filter)), true
+		return e.complexity.Query.SearchDocs(childComplexity, args["input"].(apipb.Filter)), true
 
-	case "Schema.edge_types":
-		if e.complexity.Schema.EdgeTypes == nil {
+	case "Schema.connection_types":
+		if e.complexity.Schema.ConnectionTypes == nil {
 			break
 		}
 
-		return e.complexity.Schema.EdgeTypes(childComplexity), true
+		return e.complexity.Schema.ConnectionTypes(childComplexity), true
 
-	case "Schema.node_types":
-		if e.complexity.Schema.NodeTypes == nil {
+	case "Schema.doc_types":
+		if e.complexity.Schema.DocTypes == nil {
 			break
 		}
 
-		return e.complexity.Schema.NodeTypes(childComplexity), true
+		return e.complexity.Schema.DocTypes(childComplexity), true
 
 	case "Subscription.subscribe":
 		if e.complexity.Subscription.Subscribe == nil {
@@ -844,106 +852,108 @@ type Pong {
   message: String!
 }
 
-# Path describes a node/edge type & id
+# Path describes a doc/connection type & id
 type Path {
-  # gtype is the type of the node/edge ex: pet
+  # gtype is the type of the doc/connection ex: pet
   gtype: String!
-  # gid is the unique id of the node/edge within the context of it's type
+  # gid is the unique id of the doc/connection within the context of it's type
   gid: String!
 }
 
-# Metadata is general metadata collected about the node
+# Metadata is general metadata collected about the doc
 type Metadata {
-  # created_at is the unix timestamp when the node/edge was created
+  # created_at is the unix timestamp when the doc/connection was created
   created_at: Timestamp!
-  # updated_at is the unix timestamp when the node/edge was last updated
+  # updated_at is the unix timestamp when the doc/connection was last updated
   updated_at: Timestamp!
-  # updated_by is the identity that last modified the node/edge
+  # created_by is the identity that initially created the doc/connection
+  createdBy: Path!
+  # updated_by is the identity that last modified the doc/connection
   updated_by: Path!
-  # sequence is the sequence within the context of the node/edge type
+  # sequence is the sequence within the context of the doc/connection type
   sequence: Int!
-  # version iterates by 1 every time the node/edge is modified
+  # version iterates by 1 every time the doc/connection is modified
   version: Int!
 }
 
-# Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
-type Node {
-  # path is the path to the node
+# Doc is a Graph primitive representing a single entity/resource. It is connected to other docs via Connections
+type Doc {
+  # path is the path to the doc
   path: Path!
   # k/v pairs
   attributes: Struct
-  # metadata is general metadata collected about the node
+  # metadata is general metadata collected about the doc
   metadata: Metadata!
 }
 
-# Nodes is an array of nodes
-type Nodes {
-  # nodes is an array of nodes
-  nodes: [Node!]
+# Docs is an array of docs
+type Docs {
+  # docs is an array of docs
+  docs: [Doc!]
 }
 
-# Edge is a graph primitive that represents a relationship between two nodes
-type Edge {
-  # path is the path to the edge
+# Connection is a graph primitive that represents a relationship between two docs
+type Connection {
+  # path is the path to the connection
   path: Path!
   # k/v pairs
   attributes: Struct
-  # directed is false if the edge is bi-directional
+  # directed is false if the connection is bi-directional
   directed: Boolean
-  # from is the node path that is the source of the edge
+  # from is the doc path that is the source of the connection
   from: Path!
-  # to is the node path that is the destination of the edge
+  # to is the doc path that is the destination of the connection
   to: Path!
-  # metadata is general metadata collected about the edge
+  # metadata is general metadata collected about the connection
   metadata: Metadata!
 }
 
-# Edges is an array of edges
-type Edges {
-  edges: [Edge!]
+# Connections is an array of connections
+type Connections {
+  connections: [Connection!]
 }
 
-# EdgeDetail is an edge with both of it's connected nodes fully loaded
-type EdgeDetail {
-  # path is the path to the edge
+# ConnectionDetail is an connection with both of it's connected docs fully loaded
+type ConnectionDetail {
+  # path is the path to the connection
   path: Path!
   # attributes are k/v pairs
   attributes: Struct
-  # directed is false if the edge is bi-directional
+  # directed is false if the connection is bi-directional
   directed: Boolean
-  # from is the full node that is the root of the edge
-  from: Node!
-  # to is the full node that is the destination of the edge
-  to: Node!
-  # metadata is general metadata collected about the edge
+  # from is the full doc that is the root of the connection
+  from: Doc!
+  # to is the full doc that is the destination of the connection
+  to: Doc!
+  # metadata is general metadata collected about the connection
   metadata: Metadata
 }
 
-# EdgeDetails details is an array of edge details
-type EdgeDetails {
-  edges: [EdgeDetail!]
+# ConnectionDetails details is an array of connection details
+type ConnectionDetails {
+  connections: [ConnectionDetail!]
 }
 
-# NodeDetail is a node with its connected edges
-type NodeDetail {
-  # path is the path to the node
+# DocDetail is a doc with its connected connections
+type DocDetail {
+  # path is the path to the doc
   path: Path!
   # arbitrary k/v pairs
   attributes: Struct
-  # edges_from are edges that source from this node
-  edges_from: EdgeDetails
-  # edges_to are edges that point toward this node
-  edges_to: EdgeDetails
-  # metadata is general metadata collected about the node
+  # connections_from are connections that source from this doc
+  connections_from: ConnectionDetails
+  # connections_to are connections that point toward this doc
+  connections_to: ConnectionDetails
+  # metadata is general metadata collected about the doc
   metadata: Metadata
 }
 
-# Schema returns registered edge & node types
+# Schema returns registered connection & doc types
 type Schema {
-  # edge_types are the types of edges in the graph
-  edge_types: [String!]
-  # node_types are the types of nodes in the graph
-  node_types: [String!]
+  # connection_types are the types of connections in the graph
+  connection_types: [String!]
+  # doc_types are the types of docs in the graph
+  doc_types: [String!]
 }
 
 # Message is received on PubSub subscriptions
@@ -958,44 +968,44 @@ type Message {
   timestamp: Timestamp!
 }
 
-# NodeConstructor is used to create a Node
-input NodeConstructor {
-  # path is the path to the node.
+# DocConstructor is used to create a Doc
+input DocConstructor {
+  # path is the path to the doc.
   # if an id is not present in the path, a unique id will be generated
   path: PathInput!
   # attributes are k/v pairs
   attributes: Struct
 }
 
-# EdgeConstructor is used to create an Edge
-input EdgeConstructor {
-  # path is the path to the edge.
+# ConnectionConstructor is used to create an Connection
+input ConnectionConstructor {
+  # path is the path to the connection.
   # if an id is not present in the path, a unique id will be generated
   path: PathInput!
-  # directed is false if the edge is bi-directional
+  # directed is false if the connection is bi-directional
   directed: Boolean
 
   attributes: Struct
-  # from is the node path that is the source of the edge
+  # from is the doc path that is the source of the connection
   from: PathInput!
-  # to is the node path that is the destination of the edge
+  # to is the doc path that is the destination of the connection
   to: PathInput!
 }
 
-# NodeChange is a single state change to a node
-type NodeChange {
-  # before is the node before state change
-  before: Node
-  # after is the node after state change
-  after: Node
+# DocChange is a single state change to a doc
+type DocChange {
+  # before is the doc before state change
+  before: Doc
+  # after is the doc after state change
+  after: Doc
 }
 
-# EdgeChange is a single state change to an edge
-type EdgeChange {
-  # before is the edge before state change
-  before: Edge
-  # after is the edge after state change
-  after: Edge
+# ConnectionChange is a single state change to an connection
+type ConnectionChange {
+  # before is the connection before state change
+  before: Connection
+  # after is the connection after state change
+  after: Connection
 }
 
 # Change represents a set of state changes in the graph
@@ -1003,50 +1013,50 @@ type Change {
   # method is the gRPC method invoked
   method: String!
   # identity is the identity invoking the change
-  identity: Node!
+  identity: Doc!
   # timestamp is when the change was made
   timestamp: Timestamp!
-  # edge_changes are state changes to edges
-  edge_changes: [EdgeChange!]
-  # node_changes are state changes to nodes
-  node_changes: [NodeChange!]
+  # connection_changes are state changes to connections
+  connection_changes: [ConnectionChange!]
+  # doc_changes are state changes to docs
+  doc_changes: [DocChange!]
 }
 
-# PathInput is the path to a node/edge
+# PathInput is the path to a doc/connection
 input PathInput {
-  # path is the path to the target node/edge to patch
+  # path is the path to the target doc/connection to patch
   gtype: String!
-  # path is the path to the target node/edge to patch
+  # path is the path to the target doc/connection to patch
   gid: String
 }
 
 # Filter is a generic filter using Common Expression Language
 input Filter {
-  # gtype is the node/edge type to be filtered
+  # gtype is the doc/connection type to be filtered
   gtype: String!
-  # expressions are CEL expressions used to filter edges
+  # expressions are CEL expressions used to filter connections
   expressions: [String!]
   # limit is the maximum number of items to return
   limit: Int!
 }
 
-# MeFilter is used to fetch a NodeDetail representing the identity in the inbound JWT token
+# MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
 input MeFilter {
-  # edges_from is a filter used to filter edges from the identity making the request
-  edges_from: Filter
-  # edges_to is a filter used to filter edges to the identity making the request
-  edges_to: Filter
+  # connections_from is a filter used to filter connections from the identity making the request
+  connections_from: Filter
+  # connections_to is a filter used to filter connections to the identity making the request
+  connections_to: Filter
 }
 
-# EdgeFilter is used to fetch edges related to a single noted
-input EdgeFilter {
-  # node_path is the path to the target node
-  node_path: PathInput!
-  # gtype is the type of edges to return
+# ConnectionFilter is used to fetch connections related to a single noted
+input ConnectionFilter {
+  # doc_path is the path to the target doc
+  doc_path: PathInput!
+  # gtype is the type of connections to return
   gtype: String!
-  # expressions are CEL expressions used to filter edges
+  # expressions are CEL expressions used to filter connections
   expressions: [String!],
-  # limit is the maximum number of edges to return
+  # limit is the maximum number of connections to return
   limit: Int!
 }
 
@@ -1058,19 +1068,19 @@ input ChannelFilter {
   expressions: [String]
 }
 
-# Patch patches the attributes of a Node or Edge
+# Patch patches the attributes of a Doc or Connection
 input Patch {
-  # path is the path to the target node/edge to patch
+  # path is the path to the target doc/connection to patch
   path: PathInput!
-  # attributes are k/v pairs used to overwrite k/v pairs on a node/edge
+  # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Struct!
 }
 
-# PatchFilter is used to patch nodes/edges
+# PatchFilter is used to patch docs/connections
 input PatchFilter {
-  # filter is used to filter nodes/edges to patch
+  # filter is used to filter docs/connections to patch
   filter: Filter!
-  # attributes are k/v pairs used to overwrite k/v pairs on a node/edge
+  # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Struct!
 }
 
@@ -1083,23 +1093,23 @@ input OutboundMessage {
 }
 
 input ExpressionFilter {
-  # expressions are CEL expressions used to filter messages/nodes/edges
+  # expressions are CEL expressions used to filter messages/docs/connections
   expressions: [String!]
 }
 
 type Mutation {
-  # createNode creates a single node in the graph
-  createNode(input: NodeConstructor!): Node!
-  # patchNode patches a single node in the graph
-  patchNode(input: Patch!): Node!
-  # patchNodes patches 0-many nodes in the graph
-  patchNodes(input: PatchFilter!): Nodes!
-  # createEdge creates a single edge in the graph
-  createEdge(input: EdgeConstructor!): Edge!
-  # patchEdge patches a single edge in the graph
-  patchEdge(input: Patch!): Edge!
-  # patchEdges patches 0-many edges in the graph
-  patchEdges(input: PatchFilter!): Edges!
+  # createDoc creates a single doc in the graph
+  createDoc(input: DocConstructor!): Doc!
+  # patchDoc patches a single doc in the graph
+  patchDoc(input: Patch!): Doc!
+  # patchDocs patches 0-many docs in the graph
+  patchDocs(input: PatchFilter!): Docs!
+  # createConnection creates a single connection in the graph
+  createConnection(input: ConnectionConstructor!): Connection!
+  # patchConnection patches a single connection in the graph
+  patchConnection(input: Patch!): Connection!
+  # patchConnections patches 0-many connections in the graph
+  patchConnections(input: PatchFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty!
 }
@@ -1109,20 +1119,20 @@ type Query {
   ping(input: Empty): Pong!
   # getSchema gets information about the graph schema
   getSchema(input: Empty): Schema!
-  # me returns your identity + edges
-  me(input: MeFilter): NodeDetail!
-  # getNode gets a node at the given path
-  getNode(input: PathInput!): Node!
-  # searchNodes searches for 0-many nodes
-  searchNodes(input: Filter!): Nodes!
-  # getEdge gets a edge at the given path
-  getEdge(input: PathInput!): Edge!
-  # searchEdges searches for 0-many edges
-  searchEdges(input: Filter!): Edges!
-  # edgesFrom returns edges from the given node that pass the filter
-  edgesFrom(input: EdgeFilter!): Edges!
-  # edgesTo returns edges to the given node that pass the filter
-  edgesTo(input: EdgeFilter!): Edges!
+  # me returns your identity + connections
+  me(input: MeFilter): DocDetail!
+  # getDoc gets a doc at the given path
+  getDoc(input: PathInput!): Doc!
+  # searchDocs searches for 0-many docs
+  searchDocs(input: Filter!): Docs!
+  # getConnection gets a connection at the given path
+  getConnection(input: PathInput!): Connection!
+  # searchConnections searches for 0-many connections
+  searchConnections(input: Filter!): Connections!
+  # connectionsFrom returns connections from the given doc that pass the filter
+  connectionsFrom(input: ConnectionFilter!): Connections!
+  # connectionsTo returns connections to the given doc that pass the filter
+  connectionsTo(input: ConnectionFilter!): Connections!
 }
 
 type Subscription {
@@ -1138,13 +1148,13 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
 // region    ***************************** args.gotpl *****************************
 
-func (ec *executionContext) field_Mutation_createEdge_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 apipb.EdgeConstructor
+	var arg0 apipb.ConnectionConstructor
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEdgeConstructor2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeConstructor(ctx, tmp)
+		arg0, err = ec.unmarshalNConnectionConstructor2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionConstructor(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1153,13 +1163,13 @@ func (ec *executionContext) field_Mutation_createEdge_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createNode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createDoc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 apipb.NodeConstructor
+	var arg0 apipb.DocConstructor
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNodeConstructor2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeConstructor(ctx, tmp)
+		arg0, err = ec.unmarshalNDocConstructor2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocConstructor(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1168,7 +1178,7 @@ func (ec *executionContext) field_Mutation_createNode_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_patchEdge_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_patchConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.Patch
@@ -1183,7 +1193,7 @@ func (ec *executionContext) field_Mutation_patchEdge_args(ctx context.Context, r
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_patchEdges_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_patchConnections_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.PatchFilter
@@ -1198,7 +1208,7 @@ func (ec *executionContext) field_Mutation_patchEdges_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_patchNode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_patchDoc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.Patch
@@ -1213,7 +1223,7 @@ func (ec *executionContext) field_Mutation_patchNode_args(ctx context.Context, r
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_patchNodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_patchDocs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.PatchFilter
@@ -1258,13 +1268,13 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_edgesFrom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_connectionsFrom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 apipb.EdgeFilter
+	var arg0 apipb.ConnectionFilter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEdgeFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNConnectionFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1273,13 +1283,13 @@ func (ec *executionContext) field_Query_edgesFrom_args(ctx context.Context, rawA
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_edgesTo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_connectionsTo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 apipb.EdgeFilter
+	var arg0 apipb.ConnectionFilter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEdgeFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNConnectionFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1288,7 +1298,7 @@ func (ec *executionContext) field_Query_edgesTo_args(ctx context.Context, rawArg
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getEdge_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.Path
@@ -1303,7 +1313,7 @@ func (ec *executionContext) field_Query_getEdge_args(ctx context.Context, rawArg
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_getNode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_getDoc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.Path
@@ -1363,7 +1373,7 @@ func (ec *executionContext) field_Query_ping_args(ctx context.Context, rawArgs m
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_searchEdges_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_searchConnections_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.Filter
@@ -1378,7 +1388,7 @@ func (ec *executionContext) field_Query_searchEdges_args(ctx context.Context, ra
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_searchNodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_searchDocs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.Filter
@@ -1526,9 +1536,9 @@ func (ec *executionContext) _Change_identity(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Node)
+	res := resTmp.(*apipb.Doc)
 	fc.Result = res
-	return ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Change_timestamp(ctx context.Context, field graphql.CollectedField, obj *apipb.Change) (ret graphql.Marshaler) {
@@ -1566,7 +1576,7 @@ func (ec *executionContext) _Change_timestamp(ctx context.Context, field graphql
 	return ec.marshalNTimestamp2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋtimestamppbᚐTimestamp(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Change_edge_changes(ctx context.Context, field graphql.CollectedField, obj *apipb.Change) (ret graphql.Marshaler) {
+func (ec *executionContext) _Change_connection_changes(ctx context.Context, field graphql.CollectedField, obj *apipb.Change) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1584,7 +1594,7 @@ func (ec *executionContext) _Change_edge_changes(ctx context.Context, field grap
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.EdgeChanges, nil
+		return obj.ConnectionChanges, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1593,12 +1603,12 @@ func (ec *executionContext) _Change_edge_changes(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*apipb.EdgeChange)
+	res := resTmp.([]*apipb.ConnectionChange)
 	fc.Result = res
-	return ec.marshalOEdgeChange2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeChangeᚄ(ctx, field.Selections, res)
+	return ec.marshalOConnectionChange2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionChangeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Change_node_changes(ctx context.Context, field graphql.CollectedField, obj *apipb.Change) (ret graphql.Marshaler) {
+func (ec *executionContext) _Change_doc_changes(ctx context.Context, field graphql.CollectedField, obj *apipb.Change) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1616,7 +1626,7 @@ func (ec *executionContext) _Change_node_changes(ctx context.Context, field grap
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.NodeChanges, nil
+		return obj.DocChanges, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1625,12 +1635,12 @@ func (ec *executionContext) _Change_node_changes(ctx context.Context, field grap
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*apipb.NodeChange)
+	res := resTmp.([]*apipb.DocChange)
 	fc.Result = res
-	return ec.marshalONodeChange2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeChangeᚄ(ctx, field.Selections, res)
+	return ec.marshalODocChange2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocChangeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Edge_path(ctx context.Context, field graphql.CollectedField, obj *apipb.Edge) (ret graphql.Marshaler) {
+func (ec *executionContext) _Connection_path(ctx context.Context, field graphql.CollectedField, obj *apipb.Connection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1638,7 +1648,7 @@ func (ec *executionContext) _Edge_path(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Edge",
+		Object:     "Connection",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1665,7 +1675,7 @@ func (ec *executionContext) _Edge_path(ctx context.Context, field graphql.Collec
 	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Edge_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.Edge) (ret graphql.Marshaler) {
+func (ec *executionContext) _Connection_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.Connection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1673,7 +1683,7 @@ func (ec *executionContext) _Edge_attributes(ctx context.Context, field graphql.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Edge",
+		Object:     "Connection",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1697,7 +1707,7 @@ func (ec *executionContext) _Edge_attributes(ctx context.Context, field graphql.
 	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Edge_directed(ctx context.Context, field graphql.CollectedField, obj *apipb.Edge) (ret graphql.Marshaler) {
+func (ec *executionContext) _Connection_directed(ctx context.Context, field graphql.CollectedField, obj *apipb.Connection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1705,7 +1715,7 @@ func (ec *executionContext) _Edge_directed(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Edge",
+		Object:     "Connection",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1729,7 +1739,7 @@ func (ec *executionContext) _Edge_directed(ctx context.Context, field graphql.Co
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Edge_from(ctx context.Context, field graphql.CollectedField, obj *apipb.Edge) (ret graphql.Marshaler) {
+func (ec *executionContext) _Connection_from(ctx context.Context, field graphql.CollectedField, obj *apipb.Connection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1737,7 +1747,7 @@ func (ec *executionContext) _Edge_from(ctx context.Context, field graphql.Collec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Edge",
+		Object:     "Connection",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1764,7 +1774,7 @@ func (ec *executionContext) _Edge_from(ctx context.Context, field graphql.Collec
 	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Edge_to(ctx context.Context, field graphql.CollectedField, obj *apipb.Edge) (ret graphql.Marshaler) {
+func (ec *executionContext) _Connection_to(ctx context.Context, field graphql.CollectedField, obj *apipb.Connection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1772,7 +1782,7 @@ func (ec *executionContext) _Edge_to(ctx context.Context, field graphql.Collecte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Edge",
+		Object:     "Connection",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1799,7 +1809,7 @@ func (ec *executionContext) _Edge_to(ctx context.Context, field graphql.Collecte
 	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Edge_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.Edge) (ret graphql.Marshaler) {
+func (ec *executionContext) _Connection_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.Connection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1807,7 +1817,7 @@ func (ec *executionContext) _Edge_metadata(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Edge",
+		Object:     "Connection",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1834,7 +1844,7 @@ func (ec *executionContext) _Edge_metadata(ctx context.Context, field graphql.Co
 	return ec.marshalNMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMetadata(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeChange_before(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeChange) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionChange_before(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionChange) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1842,7 +1852,7 @@ func (ec *executionContext) _EdgeChange_before(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeChange",
+		Object:     "ConnectionChange",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1861,12 +1871,12 @@ func (ec *executionContext) _EdgeChange_before(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edge)
+	res := resTmp.(*apipb.Connection)
 	fc.Result = res
-	return ec.marshalOEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx, field.Selections, res)
+	return ec.marshalOConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeChange_after(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeChange) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionChange_after(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionChange) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1874,7 +1884,7 @@ func (ec *executionContext) _EdgeChange_after(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeChange",
+		Object:     "ConnectionChange",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1893,12 +1903,12 @@ func (ec *executionContext) _EdgeChange_after(ctx context.Context, field graphql
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edge)
+	res := resTmp.(*apipb.Connection)
 	fc.Result = res
-	return ec.marshalOEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx, field.Selections, res)
+	return ec.marshalOConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeDetail_path(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetail) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionDetail_path(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1906,7 +1916,7 @@ func (ec *executionContext) _EdgeDetail_path(ctx context.Context, field graphql.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeDetail",
+		Object:     "ConnectionDetail",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1933,7 +1943,7 @@ func (ec *executionContext) _EdgeDetail_path(ctx context.Context, field graphql.
 	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeDetail_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetail) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionDetail_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1941,7 +1951,7 @@ func (ec *executionContext) _EdgeDetail_attributes(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeDetail",
+		Object:     "ConnectionDetail",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1965,7 +1975,7 @@ func (ec *executionContext) _EdgeDetail_attributes(ctx context.Context, field gr
 	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeDetail_directed(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetail) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionDetail_directed(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1973,7 +1983,7 @@ func (ec *executionContext) _EdgeDetail_directed(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeDetail",
+		Object:     "ConnectionDetail",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -1997,7 +2007,7 @@ func (ec *executionContext) _EdgeDetail_directed(ctx context.Context, field grap
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeDetail_from(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetail) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionDetail_from(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2005,7 +2015,7 @@ func (ec *executionContext) _EdgeDetail_from(ctx context.Context, field graphql.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeDetail",
+		Object:     "ConnectionDetail",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2027,12 +2037,12 @@ func (ec *executionContext) _EdgeDetail_from(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Node)
+	res := resTmp.(*apipb.Doc)
 	fc.Result = res
-	return ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeDetail_to(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetail) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionDetail_to(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2040,7 +2050,7 @@ func (ec *executionContext) _EdgeDetail_to(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeDetail",
+		Object:     "ConnectionDetail",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2062,12 +2072,12 @@ func (ec *executionContext) _EdgeDetail_to(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Node)
+	res := resTmp.(*apipb.Doc)
 	fc.Result = res
-	return ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeDetail_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetail) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionDetail_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2075,7 +2085,7 @@ func (ec *executionContext) _EdgeDetail_metadata(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeDetail",
+		Object:     "ConnectionDetail",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2099,7 +2109,7 @@ func (ec *executionContext) _EdgeDetail_metadata(ctx context.Context, field grap
 	return ec.marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMetadata(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _EdgeDetails_edges(ctx context.Context, field graphql.CollectedField, obj *apipb.EdgeDetails) (ret graphql.Marshaler) {
+func (ec *executionContext) _ConnectionDetails_connections(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetails) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2107,7 +2117,7 @@ func (ec *executionContext) _EdgeDetails_edges(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "EdgeDetails",
+		Object:     "ConnectionDetails",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2117,7 +2127,7 @@ func (ec *executionContext) _EdgeDetails_edges(ctx context.Context, field graphq
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
+		return obj.Connections, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2126,12 +2136,12 @@ func (ec *executionContext) _EdgeDetails_edges(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*apipb.EdgeDetail)
+	res := resTmp.([]*apipb.ConnectionDetail)
 	fc.Result = res
-	return ec.marshalOEdgeDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetailᚄ(ctx, field.Selections, res)
+	return ec.marshalOConnectionDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionDetailᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Edges_edges(ctx context.Context, field graphql.CollectedField, obj *apipb.Edges) (ret graphql.Marshaler) {
+func (ec *executionContext) _Connections_connections(ctx context.Context, field graphql.CollectedField, obj *apipb.Connections) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2139,7 +2149,7 @@ func (ec *executionContext) _Edges_edges(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Edges",
+		Object:     "Connections",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2149,7 +2159,7 @@ func (ec *executionContext) _Edges_edges(ctx context.Context, field graphql.Coll
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Edges, nil
+		return obj.Connections, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2158,9 +2168,370 @@ func (ec *executionContext) _Edges_edges(ctx context.Context, field graphql.Coll
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*apipb.Edge)
+	res := resTmp.([]*apipb.Connection)
 	fc.Result = res
-	return ec.marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeᚄ(ctx, field.Selections, res)
+	return ec.marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Doc_path(ctx context.Context, field graphql.CollectedField, obj *apipb.Doc) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Doc",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Path, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Path)
+	fc.Result = res
+	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Doc_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.Doc) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Doc",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Attributes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*structpb.Struct)
+	fc.Result = res
+	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Doc_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.Doc) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Doc",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Metadata, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Metadata)
+	fc.Result = res
+	return ec.marshalNMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMetadata(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocChange_before(ctx context.Context, field graphql.CollectedField, obj *apipb.DocChange) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocChange",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Before, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Doc)
+	fc.Result = res
+	return ec.marshalODoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocChange_after(ctx context.Context, field graphql.CollectedField, obj *apipb.DocChange) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocChange",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.After, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Doc)
+	fc.Result = res
+	return ec.marshalODoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocDetail_path(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Path, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Path)
+	fc.Result = res
+	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocDetail_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Attributes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*structpb.Struct)
+	fc.Result = res
+	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocDetail_connections_from(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ConnectionsFrom, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.ConnectionDetails)
+	fc.Result = res
+	return ec.marshalOConnectionDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionDetails(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocDetail_connections_to(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ConnectionsTo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.ConnectionDetails)
+	fc.Result = res
+	return ec.marshalOConnectionDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionDetails(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocDetail_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocDetail",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Metadata, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Metadata)
+	fc.Result = res
+	return ec.marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMetadata(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Docs_docs(ctx context.Context, field graphql.CollectedField, obj *apipb.Docs) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Docs",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Docs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*apipb.Doc)
+	fc.Result = res
+	return ec.marshalODoc2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Message_channel(ctx context.Context, field graphql.CollectedField, obj *apipb.Message) (ret graphql.Marshaler) {
@@ -2373,6 +2744,41 @@ func (ec *executionContext) _Metadata_updated_at(ctx context.Context, field grap
 	return ec.marshalNTimestamp2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋtimestamppbᚐTimestamp(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Metadata_createdBy(ctx context.Context, field graphql.CollectedField, obj *apipb.Metadata) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Metadata",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Path)
+	fc.Result = res
+	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Metadata_updated_by(ctx context.Context, field graphql.CollectedField, obj *apipb.Metadata) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2478,7 +2884,7 @@ func (ec *executionContext) _Metadata_version(ctx context.Context, field graphql
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_createNode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2495,7 +2901,7 @@ func (ec *executionContext) _Mutation_createNode(ctx context.Context, field grap
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createNode_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createDoc_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2503,7 +2909,7 @@ func (ec *executionContext) _Mutation_createNode(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateNode(rctx, args["input"].(apipb.NodeConstructor))
+		return ec.resolvers.Mutation().CreateDoc(rctx, args["input"].(apipb.DocConstructor))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2515,12 +2921,12 @@ func (ec *executionContext) _Mutation_createNode(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Node)
+	res := resTmp.(*apipb.Doc)
 	fc.Result = res
-	return ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_patchNode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_patchDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2537,7 +2943,7 @@ func (ec *executionContext) _Mutation_patchNode(ctx context.Context, field graph
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_patchNode_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_patchDoc_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2545,7 +2951,7 @@ func (ec *executionContext) _Mutation_patchNode(ctx context.Context, field graph
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchNode(rctx, args["input"].(apipb.Patch))
+		return ec.resolvers.Mutation().PatchDoc(rctx, args["input"].(apipb.Patch))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2557,12 +2963,12 @@ func (ec *executionContext) _Mutation_patchNode(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Node)
+	res := resTmp.(*apipb.Doc)
 	fc.Result = res
-	return ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_patchNodes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_patchDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2579,7 +2985,7 @@ func (ec *executionContext) _Mutation_patchNodes(ctx context.Context, field grap
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_patchNodes_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_patchDocs_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2587,7 +2993,7 @@ func (ec *executionContext) _Mutation_patchNodes(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchNodes(rctx, args["input"].(apipb.PatchFilter))
+		return ec.resolvers.Mutation().PatchDocs(rctx, args["input"].(apipb.PatchFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2599,12 +3005,12 @@ func (ec *executionContext) _Mutation_patchNodes(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Nodes)
+	res := resTmp.(*apipb.Docs)
 	fc.Result = res
-	return ec.marshalNNodes2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodes(ctx, field.Selections, res)
+	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocs(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_createEdge(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2621,7 +3027,7 @@ func (ec *executionContext) _Mutation_createEdge(ctx context.Context, field grap
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_createEdge_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_createConnection_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2629,7 +3035,7 @@ func (ec *executionContext) _Mutation_createEdge(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateEdge(rctx, args["input"].(apipb.EdgeConstructor))
+		return ec.resolvers.Mutation().CreateConnection(rctx, args["input"].(apipb.ConnectionConstructor))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2641,12 +3047,12 @@ func (ec *executionContext) _Mutation_createEdge(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edge)
+	res := resTmp.(*apipb.Connection)
 	fc.Result = res
-	return ec.marshalNEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx, field.Selections, res)
+	return ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_patchEdge(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_patchConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2663,7 +3069,7 @@ func (ec *executionContext) _Mutation_patchEdge(ctx context.Context, field graph
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_patchEdge_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_patchConnection_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2671,7 +3077,7 @@ func (ec *executionContext) _Mutation_patchEdge(ctx context.Context, field graph
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchEdge(rctx, args["input"].(apipb.Patch))
+		return ec.resolvers.Mutation().PatchConnection(rctx, args["input"].(apipb.Patch))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2683,12 +3089,12 @@ func (ec *executionContext) _Mutation_patchEdge(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edge)
+	res := resTmp.(*apipb.Connection)
 	fc.Result = res
-	return ec.marshalNEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx, field.Selections, res)
+	return ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_patchEdges(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_patchConnections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2705,7 +3111,7 @@ func (ec *executionContext) _Mutation_patchEdges(ctx context.Context, field grap
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_patchEdges_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_patchConnections_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -2713,7 +3119,7 @@ func (ec *executionContext) _Mutation_patchEdges(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchEdges(rctx, args["input"].(apipb.PatchFilter))
+		return ec.resolvers.Mutation().PatchConnections(rctx, args["input"].(apipb.PatchFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2725,9 +3131,9 @@ func (ec *executionContext) _Mutation_patchEdges(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edges)
+	res := resTmp.(*apipb.Connections)
 	fc.Result = res
-	return ec.marshalNEdges2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdges(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2770,367 +3176,6 @@ func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql
 	res := resTmp.(*emptypb.Empty)
 	fc.Result = res
 	return ec.marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Node_path(ctx context.Context, field graphql.CollectedField, obj *apipb.Node) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Node",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Path, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Path)
-	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Node_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.Node) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Node",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Attributes, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*structpb.Struct)
-	fc.Result = res
-	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Node_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.Node) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Node",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Metadata, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Metadata)
-	fc.Result = res
-	return ec.marshalNMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMetadata(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NodeChange_before(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeChange) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NodeChange",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Before, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Node)
-	fc.Result = res
-	return ec.marshalONode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NodeChange_after(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeChange) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NodeChange",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.After, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Node)
-	fc.Result = res
-	return ec.marshalONode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NodeDetail_path(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NodeDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Path, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Path)
-	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NodeDetail_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NodeDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Attributes, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*structpb.Struct)
-	fc.Result = res
-	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NodeDetail_edges_from(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NodeDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.EdgesFrom, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.EdgeDetails)
-	fc.Result = res
-	return ec.marshalOEdgeDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetails(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NodeDetail_edges_to(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NodeDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.EdgesTo, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.EdgeDetails)
-	fc.Result = res
-	return ec.marshalOEdgeDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetails(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _NodeDetail_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.NodeDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "NodeDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Metadata, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Metadata)
-	fc.Result = res
-	return ec.marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐMetadata(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Nodes_nodes(ctx context.Context, field graphql.CollectedField, obj *apipb.Nodes) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Nodes",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Nodes, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*apipb.Node)
-	fc.Result = res
-	return ec.marshalONode2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Path_gtype(ctx context.Context, field graphql.CollectedField, obj *apipb.Path) (ret graphql.Marshaler) {
@@ -3359,12 +3404,12 @@ func (ec *executionContext) _Query_me(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.NodeDetail)
+	res := resTmp.(*apipb.DocDetail)
 	fc.Result = res
-	return ec.marshalNNodeDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeDetail(ctx, field.Selections, res)
+	return ec.marshalNDocDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocDetail(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getNode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3381,7 +3426,7 @@ func (ec *executionContext) _Query_getNode(ctx context.Context, field graphql.Co
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getNode_args(ctx, rawArgs)
+	args, err := ec.field_Query_getDoc_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3389,7 +3434,7 @@ func (ec *executionContext) _Query_getNode(ctx context.Context, field graphql.Co
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetNode(rctx, args["input"].(apipb.Path))
+		return ec.resolvers.Query().GetDoc(rctx, args["input"].(apipb.Path))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3401,12 +3446,12 @@ func (ec *executionContext) _Query_getNode(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Node)
+	res := resTmp.(*apipb.Doc)
 	fc.Result = res
-	return ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_searchNodes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_searchDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3423,7 +3468,7 @@ func (ec *executionContext) _Query_searchNodes(ctx context.Context, field graphq
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_searchNodes_args(ctx, rawArgs)
+	args, err := ec.field_Query_searchDocs_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3431,7 +3476,7 @@ func (ec *executionContext) _Query_searchNodes(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().SearchNodes(rctx, args["input"].(apipb.Filter))
+		return ec.resolvers.Query().SearchDocs(rctx, args["input"].(apipb.Filter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3443,12 +3488,12 @@ func (ec *executionContext) _Query_searchNodes(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Nodes)
+	res := resTmp.(*apipb.Docs)
 	fc.Result = res
-	return ec.marshalNNodes2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodes(ctx, field.Selections, res)
+	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocs(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_getEdge(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_getConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3465,7 +3510,7 @@ func (ec *executionContext) _Query_getEdge(ctx context.Context, field graphql.Co
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_getEdge_args(ctx, rawArgs)
+	args, err := ec.field_Query_getConnection_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3473,7 +3518,7 @@ func (ec *executionContext) _Query_getEdge(ctx context.Context, field graphql.Co
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetEdge(rctx, args["input"].(apipb.Path))
+		return ec.resolvers.Query().GetConnection(rctx, args["input"].(apipb.Path))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3485,12 +3530,12 @@ func (ec *executionContext) _Query_getEdge(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edge)
+	res := resTmp.(*apipb.Connection)
 	fc.Result = res
-	return ec.marshalNEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx, field.Selections, res)
+	return ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_searchEdges(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_searchConnections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3507,7 +3552,7 @@ func (ec *executionContext) _Query_searchEdges(ctx context.Context, field graphq
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_searchEdges_args(ctx, rawArgs)
+	args, err := ec.field_Query_searchConnections_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3515,7 +3560,7 @@ func (ec *executionContext) _Query_searchEdges(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().SearchEdges(rctx, args["input"].(apipb.Filter))
+		return ec.resolvers.Query().SearchConnections(rctx, args["input"].(apipb.Filter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3527,12 +3572,12 @@ func (ec *executionContext) _Query_searchEdges(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edges)
+	res := resTmp.(*apipb.Connections)
 	fc.Result = res
-	return ec.marshalNEdges2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdges(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnections(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_edgesFrom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_connectionsFrom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3549,7 +3594,7 @@ func (ec *executionContext) _Query_edgesFrom(ctx context.Context, field graphql.
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_edgesFrom_args(ctx, rawArgs)
+	args, err := ec.field_Query_connectionsFrom_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3557,7 +3602,7 @@ func (ec *executionContext) _Query_edgesFrom(ctx context.Context, field graphql.
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().EdgesFrom(rctx, args["input"].(apipb.EdgeFilter))
+		return ec.resolvers.Query().ConnectionsFrom(rctx, args["input"].(apipb.ConnectionFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3569,12 +3614,12 @@ func (ec *executionContext) _Query_edgesFrom(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edges)
+	res := resTmp.(*apipb.Connections)
 	fc.Result = res
-	return ec.marshalNEdges2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdges(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnections(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_edgesTo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_connectionsTo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3591,7 +3636,7 @@ func (ec *executionContext) _Query_edgesTo(ctx context.Context, field graphql.Co
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_edgesTo_args(ctx, rawArgs)
+	args, err := ec.field_Query_connectionsTo_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3599,7 +3644,7 @@ func (ec *executionContext) _Query_edgesTo(ctx context.Context, field graphql.Co
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().EdgesTo(rctx, args["input"].(apipb.EdgeFilter))
+		return ec.resolvers.Query().ConnectionsTo(rctx, args["input"].(apipb.ConnectionFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3611,9 +3656,9 @@ func (ec *executionContext) _Query_edgesTo(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Edges)
+	res := resTmp.(*apipb.Connections)
 	fc.Result = res
-	return ec.marshalNEdges2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdges(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3687,7 +3732,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Schema_edge_types(ctx context.Context, field graphql.CollectedField, obj *apipb.Schema) (ret graphql.Marshaler) {
+func (ec *executionContext) _Schema_connection_types(ctx context.Context, field graphql.CollectedField, obj *apipb.Schema) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3705,7 +3750,7 @@ func (ec *executionContext) _Schema_edge_types(ctx context.Context, field graphq
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.EdgeTypes, nil
+		return obj.ConnectionTypes, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3719,7 +3764,7 @@ func (ec *executionContext) _Schema_edge_types(ctx context.Context, field graphq
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Schema_node_types(ctx context.Context, field graphql.CollectedField, obj *apipb.Schema) (ret graphql.Marshaler) {
+func (ec *executionContext) _Schema_doc_types(ctx context.Context, field graphql.CollectedField, obj *apipb.Schema) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3737,7 +3782,7 @@ func (ec *executionContext) _Schema_node_types(ctx context.Context, field graphq
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.NodeTypes, nil
+		return obj.DocTypes, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4970,8 +5015,8 @@ func (ec *executionContext) unmarshalInputChannelFilter(ctx context.Context, obj
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, obj interface{}) (apipb.EdgeConstructor, error) {
-	var it apipb.EdgeConstructor
+func (ec *executionContext) unmarshalInputConnectionConstructor(ctx context.Context, obj interface{}) (apipb.ConnectionConstructor, error) {
+	var it apipb.ConnectionConstructor
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -5022,17 +5067,17 @@ func (ec *executionContext) unmarshalInputEdgeConstructor(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputEdgeFilter(ctx context.Context, obj interface{}) (apipb.EdgeFilter, error) {
-	var it apipb.EdgeFilter
+func (ec *executionContext) unmarshalInputConnectionFilter(ctx context.Context, obj interface{}) (apipb.ConnectionFilter, error) {
+	var it apipb.ConnectionFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "node_path":
+		case "doc_path":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("node_path"))
-			it.NodePath, err = ec.unmarshalNPathInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("doc_path"))
+			it.DocPath, err = ec.unmarshalNPathInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5057,6 +5102,34 @@ func (ec *executionContext) unmarshalInputEdgeFilter(ctx context.Context, obj in
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
 			it.Limit, err = ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDocConstructor(ctx context.Context, obj interface{}) (apipb.DocConstructor, error) {
+	var it apipb.DocConstructor
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "path":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
+			it.Path, err = ec.unmarshalNPathInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "attributes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+			it.Attributes, err = ec.unmarshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5128,47 +5201,19 @@ func (ec *executionContext) unmarshalInputMeFilter(ctx context.Context, obj inte
 
 	for k, v := range asMap {
 		switch k {
-		case "edges_from":
+		case "connections_from":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("edges_from"))
-			it.EdgesFrom, err = ec.unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections_from"))
+			it.ConnectionsFrom, err = ec.unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "edges_to":
+		case "connections_to":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("edges_to"))
-			it.EdgesTo, err = ec.unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputNodeConstructor(ctx context.Context, obj interface{}) (apipb.NodeConstructor, error) {
-	var it apipb.NodeConstructor
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "path":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
-			it.Path, err = ec.unmarshalNPathInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐPath(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "attributes":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
-			it.Attributes, err = ec.unmarshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections_to"))
+			it.ConnectionsTo, err = ec.unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5324,10 +5369,10 @@ func (ec *executionContext) _Change(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "edge_changes":
-			out.Values[i] = ec._Change_edge_changes(ctx, field, obj)
-		case "node_changes":
-			out.Values[i] = ec._Change_node_changes(ctx, field, obj)
+		case "connection_changes":
+			out.Values[i] = ec._Change_connection_changes(ctx, field, obj)
+		case "doc_changes":
+			out.Values[i] = ec._Change_doc_changes(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5339,38 +5384,38 @@ func (ec *executionContext) _Change(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
-var edgeImplementors = []string{"Edge"}
+var connectionImplementors = []string{"Connection"}
 
-func (ec *executionContext) _Edge(ctx context.Context, sel ast.SelectionSet, obj *apipb.Edge) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, edgeImplementors)
+func (ec *executionContext) _Connection(ctx context.Context, sel ast.SelectionSet, obj *apipb.Connection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, connectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Edge")
+			out.Values[i] = graphql.MarshalString("Connection")
 		case "path":
-			out.Values[i] = ec._Edge_path(ctx, field, obj)
+			out.Values[i] = ec._Connection_path(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "attributes":
-			out.Values[i] = ec._Edge_attributes(ctx, field, obj)
+			out.Values[i] = ec._Connection_attributes(ctx, field, obj)
 		case "directed":
-			out.Values[i] = ec._Edge_directed(ctx, field, obj)
+			out.Values[i] = ec._Connection_directed(ctx, field, obj)
 		case "from":
-			out.Values[i] = ec._Edge_from(ctx, field, obj)
+			out.Values[i] = ec._Connection_from(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "to":
-			out.Values[i] = ec._Edge_to(ctx, field, obj)
+			out.Values[i] = ec._Connection_to(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "metadata":
-			out.Values[i] = ec._Edge_metadata(ctx, field, obj)
+			out.Values[i] = ec._Connection_metadata(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5385,21 +5430,21 @@ func (ec *executionContext) _Edge(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
-var edgeChangeImplementors = []string{"EdgeChange"}
+var connectionChangeImplementors = []string{"ConnectionChange"}
 
-func (ec *executionContext) _EdgeChange(ctx context.Context, sel ast.SelectionSet, obj *apipb.EdgeChange) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, edgeChangeImplementors)
+func (ec *executionContext) _ConnectionChange(ctx context.Context, sel ast.SelectionSet, obj *apipb.ConnectionChange) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, connectionChangeImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("EdgeChange")
+			out.Values[i] = graphql.MarshalString("ConnectionChange")
 		case "before":
-			out.Values[i] = ec._EdgeChange_before(ctx, field, obj)
+			out.Values[i] = ec._ConnectionChange_before(ctx, field, obj)
 		case "after":
-			out.Values[i] = ec._EdgeChange_after(ctx, field, obj)
+			out.Values[i] = ec._ConnectionChange_after(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5411,38 +5456,38 @@ func (ec *executionContext) _EdgeChange(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var edgeDetailImplementors = []string{"EdgeDetail"}
+var connectionDetailImplementors = []string{"ConnectionDetail"}
 
-func (ec *executionContext) _EdgeDetail(ctx context.Context, sel ast.SelectionSet, obj *apipb.EdgeDetail) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, edgeDetailImplementors)
+func (ec *executionContext) _ConnectionDetail(ctx context.Context, sel ast.SelectionSet, obj *apipb.ConnectionDetail) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, connectionDetailImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("EdgeDetail")
+			out.Values[i] = graphql.MarshalString("ConnectionDetail")
 		case "path":
-			out.Values[i] = ec._EdgeDetail_path(ctx, field, obj)
+			out.Values[i] = ec._ConnectionDetail_path(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "attributes":
-			out.Values[i] = ec._EdgeDetail_attributes(ctx, field, obj)
+			out.Values[i] = ec._ConnectionDetail_attributes(ctx, field, obj)
 		case "directed":
-			out.Values[i] = ec._EdgeDetail_directed(ctx, field, obj)
+			out.Values[i] = ec._ConnectionDetail_directed(ctx, field, obj)
 		case "from":
-			out.Values[i] = ec._EdgeDetail_from(ctx, field, obj)
+			out.Values[i] = ec._ConnectionDetail_from(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "to":
-			out.Values[i] = ec._EdgeDetail_to(ctx, field, obj)
+			out.Values[i] = ec._ConnectionDetail_to(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "metadata":
-			out.Values[i] = ec._EdgeDetail_metadata(ctx, field, obj)
+			out.Values[i] = ec._ConnectionDetail_metadata(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5454,19 +5499,19 @@ func (ec *executionContext) _EdgeDetail(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var edgeDetailsImplementors = []string{"EdgeDetails"}
+var connectionDetailsImplementors = []string{"ConnectionDetails"}
 
-func (ec *executionContext) _EdgeDetails(ctx context.Context, sel ast.SelectionSet, obj *apipb.EdgeDetails) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, edgeDetailsImplementors)
+func (ec *executionContext) _ConnectionDetails(ctx context.Context, sel ast.SelectionSet, obj *apipb.ConnectionDetails) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, connectionDetailsImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("EdgeDetails")
-		case "edges":
-			out.Values[i] = ec._EdgeDetails_edges(ctx, field, obj)
+			out.Values[i] = graphql.MarshalString("ConnectionDetails")
+		case "connections":
+			out.Values[i] = ec._ConnectionDetails_connections(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5478,19 +5523,138 @@ func (ec *executionContext) _EdgeDetails(ctx context.Context, sel ast.SelectionS
 	return out
 }
 
-var edgesImplementors = []string{"Edges"}
+var connectionsImplementors = []string{"Connections"}
 
-func (ec *executionContext) _Edges(ctx context.Context, sel ast.SelectionSet, obj *apipb.Edges) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, edgesImplementors)
+func (ec *executionContext) _Connections(ctx context.Context, sel ast.SelectionSet, obj *apipb.Connections) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, connectionsImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Edges")
-		case "edges":
-			out.Values[i] = ec._Edges_edges(ctx, field, obj)
+			out.Values[i] = graphql.MarshalString("Connections")
+		case "connections":
+			out.Values[i] = ec._Connections_connections(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var docImplementors = []string{"Doc"}
+
+func (ec *executionContext) _Doc(ctx context.Context, sel ast.SelectionSet, obj *apipb.Doc) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, docImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Doc")
+		case "path":
+			out.Values[i] = ec._Doc_path(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "attributes":
+			out.Values[i] = ec._Doc_attributes(ctx, field, obj)
+		case "metadata":
+			out.Values[i] = ec._Doc_metadata(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var docChangeImplementors = []string{"DocChange"}
+
+func (ec *executionContext) _DocChange(ctx context.Context, sel ast.SelectionSet, obj *apipb.DocChange) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, docChangeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DocChange")
+		case "before":
+			out.Values[i] = ec._DocChange_before(ctx, field, obj)
+		case "after":
+			out.Values[i] = ec._DocChange_after(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var docDetailImplementors = []string{"DocDetail"}
+
+func (ec *executionContext) _DocDetail(ctx context.Context, sel ast.SelectionSet, obj *apipb.DocDetail) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, docDetailImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DocDetail")
+		case "path":
+			out.Values[i] = ec._DocDetail_path(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "attributes":
+			out.Values[i] = ec._DocDetail_attributes(ctx, field, obj)
+		case "connections_from":
+			out.Values[i] = ec._DocDetail_connections_from(ctx, field, obj)
+		case "connections_to":
+			out.Values[i] = ec._DocDetail_connections_to(ctx, field, obj)
+		case "metadata":
+			out.Values[i] = ec._DocDetail_metadata(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var docsImplementors = []string{"Docs"}
+
+func (ec *executionContext) _Docs(ctx context.Context, sel ast.SelectionSet, obj *apipb.Docs) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, docsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Docs")
+		case "docs":
+			out.Values[i] = ec._Docs_docs(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5565,6 +5729,11 @@ func (ec *executionContext) _Metadata(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "createdBy":
+			out.Values[i] = ec._Metadata_createdBy(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "updated_by":
 			out.Values[i] = ec._Metadata_updated_by(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -5624,33 +5793,33 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
-		case "createNode":
-			out.Values[i] = ec._Mutation_createNode(ctx, field)
+		case "createDoc":
+			out.Values[i] = ec._Mutation_createDoc(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "patchNode":
-			out.Values[i] = ec._Mutation_patchNode(ctx, field)
+		case "patchDoc":
+			out.Values[i] = ec._Mutation_patchDoc(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "patchNodes":
-			out.Values[i] = ec._Mutation_patchNodes(ctx, field)
+		case "patchDocs":
+			out.Values[i] = ec._Mutation_patchDocs(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "createEdge":
-			out.Values[i] = ec._Mutation_createEdge(ctx, field)
+		case "createConnection":
+			out.Values[i] = ec._Mutation_createConnection(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "patchEdge":
-			out.Values[i] = ec._Mutation_patchEdge(ctx, field)
+		case "patchConnection":
+			out.Values[i] = ec._Mutation_patchConnection(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "patchEdges":
-			out.Values[i] = ec._Mutation_patchEdges(ctx, field)
+		case "patchConnections":
+			out.Values[i] = ec._Mutation_patchConnections(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5659,125 +5828,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var nodeImplementors = []string{"Node"}
-
-func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj *apipb.Node) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, nodeImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Node")
-		case "path":
-			out.Values[i] = ec._Node_path(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "attributes":
-			out.Values[i] = ec._Node_attributes(ctx, field, obj)
-		case "metadata":
-			out.Values[i] = ec._Node_metadata(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var nodeChangeImplementors = []string{"NodeChange"}
-
-func (ec *executionContext) _NodeChange(ctx context.Context, sel ast.SelectionSet, obj *apipb.NodeChange) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, nodeChangeImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("NodeChange")
-		case "before":
-			out.Values[i] = ec._NodeChange_before(ctx, field, obj)
-		case "after":
-			out.Values[i] = ec._NodeChange_after(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var nodeDetailImplementors = []string{"NodeDetail"}
-
-func (ec *executionContext) _NodeDetail(ctx context.Context, sel ast.SelectionSet, obj *apipb.NodeDetail) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, nodeDetailImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("NodeDetail")
-		case "path":
-			out.Values[i] = ec._NodeDetail_path(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "attributes":
-			out.Values[i] = ec._NodeDetail_attributes(ctx, field, obj)
-		case "edges_from":
-			out.Values[i] = ec._NodeDetail_edges_from(ctx, field, obj)
-		case "edges_to":
-			out.Values[i] = ec._NodeDetail_edges_to(ctx, field, obj)
-		case "metadata":
-			out.Values[i] = ec._NodeDetail_metadata(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var nodesImplementors = []string{"Nodes"}
-
-func (ec *executionContext) _Nodes(ctx context.Context, sel ast.SelectionSet, obj *apipb.Nodes) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, nodesImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Nodes")
-		case "nodes":
-			out.Values[i] = ec._Nodes_nodes(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5905,7 +5955,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
-		case "getNode":
+		case "getDoc":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -5913,13 +5963,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getNode(ctx, field)
+				res = ec._Query_getDoc(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "searchNodes":
+		case "searchDocs":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -5927,13 +5977,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_searchNodes(ctx, field)
+				res = ec._Query_searchDocs(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "getEdge":
+		case "getConnection":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -5941,13 +5991,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_getEdge(ctx, field)
+				res = ec._Query_getConnection(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "searchEdges":
+		case "searchConnections":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -5955,13 +6005,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_searchEdges(ctx, field)
+				res = ec._Query_searchConnections(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "edgesFrom":
+		case "connectionsFrom":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -5969,13 +6019,13 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_edgesFrom(ctx, field)
+				res = ec._Query_connectionsFrom(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
 				return res
 			})
-		case "edgesTo":
+		case "connectionsTo":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -5983,7 +6033,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_edgesTo(ctx, field)
+				res = ec._Query_connectionsTo(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -6015,10 +6065,10 @@ func (ec *executionContext) _Schema(ctx context.Context, sel ast.SelectionSet, o
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Schema")
-		case "edge_types":
-			out.Values[i] = ec._Schema_edge_types(ctx, field, obj)
-		case "node_types":
-			out.Values[i] = ec._Schema_node_types(ctx, field, obj)
+		case "connection_types":
+			out.Values[i] = ec._Schema_connection_types(ctx, field, obj)
+		case "doc_types":
+			out.Values[i] = ec._Schema_doc_types(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6331,62 +6381,119 @@ func (ec *executionContext) unmarshalNChannelFilter2githubᚗcomᚋautom8terᚋg
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNEdge2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx context.Context, sel ast.SelectionSet, v apipb.Edge) graphql.Marshaler {
-	return ec._Edge(ctx, sel, &v)
+func (ec *executionContext) marshalNConnection2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx context.Context, sel ast.SelectionSet, v apipb.Connection) graphql.Marshaler {
+	return ec._Connection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx context.Context, sel ast.SelectionSet, v *apipb.Edge) graphql.Marshaler {
+func (ec *executionContext) marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx context.Context, sel ast.SelectionSet, v *apipb.Connection) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._Edge(ctx, sel, v)
+	return ec._Connection(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNEdgeChange2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeChange(ctx context.Context, sel ast.SelectionSet, v *apipb.EdgeChange) graphql.Marshaler {
+func (ec *executionContext) marshalNConnectionChange2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionChange(ctx context.Context, sel ast.SelectionSet, v *apipb.ConnectionChange) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._EdgeChange(ctx, sel, v)
+	return ec._ConnectionChange(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNEdgeConstructor2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeConstructor(ctx context.Context, v interface{}) (apipb.EdgeConstructor, error) {
-	res, err := ec.unmarshalInputEdgeConstructor(ctx, v)
+func (ec *executionContext) unmarshalNConnectionConstructor2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionConstructor(ctx context.Context, v interface{}) (apipb.ConnectionConstructor, error) {
+	res, err := ec.unmarshalInputConnectionConstructor(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNEdgeDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetail(ctx context.Context, sel ast.SelectionSet, v *apipb.EdgeDetail) graphql.Marshaler {
+func (ec *executionContext) marshalNConnectionDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionDetail(ctx context.Context, sel ast.SelectionSet, v *apipb.ConnectionDetail) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._EdgeDetail(ctx, sel, v)
+	return ec._ConnectionDetail(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNEdgeFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeFilter(ctx context.Context, v interface{}) (apipb.EdgeFilter, error) {
-	res, err := ec.unmarshalInputEdgeFilter(ctx, v)
+func (ec *executionContext) unmarshalNConnectionFilter2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionFilter(ctx context.Context, v interface{}) (apipb.ConnectionFilter, error) {
+	res, err := ec.unmarshalInputConnectionFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNEdges2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdges(ctx context.Context, sel ast.SelectionSet, v apipb.Edges) graphql.Marshaler {
-	return ec._Edges(ctx, sel, &v)
+func (ec *executionContext) marshalNConnections2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnections(ctx context.Context, sel ast.SelectionSet, v apipb.Connections) graphql.Marshaler {
+	return ec._Connections(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNEdges2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdges(ctx context.Context, sel ast.SelectionSet, v *apipb.Edges) graphql.Marshaler {
+func (ec *executionContext) marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnections(ctx context.Context, sel ast.SelectionSet, v *apipb.Connections) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._Edges(ctx, sel, v)
+	return ec._Connections(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDoc2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx context.Context, sel ast.SelectionSet, v apipb.Doc) graphql.Marshaler {
+	return ec._Doc(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx context.Context, sel ast.SelectionSet, v *apipb.Doc) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Doc(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDocChange2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocChange(ctx context.Context, sel ast.SelectionSet, v *apipb.DocChange) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._DocChange(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDocConstructor2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocConstructor(ctx context.Context, v interface{}) (apipb.DocConstructor, error) {
+	res, err := ec.unmarshalInputDocConstructor(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDocDetail2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocDetail(ctx context.Context, sel ast.SelectionSet, v apipb.DocDetail) graphql.Marshaler {
+	return ec._DocDetail(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDocDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocDetail(ctx context.Context, sel ast.SelectionSet, v *apipb.DocDetail) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._DocDetail(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDocs2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocs(ctx context.Context, sel ast.SelectionSet, v apipb.Docs) graphql.Marshaler {
+	return ec._Docs(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocs(ctx context.Context, sel ast.SelectionSet, v *apipb.Docs) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Docs(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx context.Context, v interface{}) (*emptypb.Empty, error) {
@@ -6477,63 +6584,6 @@ func (ec *executionContext) marshalNMetadata2ᚖgithubᚗcomᚋautom8terᚋgraph
 		return graphql.Null
 	}
 	return ec._Metadata(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNNode2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx context.Context, sel ast.SelectionSet, v apipb.Node) graphql.Marshaler {
-	return ec._Node(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx context.Context, sel ast.SelectionSet, v *apipb.Node) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Node(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNNodeChange2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeChange(ctx context.Context, sel ast.SelectionSet, v *apipb.NodeChange) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._NodeChange(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNNodeConstructor2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeConstructor(ctx context.Context, v interface{}) (apipb.NodeConstructor, error) {
-	res, err := ec.unmarshalInputNodeConstructor(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNNodeDetail2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeDetail(ctx context.Context, sel ast.SelectionSet, v apipb.NodeDetail) graphql.Marshaler {
-	return ec._NodeDetail(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNNodeDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeDetail(ctx context.Context, sel ast.SelectionSet, v *apipb.NodeDetail) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._NodeDetail(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNNodes2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodes(ctx context.Context, sel ast.SelectionSet, v apipb.Nodes) graphql.Marshaler {
-	return ec._Nodes(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNNodes2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodes(ctx context.Context, sel ast.SelectionSet, v *apipb.Nodes) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Nodes(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNOutboundMessage2githubᚗcomᚋautom8terᚋgraphikᚋapiᚐOutboundMessage(ctx context.Context, v interface{}) (apipb.OutboundMessage, error) {
@@ -6909,7 +6959,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
-func (ec *executionContext) marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Edge) graphql.Marshaler {
+func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Connection) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -6936,7 +6986,7 @@ func (ec *executionContext) marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphi
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx, sel, v[i])
+			ret[i] = ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6949,14 +6999,14 @@ func (ec *executionContext) marshalOEdge2ᚕᚖgithubᚗcomᚋautom8terᚋgraphi
 	return ret
 }
 
-func (ec *executionContext) marshalOEdge2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdge(ctx context.Context, sel ast.SelectionSet, v *apipb.Edge) graphql.Marshaler {
+func (ec *executionContext) marshalOConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnection(ctx context.Context, sel ast.SelectionSet, v *apipb.Connection) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec._Edge(ctx, sel, v)
+	return ec._Connection(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOEdgeChange2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeChangeᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.EdgeChange) graphql.Marshaler {
+func (ec *executionContext) marshalOConnectionChange2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionChangeᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.ConnectionChange) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -6983,7 +7033,7 @@ func (ec *executionContext) marshalOEdgeChange2ᚕᚖgithubᚗcomᚋautom8terᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNEdgeChange2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeChange(ctx, sel, v[i])
+			ret[i] = ec.marshalNConnectionChange2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionChange(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6996,7 +7046,7 @@ func (ec *executionContext) marshalOEdgeChange2ᚕᚖgithubᚗcomᚋautom8terᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalOEdgeDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetailᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.EdgeDetail) graphql.Marshaler {
+func (ec *executionContext) marshalOConnectionDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionDetailᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.ConnectionDetail) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7023,7 +7073,7 @@ func (ec *executionContext) marshalOEdgeDetail2ᚕᚖgithubᚗcomᚋautom8terᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNEdgeDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetail(ctx, sel, v[i])
+			ret[i] = ec.marshalNConnectionDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionDetail(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7036,11 +7086,98 @@ func (ec *executionContext) marshalOEdgeDetail2ᚕᚖgithubᚗcomᚋautom8terᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalOEdgeDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐEdgeDetails(ctx context.Context, sel ast.SelectionSet, v *apipb.EdgeDetails) graphql.Marshaler {
+func (ec *executionContext) marshalOConnectionDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐConnectionDetails(ctx context.Context, sel ast.SelectionSet, v *apipb.ConnectionDetails) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec._EdgeDetails(ctx, sel, v)
+	return ec._ConnectionDetails(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODoc2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Doc) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalODoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDoc(ctx context.Context, sel ast.SelectionSet, v *apipb.Doc) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Doc(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODocChange2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocChangeᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.DocChange) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDocChange2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐDocChange(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx context.Context, v interface{}) (*emptypb.Empty, error) {
@@ -7079,93 +7216,6 @@ func (ec *executionContext) marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraph
 		return graphql.Null
 	}
 	return ec._Metadata(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalONode2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Node) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNNode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalONode2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNode(ctx context.Context, sel ast.SelectionSet, v *apipb.Node) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Node(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalONodeChange2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeChangeᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.NodeChange) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNNodeChange2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋapiᚐNodeChange(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

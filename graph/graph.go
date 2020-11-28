@@ -35,8 +35,8 @@ const (
 var (
 	DONE = errors.New("DONE")
 	// Bucket names we perform transactions in
-	dbEdges = []byte("edges")
-	dbNodes = []byte("nodes")
+	dbConnections = []byte("connections")
+	dbDocs        = []byte("docs")
 	// An error indicating a given key does not exist
 	ErrNotFound = errors.New("not found")
 )
@@ -50,13 +50,13 @@ type Graph struct {
 	jwksSource  string
 	authorizers []cel.Program
 	// The path to the Bolt database file
-	path      string
-	mu        sync.RWMutex
-	edgesTo   map[string][]*apipb.Path
-	edgesFrom map[string][]*apipb.Path
-	machine   *machine.Machine
-	closers   []func()
-	closeOnce sync.Once
+	path            string
+	mu              sync.RWMutex
+	connectionsTo   map[string][]*apipb.Path
+	connectionsFrom map[string][]*apipb.Path
+	machine         *machine.Machine
+	closers         []func()
+	closeOnce       sync.Once
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -80,19 +80,19 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		}
 	}
 	g := &Graph{
-		vm:          vMachine,
-		db:          handle,
-		jwksMu:      sync.RWMutex{},
-		jwksSet:     nil,
-		jwksSource:  flgs.JWKS,
-		authorizers: programs,
-		path:        path,
-		mu:          sync.RWMutex{},
-		edgesTo:     map[string][]*apipb.Path{},
-		edgesFrom:   map[string][]*apipb.Path{},
-		machine:     machine.New(ctx),
-		closers:     closers,
-		closeOnce:   sync.Once{},
+		vm:              vMachine,
+		db:              handle,
+		jwksMu:          sync.RWMutex{},
+		jwksSet:         nil,
+		jwksSource:      flgs.JWKS,
+		authorizers:     programs,
+		path:            path,
+		mu:              sync.RWMutex{},
+		connectionsTo:   map[string][]*apipb.Path{},
+		connectionsFrom: map[string][]*apipb.Path{},
+		machine:         machine.New(ctx),
+		closers:         closers,
+		closeOnce:       sync.Once{},
 	}
 	if flgs.JWKS != "" {
 		set, err := jwk.Fetch(flgs.JWKS)
@@ -103,24 +103,24 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 	}
 	err = g.db.Update(func(tx *bbolt.Tx) error {
 		// Create all the buckets
-		_, err = tx.CreateBucketIfNotExists(dbNodes)
+		_, err = tx.CreateBucketIfNotExists(dbDocs)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "failed to create doc bucket")
 		}
-		_, err = tx.CreateBucketIfNotExists(dbEdges)
+		_, err = tx.CreateBucketIfNotExists(dbConnections)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "failed to create connection bucket")
 		}
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	err = g.rangeEdges(ctx, apipb.Any, func(e *apipb.Edge) bool {
+	err = g.rangeConnections(ctx, apipb.Any, func(e *apipb.Connection) bool {
 		g.mu.Lock()
 		defer g.mu.Unlock()
-		g.edgesFrom[e.From.String()] = append(g.edgesFrom[e.From.String()], e.Path)
-		g.edgesTo[e.To.String()] = append(g.edgesTo[e.To.String()], e.Path)
+		g.connectionsFrom[e.From.String()] = append(g.connectionsFrom[e.From.String()], e.Path)
+		g.connectionsTo[e.To.String()] = append(g.connectionsTo[e.To.String()], e.Path)
 		return true
 	})
 	if err != nil {
@@ -148,91 +148,91 @@ func (g *Graph) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
 }
 
 func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, error) {
-	e, err := g.EdgeTypes(ctx)
+	e, err := g.ConnectionTypes(ctx)
 	if err != nil {
 		return nil, err
 	}
-	n, err := g.NodeTypes(ctx)
+	n, err := g.DocTypes(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &apipb.Schema{
-		EdgeTypes: e,
-		NodeTypes: n,
+		ConnectionTypes: e,
+		DocTypes:        n,
 	}, nil
 }
 
-func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.NodeDetail, error) {
+func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetail, error) {
 	identity := g.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	detail := &apipb.NodeDetail{
-		Path:       identity.Path,
-		Attributes: identity.Attributes,
-		Metadata:   identity.Metadata,
-		EdgesTo:    &apipb.EdgeDetails{},
-		EdgesFrom:  &apipb.EdgeDetails{},
+	detail := &apipb.DocDetail{
+		Path:            identity.Path,
+		Attributes:      identity.Attributes,
+		Metadata:        identity.Metadata,
+		ConnectionsTo:   &apipb.ConnectionDetails{},
+		ConnectionsFrom: &apipb.ConnectionDetails{},
 	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if filter.EdgesFrom != nil {
-			from, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
-				NodePath:    identity.GetPath(),
-				Gtype:       filter.GetEdgesFrom().GetGtype(),
-				Expressions: filter.GetEdgesFrom().GetExpressions(),
-				Limit:       filter.GetEdgesFrom().GetLimit(),
+		if filter.ConnectionsFrom != nil {
+			from, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
+				DocPath:     identity.GetPath(),
+				Gtype:       filter.GetConnectionsFrom().GetGtype(),
+				Expressions: filter.GetConnectionsFrom().GetExpressions(),
+				Limit:       filter.GetConnectionsFrom().GetLimit(),
 			})
 			if err != nil {
 				return err
 			}
-			for _, f := range from.GetEdges() {
-				toNode, err := g.getNode(ctx, tx, f.To)
+			for _, f := range from.GetConnections() {
+				toDoc, err := g.getDoc(ctx, tx, f.To)
 				if err != nil {
 					return err
 				}
-				fromNode, err := g.getNode(ctx, tx, f.From)
+				fromDoc, err := g.getDoc(ctx, tx, f.From)
 				if err != nil {
 					return err
 				}
-				edetail := &apipb.EdgeDetail{
+				edetail := &apipb.ConnectionDetail{
 					Path:       f.Path,
 					Attributes: f.Attributes,
 
-					From:     fromNode,
-					To:       toNode,
+					From:     fromDoc,
+					To:       toDoc,
 					Metadata: f.Metadata,
 				}
-				detail.EdgesFrom.Edges = append(detail.EdgesFrom.Edges, edetail)
+				detail.ConnectionsFrom.Connections = append(detail.ConnectionsFrom.Connections, edetail)
 			}
 		}
-		if filter.EdgesTo != nil {
-			from, err := g.EdgesTo(ctx, &apipb.EdgeFilter{
-				NodePath:    identity.GetPath(),
-				Gtype:       filter.GetEdgesFrom().GetGtype(),
-				Expressions: filter.GetEdgesFrom().GetExpressions(),
-				Limit:       filter.GetEdgesFrom().GetLimit(),
+		if filter.ConnectionsTo != nil {
+			from, err := g.ConnectionsTo(ctx, &apipb.ConnectionFilter{
+				DocPath:     identity.GetPath(),
+				Gtype:       filter.GetConnectionsFrom().GetGtype(),
+				Expressions: filter.GetConnectionsFrom().GetExpressions(),
+				Limit:       filter.GetConnectionsFrom().GetLimit(),
 			})
 			if err != nil {
 				return err
 			}
-			for _, f := range from.GetEdges() {
-				toNode, err := g.getNode(ctx, tx, f.To)
+			for _, f := range from.GetConnections() {
+				toDoc, err := g.getDoc(ctx, tx, f.To)
 				if err != nil {
 					return err
 				}
-				fromNode, err := g.getNode(ctx, tx, f.From)
+				fromDoc, err := g.getDoc(ctx, tx, f.From)
 				if err != nil {
 					return err
 				}
-				edetail := &apipb.EdgeDetail{
+				edetail := &apipb.ConnectionDetail{
 					Path:       f.Path,
 					Attributes: f.Attributes,
 
-					From:     fromNode,
-					To:       toNode,
+					From:     fromDoc,
+					To:       toDoc,
 					Metadata: f.Metadata,
 				}
-				detail.EdgesTo.Edges = append(detail.EdgesTo.Edges, edetail)
+				detail.ConnectionsTo.Connections = append(detail.ConnectionsTo.Connections, edetail)
 			}
 		}
 		return nil
@@ -242,7 +242,7 @@ func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.NodeDeta
 	return detail, nil
 }
 
-func (g *Graph) CreateNodes(ctx context.Context, constructors *apipb.NodeConstructors) (*apipb.Nodes, error) {
+func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstructors) (*apipb.Docs, error) {
 	identity := g.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
@@ -253,15 +253,15 @@ func (g *Graph) CreateNodes(ctx context.Context, constructors *apipb.NodeConstru
 	}
 	now := timestamppb.Now()
 	method := g.getMethod(ctx)
-	var nodes = &apipb.Nodes{}
+	var docs = &apipb.Docs{}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		nodeBucket := tx.Bucket(dbNodes)
-		for _, constructor := range constructors.GetNodes() {
-			bucket := nodeBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+		docBucket := tx.Bucket(dbDocs)
+		for _, constructor := range constructors.GetDocs() {
+			bucket := docBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
 			if constructor.Path.GetGid() == "" {
 				constructor.Path.Gid = uuid.New().String()
 			}
-			node := &apipb.Node{
+			doc := &apipb.Doc{
 				Path:       constructor.GetPath(),
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
@@ -271,52 +271,52 @@ func (g *Graph) CreateNodes(ctx context.Context, constructors *apipb.NodeConstru
 				},
 			}
 			if bucket == nil {
-				bucket, err = nodeBucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
+				bucket, err = docBucket.CreateBucketIfNotExists([]byte(doc.GetPath().GetGtype()))
 				if err != nil {
 					return err
 				}
 			}
 			seq, _ := bucket.NextSequence()
-			node.Metadata.Sequence = seq
-			node, err := g.setNode(ctx, tx, node)
+			doc.Metadata.Sequence = seq
+			doc, err := g.setDoc(ctx, tx, doc)
 			if err != nil {
 				return err
 			}
-			nodes.Nodes = append(nodes.Nodes, node)
+			docs.Docs = append(docs.Docs, doc)
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	var changes []*apipb.NodeChange
-	for _, node := range nodes.GetNodes() {
-		changes = append(changes, &apipb.NodeChange{
-			After: node,
+	var changes []*apipb.DocChange
+	for _, doc := range docs.GetDocs() {
+		changes = append(changes, &apipb.DocChange{
+			After: doc,
 		})
 	}
 	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:      method,
-		Identity:    identity,
-		Timestamp:   now,
-		NodeChanges: changes,
+		Method:     method,
+		Identity:   identity,
+		Timestamp:  now,
+		DocChanges: changes,
 	})
-	nodes.Sort()
-	return nodes, nil
+	docs.Sort()
+	return docs, nil
 }
 
-func (g *Graph) CreateEdge(ctx context.Context, constructor *apipb.EdgeConstructor) (*apipb.Edge, error) {
+func (g *Graph) CreateConnection(ctx context.Context, constructor *apipb.ConnectionConstructor) (*apipb.Connection, error) {
 	identity := g.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	edges, err := g.CreateEdges(ctx, &apipb.EdgeConstructors{Edges: []*apipb.EdgeConstructor{constructor}})
+	connections, err := g.CreateConnections(ctx, &apipb.ConnectionConstructors{Connections: []*apipb.ConnectionConstructor{constructor}})
 	if err != nil {
 		return nil, err
 	}
-	return edges.GetEdges()[0], nil
+	return connections.GetConnections()[0], nil
 }
 
-func (g *Graph) CreateEdges(ctx context.Context, constructors *apipb.EdgeConstructors) (*apipb.Edges, error) {
+func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.ConnectionConstructors) (*apipb.Connections, error) {
 	identity := g.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
@@ -327,13 +327,13 @@ func (g *Graph) CreateEdges(ctx context.Context, constructors *apipb.EdgeConstru
 	}
 	now := timestamppb.Now()
 	method := g.getMethod(ctx)
-	var edges = []*apipb.Edge{}
+	var connections = []*apipb.Connection{}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		edgeBucket := tx.Bucket(dbEdges)
-		for _, constructor := range constructors.GetEdges() {
-			bucket := edgeBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+		connectionBucket := tx.Bucket(dbConnections)
+		for _, constructor := range constructors.GetConnections() {
+			bucket := connectionBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
 			if bucket == nil {
-				bucket, err = edgeBucket.CreateBucketIfNotExists([]byte(constructor.GetPath().GetGtype()))
+				bucket, err = connectionBucket.CreateBucketIfNotExists([]byte(constructor.GetPath().GetGtype()))
 				if err != nil {
 					return err
 				}
@@ -341,7 +341,7 @@ func (g *Graph) CreateEdges(ctx context.Context, constructors *apipb.EdgeConstru
 			if constructor.Path.GetGid() == "" {
 				constructor.Path.Gid = uuid.New().String()
 			}
-			edge := &apipb.Edge{
+			connection := &apipb.Connection{
 				Path:       constructor.GetPath(),
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
@@ -354,31 +354,31 @@ func (g *Graph) CreateEdges(ctx context.Context, constructors *apipb.EdgeConstru
 				To:       constructor.GetTo(),
 			}
 			seq, _ := bucket.NextSequence()
-			edge.Metadata.Sequence = seq
-			edges = append(edges, edge)
+			connection.Metadata.Sequence = seq
+			connections = append(connections, connection)
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	edgess, err := g.setEdges(ctx, edges...)
+	connectionss, err := g.setConnections(ctx, connections...)
 	if err != nil {
 		return nil, err
 	}
-	var changes []*apipb.EdgeChange
-	for _, node := range edges {
-		changes = append(changes, &apipb.EdgeChange{
-			After: node,
+	var changes []*apipb.ConnectionChange
+	for _, doc := range connections {
+		changes = append(changes, &apipb.ConnectionChange{
+			After: doc,
 		})
 	}
 	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:      method,
-		Identity:    identity,
-		Timestamp:   now,
-		EdgeChanges: changes,
+		Method:            method,
+		Identity:          identity,
+		Timestamp:         now,
+		ConnectionChanges: changes,
 	})
-	edgess.Sort()
-	return edgess, nil
+	connectionss.Sort()
+	return connectionss, nil
 }
 
 func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
@@ -394,7 +394,7 @@ func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*e
 	})
 }
 
-func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphService_SubscribeServer) error {
+func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseService_SubscribeServer) error {
 	programs, err := g.vm.Message().Programs(filter.Expressions)
 	if err != nil {
 		return err
@@ -429,7 +429,7 @@ func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.GraphService
 	return nil
 }
 
-func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.GraphService_SubscribeChangesServer) error {
+func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.DatabaseService_SubscribeChangesServer) error {
 	programs, err := g.vm.Change().Programs(filter.Expressions)
 	if err != nil {
 		return err
@@ -469,17 +469,17 @@ func (r *Graph) Export(ctx context.Context, _ *empty.Empty) (*apipb.Graph, error
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	nodes, err := r.AllNodes(ctx)
+	docs, err := r.AllDocs(ctx)
 	if err != nil {
 		return nil, err
 	}
-	edges, err := r.AllEdges(ctx)
+	connections, err := r.AllConnections(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &apipb.Graph{
-		Nodes: nodes,
-		Edges: edges,
+		Docs:        docs,
+		Connections: connections,
 	}, nil
 }
 
@@ -488,17 +488,17 @@ func (r *Graph) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Graph, e
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	nodes, err := r.setNodes(ctx, graph.GetNodes().GetNodes()...)
+	docs, err := r.setDocs(ctx, graph.GetDocs().GetDocs()...)
 	if err != nil {
 		return nil, err
 	}
-	edges, err := r.setEdges(ctx, graph.GetEdges().GetEdges()...)
+	connections, err := r.setConnections(ctx, graph.GetConnections().GetConnections()...)
 	if err != nil {
 		return nil, err
 	}
 	return &apipb.Graph{
-		Nodes: nodes,
-		Edges: edges,
+		Docs:        docs,
+		Connections: connections,
 	}, nil
 }
 
@@ -521,7 +521,7 @@ func (b *Graph) Close() {
 	})
 }
 
-func (g *Graph) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, error) {
+func (g *Graph) GetConnection(ctx context.Context, path *apipb.Path) (*apipb.Connection, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
@@ -530,11 +530,11 @@ func (g *Graph) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, err
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
 	var (
-		edge *apipb.Edge
-		err  error
+		connection *apipb.Connection
+		err        error
 	)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		edge, err = g.getEdge(ctx, tx, path)
+		connection, err = g.getConnection(ctx, tx, path)
 		if err != nil {
 			return err
 		}
@@ -542,30 +542,30 @@ func (g *Graph) GetEdge(ctx context.Context, path *apipb.Path) (*apipb.Edge, err
 	}); err != nil && err != DONE {
 		return nil, err
 	}
-	return edge, err
+	return connection, err
 }
 
-func (g *Graph) RangeSeekEdges(ctx context.Context, gType, seek string, fn func(e *apipb.Edge) bool) error {
+func (g *Graph) RangeSeekConnections(ctx context.Context, gType, seek string, fn func(e *apipb.Connection) bool) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}
 	if gType == apipb.Any {
-		types, err := g.EdgeTypes(ctx)
+		types, err := g.ConnectionTypes(ctx)
 		if err != nil {
 			return err
 		}
-		for _, edgeType := range types {
-			if edgeType == apipb.Any {
+		for _, connectionType := range types {
+			if connectionType == apipb.Any {
 				continue
 			}
-			if err := g.RangeSeekEdges(ctx, edgeType, seek, fn); err != nil {
+			if err := g.RangeSeekConnections(ctx, connectionType, seek, fn); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(gType))
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(gType))
 		if bucket == nil {
 			return ErrNotFound
 		}
@@ -574,11 +574,11 @@ func (g *Graph) RangeSeekEdges(ctx context.Context, gType, seek string, fn func(
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
-			var edge apipb.Edge
-			if err := proto.Unmarshal(v, &edge); err != nil {
+			var connection apipb.Connection
+			if err := proto.Unmarshal(v, &connection); err != nil {
 				return err
 			}
-			if !fn(&edge) {
+			if !fn(&connection) {
 				return DONE
 			}
 		}
@@ -589,26 +589,26 @@ func (g *Graph) RangeSeekEdges(ctx context.Context, gType, seek string, fn func(
 	return nil
 }
 
-func (n *Graph) AllNodes(ctx context.Context) (*apipb.Nodes, error) {
+func (n *Graph) AllDocs(ctx context.Context) (*apipb.Docs, error) {
 	identity := n.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	var nodes []*apipb.Node
-	if err := n.rangeNodes(ctx, apipb.Any, func(node *apipb.Node) bool {
-		nodes = append(nodes, node)
+	var docs []*apipb.Doc
+	if err := n.rangeDocs(ctx, apipb.Any, func(doc *apipb.Doc) bool {
+		docs = append(docs, doc)
 		return true
 	}); err != nil {
 		return nil, err
 	}
-	toReturn := &apipb.Nodes{
-		Nodes: nodes,
+	toReturn := &apipb.Docs{
+		Docs: docs,
 	}
 	toReturn.Sort()
 	return toReturn, nil
 }
 
-func (g *Graph) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, error) {
+func (g *Graph) GetDoc(ctx context.Context, path *apipb.Path) (*apipb.Doc, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
@@ -617,11 +617,11 @@ func (g *Graph) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, err
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
 	var (
-		node *apipb.Node
-		err  error
+		doc *apipb.Doc
+		err error
 	)
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		node, err = g.getNode(ctx, tx, path)
+		doc, err = g.getDoc(ctx, tx, path)
 		if err != nil {
 			return err
 		}
@@ -629,43 +629,43 @@ func (g *Graph) GetNode(ctx context.Context, path *apipb.Path) (*apipb.Node, err
 	}); err != nil {
 		return nil, err
 	}
-	return node, nil
+	return doc, nil
 }
 
-func (g *Graph) CreateNode(ctx context.Context, constructor *apipb.NodeConstructor) (*apipb.Node, error) {
-	nodes, err := g.CreateNodes(ctx, &apipb.NodeConstructors{Nodes: []*apipb.NodeConstructor{constructor}})
+func (g *Graph) CreateDoc(ctx context.Context, constructor *apipb.DocConstructor) (*apipb.Doc, error) {
+	docs, err := g.CreateDocs(ctx, &apipb.DocConstructors{Docs: []*apipb.DocConstructor{constructor}})
 	if err != nil {
 		return nil, err
 	}
-	return nodes.GetNodes()[0], nil
+	return docs.GetDocs()[0], nil
 }
 
-func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.Node, error) {
+func (n *Graph) PatchDoc(ctx context.Context, value *apipb.Patch) (*apipb.Doc, error) {
 	identity := n.getIdentity(ctx)
-	var node *apipb.Node
+	var doc *apipb.Doc
 	var err error
 	if err = n.db.Update(func(tx *bbolt.Tx) error {
-		node, err = n.getNode(ctx, tx, value.GetPath())
+		doc, err = n.getDoc(ctx, tx, value.GetPath())
 		if err != nil {
 			return err
 		}
-		nodeChange := &apipb.NodeChange{
-			Before: node,
+		docChange := &apipb.DocChange{
+			Before: doc,
 		}
 		for k, v := range value.GetAttributes().GetFields() {
-			node.Attributes.GetFields()[k] = v
+			doc.Attributes.GetFields()[k] = v
 		}
-		node, err = n.setNode(ctx, tx, node)
+		doc, err = n.setDoc(ctx, tx, doc)
 		if err != nil {
 			return err
 		}
-		nodeChange.After = node
+		docChange.After = doc
 		n.machine.PubSub().Publish(changeChannel, &apipb.Change{
-			Method:      n.getMethod(ctx),
-			Identity:    identity,
-			Timestamp:   node.Metadata.UpdatedAt,
-			EdgeChanges: nil,
-			NodeChanges: []*apipb.NodeChange{nodeChange},
+			Method:            n.getMethod(ctx),
+			Identity:          identity,
+			Timestamp:         doc.Metadata.UpdatedAt,
+			ConnectionChanges: nil,
+			DocChanges:        []*apipb.DocChange{docChange},
 		})
 
 		return nil
@@ -673,54 +673,54 @@ func (n *Graph) PatchNode(ctx context.Context, value *apipb.Patch) (*apipb.Node,
 		return nil, err
 	}
 
-	return node, err
+	return doc, err
 }
 
-func (n *Graph) PatchNodes(ctx context.Context, patch *apipb.PatchFilter) (*apipb.Nodes, error) {
+func (n *Graph) PatchDocs(ctx context.Context, patch *apipb.PatchFilter) (*apipb.Docs, error) {
 	identity := n.getIdentity(ctx)
-	var changes []*apipb.NodeChange
-	var nodes []*apipb.Node
+	var changes []*apipb.DocChange
+	var docs []*apipb.Doc
 	method := n.getMethod(ctx)
 	now := timestamppb.Now()
-	before, err := n.SearchNodes(ctx, patch.GetFilter())
+	before, err := n.SearchDocs(ctx, patch.GetFilter())
 	if err != nil {
 		return nil, err
 	}
-	for _, node := range before.GetNodes() {
-		change := &apipb.NodeChange{
-			Before: node,
+	for _, doc := range before.GetDocs() {
+		change := &apipb.DocChange{
+			Before: doc,
 		}
 		for k, v := range patch.GetAttributes().GetFields() {
-			node.Attributes.GetFields()[k] = v
+			doc.Attributes.GetFields()[k] = v
 		}
-		node.GetMetadata().UpdatedAt = now
-		node.GetMetadata().UpdatedBy = identity.GetPath()
-		change.After = node
-		nodes = append(nodes, node)
+		doc.GetMetadata().UpdatedAt = now
+		doc.GetMetadata().UpdatedBy = identity.GetPath()
+		change.After = doc
+		docs = append(docs, doc)
 		changes = append(changes, change)
 	}
 
-	nodess, err := n.setNodes(ctx, nodes...)
+	docss, err := n.setDocs(ctx, docs...)
 	if err != nil {
 		return nil, err
 	}
 	n.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:      method,
-		Identity:    identity,
-		Timestamp:   now,
-		EdgeChanges: nil,
-		NodeChanges: changes,
+		Method:            method,
+		Identity:          identity,
+		Timestamp:         now,
+		ConnectionChanges: nil,
+		DocChanges:        changes,
 	})
-	return nodess, nil
+	return docss, nil
 }
 
-func (g *Graph) EdgeTypes(ctx context.Context) ([]string, error) {
+func (g *Graph) ConnectionTypes(ctx context.Context) ([]string, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	var types []string
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		return tx.Bucket(dbEdges).ForEach(func(name []byte, _ []byte) error {
+		return tx.Bucket(dbConnections).ForEach(func(name []byte, _ []byte) error {
 			types = append(types, string(name))
 			return nil
 		})
@@ -731,13 +731,13 @@ func (g *Graph) EdgeTypes(ctx context.Context) ([]string, error) {
 	return types, nil
 }
 
-func (g *Graph) NodeTypes(ctx context.Context) ([]string, error) {
+func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	var types []string
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		return tx.Bucket(dbNodes).ForEach(func(name []byte, _ []byte) error {
+		return tx.Bucket(dbDocs).ForEach(func(name []byte, _ []byte) error {
 			types = append(types, string(name))
 			return nil
 		})
@@ -748,77 +748,77 @@ func (g *Graph) NodeTypes(ctx context.Context) ([]string, error) {
 	return types, nil
 }
 
-func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, nodePath *apipb.Path, fn func(e *apipb.Edge) bool) error {
+func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, fn func(e *apipb.Connection) bool) error {
 	g.mu.RLock()
-	paths := g.edgesFrom[nodePath.String()]
+	paths := g.connectionsFrom[docPath.String()]
 	g.mu.RUnlock()
 	for _, path := range paths {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype))
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
 		if bucket == nil {
 			return ErrNotFound
 		}
-		var edge apipb.Edge
+		var connection apipb.Connection
 		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, &edge); err != nil {
+		if err := proto.Unmarshal(bits, &connection); err != nil {
 			return err
 		}
-		if !fn(&edge) {
+		if !fn(&connection) {
 			return nil
 		}
 	}
 	return nil
 }
 
-func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, nodePath *apipb.Path, fn func(e *apipb.Edge) bool) error {
+func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, fn func(e *apipb.Connection) bool) error {
 	g.mu.RLock()
-	paths := g.edgesTo[nodePath.String()]
+	paths := g.connectionsTo[docPath.String()]
 	g.mu.RUnlock()
 	for _, path := range paths {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype))
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
 		if bucket == nil {
 			return ErrNotFound
 		}
-		var edge apipb.Edge
+		var connection apipb.Connection
 		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, &edge); err != nil {
+		if err := proto.Unmarshal(bits, &connection); err != nil {
 			return err
 		}
-		if !fn(&edge) {
+		if !fn(&connection) {
 			return nil
 		}
 	}
 	return nil
 }
 
-func (g *Graph) EdgesFrom(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
-	programs, err := g.vm.Edge().Programs(filter.Expressions)
+func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
+	programs, err := g.vm.Connection().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
-	var edges []*apipb.Edge
+	var connections []*apipb.Connection
 	var pass bool
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if err = g.rangeFrom(ctx, tx, filter.NodePath, func(edge *apipb.Edge) bool {
+		if err = g.rangeFrom(ctx, tx, filter.DocPath, func(connection *apipb.Connection) bool {
 			if filter.Gtype != "*" {
-				if edge.GetPath().GetGtype() != filter.Gtype {
+				if connection.GetPath().GetGtype() != filter.Gtype {
 					return true
 				}
 			}
 
-			pass, err = g.vm.Edge().Eval(programs, edge)
+			pass, err = g.vm.Connection().Eval(programs, connection)
 			if err != nil {
 				return true
 			}
 			if pass {
-				edges = append(edges, edge)
+				connections = append(connections, connection)
 			}
-			return len(edges) < int(filter.Limit)
+			return len(connections) < int(filter.Limit)
 		}); err != nil {
 			return err
 		}
@@ -827,88 +827,88 @@ func (g *Graph) EdgesFrom(ctx context.Context, filter *apipb.EdgeFilter) (*apipb
 		return nil, err
 	}
 
-	toReturn := &apipb.Edges{
-		Edges: edges,
+	toReturn := &apipb.Connections{
+		Connections: connections,
 	}
 	toReturn.Sort()
 	return toReturn, err
 }
 
-func (n *Graph) HasNode(ctx context.Context, path *apipb.Path) bool {
-	node, _ := n.GetNode(ctx, path)
-	return node != nil
+func (n *Graph) HasDoc(ctx context.Context, path *apipb.Path) bool {
+	doc, _ := n.GetDoc(ctx, path)
+	return doc != nil
 }
 
-func (n *Graph) HasEdge(ctx context.Context, path *apipb.Path) bool {
-	edge, _ := n.GetEdge(ctx, path)
-	return edge != nil
+func (n *Graph) HasConnection(ctx context.Context, path *apipb.Path) bool {
+	connection, _ := n.GetConnection(ctx, path)
+	return connection != nil
 }
 
-func (n *Graph) SearchNodes(ctx context.Context, filter *apipb.Filter) (*apipb.Nodes, error) {
-	var nodes []*apipb.Node
-	programs, err := n.vm.Node().Programs(filter.Expressions)
+func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Docs, error) {
+	var docs []*apipb.Doc
+	programs, err := n.vm.Doc().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
-	if err := n.rangeNodes(ctx, filter.Gtype, func(node *apipb.Node) bool {
-		pass, err := n.vm.Node().Eval(programs, node)
+	if err := n.rangeDocs(ctx, filter.Gtype, func(doc *apipb.Doc) bool {
+		pass, err := n.vm.Doc().Eval(programs, doc)
 		if err != nil {
 			return true
 		}
 		if pass {
-			nodes = append(nodes, node)
+			docs = append(docs, doc)
 		}
-		return len(nodes) < int(filter.Limit)
+		return len(docs) < int(filter.Limit)
 	}); err != nil {
 		return nil, err
 	}
-	toReturn := &apipb.Nodes{
-		Nodes: nodes,
+	toReturn := &apipb.Docs{
+		Docs: docs,
 	}
 	toReturn.Sort()
 	return toReturn, nil
 }
 
-func (n *Graph) FilterNode(ctx context.Context, nodeType string, filter func(node *apipb.Node) bool) (*apipb.Nodes, error) {
-	var filtered []*apipb.Node
-	if err := n.rangeNodes(ctx, nodeType, func(node *apipb.Node) bool {
-		if filter(node) {
-			filtered = append(filtered, node)
+func (n *Graph) FilterDoc(ctx context.Context, docType string, filter func(doc *apipb.Doc) bool) (*apipb.Docs, error) {
+	var filtered []*apipb.Doc
+	if err := n.rangeDocs(ctx, docType, func(doc *apipb.Doc) bool {
+		if filter(doc) {
+			filtered = append(filtered, doc)
 		}
 		return true
 	}); err != nil {
 		return nil, err
 	}
-	toreturn := &apipb.Nodes{
-		Nodes: filtered,
+	toreturn := &apipb.Docs{
+		Docs: filtered,
 	}
 	toreturn.Sort()
 	return toreturn, nil
 }
 
-func (g *Graph) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.Edges, error) {
-	programs, err := g.vm.Edge().Programs(filter.Expressions)
+func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
+	programs, err := g.vm.Connection().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
-	var edges []*apipb.Edge
+	var connections []*apipb.Connection
 	var pass bool
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if err = g.rangeTo(ctx, tx, filter.NodePath, func(edge *apipb.Edge) bool {
+		if err = g.rangeTo(ctx, tx, filter.DocPath, func(connection *apipb.Connection) bool {
 			if filter.Gtype != "*" {
-				if edge.GetPath().GetGtype() != filter.Gtype {
+				if connection.GetPath().GetGtype() != filter.Gtype {
 					return true
 				}
 			}
 
-			pass, err = g.vm.Edge().Eval(programs, edge)
+			pass, err = g.vm.Connection().Eval(programs, connection)
 			if err != nil {
 				return true
 			}
 			if pass {
-				edges = append(edges, edge)
+				connections = append(connections, connection)
 			}
-			return len(edges) < int(filter.Limit)
+			return len(connections) < int(filter.Limit)
 		}); err != nil {
 			return err
 		}
@@ -917,125 +917,125 @@ func (g *Graph) EdgesTo(ctx context.Context, filter *apipb.EdgeFilter) (*apipb.E
 		return nil, err
 	}
 
-	toReturn := &apipb.Edges{
-		Edges: edges,
+	toReturn := &apipb.Connections{
+		Connections: connections,
 	}
 	toReturn.Sort()
 	return toReturn, err
 }
 
-func (n *Graph) AllEdges(ctx context.Context) (*apipb.Edges, error) {
-	var edges []*apipb.Edge
-	if err := n.rangeEdges(ctx, apipb.Any, func(edge *apipb.Edge) bool {
-		edges = append(edges, edge)
+func (n *Graph) AllConnections(ctx context.Context) (*apipb.Connections, error) {
+	var connections []*apipb.Connection
+	if err := n.rangeConnections(ctx, apipb.Any, func(connection *apipb.Connection) bool {
+		connections = append(connections, connection)
 		return true
 	}); err != nil {
 		return nil, err
 	}
-	toReturn := &apipb.Edges{
-		Edges: edges,
+	toReturn := &apipb.Connections{
+		Connections: connections,
 	}
 	toReturn.Sort()
 	return toReturn, nil
 }
 
-func (n *Graph) PatchEdge(ctx context.Context, value *apipb.Patch) (*apipb.Edge, error) {
+func (n *Graph) PatchConnection(ctx context.Context, value *apipb.Patch) (*apipb.Connection, error) {
 	identity := n.getIdentity(ctx)
-	var edge *apipb.Edge
+	var connection *apipb.Connection
 	var err error
 	if err = n.db.Update(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(value.GetPath().Gtype))
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(value.GetPath().Gtype))
 		if bucket == nil {
 			return ErrNotFound
 		}
-		var e apipb.Edge
+		var e apipb.Connection
 		bits := bucket.Get([]byte(value.GetPath().Gid))
 		if err := proto.Unmarshal(bits, &e); err != nil {
 			return err
 		}
-		change := &apipb.EdgeChange{
+		change := &apipb.ConnectionChange{
 			Before: &e,
 		}
 		for k, v := range value.GetAttributes().GetFields() {
-			edge.Attributes.GetFields()[k] = v
+			connection.Attributes.GetFields()[k] = v
 		}
-		edge.GetMetadata().UpdatedAt = timestamppb.Now()
-		edge.GetMetadata().UpdatedBy = identity.GetPath()
+		connection.GetMetadata().UpdatedAt = timestamppb.Now()
+		connection.GetMetadata().UpdatedBy = identity.GetPath()
 		change.After = &e
-		edge, err = n.setEdge(ctx, tx, edge)
+		connection, err = n.setConnection(ctx, tx, connection)
 		if err != nil {
 			return err
 		}
 		n.machine.PubSub().Publish(changeChannel, &apipb.Change{
-			Method:      n.getMethod(ctx),
-			Identity:    identity,
-			Timestamp:   edge.Metadata.UpdatedAt,
-			EdgeChanges: []*apipb.EdgeChange{change},
+			Method:            n.getMethod(ctx),
+			Identity:          identity,
+			Timestamp:         connection.Metadata.UpdatedAt,
+			ConnectionChanges: []*apipb.ConnectionChange{change},
 		})
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	return edge, nil
+	return connection, nil
 }
 
-func (n *Graph) PatchEdges(ctx context.Context, patch *apipb.PatchFilter) (*apipb.Edges, error) {
+func (n *Graph) PatchConnections(ctx context.Context, patch *apipb.PatchFilter) (*apipb.Connections, error) {
 	identity := n.getIdentity(ctx)
-	var changes []*apipb.EdgeChange
-	var edges []*apipb.Edge
+	var changes []*apipb.ConnectionChange
+	var connections []*apipb.Connection
 	method := n.getMethod(ctx)
 	now := timestamppb.Now()
-	before, err := n.SearchEdges(ctx, patch.GetFilter())
+	before, err := n.SearchConnections(ctx, patch.GetFilter())
 	if err != nil {
 		return nil, err
 	}
-	for _, edge := range before.GetEdges() {
-		change := &apipb.EdgeChange{
-			Before: edge,
+	for _, connection := range before.GetConnections() {
+		change := &apipb.ConnectionChange{
+			Before: connection,
 		}
 		for k, v := range patch.GetAttributes().GetFields() {
-			edge.Attributes.GetFields()[k] = v
+			connection.Attributes.GetFields()[k] = v
 		}
-		edge.GetMetadata().UpdatedAt = now
-		edge.GetMetadata().UpdatedBy = identity.GetPath()
-		change.After = edge
-		edges = append(edges, edge)
+		connection.GetMetadata().UpdatedAt = now
+		connection.GetMetadata().UpdatedBy = identity.GetPath()
+		change.After = connection
+		connections = append(connections, connection)
 		changes = append(changes, change)
 	}
 
-	edgess, err := n.setEdges(ctx, edges...)
+	connectionss, err := n.setConnections(ctx, connections...)
 	if err != nil {
 		return nil, err
 	}
 	n.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:      method,
-		Identity:    identity,
-		Timestamp:   now,
-		EdgeChanges: changes,
+		Method:            method,
+		Identity:          identity,
+		Timestamp:         now,
+		ConnectionChanges: changes,
 	})
-	return edgess, nil
+	return connectionss, nil
 }
 
-func (e *Graph) SearchEdges(ctx context.Context, filter *apipb.Filter) (*apipb.Edges, error) {
-	programs, err := e.vm.Edge().Programs(filter.Expressions)
+func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*apipb.Connections, error) {
+	programs, err := e.vm.Connection().Programs(filter.Expressions)
 	if err != nil {
 		return nil, err
 	}
-	var edges []*apipb.Edge
-	if err := e.rangeEdges(ctx, filter.Gtype, func(edge *apipb.Edge) bool {
-		pass, err := e.vm.Edge().Eval(programs, edge)
+	var connections []*apipb.Connection
+	if err := e.rangeConnections(ctx, filter.Gtype, func(connection *apipb.Connection) bool {
+		pass, err := e.vm.Connection().Eval(programs, connection)
 		if err != nil {
 			return true
 		}
 		if pass {
-			edges = append(edges, edge)
+			connections = append(connections, connection)
 		}
-		return len(edges) < int(filter.Limit)
+		return len(connections) < int(filter.Limit)
 	}); err != nil {
 		return nil, err
 	}
-	toReturn := &apipb.Edges{
-		Edges: edges,
+	toReturn := &apipb.Connections{
+		Connections: connections,
 	}
 	toReturn.Sort()
 	return toReturn, nil
@@ -1043,48 +1043,48 @@ func (e *Graph) SearchEdges(ctx context.Context, filter *apipb.Filter) (*apipb.E
 
 func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
 	graph := &apipb.Graph{
-		Nodes: &apipb.Nodes{},
-		Edges: &apipb.Edges{},
+		Docs:        &apipb.Docs{},
+		Connections: &apipb.Connections{},
 	}
-	nodes, err := g.SearchNodes(ctx, filter.GetNodeFilter())
+	docs, err := g.SearchDocs(ctx, filter.GetDocFilter())
 	if err != nil {
 		return nil, err
 	}
-	for _, node := range nodes.GetNodes() {
-		graph.Nodes.Nodes = append(graph.Nodes.Nodes, node)
-		edges, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
-			NodePath:    node.Path,
-			Gtype:       filter.GetEdgeFilter().GetGtype(),
-			Expressions: filter.GetEdgeFilter().GetExpressions(),
-			Limit:       filter.GetEdgeFilter().GetLimit(),
+	for _, doc := range docs.GetDocs() {
+		graph.Docs.Docs = append(graph.Docs.Docs, doc)
+		connections, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
+			DocPath:     doc.Path,
+			Gtype:       filter.GetConnectionFilter().GetGtype(),
+			Expressions: filter.GetConnectionFilter().GetExpressions(),
+			Limit:       filter.GetConnectionFilter().GetLimit(),
 		})
 		if err != nil {
 			return nil, err
 		}
-		graph.Edges.Edges = append(graph.Edges.Edges, edges.GetEdges()...)
+		graph.Connections.Connections = append(graph.Connections.Connections, connections.GetConnections()...)
 	}
-	graph.Edges.Sort()
-	graph.Nodes.Sort()
+	graph.Connections.Sort()
+	graph.Docs.Sort()
 	return graph, err
 }
 
-func (g *Graph) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apipb.EdgeDetail, error) {
+func (g *Graph) GetConnectionDetail(ctx context.Context, path *apipb.Path) (*apipb.ConnectionDetail, error) {
 	var (
-		err  error
-		edge *apipb.Edge
-		from *apipb.Node
-		to   *apipb.Node
+		err        error
+		connection *apipb.Connection
+		from       *apipb.Doc
+		to         *apipb.Doc
 	)
 	if err = g.db.View(func(tx *bbolt.Tx) error {
-		edge, err = g.getEdge(ctx, tx, path)
+		connection, err = g.getConnection(ctx, tx, path)
 		if err != nil {
 			return err
 		}
-		from, err = g.getNode(ctx, tx, edge.From)
+		from, err = g.getDoc(ctx, tx, connection.From)
 		if err != nil {
 			return err
 		}
-		to, err = g.getNode(ctx, tx, edge.To)
+		to, err = g.getDoc(ctx, tx, connection.To)
 		if err != nil {
 			return err
 		}
@@ -1093,36 +1093,36 @@ func (g *Graph) GetEdgeDetail(ctx context.Context, path *apipb.Path) (*apipb.Edg
 		return nil, err
 	}
 
-	return &apipb.EdgeDetail{
-		Path:       edge.GetPath(),
-		Attributes: edge.GetAttributes(),
-		Directed:   edge.GetDirected(),
+	return &apipb.ConnectionDetail{
+		Path:       connection.GetPath(),
+		Attributes: connection.GetAttributes(),
+		Directed:   connection.GetDirected(),
 		From:       from,
 		To:         to,
-		Metadata:   edge.GetMetadata(),
+		Metadata:   connection.GetMetadata(),
 	}, nil
 }
 
-func (g *Graph) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilter) (*apipb.NodeDetail, error) {
-	detail := &apipb.NodeDetail{
-		Path:      filter.GetPath(),
-		EdgesTo:   &apipb.EdgeDetails{},
-		EdgesFrom: &apipb.EdgeDetails{},
+func (g *Graph) GetDocDetail(ctx context.Context, filter *apipb.DocDetailFilter) (*apipb.DocDetail, error) {
+	detail := &apipb.DocDetail{
+		Path:            filter.GetPath(),
+		ConnectionsTo:   &apipb.ConnectionDetails{},
+		ConnectionsFrom: &apipb.ConnectionDetails{},
 	}
 	var (
-		err  error
-		node *apipb.Node
+		err error
+		doc *apipb.Doc
 	)
 	if err = g.db.View(func(tx *bbolt.Tx) error {
-		node, err = g.getNode(ctx, tx, filter.GetPath())
+		doc, err = g.getDoc(ctx, tx, filter.GetPath())
 		if err != nil {
 			return err
 		}
-		detail.Metadata = node.Metadata
-		detail.Attributes = node.Attributes
-		if val := filter.GetFromEdges(); val != nil {
-			edges, err := g.EdgesFrom(ctx, &apipb.EdgeFilter{
-				NodePath:    node.Path,
+		detail.Metadata = doc.Metadata
+		detail.Attributes = doc.Attributes
+		if val := filter.GetFromConnections(); val != nil {
+			connections, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
+				DocPath:     doc.Path,
 				Gtype:       val.GetGtype(),
 				Expressions: val.GetExpressions(),
 				Limit:       val.GetLimit(),
@@ -1130,18 +1130,18 @@ func (g *Graph) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilte
 			if err != nil {
 				return err
 			}
-			for _, edge := range edges.GetEdges() {
-				eDetail, err := g.GetEdgeDetail(ctx, edge.GetPath())
+			for _, connection := range connections.GetConnections() {
+				eDetail, err := g.GetConnectionDetail(ctx, connection.GetPath())
 				if err != nil {
 					return err
 				}
-				detail.EdgesFrom.Edges = append(detail.EdgesFrom.Edges, eDetail)
+				detail.ConnectionsFrom.Connections = append(detail.ConnectionsFrom.Connections, eDetail)
 			}
 		}
 
-		if val := filter.GetToEdges(); val != nil {
-			edges, err := g.EdgesTo(ctx, &apipb.EdgeFilter{
-				NodePath:    node.Path,
+		if val := filter.GetToConnections(); val != nil {
+			connections, err := g.ConnectionsTo(ctx, &apipb.ConnectionFilter{
+				DocPath:     doc.Path,
 				Gtype:       val.GetGtype(),
 				Expressions: val.GetExpressions(),
 				Limit:       val.GetLimit(),
@@ -1149,35 +1149,34 @@ func (g *Graph) GetNodeDetail(ctx context.Context, filter *apipb.NodeDetailFilte
 			if err != nil {
 				return err
 			}
-			for _, edge := range edges.GetEdges() {
-				eDetail, err := g.GetEdgeDetail(ctx, edge.GetPath())
+			for _, connection := range connections.GetConnections() {
+				eDetail, err := g.GetConnectionDetail(ctx, connection.GetPath())
 				if err != nil {
 					return err
 				}
-				detail.EdgesTo.Edges = append(detail.EdgesTo.Edges, eDetail)
+				detail.ConnectionsTo.Connections = append(detail.ConnectionsTo.Connections, eDetail)
 			}
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	detail.EdgesTo.Sort()
-	detail.EdgesFrom.Sort()
+	detail.ConnectionsTo.Sort()
+	detail.ConnectionsFrom.Sort()
 	return detail, err
 }
 
-
-func (g *Graph) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+func (g *Graph) DelDoc(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
 	var (
-		n *apipb.Node
+		n   *apipb.Doc
 		err error
 	)
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		n, err = g.getNode(ctx, tx, path)
+		n, err = g.getDoc(ctx, tx, path)
 		if err != nil {
 			return err
 		}
-		if err := g.delNode(ctx, tx, path); err != nil {
+		if err := g.delDoc(ctx, tx, path); err != nil {
 			return err
 		}
 		return nil
@@ -1185,10 +1184,10 @@ func (g *Graph) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, er
 		return nil, err
 	}
 	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:      g.getMethod(ctx),
-		Identity:    g.getIdentity(ctx),
-		Timestamp:   timestamppb.Now(),
-		NodeChanges: []*apipb.NodeChange{{
+		Method:    g.getMethod(ctx),
+		Identity:  g.getIdentity(ctx),
+		Timestamp: timestamppb.Now(),
+		DocChanges: []*apipb.DocChange{{
 			Before: n,
 			After:  nil,
 		}},
@@ -1196,45 +1195,45 @@ func (g *Graph) DelNode(ctx context.Context, path *apipb.Path) (*empty.Empty, er
 	return &empty.Empty{}, nil
 }
 
-func (g *Graph) DelNodes(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
-	var changes []*apipb.NodeChange
-	before, err := g.SearchNodes(ctx, filter)
+func (g *Graph) DelDocs(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
+	var changes []*apipb.DocChange
+	before, err := g.SearchDocs(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	if len(before.GetNodes()) == 0 {
+	if len(before.GetDocs()) == 0 {
 		return nil, ErrNotFound
 	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		for _, node := range before.GetNodes() {
-			if err := g.delNode(ctx, tx, node.GetPath()); err != nil {
+		for _, doc := range before.GetDocs() {
+			if err := g.delDoc(ctx, tx, doc.GetPath()); err != nil {
 				return err
 			}
-			changes = append(changes, &apipb.NodeChange{Before: node})
+			changes = append(changes, &apipb.DocChange{Before: doc})
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
 	return &empty.Empty{}, g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:      g.getMethod(ctx),
-		Identity:    g.getIdentity(ctx),
-		Timestamp:   timestamppb.Now(),
-		NodeChanges: changes,
+		Method:     g.getMethod(ctx),
+		Identity:   g.getIdentity(ctx),
+		Timestamp:  timestamppb.Now(),
+		DocChanges: changes,
 	})
 }
 
-func (g *Graph) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+func (g *Graph) DelConnection(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
 	var (
-		n *apipb.Edge
+		n   *apipb.Connection
 		err error
 	)
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		n, err = g.getEdge(ctx, tx, path)
+		n, err = g.getConnection(ctx, tx, path)
 		if err != nil {
 			return err
 		}
-		if err := g.delEdge(ctx, tx, path); err != nil {
+		if err := g.delConnection(ctx, tx, path); err != nil {
 			return err
 		}
 		return nil
@@ -1242,10 +1241,10 @@ func (g *Graph) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, er
 		return nil, err
 	}
 	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:      g.getMethod(ctx),
-		Identity:    g.getIdentity(ctx),
-		Timestamp:   timestamppb.Now(),
-		EdgeChanges: []*apipb.EdgeChange{{
+		Method:    g.getMethod(ctx),
+		Identity:  g.getIdentity(ctx),
+		Timestamp: timestamppb.Now(),
+		ConnectionChanges: []*apipb.ConnectionChange{{
 			Before: n,
 			After:  nil,
 		}},
@@ -1253,30 +1252,30 @@ func (g *Graph) DelEdge(ctx context.Context, path *apipb.Path) (*empty.Empty, er
 	return &empty.Empty{}, nil
 }
 
-func (g *Graph) DelEdges(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
-	var changes []*apipb.EdgeChange
-	before, err := g.SearchEdges(ctx, filter)
+func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
+	var changes []*apipb.ConnectionChange
+	before, err := g.SearchConnections(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	if len(before.GetEdges()) == 0 {
+	if len(before.GetConnections()) == 0 {
 		return nil, ErrNotFound
 	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		for _, node := range before.GetEdges() {
-			if err := g.delEdge(ctx, tx, node.GetPath()); err != nil {
+		for _, doc := range before.GetConnections() {
+			if err := g.delConnection(ctx, tx, doc.GetPath()); err != nil {
 				return err
 			}
-			changes = append(changes, &apipb.EdgeChange{Before: node})
+			changes = append(changes, &apipb.ConnectionChange{Before: doc})
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
 	return &empty.Empty{}, g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:      g.getMethod(ctx),
-		Identity:    g.getIdentity(ctx),
-		Timestamp:   timestamppb.Now(),
-		EdgeChanges: changes,
+		Method:            g.getMethod(ctx),
+		Identity:          g.getIdentity(ctx),
+		Timestamp:         timestamppb.Now(),
+		ConnectionChanges: changes,
 	})
 }

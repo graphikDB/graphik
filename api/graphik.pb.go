@@ -29,15 +29,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Path describes a node/edge type & id
+// Path describes a doc/connection type & id
 type Path struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// gtype is the type of the node/edge ex: pet
+	// gtype is the type of the doc/connection ex: pet
 	Gtype string `protobuf:"bytes,1,opt,name=gtype,proto3" json:"gtype,omitempty"`
-	// gid is the unique id of the node/edge within the context of it's type
+	// gid is the unique id of the doc/connection within the context of it's type
 	Gid string `protobuf:"bytes,2,opt,name=gid,proto3" json:"gid,omitempty"`
 }
 
@@ -87,23 +87,23 @@ func (x *Path) GetGid() string {
 	return ""
 }
 
-// Metadata is general metadata collected on nodes/edges
+// Metadata is general metadata collected on docs/connections
 type Metadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// created_at is the unix timestamp when the node/edge was created
+	// created_at is the unix timestamp when the doc/connection was created
 	CreatedAt *timestamp.Timestamp `protobuf:"bytes,1,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	// updated_at is the unix timestamp when the node/edge was last updated
+	// updated_at is the unix timestamp when the doc/connection was last updated
 	UpdatedAt *timestamp.Timestamp `protobuf:"bytes,2,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	// created_by is the identity that initially created the node/edge
+	// created_by is the identity that initially created the doc/connection
 	CreatedBy *Path `protobuf:"bytes,3,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
-	// updated_by is the identity that last modified the node/edge
+	// updated_by is the identity that last modified the doc/connection
 	UpdatedBy *Path `protobuf:"bytes,4,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
-	// sequence is the sequence within the context of the node/edge type
+	// sequence is the sequence within the context of the doc/connection type
 	Sequence uint64 `protobuf:"varint,5,opt,name=sequence,proto3" json:"sequence,omitempty"`
-	// version iterates by 1 every time the node/edge is modified
+	// version iterates by 1 every time the doc/connection is modified
 	Version uint64 `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"`
 }
 
@@ -229,22 +229,22 @@ func (x *Paths) GetPaths() []*Path {
 	return nil
 }
 
-// Node is a Graph primitive representing a single entity/resource. It is connected to other nodes via Edges
-type Node struct {
+// Doc is a Graph primitive representing a single entity/resource. It is connected to other docs via Connections
+type Doc struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// path is the path to the node
+	// path is the path to the doc
 	Path *Path `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 	// k/v pairs
 	Attributes *_struct.Struct `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
-	// metadata is general metadata collected about the node
+	// metadata is general metadata collected about the doc
 	Metadata *Metadata `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (x *Node) Reset() {
-	*x = Node{}
+func (x *Doc) Reset() {
+	*x = Doc{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -252,13 +252,13 @@ func (x *Node) Reset() {
 	}
 }
 
-func (x *Node) String() string {
+func (x *Doc) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Node) ProtoMessage() {}
+func (*Doc) ProtoMessage() {}
 
-func (x *Node) ProtoReflect() protoreflect.Message {
+func (x *Doc) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -270,46 +270,46 @@ func (x *Node) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Node.ProtoReflect.Descriptor instead.
-func (*Node) Descriptor() ([]byte, []int) {
+// Deprecated: Use Doc.ProtoReflect.Descriptor instead.
+func (*Doc) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *Node) GetPath() *Path {
+func (x *Doc) GetPath() *Path {
 	if x != nil {
 		return x.Path
 	}
 	return nil
 }
 
-func (x *Node) GetAttributes() *_struct.Struct {
+func (x *Doc) GetAttributes() *_struct.Struct {
 	if x != nil {
 		return x.Attributes
 	}
 	return nil
 }
 
-func (x *Node) GetMetadata() *Metadata {
+func (x *Doc) GetMetadata() *Metadata {
 	if x != nil {
 		return x.Metadata
 	}
 	return nil
 }
 
-// NodeConstructor is used to create a node
-type NodeConstructor struct {
+// DocConstructor is used to create a doc
+type DocConstructor struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// path is the path to the node. If an id is not provided, a unique id will be generated
+	// path is the path to the doc. If an id is not provided, a unique id will be generated
 	Path *Path `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 	// arbitrary k/v pairs
 	Attributes *_struct.Struct `protobuf:"bytes,3,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
-func (x *NodeConstructor) Reset() {
-	*x = NodeConstructor{}
+func (x *DocConstructor) Reset() {
+	*x = DocConstructor{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -317,13 +317,13 @@ func (x *NodeConstructor) Reset() {
 	}
 }
 
-func (x *NodeConstructor) String() string {
+func (x *DocConstructor) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NodeConstructor) ProtoMessage() {}
+func (*DocConstructor) ProtoMessage() {}
 
-func (x *NodeConstructor) ProtoReflect() protoreflect.Message {
+func (x *DocConstructor) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -335,37 +335,37 @@ func (x *NodeConstructor) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use NodeConstructor.ProtoReflect.Descriptor instead.
-func (*NodeConstructor) Descriptor() ([]byte, []int) {
+// Deprecated: Use DocConstructor.ProtoReflect.Descriptor instead.
+func (*DocConstructor) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *NodeConstructor) GetPath() *Path {
+func (x *DocConstructor) GetPath() *Path {
 	if x != nil {
 		return x.Path
 	}
 	return nil
 }
 
-func (x *NodeConstructor) GetAttributes() *_struct.Struct {
+func (x *DocConstructor) GetAttributes() *_struct.Struct {
 	if x != nil {
 		return x.Attributes
 	}
 	return nil
 }
 
-// NodeConstructor is used to create a batch of nodes
-type NodeConstructors struct {
+// DocConstructor is used to create a batch of docs
+type DocConstructors struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// nodes is an array of node constructors
-	Nodes []*NodeConstructor `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	// docs is an array of doc constructors
+	Docs []*DocConstructor `protobuf:"bytes,1,rep,name=docs,proto3" json:"docs,omitempty"`
 }
 
-func (x *NodeConstructors) Reset() {
-	*x = NodeConstructors{}
+func (x *DocConstructors) Reset() {
+	*x = DocConstructors{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -373,13 +373,13 @@ func (x *NodeConstructors) Reset() {
 	}
 }
 
-func (x *NodeConstructors) String() string {
+func (x *DocConstructors) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NodeConstructors) ProtoMessage() {}
+func (*DocConstructors) ProtoMessage() {}
 
-func (x *NodeConstructors) ProtoReflect() protoreflect.Message {
+func (x *DocConstructors) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -391,30 +391,30 @@ func (x *NodeConstructors) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use NodeConstructors.ProtoReflect.Descriptor instead.
-func (*NodeConstructors) Descriptor() ([]byte, []int) {
+// Deprecated: Use DocConstructors.ProtoReflect.Descriptor instead.
+func (*DocConstructors) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *NodeConstructors) GetNodes() []*NodeConstructor {
+func (x *DocConstructors) GetDocs() []*DocConstructor {
 	if x != nil {
-		return x.Nodes
+		return x.Docs
 	}
 	return nil
 }
 
-// Nodes is an array of nodes
-type Nodes struct {
+// Docs is an array of docs
+type Docs struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// nodes is an array of nodes
-	Nodes []*Node `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	// docs is an array of docs
+	Docs []*Doc `protobuf:"bytes,1,rep,name=docs,proto3" json:"docs,omitempty"`
 }
 
-func (x *Nodes) Reset() {
-	*x = Nodes{}
+func (x *Docs) Reset() {
+	*x = Docs{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -422,13 +422,13 @@ func (x *Nodes) Reset() {
 	}
 }
 
-func (x *Nodes) String() string {
+func (x *Docs) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Nodes) ProtoMessage() {}
+func (*Docs) ProtoMessage() {}
 
-func (x *Nodes) ProtoReflect() protoreflect.Message {
+func (x *Docs) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -440,38 +440,38 @@ func (x *Nodes) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Nodes.ProtoReflect.Descriptor instead.
-func (*Nodes) Descriptor() ([]byte, []int) {
+// Deprecated: Use Docs.ProtoReflect.Descriptor instead.
+func (*Docs) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *Nodes) GetNodes() []*Node {
+func (x *Docs) GetDocs() []*Doc {
 	if x != nil {
-		return x.Nodes
+		return x.Docs
 	}
 	return nil
 }
 
-// NodeDetail is a node with its connected edges
-type NodeDetail struct {
+// DocDetail is a doc with its connected connections
+type DocDetail struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// path is the path to the node
+	// path is the path to the doc
 	Path *Path `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 	// arbitrary k/v pairs
 	Attributes *_struct.Struct `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
-	// edges_from are edges that source from this node
-	EdgesFrom *EdgeDetails `protobuf:"bytes,3,opt,name=edges_from,json=edgesFrom,proto3" json:"edges_from,omitempty"`
-	// edges_to are edges that point toward this node
-	EdgesTo *EdgeDetails `protobuf:"bytes,4,opt,name=edges_to,json=edgesTo,proto3" json:"edges_to,omitempty"`
-	// metadata is general metadata collected about the node
+	// connections_from are connections that source from this doc
+	ConnectionsFrom *ConnectionDetails `protobuf:"bytes,3,opt,name=connections_from,json=connectionsFrom,proto3" json:"connections_from,omitempty"`
+	// connections_to are connections that point toward this doc
+	ConnectionsTo *ConnectionDetails `protobuf:"bytes,4,opt,name=connections_to,json=connectionsTo,proto3" json:"connections_to,omitempty"`
+	// metadata is general metadata collected about the doc
 	Metadata *Metadata `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (x *NodeDetail) Reset() {
-	*x = NodeDetail{}
+func (x *DocDetail) Reset() {
+	*x = DocDetail{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -479,13 +479,13 @@ func (x *NodeDetail) Reset() {
 	}
 }
 
-func (x *NodeDetail) String() string {
+func (x *DocDetail) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NodeDetail) ProtoMessage() {}
+func (*DocDetail) ProtoMessage() {}
 
-func (x *NodeDetail) ProtoReflect() protoreflect.Message {
+func (x *DocDetail) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -497,57 +497,57 @@ func (x *NodeDetail) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use NodeDetail.ProtoReflect.Descriptor instead.
-func (*NodeDetail) Descriptor() ([]byte, []int) {
+// Deprecated: Use DocDetail.ProtoReflect.Descriptor instead.
+func (*DocDetail) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *NodeDetail) GetPath() *Path {
+func (x *DocDetail) GetPath() *Path {
 	if x != nil {
 		return x.Path
 	}
 	return nil
 }
 
-func (x *NodeDetail) GetAttributes() *_struct.Struct {
+func (x *DocDetail) GetAttributes() *_struct.Struct {
 	if x != nil {
 		return x.Attributes
 	}
 	return nil
 }
 
-func (x *NodeDetail) GetEdgesFrom() *EdgeDetails {
+func (x *DocDetail) GetConnectionsFrom() *ConnectionDetails {
 	if x != nil {
-		return x.EdgesFrom
+		return x.ConnectionsFrom
 	}
 	return nil
 }
 
-func (x *NodeDetail) GetEdgesTo() *EdgeDetails {
+func (x *DocDetail) GetConnectionsTo() *ConnectionDetails {
 	if x != nil {
-		return x.EdgesTo
+		return x.ConnectionsTo
 	}
 	return nil
 }
 
-func (x *NodeDetail) GetMetadata() *Metadata {
+func (x *DocDetail) GetMetadata() *Metadata {
 	if x != nil {
 		return x.Metadata
 	}
 	return nil
 }
 
-// NodeDetails is an array of NodeDetail
-type NodeDetails struct {
+// DocDetails is an array of DocDetail
+type DocDetails struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	NodeDetails []*NodeDetail `protobuf:"bytes,1,rep,name=node_details,json=nodeDetails,proto3" json:"node_details,omitempty"`
+	DocDetails []*DocDetail `protobuf:"bytes,1,rep,name=doc_details,json=docDetails,proto3" json:"doc_details,omitempty"`
 }
 
-func (x *NodeDetails) Reset() {
-	*x = NodeDetails{}
+func (x *DocDetails) Reset() {
+	*x = DocDetails{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -555,13 +555,13 @@ func (x *NodeDetails) Reset() {
 	}
 }
 
-func (x *NodeDetails) String() string {
+func (x *DocDetails) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NodeDetails) ProtoMessage() {}
+func (*DocDetails) ProtoMessage() {}
 
-func (x *NodeDetails) ProtoReflect() protoreflect.Message {
+func (x *DocDetails) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -573,32 +573,32 @@ func (x *NodeDetails) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use NodeDetails.ProtoReflect.Descriptor instead.
-func (*NodeDetails) Descriptor() ([]byte, []int) {
+// Deprecated: Use DocDetails.ProtoReflect.Descriptor instead.
+func (*DocDetails) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *NodeDetails) GetNodeDetails() []*NodeDetail {
+func (x *DocDetails) GetDocDetails() []*DocDetail {
 	if x != nil {
-		return x.NodeDetails
+		return x.DocDetails
 	}
 	return nil
 }
 
-// NodeDetailFilter is used to fetch node details
-type NodeDetailFilter struct {
+// DocDetailFilter is used to fetch doc details
+type DocDetailFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// path is the path to the node
-	Path      *Path   `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	FromEdges *Filter `protobuf:"bytes,2,opt,name=from_edges,json=fromEdges,proto3" json:"from_edges,omitempty"`
-	ToEdges   *Filter `protobuf:"bytes,3,opt,name=to_edges,json=toEdges,proto3" json:"to_edges,omitempty"`
+	// path is the path to the doc
+	Path            *Path   `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	FromConnections *Filter `protobuf:"bytes,2,opt,name=from_connections,json=fromConnections,proto3" json:"from_connections,omitempty"`
+	ToConnections   *Filter `protobuf:"bytes,3,opt,name=to_connections,json=toConnections,proto3" json:"to_connections,omitempty"`
 }
 
-func (x *NodeDetailFilter) Reset() {
-	*x = NodeDetailFilter{}
+func (x *DocDetailFilter) Reset() {
+	*x = DocDetailFilter{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -606,13 +606,13 @@ func (x *NodeDetailFilter) Reset() {
 	}
 }
 
-func (x *NodeDetailFilter) String() string {
+func (x *DocDetailFilter) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NodeDetailFilter) ProtoMessage() {}
+func (*DocDetailFilter) ProtoMessage() {}
 
-func (x *NodeDetailFilter) ProtoReflect() protoreflect.Message {
+func (x *DocDetailFilter) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -624,54 +624,54 @@ func (x *NodeDetailFilter) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use NodeDetailFilter.ProtoReflect.Descriptor instead.
-func (*NodeDetailFilter) Descriptor() ([]byte, []int) {
+// Deprecated: Use DocDetailFilter.ProtoReflect.Descriptor instead.
+func (*DocDetailFilter) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *NodeDetailFilter) GetPath() *Path {
+func (x *DocDetailFilter) GetPath() *Path {
 	if x != nil {
 		return x.Path
 	}
 	return nil
 }
 
-func (x *NodeDetailFilter) GetFromEdges() *Filter {
+func (x *DocDetailFilter) GetFromConnections() *Filter {
 	if x != nil {
-		return x.FromEdges
+		return x.FromConnections
 	}
 	return nil
 }
 
-func (x *NodeDetailFilter) GetToEdges() *Filter {
+func (x *DocDetailFilter) GetToConnections() *Filter {
 	if x != nil {
-		return x.ToEdges
+		return x.ToConnections
 	}
 	return nil
 }
 
-// Edge is a graph primitive that represents a relationship between two nodes
-type Edge struct {
+// Connection is a graph primitive that represents a relationship between two docs
+type Connection struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// path is the path to the edge
+	// path is the path to the connection
 	Path *Path `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 	// attributes are k/v pairs
 	Attributes *_struct.Struct `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
-	// directed is false if the edge is bi-directional
+	// directed is false if the connection is bi-directional
 	Directed bool `protobuf:"varint,3,opt,name=directed,proto3" json:"directed,omitempty"`
-	// from is the node path that is the source of the edge
+	// from is the doc path that is the source of the connection
 	From *Path `protobuf:"bytes,4,opt,name=from,proto3" json:"from,omitempty"`
-	// to is the node path that is the destination of the edge
+	// to is the doc path that is the destination of the connection
 	To *Path `protobuf:"bytes,5,opt,name=to,proto3" json:"to,omitempty"`
-	// metadata is general metadata collected about the edge
+	// metadata is general metadata collected about the connection
 	Metadata *Metadata `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (x *Edge) Reset() {
-	*x = Edge{}
+func (x *Connection) Reset() {
+	*x = Connection{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -679,13 +679,13 @@ func (x *Edge) Reset() {
 	}
 }
 
-func (x *Edge) String() string {
+func (x *Connection) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Edge) ProtoMessage() {}
+func (*Connection) ProtoMessage() {}
 
-func (x *Edge) ProtoReflect() protoreflect.Message {
+func (x *Connection) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -697,73 +697,73 @@ func (x *Edge) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Edge.ProtoReflect.Descriptor instead.
-func (*Edge) Descriptor() ([]byte, []int) {
+// Deprecated: Use Connection.ProtoReflect.Descriptor instead.
+func (*Connection) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *Edge) GetPath() *Path {
+func (x *Connection) GetPath() *Path {
 	if x != nil {
 		return x.Path
 	}
 	return nil
 }
 
-func (x *Edge) GetAttributes() *_struct.Struct {
+func (x *Connection) GetAttributes() *_struct.Struct {
 	if x != nil {
 		return x.Attributes
 	}
 	return nil
 }
 
-func (x *Edge) GetDirected() bool {
+func (x *Connection) GetDirected() bool {
 	if x != nil {
 		return x.Directed
 	}
 	return false
 }
 
-func (x *Edge) GetFrom() *Path {
+func (x *Connection) GetFrom() *Path {
 	if x != nil {
 		return x.From
 	}
 	return nil
 }
 
-func (x *Edge) GetTo() *Path {
+func (x *Connection) GetTo() *Path {
 	if x != nil {
 		return x.To
 	}
 	return nil
 }
 
-func (x *Edge) GetMetadata() *Metadata {
+func (x *Connection) GetMetadata() *Metadata {
 	if x != nil {
 		return x.Metadata
 	}
 	return nil
 }
 
-// EdgeConstructor is used to create an Edge
-type EdgeConstructor struct {
+// ConnectionConstructor is used to create an Connection
+type ConnectionConstructor struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// path is the path to the edge. If an id is not provided, a unique id will be generated
+	// path is the path to the connection. If an id is not provided, a unique id will be generated
 	Path *Path `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 	// attributes are k/v pairs
 	Attributes *_struct.Struct `protobuf:"bytes,3,opt,name=attributes,proto3" json:"attributes,omitempty"`
-	// directed is false if the edge is bi-directional
+	// directed is false if the connection is bi-directional
 	Directed bool `protobuf:"varint,4,opt,name=directed,proto3" json:"directed,omitempty"`
-	// from is the node path that is the root of the edge
+	// from is the doc path that is the root of the connection
 	From *Path `protobuf:"bytes,5,opt,name=from,proto3" json:"from,omitempty"`
-	// to is the node path that is the destination of the edge
+	// to is the doc path that is the destination of the connection
 	To *Path `protobuf:"bytes,6,opt,name=to,proto3" json:"to,omitempty"`
 }
 
-func (x *EdgeConstructor) Reset() {
-	*x = EdgeConstructor{}
+func (x *ConnectionConstructor) Reset() {
+	*x = ConnectionConstructor{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -771,13 +771,13 @@ func (x *EdgeConstructor) Reset() {
 	}
 }
 
-func (x *EdgeConstructor) String() string {
+func (x *ConnectionConstructor) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EdgeConstructor) ProtoMessage() {}
+func (*ConnectionConstructor) ProtoMessage() {}
 
-func (x *EdgeConstructor) ProtoReflect() protoreflect.Message {
+func (x *ConnectionConstructor) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -789,57 +789,57 @@ func (x *EdgeConstructor) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EdgeConstructor.ProtoReflect.Descriptor instead.
-func (*EdgeConstructor) Descriptor() ([]byte, []int) {
+// Deprecated: Use ConnectionConstructor.ProtoReflect.Descriptor instead.
+func (*ConnectionConstructor) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *EdgeConstructor) GetPath() *Path {
+func (x *ConnectionConstructor) GetPath() *Path {
 	if x != nil {
 		return x.Path
 	}
 	return nil
 }
 
-func (x *EdgeConstructor) GetAttributes() *_struct.Struct {
+func (x *ConnectionConstructor) GetAttributes() *_struct.Struct {
 	if x != nil {
 		return x.Attributes
 	}
 	return nil
 }
 
-func (x *EdgeConstructor) GetDirected() bool {
+func (x *ConnectionConstructor) GetDirected() bool {
 	if x != nil {
 		return x.Directed
 	}
 	return false
 }
 
-func (x *EdgeConstructor) GetFrom() *Path {
+func (x *ConnectionConstructor) GetFrom() *Path {
 	if x != nil {
 		return x.From
 	}
 	return nil
 }
 
-func (x *EdgeConstructor) GetTo() *Path {
+func (x *ConnectionConstructor) GetTo() *Path {
 	if x != nil {
 		return x.To
 	}
 	return nil
 }
 
-// EdgeConstructors is an array of EdgeConstructor
-type EdgeConstructors struct {
+// ConnectionConstructors is an array of ConnectionConstructor
+type ConnectionConstructors struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Edges []*EdgeConstructor `protobuf:"bytes,1,rep,name=edges,proto3" json:"edges,omitempty"`
+	Connections []*ConnectionConstructor `protobuf:"bytes,1,rep,name=connections,proto3" json:"connections,omitempty"`
 }
 
-func (x *EdgeConstructors) Reset() {
-	*x = EdgeConstructors{}
+func (x *ConnectionConstructors) Reset() {
+	*x = ConnectionConstructors{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -847,13 +847,13 @@ func (x *EdgeConstructors) Reset() {
 	}
 }
 
-func (x *EdgeConstructors) String() string {
+func (x *ConnectionConstructors) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EdgeConstructors) ProtoMessage() {}
+func (*ConnectionConstructors) ProtoMessage() {}
 
-func (x *EdgeConstructors) ProtoReflect() protoreflect.Message {
+func (x *ConnectionConstructors) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -865,29 +865,29 @@ func (x *EdgeConstructors) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EdgeConstructors.ProtoReflect.Descriptor instead.
-func (*EdgeConstructors) Descriptor() ([]byte, []int) {
+// Deprecated: Use ConnectionConstructors.ProtoReflect.Descriptor instead.
+func (*ConnectionConstructors) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *EdgeConstructors) GetEdges() []*EdgeConstructor {
+func (x *ConnectionConstructors) GetConnections() []*ConnectionConstructor {
 	if x != nil {
-		return x.Edges
+		return x.Connections
 	}
 	return nil
 }
 
-// Edges is an array of Edge
-type Edges struct {
+// Connections is an array of Connection
+type Connections struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Edges []*Edge `protobuf:"bytes,1,rep,name=edges,proto3" json:"edges,omitempty"`
+	Connections []*Connection `protobuf:"bytes,1,rep,name=connections,proto3" json:"connections,omitempty"`
 }
 
-func (x *Edges) Reset() {
-	*x = Edges{}
+func (x *Connections) Reset() {
+	*x = Connections{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -895,13 +895,13 @@ func (x *Edges) Reset() {
 	}
 }
 
-func (x *Edges) String() string {
+func (x *Connections) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Edges) ProtoMessage() {}
+func (*Connections) ProtoMessage() {}
 
-func (x *Edges) ProtoReflect() protoreflect.Message {
+func (x *Connections) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -913,40 +913,40 @@ func (x *Edges) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Edges.ProtoReflect.Descriptor instead.
-func (*Edges) Descriptor() ([]byte, []int) {
+// Deprecated: Use Connections.ProtoReflect.Descriptor instead.
+func (*Connections) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{13}
 }
 
-func (x *Edges) GetEdges() []*Edge {
+func (x *Connections) GetConnections() []*Connection {
 	if x != nil {
-		return x.Edges
+		return x.Connections
 	}
 	return nil
 }
 
-// EdgeDetail is an edge with both of it's connected nodes fully loaded
-type EdgeDetail struct {
+// ConnectionDetail is an connection with both of it's connected docs fully loaded
+type ConnectionDetail struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// path is the path to the edge
+	// path is the path to the connection
 	Path *Path `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
 	// attributes are k/v pairs
 	Attributes *_struct.Struct `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
-	// directed is false if the edge is bi-directional
+	// directed is false if the connection is bi-directional
 	Directed bool `protobuf:"varint,3,opt,name=directed,proto3" json:"directed,omitempty"`
-	// from is the full node that is the root of the edge
-	From *Node `protobuf:"bytes,4,opt,name=from,proto3" json:"from,omitempty"`
-	// to is the full node that is the destination of the edge
-	To *Node `protobuf:"bytes,5,opt,name=to,proto3" json:"to,omitempty"`
-	// metadata is general metadata collected about the edge
+	// from is the full doc that is the root of the connection
+	From *Doc `protobuf:"bytes,4,opt,name=from,proto3" json:"from,omitempty"`
+	// to is the full doc that is the destination of the connection
+	To *Doc `protobuf:"bytes,5,opt,name=to,proto3" json:"to,omitempty"`
+	// metadata is general metadata collected about the connection
 	Metadata *Metadata `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (x *EdgeDetail) Reset() {
-	*x = EdgeDetail{}
+func (x *ConnectionDetail) Reset() {
+	*x = ConnectionDetail{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -954,13 +954,13 @@ func (x *EdgeDetail) Reset() {
 	}
 }
 
-func (x *EdgeDetail) String() string {
+func (x *ConnectionDetail) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EdgeDetail) ProtoMessage() {}
+func (*ConnectionDetail) ProtoMessage() {}
 
-func (x *EdgeDetail) ProtoReflect() protoreflect.Message {
+func (x *ConnectionDetail) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -972,64 +972,64 @@ func (x *EdgeDetail) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EdgeDetail.ProtoReflect.Descriptor instead.
-func (*EdgeDetail) Descriptor() ([]byte, []int) {
+// Deprecated: Use ConnectionDetail.ProtoReflect.Descriptor instead.
+func (*ConnectionDetail) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *EdgeDetail) GetPath() *Path {
+func (x *ConnectionDetail) GetPath() *Path {
 	if x != nil {
 		return x.Path
 	}
 	return nil
 }
 
-func (x *EdgeDetail) GetAttributes() *_struct.Struct {
+func (x *ConnectionDetail) GetAttributes() *_struct.Struct {
 	if x != nil {
 		return x.Attributes
 	}
 	return nil
 }
 
-func (x *EdgeDetail) GetDirected() bool {
+func (x *ConnectionDetail) GetDirected() bool {
 	if x != nil {
 		return x.Directed
 	}
 	return false
 }
 
-func (x *EdgeDetail) GetFrom() *Node {
+func (x *ConnectionDetail) GetFrom() *Doc {
 	if x != nil {
 		return x.From
 	}
 	return nil
 }
 
-func (x *EdgeDetail) GetTo() *Node {
+func (x *ConnectionDetail) GetTo() *Doc {
 	if x != nil {
 		return x.To
 	}
 	return nil
 }
 
-func (x *EdgeDetail) GetMetadata() *Metadata {
+func (x *ConnectionDetail) GetMetadata() *Metadata {
 	if x != nil {
 		return x.Metadata
 	}
 	return nil
 }
 
-// EdgeDetails is an array of EdgeDetail
-type EdgeDetails struct {
+// ConnectionDetails is an array of ConnectionDetail
+type ConnectionDetails struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Edges []*EdgeDetail `protobuf:"bytes,1,rep,name=edges,proto3" json:"edges,omitempty"`
+	Connections []*ConnectionDetail `protobuf:"bytes,1,rep,name=connections,proto3" json:"connections,omitempty"`
 }
 
-func (x *EdgeDetails) Reset() {
-	*x = EdgeDetails{}
+func (x *ConnectionDetails) Reset() {
+	*x = ConnectionDetails{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1037,13 +1037,13 @@ func (x *EdgeDetails) Reset() {
 	}
 }
 
-func (x *EdgeDetails) String() string {
+func (x *ConnectionDetails) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EdgeDetails) ProtoMessage() {}
+func (*ConnectionDetails) ProtoMessage() {}
 
-func (x *EdgeDetails) ProtoReflect() protoreflect.Message {
+func (x *ConnectionDetails) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1055,36 +1055,36 @@ func (x *EdgeDetails) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EdgeDetails.ProtoReflect.Descriptor instead.
-func (*EdgeDetails) Descriptor() ([]byte, []int) {
+// Deprecated: Use ConnectionDetails.ProtoReflect.Descriptor instead.
+func (*ConnectionDetails) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *EdgeDetails) GetEdges() []*EdgeDetail {
+func (x *ConnectionDetails) GetConnections() []*ConnectionDetail {
 	if x != nil {
-		return x.Edges
+		return x.Connections
 	}
 	return nil
 }
 
-// EdgeFilter is used to fetch edges related to a single noted
-type EdgeFilter struct {
+// ConnectionFilter is used to fetch connections related to a single noted
+type ConnectionFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// node_path is the path to the target node
-	NodePath *Path `protobuf:"bytes,1,opt,name=node_path,json=nodePath,proto3" json:"node_path,omitempty"`
-	// gtype is the type of edges to return
+	// doc_path is the path to the target doc
+	DocPath *Path `protobuf:"bytes,1,opt,name=doc_path,json=docPath,proto3" json:"doc_path,omitempty"`
+	// gtype is the type of connections to return
 	Gtype string `protobuf:"bytes,2,opt,name=gtype,proto3" json:"gtype,omitempty"`
-	// expressions are CEL expressions used to filter edges
+	// expressions are CEL expressions used to filter connections
 	Expressions []string `protobuf:"bytes,3,rep,name=expressions,proto3" json:"expressions,omitempty"`
-	// limit is the maximum number of edges to return
+	// limit is the maximum number of connections to return
 	Limit int32 `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
 }
 
-func (x *EdgeFilter) Reset() {
-	*x = EdgeFilter{}
+func (x *ConnectionFilter) Reset() {
+	*x = ConnectionFilter{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1092,13 +1092,13 @@ func (x *EdgeFilter) Reset() {
 	}
 }
 
-func (x *EdgeFilter) String() string {
+func (x *ConnectionFilter) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EdgeFilter) ProtoMessage() {}
+func (*ConnectionFilter) ProtoMessage() {}
 
-func (x *EdgeFilter) ProtoReflect() protoreflect.Message {
+func (x *ConnectionFilter) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1110,33 +1110,33 @@ func (x *EdgeFilter) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EdgeFilter.ProtoReflect.Descriptor instead.
-func (*EdgeFilter) Descriptor() ([]byte, []int) {
+// Deprecated: Use ConnectionFilter.ProtoReflect.Descriptor instead.
+func (*ConnectionFilter) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{16}
 }
 
-func (x *EdgeFilter) GetNodePath() *Path {
+func (x *ConnectionFilter) GetDocPath() *Path {
 	if x != nil {
-		return x.NodePath
+		return x.DocPath
 	}
 	return nil
 }
 
-func (x *EdgeFilter) GetGtype() string {
+func (x *ConnectionFilter) GetGtype() string {
 	if x != nil {
 		return x.Gtype
 	}
 	return ""
 }
 
-func (x *EdgeFilter) GetExpressions() []string {
+func (x *ConnectionFilter) GetExpressions() []string {
 	if x != nil {
 		return x.Expressions
 	}
 	return nil
 }
 
-func (x *EdgeFilter) GetLimit() int32 {
+func (x *ConnectionFilter) GetLimit() int32 {
 	if x != nil {
 		return x.Limit
 	}
@@ -1149,9 +1149,9 @@ type Filter struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// gtype is the node/edge type to be filtered
+	// gtype is the doc/connection type to be filtered
 	Gtype string `protobuf:"bytes,1,opt,name=gtype,proto3" json:"gtype,omitempty"`
-	// expressions are CEL expressions used to filter edges
+	// expressions are CEL expressions used to filter connections
 	Expressions []string `protobuf:"bytes,2,rep,name=expressions,proto3" json:"expressions,omitempty"`
 	// limit is the maximum number of items to return
 	Limit int32 `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
@@ -1210,16 +1210,16 @@ func (x *Filter) GetLimit() int32 {
 	return 0
 }
 
-// MeFilter is used to fetch a NodeDetail representing the identity in the inbound JWT token
+// MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
 type MeFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// edges_from is a filter used to filter edges from the identity making the request
-	EdgesFrom *Filter `protobuf:"bytes,1,opt,name=edges_from,json=edgesFrom,proto3" json:"edges_from,omitempty"`
-	// edges_to is a filter used to filter edges to the identity making the request
-	EdgesTo *Filter `protobuf:"bytes,2,opt,name=edges_to,json=edgesTo,proto3" json:"edges_to,omitempty"`
+	// connections_from is a filter used to filter connections from the identity making the request
+	ConnectionsFrom *Filter `protobuf:"bytes,1,opt,name=connections_from,json=connectionsFrom,proto3" json:"connections_from,omitempty"`
+	// connections_to is a filter used to filter connections to the identity making the request
+	ConnectionsTo *Filter `protobuf:"bytes,2,opt,name=connections_to,json=connectionsTo,proto3" json:"connections_to,omitempty"`
 }
 
 func (x *MeFilter) Reset() {
@@ -1254,16 +1254,16 @@ func (*MeFilter) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{18}
 }
 
-func (x *MeFilter) GetEdgesFrom() *Filter {
+func (x *MeFilter) GetConnectionsFrom() *Filter {
 	if x != nil {
-		return x.EdgesFrom
+		return x.ConnectionsFrom
 	}
 	return nil
 }
 
-func (x *MeFilter) GetEdgesTo() *Filter {
+func (x *MeFilter) GetConnectionsTo() *Filter {
 	if x != nil {
-		return x.EdgesTo
+		return x.ConnectionsTo
 	}
 	return nil
 }
@@ -1326,16 +1326,16 @@ func (x *ChannelFilter) GetExpressions() []string {
 	return nil
 }
 
-// SubGraphFilter is used to filter nodes/edges in the graph
+// SubGraphFilter is used to filter docs/connections in the graph
 type SubGraphFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// node_filter is a filter used to filter nodes in the graph
-	NodeFilter *Filter `protobuf:"bytes,1,opt,name=node_filter,json=nodeFilter,proto3" json:"node_filter,omitempty"`
-	// edge_filter is a filter used to filter the edges of each node returned by the node_filter
-	EdgeFilter *Filter `protobuf:"bytes,2,opt,name=edge_filter,json=edgeFilter,proto3" json:"edge_filter,omitempty"`
+	// doc_filter is a filter used to filter docs in the graph
+	DocFilter *Filter `protobuf:"bytes,1,opt,name=doc_filter,json=docFilter,proto3" json:"doc_filter,omitempty"`
+	// connection_filter is a filter used to filter the connections of each doc returned by the doc_filter
+	ConnectionFilter *Filter `protobuf:"bytes,2,opt,name=connection_filter,json=connectionFilter,proto3" json:"connection_filter,omitempty"`
 }
 
 func (x *SubGraphFilter) Reset() {
@@ -1370,30 +1370,30 @@ func (*SubGraphFilter) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *SubGraphFilter) GetNodeFilter() *Filter {
+func (x *SubGraphFilter) GetDocFilter() *Filter {
 	if x != nil {
-		return x.NodeFilter
+		return x.DocFilter
 	}
 	return nil
 }
 
-func (x *SubGraphFilter) GetEdgeFilter() *Filter {
+func (x *SubGraphFilter) GetConnectionFilter() *Filter {
 	if x != nil {
-		return x.EdgeFilter
+		return x.ConnectionFilter
 	}
 	return nil
 }
 
-// Graph is an array of nodes and edges
+// Graph is an array of docs and connections
 type Graph struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// nodes are nodes present in the graph
-	Nodes *Nodes `protobuf:"bytes,1,opt,name=nodes,proto3" json:"nodes,omitempty"`
-	// edges are edges present in the graph
-	Edges *Edges `protobuf:"bytes,2,opt,name=edges,proto3" json:"edges,omitempty"`
+	// docs are docs present in the graph
+	Docs *Docs `protobuf:"bytes,1,opt,name=docs,proto3" json:"docs,omitempty"`
+	// connections are connections present in the graph
+	Connections *Connections `protobuf:"bytes,2,opt,name=connections,proto3" json:"connections,omitempty"`
 }
 
 func (x *Graph) Reset() {
@@ -1428,29 +1428,29 @@ func (*Graph) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{21}
 }
 
-func (x *Graph) GetNodes() *Nodes {
+func (x *Graph) GetDocs() *Docs {
 	if x != nil {
-		return x.Nodes
+		return x.Docs
 	}
 	return nil
 }
 
-func (x *Graph) GetEdges() *Edges {
+func (x *Graph) GetConnections() *Connections {
 	if x != nil {
-		return x.Edges
+		return x.Connections
 	}
 	return nil
 }
 
-// Patch patches the attributes of a Node or Edge
+// Patch patches the attributes of a Doc or Connection
 type Patch struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// path is the path to the target node/edge to patch
+	// path is the path to the target doc/connection to patch
 	Path *Path `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	// attributes are k/v pairs used to overwrite k/v pairs on a node/edge
+	// attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
 	Attributes *_struct.Struct `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -1500,15 +1500,15 @@ func (x *Patch) GetAttributes() *_struct.Struct {
 	return nil
 }
 
-// PatchFilter is used to patch nodes/edges
+// PatchFilter is used to patch docs/connections
 type PatchFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// filter is used to filter nodes/edges to patch
+	// filter is used to filter docs/connections to patch
 	Filter *Filter `protobuf:"bytes,1,opt,name=filter,proto3" json:"filter,omitempty"`
-	// attributes are k/v pairs used to overwrite k/v pairs on all nodes/edges that pass the filter
+	// attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter
 	Attributes *_struct.Struct `protobuf:"bytes,2,opt,name=attributes,proto3" json:"attributes,omitempty"`
 }
 
@@ -1741,16 +1741,16 @@ func (x *Message) GetTimestamp() *timestamp.Timestamp {
 	return nil
 }
 
-// Schema returns registered edge & node types
+// Schema returns registered connection & doc types
 type Schema struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// edge_types are the types of edges in the graph
-	EdgeTypes []string `protobuf:"bytes,1,rep,name=edge_types,json=edgeTypes,proto3" json:"edge_types,omitempty"`
-	// node_types are the types of nodes in the graph
-	NodeTypes []string `protobuf:"bytes,2,rep,name=node_types,json=nodeTypes,proto3" json:"node_types,omitempty"`
+	// connection_types are the types of connections in the graph
+	ConnectionTypes []string `protobuf:"bytes,1,rep,name=connection_types,json=connectionTypes,proto3" json:"connection_types,omitempty"`
+	// doc_types are the types of docs in the graph
+	DocTypes []string `protobuf:"bytes,2,rep,name=doc_types,json=docTypes,proto3" json:"doc_types,omitempty"`
 }
 
 func (x *Schema) Reset() {
@@ -1785,34 +1785,34 @@ func (*Schema) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{27}
 }
 
-func (x *Schema) GetEdgeTypes() []string {
+func (x *Schema) GetConnectionTypes() []string {
 	if x != nil {
-		return x.EdgeTypes
+		return x.ConnectionTypes
 	}
 	return nil
 }
 
-func (x *Schema) GetNodeTypes() []string {
+func (x *Schema) GetDocTypes() []string {
 	if x != nil {
-		return x.NodeTypes
+		return x.DocTypes
 	}
 	return nil
 }
 
-// NodeChange is a single state change to a node
-type NodeChange struct {
+// DocChange is a single state change to a doc
+type DocChange struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// before is the node before state change
-	Before *Node `protobuf:"bytes,4,opt,name=before,proto3" json:"before,omitempty"`
-	// after is the node after state change
-	After *Node `protobuf:"bytes,5,opt,name=after,proto3" json:"after,omitempty"`
+	// before is the doc before state change
+	Before *Doc `protobuf:"bytes,4,opt,name=before,proto3" json:"before,omitempty"`
+	// after is the doc after state change
+	After *Doc `protobuf:"bytes,5,opt,name=after,proto3" json:"after,omitempty"`
 }
 
-func (x *NodeChange) Reset() {
-	*x = NodeChange{}
+func (x *DocChange) Reset() {
+	*x = DocChange{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[28]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1820,13 +1820,13 @@ func (x *NodeChange) Reset() {
 	}
 }
 
-func (x *NodeChange) String() string {
+func (x *DocChange) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NodeChange) ProtoMessage() {}
+func (*DocChange) ProtoMessage() {}
 
-func (x *NodeChange) ProtoReflect() protoreflect.Message {
+func (x *DocChange) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[28]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1838,36 +1838,36 @@ func (x *NodeChange) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use NodeChange.ProtoReflect.Descriptor instead.
-func (*NodeChange) Descriptor() ([]byte, []int) {
+// Deprecated: Use DocChange.ProtoReflect.Descriptor instead.
+func (*DocChange) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{28}
 }
 
-func (x *NodeChange) GetBefore() *Node {
+func (x *DocChange) GetBefore() *Doc {
 	if x != nil {
 		return x.Before
 	}
 	return nil
 }
 
-func (x *NodeChange) GetAfter() *Node {
+func (x *DocChange) GetAfter() *Doc {
 	if x != nil {
 		return x.After
 	}
 	return nil
 }
 
-type EdgeChange struct {
+type ConnectionChange struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Before *Edge `protobuf:"bytes,4,opt,name=before,proto3" json:"before,omitempty"`
-	After  *Edge `protobuf:"bytes,5,opt,name=after,proto3" json:"after,omitempty"`
+	Before *Connection `protobuf:"bytes,4,opt,name=before,proto3" json:"before,omitempty"`
+	After  *Connection `protobuf:"bytes,5,opt,name=after,proto3" json:"after,omitempty"`
 }
 
-func (x *EdgeChange) Reset() {
-	*x = EdgeChange{}
+func (x *ConnectionChange) Reset() {
+	*x = ConnectionChange{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_graphik_proto_msgTypes[29]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1875,13 +1875,13 @@ func (x *EdgeChange) Reset() {
 	}
 }
 
-func (x *EdgeChange) String() string {
+func (x *ConnectionChange) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EdgeChange) ProtoMessage() {}
+func (*ConnectionChange) ProtoMessage() {}
 
-func (x *EdgeChange) ProtoReflect() protoreflect.Message {
+func (x *ConnectionChange) ProtoReflect() protoreflect.Message {
 	mi := &file_api_graphik_proto_msgTypes[29]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1893,19 +1893,19 @@ func (x *EdgeChange) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use EdgeChange.ProtoReflect.Descriptor instead.
-func (*EdgeChange) Descriptor() ([]byte, []int) {
+// Deprecated: Use ConnectionChange.ProtoReflect.Descriptor instead.
+func (*ConnectionChange) Descriptor() ([]byte, []int) {
 	return file_api_graphik_proto_rawDescGZIP(), []int{29}
 }
 
-func (x *EdgeChange) GetBefore() *Edge {
+func (x *ConnectionChange) GetBefore() *Connection {
 	if x != nil {
 		return x.Before
 	}
 	return nil
 }
 
-func (x *EdgeChange) GetAfter() *Edge {
+func (x *ConnectionChange) GetAfter() *Connection {
 	if x != nil {
 		return x.After
 	}
@@ -1921,13 +1921,13 @@ type Change struct {
 	// method is the gRPC method invoked
 	Method string `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
 	// identity is the identity invoking the change
-	Identity *Node `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
+	Identity *Doc `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
 	// timestamp is when the change was made
 	Timestamp *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	// edge_changes are state changes to edges
-	EdgeChanges []*EdgeChange `protobuf:"bytes,4,rep,name=edge_changes,json=edgeChanges,proto3" json:"edge_changes,omitempty"`
-	// node_changes are state changes to nodes
-	NodeChanges []*NodeChange `protobuf:"bytes,5,rep,name=node_changes,json=nodeChanges,proto3" json:"node_changes,omitempty"`
+	// connection_changes are state changes to connections
+	ConnectionChanges []*ConnectionChange `protobuf:"bytes,4,rep,name=connection_changes,json=connectionChanges,proto3" json:"connection_changes,omitempty"`
+	// doc_changes are state changes to docs
+	DocChanges []*DocChange `protobuf:"bytes,5,rep,name=doc_changes,json=docChanges,proto3" json:"doc_changes,omitempty"`
 }
 
 func (x *Change) Reset() {
@@ -1969,7 +1969,7 @@ func (x *Change) GetMethod() string {
 	return ""
 }
 
-func (x *Change) GetIdentity() *Node {
+func (x *Change) GetIdentity() *Doc {
 	if x != nil {
 		return x.Identity
 	}
@@ -1983,16 +1983,16 @@ func (x *Change) GetTimestamp() *timestamp.Timestamp {
 	return nil
 }
 
-func (x *Change) GetEdgeChanges() []*EdgeChange {
+func (x *Change) GetConnectionChanges() []*ConnectionChange {
 	if x != nil {
-		return x.EdgeChanges
+		return x.ConnectionChanges
 	}
 	return nil
 }
 
-func (x *Change) GetNodeChanges() []*NodeChange {
+func (x *Change) GetDocChanges() []*DocChange {
 	if x != nil {
-		return x.NodeChanges
+		return x.DocChanges
 	}
 	return nil
 }
@@ -2002,7 +2002,7 @@ type ExpressionFilter struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// expressions are CEL expressions used to filter edges
+	// expressions are CEL expressions used to filter connections
 	Expressions []string `protobuf:"bytes,1,rep,name=expressions,proto3" json:"expressions,omitempty"`
 }
 
@@ -2053,7 +2053,7 @@ type Request struct {
 	// method is the rpc method
 	Method string `protobuf:"bytes,1,opt,name=method,proto3" json:"method,omitempty"`
 	// identity is the identity making the request
-	Identity *Node `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
+	Identity *Doc `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
 	// timestamp is when the intercept was received
 	Timestamp *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// request is the intercepted request
@@ -2099,7 +2099,7 @@ func (x *Request) GetMethod() string {
 	return ""
 }
 
-func (x *Request) GetIdentity() *Node {
+func (x *Request) GetIdentity() *Doc {
 	if x != nil {
 		return x.Identity
 	}
@@ -2161,235 +2161,249 @@ var file_api_graphik_proto_rawDesc = []byte{
 	0xdf, 0x1f, 0x02, 0x10, 0x00, 0x52, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x28,
 	0x0a, 0x05, 0x50, 0x61, 0x74, 0x68, 0x73, 0x12, 0x1f, 0x0a, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73,
 	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74,
-	0x68, 0x52, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x22, 0x99, 0x01, 0x0a, 0x04, 0x4e, 0x6f, 0x64,
-	0x65, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02,
-	0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65,
-	0x73, 0x12, 0x31, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x22, 0x71, 0x0a, 0x0f, 0x4e, 0x6f, 0x64, 0x65, 0x43, 0x6f, 0x6e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68,
-	0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37,
-	0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74,
-	0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x22, 0x3e, 0x0a, 0x10, 0x4e, 0x6f, 0x64, 0x65, 0x43,
-	0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x2a, 0x0a, 0x05, 0x6e,
-	0x6f, 0x64, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72,
-	0x52, 0x05, 0x6e, 0x6f, 0x64, 0x65, 0x73, 0x22, 0x28, 0x0a, 0x05, 0x4e, 0x6f, 0x64, 0x65, 0x73,
-	0x12, 0x1f, 0x0a, 0x05, 0x6e, 0x6f, 0x64, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x52, 0x05, 0x6e, 0x6f, 0x64, 0x65,
-	0x73, 0x22, 0xfd, 0x01, 0x0a, 0x0a, 0x4e, 0x6f, 0x64, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x68, 0x52, 0x05, 0x70, 0x61, 0x74, 0x68, 0x73, 0x22, 0x98, 0x01, 0x0a, 0x03, 0x44, 0x6f, 0x63,
 	0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09,
 	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20,
 	0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69,
 	0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73,
-	0x12, 0x2f, 0x0a, 0x0a, 0x65, 0x64, 0x67, 0x65, 0x73, 0x5f, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x09, 0x65, 0x64, 0x67, 0x65, 0x73, 0x46, 0x72, 0x6f,
-	0x6d, 0x12, 0x2b, 0x0a, 0x08, 0x65, 0x64, 0x67, 0x65, 0x73, 0x5f, 0x74, 0x6f, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x07, 0x65, 0x64, 0x67, 0x65, 0x73, 0x54, 0x6f, 0x12, 0x31,
-	0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x42,
-	0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0x22, 0x41, 0x0a, 0x0b, 0x4e, 0x6f, 0x64, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
-	0x12, 0x32, 0x0a, 0x0c, 0x6e, 0x6f, 0x64, 0x65, 0x5f, 0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73,
-	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64,
-	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x0b, 0x6e, 0x6f, 0x64, 0x65, 0x44, 0x65, 0x74,
-	0x61, 0x69, 0x6c, 0x73, 0x22, 0x8d, 0x01, 0x0a, 0x10, 0x4e, 0x6f, 0x64, 0x65, 0x44, 0x65, 0x74,
-	0x61, 0x69, 0x6c, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74,
-	0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61,
-	0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68,
-	0x12, 0x2a, 0x0a, 0x0a, 0x66, 0x72, 0x6f, 0x6d, 0x5f, 0x65, 0x64, 0x67, 0x65, 0x73, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65,
-	0x72, 0x52, 0x09, 0x66, 0x72, 0x6f, 0x6d, 0x45, 0x64, 0x67, 0x65, 0x73, 0x12, 0x26, 0x0a, 0x08,
-	0x74, 0x6f, 0x5f, 0x65, 0x64, 0x67, 0x65, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x07, 0x74, 0x6f, 0x45,
-	0x64, 0x67, 0x65, 0x73, 0x22, 0xff, 0x01, 0x0a, 0x04, 0x45, 0x64, 0x67, 0x65, 0x12, 0x25, 0x0a,
+	0x12, 0x31, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0x22, 0x70, 0x0a, 0x0e, 0x44, 0x6f, 0x63, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06,
+	0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a,
+	0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69,
+	0x62, 0x75, 0x74, 0x65, 0x73, 0x22, 0x3a, 0x0a, 0x0f, 0x44, 0x6f, 0x63, 0x43, 0x6f, 0x6e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x27, 0x0a, 0x04, 0x64, 0x6f, 0x63, 0x73,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63,
+	0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x04, 0x64, 0x6f, 0x63,
+	0x73, 0x22, 0x24, 0x0a, 0x04, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x1c, 0x0a, 0x04, 0x64, 0x6f, 0x63,
+	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f,
+	0x63, 0x52, 0x04, 0x64, 0x6f, 0x63, 0x73, 0x22, 0xa0, 0x02, 0x0a, 0x09, 0x44, 0x6f, 0x63, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06,
+	0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a,
+	0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69,
+	0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x41, 0x0a, 0x10, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x5f, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x16, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x12, 0x3d, 0x0a, 0x0e, 0x63, 0x6f, 0x6e, 0x6e,
+	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x5f, 0x74, 0x6f, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x16, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0d, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x54, 0x6f, 0x12, 0x31, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01,
+	0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x22, 0x3d, 0x0a, 0x0a, 0x44, 0x6f,
+	0x63, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x2f, 0x0a, 0x0b, 0x64, 0x6f, 0x63, 0x5f,
+	0x64, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x0a, 0x64,
+	0x6f, 0x63, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x22, 0xa4, 0x01, 0x0a, 0x0f, 0x44, 0x6f,
+	0x63, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x25, 0x0a,
 	0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70,
 	0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04,
-	0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
-	0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x1a, 0x0a,
-	0x08, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52,
-	0x08, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x04, 0x66, 0x72, 0x6f,
-	0x6d, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61,
-	0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x66, 0x72, 0x6f, 0x6d,
-	0x12, 0x21, 0x0a, 0x02, 0x74, 0x6f, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61,
+	0x70, 0x61, 0x74, 0x68, 0x12, 0x36, 0x0a, 0x10, 0x66, 0x72, 0x6f, 0x6d, 0x5f, 0x63, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x0f, 0x66, 0x72, 0x6f,
+	0x6d, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x32, 0x0a, 0x0e,
+	0x74, 0x6f, 0x5f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65,
+	0x72, 0x52, 0x0d, 0x74, 0x6f, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x22, 0x85, 0x02, 0x0a, 0x0a, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01,
+	0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12,
+	0x1a, 0x0a, 0x08, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x08, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x04, 0x66,
+	0x72, 0x6f, 0x6d, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x66, 0x72,
+	0x6f, 0x6d, 0x12, 0x21, 0x0a, 0x02, 0x74, 0x6f, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20,
+	0x01, 0x52, 0x02, 0x74, 0x6f, 0x12, 0x31, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65,
+	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08,
+	0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x22, 0xdd, 0x01, 0x0a, 0x15, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x6f, 0x72, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f,
+	0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e,
+	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
+	0x65, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x65, 0x64, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x65, 0x64, 0x12, 0x25,
+	0x0a, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61,
 	0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52,
-	0x02, 0x74, 0x6f, 0x12, 0x31, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18,
-	0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x6d, 0x65,
-	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x22, 0xd7, 0x01, 0x0a, 0x0f, 0x45, 0x64, 0x67, 0x65, 0x43,
-	0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61,
-	0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50,
-	0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74,
-	0x68, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a,
-	0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x69,
-	0x72, 0x65, 0x63, 0x74, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x64, 0x69,
-	0x72, 0x65, 0x63, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x05,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42,
-	0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x12, 0x21, 0x0a,
-	0x02, 0x74, 0x6f, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x02, 0x74, 0x6f,
-	0x22, 0x3e, 0x0a, 0x10, 0x45, 0x64, 0x67, 0x65, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x6f, 0x72, 0x73, 0x12, 0x2a, 0x0a, 0x05, 0x65, 0x64, 0x67, 0x65, 0x73, 0x18, 0x01, 0x20,
-	0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x43, 0x6f,
-	0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x05, 0x65, 0x64, 0x67, 0x65, 0x73,
-	0x22, 0x28, 0x0a, 0x05, 0x45, 0x64, 0x67, 0x65, 0x73, 0x12, 0x1f, 0x0a, 0x05, 0x65, 0x64, 0x67,
-	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45,
-	0x64, 0x67, 0x65, 0x52, 0x05, 0x65, 0x64, 0x67, 0x65, 0x73, 0x22, 0x85, 0x02, 0x0a, 0x0a, 0x45,
-	0x64, 0x67, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74,
-	0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61,
-	0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68,
-	0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61,
-	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x69, 0x72,
-	0x65, 0x63, 0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x64, 0x69, 0x72,
-	0x65, 0x63, 0x74, 0x65, 0x64, 0x12, 0x25, 0x0a, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x42, 0x06,
-	0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x12, 0x21, 0x0a, 0x02,
-	0x74, 0x6f, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e,
-	0x6f, 0x64, 0x65, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x02, 0x74, 0x6f, 0x12,
-	0x31, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x06, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0x22, 0x34, 0x0a, 0x0b, 0x45, 0x64, 0x67, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x73, 0x12, 0x25, 0x0a, 0x05, 0x65, 0x64, 0x67, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
-	0x32, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x52, 0x05, 0x65, 0x64, 0x67, 0x65, 0x73, 0x22, 0xa4, 0x01, 0x0a, 0x0a, 0x45, 0x64, 0x67,
-	0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x2e, 0x0a, 0x09, 0x6e, 0x6f, 0x64, 0x65, 0x5f,
-	0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x6e,
-	0x6f, 0x64, 0x65, 0x50, 0x61, 0x74, 0x68, 0x12, 0x26, 0x0a, 0x05, 0x67, 0x74, 0x79, 0x70, 0x65,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10, 0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e,
-	0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24, 0x52, 0x05, 0x67, 0x74, 0x79, 0x70, 0x65, 0x12,
-	0x20, 0x0a, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03,
-	0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x73, 0x12, 0x1c, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05,
-	0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x10, 0x00, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x22,
-	0x70, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x26, 0x0a, 0x05, 0x67, 0x74, 0x79,
-	0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10, 0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a,
-	0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24, 0x52, 0x05, 0x67, 0x74, 0x79, 0x70,
-	0x65, 0x12, 0x20, 0x0a, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73,
-	0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69,
-	0x6f, 0x6e, 0x73, 0x12, 0x1c, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x05, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x10, 0x00, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69,
-	0x74, 0x22, 0x5e, 0x0a, 0x08, 0x4d, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x2a, 0x0a,
-	0x0a, 0x65, 0x64, 0x67, 0x65, 0x73, 0x5f, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x09,
-	0x65, 0x64, 0x67, 0x65, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x12, 0x26, 0x0a, 0x08, 0x65, 0x64, 0x67,
-	0x65, 0x73, 0x5f, 0x74, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x61, 0x70,
-	0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x07, 0x65, 0x64, 0x67, 0x65, 0x73, 0x54,
+	0x04, 0x66, 0x72, 0x6f, 0x6d, 0x12, 0x21, 0x0a, 0x02, 0x74, 0x6f, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf,
+	0x1f, 0x02, 0x20, 0x01, 0x52, 0x02, 0x74, 0x6f, 0x22, 0x56, 0x0a, 0x16, 0x43, 0x6f, 0x6e, 0x6e,
+	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f,
+	0x72, 0x73, 0x12, 0x3c, 0x0a, 0x0b, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x6f, 0x72, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x22, 0x40, 0x0a, 0x0b, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12,
+	0x31, 0x0a, 0x0b, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x73, 0x22, 0x89, 0x02, 0x0a, 0x10, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68,
+	0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37,
+	0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x69, 0x72, 0x65, 0x63,
+	0x74, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x64, 0x69, 0x72, 0x65, 0x63,
+	0x74, 0x65, 0x64, 0x12, 0x24, 0x0a, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x42, 0x06, 0xe2, 0xdf, 0x1f,
+	0x02, 0x20, 0x01, 0x52, 0x04, 0x66, 0x72, 0x6f, 0x6d, 0x12, 0x20, 0x0a, 0x02, 0x74, 0x6f, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x42,
+	0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x02, 0x74, 0x6f, 0x12, 0x31, 0x0a, 0x08, 0x6d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x42, 0x06, 0xe2, 0xdf,
+	0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x22, 0x4c,
+	0x0a, 0x11, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x73, 0x12, 0x37, 0x0a, 0x0b, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
+	0x0b, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0xa8, 0x01, 0x0a,
+	0x10, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x46, 0x69, 0x6c, 0x74, 0x65,
+	0x72, 0x12, 0x2c, 0x0a, 0x08, 0x64, 0x6f, 0x63, 0x5f, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06,
+	0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x07, 0x64, 0x6f, 0x63, 0x50, 0x61, 0x74, 0x68, 0x12,
+	0x26, 0x0a, 0x05, 0x67, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10,
+	0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24,
+	0x52, 0x05, 0x67, 0x74, 0x79, 0x70, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x65, 0x78,
+	0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1c, 0x0a, 0x05, 0x6c, 0x69, 0x6d,
+	0x69, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x10, 0x00,
+	0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x22, 0x70, 0x0a, 0x06, 0x46, 0x69, 0x6c, 0x74, 0x65,
+	0x72, 0x12, 0x26, 0x0a, 0x05, 0x67, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x42, 0x10, 0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35,
+	0x7d, 0x24, 0x52, 0x05, 0x67, 0x74, 0x79, 0x70, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x65, 0x78, 0x70,
+	0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b,
+	0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1c, 0x0a, 0x05, 0x6c,
+	0x69, 0x6d, 0x69, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02,
+	0x10, 0x00, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x22, 0x76, 0x0a, 0x08, 0x4d, 0x65, 0x46,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x36, 0x0a, 0x10, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x5f, 0x66, 0x72, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x0f, 0x63, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x12, 0x32, 0x0a,
+	0x0e, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x5f, 0x74, 0x6f, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x52, 0x0d, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x54,
 	0x6f, 0x22, 0x5d, 0x0a, 0x0d, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x46, 0x69, 0x6c, 0x74,
 	0x65, 0x72, 0x12, 0x2a, 0x0a, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x42, 0x10, 0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31, 0x2c,
 	0x32, 0x32, 0x35, 0x7d, 0x24, 0x52, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x20,
 	0x0a, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02, 0x20,
 	0x03, 0x28, 0x09, 0x52, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73,
-	0x22, 0x7c, 0x0a, 0x0e, 0x53, 0x75, 0x62, 0x47, 0x72, 0x61, 0x70, 0x68, 0x46, 0x69, 0x6c, 0x74,
-	0x65, 0x72, 0x12, 0x34, 0x0a, 0x0b, 0x6e, 0x6f, 0x64, 0x65, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65,
+	0x22, 0x86, 0x01, 0x0a, 0x0e, 0x53, 0x75, 0x62, 0x47, 0x72, 0x61, 0x70, 0x68, 0x46, 0x69, 0x6c,
+	0x74, 0x65, 0x72, 0x12, 0x32, 0x0a, 0x0a, 0x64, 0x6f, 0x63, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65,
 	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69,
-	0x6c, 0x74, 0x65, 0x72, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x0a, 0x6e, 0x6f,
-	0x64, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x34, 0x0a, 0x0b, 0x65, 0x64, 0x67, 0x65,
-	0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02,
-	0x20, 0x01, 0x52, 0x0a, 0x65, 0x64, 0x67, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0x4b,
-	0x0a, 0x05, 0x47, 0x72, 0x61, 0x70, 0x68, 0x12, 0x20, 0x0a, 0x05, 0x6e, 0x6f, 0x64, 0x65, 0x73,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64,
-	0x65, 0x73, 0x52, 0x05, 0x6e, 0x6f, 0x64, 0x65, 0x73, 0x12, 0x20, 0x0a, 0x05, 0x65, 0x64, 0x67,
-	0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45,
-	0x64, 0x67, 0x65, 0x73, 0x52, 0x05, 0x65, 0x64, 0x67, 0x65, 0x73, 0x22, 0x67, 0x0a, 0x05, 0x50,
-	0x61, 0x74, 0x63, 0x68, 0x12, 0x25, 0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2,
-	0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a, 0x61,
-	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62,
-	0x75, 0x74, 0x65, 0x73, 0x22, 0x6b, 0x0a, 0x0b, 0x50, 0x61, 0x74, 0x63, 0x68, 0x46, 0x69, 0x6c,
-	0x74, 0x65, 0x72, 0x12, 0x23, 0x0a, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72,
-	0x52, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65,
-	0x73, 0x22, 0x20, 0x0a, 0x04, 0x50, 0x6f, 0x6e, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73,
-	0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x22, 0x72, 0x0a, 0x0f, 0x4f, 0x75, 0x74, 0x62, 0x6f, 0x75, 0x6e, 0x64, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x2a, 0x0a, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65,
-	0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10, 0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e,
-	0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24, 0x52, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e,
-	0x65, 0x6c, 0x12, 0x33, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
-	0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20,
-	0x01, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0xd7, 0x01, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x12, 0x2a, 0x0a, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x42, 0x10, 0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31,
-	0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24, 0x52, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12,
-	0x33, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04,
-	0x64, 0x61, 0x74, 0x61, 0x12, 0x29, 0x0a, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42,
-	0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12,
-	0x40, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x06,
-	0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
-	0x70, 0x22, 0x46, 0x0a, 0x06, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x12, 0x1d, 0x0a, 0x0a, 0x65,
-	0x64, 0x67, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52,
-	0x09, 0x65, 0x64, 0x67, 0x65, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x1d, 0x0a, 0x0a, 0x6e, 0x6f,
-	0x64, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x09,
-	0x6e, 0x6f, 0x64, 0x65, 0x54, 0x79, 0x70, 0x65, 0x73, 0x22, 0x50, 0x0a, 0x0a, 0x4e, 0x6f, 0x64,
-	0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x21, 0x0a, 0x06, 0x62, 0x65, 0x66, 0x6f, 0x72,
-	0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f,
-	0x64, 0x65, 0x52, 0x06, 0x62, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x1f, 0x0a, 0x05, 0x61, 0x66,
-	0x74, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x4e, 0x6f, 0x64, 0x65, 0x52, 0x05, 0x61, 0x66, 0x74, 0x65, 0x72, 0x22, 0x50, 0x0a, 0x0a, 0x45,
-	0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x21, 0x0a, 0x06, 0x62, 0x65, 0x66,
-	0x6f, 0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x45, 0x64, 0x67, 0x65, 0x52, 0x06, 0x62, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x1f, 0x0a, 0x05,
-	0x61, 0x66, 0x74, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70,
-	0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x52, 0x05, 0x61, 0x66, 0x74, 0x65, 0x72, 0x22, 0x8b, 0x02,
-	0x0a, 0x06, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x06, 0x6d, 0x65, 0x74, 0x68,
-	0x6f, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10, 0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a,
-	0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24, 0x52, 0x06, 0x6d, 0x65, 0x74, 0x68,
-	0x6f, 0x64, 0x12, 0x2d, 0x0a, 0x08, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x42,
-	0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x74,
-	0x79, 0x12, 0x40, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
-	0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74,
-	0x61, 0x6d, 0x70, 0x12, 0x32, 0x0a, 0x0c, 0x65, 0x64, 0x67, 0x65, 0x5f, 0x63, 0x68, 0x61, 0x6e,
-	0x67, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x45, 0x64, 0x67, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x0b, 0x65, 0x64, 0x67, 0x65,
-	0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x12, 0x32, 0x0a, 0x0c, 0x6e, 0x6f, 0x64, 0x65, 0x5f,
-	0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x0b,
-	0x6e, 0x6f, 0x64, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x22, 0x34, 0x0a, 0x10, 0x45,
-	0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12,
-	0x20, 0x0a, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01,
-	0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x73, 0x22, 0xd7, 0x01, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x28, 0x0a,
-	0x06, 0x6d, 0x65, 0x74, 0x68, 0x6f, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10, 0xe2,
-	0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24, 0x52,
-	0x06, 0x6d, 0x65, 0x74, 0x68, 0x6f, 0x64, 0x12, 0x2d, 0x0a, 0x08, 0x69, 0x64, 0x65, 0x6e, 0x74,
-	0x69, 0x74, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x4e, 0x6f, 0x64, 0x65, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x69, 0x64,
+	0x6c, 0x74, 0x65, 0x72, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x09, 0x64, 0x6f,
+	0x63, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x40, 0x0a, 0x11, 0x63, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x42,
+	0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x10, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x22, 0x5a, 0x0a, 0x05, 0x47, 0x72, 0x61,
+	0x70, 0x68, 0x12, 0x1d, 0x0a, 0x04, 0x64, 0x6f, 0x63, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x73, 0x52, 0x04, 0x64, 0x6f, 0x63,
+	0x73, 0x12, 0x32, 0x0a, 0x0b, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x67, 0x0a, 0x05, 0x50, 0x61, 0x74, 0x63, 0x68, 0x12, 0x25,
+	0x0a, 0x04, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52,
+	0x04, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
+	0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x52, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x22, 0x6b,
+	0x0a, 0x0b, 0x50, 0x61, 0x74, 0x63, 0x68, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x23, 0x0a,
+	0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x12, 0x37, 0x0a, 0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52,
+	0x0a, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x22, 0x20, 0x0a, 0x04, 0x50,
+	0x6f, 0x6e, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x72, 0x0a,
+	0x0f, 0x4f, 0x75, 0x74, 0x62, 0x6f, 0x75, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x12, 0x2a, 0x0a, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x10, 0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32,
+	0x35, 0x7d, 0x24, 0x52, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x33, 0x0a, 0x04,
+	0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x64, 0x61, 0x74,
+	0x61, 0x22, 0xd7, 0x01, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x2a, 0x0a,
+	0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10,
+	0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24,
+	0x52, 0x07, 0x63, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x12, 0x33, 0x0a, 0x04, 0x64, 0x61, 0x74,
+	0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x12, 0x29,
+	0x0a, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x09,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20,
+	0x01, 0x52, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x40, 0x0a, 0x09, 0x74, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01,
+	0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x50, 0x0a, 0x06, 0x53,
+	0x63, 0x68, 0x65, 0x6d, 0x61, 0x12, 0x29, 0x0a, 0x10, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52,
+	0x0f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x73,
+	0x12, 0x1b, 0x0a, 0x09, 0x64, 0x6f, 0x63, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18, 0x02, 0x20,
+	0x03, 0x28, 0x09, 0x52, 0x08, 0x64, 0x6f, 0x63, 0x54, 0x79, 0x70, 0x65, 0x73, 0x22, 0x4d, 0x0a,
+	0x09, 0x44, 0x6f, 0x63, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x20, 0x0a, 0x06, 0x62, 0x65,
+	0x66, 0x6f, 0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x08, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x44, 0x6f, 0x63, 0x52, 0x06, 0x62, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x1e, 0x0a, 0x05,
+	0x61, 0x66, 0x74, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x08, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x44, 0x6f, 0x63, 0x52, 0x05, 0x61, 0x66, 0x74, 0x65, 0x72, 0x22, 0x62, 0x0a, 0x10,
+	0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65,
+	0x12, 0x27, 0x0a, 0x06, 0x62, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x06, 0x62, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x12, 0x25, 0x0a, 0x05, 0x61, 0x66, 0x74,
+	0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x05, 0x61, 0x66, 0x74, 0x65, 0x72,
+	0x22, 0x99, 0x02, 0x0a, 0x06, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x06, 0x6d,
+	0x65, 0x74, 0x68, 0x6f, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10, 0xe2, 0xdf, 0x1f,
+	0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24, 0x52, 0x06, 0x6d,
+	0x65, 0x74, 0x68, 0x6f, 0x64, 0x12, 0x2c, 0x0a, 0x08, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x74,
+	0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f,
+	0x63, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x69, 0x64, 0x65, 0x6e, 0x74,
+	0x69, 0x74, 0x79, 0x12, 0x40, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x44, 0x0a, 0x12, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x52, 0x11, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x12, 0x2f, 0x0a, 0x0b, 0x64,
+	0x6f, 0x63, 0x5f, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x0e, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65,
+	0x52, 0x0a, 0x64, 0x6f, 0x63, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x22, 0x34, 0x0a, 0x10,
+	0x45, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x12, 0x20, 0x0a, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x65, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x73, 0x22, 0xd6, 0x01, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x28,
+	0x0a, 0x06, 0x6d, 0x65, 0x74, 0x68, 0x6f, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x10,
+	0xe2, 0xdf, 0x1f, 0x0c, 0x0a, 0x0a, 0x5e, 0x2e, 0x7b, 0x31, 0x2c, 0x32, 0x32, 0x35, 0x7d, 0x24,
+	0x52, 0x06, 0x6d, 0x65, 0x74, 0x68, 0x6f, 0x64, 0x12, 0x2c, 0x0a, 0x08, 0x69, 0x64, 0x65, 0x6e,
+	0x74, 0x69, 0x74, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x08, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x44, 0x6f, 0x63, 0x42, 0x06, 0xe2, 0xdf, 0x1f, 0x02, 0x20, 0x01, 0x52, 0x08, 0x69, 0x64,
 	0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x40, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74,
 	0x61, 0x6d, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
@@ -2397,91 +2411,98 @@ var file_api_graphik_proto_rawDesc = []byte{
 	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x31, 0x0a, 0x07, 0x72, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x52, 0x07, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x32, 0xaa, 0x0a, 0x0a, 0x0c,
-	0x47, 0x72, 0x61, 0x70, 0x68, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x2b, 0x0a, 0x04,
-	0x50, 0x69, 0x6e, 0x67, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x09, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x50, 0x6f, 0x6e, 0x67, 0x22, 0x00, 0x12, 0x32, 0x0a, 0x09, 0x47, 0x65, 0x74,
-	0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x0b,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x22, 0x00, 0x12, 0x26, 0x0a,
-	0x02, 0x4d, 0x65, 0x12, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x46, 0x69, 0x6c, 0x74,
-	0x65, 0x72, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x44, 0x65, 0x74,
-	0x61, 0x69, 0x6c, 0x22, 0x00, 0x12, 0x2f, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4e,
-	0x6f, 0x64, 0x65, 0x12, 0x14, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x43, 0x6f,
-	0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x4e, 0x6f, 0x64, 0x65, 0x22, 0x00, 0x12, 0x32, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x4e, 0x6f, 0x64, 0x65, 0x73, 0x12, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65,
-	0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x1a, 0x0a, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x73, 0x22, 0x00, 0x12, 0x21, 0x0a, 0x07, 0x47, 0x65,
-	0x74, 0x4e, 0x6f, 0x64, 0x65, 0x12, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68,
-	0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x22, 0x00, 0x12, 0x28, 0x0a,
-	0x0b, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x4e, 0x6f, 0x64, 0x65, 0x73, 0x12, 0x0b, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x4e, 0x6f, 0x64, 0x65, 0x73, 0x22, 0x00, 0x12, 0x24, 0x0a, 0x09, 0x50, 0x61, 0x74, 0x63, 0x68,
-	0x4e, 0x6f, 0x64, 0x65, 0x12, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x63, 0x68,
-	0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x22, 0x00, 0x12, 0x2c, 0x0a,
-	0x0a, 0x50, 0x61, 0x74, 0x63, 0x68, 0x4e, 0x6f, 0x64, 0x65, 0x73, 0x12, 0x10, 0x2e, 0x61, 0x70,
-	0x69, 0x2e, 0x50, 0x61, 0x74, 0x63, 0x68, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0a, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x4e, 0x6f, 0x64, 0x65, 0x73, 0x22, 0x00, 0x12, 0x2e, 0x0a, 0x07, 0x44,
-	0x65, 0x6c, 0x4e, 0x6f, 0x64, 0x65, 0x12, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74,
-	0x68, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12, 0x31, 0x0a, 0x08, 0x44,
-	0x65, 0x6c, 0x4e, 0x6f, 0x64, 0x65, 0x73, 0x12, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69,
-	0x6c, 0x74, 0x65, 0x72, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12, 0x2f,
-	0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x64, 0x67, 0x65, 0x12, 0x14, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x6f, 0x72, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x22, 0x00, 0x12,
-	0x32, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x45, 0x64, 0x67, 0x65, 0x73, 0x12, 0x15,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x6f, 0x72, 0x73, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65,
-	0x73, 0x22, 0x00, 0x12, 0x21, 0x0a, 0x07, 0x47, 0x65, 0x74, 0x45, 0x64, 0x67, 0x65, 0x12, 0x09,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x45, 0x64, 0x67, 0x65, 0x22, 0x00, 0x12, 0x28, 0x0a, 0x0b, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68,
-	0x45, 0x64, 0x67, 0x65, 0x73, 0x12, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74,
-	0x65, 0x72, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x73, 0x22, 0x00,
-	0x12, 0x24, 0x0a, 0x09, 0x50, 0x61, 0x74, 0x63, 0x68, 0x45, 0x64, 0x67, 0x65, 0x12, 0x0a, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x63, 0x68, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x45, 0x64, 0x67, 0x65, 0x22, 0x00, 0x12, 0x2c, 0x0a, 0x0a, 0x50, 0x61, 0x74, 0x63, 0x68, 0x45,
-	0x64, 0x67, 0x65, 0x73, 0x12, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x63, 0x68,
-	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67,
-	0x65, 0x73, 0x22, 0x00, 0x12, 0x2e, 0x0a, 0x07, 0x44, 0x65, 0x6c, 0x45, 0x64, 0x67, 0x65, 0x12,
-	0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70,
-	0x74, 0x79, 0x22, 0x00, 0x12, 0x31, 0x0a, 0x08, 0x44, 0x65, 0x6c, 0x45, 0x64, 0x67, 0x65, 0x73,
-	0x12, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x16, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
-	0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12, 0x2a, 0x0a, 0x09, 0x45, 0x64, 0x67, 0x65, 0x73,
-	0x46, 0x72, 0x6f, 0x6d, 0x12, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x46,
-	0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65,
-	0x73, 0x22, 0x00, 0x12, 0x28, 0x0a, 0x07, 0x45, 0x64, 0x67, 0x65, 0x73, 0x54, 0x6f, 0x12, 0x0f,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a,
-	0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x67, 0x65, 0x73, 0x22, 0x00, 0x12, 0x39, 0x0a,
-	0x07, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x12, 0x14, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4f,
-	0x75, 0x74, 0x62, 0x6f, 0x75, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x16,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
-	0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12, 0x31, 0x0a, 0x09, 0x53, 0x75, 0x62, 0x73,
-	0x63, 0x72, 0x69, 0x62, 0x65, 0x12, 0x12, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x68, 0x61, 0x6e,
-	0x6e, 0x65, 0x6c, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x3a, 0x0a, 0x10, 0x53,
-	0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x62, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x12,
-	0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x68, 0x61,
-	0x6e, 0x67, 0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x22, 0x0a, 0x06, 0x49, 0x6d, 0x70, 0x6f, 0x72,
-	0x74, 0x12, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x1a, 0x0a, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x22, 0x00, 0x12, 0x2e, 0x0a, 0x06, 0x45,
-	0x78, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x0a, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x22, 0x00, 0x12, 0x2d, 0x0a, 0x08, 0x53,
-	0x75, 0x62, 0x47, 0x72, 0x61, 0x70, 0x68, 0x12, 0x13, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x75,
-	0x62, 0x47, 0x72, 0x61, 0x70, 0x68, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0a, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x22, 0x00, 0x12, 0x3c, 0x0a, 0x08, 0x53, 0x68,
-	0x75, 0x74, 0x64, 0x6f, 0x77, 0x6e, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x16,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
-	0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x42, 0x07, 0x5a, 0x05, 0x61, 0x70, 0x69, 0x70,
-	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x63, 0x74, 0x52, 0x07, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x32, 0xa0, 0x0b, 0x0a, 0x0f,
+	0x44, 0x61, 0x74, 0x61, 0x62, 0x61, 0x73, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12,
+	0x2b, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a,
+	0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x6f, 0x6e, 0x67, 0x22, 0x00, 0x12, 0x32, 0x0a, 0x09,
+	0x47, 0x65, 0x74, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74,
+	0x79, 0x1a, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x22, 0x00,
+	0x12, 0x25, 0x0a, 0x02, 0x4d, 0x65, 0x12, 0x0d, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x46,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0e, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x00, 0x12, 0x2c, 0x0a, 0x09, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x44, 0x6f, 0x63, 0x12, 0x13, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x43, 0x6f,
+	0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x1a, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x44, 0x6f, 0x63, 0x22, 0x00, 0x12, 0x2f, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x44,
+	0x6f, 0x63, 0x73, 0x12, 0x14, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x43, 0x6f, 0x6e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x44, 0x6f, 0x63, 0x73, 0x22, 0x00, 0x12, 0x1f, 0x0a, 0x06, 0x47, 0x65, 0x74, 0x44, 0x6f, 0x63,
+	0x12, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x1a, 0x08, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x44, 0x6f, 0x63, 0x22, 0x00, 0x12, 0x26, 0x0a, 0x0a, 0x53, 0x65, 0x61, 0x72, 0x63,
+	0x68, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x73, 0x22, 0x00, 0x12,
+	0x22, 0x0a, 0x08, 0x50, 0x61, 0x74, 0x63, 0x68, 0x44, 0x6f, 0x63, 0x12, 0x0a, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x50, 0x61, 0x74, 0x63, 0x68, 0x1a, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f,
+	0x63, 0x22, 0x00, 0x12, 0x2a, 0x0a, 0x09, 0x50, 0x61, 0x74, 0x63, 0x68, 0x44, 0x6f, 0x63, 0x73,
+	0x12, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x63, 0x68, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x73, 0x22, 0x00, 0x12,
+	0x2d, 0x0a, 0x06, 0x44, 0x65, 0x6c, 0x44, 0x6f, 0x63, 0x12, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x50, 0x61, 0x74, 0x68, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12, 0x30,
+	0x0a, 0x07, 0x44, 0x65, 0x6c, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00,
+	0x12, 0x41, 0x0a, 0x10, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72,
+	0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x22, 0x00, 0x12, 0x44, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x6f, 0x72, 0x73, 0x1a, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e,
+	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x00, 0x12, 0x2d, 0x0a, 0x0d, 0x47, 0x65, 0x74,
+	0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x09, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x50, 0x61, 0x74, 0x68, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e,
+	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x00, 0x12, 0x34, 0x0a, 0x11, 0x53, 0x65, 0x61, 0x72,
+	0x63, 0x68, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x0b, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x10, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x00, 0x12, 0x30,
+	0x0a, 0x0f, 0x50, 0x61, 0x74, 0x63, 0x68, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x63, 0x68, 0x1a, 0x0f, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x00,
+	0x12, 0x38, 0x0a, 0x10, 0x50, 0x61, 0x74, 0x63, 0x68, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x12, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x61, 0x74, 0x63, 0x68,
+	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x00, 0x12, 0x34, 0x0a, 0x0d, 0x44, 0x65,
+	0x6c, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x09, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x50, 0x61, 0x74, 0x68, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00,
+	0x12, 0x37, 0x0a, 0x0e, 0x44, 0x65, 0x6c, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x73, 0x12, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a,
+	0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12, 0x3c, 0x0a, 0x0f, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x12, 0x15, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x46, 0x69, 0x6c,
+	0x74, 0x65, 0x72, 0x1a, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x0d, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x54, 0x6f, 0x12, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43,
+	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a,
+	0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x22, 0x00, 0x12, 0x39, 0x0a, 0x07, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x73, 0x68, 0x12, 0x14,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4f, 0x75, 0x74, 0x62, 0x6f, 0x75, 0x6e, 0x64, 0x4d, 0x65, 0x73,
+	0x73, 0x61, 0x67, 0x65, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12, 0x31,
+	0x0a, 0x09, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x62, 0x65, 0x12, 0x12, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x43, 0x68, 0x61, 0x6e, 0x6e, 0x65, 0x6c, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a,
+	0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x00, 0x30,
+	0x01, 0x12, 0x3a, 0x0a, 0x10, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x62, 0x65, 0x43, 0x68,
+	0x61, 0x6e, 0x67, 0x65, 0x73, 0x12, 0x15, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x78, 0x70, 0x72,
+	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0b, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x22, 0x0a,
+	0x06, 0x49, 0x6d, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x72,
+	0x61, 0x70, 0x68, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x22,
+	0x00, 0x12, 0x2e, 0x0a, 0x06, 0x45, 0x78, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x16, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d,
+	0x70, 0x74, 0x79, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x22,
+	0x00, 0x12, 0x2d, 0x0a, 0x08, 0x53, 0x75, 0x62, 0x47, 0x72, 0x61, 0x70, 0x68, 0x12, 0x13, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x53, 0x75, 0x62, 0x47, 0x72, 0x61, 0x70, 0x68, 0x46, 0x69, 0x6c, 0x74,
+	0x65, 0x72, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x22, 0x00,
+	0x12, 0x3c, 0x0a, 0x08, 0x53, 0x68, 0x75, 0x74, 0x64, 0x6f, 0x77, 0x6e, 0x12, 0x16, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45,
+	0x6d, 0x70, 0x74, 0x79, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x42, 0x07,
+	0x5a, 0x05, 0x61, 0x70, 0x69, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2498,42 +2519,42 @@ func file_api_graphik_proto_rawDescGZIP() []byte {
 
 var file_api_graphik_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_api_graphik_proto_goTypes = []interface{}{
-	(*Path)(nil),                // 0: api.Path
-	(*Metadata)(nil),            // 1: api.Metadata
-	(*Paths)(nil),               // 2: api.Paths
-	(*Node)(nil),                // 3: api.Node
-	(*NodeConstructor)(nil),     // 4: api.NodeConstructor
-	(*NodeConstructors)(nil),    // 5: api.NodeConstructors
-	(*Nodes)(nil),               // 6: api.Nodes
-	(*NodeDetail)(nil),          // 7: api.NodeDetail
-	(*NodeDetails)(nil),         // 8: api.NodeDetails
-	(*NodeDetailFilter)(nil),    // 9: api.NodeDetailFilter
-	(*Edge)(nil),                // 10: api.Edge
-	(*EdgeConstructor)(nil),     // 11: api.EdgeConstructor
-	(*EdgeConstructors)(nil),    // 12: api.EdgeConstructors
-	(*Edges)(nil),               // 13: api.Edges
-	(*EdgeDetail)(nil),          // 14: api.EdgeDetail
-	(*EdgeDetails)(nil),         // 15: api.EdgeDetails
-	(*EdgeFilter)(nil),          // 16: api.EdgeFilter
-	(*Filter)(nil),              // 17: api.Filter
-	(*MeFilter)(nil),            // 18: api.MeFilter
-	(*ChannelFilter)(nil),       // 19: api.ChannelFilter
-	(*SubGraphFilter)(nil),      // 20: api.SubGraphFilter
-	(*Graph)(nil),               // 21: api.Graph
-	(*Patch)(nil),               // 22: api.Patch
-	(*PatchFilter)(nil),         // 23: api.PatchFilter
-	(*Pong)(nil),                // 24: api.Pong
-	(*OutboundMessage)(nil),     // 25: api.OutboundMessage
-	(*Message)(nil),             // 26: api.Message
-	(*Schema)(nil),              // 27: api.Schema
-	(*NodeChange)(nil),          // 28: api.NodeChange
-	(*EdgeChange)(nil),          // 29: api.EdgeChange
-	(*Change)(nil),              // 30: api.Change
-	(*ExpressionFilter)(nil),    // 31: api.ExpressionFilter
-	(*Request)(nil),             // 32: api.Request
-	(*timestamp.Timestamp)(nil), // 33: google.protobuf.Timestamp
-	(*_struct.Struct)(nil),      // 34: google.protobuf.Struct
-	(*empty.Empty)(nil),         // 35: google.protobuf.Empty
+	(*Path)(nil),                   // 0: api.Path
+	(*Metadata)(nil),               // 1: api.Metadata
+	(*Paths)(nil),                  // 2: api.Paths
+	(*Doc)(nil),                    // 3: api.Doc
+	(*DocConstructor)(nil),         // 4: api.DocConstructor
+	(*DocConstructors)(nil),        // 5: api.DocConstructors
+	(*Docs)(nil),                   // 6: api.Docs
+	(*DocDetail)(nil),              // 7: api.DocDetail
+	(*DocDetails)(nil),             // 8: api.DocDetails
+	(*DocDetailFilter)(nil),        // 9: api.DocDetailFilter
+	(*Connection)(nil),             // 10: api.Connection
+	(*ConnectionConstructor)(nil),  // 11: api.ConnectionConstructor
+	(*ConnectionConstructors)(nil), // 12: api.ConnectionConstructors
+	(*Connections)(nil),            // 13: api.Connections
+	(*ConnectionDetail)(nil),       // 14: api.ConnectionDetail
+	(*ConnectionDetails)(nil),      // 15: api.ConnectionDetails
+	(*ConnectionFilter)(nil),       // 16: api.ConnectionFilter
+	(*Filter)(nil),                 // 17: api.Filter
+	(*MeFilter)(nil),               // 18: api.MeFilter
+	(*ChannelFilter)(nil),          // 19: api.ChannelFilter
+	(*SubGraphFilter)(nil),         // 20: api.SubGraphFilter
+	(*Graph)(nil),                  // 21: api.Graph
+	(*Patch)(nil),                  // 22: api.Patch
+	(*PatchFilter)(nil),            // 23: api.PatchFilter
+	(*Pong)(nil),                   // 24: api.Pong
+	(*OutboundMessage)(nil),        // 25: api.OutboundMessage
+	(*Message)(nil),                // 26: api.Message
+	(*Schema)(nil),                 // 27: api.Schema
+	(*DocChange)(nil),              // 28: api.DocChange
+	(*ConnectionChange)(nil),       // 29: api.ConnectionChange
+	(*Change)(nil),                 // 30: api.Change
+	(*ExpressionFilter)(nil),       // 31: api.ExpressionFilter
+	(*Request)(nil),                // 32: api.Request
+	(*timestamp.Timestamp)(nil),    // 33: google.protobuf.Timestamp
+	(*_struct.Struct)(nil),         // 34: google.protobuf.Struct
+	(*empty.Empty)(nil),            // 35: google.protobuf.Empty
 }
 var file_api_graphik_proto_depIdxs = []int32{
 	33, // 0: api.Metadata.created_at:type_name -> google.protobuf.Timestamp
@@ -2541,46 +2562,46 @@ var file_api_graphik_proto_depIdxs = []int32{
 	0,  // 2: api.Metadata.created_by:type_name -> api.Path
 	0,  // 3: api.Metadata.updated_by:type_name -> api.Path
 	0,  // 4: api.Paths.paths:type_name -> api.Path
-	0,  // 5: api.Node.path:type_name -> api.Path
-	34, // 6: api.Node.attributes:type_name -> google.protobuf.Struct
-	1,  // 7: api.Node.metadata:type_name -> api.Metadata
-	0,  // 8: api.NodeConstructor.path:type_name -> api.Path
-	34, // 9: api.NodeConstructor.attributes:type_name -> google.protobuf.Struct
-	4,  // 10: api.NodeConstructors.nodes:type_name -> api.NodeConstructor
-	3,  // 11: api.Nodes.nodes:type_name -> api.Node
-	0,  // 12: api.NodeDetail.path:type_name -> api.Path
-	34, // 13: api.NodeDetail.attributes:type_name -> google.protobuf.Struct
-	15, // 14: api.NodeDetail.edges_from:type_name -> api.EdgeDetails
-	15, // 15: api.NodeDetail.edges_to:type_name -> api.EdgeDetails
-	1,  // 16: api.NodeDetail.metadata:type_name -> api.Metadata
-	7,  // 17: api.NodeDetails.node_details:type_name -> api.NodeDetail
-	0,  // 18: api.NodeDetailFilter.path:type_name -> api.Path
-	17, // 19: api.NodeDetailFilter.from_edges:type_name -> api.Filter
-	17, // 20: api.NodeDetailFilter.to_edges:type_name -> api.Filter
-	0,  // 21: api.Edge.path:type_name -> api.Path
-	34, // 22: api.Edge.attributes:type_name -> google.protobuf.Struct
-	0,  // 23: api.Edge.from:type_name -> api.Path
-	0,  // 24: api.Edge.to:type_name -> api.Path
-	1,  // 25: api.Edge.metadata:type_name -> api.Metadata
-	0,  // 26: api.EdgeConstructor.path:type_name -> api.Path
-	34, // 27: api.EdgeConstructor.attributes:type_name -> google.protobuf.Struct
-	0,  // 28: api.EdgeConstructor.from:type_name -> api.Path
-	0,  // 29: api.EdgeConstructor.to:type_name -> api.Path
-	11, // 30: api.EdgeConstructors.edges:type_name -> api.EdgeConstructor
-	10, // 31: api.Edges.edges:type_name -> api.Edge
-	0,  // 32: api.EdgeDetail.path:type_name -> api.Path
-	34, // 33: api.EdgeDetail.attributes:type_name -> google.protobuf.Struct
-	3,  // 34: api.EdgeDetail.from:type_name -> api.Node
-	3,  // 35: api.EdgeDetail.to:type_name -> api.Node
-	1,  // 36: api.EdgeDetail.metadata:type_name -> api.Metadata
-	14, // 37: api.EdgeDetails.edges:type_name -> api.EdgeDetail
-	0,  // 38: api.EdgeFilter.node_path:type_name -> api.Path
-	17, // 39: api.MeFilter.edges_from:type_name -> api.Filter
-	17, // 40: api.MeFilter.edges_to:type_name -> api.Filter
-	17, // 41: api.SubGraphFilter.node_filter:type_name -> api.Filter
-	17, // 42: api.SubGraphFilter.edge_filter:type_name -> api.Filter
-	6,  // 43: api.Graph.nodes:type_name -> api.Nodes
-	13, // 44: api.Graph.edges:type_name -> api.Edges
+	0,  // 5: api.Doc.path:type_name -> api.Path
+	34, // 6: api.Doc.attributes:type_name -> google.protobuf.Struct
+	1,  // 7: api.Doc.metadata:type_name -> api.Metadata
+	0,  // 8: api.DocConstructor.path:type_name -> api.Path
+	34, // 9: api.DocConstructor.attributes:type_name -> google.protobuf.Struct
+	4,  // 10: api.DocConstructors.docs:type_name -> api.DocConstructor
+	3,  // 11: api.Docs.docs:type_name -> api.Doc
+	0,  // 12: api.DocDetail.path:type_name -> api.Path
+	34, // 13: api.DocDetail.attributes:type_name -> google.protobuf.Struct
+	15, // 14: api.DocDetail.connections_from:type_name -> api.ConnectionDetails
+	15, // 15: api.DocDetail.connections_to:type_name -> api.ConnectionDetails
+	1,  // 16: api.DocDetail.metadata:type_name -> api.Metadata
+	7,  // 17: api.DocDetails.doc_details:type_name -> api.DocDetail
+	0,  // 18: api.DocDetailFilter.path:type_name -> api.Path
+	17, // 19: api.DocDetailFilter.from_connections:type_name -> api.Filter
+	17, // 20: api.DocDetailFilter.to_connections:type_name -> api.Filter
+	0,  // 21: api.Connection.path:type_name -> api.Path
+	34, // 22: api.Connection.attributes:type_name -> google.protobuf.Struct
+	0,  // 23: api.Connection.from:type_name -> api.Path
+	0,  // 24: api.Connection.to:type_name -> api.Path
+	1,  // 25: api.Connection.metadata:type_name -> api.Metadata
+	0,  // 26: api.ConnectionConstructor.path:type_name -> api.Path
+	34, // 27: api.ConnectionConstructor.attributes:type_name -> google.protobuf.Struct
+	0,  // 28: api.ConnectionConstructor.from:type_name -> api.Path
+	0,  // 29: api.ConnectionConstructor.to:type_name -> api.Path
+	11, // 30: api.ConnectionConstructors.connections:type_name -> api.ConnectionConstructor
+	10, // 31: api.Connections.connections:type_name -> api.Connection
+	0,  // 32: api.ConnectionDetail.path:type_name -> api.Path
+	34, // 33: api.ConnectionDetail.attributes:type_name -> google.protobuf.Struct
+	3,  // 34: api.ConnectionDetail.from:type_name -> api.Doc
+	3,  // 35: api.ConnectionDetail.to:type_name -> api.Doc
+	1,  // 36: api.ConnectionDetail.metadata:type_name -> api.Metadata
+	14, // 37: api.ConnectionDetails.connections:type_name -> api.ConnectionDetail
+	0,  // 38: api.ConnectionFilter.doc_path:type_name -> api.Path
+	17, // 39: api.MeFilter.connections_from:type_name -> api.Filter
+	17, // 40: api.MeFilter.connections_to:type_name -> api.Filter
+	17, // 41: api.SubGraphFilter.doc_filter:type_name -> api.Filter
+	17, // 42: api.SubGraphFilter.connection_filter:type_name -> api.Filter
+	6,  // 43: api.Graph.docs:type_name -> api.Docs
+	13, // 44: api.Graph.connections:type_name -> api.Connections
 	0,  // 45: api.Patch.path:type_name -> api.Path
 	34, // 46: api.Patch.attributes:type_name -> google.protobuf.Struct
 	17, // 47: api.PatchFilter.filter:type_name -> api.Filter
@@ -2589,73 +2610,73 @@ var file_api_graphik_proto_depIdxs = []int32{
 	34, // 50: api.Message.data:type_name -> google.protobuf.Struct
 	0,  // 51: api.Message.sender:type_name -> api.Path
 	33, // 52: api.Message.timestamp:type_name -> google.protobuf.Timestamp
-	3,  // 53: api.NodeChange.before:type_name -> api.Node
-	3,  // 54: api.NodeChange.after:type_name -> api.Node
-	10, // 55: api.EdgeChange.before:type_name -> api.Edge
-	10, // 56: api.EdgeChange.after:type_name -> api.Edge
-	3,  // 57: api.Change.identity:type_name -> api.Node
+	3,  // 53: api.DocChange.before:type_name -> api.Doc
+	3,  // 54: api.DocChange.after:type_name -> api.Doc
+	10, // 55: api.ConnectionChange.before:type_name -> api.Connection
+	10, // 56: api.ConnectionChange.after:type_name -> api.Connection
+	3,  // 57: api.Change.identity:type_name -> api.Doc
 	33, // 58: api.Change.timestamp:type_name -> google.protobuf.Timestamp
-	29, // 59: api.Change.edge_changes:type_name -> api.EdgeChange
-	28, // 60: api.Change.node_changes:type_name -> api.NodeChange
-	3,  // 61: api.Request.identity:type_name -> api.Node
+	29, // 59: api.Change.connection_changes:type_name -> api.ConnectionChange
+	28, // 60: api.Change.doc_changes:type_name -> api.DocChange
+	3,  // 61: api.Request.identity:type_name -> api.Doc
 	33, // 62: api.Request.timestamp:type_name -> google.protobuf.Timestamp
 	34, // 63: api.Request.request:type_name -> google.protobuf.Struct
-	35, // 64: api.GraphService.Ping:input_type -> google.protobuf.Empty
-	35, // 65: api.GraphService.GetSchema:input_type -> google.protobuf.Empty
-	18, // 66: api.GraphService.Me:input_type -> api.MeFilter
-	4,  // 67: api.GraphService.CreateNode:input_type -> api.NodeConstructor
-	5,  // 68: api.GraphService.CreateNodes:input_type -> api.NodeConstructors
-	0,  // 69: api.GraphService.GetNode:input_type -> api.Path
-	17, // 70: api.GraphService.SearchNodes:input_type -> api.Filter
-	22, // 71: api.GraphService.PatchNode:input_type -> api.Patch
-	23, // 72: api.GraphService.PatchNodes:input_type -> api.PatchFilter
-	0,  // 73: api.GraphService.DelNode:input_type -> api.Path
-	17, // 74: api.GraphService.DelNodes:input_type -> api.Filter
-	11, // 75: api.GraphService.CreateEdge:input_type -> api.EdgeConstructor
-	12, // 76: api.GraphService.CreateEdges:input_type -> api.EdgeConstructors
-	0,  // 77: api.GraphService.GetEdge:input_type -> api.Path
-	17, // 78: api.GraphService.SearchEdges:input_type -> api.Filter
-	22, // 79: api.GraphService.PatchEdge:input_type -> api.Patch
-	23, // 80: api.GraphService.PatchEdges:input_type -> api.PatchFilter
-	0,  // 81: api.GraphService.DelEdge:input_type -> api.Path
-	17, // 82: api.GraphService.DelEdges:input_type -> api.Filter
-	16, // 83: api.GraphService.EdgesFrom:input_type -> api.EdgeFilter
-	16, // 84: api.GraphService.EdgesTo:input_type -> api.EdgeFilter
-	25, // 85: api.GraphService.Publish:input_type -> api.OutboundMessage
-	19, // 86: api.GraphService.Subscribe:input_type -> api.ChannelFilter
-	31, // 87: api.GraphService.SubscribeChanges:input_type -> api.ExpressionFilter
-	21, // 88: api.GraphService.Import:input_type -> api.Graph
-	35, // 89: api.GraphService.Export:input_type -> google.protobuf.Empty
-	20, // 90: api.GraphService.SubGraph:input_type -> api.SubGraphFilter
-	35, // 91: api.GraphService.Shutdown:input_type -> google.protobuf.Empty
-	24, // 92: api.GraphService.Ping:output_type -> api.Pong
-	27, // 93: api.GraphService.GetSchema:output_type -> api.Schema
-	7,  // 94: api.GraphService.Me:output_type -> api.NodeDetail
-	3,  // 95: api.GraphService.CreateNode:output_type -> api.Node
-	6,  // 96: api.GraphService.CreateNodes:output_type -> api.Nodes
-	3,  // 97: api.GraphService.GetNode:output_type -> api.Node
-	6,  // 98: api.GraphService.SearchNodes:output_type -> api.Nodes
-	3,  // 99: api.GraphService.PatchNode:output_type -> api.Node
-	6,  // 100: api.GraphService.PatchNodes:output_type -> api.Nodes
-	35, // 101: api.GraphService.DelNode:output_type -> google.protobuf.Empty
-	35, // 102: api.GraphService.DelNodes:output_type -> google.protobuf.Empty
-	10, // 103: api.GraphService.CreateEdge:output_type -> api.Edge
-	13, // 104: api.GraphService.CreateEdges:output_type -> api.Edges
-	10, // 105: api.GraphService.GetEdge:output_type -> api.Edge
-	13, // 106: api.GraphService.SearchEdges:output_type -> api.Edges
-	10, // 107: api.GraphService.PatchEdge:output_type -> api.Edge
-	13, // 108: api.GraphService.PatchEdges:output_type -> api.Edges
-	35, // 109: api.GraphService.DelEdge:output_type -> google.protobuf.Empty
-	35, // 110: api.GraphService.DelEdges:output_type -> google.protobuf.Empty
-	13, // 111: api.GraphService.EdgesFrom:output_type -> api.Edges
-	13, // 112: api.GraphService.EdgesTo:output_type -> api.Edges
-	35, // 113: api.GraphService.Publish:output_type -> google.protobuf.Empty
-	26, // 114: api.GraphService.Subscribe:output_type -> api.Message
-	30, // 115: api.GraphService.SubscribeChanges:output_type -> api.Change
-	21, // 116: api.GraphService.Import:output_type -> api.Graph
-	21, // 117: api.GraphService.Export:output_type -> api.Graph
-	21, // 118: api.GraphService.SubGraph:output_type -> api.Graph
-	35, // 119: api.GraphService.Shutdown:output_type -> google.protobuf.Empty
+	35, // 64: api.DatabaseService.Ping:input_type -> google.protobuf.Empty
+	35, // 65: api.DatabaseService.GetSchema:input_type -> google.protobuf.Empty
+	18, // 66: api.DatabaseService.Me:input_type -> api.MeFilter
+	4,  // 67: api.DatabaseService.CreateDoc:input_type -> api.DocConstructor
+	5,  // 68: api.DatabaseService.CreateDocs:input_type -> api.DocConstructors
+	0,  // 69: api.DatabaseService.GetDoc:input_type -> api.Path
+	17, // 70: api.DatabaseService.SearchDocs:input_type -> api.Filter
+	22, // 71: api.DatabaseService.PatchDoc:input_type -> api.Patch
+	23, // 72: api.DatabaseService.PatchDocs:input_type -> api.PatchFilter
+	0,  // 73: api.DatabaseService.DelDoc:input_type -> api.Path
+	17, // 74: api.DatabaseService.DelDocs:input_type -> api.Filter
+	11, // 75: api.DatabaseService.CreateConnection:input_type -> api.ConnectionConstructor
+	12, // 76: api.DatabaseService.CreateConnections:input_type -> api.ConnectionConstructors
+	0,  // 77: api.DatabaseService.GetConnection:input_type -> api.Path
+	17, // 78: api.DatabaseService.SearchConnections:input_type -> api.Filter
+	22, // 79: api.DatabaseService.PatchConnection:input_type -> api.Patch
+	23, // 80: api.DatabaseService.PatchConnections:input_type -> api.PatchFilter
+	0,  // 81: api.DatabaseService.DelConnection:input_type -> api.Path
+	17, // 82: api.DatabaseService.DelConnections:input_type -> api.Filter
+	16, // 83: api.DatabaseService.ConnectionsFrom:input_type -> api.ConnectionFilter
+	16, // 84: api.DatabaseService.ConnectionsTo:input_type -> api.ConnectionFilter
+	25, // 85: api.DatabaseService.Publish:input_type -> api.OutboundMessage
+	19, // 86: api.DatabaseService.Subscribe:input_type -> api.ChannelFilter
+	31, // 87: api.DatabaseService.SubscribeChanges:input_type -> api.ExpressionFilter
+	21, // 88: api.DatabaseService.Import:input_type -> api.Graph
+	35, // 89: api.DatabaseService.Export:input_type -> google.protobuf.Empty
+	20, // 90: api.DatabaseService.SubGraph:input_type -> api.SubGraphFilter
+	35, // 91: api.DatabaseService.Shutdown:input_type -> google.protobuf.Empty
+	24, // 92: api.DatabaseService.Ping:output_type -> api.Pong
+	27, // 93: api.DatabaseService.GetSchema:output_type -> api.Schema
+	7,  // 94: api.DatabaseService.Me:output_type -> api.DocDetail
+	3,  // 95: api.DatabaseService.CreateDoc:output_type -> api.Doc
+	6,  // 96: api.DatabaseService.CreateDocs:output_type -> api.Docs
+	3,  // 97: api.DatabaseService.GetDoc:output_type -> api.Doc
+	6,  // 98: api.DatabaseService.SearchDocs:output_type -> api.Docs
+	3,  // 99: api.DatabaseService.PatchDoc:output_type -> api.Doc
+	6,  // 100: api.DatabaseService.PatchDocs:output_type -> api.Docs
+	35, // 101: api.DatabaseService.DelDoc:output_type -> google.protobuf.Empty
+	35, // 102: api.DatabaseService.DelDocs:output_type -> google.protobuf.Empty
+	10, // 103: api.DatabaseService.CreateConnection:output_type -> api.Connection
+	13, // 104: api.DatabaseService.CreateConnections:output_type -> api.Connections
+	10, // 105: api.DatabaseService.GetConnection:output_type -> api.Connection
+	13, // 106: api.DatabaseService.SearchConnections:output_type -> api.Connections
+	10, // 107: api.DatabaseService.PatchConnection:output_type -> api.Connection
+	13, // 108: api.DatabaseService.PatchConnections:output_type -> api.Connections
+	35, // 109: api.DatabaseService.DelConnection:output_type -> google.protobuf.Empty
+	35, // 110: api.DatabaseService.DelConnections:output_type -> google.protobuf.Empty
+	13, // 111: api.DatabaseService.ConnectionsFrom:output_type -> api.Connections
+	13, // 112: api.DatabaseService.ConnectionsTo:output_type -> api.Connections
+	35, // 113: api.DatabaseService.Publish:output_type -> google.protobuf.Empty
+	26, // 114: api.DatabaseService.Subscribe:output_type -> api.Message
+	30, // 115: api.DatabaseService.SubscribeChanges:output_type -> api.Change
+	21, // 116: api.DatabaseService.Import:output_type -> api.Graph
+	21, // 117: api.DatabaseService.Export:output_type -> api.Graph
+	21, // 118: api.DatabaseService.SubGraph:output_type -> api.Graph
+	35, // 119: api.DatabaseService.Shutdown:output_type -> google.protobuf.Empty
 	92, // [92:120] is the sub-list for method output_type
 	64, // [64:92] is the sub-list for method input_type
 	64, // [64:64] is the sub-list for extension type_name
@@ -2706,7 +2727,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Node); i {
+			switch v := v.(*Doc); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2718,7 +2739,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeConstructor); i {
+			switch v := v.(*DocConstructor); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2730,7 +2751,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeConstructors); i {
+			switch v := v.(*DocConstructors); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2742,7 +2763,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Nodes); i {
+			switch v := v.(*Docs); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2754,7 +2775,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeDetail); i {
+			switch v := v.(*DocDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2766,7 +2787,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeDetails); i {
+			switch v := v.(*DocDetails); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2778,7 +2799,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeDetailFilter); i {
+			switch v := v.(*DocDetailFilter); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2790,7 +2811,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Edge); i {
+			switch v := v.(*Connection); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2802,7 +2823,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EdgeConstructor); i {
+			switch v := v.(*ConnectionConstructor); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2814,7 +2835,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EdgeConstructors); i {
+			switch v := v.(*ConnectionConstructors); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2826,7 +2847,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Edges); i {
+			switch v := v.(*Connections); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2838,7 +2859,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EdgeDetail); i {
+			switch v := v.(*ConnectionDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2850,7 +2871,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EdgeDetails); i {
+			switch v := v.(*ConnectionDetails); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2862,7 +2883,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EdgeFilter); i {
+			switch v := v.(*ConnectionFilter); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3006,7 +3027,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeChange); i {
+			switch v := v.(*DocChange); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3018,7 +3039,7 @@ func file_api_graphik_proto_init() {
 			}
 		}
 		file_api_graphik_proto_msgTypes[29].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EdgeChange); i {
+			switch v := v.(*ConnectionChange); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3094,57 +3115,57 @@ var _ grpc.ClientConnInterface
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion6
 
-// GraphServiceClient is the client API for GraphService service.
+// DatabaseServiceClient is the client API for DatabaseService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type GraphServiceClient interface {
+type DatabaseServiceClient interface {
 	// Ping returns PONG if the server is health
 	Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error)
-	// GetSchema gets schema about the Graph node & edge types
+	// GetSchema gets schema about the Graph doc & connection types
 	GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Schema, error)
-	// Me returns a NodeDetail of the currently logged in identity(the subject of the JWT)
-	Me(ctx context.Context, in *MeFilter, opts ...grpc.CallOption) (*NodeDetail, error)
-	// CreateNode creates a node in the graph
-	CreateNode(ctx context.Context, in *NodeConstructor, opts ...grpc.CallOption) (*Node, error)
-	// CreateNodes creates a batch of nodes in the graph
-	CreateNodes(ctx context.Context, in *NodeConstructors, opts ...grpc.CallOption) (*Nodes, error)
-	// GetNode gets a single node in the graph
-	GetNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Node, error)
-	// SearchNodes searches the graph for nodes
-	SearchNodes(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Nodes, error)
-	// PatchNode patches a nodes attributes
-	PatchNode(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Node, error)
-	// PatchNodes patches a batch of nodes attributes that pass the patch filter
-	PatchNodes(ctx context.Context, in *PatchFilter, opts ...grpc.CallOption) (*Nodes, error)
-	// DelNode deletes a node & all of it's connected edges
-	DelNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error)
-	// DelNodes deletes a batch of nodes that pass the filter
-	DelNodes(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*empty.Empty, error)
-	// CreateEdge creates an edge in the graph
-	CreateEdge(ctx context.Context, in *EdgeConstructor, opts ...grpc.CallOption) (*Edge, error)
-	// CreateEdges creates a batch of edges in the graph
-	CreateEdges(ctx context.Context, in *EdgeConstructors, opts ...grpc.CallOption) (*Edges, error)
-	// GetEdge gets a single edge in the graph
-	GetEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Edge, error)
-	// SearchEdges searches the graph for edges
-	SearchEdges(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Edges, error)
-	// PatchEdge patches an edges attributes
-	PatchEdge(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Edge, error)
-	// PatchEdges patches a batch of edges attributes that pass the patch filter
-	PatchEdges(ctx context.Context, in *PatchFilter, opts ...grpc.CallOption) (*Edges, error)
-	// DelEdge deletes an edge from the graph
-	DelEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error)
-	// DelEdges deletes a batch of edges that pass the filter
-	DelEdges(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*empty.Empty, error)
-	// EdgesFrom returns edges that source from the given node path that pass the filter
-	EdgesFrom(ctx context.Context, in *EdgeFilter, opts ...grpc.CallOption) (*Edges, error)
-	// EdgesTo returns edges that point to the given node path that pass the filter
-	EdgesTo(ctx context.Context, in *EdgeFilter, opts ...grpc.CallOption) (*Edges, error)
+	// Me returns a DocDetail of the currently logged in identity(the subject of the JWT)
+	Me(ctx context.Context, in *MeFilter, opts ...grpc.CallOption) (*DocDetail, error)
+	// CreateDoc creates a doc in the graph
+	CreateDoc(ctx context.Context, in *DocConstructor, opts ...grpc.CallOption) (*Doc, error)
+	// CreateDocs creates a batch of docs in the graph
+	CreateDocs(ctx context.Context, in *DocConstructors, opts ...grpc.CallOption) (*Docs, error)
+	// GetDoc gets a single doc in the graph
+	GetDoc(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Doc, error)
+	// SearchDocs searches the graph for docs
+	SearchDocs(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Docs, error)
+	// PatchDoc patches a docs attributes
+	PatchDoc(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Doc, error)
+	// PatchDocs patches a batch of docs attributes that pass the patch filter
+	PatchDocs(ctx context.Context, in *PatchFilter, opts ...grpc.CallOption) (*Docs, error)
+	// DelDoc deletes a doc & all of it's connected connections
+	DelDoc(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error)
+	// DelDocs deletes a batch of docs that pass the filter
+	DelDocs(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*empty.Empty, error)
+	// CreateConnection creates an connection in the graph
+	CreateConnection(ctx context.Context, in *ConnectionConstructor, opts ...grpc.CallOption) (*Connection, error)
+	// CreateConnections creates a batch of connections in the graph
+	CreateConnections(ctx context.Context, in *ConnectionConstructors, opts ...grpc.CallOption) (*Connections, error)
+	// GetConnection gets a single connection in the graph
+	GetConnection(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Connection, error)
+	// SearchConnections searches the graph for connections
+	SearchConnections(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Connections, error)
+	// PatchConnection patches an connections attributes
+	PatchConnection(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Connection, error)
+	// PatchConnections patches a batch of connections attributes that pass the patch filter
+	PatchConnections(ctx context.Context, in *PatchFilter, opts ...grpc.CallOption) (*Connections, error)
+	// DelConnection deletes an connection from the graph
+	DelConnection(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error)
+	// DelConnections deletes a batch of connections that pass the filter
+	DelConnections(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*empty.Empty, error)
+	// ConnectionsFrom returns connections that source from the given doc path that pass the filter
+	ConnectionsFrom(ctx context.Context, in *ConnectionFilter, opts ...grpc.CallOption) (*Connections, error)
+	// ConnectionsTo returns connections that point to the given doc path that pass the filter
+	ConnectionsTo(ctx context.Context, in *ConnectionFilter, opts ...grpc.CallOption) (*Connections, error)
 	// Publish publishes a message to a pubsub channel
 	Publish(ctx context.Context, in *OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error)
 	// Subscribe subscribes to messages on a pubsub channel
-	Subscribe(ctx context.Context, in *ChannelFilter, opts ...grpc.CallOption) (GraphService_SubscribeClient, error)
-	SubscribeChanges(ctx context.Context, in *ExpressionFilter, opts ...grpc.CallOption) (GraphService_SubscribeChangesClient, error)
+	Subscribe(ctx context.Context, in *ChannelFilter, opts ...grpc.CallOption) (DatabaseService_SubscribeClient, error)
+	SubscribeChanges(ctx context.Context, in *ExpressionFilter, opts ...grpc.CallOption) (DatabaseService_SubscribeChangesClient, error)
 	// Import imports the Graph into the database
 	Import(ctx context.Context, in *Graph, opts ...grpc.CallOption) (*Graph, error)
 	// Export returns the Graph data
@@ -3155,218 +3176,218 @@ type GraphServiceClient interface {
 	Shutdown(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
-type graphServiceClient struct {
+type databaseServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGraphServiceClient(cc grpc.ClientConnInterface) GraphServiceClient {
-	return &graphServiceClient{cc}
+func NewDatabaseServiceClient(cc grpc.ClientConnInterface) DatabaseServiceClient {
+	return &databaseServiceClient{cc}
 }
 
-func (c *graphServiceClient) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error) {
+func (c *databaseServiceClient) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Pong, error) {
 	out := new(Pong)
-	err := c.cc.Invoke(ctx, "/api.GraphService/Ping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Schema, error) {
+func (c *databaseServiceClient) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Schema, error) {
 	out := new(Schema)
-	err := c.cc.Invoke(ctx, "/api.GraphService/GetSchema", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/GetSchema", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) Me(ctx context.Context, in *MeFilter, opts ...grpc.CallOption) (*NodeDetail, error) {
-	out := new(NodeDetail)
-	err := c.cc.Invoke(ctx, "/api.GraphService/Me", in, out, opts...)
+func (c *databaseServiceClient) Me(ctx context.Context, in *MeFilter, opts ...grpc.CallOption) (*DocDetail, error) {
+	out := new(DocDetail)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/Me", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) CreateNode(ctx context.Context, in *NodeConstructor, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.GraphService/CreateNode", in, out, opts...)
+func (c *databaseServiceClient) CreateDoc(ctx context.Context, in *DocConstructor, opts ...grpc.CallOption) (*Doc, error) {
+	out := new(Doc)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/CreateDoc", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) CreateNodes(ctx context.Context, in *NodeConstructors, opts ...grpc.CallOption) (*Nodes, error) {
-	out := new(Nodes)
-	err := c.cc.Invoke(ctx, "/api.GraphService/CreateNodes", in, out, opts...)
+func (c *databaseServiceClient) CreateDocs(ctx context.Context, in *DocConstructors, opts ...grpc.CallOption) (*Docs, error) {
+	out := new(Docs)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/CreateDocs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) GetNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.GraphService/GetNode", in, out, opts...)
+func (c *databaseServiceClient) GetDoc(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Doc, error) {
+	out := new(Doc)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/GetDoc", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) SearchNodes(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Nodes, error) {
-	out := new(Nodes)
-	err := c.cc.Invoke(ctx, "/api.GraphService/SearchNodes", in, out, opts...)
+func (c *databaseServiceClient) SearchDocs(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Docs, error) {
+	out := new(Docs)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/SearchDocs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) PatchNode(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Node, error) {
-	out := new(Node)
-	err := c.cc.Invoke(ctx, "/api.GraphService/PatchNode", in, out, opts...)
+func (c *databaseServiceClient) PatchDoc(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Doc, error) {
+	out := new(Doc)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/PatchDoc", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) PatchNodes(ctx context.Context, in *PatchFilter, opts ...grpc.CallOption) (*Nodes, error) {
-	out := new(Nodes)
-	err := c.cc.Invoke(ctx, "/api.GraphService/PatchNodes", in, out, opts...)
+func (c *databaseServiceClient) PatchDocs(ctx context.Context, in *PatchFilter, opts ...grpc.CallOption) (*Docs, error) {
+	out := new(Docs)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/PatchDocs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) DelNode(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseServiceClient) DelDoc(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.GraphService/DelNode", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/DelDoc", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) DelNodes(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseServiceClient) DelDocs(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.GraphService/DelNodes", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/DelDocs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) CreateEdge(ctx context.Context, in *EdgeConstructor, opts ...grpc.CallOption) (*Edge, error) {
-	out := new(Edge)
-	err := c.cc.Invoke(ctx, "/api.GraphService/CreateEdge", in, out, opts...)
+func (c *databaseServiceClient) CreateConnection(ctx context.Context, in *ConnectionConstructor, opts ...grpc.CallOption) (*Connection, error) {
+	out := new(Connection)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/CreateConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) CreateEdges(ctx context.Context, in *EdgeConstructors, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.GraphService/CreateEdges", in, out, opts...)
+func (c *databaseServiceClient) CreateConnections(ctx context.Context, in *ConnectionConstructors, opts ...grpc.CallOption) (*Connections, error) {
+	out := new(Connections)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/CreateConnections", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) GetEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Edge, error) {
-	out := new(Edge)
-	err := c.cc.Invoke(ctx, "/api.GraphService/GetEdge", in, out, opts...)
+func (c *databaseServiceClient) GetConnection(ctx context.Context, in *Path, opts ...grpc.CallOption) (*Connection, error) {
+	out := new(Connection)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/GetConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) SearchEdges(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.GraphService/SearchEdges", in, out, opts...)
+func (c *databaseServiceClient) SearchConnections(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*Connections, error) {
+	out := new(Connections)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/SearchConnections", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) PatchEdge(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Edge, error) {
-	out := new(Edge)
-	err := c.cc.Invoke(ctx, "/api.GraphService/PatchEdge", in, out, opts...)
+func (c *databaseServiceClient) PatchConnection(ctx context.Context, in *Patch, opts ...grpc.CallOption) (*Connection, error) {
+	out := new(Connection)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/PatchConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) PatchEdges(ctx context.Context, in *PatchFilter, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.GraphService/PatchEdges", in, out, opts...)
+func (c *databaseServiceClient) PatchConnections(ctx context.Context, in *PatchFilter, opts ...grpc.CallOption) (*Connections, error) {
+	out := new(Connections)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/PatchConnections", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) DelEdge(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseServiceClient) DelConnection(ctx context.Context, in *Path, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.GraphService/DelEdge", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/DelConnection", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) DelEdges(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseServiceClient) DelConnections(ctx context.Context, in *Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.GraphService/DelEdges", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/DelConnections", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) EdgesFrom(ctx context.Context, in *EdgeFilter, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.GraphService/EdgesFrom", in, out, opts...)
+func (c *databaseServiceClient) ConnectionsFrom(ctx context.Context, in *ConnectionFilter, opts ...grpc.CallOption) (*Connections, error) {
+	out := new(Connections)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/ConnectionsFrom", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) EdgesTo(ctx context.Context, in *EdgeFilter, opts ...grpc.CallOption) (*Edges, error) {
-	out := new(Edges)
-	err := c.cc.Invoke(ctx, "/api.GraphService/EdgesTo", in, out, opts...)
+func (c *databaseServiceClient) ConnectionsTo(ctx context.Context, in *ConnectionFilter, opts ...grpc.CallOption) (*Connections, error) {
+	out := new(Connections)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/ConnectionsTo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) Publish(ctx context.Context, in *OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseServiceClient) Publish(ctx context.Context, in *OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.GraphService/Publish", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/Publish", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) Subscribe(ctx context.Context, in *ChannelFilter, opts ...grpc.CallOption) (GraphService_SubscribeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_GraphService_serviceDesc.Streams[0], "/api.GraphService/Subscribe", opts...)
+func (c *databaseServiceClient) Subscribe(ctx context.Context, in *ChannelFilter, opts ...grpc.CallOption) (DatabaseService_SubscribeClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_DatabaseService_serviceDesc.Streams[0], "/api.DatabaseService/Subscribe", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &graphServiceSubscribeClient{stream}
+	x := &databaseServiceSubscribeClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -3376,16 +3397,16 @@ func (c *graphServiceClient) Subscribe(ctx context.Context, in *ChannelFilter, o
 	return x, nil
 }
 
-type GraphService_SubscribeClient interface {
+type DatabaseService_SubscribeClient interface {
 	Recv() (*Message, error)
 	grpc.ClientStream
 }
 
-type graphServiceSubscribeClient struct {
+type databaseServiceSubscribeClient struct {
 	grpc.ClientStream
 }
 
-func (x *graphServiceSubscribeClient) Recv() (*Message, error) {
+func (x *databaseServiceSubscribeClient) Recv() (*Message, error) {
 	m := new(Message)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -3393,12 +3414,12 @@ func (x *graphServiceSubscribeClient) Recv() (*Message, error) {
 	return m, nil
 }
 
-func (c *graphServiceClient) SubscribeChanges(ctx context.Context, in *ExpressionFilter, opts ...grpc.CallOption) (GraphService_SubscribeChangesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_GraphService_serviceDesc.Streams[1], "/api.GraphService/SubscribeChanges", opts...)
+func (c *databaseServiceClient) SubscribeChanges(ctx context.Context, in *ExpressionFilter, opts ...grpc.CallOption) (DatabaseService_SubscribeChangesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_DatabaseService_serviceDesc.Streams[1], "/api.DatabaseService/SubscribeChanges", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &graphServiceSubscribeChangesClient{stream}
+	x := &databaseServiceSubscribeChangesClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -3408,16 +3429,16 @@ func (c *graphServiceClient) SubscribeChanges(ctx context.Context, in *Expressio
 	return x, nil
 }
 
-type GraphService_SubscribeChangesClient interface {
+type DatabaseService_SubscribeChangesClient interface {
 	Recv() (*Change, error)
 	grpc.ClientStream
 }
 
-type graphServiceSubscribeChangesClient struct {
+type databaseServiceSubscribeChangesClient struct {
 	grpc.ClientStream
 }
 
-func (x *graphServiceSubscribeChangesClient) Recv() (*Change, error) {
+func (x *databaseServiceSubscribeChangesClient) Recv() (*Change, error) {
 	m := new(Change)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -3425,91 +3446,91 @@ func (x *graphServiceSubscribeChangesClient) Recv() (*Change, error) {
 	return m, nil
 }
 
-func (c *graphServiceClient) Import(ctx context.Context, in *Graph, opts ...grpc.CallOption) (*Graph, error) {
+func (c *databaseServiceClient) Import(ctx context.Context, in *Graph, opts ...grpc.CallOption) (*Graph, error) {
 	out := new(Graph)
-	err := c.cc.Invoke(ctx, "/api.GraphService/Import", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/Import", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) Export(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Graph, error) {
+func (c *databaseServiceClient) Export(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*Graph, error) {
 	out := new(Graph)
-	err := c.cc.Invoke(ctx, "/api.GraphService/Export", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/Export", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) SubGraph(ctx context.Context, in *SubGraphFilter, opts ...grpc.CallOption) (*Graph, error) {
+func (c *databaseServiceClient) SubGraph(ctx context.Context, in *SubGraphFilter, opts ...grpc.CallOption) (*Graph, error) {
 	out := new(Graph)
-	err := c.cc.Invoke(ctx, "/api.GraphService/SubGraph", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/SubGraph", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *graphServiceClient) Shutdown(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseServiceClient) Shutdown(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/api.GraphService/Shutdown", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/Shutdown", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GraphServiceServer is the server API for GraphService service.
-type GraphServiceServer interface {
+// DatabaseServiceServer is the server API for DatabaseService service.
+type DatabaseServiceServer interface {
 	// Ping returns PONG if the server is health
 	Ping(context.Context, *empty.Empty) (*Pong, error)
-	// GetSchema gets schema about the Graph node & edge types
+	// GetSchema gets schema about the Graph doc & connection types
 	GetSchema(context.Context, *empty.Empty) (*Schema, error)
-	// Me returns a NodeDetail of the currently logged in identity(the subject of the JWT)
-	Me(context.Context, *MeFilter) (*NodeDetail, error)
-	// CreateNode creates a node in the graph
-	CreateNode(context.Context, *NodeConstructor) (*Node, error)
-	// CreateNodes creates a batch of nodes in the graph
-	CreateNodes(context.Context, *NodeConstructors) (*Nodes, error)
-	// GetNode gets a single node in the graph
-	GetNode(context.Context, *Path) (*Node, error)
-	// SearchNodes searches the graph for nodes
-	SearchNodes(context.Context, *Filter) (*Nodes, error)
-	// PatchNode patches a nodes attributes
-	PatchNode(context.Context, *Patch) (*Node, error)
-	// PatchNodes patches a batch of nodes attributes that pass the patch filter
-	PatchNodes(context.Context, *PatchFilter) (*Nodes, error)
-	// DelNode deletes a node & all of it's connected edges
-	DelNode(context.Context, *Path) (*empty.Empty, error)
-	// DelNodes deletes a batch of nodes that pass the filter
-	DelNodes(context.Context, *Filter) (*empty.Empty, error)
-	// CreateEdge creates an edge in the graph
-	CreateEdge(context.Context, *EdgeConstructor) (*Edge, error)
-	// CreateEdges creates a batch of edges in the graph
-	CreateEdges(context.Context, *EdgeConstructors) (*Edges, error)
-	// GetEdge gets a single edge in the graph
-	GetEdge(context.Context, *Path) (*Edge, error)
-	// SearchEdges searches the graph for edges
-	SearchEdges(context.Context, *Filter) (*Edges, error)
-	// PatchEdge patches an edges attributes
-	PatchEdge(context.Context, *Patch) (*Edge, error)
-	// PatchEdges patches a batch of edges attributes that pass the patch filter
-	PatchEdges(context.Context, *PatchFilter) (*Edges, error)
-	// DelEdge deletes an edge from the graph
-	DelEdge(context.Context, *Path) (*empty.Empty, error)
-	// DelEdges deletes a batch of edges that pass the filter
-	DelEdges(context.Context, *Filter) (*empty.Empty, error)
-	// EdgesFrom returns edges that source from the given node path that pass the filter
-	EdgesFrom(context.Context, *EdgeFilter) (*Edges, error)
-	// EdgesTo returns edges that point to the given node path that pass the filter
-	EdgesTo(context.Context, *EdgeFilter) (*Edges, error)
+	// Me returns a DocDetail of the currently logged in identity(the subject of the JWT)
+	Me(context.Context, *MeFilter) (*DocDetail, error)
+	// CreateDoc creates a doc in the graph
+	CreateDoc(context.Context, *DocConstructor) (*Doc, error)
+	// CreateDocs creates a batch of docs in the graph
+	CreateDocs(context.Context, *DocConstructors) (*Docs, error)
+	// GetDoc gets a single doc in the graph
+	GetDoc(context.Context, *Path) (*Doc, error)
+	// SearchDocs searches the graph for docs
+	SearchDocs(context.Context, *Filter) (*Docs, error)
+	// PatchDoc patches a docs attributes
+	PatchDoc(context.Context, *Patch) (*Doc, error)
+	// PatchDocs patches a batch of docs attributes that pass the patch filter
+	PatchDocs(context.Context, *PatchFilter) (*Docs, error)
+	// DelDoc deletes a doc & all of it's connected connections
+	DelDoc(context.Context, *Path) (*empty.Empty, error)
+	// DelDocs deletes a batch of docs that pass the filter
+	DelDocs(context.Context, *Filter) (*empty.Empty, error)
+	// CreateConnection creates an connection in the graph
+	CreateConnection(context.Context, *ConnectionConstructor) (*Connection, error)
+	// CreateConnections creates a batch of connections in the graph
+	CreateConnections(context.Context, *ConnectionConstructors) (*Connections, error)
+	// GetConnection gets a single connection in the graph
+	GetConnection(context.Context, *Path) (*Connection, error)
+	// SearchConnections searches the graph for connections
+	SearchConnections(context.Context, *Filter) (*Connections, error)
+	// PatchConnection patches an connections attributes
+	PatchConnection(context.Context, *Patch) (*Connection, error)
+	// PatchConnections patches a batch of connections attributes that pass the patch filter
+	PatchConnections(context.Context, *PatchFilter) (*Connections, error)
+	// DelConnection deletes an connection from the graph
+	DelConnection(context.Context, *Path) (*empty.Empty, error)
+	// DelConnections deletes a batch of connections that pass the filter
+	DelConnections(context.Context, *Filter) (*empty.Empty, error)
+	// ConnectionsFrom returns connections that source from the given doc path that pass the filter
+	ConnectionsFrom(context.Context, *ConnectionFilter) (*Connections, error)
+	// ConnectionsTo returns connections that point to the given doc path that pass the filter
+	ConnectionsTo(context.Context, *ConnectionFilter) (*Connections, error)
 	// Publish publishes a message to a pubsub channel
 	Publish(context.Context, *OutboundMessage) (*empty.Empty, error)
 	// Subscribe subscribes to messages on a pubsub channel
-	Subscribe(*ChannelFilter, GraphService_SubscribeServer) error
-	SubscribeChanges(*ExpressionFilter, GraphService_SubscribeChangesServer) error
+	Subscribe(*ChannelFilter, DatabaseService_SubscribeServer) error
+	SubscribeChanges(*ExpressionFilter, DatabaseService_SubscribeChangesServer) error
 	// Import imports the Graph into the database
 	Import(context.Context, *Graph) (*Graph, error)
 	// Export returns the Graph data
@@ -3520,727 +3541,727 @@ type GraphServiceServer interface {
 	Shutdown(context.Context, *empty.Empty) (*empty.Empty, error)
 }
 
-// UnimplementedGraphServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedGraphServiceServer struct {
+// UnimplementedDatabaseServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedDatabaseServiceServer struct {
 }
 
-func (*UnimplementedGraphServiceServer) Ping(context.Context, *empty.Empty) (*Pong, error) {
+func (*UnimplementedDatabaseServiceServer) Ping(context.Context, *empty.Empty) (*Pong, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (*UnimplementedGraphServiceServer) GetSchema(context.Context, *empty.Empty) (*Schema, error) {
+func (*UnimplementedDatabaseServiceServer) GetSchema(context.Context, *empty.Empty) (*Schema, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSchema not implemented")
 }
-func (*UnimplementedGraphServiceServer) Me(context.Context, *MeFilter) (*NodeDetail, error) {
+func (*UnimplementedDatabaseServiceServer) Me(context.Context, *MeFilter) (*DocDetail, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Me not implemented")
 }
-func (*UnimplementedGraphServiceServer) CreateNode(context.Context, *NodeConstructor) (*Node, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateNode not implemented")
+func (*UnimplementedDatabaseServiceServer) CreateDoc(context.Context, *DocConstructor) (*Doc, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDoc not implemented")
 }
-func (*UnimplementedGraphServiceServer) CreateNodes(context.Context, *NodeConstructors) (*Nodes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateNodes not implemented")
+func (*UnimplementedDatabaseServiceServer) CreateDocs(context.Context, *DocConstructors) (*Docs, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateDocs not implemented")
 }
-func (*UnimplementedGraphServiceServer) GetNode(context.Context, *Path) (*Node, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetNode not implemented")
+func (*UnimplementedDatabaseServiceServer) GetDoc(context.Context, *Path) (*Doc, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDoc not implemented")
 }
-func (*UnimplementedGraphServiceServer) SearchNodes(context.Context, *Filter) (*Nodes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SearchNodes not implemented")
+func (*UnimplementedDatabaseServiceServer) SearchDocs(context.Context, *Filter) (*Docs, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchDocs not implemented")
 }
-func (*UnimplementedGraphServiceServer) PatchNode(context.Context, *Patch) (*Node, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PatchNode not implemented")
+func (*UnimplementedDatabaseServiceServer) PatchDoc(context.Context, *Patch) (*Doc, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PatchDoc not implemented")
 }
-func (*UnimplementedGraphServiceServer) PatchNodes(context.Context, *PatchFilter) (*Nodes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PatchNodes not implemented")
+func (*UnimplementedDatabaseServiceServer) PatchDocs(context.Context, *PatchFilter) (*Docs, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PatchDocs not implemented")
 }
-func (*UnimplementedGraphServiceServer) DelNode(context.Context, *Path) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DelNode not implemented")
+func (*UnimplementedDatabaseServiceServer) DelDoc(context.Context, *Path) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelDoc not implemented")
 }
-func (*UnimplementedGraphServiceServer) DelNodes(context.Context, *Filter) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DelNodes not implemented")
+func (*UnimplementedDatabaseServiceServer) DelDocs(context.Context, *Filter) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelDocs not implemented")
 }
-func (*UnimplementedGraphServiceServer) CreateEdge(context.Context, *EdgeConstructor) (*Edge, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateEdge not implemented")
+func (*UnimplementedDatabaseServiceServer) CreateConnection(context.Context, *ConnectionConstructor) (*Connection, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateConnection not implemented")
 }
-func (*UnimplementedGraphServiceServer) CreateEdges(context.Context, *EdgeConstructors) (*Edges, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateEdges not implemented")
+func (*UnimplementedDatabaseServiceServer) CreateConnections(context.Context, *ConnectionConstructors) (*Connections, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateConnections not implemented")
 }
-func (*UnimplementedGraphServiceServer) GetEdge(context.Context, *Path) (*Edge, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetEdge not implemented")
+func (*UnimplementedDatabaseServiceServer) GetConnection(context.Context, *Path) (*Connection, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetConnection not implemented")
 }
-func (*UnimplementedGraphServiceServer) SearchEdges(context.Context, *Filter) (*Edges, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SearchEdges not implemented")
+func (*UnimplementedDatabaseServiceServer) SearchConnections(context.Context, *Filter) (*Connections, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchConnections not implemented")
 }
-func (*UnimplementedGraphServiceServer) PatchEdge(context.Context, *Patch) (*Edge, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PatchEdge not implemented")
+func (*UnimplementedDatabaseServiceServer) PatchConnection(context.Context, *Patch) (*Connection, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PatchConnection not implemented")
 }
-func (*UnimplementedGraphServiceServer) PatchEdges(context.Context, *PatchFilter) (*Edges, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PatchEdges not implemented")
+func (*UnimplementedDatabaseServiceServer) PatchConnections(context.Context, *PatchFilter) (*Connections, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PatchConnections not implemented")
 }
-func (*UnimplementedGraphServiceServer) DelEdge(context.Context, *Path) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DelEdge not implemented")
+func (*UnimplementedDatabaseServiceServer) DelConnection(context.Context, *Path) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelConnection not implemented")
 }
-func (*UnimplementedGraphServiceServer) DelEdges(context.Context, *Filter) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DelEdges not implemented")
+func (*UnimplementedDatabaseServiceServer) DelConnections(context.Context, *Filter) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelConnections not implemented")
 }
-func (*UnimplementedGraphServiceServer) EdgesFrom(context.Context, *EdgeFilter) (*Edges, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EdgesFrom not implemented")
+func (*UnimplementedDatabaseServiceServer) ConnectionsFrom(context.Context, *ConnectionFilter) (*Connections, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConnectionsFrom not implemented")
 }
-func (*UnimplementedGraphServiceServer) EdgesTo(context.Context, *EdgeFilter) (*Edges, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EdgesTo not implemented")
+func (*UnimplementedDatabaseServiceServer) ConnectionsTo(context.Context, *ConnectionFilter) (*Connections, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConnectionsTo not implemented")
 }
-func (*UnimplementedGraphServiceServer) Publish(context.Context, *OutboundMessage) (*empty.Empty, error) {
+func (*UnimplementedDatabaseServiceServer) Publish(context.Context, *OutboundMessage) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Publish not implemented")
 }
-func (*UnimplementedGraphServiceServer) Subscribe(*ChannelFilter, GraphService_SubscribeServer) error {
+func (*UnimplementedDatabaseServiceServer) Subscribe(*ChannelFilter, DatabaseService_SubscribeServer) error {
 	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
-func (*UnimplementedGraphServiceServer) SubscribeChanges(*ExpressionFilter, GraphService_SubscribeChangesServer) error {
+func (*UnimplementedDatabaseServiceServer) SubscribeChanges(*ExpressionFilter, DatabaseService_SubscribeChangesServer) error {
 	return status.Errorf(codes.Unimplemented, "method SubscribeChanges not implemented")
 }
-func (*UnimplementedGraphServiceServer) Import(context.Context, *Graph) (*Graph, error) {
+func (*UnimplementedDatabaseServiceServer) Import(context.Context, *Graph) (*Graph, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Import not implemented")
 }
-func (*UnimplementedGraphServiceServer) Export(context.Context, *empty.Empty) (*Graph, error) {
+func (*UnimplementedDatabaseServiceServer) Export(context.Context, *empty.Empty) (*Graph, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Export not implemented")
 }
-func (*UnimplementedGraphServiceServer) SubGraph(context.Context, *SubGraphFilter) (*Graph, error) {
+func (*UnimplementedDatabaseServiceServer) SubGraph(context.Context, *SubGraphFilter) (*Graph, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubGraph not implemented")
 }
-func (*UnimplementedGraphServiceServer) Shutdown(context.Context, *empty.Empty) (*empty.Empty, error) {
+func (*UnimplementedDatabaseServiceServer) Shutdown(context.Context, *empty.Empty) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Shutdown not implemented")
 }
 
-func RegisterGraphServiceServer(s *grpc.Server, srv GraphServiceServer) {
-	s.RegisterService(&_GraphService_serviceDesc, srv)
+func RegisterDatabaseServiceServer(s *grpc.Server, srv DatabaseServiceServer) {
+	s.RegisterService(&_DatabaseService_serviceDesc, srv)
 }
 
-func _GraphService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).Ping(ctx, in)
+		return srv.(DatabaseServiceServer).Ping(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/Ping",
+		FullMethod: "/api.DatabaseService/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).Ping(ctx, req.(*empty.Empty))
+		return srv.(DatabaseServiceServer).Ping(ctx, req.(*empty.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_GetSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_GetSchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).GetSchema(ctx, in)
+		return srv.(DatabaseServiceServer).GetSchema(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/GetSchema",
+		FullMethod: "/api.DatabaseService/GetSchema",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).GetSchema(ctx, req.(*empty.Empty))
+		return srv.(DatabaseServiceServer).GetSchema(ctx, req.(*empty.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_Me_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MeFilter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).Me(ctx, in)
+		return srv.(DatabaseServiceServer).Me(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/Me",
+		FullMethod: "/api.DatabaseService/Me",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).Me(ctx, req.(*MeFilter))
+		return srv.(DatabaseServiceServer).Me(ctx, req.(*MeFilter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_CreateNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NodeConstructor)
+func _DatabaseService_CreateDoc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DocConstructor)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).CreateNode(ctx, in)
+		return srv.(DatabaseServiceServer).CreateDoc(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/CreateNode",
+		FullMethod: "/api.DatabaseService/CreateDoc",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).CreateNode(ctx, req.(*NodeConstructor))
+		return srv.(DatabaseServiceServer).CreateDoc(ctx, req.(*DocConstructor))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_CreateNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NodeConstructors)
+func _DatabaseService_CreateDocs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DocConstructors)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).CreateNodes(ctx, in)
+		return srv.(DatabaseServiceServer).CreateDocs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/CreateNodes",
+		FullMethod: "/api.DatabaseService/CreateDocs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).CreateNodes(ctx, req.(*NodeConstructors))
+		return srv.(DatabaseServiceServer).CreateDocs(ctx, req.(*DocConstructors))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_GetNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_GetDoc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Path)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).GetNode(ctx, in)
+		return srv.(DatabaseServiceServer).GetDoc(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/GetNode",
+		FullMethod: "/api.DatabaseService/GetDoc",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).GetNode(ctx, req.(*Path))
+		return srv.(DatabaseServiceServer).GetDoc(ctx, req.(*Path))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_SearchNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_SearchDocs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Filter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).SearchNodes(ctx, in)
+		return srv.(DatabaseServiceServer).SearchDocs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/SearchNodes",
+		FullMethod: "/api.DatabaseService/SearchDocs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).SearchNodes(ctx, req.(*Filter))
+		return srv.(DatabaseServiceServer).SearchDocs(ctx, req.(*Filter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_PatchNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_PatchDoc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Patch)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).PatchNode(ctx, in)
+		return srv.(DatabaseServiceServer).PatchDoc(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/PatchNode",
+		FullMethod: "/api.DatabaseService/PatchDoc",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).PatchNode(ctx, req.(*Patch))
+		return srv.(DatabaseServiceServer).PatchDoc(ctx, req.(*Patch))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_PatchNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_PatchDocs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PatchFilter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).PatchNodes(ctx, in)
+		return srv.(DatabaseServiceServer).PatchDocs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/PatchNodes",
+		FullMethod: "/api.DatabaseService/PatchDocs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).PatchNodes(ctx, req.(*PatchFilter))
+		return srv.(DatabaseServiceServer).PatchDocs(ctx, req.(*PatchFilter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_DelNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_DelDoc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Path)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).DelNode(ctx, in)
+		return srv.(DatabaseServiceServer).DelDoc(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/DelNode",
+		FullMethod: "/api.DatabaseService/DelDoc",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).DelNode(ctx, req.(*Path))
+		return srv.(DatabaseServiceServer).DelDoc(ctx, req.(*Path))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_DelNodes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_DelDocs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Filter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).DelNodes(ctx, in)
+		return srv.(DatabaseServiceServer).DelDocs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/DelNodes",
+		FullMethod: "/api.DatabaseService/DelDocs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).DelNodes(ctx, req.(*Filter))
+		return srv.(DatabaseServiceServer).DelDocs(ctx, req.(*Filter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_CreateEdge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EdgeConstructor)
+func _DatabaseService_CreateConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConnectionConstructor)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).CreateEdge(ctx, in)
+		return srv.(DatabaseServiceServer).CreateConnection(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/CreateEdge",
+		FullMethod: "/api.DatabaseService/CreateConnection",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).CreateEdge(ctx, req.(*EdgeConstructor))
+		return srv.(DatabaseServiceServer).CreateConnection(ctx, req.(*ConnectionConstructor))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_CreateEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EdgeConstructors)
+func _DatabaseService_CreateConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConnectionConstructors)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).CreateEdges(ctx, in)
+		return srv.(DatabaseServiceServer).CreateConnections(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/CreateEdges",
+		FullMethod: "/api.DatabaseService/CreateConnections",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).CreateEdges(ctx, req.(*EdgeConstructors))
+		return srv.(DatabaseServiceServer).CreateConnections(ctx, req.(*ConnectionConstructors))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_GetEdge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_GetConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Path)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).GetEdge(ctx, in)
+		return srv.(DatabaseServiceServer).GetConnection(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/GetEdge",
+		FullMethod: "/api.DatabaseService/GetConnection",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).GetEdge(ctx, req.(*Path))
+		return srv.(DatabaseServiceServer).GetConnection(ctx, req.(*Path))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_SearchEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_SearchConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Filter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).SearchEdges(ctx, in)
+		return srv.(DatabaseServiceServer).SearchConnections(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/SearchEdges",
+		FullMethod: "/api.DatabaseService/SearchConnections",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).SearchEdges(ctx, req.(*Filter))
+		return srv.(DatabaseServiceServer).SearchConnections(ctx, req.(*Filter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_PatchEdge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_PatchConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Patch)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).PatchEdge(ctx, in)
+		return srv.(DatabaseServiceServer).PatchConnection(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/PatchEdge",
+		FullMethod: "/api.DatabaseService/PatchConnection",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).PatchEdge(ctx, req.(*Patch))
+		return srv.(DatabaseServiceServer).PatchConnection(ctx, req.(*Patch))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_PatchEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_PatchConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PatchFilter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).PatchEdges(ctx, in)
+		return srv.(DatabaseServiceServer).PatchConnections(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/PatchEdges",
+		FullMethod: "/api.DatabaseService/PatchConnections",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).PatchEdges(ctx, req.(*PatchFilter))
+		return srv.(DatabaseServiceServer).PatchConnections(ctx, req.(*PatchFilter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_DelEdge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_DelConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Path)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).DelEdge(ctx, in)
+		return srv.(DatabaseServiceServer).DelConnection(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/DelEdge",
+		FullMethod: "/api.DatabaseService/DelConnection",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).DelEdge(ctx, req.(*Path))
+		return srv.(DatabaseServiceServer).DelConnection(ctx, req.(*Path))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_DelEdges_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_DelConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Filter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).DelEdges(ctx, in)
+		return srv.(DatabaseServiceServer).DelConnections(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/DelEdges",
+		FullMethod: "/api.DatabaseService/DelConnections",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).DelEdges(ctx, req.(*Filter))
+		return srv.(DatabaseServiceServer).DelConnections(ctx, req.(*Filter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_EdgesFrom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EdgeFilter)
+func _DatabaseService_ConnectionsFrom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConnectionFilter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).EdgesFrom(ctx, in)
+		return srv.(DatabaseServiceServer).ConnectionsFrom(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/EdgesFrom",
+		FullMethod: "/api.DatabaseService/ConnectionsFrom",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).EdgesFrom(ctx, req.(*EdgeFilter))
+		return srv.(DatabaseServiceServer).ConnectionsFrom(ctx, req.(*ConnectionFilter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_EdgesTo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EdgeFilter)
+func _DatabaseService_ConnectionsTo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConnectionFilter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).EdgesTo(ctx, in)
+		return srv.(DatabaseServiceServer).ConnectionsTo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/EdgesTo",
+		FullMethod: "/api.DatabaseService/ConnectionsTo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).EdgesTo(ctx, req.(*EdgeFilter))
+		return srv.(DatabaseServiceServer).ConnectionsTo(ctx, req.(*ConnectionFilter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_Publish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(OutboundMessage)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).Publish(ctx, in)
+		return srv.(DatabaseServiceServer).Publish(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/Publish",
+		FullMethod: "/api.DatabaseService/Publish",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).Publish(ctx, req.(*OutboundMessage))
+		return srv.(DatabaseServiceServer).Publish(ctx, req.(*OutboundMessage))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _DatabaseService_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ChannelFilter)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(GraphServiceServer).Subscribe(m, &graphServiceSubscribeServer{stream})
+	return srv.(DatabaseServiceServer).Subscribe(m, &databaseServiceSubscribeServer{stream})
 }
 
-type GraphService_SubscribeServer interface {
+type DatabaseService_SubscribeServer interface {
 	Send(*Message) error
 	grpc.ServerStream
 }
 
-type graphServiceSubscribeServer struct {
+type databaseServiceSubscribeServer struct {
 	grpc.ServerStream
 }
 
-func (x *graphServiceSubscribeServer) Send(m *Message) error {
+func (x *databaseServiceSubscribeServer) Send(m *Message) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _GraphService_SubscribeChanges_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _DatabaseService_SubscribeChanges_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(ExpressionFilter)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(GraphServiceServer).SubscribeChanges(m, &graphServiceSubscribeChangesServer{stream})
+	return srv.(DatabaseServiceServer).SubscribeChanges(m, &databaseServiceSubscribeChangesServer{stream})
 }
 
-type GraphService_SubscribeChangesServer interface {
+type DatabaseService_SubscribeChangesServer interface {
 	Send(*Change) error
 	grpc.ServerStream
 }
 
-type graphServiceSubscribeChangesServer struct {
+type databaseServiceSubscribeChangesServer struct {
 	grpc.ServerStream
 }
 
-func (x *graphServiceSubscribeChangesServer) Send(m *Change) error {
+func (x *databaseServiceSubscribeChangesServer) Send(m *Change) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _GraphService_Import_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_Import_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Graph)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).Import(ctx, in)
+		return srv.(DatabaseServiceServer).Import(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/Import",
+		FullMethod: "/api.DatabaseService/Import",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).Import(ctx, req.(*Graph))
+		return srv.(DatabaseServiceServer).Import(ctx, req.(*Graph))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_Export_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_Export_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).Export(ctx, in)
+		return srv.(DatabaseServiceServer).Export(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/Export",
+		FullMethod: "/api.DatabaseService/Export",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).Export(ctx, req.(*empty.Empty))
+		return srv.(DatabaseServiceServer).Export(ctx, req.(*empty.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_SubGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_SubGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubGraphFilter)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).SubGraph(ctx, in)
+		return srv.(DatabaseServiceServer).SubGraph(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/SubGraph",
+		FullMethod: "/api.DatabaseService/SubGraph",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).SubGraph(ctx, req.(*SubGraphFilter))
+		return srv.(DatabaseServiceServer).SubGraph(ctx, req.(*SubGraphFilter))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GraphService_Shutdown_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseService_Shutdown_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GraphServiceServer).Shutdown(ctx, in)
+		return srv.(DatabaseServiceServer).Shutdown(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GraphService/Shutdown",
+		FullMethod: "/api.DatabaseService/Shutdown",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GraphServiceServer).Shutdown(ctx, req.(*empty.Empty))
+		return srv.(DatabaseServiceServer).Shutdown(ctx, req.(*empty.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _GraphService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "api.GraphService",
-	HandlerType: (*GraphServiceServer)(nil),
+var _DatabaseService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "api.DatabaseService",
+	HandlerType: (*DatabaseServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Ping",
-			Handler:    _GraphService_Ping_Handler,
+			Handler:    _DatabaseService_Ping_Handler,
 		},
 		{
 			MethodName: "GetSchema",
-			Handler:    _GraphService_GetSchema_Handler,
+			Handler:    _DatabaseService_GetSchema_Handler,
 		},
 		{
 			MethodName: "Me",
-			Handler:    _GraphService_Me_Handler,
+			Handler:    _DatabaseService_Me_Handler,
 		},
 		{
-			MethodName: "CreateNode",
-			Handler:    _GraphService_CreateNode_Handler,
+			MethodName: "CreateDoc",
+			Handler:    _DatabaseService_CreateDoc_Handler,
 		},
 		{
-			MethodName: "CreateNodes",
-			Handler:    _GraphService_CreateNodes_Handler,
+			MethodName: "CreateDocs",
+			Handler:    _DatabaseService_CreateDocs_Handler,
 		},
 		{
-			MethodName: "GetNode",
-			Handler:    _GraphService_GetNode_Handler,
+			MethodName: "GetDoc",
+			Handler:    _DatabaseService_GetDoc_Handler,
 		},
 		{
-			MethodName: "SearchNodes",
-			Handler:    _GraphService_SearchNodes_Handler,
+			MethodName: "SearchDocs",
+			Handler:    _DatabaseService_SearchDocs_Handler,
 		},
 		{
-			MethodName: "PatchNode",
-			Handler:    _GraphService_PatchNode_Handler,
+			MethodName: "PatchDoc",
+			Handler:    _DatabaseService_PatchDoc_Handler,
 		},
 		{
-			MethodName: "PatchNodes",
-			Handler:    _GraphService_PatchNodes_Handler,
+			MethodName: "PatchDocs",
+			Handler:    _DatabaseService_PatchDocs_Handler,
 		},
 		{
-			MethodName: "DelNode",
-			Handler:    _GraphService_DelNode_Handler,
+			MethodName: "DelDoc",
+			Handler:    _DatabaseService_DelDoc_Handler,
 		},
 		{
-			MethodName: "DelNodes",
-			Handler:    _GraphService_DelNodes_Handler,
+			MethodName: "DelDocs",
+			Handler:    _DatabaseService_DelDocs_Handler,
 		},
 		{
-			MethodName: "CreateEdge",
-			Handler:    _GraphService_CreateEdge_Handler,
+			MethodName: "CreateConnection",
+			Handler:    _DatabaseService_CreateConnection_Handler,
 		},
 		{
-			MethodName: "CreateEdges",
-			Handler:    _GraphService_CreateEdges_Handler,
+			MethodName: "CreateConnections",
+			Handler:    _DatabaseService_CreateConnections_Handler,
 		},
 		{
-			MethodName: "GetEdge",
-			Handler:    _GraphService_GetEdge_Handler,
+			MethodName: "GetConnection",
+			Handler:    _DatabaseService_GetConnection_Handler,
 		},
 		{
-			MethodName: "SearchEdges",
-			Handler:    _GraphService_SearchEdges_Handler,
+			MethodName: "SearchConnections",
+			Handler:    _DatabaseService_SearchConnections_Handler,
 		},
 		{
-			MethodName: "PatchEdge",
-			Handler:    _GraphService_PatchEdge_Handler,
+			MethodName: "PatchConnection",
+			Handler:    _DatabaseService_PatchConnection_Handler,
 		},
 		{
-			MethodName: "PatchEdges",
-			Handler:    _GraphService_PatchEdges_Handler,
+			MethodName: "PatchConnections",
+			Handler:    _DatabaseService_PatchConnections_Handler,
 		},
 		{
-			MethodName: "DelEdge",
-			Handler:    _GraphService_DelEdge_Handler,
+			MethodName: "DelConnection",
+			Handler:    _DatabaseService_DelConnection_Handler,
 		},
 		{
-			MethodName: "DelEdges",
-			Handler:    _GraphService_DelEdges_Handler,
+			MethodName: "DelConnections",
+			Handler:    _DatabaseService_DelConnections_Handler,
 		},
 		{
-			MethodName: "EdgesFrom",
-			Handler:    _GraphService_EdgesFrom_Handler,
+			MethodName: "ConnectionsFrom",
+			Handler:    _DatabaseService_ConnectionsFrom_Handler,
 		},
 		{
-			MethodName: "EdgesTo",
-			Handler:    _GraphService_EdgesTo_Handler,
+			MethodName: "ConnectionsTo",
+			Handler:    _DatabaseService_ConnectionsTo_Handler,
 		},
 		{
 			MethodName: "Publish",
-			Handler:    _GraphService_Publish_Handler,
+			Handler:    _DatabaseService_Publish_Handler,
 		},
 		{
 			MethodName: "Import",
-			Handler:    _GraphService_Import_Handler,
+			Handler:    _DatabaseService_Import_Handler,
 		},
 		{
 			MethodName: "Export",
-			Handler:    _GraphService_Export_Handler,
+			Handler:    _DatabaseService_Export_Handler,
 		},
 		{
 			MethodName: "SubGraph",
-			Handler:    _GraphService_SubGraph_Handler,
+			Handler:    _DatabaseService_SubGraph_Handler,
 		},
 		{
 			MethodName: "Shutdown",
-			Handler:    _GraphService_Shutdown_Handler,
+			Handler:    _DatabaseService_Shutdown_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Subscribe",
-			Handler:       _GraphService_Subscribe_Handler,
+			Handler:       _DatabaseService_Subscribe_Handler,
 			ServerStreams: true,
 		},
 		{
 			StreamName:    "SubscribeChanges",
-			Handler:       _GraphService_SubscribeChanges_Handler,
+			Handler:       _DatabaseService_SubscribeChanges_Handler,
 			ServerStreams: true,
 		},
 	},

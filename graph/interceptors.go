@@ -27,17 +27,26 @@ import (
 const (
 	authCtxKey   = "x-graphik-auth-ctx"
 	identityType = "identity"
-	idClaim      = "sub"
+	emailClaim   = "email"
 	methodCtxKey = "x-grpc-full-method"
 )
 
 func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
+		_, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
-		payload, err := g.verifyJWT(token)
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
+		}
+		values := md.Get("X-GRAPHIK-ID")
+		if len(values) == 0 {
+			return nil, status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
+		}
+		idToken := values[0]
+		payload, err := g.verifyJWT(idToken)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -51,12 +60,11 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
 		}
+		ctx = g.methodToContext(ctx, info.FullMethod)
 		ctx, identity, err := g.identityToContext(ctx, payload)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
 		}
-		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
-		ctx = g.methodToContext(ctx, info.FullMethod)
 		if len(g.authorizers) > 0 {
 			now := time.Now()
 			request := &apipb.Request{
@@ -80,18 +88,29 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 				return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
 			}
 		}
+		if g.getIdentity(ctx) == nil {
+			return nil, status.Error(codes.Internal, "empty identity")
+		}
 		return handler(ctx, req)
 	}
 }
 
 func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
+		_, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
 			return err
 		}
-
-		payload, err := g.verifyJWT(token)
+		md, ok := metadata.FromIncomingContext(ss.Context())
+		if !ok {
+			return status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
+		}
+		values := md.Get("X-GRAPHIK-ID")
+		if len(values) == 0 {
+			return status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
+		}
+		idToken := values[0]
+		payload, err := g.verifyJWT(idToken)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
@@ -101,12 +120,11 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		if val, ok := payload["exp"].(float64); ok && int64(val) < time.Now().Unix() {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
-		ctx, identity, err := g.identityToContext(ss.Context(), payload)
+		ctx := g.methodToContext(ss.Context(), info.FullMethod)
+		ctx, identity, err := g.identityToContext(ctx, payload)
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
 		}
-		ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", fmt.Sprintf("Bearer %s", token))
-		ctx = g.methodToContext(ss.Context(), info.FullMethod)
 		if len(g.authorizers) > 0 {
 			now := time.Now()
 			request := &apipb.Request{
@@ -136,22 +154,26 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	}
 }
 
-func (a *Graph) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
+func (a *Graph) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Doc, error) {
 	path := &apipb.Path{
 		Gtype: identityType,
-		Gid:   payload[idClaim].(string),
+		Gid:   payload[emailClaim].(string),
 	}
 	var (
-		node *apipb.Node
-		err  error
+		doc apipb.Doc
+		err error
 	)
 	if err = a.db.View(func(tx *bbolt.Tx) error {
-		node, err = a.getNode(ctx, tx, path)
+		getDoc, err := a.getDoc(ctx, tx, path)
+		if err != nil {
+			return err
+		}
+		doc = *getDoc
 		return err
 	}); err != nil && err != ErrNotFound {
 		return ctx, nil, err
 	}
-	if node.GetPath() == nil {
+	if doc.GetPath() == nil {
 		logger.Info("creating identity",
 			zap.String("gtype", path.GetGtype()),
 			zap.String("gid", path.GetGid()),
@@ -160,27 +182,27 @@ func (a *Graph) identityToContext(ctx context.Context, payload map[string]interf
 		if err != nil {
 			return nil, nil, err
 		}
-		nodeP, err := a.createIdentity(ctx, &apipb.NodeConstructor{
+		docP, err := a.createIdentity(ctx, &apipb.DocConstructor{
 			Path:       path,
 			Attributes: strct,
 		})
 		if err != nil {
 			return nil, nil, err
 		}
-		node = nodeP
+		doc = *docP
 	}
-	if node.GetPath() == nil {
-		return nil, nil, errors.New("empty node")
+	if doc.GetPath() == nil {
+		return nil, nil, errors.New("empty doc")
 	}
-	return context.WithValue(ctx, authCtxKey, node), node, nil
+	return context.WithValue(ctx, authCtxKey, &doc), &doc, nil
 }
 
-func (s *Graph) getIdentity(ctx context.Context) *apipb.Node {
-	val, ok := ctx.Value(authCtxKey).(*apipb.Node)
+func (s *Graph) getIdentity(ctx context.Context) *apipb.Doc {
+	val, ok := ctx.Value(authCtxKey).(*apipb.Doc)
 	if ok {
 		return val
 	}
-	val2, ok := ctx.Value(authCtxKey).(apipb.Node)
+	val2, ok := ctx.Value(authCtxKey).(apipb.Doc)
 	if ok {
 		return &val2
 	}

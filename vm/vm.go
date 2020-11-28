@@ -3,21 +3,21 @@ package vm
 import "github.com/pkg/errors"
 
 type VM struct {
-	edgeVM    *EdgeVM
-	nodeVM    *NodeVM
-	messageVM *MessageVM
-	changeVM  *ChangeVM
-	authVm    *AuthVM
+	connectionVM *ConnectionVM
+	docVM        *DocVM
+	messageVM    *MessageVM
+	changeVM     *ChangeVM
+	authVm       *AuthVM
 }
 
 func NewVM() (*VM, error) {
-	edge, err := NewEdgeVM()
+	connection, err := NewConnectionVM()
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create edge vm")
+		return nil, errors.Wrap(err, "failed to create connection vm")
 	}
-	node, err := NewNodeVM()
+	doc, err := NewDocVM()
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create node vm")
+		return nil, errors.Wrap(err, "failed to create doc vm")
 	}
 	message, err := NewMessageVM()
 	if err != nil {
@@ -31,15 +31,15 @@ func NewVM() (*VM, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create auth vm")
 	}
-	return &VM{edgeVM: edge, nodeVM: node, messageVM: message, changeVM: change, authVm: auth}, nil
+	return &VM{connectionVM: connection, docVM: doc, messageVM: message, changeVM: change, authVm: auth}, nil
 }
 
-func (v *VM) Edge() *EdgeVM {
-	return v.edgeVM
+func (v *VM) Connection() *ConnectionVM {
+	return v.connectionVM
 }
 
-func (v *VM) Node() *NodeVM {
-	return v.nodeVM
+func (v *VM) Doc() *DocVM {
+	return v.docVM
 }
 
 func (v *VM) Message() *MessageVM {

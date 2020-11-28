@@ -73,7 +73,7 @@ func (m *Metadata) FromMap(data map[string]interface{}) {
 	}
 }
 
-func (n *Node) AsMap() map[string]interface{} {
+func (n *Doc) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
@@ -84,7 +84,7 @@ func (n *Node) AsMap() map[string]interface{} {
 	}
 }
 
-func (m *Node) FromMap(data map[string]interface{}) {
+func (m *Doc) FromMap(data map[string]interface{}) {
 	if val, ok := data["metadata"]; ok {
 		if m.Metadata == nil {
 			m.Metadata = &Metadata{}
@@ -117,7 +117,7 @@ func (m *Node) FromMap(data map[string]interface{}) {
 	}
 }
 
-func (n *Edge) AsMap() map[string]interface{} {
+func (n *Connection) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
@@ -131,7 +131,7 @@ func (n *Edge) AsMap() map[string]interface{} {
 	}
 }
 
-func (m *Edge) FromMap(data map[string]interface{}) {
+func (m *Connection) FromMap(data map[string]interface{}) {
 	if val, ok := data["metadata"]; ok {
 		if m.Metadata == nil {
 			m.Metadata = &Metadata{}
@@ -220,26 +220,26 @@ func (c *Change) AsMap() map[string]interface{} {
 	if c == nil {
 		return map[string]interface{}{}
 	}
-	var edgeChanges []interface{}
-	var nodeChanges []interface{}
-	for _, change := range c.GetEdgeChanges() {
-		edgeChanges = append(edgeChanges, map[string]interface{}{
+	var connectionChanges []interface{}
+	var docChanges []interface{}
+	for _, change := range c.GetConnectionChanges() {
+		connectionChanges = append(connectionChanges, map[string]interface{}{
 			"before": change.GetBefore().AsMap(),
 			"after":  change.GetAfter().AsMap(),
 		})
 	}
-	for _, change := range c.GetNodeChanges() {
-		nodeChanges = append(nodeChanges, map[string]interface{}{
+	for _, change := range c.GetDocChanges() {
+		docChanges = append(docChanges, map[string]interface{}{
 			"before": change.GetBefore().AsMap(),
 			"after":  change.GetAfter().AsMap(),
 		})
 	}
 	return map[string]interface{}{
-		"method":       c.Method,
-		"timestamp":    c.Timestamp,
-		"identity":     c.Identity,
-		"edge_changes": edgeChanges,
-		"node_changes": nodeChanges,
+		"method":             c.Method,
+		"timestamp":          c.Timestamp,
+		"identity":           c.Identity,
+		"connection_changes": connectionChanges,
+		"doc_changes":        docChanges,
 	}
 }
 
@@ -254,7 +254,7 @@ func (n *Filter) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *EdgeFilter) AsMap() map[string]interface{} {
+func (n *ConnectionFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
@@ -262,7 +262,7 @@ func (n *EdgeFilter) AsMap() map[string]interface{} {
 		"gtype":       n.GetGtype(),
 		"expressions": n.GetExpressions(),
 		"limit":       n.GetLimit(),
-		"node_path":   n.GetNodePath(),
+		"doc_path":    n.GetDocPath(),
 	}
 }
 
@@ -271,8 +271,8 @@ func (n *SubGraphFilter) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"edge_filter": n.GetEdgeFilter().AsMap(),
-		"node_filter": n.GetNodeFilter().AsMap(),
+		"connection_filter": n.GetConnectionFilter().AsMap(),
+		"doc_filter":        n.GetDocFilter().AsMap(),
 	}
 }
 
@@ -320,12 +320,12 @@ func (m *MeFilter) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"from_edges": m.GetEdgesFrom().AsMap(),
-		"to_edges":   m.GetEdgesTo().AsMap(),
+		"from_connections": m.GetConnectionsFrom().AsMap(),
+		"to_connections":   m.GetConnectionsTo().AsMap(),
 	}
 }
 
-func (e *EdgeConstructor) AsMap() map[string]interface{} {
+func (e *ConnectionConstructor) AsMap() map[string]interface{} {
 	if e == nil {
 		return map[string]interface{}{}
 	}
@@ -338,7 +338,7 @@ func (e *EdgeConstructor) AsMap() map[string]interface{} {
 	}
 }
 
-func (e *NodeConstructor) AsMap() map[string]interface{} {
+func (e *DocConstructor) AsMap() map[string]interface{} {
 	if e == nil {
 		return map[string]interface{}{}
 	}
@@ -358,30 +358,30 @@ func (o *OutboundMessage) AsMap() map[string]interface{} {
 	}
 }
 
-func (e *Edges) AsMap() map[string]interface{} {
-	var edges []interface{}
-	for _, edge := range e.GetEdges() {
-		edges = append(edges, edge.AsMap())
+func (e *Connections) AsMap() map[string]interface{} {
+	var connections []interface{}
+	for _, connection := range e.GetConnections() {
+		connections = append(connections, connection.AsMap())
 	}
 	return map[string]interface{}{
-		"edges": edges,
+		"connections": connections,
 	}
 }
 
-func (e *Nodes) AsMap() map[string]interface{} {
-	var nodes []interface{}
-	for _, edge := range e.GetNodes() {
-		nodes = append(nodes, edge.AsMap())
+func (e *Docs) AsMap() map[string]interface{} {
+	var docs []interface{}
+	for _, connection := range e.GetDocs() {
+		docs = append(docs, connection.AsMap())
 	}
 	return map[string]interface{}{
-		"nodes": nodes,
+		"docs": docs,
 	}
 }
 
 func (g *Graph) AsMap() map[string]interface{} {
 	return map[string]interface{}{
-		"edges": g.GetEdges().AsMap(),
-		"nodes": g.GetNodes().AsMap(),
+		"connections": g.GetConnections().AsMap(),
+		"docs":        g.GetDocs().AsMap(),
 	}
 }
 
@@ -400,46 +400,46 @@ func (p *Paths) Sort() {
 	s.Sort()
 }
 
-func (n *Nodes) Sort() {
+func (n *Docs) Sort() {
 	s := sortable.Sortable{
 		LenFunc: func() int {
-			return len(n.GetNodes())
+			return len(n.GetDocs())
 		},
 		LessFunc: func(i, j int) bool {
-			return n.GetNodes()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < n.GetNodes()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
+			return n.GetDocs()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < n.GetDocs()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		},
 		SwapFunc: func(i, j int) {
-			n.GetNodes()[i], n.GetNodes()[j] = n.GetNodes()[j], n.GetNodes()[i]
+			n.GetDocs()[i], n.GetDocs()[j] = n.GetDocs()[j], n.GetDocs()[i]
 		},
 	}
 	s.Sort()
 }
 
-func (e *Edges) Sort() {
+func (e *Connections) Sort() {
 	s := sortable.Sortable{
 		LenFunc: func() int {
-			return len(e.GetEdges())
+			return len(e.GetConnections())
 		},
 		LessFunc: func(i, j int) bool {
-			return e.GetEdges()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetEdges()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
+			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		},
 		SwapFunc: func(i, j int) {
-			e.GetEdges()[i], e.GetEdges()[j] = e.GetEdges()[j], e.GetEdges()[i]
+			e.GetConnections()[i], e.GetConnections()[j] = e.GetConnections()[j], e.GetConnections()[i]
 		},
 	}
 	s.Sort()
 }
 
-func (e *EdgeDetails) Sort() {
+func (e *ConnectionDetails) Sort() {
 	s := sortable.Sortable{
 		LenFunc: func() int {
-			return len(e.GetEdges())
+			return len(e.GetConnections())
 		},
 		LessFunc: func(i, j int) bool {
-			return e.GetEdges()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetEdges()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
+			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		},
 		SwapFunc: func(i, j int) {
-			e.GetEdges()[i], e.GetEdges()[j] = e.GetEdges()[j], e.GetEdges()[i]
+			e.GetConnections()[i], e.GetConnections()[j] = e.GetConnections()[j], e.GetConnections()[i]
 		},
 	}
 	s.Sort()

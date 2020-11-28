@@ -111,7 +111,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		logger.Error("failed to setup graphql endpoint", zap.Error(err))
 		return
 	}
-	resolver := gql.NewResolver(ctx, apipb.NewGraphServiceClient(conn), cors.New(cors.Options{
+	resolver := gql.NewResolver(ctx, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
 		AllowedOrigins: global.AllowedOrigins,
 		AllowedMethods: global.AllowedMethods,
 		AllowedHeaders: global.AllowedHeaders,
@@ -149,7 +149,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		),
 	)
 
-	apipb.RegisterGraphServiceServer(gserver, g)
+	apipb.RegisterDatabaseServiceServer(gserver, g)
 	reflection.Register(gserver)
 	grpc_prometheus.Register(gserver)
 

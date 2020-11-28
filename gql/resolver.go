@@ -15,12 +15,12 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	client  apipb.GraphServiceClient
+	client  apipb.DatabaseServiceClient
 	cors    *cors.Cors
 	machine *machine.Machine
 }
 
-func NewResolver(ctx context.Context, client apipb.GraphServiceClient, cors *cors.Cors) *Resolver {
+func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *cors.Cors) *Resolver {
 	return &Resolver{client: client, cors: cors, machine: machine.New(ctx)}
 }
 

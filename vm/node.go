@@ -6,23 +6,23 @@ import (
 	"github.com/google/cel-go/checker/decls"
 )
 
-type NodeVM struct {
+type DocVM struct {
 	e *cel.Env
 }
 
-func NewNodeVM() (*NodeVM, error) {
+func NewDocVM() (*DocVM, error) {
 	e, err := cel.NewEnv(
 		cel.Declarations(
-			decls.NewVar("node", decls.NewMapType(decls.String, decls.Any)),
+			decls.NewVar("doc", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &NodeVM{e: e}, nil
+	return &DocVM{e: e}, nil
 }
 
-func (n *NodeVM) Program(expression string) (cel.Program, error) {
+func (n *DocVM) Program(expression string) (cel.Program, error) {
 	ast, iss := n.e.Compile(expression)
 	if iss.Err() != nil {
 		return nil, iss.Err()
@@ -30,7 +30,7 @@ func (n *NodeVM) Program(expression string) (cel.Program, error) {
 	return n.e.Program(ast)
 }
 
-func (n *NodeVM) Programs(expressions []string) ([]cel.Program, error) {
+func (n *DocVM) Programs(expressions []string) ([]cel.Program, error) {
 	var programs []cel.Program
 	for _, exp := range expressions {
 		prgm, err := n.Program(exp)
@@ -42,14 +42,14 @@ func (n *NodeVM) Programs(expressions []string) ([]cel.Program, error) {
 	return programs, nil
 }
 
-func (n *NodeVM) Eval(programs []cel.Program, node *apipb.Node) (bool, error) {
+func (n *DocVM) Eval(programs []cel.Program, doc *apipb.Doc) (bool, error) {
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"node": node.AsMap(),
+			"doc": doc.AsMap(),
 		})
 		if err != nil {
 			return false, err

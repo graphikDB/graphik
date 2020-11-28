@@ -7,8 +7,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"reflect"
@@ -19,56 +17,55 @@ func (g *Graph) metaDefaults(ctx context.Context, meta *apipb.Metadata) {
 	if meta == nil {
 		meta = &apipb.Metadata{}
 	}
-	if meta.GetUpdatedBy() == nil {
-		identity.GetMetadata().UpdatedBy = identity.GetPath()
-	}
 	if meta.GetCreatedAt() == nil {
 		meta.CreatedAt = timestamppb.Now()
 	}
-	if meta.GetUpdatedAt() == nil {
-		meta.UpdatedAt = timestamppb.Now()
+	if meta.GetCreatedBy() == nil {
+		meta.CreatedBy = identity.GetPath()
 	}
+	meta.UpdatedBy = identity.GetPath()
+	meta.UpdatedAt = timestamppb.Now()
 	meta.Version += 1
 }
 
-func (g *Graph) setNode(ctx context.Context, tx *bbolt.Tx, node *apipb.Node) (*apipb.Node, error) {
+func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apipb.Doc, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	if node.GetPath() == nil {
-		node.Path = &apipb.Path{}
+	if doc.GetPath() == nil {
+		doc.Path = &apipb.Path{}
 	}
-	if node.GetPath().Gid == "" {
-		node.Path.Gid = uuid.New().String()
+	if doc.GetPath().Gid == "" {
+		doc.Path.Gid = uuid.New().String()
 	}
-	g.metaDefaults(ctx, node.Metadata)
-	bits, err := proto.Marshal(node)
+	g.metaDefaults(ctx, doc.Metadata)
+	bits, err := proto.Marshal(doc)
 	if err != nil {
 		return nil, err
 	}
-	nodeBucket := tx.Bucket(dbNodes)
-	bucket := nodeBucket.Bucket([]byte(node.GetPath().GetGtype()))
+	docBucket := tx.Bucket(dbDocs)
+	bucket := docBucket.Bucket([]byte(doc.GetPath().GetGtype()))
 	if bucket == nil {
-		bucket, err = nodeBucket.CreateBucketIfNotExists([]byte(node.GetPath().GetGtype()))
+		bucket, err = docBucket.CreateBucketIfNotExists([]byte(doc.GetPath().GetGtype()))
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "failed to create bucket %s", doc.GetPath().GetGtype())
 		}
 	}
-	if err := bucket.Put([]byte(node.GetPath().GetGid()), bits); err != nil {
+	if err := bucket.Put([]byte(doc.GetPath().GetGid()), bits); err != nil {
 		return nil, err
 	}
-	return node, nil
+	return doc, nil
 }
 
-func (g *Graph) setNodes(ctx context.Context, nodes ...*apipb.Node) (*apipb.Nodes, error) {
-	var nds = &apipb.Nodes{}
+func (g *Graph) setDocs(ctx context.Context, docs ...*apipb.Doc) (*apipb.Docs, error) {
+	var nds = &apipb.Docs{}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		for _, node := range nodes {
-			n, err := g.setNode(ctx, tx, node)
+		for _, doc := range docs {
+			n, err := g.setDoc(ctx, tx, doc)
 			if err != nil {
 				return err
 			}
-			nds.Nodes = append(nds.Nodes, n)
+			nds.Docs = append(nds.Docs, n)
 		}
 		return nil
 	}); err != nil {
@@ -77,78 +74,78 @@ func (g *Graph) setNodes(ctx context.Context, nodes ...*apipb.Node) (*apipb.Node
 	return nds, nil
 }
 
-func (g *Graph) setEdge(ctx context.Context, tx *bbolt.Tx, edge *apipb.Edge) (*apipb.Edge, error) {
+func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *apipb.Connection) (*apipb.Connection, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	nodeBucket := tx.Bucket(dbNodes)
+	docBucket := tx.Bucket(dbDocs)
 	{
-		fromBucket := nodeBucket.Bucket([]byte(edge.From.Gtype))
+		fromBucket := docBucket.Bucket([]byte(connection.From.Gtype))
 		if fromBucket == nil {
-			return nil, errors.Errorf("from node %s does not exist", edge.From.String())
+			return nil, errors.Errorf("from doc %s does not exist", connection.From.String())
 		}
-		val := fromBucket.Get([]byte(edge.From.Gid))
+		val := fromBucket.Get([]byte(connection.From.Gid))
 		if val == nil {
-			return nil, errors.Errorf("from node %s does not exist", edge.From.String())
+			return nil, errors.Errorf("from doc %s does not exist", connection.From.String())
 		}
 	}
 	{
-		toBucket := nodeBucket.Bucket([]byte(edge.To.Gtype))
+		toBucket := docBucket.Bucket([]byte(connection.To.Gtype))
 		if toBucket == nil {
-			return nil, errors.Errorf("to node %s does not exist", edge.To.String())
+			return nil, errors.Errorf("to doc %s does not exist", connection.To.String())
 		}
-		val := toBucket.Get([]byte(edge.To.Gid))
+		val := toBucket.Get([]byte(connection.To.Gid))
 		if val == nil {
-			return nil, errors.Errorf("to node %s does not exist", edge.To.String())
+			return nil, errors.Errorf("to doc %s does not exist", connection.To.String())
 		}
 	}
-	if edge.GetPath() == nil {
-		edge.Path = &apipb.Path{}
+	if connection.GetPath() == nil {
+		connection.Path = &apipb.Path{}
 	}
-	if edge.GetPath().Gid == "" {
-		edge.Path.Gid = uuid.New().String()
+	if connection.GetPath().Gid == "" {
+		connection.Path.Gid = uuid.New().String()
 	}
-	g.metaDefaults(ctx, edge.Metadata)
-	bits, err := proto.Marshal(edge)
+	g.metaDefaults(ctx, connection.Metadata)
+	bits, err := proto.Marshal(connection)
 	if err != nil {
 		return nil, err
 	}
-	edgeBucket := tx.Bucket(dbEdges)
-	edgeBucket = edgeBucket.Bucket([]byte(edge.GetPath().GetGtype()))
-	if edgeBucket == nil {
-		edgeBucket, err = edgeBucket.CreateBucketIfNotExists([]byte(edge.GetPath().GetGtype()))
+	connectionBucket := tx.Bucket(dbConnections)
+	connectionBucket = connectionBucket.Bucket([]byte(connection.GetPath().GetGtype()))
+	if connectionBucket == nil {
+		connectionBucket, err = connectionBucket.CreateBucketIfNotExists([]byte(connection.GetPath().GetGtype()))
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "failed to create bucket %s", connection.GetPath().GetGtype())
 		}
 	}
-	if err := edgeBucket.Put([]byte(edge.GetPath().GetGid()), bits); err != nil {
+	if err := connectionBucket.Put([]byte(connection.GetPath().GetGid()), bits); err != nil {
 		return nil, err
 	}
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	g.edgesFrom[edge.GetFrom().String()] = append(g.edgesFrom[edge.GetFrom().String()], edge.GetPath())
-	g.edgesTo[edge.GetTo().String()] = append(g.edgesTo[edge.GetTo().String()], edge.GetPath())
-	if !edge.Directed {
-		g.edgesTo[edge.GetFrom().String()] = append(g.edgesTo[edge.GetFrom().String()], edge.GetPath())
-		g.edgesFrom[edge.GetTo().String()] = append(g.edgesFrom[edge.GetTo().String()], edge.GetPath())
+	g.connectionsFrom[connection.GetFrom().String()] = append(g.connectionsFrom[connection.GetFrom().String()], connection.GetPath())
+	g.connectionsTo[connection.GetTo().String()] = append(g.connectionsTo[connection.GetTo().String()], connection.GetPath())
+	if !connection.Directed {
+		g.connectionsTo[connection.GetFrom().String()] = append(g.connectionsTo[connection.GetFrom().String()], connection.GetPath())
+		g.connectionsFrom[connection.GetTo().String()] = append(g.connectionsFrom[connection.GetTo().String()], connection.GetPath())
 	}
-	sortPaths(g.edgesFrom[edge.GetFrom().String()])
-	sortPaths(g.edgesTo[edge.GetTo().String()])
-	return edge, nil
+	sortPaths(g.connectionsFrom[connection.GetFrom().String()])
+	sortPaths(g.connectionsTo[connection.GetTo().String()])
+	return connection, nil
 }
 
-func (g *Graph) setEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb.Edges, error) {
+func (g *Graph) setConnections(ctx context.Context, connections ...*apipb.Connection) (*apipb.Connections, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	var edgs = &apipb.Edges{}
+	var edgs = &apipb.Connections{}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		for _, edge := range edges {
-			e, err := g.setEdge(ctx, tx, edge)
+		for _, connection := range connections {
+			e, err := g.setConnection(ctx, tx, connection)
 			if err != nil {
 				return err
 			}
-			edgs.Edges = append(edgs.Edges, e)
+			edgs.Connections = append(edgs.Connections, e)
 		}
 		return nil
 	}); err != nil {
@@ -158,16 +155,12 @@ func (g *Graph) setEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb.Edge
 	return edgs, nil
 }
 
-func (g *Graph) getNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Node, error) {
+func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Doc, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
-	}
-	var node apipb.Node
-	bucket := tx.Bucket(dbNodes).Bucket([]byte(path.Gtype))
+	var doc apipb.Doc
+	bucket := tx.Bucket(dbDocs).Bucket([]byte(path.Gtype))
 	if bucket == nil {
 		return nil, ErrNotFound
 	}
@@ -175,18 +168,18 @@ func (g *Graph) getNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*a
 	if len(bits) == 0 {
 		return nil, ErrNotFound
 	}
-	if err := proto.Unmarshal(bits, &node); err != nil {
+	if err := proto.Unmarshal(bits, &doc); err != nil {
 		return nil, err
 	}
-	return &node, nil
+	return &doc, nil
 }
 
-func (g *Graph) getEdge(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Edge, error) {
+func (g *Graph) getConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Connection, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
-	var edge apipb.Edge
-	bucket := tx.Bucket(dbEdges).Bucket([]byte(path.Gtype))
+	var connection apipb.Connection
+	bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
 	if bucket == nil {
 		return nil, ErrNotFound
 	}
@@ -194,30 +187,30 @@ func (g *Graph) getEdge(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*a
 	if len(bits) == 0 {
 		return nil, ErrNotFound
 	}
-	if err := proto.Unmarshal(bits, &edge); err != nil {
+	if err := proto.Unmarshal(bits, &connection); err != nil {
 		return nil, err
 	}
-	return &edge, nil
+	return &connection, nil
 }
 
-func (g *Graph) rangeEdges(ctx context.Context, gType string, fn func(n *apipb.Edge) bool) error {
+func (g *Graph) rangeConnections(ctx context.Context, gType string, fn func(n *apipb.Connection) bool) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		if gType == apipb.Any {
-			types, err := g.EdgeTypes(ctx)
+			types, err := g.ConnectionTypes(ctx)
 			if err != nil {
 				return err
 			}
-			for _, edgeType := range types {
-				if err := g.rangeEdges(ctx, edgeType, fn); err != nil {
+			for _, connectionType := range types {
+				if err := g.rangeConnections(ctx, connectionType, fn); err != nil {
 					return err
 				}
 			}
 			return nil
 		}
-		bucket := tx.Bucket(dbEdges).Bucket([]byte(gType))
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(gType))
 		if bucket == nil {
 			return ErrNotFound
 		}
@@ -226,11 +219,11 @@ func (g *Graph) rangeEdges(ctx context.Context, gType string, fn func(n *apipb.E
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
-			var edge apipb.Edge
-			if err := proto.Unmarshal(v, &edge); err != nil {
+			var connection apipb.Connection
+			if err := proto.Unmarshal(v, &connection); err != nil {
 				return err
 			}
-			if !fn(&edge) {
+			if !fn(&connection) {
 				return DONE
 			}
 			return nil
@@ -241,25 +234,25 @@ func (g *Graph) rangeEdges(ctx context.Context, gType string, fn func(n *apipb.E
 	return nil
 }
 
-func (g *Graph) rangeNodes(ctx context.Context, gType string, fn func(n *apipb.Node) bool) error {
+func (g *Graph) rangeDocs(ctx context.Context, gType string, fn func(n *apipb.Doc) bool) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
 
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		if gType == apipb.Any {
-			types, err := g.NodeTypes(ctx)
+			types, err := g.DocTypes(ctx)
 			if err != nil {
 				return err
 			}
-			for _, nodeType := range types {
-				if err := g.rangeNodes(ctx, nodeType, fn); err != nil {
+			for _, docType := range types {
+				if err := g.rangeDocs(ctx, docType, fn); err != nil {
 					return err
 				}
 			}
 			return nil
 		}
-		bucket := tx.Bucket(dbNodes).Bucket([]byte(gType))
+		bucket := tx.Bucket(dbDocs).Bucket([]byte(gType))
 		if bucket == nil {
 			return ErrNotFound
 		}
@@ -268,11 +261,11 @@ func (g *Graph) rangeNodes(ctx context.Context, gType string, fn func(n *apipb.N
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
-			var node apipb.Node
-			if err := proto.Unmarshal(v, &node); err != nil {
+			var doc apipb.Doc
+			if err := proto.Unmarshal(v, &doc); err != nil {
 				return err
 			}
-			if !fn(&node) {
+			if !fn(&doc) {
 				return DONE
 			}
 			return nil
@@ -283,42 +276,36 @@ func (g *Graph) rangeNodes(ctx context.Context, gType string, fn func(n *apipb.N
 	return nil
 }
 
-func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.NodeConstructor) (*apipb.Node, error) {
+func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstructor) (*apipb.Doc, error) {
 	now := timestamppb.Now()
-	var node *apipb.Node
 	var err error
 	if constructor.Path.Gid == "" {
 		constructor.Path.Gid = uuid.New().String()
 	}
+	newDock := &apipb.Doc{
+		Path:       constructor.GetPath(),
+		Attributes: constructor.GetAttributes(),
+		Metadata: &apipb.Metadata{
+			CreatedAt: now,
+			UpdatedAt: now,
+			UpdatedBy: constructor.GetPath(),
+		},
+	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		node = &apipb.Node{
-			Path:       constructor.GetPath(),
-			Attributes: constructor.GetAttributes(),
-			Metadata: &apipb.Metadata{
-				CreatedAt: now,
-				UpdatedAt: now,
-				UpdatedBy: constructor.GetPath(),
-			},
-		}
-
-		if constructor.Path.GetGid() == "" {
-			constructor.Path.Gid = uuid.New().String()
-		}
-		nodeBucket := tx.Bucket(dbNodes)
-		bucket := nodeBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+		docBucket := tx.Bucket(dbDocs)
+		bucket := docBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
 		if bucket == nil {
-			bucket, err = nodeBucket.CreateBucket([]byte(node.GetPath().GetGtype()))
+			bucket, err = docBucket.CreateBucket([]byte(newDock.GetPath().GetGtype()))
 			if err != nil {
-				return err
+				return errors.Wrapf(err, "%s", newDock.GetPath().GetGtype())
 			}
 		}
 		seq, err := bucket.NextSequence()
 		if err != nil {
-			return err
+			return errors.Wrap(err, "failed to get next sequence")
 		}
-		node.Metadata.Sequence = seq
-
-		node, err = g.setNode(ctx, tx, node)
+		newDock.Metadata.Sequence = seq
+		newDock, err = g.setDoc(ctx, tx, newDock)
 		if err != nil {
 			return err
 		}
@@ -326,42 +313,42 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.NodeConst
 	}); err != nil {
 		return nil, err
 	}
-	return node, nil
+	return newDock, nil
 }
 
-func (g *Graph) delNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
-	node, err := g.getNode(ctx, tx, path)
+func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
+	doc, err := g.getDoc(ctx, tx, path)
 	if err != nil {
 		return err
 	}
-	bucket := tx.Bucket(dbNodes).Bucket([]byte(node.GetPath().GetGtype()))
+	bucket := tx.Bucket(dbDocs).Bucket([]byte(doc.GetPath().GetGtype()))
 
-	g.rangeFrom(ctx, tx, path, func(e *apipb.Edge) bool {
-		g.delEdge(ctx, tx, e.GetPath())
+	g.rangeFrom(ctx, tx, path, func(e *apipb.Connection) bool {
+		g.delConnection(ctx, tx, e.GetPath())
 		return true
 	})
-	g.rangeTo(ctx, tx, path, func(e *apipb.Edge) bool {
-		g.delEdge(ctx, tx, e.GetPath())
+	g.rangeTo(ctx, tx, path, func(e *apipb.Connection) bool {
+		g.delConnection(ctx, tx, e.GetPath())
 		return true
 	})
-	return bucket.Delete([]byte(node.GetPath().GetGid()))
+	return bucket.Delete([]byte(doc.GetPath().GetGid()))
 }
 
-func (g *Graph) delEdge(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
-	edge, err := g.getEdge(ctx, tx, path)
+func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
+	connection, err := g.getConnection(ctx, tx, path)
 	if err != nil {
 		return err
 	}
 	g.mu.Lock()
-	fromPaths := removeEdge(path, g.edgesFrom[edge.GetFrom().String()])
-	g.edgesFrom[edge.GetFrom().String()] = fromPaths
-	toPaths := removeEdge(path, g.edgesTo[edge.GetTo().String()])
-	g.edgesTo[edge.GetTo().String()] = toPaths
+	fromPaths := removeConnection(path, g.connectionsFrom[connection.GetFrom().String()])
+	g.connectionsFrom[connection.GetFrom().String()] = fromPaths
+	toPaths := removeConnection(path, g.connectionsTo[connection.GetTo().String()])
+	g.connectionsTo[connection.GetTo().String()] = toPaths
 	g.mu.Unlock()
-	return tx.Bucket(dbEdges).Bucket([]byte(edge.GetPath().GetGtype())).Delete([]byte(edge.GetPath().GetGid()))
+	return tx.Bucket(dbConnections).Bucket([]byte(connection.GetPath().GetGtype())).Delete([]byte(connection.GetPath().GetGid()))
 }
 
-func removeEdge(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
+func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
 	var newPaths []*apipb.Path
 	for _, p := range paths {
 		if !reflect.DeepEqual(p, path) {
