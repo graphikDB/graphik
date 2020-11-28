@@ -31,7 +31,7 @@ const (
 	methodCtxKey = "x-grpc-full-method"
 )
 
-func (g *GraphStore) UnaryInterceptor() grpc.UnaryServerInterceptor {
+func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
@@ -84,7 +84,7 @@ func (g *GraphStore) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	}
 }
 
-func (g *GraphStore) StreamInterceptor() grpc.StreamServerInterceptor {
+func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
@@ -136,7 +136,7 @@ func (g *GraphStore) StreamInterceptor() grpc.StreamServerInterceptor {
 	}
 }
 
-func (a *GraphStore) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
+func (a *Graph) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Node, error) {
 	path := &apipb.Path{
 		Gtype: identityType,
 		Gid:   payload[idClaim].(string),
@@ -175,7 +175,7 @@ func (a *GraphStore) identityToContext(ctx context.Context, payload map[string]i
 	return context.WithValue(ctx, authCtxKey, node), node, nil
 }
 
-func (s *GraphStore) getIdentity(ctx context.Context) *apipb.Node {
+func (s *Graph) getIdentity(ctx context.Context) *apipb.Node {
 	val, ok := ctx.Value(authCtxKey).(*apipb.Node)
 	if ok {
 		return val
@@ -187,7 +187,7 @@ func (s *GraphStore) getIdentity(ctx context.Context) *apipb.Node {
 	return nil
 }
 
-func (r *GraphStore) getMethod(ctx context.Context) string {
+func (r *Graph) getMethod(ctx context.Context) string {
 	val, ok := ctx.Value(methodCtxKey).(string)
 	if ok {
 		return val
@@ -195,11 +195,11 @@ func (r *GraphStore) getMethod(ctx context.Context) string {
 	return ""
 }
 
-func (r *GraphStore) methodToContext(ctx context.Context, path string) context.Context {
+func (r *Graph) methodToContext(ctx context.Context, path string) context.Context {
 	return context.WithValue(ctx, methodCtxKey, path)
 }
 
-func (g *GraphStore) verifyJWT(token string) (map[string]interface{}, error) {
+func (g *Graph) verifyJWT(token string) (map[string]interface{}, error) {
 	message, err := jws.ParseString(token)
 	if err != nil {
 		return nil, err

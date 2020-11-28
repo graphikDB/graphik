@@ -293,6 +293,17 @@ message ExpressionFilter {
   repeated string expressions =1;
 }
 
+message Request {
+  // method is the rpc method
+  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // identity is the identity making the request
+  Node identity =2 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the intercept was received
+  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  // request is the intercepted request
+  google.protobuf.Struct request = 4;
+}
+
 // GraphService is the primary Graph service
 service GraphService {
   // Ping returns PONG if the server is health
@@ -342,17 +353,6 @@ service GraphService {
   rpc SubGraph(SubGraphFilter) returns(Graph){}
   // Shutdown shuts down the database
   rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
-}
-
-message Request {
-  // method is the rpc method
-  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  // identity is the identity making the request
-  Node identity =2 [(validator.field) = {msg_exists : true}];
-  // timestamp is when the intercept was received
-  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
-  // request is the intercepted request
-  google.protobuf.Struct request = 4;
 }
 
 // TriggerService is an optional/custom external plugin that when added to a graphik instance, mutates requests & responses at runtime

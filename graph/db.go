@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (g *GraphStore) setNode(ctx context.Context, tx *bbolt.Tx, node *apipb.Node) (*apipb.Node, error) {
+func (g *Graph) setNode(ctx context.Context, tx *bbolt.Tx, node *apipb.Node) (*apipb.Node, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (g *GraphStore) setNode(ctx context.Context, tx *bbolt.Tx, node *apipb.Node
 	return node, nil
 }
 
-func (g *GraphStore) setNodes(ctx context.Context, nodes ...*apipb.Node) (*apipb.Nodes, error) {
+func (g *Graph) setNodes(ctx context.Context, nodes ...*apipb.Node) (*apipb.Nodes, error) {
 	var nds = &apipb.Nodes{}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		for _, node := range nodes {
@@ -71,7 +71,7 @@ func (g *GraphStore) setNodes(ctx context.Context, nodes ...*apipb.Node) (*apipb
 	return nds, nil
 }
 
-func (g *GraphStore) setEdge(ctx context.Context, tx *bbolt.Tx, edge *apipb.Edge) (*apipb.Edge, error) {
+func (g *Graph) setEdge(ctx context.Context, tx *bbolt.Tx, edge *apipb.Edge) (*apipb.Edge, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func (g *GraphStore) setEdge(ctx context.Context, tx *bbolt.Tx, edge *apipb.Edge
 	return edge, nil
 }
 
-func (g *GraphStore) setEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb.Edges, error) {
+func (g *Graph) setEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb.Edges, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -169,7 +169,7 @@ func (g *GraphStore) setEdges(ctx context.Context, edges ...*apipb.Edge) (*apipb
 	return edgs, nil
 }
 
-func (g *GraphStore) getNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Node, error) {
+func (g *Graph) getNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Node, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
@@ -189,7 +189,7 @@ func (g *GraphStore) getNode(ctx context.Context, tx *bbolt.Tx, path *apipb.Path
 	return &node, nil
 }
 
-func (g *GraphStore) getEdge(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Edge, error) {
+func (g *Graph) getEdge(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Edge, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}

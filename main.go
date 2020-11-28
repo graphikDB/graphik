@@ -84,8 +84,7 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
 	m := machine.New(ctx)
-	defer m.Close()
-	g, err := graph.NewGraphStore(ctx, cfg)
+	g, err := graph.NewGraph(ctx, cfg)
 	if err != nil {
 		logger.Error("failed to create graph", zap.Error(err))
 		return
@@ -191,7 +190,6 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	}()
 
 	t := time.NewTimer(5 * time.Second)
-
 	select {
 	case <-t.C:
 		gserver.Stop()
