@@ -187,34 +187,12 @@ func (n *Message) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
+
 	return map[string]interface{}{
 		"channel":   n.GetChannel(),
 		"sender":    n.GetSender().AsMap(),
-		"data":      n.Data.AsMap(),
+		"data":      n.GetData().AsMap(),
 		"timestamp": n.GetTimestamp(),
-	}
-}
-
-func (m *Message) FromMap(data map[string]interface{}) {
-	if val, ok := data["sender"]; ok {
-		if m.Sender == nil {
-			m.Sender = &Path{}
-		}
-		if val, ok := val.(map[string]interface{}); ok {
-			m.Sender.FromMap(val)
-		}
-		if val, ok := val.(*Path); ok {
-			m.Sender = val
-		}
-	}
-	if val, ok := data["timestamp"]; ok {
-		m.Timestamp = timestamppb.New(val.(time.Time))
-	}
-	if val, ok := data["data"]; ok {
-		m.Data = NewStruct(val.(map[string]interface{}))
-	}
-	if val, ok := data["channel"]; ok {
-		m.Channel = val.(string)
 	}
 }
 
@@ -237,9 +215,9 @@ func (c *Change) AsMap() map[string]interface{} {
 		})
 	}
 	return map[string]interface{}{
-		"method":             c.Method,
-		"timestamp":          c.Timestamp,
-		"identity":           c.Identity,
+		"method":             c.GetMethod(),
+		"timestamp":          c.GetTimestamp(),
+		"identity":           c.GetIdentity(),
 		"connection_changes": connectionChanges,
 		"doc_changes":        docChanges,
 	}
@@ -253,6 +231,9 @@ func (n *Filter) AsMap() map[string]interface{} {
 		"gtype":      n.GetGtype(),
 		"expression": n.GetExpression(),
 		"limit":      n.GetLimit(),
+		"sort":       n.GetSort(),
+		"reverse":    n.GetReverse(),
+		"seek":       n.GetSeek(),
 	}
 }
 
@@ -263,8 +244,11 @@ func (n *ConnectionFilter) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"gtype":      n.GetGtype(),
 		"expression": n.GetExpression(),
-		"limit":      n.GetLimit(),
 		"doc_path":   n.GetDocPath(),
+		"limit":      n.GetLimit(),
+		"sort":       n.GetSort(),
+		"reverse":    n.GetReverse(),
+		"seek":       n.GetSeek(),
 	}
 }
 
@@ -355,8 +339,8 @@ func (o *OutboundMessage) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"channel": o.Channel,
-		"data":    o.Data.AsMap(),
+		"channel": o.GetChannel(),
+		"data":    o.GetData().AsMap(),
 	}
 }
 
@@ -388,6 +372,9 @@ func (g *Graph) AsMap() map[string]interface{} {
 }
 
 func (p *Paths) Sort(field string) {
+	if p == nil {
+		return
+	}
 	switch field {
 	case "path.gid":
 		sort.Slice(p.GetPaths(), func(i, j int) bool {
@@ -401,6 +388,9 @@ func (p *Paths) Sort(field string) {
 }
 
 func (n *Docs) Sort(field string) {
+	if n == nil {
+		return
+	}
 	switch {
 	case field == "path.gid":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
@@ -452,6 +442,9 @@ func (n *Docs) Sort(field string) {
 }
 
 func (e *Connections) Sort(field string) {
+	if e == nil {
+		return
+	}
 	switch {
 	case field == "path.gid":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
@@ -507,6 +500,9 @@ func (e *Connections) Sort(field string) {
 }
 
 func (e *ConnectionDetails) Sort(field string) {
+	if e == nil {
+		return
+	}
 	switch {
 	case field == "path.gid":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
@@ -576,4 +572,40 @@ func (e *ConnectionDetails) Sort(field string) {
 		})
 	}
 
+}
+
+func (n *Docs) Reverse() {
+	if n == nil {
+		return
+	}
+	docs := n.GetDocs()
+	for i := 0; i < len(docs)/2; i++ {
+		j := len(docs) - i - 1
+		docs[i], docs[j] = docs[j], docs[i]
+	}
+	n.Docs = docs
+}
+
+func (n *Connections) Reverse() {
+	if n == nil {
+		return
+	}
+	values := n.GetConnections()
+	for i := 0; i < len(values)/2; i++ {
+		j := len(values) - i - 1
+		values[i], values[j] = values[j], values[i]
+	}
+	n.Connections = values
+}
+
+func (n *ConnectionDetails) Reverse() {
+	if n == nil {
+		return
+	}
+	values := n.GetConnections()
+	for i := 0; i < len(values)/2; i++ {
+		j := len(values) - i - 1
+		values[i], values[j] = values[j], values[i]
+	}
+	n.Connections = values
 }

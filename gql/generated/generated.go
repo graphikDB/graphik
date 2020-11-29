@@ -1058,6 +1058,7 @@ input Filter {
   limit: Int!
   sort: String
   seek: String
+  reverse: Boolean
 }
 
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
@@ -1080,6 +1081,7 @@ input ConnectionFilter {
   limit: Int!
   sort: String
   seek: String
+  reverse: Boolean
 }
 
 # ChannelFilter is used to filter messages in a pubsub channel
@@ -5213,6 +5215,14 @@ func (ec *executionContext) unmarshalInputConnectionFilter(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
+		case "reverse":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reverse"))
+			it.Reverse, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -5310,6 +5320,14 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seek"))
 			it.Seek, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "reverse":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reverse"))
+			it.Reverse, err = ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
