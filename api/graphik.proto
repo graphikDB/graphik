@@ -169,10 +169,13 @@ message ConnectionFilter {
   string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is a CEL expression used to filter connections/modes
   string expression =3;
-  // limit is the maximum number of connections to return
+  // limit is the maximum number of items to return
   int32 limit =4 [(validator.field) = {int_gt : 0}];
+  // custom sorting of the results.
   string sort =5;
+  // seek to a specific key for pagination
   string seek =6;
+  // reverse the results
   bool reverse =7;
 }
 
@@ -186,7 +189,7 @@ message Filter {
   int32 limit =3 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results.
   string sort =4;
-  // seek to a specific key
+  // seek to a specific key for pagination
   string seek =5;
   // reverse the results
   bool reverse =6;

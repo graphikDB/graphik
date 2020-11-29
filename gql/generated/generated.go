@@ -1079,8 +1079,11 @@ input ConnectionFilter {
   expression: String,
   # limit is the maximum number of connections to return
   limit: Int!
+  # custom sorting of the results.
   sort: String
+  # seek to a specific key for pagination
   seek: String
+  # reverse the results
   reverse: Boolean
 }
 
