@@ -50,7 +50,7 @@ type Graph struct {
 	db          *bbolt.DB
 	jwksMu      sync.RWMutex
 	jwksSet     *jwk.Set
-	openID      *openIDConnect
+	openID  	*openIDConnect
 	authorizers []cel.Program
 	// The path to the Bolt database file
 	path            string
@@ -412,7 +412,7 @@ func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*e
 }
 
 func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseService_SubscribeServer) error {
-	var filterFunc func(msg interface{}) bool
+	var filterFunc  func(msg interface{}) bool
 	if filter.Expression == "" {
 		filterFunc = func(msg interface{}) bool {
 			_, ok := msg.(*apipb.Message)
@@ -573,50 +573,6 @@ func (g *Graph) GetConnection(ctx context.Context, path *apipb.Path) (*apipb.Con
 	return connection, err
 }
 
-func (g *Graph) RangeSeekConnections(ctx context.Context, gType, seek string, fn func(e *apipb.Connection) bool) error {
-	if ctx.Err() != nil {
-		return ctx.Err()
-	}
-	if gType == apipb.Any {
-		types, err := g.ConnectionTypes(ctx)
-		if err != nil {
-			return err
-		}
-		for _, connectionType := range types {
-			if connectionType == apipb.Any {
-				continue
-			}
-			if err := g.RangeSeekConnections(ctx, connectionType, seek, fn); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbConnections).Bucket([]byte(gType))
-		if bucket == nil {
-			return ErrNotFound
-		}
-		c := bucket.Cursor()
-		for k, v := c.Seek([]byte(seek)); k != nil; k, v = c.Next() {
-			if ctx.Err() != nil {
-				return ctx.Err()
-			}
-			var connection apipb.Connection
-			if err := proto.Unmarshal(v, &connection); err != nil {
-				return err
-			}
-			if !fn(&connection) {
-				return DONE
-			}
-		}
-		return nil
-	}); err != nil && err != DONE {
-		return err
-	}
-	return nil
-}
-
 func (n *Graph) AllDocs(ctx context.Context) (*apipb.Docs, error) {
 	identity := n.getIdentity(ctx)
 	if identity == nil {
@@ -774,54 +730,6 @@ func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 	}
 	sort.Strings(types)
 	return types, nil
-}
-
-func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, fn func(e *apipb.Connection) bool) error {
-	g.mu.RLock()
-	paths := g.connectionsFrom[docPath.String()]
-	g.mu.RUnlock()
-	for _, path := range paths {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
-		bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
-		if bucket == nil {
-			return ErrNotFound
-		}
-		var connection apipb.Connection
-		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, &connection); err != nil {
-			return err
-		}
-		if !fn(&connection) {
-			return nil
-		}
-	}
-	return nil
-}
-
-func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, fn func(e *apipb.Connection) bool) error {
-	g.mu.RLock()
-	paths := g.connectionsTo[docPath.String()]
-	g.mu.RUnlock()
-	for _, path := range paths {
-		if err := ctx.Err(); err != nil {
-			return err
-		}
-		bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
-		if bucket == nil {
-			return ErrNotFound
-		}
-		var connection apipb.Connection
-		bits := bucket.Get([]byte(path.Gid))
-		if err := proto.Unmarshal(bits, &connection); err != nil {
-			return err
-		}
-		if !fn(&connection) {
-			return nil
-		}
-	}
-	return nil
 }
 
 func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
