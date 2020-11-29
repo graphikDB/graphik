@@ -468,7 +468,7 @@ func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseServ
 func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.DatabaseService_SubscribeChangesServer) error {
 	var (
 		program cel.Program
-		err error
+		err     error
 	)
 	if filter.Expression != "" {
 		program, err = g.vm.Connection().Program(filter.Expression)
@@ -752,7 +752,7 @@ func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
 	var (
 		program cel.Program
-		err error
+		err     error
 	)
 	if filter.Expression != "" {
 		program, err = g.vm.Connection().Program(filter.Expression)
@@ -844,7 +844,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
 	var (
 		program cel.Program
-		err error
+		err     error
 	)
 	if filter.Expression != "" {
 		program, err = g.vm.Connection().Program(filter.Expression)
@@ -983,7 +983,7 @@ func (n *Graph) PatchConnections(ctx context.Context, patch *apipb.PatchFilter) 
 func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*apipb.Connections, error) {
 	var (
 		program cel.Program
-		err error
+		err     error
 	)
 	if filter.Expression != "" {
 		program, err = e.vm.Connection().Program(filter.Expression)

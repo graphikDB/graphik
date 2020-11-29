@@ -87,6 +87,7 @@ type ComplexityRoot struct {
 
 	Connections struct {
 		Connections func(childComplexity int) int
+		SeekNext    func(childComplexity int) int
 	}
 
 	Doc struct {
@@ -109,7 +110,8 @@ type ComplexityRoot struct {
 	}
 
 	Docs struct {
-		Docs func(childComplexity int) int
+		Docs     func(childComplexity int) int
+		SeekNext func(childComplexity int) int
 	}
 
 	Message struct {
@@ -361,6 +363,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Connections.Connections(childComplexity), true
 
+	case "Connections.seek_next":
+		if e.complexity.Connections.SeekNext == nil {
+			break
+		}
+
+		return e.complexity.Connections.SeekNext(childComplexity), true
+
 	case "Doc.attributes":
 		if e.complexity.Doc.Attributes == nil {
 			break
@@ -437,6 +446,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Docs.Docs(childComplexity), true
+
+	case "Docs.seek_next":
+		if e.complexity.Docs.SeekNext == nil {
+			break
+		}
+
+		return e.complexity.Docs.SeekNext(childComplexity), true
 
 	case "Message.channel":
 		if e.complexity.Message.Channel == nil {
@@ -890,6 +906,7 @@ type Doc {
 type Docs {
   # docs is an array of docs
   docs: [Doc!]
+  seek_next: String!
 }
 
 # Connection is a graph primitive that represents a relationship between two docs
@@ -911,6 +928,7 @@ type Connection {
 # Connections is an array of connections
 type Connections {
   connections: [Connection!]
+  seek_next: String!
 }
 
 # ConnectionDetail is an connection with both of it's connected docs fully loaded
@@ -1039,6 +1057,7 @@ input Filter {
   # limit is the maximum number of items to return
   limit: Int!
   sort: String
+  seek: String
 }
 
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
@@ -1059,6 +1078,8 @@ input ConnectionFilter {
   expression: String,
   # limit is the maximum number of connections to return
   limit: Int!
+  sort: String
+  seek: String
 }
 
 # ChannelFilter is used to filter messages in a pubsub channel
@@ -2174,6 +2195,41 @@ func (ec *executionContext) _Connections_connections(ctx context.Context, field 
 	return ec.marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐConnectionᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Connections_seek_next(ctx context.Context, field graphql.CollectedField, obj *apipb.Connections) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Connections",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SeekNext, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Doc_path(ctx context.Context, field graphql.CollectedField, obj *apipb.Doc) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2533,6 +2589,41 @@ func (ec *executionContext) _Docs_docs(ctx context.Context, field graphql.Collec
 	res := resTmp.([]*apipb.Doc)
 	fc.Result = res
 	return ec.marshalODoc2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐDocᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Docs_seek_next(ctx context.Context, field graphql.CollectedField, obj *apipb.Docs) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Docs",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SeekNext, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Message_channel(ctx context.Context, field graphql.CollectedField, obj *apipb.Message) (ret graphql.Marshaler) {
@@ -5106,6 +5197,22 @@ func (ec *executionContext) unmarshalInputConnectionFilter(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
+		case "sort":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+			it.Sort, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "seek":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seek"))
+			it.Seek, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -5195,6 +5302,14 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
 			it.Sort, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "seek":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seek"))
+			it.Seek, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5545,6 +5660,11 @@ func (ec *executionContext) _Connections(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = graphql.MarshalString("Connections")
 		case "connections":
 			out.Values[i] = ec._Connections_connections(ctx, field, obj)
+		case "seek_next":
+			out.Values[i] = ec._Connections_seek_next(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5664,6 +5784,11 @@ func (ec *executionContext) _Docs(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = graphql.MarshalString("Docs")
 		case "docs":
 			out.Values[i] = ec._Docs_docs(ctx, field, obj)
+		case "seek_next":
+			out.Values[i] = ec._Docs_seek_next(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
