@@ -4,6 +4,7 @@ import (
 	"github.com/autom8ter/graphik/sortable"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"sort"
 	"time"
 )
 
@@ -430,17 +431,52 @@ func (e *Connections) Sort() {
 	s.Sort()
 }
 
-func (e *ConnectionDetails) Sort() {
-	s := sortable.Sortable{
-		LenFunc: func() int {
-			return len(e.GetConnections())
-		},
-		LessFunc: func(i, j int) bool {
+func (e *ConnectionDetails) Sort(field string) {
+	switch field {
+	case "path.gid":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetPath().GetGid() < e.GetConnections()[j].GetPath().GetGid()
+		})
+	case "path.gtype":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetPath().GetGtype() < e.GetConnections()[j].GetPath().GetGtype()
+		})
+	case "to.path.gtype":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetTo().GetPath().GetGtype() < e.GetConnections()[j].GetTo().GetPath().GetGtype()
+		})
+	case "to.path.gid":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetTo().GetPath().GetGid() < e.GetConnections()[j].GetTo().GetPath().GetGid()
+		})
+	case "from.path.gtype":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetFrom().GetPath().GetGtype() < e.GetConnections()[j].GetFrom().GetPath().GetGtype()
+		})
+	case "from.path.gid":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetFrom().GetPath().GetGid() < e.GetConnections()[j].GetFrom().GetPath().GetGid()
+		})
+	case "metadata.sequence":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetMetadata().GetSequence() < e.GetConnections()[j].GetMetadata().GetSequence()
+		})
+	case "metadata.version":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetMetadata().GetVersion() < e.GetConnections()[j].GetMetadata().GetVersion()
+		})
+	case "metadata.updated_at":
+		sort.Slice(e, func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
-		},
-		SwapFunc: func(i, j int) {
-			e.GetConnections()[i], e.GetConnections()[j] = e.GetConnections()[j], e.GetConnections()[i]
-		},
+		})
+	case "metadata.created_at":
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetMetadata().GetCreatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetCreatedAt().AsTime().Nanosecond()
+		})
+	default:
+		sort.Slice(e, func(i, j int) bool {
+			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
+		})
 	}
-	s.Sort()
+
 }

@@ -1,6 +1,8 @@
 package sortable
 
-import "sort"
+import (
+	"sort"
+)
 
 type Sortable struct {
 	LenFunc  func() int

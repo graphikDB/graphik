@@ -1161,8 +1161,8 @@ func (g *Graph) GetDocDetail(ctx context.Context, filter *apipb.DocDetailFilter)
 	}); err != nil {
 		return nil, err
 	}
-	detail.ConnectionsTo.Sort()
-	detail.ConnectionsFrom.Sort()
+	detail.ConnectionsTo.Sort("")
+	detail.ConnectionsFrom.Sort("")
 	return detail, err
 }
 
