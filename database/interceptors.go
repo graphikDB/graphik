@@ -21,6 +21,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"io/ioutil"
+	"net/http"
 	"time"
 )
 
@@ -33,7 +35,7 @@ const (
 
 func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		_, err := grpc_auth.AuthFromMD(ctx, "Bearer")
+		bearer, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
@@ -61,6 +63,27 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			}
 		}
 		ctx = g.methodToContext(ctx, info.FullMethod)
+		if g.openID != nil && g.openID.UserinfoEndpoint != "" {
+			req, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, err.Error())
+			}
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bearer))
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, err.Error())
+			}
+			defer resp.Body.Close()
+			bits, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, err.Error())
+			}
+			data := map[string]interface{}{}
+			if err := json.Unmarshal(bits, &data); err != nil {
+				return nil, status.Errorf(codes.Internal, err.Error())
+			}
+			payload = data
+		}
 		ctx, identity, err := g.identityToContext(ctx, payload)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
@@ -97,7 +120,7 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 
 func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		_, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
+		bearer, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
 			return err
 		}
@@ -121,6 +144,27 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 			return status.Errorf(codes.Unauthenticated, "token expired")
 		}
 		ctx := g.methodToContext(ss.Context(), info.FullMethod)
+		if g.openID != nil && g.openID.UserinfoEndpoint != "" {
+			req, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
+			if err != nil {
+				return status.Errorf(codes.Internal, err.Error())
+			}
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bearer))
+			resp, err := http.DefaultClient.Do(req)
+			if err != nil {
+				return status.Errorf(codes.Internal, err.Error())
+			}
+			defer resp.Body.Close()
+			bits, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return status.Errorf(codes.Internal, err.Error())
+			}
+			data := map[string]interface{}{}
+			if err := json.Unmarshal(bits, &data); err != nil {
+				return status.Errorf(codes.Internal, err.Error())
+			}
+			payload = data
+		}
 		ctx, identity, err := g.identityToContext(ctx, payload)
 		if err != nil {
 			return status.Errorf(codes.Internal, err.Error())
