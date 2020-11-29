@@ -1,9 +1,11 @@
 package apipb
 
 import (
+	"fmt"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -420,14 +422,28 @@ func (n *Docs) Sort(field string) {
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetMetadata().GetCreatedAt().AsTime().Nanosecond() < n.GetDocs()[j].GetMetadata().GetCreatedAt().AsTime().Nanosecond()
 		})
-	//case strings.Contains(field, "attributes."):
-	//	split := strings.Split(field, "attributes.")
-	//	if len(split) == 2 {
-	//		key := split[1]
-	//		switch n.GetDocs()[i] {
-	//
-	//		}
-	//	}
+	case strings.Contains(field, "attributes."):
+		split := strings.Split(field, "attributes.")
+		if len(split) == 2 {
+			key := split[1]
+			sort.Slice(n.GetDocs(), func(i, j int) bool {
+				fields := n.GetDocs()[i].GetAttributes().GetFields()
+				if fields == nil {
+					return true
+				}
+				if fields[key] == nil {
+					return true
+				}
+				switch n.GetDocs()[i].GetAttributes().GetFields()[key].GetKind() {
+				case &structpb.Value_NumberValue{}:
+					return n.GetDocs()[i].GetAttributes().GetFields()[key].GetNumberValue() < n.GetDocs()[j].GetAttributes().GetFields()[key].GetNumberValue()
+				case &structpb.Value_StringValue{}:
+					return n.GetDocs()[i].GetAttributes().GetFields()[key].GetStringValue() < n.GetDocs()[j].GetAttributes().GetFields()[key].GetStringValue()
+				default:
+					return fmt.Sprint(n.GetDocs()[i].GetAttributes().GetFields()[key].AsInterface()) < fmt.Sprint(n.GetDocs()[j].GetAttributes().GetFields()[key].AsInterface())
+				}
+			})
+		}
 	default:
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < n.GetDocs()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
@@ -436,31 +452,53 @@ func (n *Docs) Sort(field string) {
 }
 
 func (e *Connections) Sort(field string) {
-	switch field {
-	case "path.gid":
+	switch {
+	case field == "path.gid":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetPath().GetGid() < e.GetConnections()[j].GetPath().GetGid()
 		})
-	case "path.gtype":
+	case field == "path.gtype":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetPath().GetGtype() < e.GetConnections()[j].GetPath().GetGtype()
 		})
-	case "metadata.sequence":
+	case field == "metadata.sequence":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetSequence() < e.GetConnections()[j].GetMetadata().GetSequence()
 		})
-	case "metadata.version":
+	case field == "metadata.version":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetVersion() < e.GetConnections()[j].GetMetadata().GetVersion()
 		})
-	case "metadata.updated_at":
+	case field == "metadata.updated_at":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		})
-	case "metadata.created_at":
+	case field == "metadata.created_at":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetCreatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetCreatedAt().AsTime().Nanosecond()
 		})
+	case strings.Contains(field, "attributes."):
+		split := strings.Split(field, "attributes.")
+		if len(split) == 2 {
+			key := split[1]
+			sort.Slice(e.GetConnections(), func(i, j int) bool {
+				fields := e.GetConnections()[i].GetAttributes().GetFields()
+				if fields == nil {
+					return true
+				}
+				if fields[key] == nil {
+					return true
+				}
+				switch e.GetConnections()[i].GetAttributes().GetFields()[key].GetKind() {
+				case &structpb.Value_NumberValue{}:
+					return e.GetConnections()[i].GetAttributes().GetFields()[key].GetNumberValue() < e.GetConnections()[j].GetAttributes().GetFields()[key].GetNumberValue()
+				case &structpb.Value_StringValue{}:
+					return e.GetConnections()[i].GetAttributes().GetFields()[key].GetStringValue() < e.GetConnections()[j].GetAttributes().GetFields()[key].GetStringValue()
+				default:
+					return fmt.Sprint(e.GetConnections()[i].GetAttributes().GetFields()[key].AsInterface()) < fmt.Sprint(e.GetConnections()[j].GetAttributes().GetFields()[key].AsInterface())
+				}
+			})
+		}
 	default:
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
@@ -469,47 +507,69 @@ func (e *Connections) Sort(field string) {
 }
 
 func (e *ConnectionDetails) Sort(field string) {
-	switch field {
-	case "path.gid":
+	switch {
+	case field == "path.gid":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetPath().GetGid() < e.GetConnections()[j].GetPath().GetGid()
 		})
-	case "path.gtype":
+	case field == "path.gtype":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetPath().GetGtype() < e.GetConnections()[j].GetPath().GetGtype()
 		})
-	case "to.path.gtype":
+	case field == "to.path.gtype":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetTo().GetPath().GetGtype() < e.GetConnections()[j].GetTo().GetPath().GetGtype()
 		})
-	case "to.path.gid":
+	case field == "to.path.gid":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetTo().GetPath().GetGid() < e.GetConnections()[j].GetTo().GetPath().GetGid()
 		})
-	case "from.path.gtype":
+	case field == "from.path.gtype":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetFrom().GetPath().GetGtype() < e.GetConnections()[j].GetFrom().GetPath().GetGtype()
 		})
-	case "from.path.gid":
+	case field == "from.path.gid":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetFrom().GetPath().GetGid() < e.GetConnections()[j].GetFrom().GetPath().GetGid()
 		})
-	case "metadata.sequence":
+	case field == "metadata.sequence":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetSequence() < e.GetConnections()[j].GetMetadata().GetSequence()
 		})
-	case "metadata.version":
+	case field == "metadata.version":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetVersion() < e.GetConnections()[j].GetMetadata().GetVersion()
 		})
-	case "metadata.updated_at":
+	case field == "metadata.updated_at":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		})
-	case "metadata.created_at":
+	case field == "metadata.created_at":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetCreatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetCreatedAt().AsTime().Nanosecond()
 		})
+	case strings.Contains(field, "attributes."):
+		split := strings.Split(field, "attributes.")
+		if len(split) == 2 {
+			key := split[1]
+			sort.Slice(e.GetConnections(), func(i, j int) bool {
+				fields := e.GetConnections()[i].GetAttributes().GetFields()
+				if fields == nil {
+					return true
+				}
+				if fields[key] == nil {
+					return true
+				}
+				switch e.GetConnections()[i].GetAttributes().GetFields()[key].GetKind() {
+				case &structpb.Value_NumberValue{}:
+					return e.GetConnections()[i].GetAttributes().GetFields()[key].GetNumberValue() < e.GetConnections()[j].GetAttributes().GetFields()[key].GetNumberValue()
+				case &structpb.Value_StringValue{}:
+					return e.GetConnections()[i].GetAttributes().GetFields()[key].GetStringValue() < e.GetConnections()[j].GetAttributes().GetFields()[key].GetStringValue()
+				default:
+					return fmt.Sprint(e.GetConnections()[i].GetAttributes().GetFields()[key].AsInterface()) < fmt.Sprint(e.GetConnections()[j].GetAttributes().GetFields()[key].AsInterface())
+				}
+			})
+		}
 	default:
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()

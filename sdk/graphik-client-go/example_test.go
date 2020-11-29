@@ -97,6 +97,7 @@ func ExampleClient_SearchDocs() {
 			`doc.attributes.name.contains("Charl")`,
 		},
 		Limit: 1,
+		Sort:  "metadata.created_at",
 	})
 	if err != nil {
 		log.Print(err)
