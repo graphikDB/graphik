@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"github.com/autom8ter/graphik/cache"
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/logger"
@@ -60,6 +61,7 @@ type Graph struct {
 	machine         *machine.Machine
 	closers         []func()
 	closeOnce       sync.Once
+	cache *cache.Cache
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -82,6 +84,7 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 			return nil, err
 		}
 	}
+	m := machine.New(ctx)
 	g := &Graph{
 		vm:              vMachine,
 		db:              handle,
@@ -92,9 +95,10 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		mu:              sync.RWMutex{},
 		connectionsTo:   map[string][]*apipb.Path{},
 		connectionsFrom: map[string][]*apipb.Path{},
-		machine:         machine.New(ctx),
+		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},
+		cache: cache.New(m, 1 *time.Minute),
 	}
 	if flgs.OpenIDConnect != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIDConnect)

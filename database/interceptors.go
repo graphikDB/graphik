@@ -48,19 +48,30 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
 		}
 		idToken := values[0]
+		if val, ok := g.cache.Get(idToken); ok {
+			payload := val.(map[string]interface{})
+			ctx, err := g.check(ctx, info.FullMethod, req, payload)
+			if err != nil {
+				return nil, err
+			}
+			return handler(ctx, req)
+		}
 		payload, err := g.verifyJWT(idToken)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
-		if exp, ok := payload["exp"].(int64); ok {
-			if exp < time.Now().Unix() {
+		var exp int64
+		if val, ok := payload["exp"].(int64); ok {
+			if val < time.Now().Unix() {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
+			exp = val
 		}
-		if exp, ok := payload["exp"].(int); ok {
-			if int64(exp) < time.Now().Unix() {
+		if val, ok := payload["exp"].(int); ok {
+			if int64(val) < time.Now().Unix() {
 				return nil, status.Errorf(codes.Unauthenticated, "token expired")
 			}
+			exp = int64(val)
 		}
 		ctx = g.methodToContext(ctx, info.FullMethod)
 		if g.openID != nil && g.openID.UserinfoEndpoint != "" {
@@ -84,35 +95,10 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			}
 			payload = data
 		}
-		ctx, identity, err := g.identityToContext(ctx, payload)
+		g.cache.Set(idToken, payload, time.Unix(exp, 0).Sub(time.Now()))
+		ctx, err = g.check(ctx, info.FullMethod, req, payload)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, err.Error())
-		}
-		if len(g.authorizers) > 0 {
-			now := time.Now()
-			request := &apipb.Request{
-				Method:    info.FullMethod,
-				Identity:  identity,
-				Timestamp: timestamppb.New(now),
-			}
-			if val, ok := req.(proto.Message); ok {
-				bits, _ := helpers.MarshalJSON(val)
-				reqMap := map[string]interface{}{}
-				if err := json.Unmarshal(bits, &reqMap); err != nil {
-					return nil, status.Error(codes.Internal, err.Error())
-				}
-				request.Request = apipb.NewStruct(reqMap)
-			}
-			result, err := g.vm.Auth().Eval(request, g.authorizers...)
-			if err != nil {
-				return nil, err
-			}
-			if !result {
-				return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
-			}
-		}
-		if g.getIdentity(ctx) == nil {
-			return nil, status.Error(codes.Internal, "empty identity")
+			return nil, err
 		}
 		return handler(ctx, req)
 	}
@@ -133,17 +119,33 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 			return status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
 		}
 		idToken := values[0]
+		if val, ok := g.cache.Get(idToken); ok {
+			payload := val.(map[string]interface{})
+			ctx, err := g.check(ss.Context(), info.FullMethod, srv, payload)
+			if err != nil {
+				return err
+			}
+			wrapped := grpc_middleware.WrapServerStream(ss)
+			wrapped.WrappedContext = ctx
+			return handler(srv, wrapped)
+		}
 		payload, err := g.verifyJWT(idToken)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, err.Error())
 		}
-		if val, ok := payload["exp"].(int64); ok && val < time.Now().Unix() {
-			return status.Errorf(codes.Unauthenticated, "token expired")
+		var exp int64
+		if val, ok := payload["exp"].(int64); ok {
+			if val < time.Now().Unix() {
+				return status.Errorf(codes.Unauthenticated, "token expired")
+			}
+			exp = val
 		}
-		if val, ok := payload["exp"].(float64); ok && int64(val) < time.Now().Unix() {
-			return status.Errorf(codes.Unauthenticated, "token expired")
+		if val, ok := payload["exp"].(int); ok {
+			if int64(val) < time.Now().Unix() {
+				return status.Errorf(codes.Unauthenticated, "token expired")
+			}
+			exp = int64(val)
 		}
-		ctx := g.methodToContext(ss.Context(), info.FullMethod)
 		if g.openID != nil && g.openID.UserinfoEndpoint != "" {
 			req, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
 			if err != nil {
@@ -165,32 +167,10 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 			}
 			payload = data
 		}
-		ctx, identity, err := g.identityToContext(ctx, payload)
+		g.cache.Set(idToken, payload, time.Unix(exp, 0).Sub(time.Now()))
+		ctx, err := g.check(ss.Context(), info.FullMethod, srv, payload)
 		if err != nil {
-			return status.Errorf(codes.Internal, err.Error())
-		}
-		if len(g.authorizers) > 0 {
-			now := time.Now()
-			request := &apipb.Request{
-				Method:    info.FullMethod,
-				Identity:  identity,
-				Timestamp: timestamppb.New(now),
-			}
-			if val, ok := srv.(proto.Message); ok {
-				bits, _ := helpers.MarshalJSON(val)
-				reqMap := map[string]interface{}{}
-				if err := json.Unmarshal(bits, &reqMap); err != nil {
-					return status.Error(codes.Internal, err.Error())
-				}
-				request.Request = apipb.NewStruct(reqMap)
-			}
-			result, err := g.vm.Auth().Eval(request, g.authorizers...)
-			if err != nil {
-				return err
-			}
-			if !result {
-				return status.Error(codes.PermissionDenied, "request authorization = denied")
-			}
+			return err
 		}
 		wrapped := grpc_middleware.WrapServerStream(ss)
 		wrapped.WrappedContext = ctx
@@ -311,4 +291,39 @@ func (g *Graph) verifyJWT(token string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	return data, nil
+}
+
+func (g *Graph) check(ctx context.Context, method string, req interface{}, payload map[string]interface{}) (context.Context, error) {
+	ctx = g.methodToContext(ctx, method)
+	ctx, identity, err := g.identityToContext(ctx, payload)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	if len(g.authorizers) > 0 {
+		now := time.Now()
+		request := &apipb.Request{
+			Method:    method,
+			Identity:  identity,
+			Timestamp: timestamppb.New(now),
+		}
+		if val, ok := req.(proto.Message); ok {
+			bits, _ := helpers.MarshalJSON(val)
+			reqMap := map[string]interface{}{}
+			if err := json.Unmarshal(bits, &reqMap); err != nil {
+				return nil, status.Error(codes.Internal, err.Error())
+			}
+			request.Request = apipb.NewStruct(reqMap)
+		}
+		result, err := g.vm.Auth().Eval(request, g.authorizers...)
+		if err != nil {
+			return nil, err
+		}
+		if !result {
+			return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
+		}
+	}
+	if g.getIdentity(ctx) == nil {
+		return nil, status.Error(codes.Internal, "empty identity")
+	}
+	return ctx, nil
 }

@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"os"
@@ -20,4 +22,11 @@ func EnvOr(key string, defaul string) string {
 	} else {
 		return val
 	}
+}
+
+func Hash(val []byte) string {
+	h := sha1.New()
+	h.Write(val)
+	bs := h.Sum(nil)
+	return hex.EncodeToString(bs)
 }
