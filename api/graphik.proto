@@ -173,6 +173,7 @@ message ConnectionFilter {
   int32 limit =4 [(validator.field) = {int_gt : 0}];
   string sort =5;
   string seek =6;
+  bool reverse =7;
 }
 
 // Filter is a generic filter using Common Expression Language
@@ -183,8 +184,12 @@ message Filter {
   string expression =2;
   // limit is the maximum number of items to return
   int32 limit =3 [(validator.field) = {int_gt : 0}];
+  // custom sorting of the results.
   string sort =4;
+  // seek to a specific key
   string seek =5;
+  // reverse the results
+  bool reverse =6;
 }
 
 // MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token

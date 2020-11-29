@@ -200,6 +200,7 @@ input Filter {
   limit: Int!
   sort: String
   seek: String
+  reverse: Boolean
 }
 
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
@@ -222,6 +223,7 @@ input ConnectionFilter {
   limit: Int!
   sort: String
   seek: String
+  reverse: Boolean
 }
 
 # ChannelFilter is used to filter messages in a pubsub channel
