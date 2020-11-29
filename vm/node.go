@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"errors"
 	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
@@ -23,6 +24,9 @@ func NewDocVM() (*DocVM, error) {
 }
 
 func (n *DocVM) Program(expression string) (cel.Program, error) {
+	if expression == "" {
+		return nil, errors.New("empty expression")
+	}
 	ast, iss := n.e.Compile(expression)
 	if iss.Err() != nil {
 		return nil, iss.Err()
@@ -33,6 +37,9 @@ func (n *DocVM) Program(expression string) (cel.Program, error) {
 func (n *DocVM) Programs(expressions []string) ([]cel.Program, error) {
 	var programs []cel.Program
 	for _, exp := range expressions {
+		if exp == "" {
+			continue
+		}
 		prgm, err := n.Program(exp)
 		if err != nil {
 			return nil, err

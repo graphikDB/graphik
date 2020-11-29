@@ -1404,7 +1404,8 @@ proto.api.Docs.prototype.toObject = function(opt_includeInstance) {
 proto.api.Docs.toObject = function(includeInstance, msg) {
   var f, obj = {
     docsList: jspb.Message.toObjectList(msg.getDocsList(),
-    proto.api.Doc.toObject, includeInstance)
+    proto.api.Doc.toObject, includeInstance),
+    seekNext: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -1446,6 +1447,10 @@ proto.api.Docs.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.api.Doc.deserializeBinaryFromReader);
       msg.addDocs(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSeekNext(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1483,6 +1488,13 @@ proto.api.Docs.serializeBinaryToWriter = function(message, writer) {
       proto.api.Doc.serializeBinaryToWriter
     );
   }
+  f = message.getSeekNext();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -1514,6 +1526,21 @@ proto.api.Docs.prototype.addDocs = function(opt_value, opt_index) {
 
 proto.api.Docs.prototype.clearDocsList = function() {
   this.setDocsList([]);
+};
+
+
+/**
+ * optional string seek_next = 2;
+ * @return {string}
+ */
+proto.api.Docs.prototype.getSeekNext = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Docs.prototype.setSeekNext = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -1907,7 +1934,8 @@ proto.api.DocDetails.prototype.toObject = function(opt_includeInstance) {
 proto.api.DocDetails.toObject = function(includeInstance, msg) {
   var f, obj = {
     docDetailsList: jspb.Message.toObjectList(msg.getDocDetailsList(),
-    proto.api.DocDetail.toObject, includeInstance)
+    proto.api.DocDetail.toObject, includeInstance),
+    seekNext: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -1949,6 +1977,10 @@ proto.api.DocDetails.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.api.DocDetail.deserializeBinaryFromReader);
       msg.addDocDetails(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSeekNext(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1986,6 +2018,13 @@ proto.api.DocDetails.serializeBinaryToWriter = function(message, writer) {
       proto.api.DocDetail.serializeBinaryToWriter
     );
   }
+  f = message.getSeekNext();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -2017,6 +2056,21 @@ proto.api.DocDetails.prototype.addDocDetails = function(opt_value, opt_index) {
 
 proto.api.DocDetails.prototype.clearDocDetailsList = function() {
   this.setDocDetailsList([]);
+};
+
+
+/**
+ * optional string seek_next = 2;
+ * @return {string}
+ */
+proto.api.DocDetails.prototype.getSeekNext = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.DocDetails.prototype.setSeekNext = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -3174,7 +3228,8 @@ proto.api.Connections.prototype.toObject = function(opt_includeInstance) {
 proto.api.Connections.toObject = function(includeInstance, msg) {
   var f, obj = {
     connectionsList: jspb.Message.toObjectList(msg.getConnectionsList(),
-    proto.api.Connection.toObject, includeInstance)
+    proto.api.Connection.toObject, includeInstance),
+    seekNext: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3216,6 +3271,10 @@ proto.api.Connections.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.api.Connection.deserializeBinaryFromReader);
       msg.addConnections(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSeekNext(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3253,6 +3312,13 @@ proto.api.Connections.serializeBinaryToWriter = function(message, writer) {
       proto.api.Connection.serializeBinaryToWriter
     );
   }
+  f = message.getSeekNext();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -3284,6 +3350,21 @@ proto.api.Connections.prototype.addConnections = function(opt_value, opt_index) 
 
 proto.api.Connections.prototype.clearConnectionsList = function() {
   this.setConnectionsList([]);
+};
+
+
+/**
+ * optional string seek_next = 2;
+ * @return {string}
+ */
+proto.api.Connections.prototype.getSeekNext = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Connections.prototype.setSeekNext = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -3706,7 +3787,8 @@ proto.api.ConnectionDetails.prototype.toObject = function(opt_includeInstance) {
 proto.api.ConnectionDetails.toObject = function(includeInstance, msg) {
   var f, obj = {
     connectionsList: jspb.Message.toObjectList(msg.getConnectionsList(),
-    proto.api.ConnectionDetail.toObject, includeInstance)
+    proto.api.ConnectionDetail.toObject, includeInstance),
+    seekNext: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3748,6 +3830,10 @@ proto.api.ConnectionDetails.deserializeBinaryFromReader = function(msg, reader) 
       reader.readMessage(value,proto.api.ConnectionDetail.deserializeBinaryFromReader);
       msg.addConnections(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSeekNext(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3785,6 +3871,13 @@ proto.api.ConnectionDetails.serializeBinaryToWriter = function(message, writer) 
       proto.api.ConnectionDetail.serializeBinaryToWriter
     );
   }
+  f = message.getSeekNext();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -3816,6 +3909,21 @@ proto.api.ConnectionDetails.prototype.addConnections = function(opt_value, opt_i
 
 proto.api.ConnectionDetails.prototype.clearConnectionsList = function() {
   this.setConnectionsList([]);
+};
+
+
+/**
+ * optional string seek_next = 2;
+ * @return {string}
+ */
+proto.api.ConnectionDetails.prototype.getSeekNext = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.ConnectionDetails.prototype.setSeekNext = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -3869,7 +3977,9 @@ proto.api.ConnectionFilter.toObject = function(includeInstance, msg) {
     docPath: (f = msg.getDocPath()) && proto.api.Path.toObject(includeInstance, f),
     gtype: jspb.Message.getFieldWithDefault(msg, 2, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    limit: jspb.Message.getFieldWithDefault(msg, 4, 0)
+    limit: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    sort: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    seek: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -3922,6 +4032,14 @@ proto.api.ConnectionFilter.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setLimit(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSort(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSeek(value);
       break;
     default:
       reader.skipField();
@@ -3978,6 +4096,20 @@ proto.api.ConnectionFilter.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt32(
       4,
+      f
+    );
+  }
+  f = message.getSort();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getSeek();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -4059,6 +4191,36 @@ proto.api.ConnectionFilter.prototype.setLimit = function(value) {
 };
 
 
+/**
+ * optional string sort = 5;
+ * @return {string}
+ */
+proto.api.ConnectionFilter.prototype.getSort = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/** @param {string} value */
+proto.api.ConnectionFilter.prototype.setSort = function(value) {
+  jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string seek = 6;
+ * @return {string}
+ */
+proto.api.ConnectionFilter.prototype.getSeek = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/** @param {string} value */
+proto.api.ConnectionFilter.prototype.setSeek = function(value) {
+  jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
 
 /**
  * Generated by JsPbCodeGenerator.
@@ -4109,7 +4271,8 @@ proto.api.Filter.toObject = function(includeInstance, msg) {
     gtype: jspb.Message.getFieldWithDefault(msg, 1, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 2, ""),
     limit: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    sort: jspb.Message.getFieldWithDefault(msg, 4, "")
+    sort: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    seek: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -4161,6 +4324,10 @@ proto.api.Filter.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setSort(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSeek(value);
       break;
     default:
       reader.skipField();
@@ -4216,6 +4383,13 @@ proto.api.Filter.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getSeek();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -4279,6 +4453,21 @@ proto.api.Filter.prototype.getSort = function() {
 /** @param {string} value */
 proto.api.Filter.prototype.setSort = function(value) {
   jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string seek = 5;
+ * @return {string}
+ */
+proto.api.Filter.prototype.getSeek = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Filter.prototype.setSeek = function(value) {
+  jspb.Message.setProto3StringField(this, 5, value);
 };
 
 

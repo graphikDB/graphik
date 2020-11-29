@@ -185,6 +185,7 @@ ConnectionDetails is an array of ConnectionDetail
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | connections | [ConnectionDetail](#api.ConnectionDetail) | repeated |  |
+| seek_next | [string](#string) |  |  |
 
 
 
@@ -203,6 +204,8 @@ ConnectionFilter is used to fetch connections related to a single noted
 | gtype | [string](#string) |  | gtype is the type of connections to return |
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of connections to return |
+| sort | [string](#string) |  |  |
+| seek | [string](#string) |  |  |
 
 
 
@@ -218,6 +221,7 @@ Connections is an array of Connection
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | connections | [Connection](#api.Connection) | repeated |  |
+| seek_next | [string](#string) |  |  |
 
 
 
@@ -333,6 +337,7 @@ DocDetails is an array of DocDetail
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | doc_details | [DocDetail](#api.DocDetail) | repeated |  |
+| seek_next | [string](#string) |  |  |
 
 
 
@@ -348,6 +353,7 @@ Docs is an array of docs
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | docs | [Doc](#api.Doc) | repeated | docs is an array of docs |
+| seek_next | [string](#string) |  |  |
 
 
 
@@ -381,6 +387,7 @@ Filter is a generic filter using Common Expression Language
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return |
 | sort | [string](#string) |  |  |
+| seek | [string](#string) |  |  |
 
 
 

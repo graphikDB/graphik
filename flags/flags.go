@@ -15,4 +15,3 @@ type Flags struct {
 	AllowedMethods []string
 	AllowedOrigins []string
 }
-

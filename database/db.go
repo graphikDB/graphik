@@ -8,7 +8,6 @@ import (
 	"go.etcd.io/bbolt"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"reflect"
 	"sort"
 )
 
@@ -417,25 +416,11 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path
 	return nil
 }
 
-func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek string, fn func(e *apipb.Connection) bool) error {
+func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek string, fn func(e *apipb.Connection) bool) (string, error) {
 	if ctx.Err() != nil {
-		return ctx.Err()
+		return seek, ctx.Err()
 	}
-	if gType == apipb.Any {
-		types, err := g.ConnectionTypes(ctx)
-		if err != nil {
-			return err
-		}
-		for _, connectionType := range types {
-			if connectionType == apipb.Any {
-				continue
-			}
-			if err := g.rangeSeekConnections(ctx, connectionType, seek, fn); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
+	var lastKey []byte
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket(dbConnections).Bucket([]byte(gType))
 		if bucket == nil {
@@ -450,21 +435,53 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek string, fn
 			if err := proto.Unmarshal(v, &connection); err != nil {
 				return err
 			}
+			lastKey = k
 			if !fn(&connection) {
 				return DONE
 			}
 		}
 		return nil
 	}); err != nil && err != DONE {
-		return err
+		return string(lastKey), err
 	}
-	return nil
+	return string(lastKey), nil
+}
+
+func (g *Graph) rangeSeekDocs(ctx context.Context, gType, seek string, fn func(e *apipb.Doc) bool) (string, error) {
+	if ctx.Err() != nil {
+		return seek, ctx.Err()
+	}
+	var lastKey []byte
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket(dbDocs).Bucket([]byte(gType))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		c := bucket.Cursor()
+		for k, v := c.Seek([]byte(seek)); k != nil; k, v = c.Next() {
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+			var doc apipb.Doc
+			if err := proto.Unmarshal(v, &doc); err != nil {
+				return err
+			}
+			lastKey = k
+			if !fn(&doc) {
+				return DONE
+			}
+		}
+		return nil
+	}); err != nil && err != DONE {
+		return string(lastKey), err
+	}
+	return string(lastKey), nil
 }
 
 func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
 	var newPaths []*apipb.Path
 	for _, p := range paths {
-		if !reflect.DeepEqual(p, path) {
+		if path.Gid == p.Gid && path.Gtype == p.Gtype {
 			newPaths = append(newPaths, p)
 		}
 	}
