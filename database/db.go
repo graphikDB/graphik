@@ -369,6 +369,98 @@ func (n *Graph) filterDoc(ctx context.Context, docType string, filter func(doc *
 	return toreturn, nil
 }
 
+func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, fn func(e *apipb.Connection) bool) error {
+	g.mu.RLock()
+	paths := g.connectionsTo[docPath.String()]
+	g.mu.RUnlock()
+	for _, path := range paths {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		var connection apipb.Connection
+		bits := bucket.Get([]byte(path.Gid))
+		if err := proto.Unmarshal(bits, &connection); err != nil {
+			return err
+		}
+		if !fn(&connection) {
+			return nil
+		}
+	}
+	return nil
+}
+
+func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, fn func(e *apipb.Connection) bool) error {
+	g.mu.RLock()
+	paths := g.connectionsFrom[docPath.String()]
+	g.mu.RUnlock()
+	for _, path := range paths {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		var connection apipb.Connection
+		bits := bucket.Get([]byte(path.Gid))
+		if err := proto.Unmarshal(bits, &connection); err != nil {
+			return err
+		}
+		if !fn(&connection) {
+			return nil
+		}
+	}
+	return nil
+}
+
+func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek string, fn func(e *apipb.Connection) bool) error {
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+	if gType == apipb.Any {
+		types, err := g.ConnectionTypes(ctx)
+		if err != nil {
+			return err
+		}
+		for _, connectionType := range types {
+			if connectionType == apipb.Any {
+				continue
+			}
+			if err := g.rangeSeekConnections(ctx, connectionType, seek, fn); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(gType))
+		if bucket == nil {
+			return ErrNotFound
+		}
+		c := bucket.Cursor()
+		for k, v := c.Seek([]byte(seek)); k != nil; k, v = c.Next() {
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+			var connection apipb.Connection
+			if err := proto.Unmarshal(v, &connection); err != nil {
+				return err
+			}
+			if !fn(&connection) {
+				return DONE
+			}
+		}
+		return nil
+	}); err != nil && err != DONE {
+		return err
+	}
+	return nil
+}
+
 func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
 	var newPaths []*apipb.Path
 	for _, p := range paths {
