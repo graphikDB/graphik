@@ -3,13 +3,13 @@ package database
 import (
 	"context"
 	"github.com/autom8ter/graphik/gen/go/api"
-	"github.com/autom8ter/graphik/sortable"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"reflect"
+	"sort"
 )
 
 func (g *Graph) metaDefaults(ctx context.Context, meta *apipb.Metadata) {
@@ -155,7 +155,7 @@ func (g *Graph) setConnections(ctx context.Context, connections ...*apipb.Connec
 	}); err != nil {
 		return nil, err
 	}
-	edgs.Sort()
+	edgs.Sort("")
 	return edgs, nil
 }
 
@@ -365,16 +365,7 @@ func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
 }
 
 func sortPaths(paths []*apipb.Path) {
-	s := sortable.Sortable{
-		LenFunc: func() int {
-			return len(paths)
-		},
-		LessFunc: func(i, j int) bool {
-			return paths[i].String() < paths[j].String()
-		},
-		SwapFunc: func(i, j int) {
-			paths[i], paths[j] = paths[j], paths[i]
-		},
-	}
-	s.Sort()
+	sort.Slice(paths, func(i, j int) bool {
+		return paths[i].String() < paths[j].String()
+	})
 }

@@ -300,7 +300,7 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 		Timestamp:  now,
 		DocChanges: changes,
 	})
-	docs.Sort()
+	docs.Sort("")
 	return docs, nil
 }
 
@@ -377,7 +377,7 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 		Timestamp:         now,
 		ConnectionChanges: changes,
 	})
-	connectionss.Sort()
+	connectionss.Sort("")
 	return connectionss, nil
 }
 
@@ -604,7 +604,7 @@ func (n *Graph) AllDocs(ctx context.Context) (*apipb.Docs, error) {
 	toReturn := &apipb.Docs{
 		Docs: docs,
 	}
-	toReturn.Sort()
+	toReturn.Sort("")
 	return toReturn, nil
 }
 
@@ -830,7 +830,7 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFil
 	toReturn := &apipb.Connections{
 		Connections: connections,
 	}
-	toReturn.Sort()
+	toReturn.Sort("")
 	return toReturn, err
 }
 
@@ -865,7 +865,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	toReturn := &apipb.Docs{
 		Docs: docs,
 	}
-	toReturn.Sort()
+	toReturn.Sort("")
 	return toReturn, nil
 }
 
@@ -882,7 +882,7 @@ func (n *Graph) FilterDoc(ctx context.Context, docType string, filter func(doc *
 	toreturn := &apipb.Docs{
 		Docs: filtered,
 	}
-	toreturn.Sort()
+	toreturn.Sort("")
 	return toreturn, nil
 }
 
@@ -920,7 +920,7 @@ func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilte
 	toReturn := &apipb.Connections{
 		Connections: connections,
 	}
-	toReturn.Sort()
+	toReturn.Sort("")
 	return toReturn, err
 }
 
@@ -935,7 +935,7 @@ func (n *Graph) AllConnections(ctx context.Context) (*apipb.Connections, error) 
 	toReturn := &apipb.Connections{
 		Connections: connections,
 	}
-	toReturn.Sort()
+	toReturn.Sort("")
 	return toReturn, nil
 }
 
@@ -1037,7 +1037,7 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 	toReturn := &apipb.Connections{
 		Connections: connections,
 	}
-	toReturn.Sort()
+	toReturn.Sort("")
 	return toReturn, nil
 }
 
@@ -1063,8 +1063,8 @@ func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*ap
 		}
 		graph.Connections.Connections = append(graph.Connections.Connections, connections.GetConnections()...)
 	}
-	graph.Connections.Sort()
-	graph.Docs.Sort()
+	graph.Connections.Sort("")
+	graph.Docs.Sort("")
 	return graph, err
 }
 
