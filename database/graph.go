@@ -51,7 +51,7 @@ type Graph struct {
 	db          *bbolt.DB
 	jwksMu      sync.RWMutex
 	jwksSet     *jwk.Set
-	openID  	*openIDConnect
+	openID      *openIDConnect
 	authorizers []cel.Program
 	// The path to the Bolt database file
 	path            string
@@ -61,7 +61,7 @@ type Graph struct {
 	machine         *machine.Machine
 	closers         []func()
 	closeOnce       sync.Once
-	cache *cache.Cache
+	cache           *cache.Cache
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -98,7 +98,7 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},
-		cache: cache.New(m, 1 *time.Minute),
+		cache:           cache.New(m, 1*time.Minute),
 	}
 	if flgs.OpenIDConnect != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIDConnect)
@@ -191,9 +191,9 @@ func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetai
 	detail := &apipb.DocDetail{
 		Path:            identity.Path,
 		Attributes:      identity.Attributes,
-		Metadata:        identity.Metadata,
-		ConnectionsTo:   &apipb.ConnectionDetails{},
 		ConnectionsFrom: &apipb.ConnectionDetails{},
+		ConnectionsTo:   &apipb.ConnectionDetails{},
+		Metadata:        identity.Metadata,
 	}
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		if filter.ConnectionsFrom != nil {
@@ -202,6 +202,8 @@ func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetai
 				Gtype:      filter.GetConnectionsFrom().GetGtype(),
 				Expression: filter.GetConnectionsFrom().GetExpression(),
 				Limit:      filter.GetConnectionsFrom().GetLimit(),
+				Sort:       filter.GetConnectionsFrom().GetSort(),
+				Seek:       filter.GetConnectionsFrom().GetSeek(),
 			})
 			if err != nil {
 				return err
@@ -218,10 +220,10 @@ func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetai
 				edetail := &apipb.ConnectionDetail{
 					Path:       f.Path,
 					Attributes: f.Attributes,
-
-					From:     fromDoc,
-					To:       toDoc,
-					Metadata: f.Metadata,
+					Directed:   f.Directed,
+					From:       fromDoc,
+					To:         toDoc,
+					Metadata:   f.Metadata,
 				}
 				detail.ConnectionsFrom.Connections = append(detail.ConnectionsFrom.Connections, edetail)
 			}
@@ -229,9 +231,11 @@ func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetai
 		if filter.ConnectionsTo != nil {
 			from, err := g.ConnectionsTo(ctx, &apipb.ConnectionFilter{
 				DocPath:    identity.GetPath(),
-				Gtype:      filter.GetConnectionsFrom().GetGtype(),
-				Expression: filter.GetConnectionsFrom().GetExpression(),
-				Limit:      filter.GetConnectionsFrom().GetLimit(),
+				Gtype:      filter.GetConnectionsTo().GetGtype(),
+				Expression: filter.GetConnectionsTo().GetExpression(),
+				Limit:      filter.GetConnectionsTo().GetLimit(),
+				Sort:       filter.GetConnectionsTo().GetSort(),
+				Seek:       filter.GetConnectionsTo().GetSeek(),
 			})
 			if err != nil {
 				return err
@@ -248,10 +252,10 @@ func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetai
 				edetail := &apipb.ConnectionDetail{
 					Path:       f.Path,
 					Attributes: f.Attributes,
-
-					From:     fromDoc,
-					To:       toDoc,
-					Metadata: f.Metadata,
+					Directed:   f.Directed,
+					From:       fromDoc,
+					To:         toDoc,
+					Metadata:   f.Metadata,
 				}
 				detail.ConnectionsTo.Connections = append(detail.ConnectionsTo.Connections, edetail)
 			}
@@ -416,7 +420,7 @@ func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*e
 }
 
 func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseService_SubscribeServer) error {
-	var filterFunc  func(msg interface{}) bool
+	var filterFunc func(msg interface{}) bool
 	if filter.Expression == "" {
 		filterFunc = func(msg interface{}) bool {
 			_, ok := msg.(*apipb.Message)
@@ -462,9 +466,15 @@ func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseServ
 }
 
 func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.DatabaseService_SubscribeChangesServer) error {
-	programs, err := g.vm.Change().Program(filter.Expression)
-	if err != nil {
-		return err
+	var (
+		program cel.Program
+		err error
+	)
+	if filter.Expression != "" {
+		program, err = g.vm.Connection().Program(filter.Expression)
+		if err != nil {
+			return err
+		}
 	}
 	filterFunc := func(msg interface{}) bool {
 		val, ok := msg.(*apipb.Change)
@@ -472,12 +482,15 @@ func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.Da
 			logger.Error("invalid message type received during change subscription")
 			return false
 		}
-		result, err := g.vm.Change().Eval(val, programs)
-		if err != nil {
-			logger.Error("subscription change failure", zap.Error(err))
-			return false
+		if program != nil {
+			result, err := g.vm.Change().Eval(val, program)
+			if err != nil {
+				logger.Error("subscription change failure", zap.Error(err))
+				return false
+			}
+			return result
 		}
-		return result
+		return true
 	}
 	if err := g.machine.PubSub().SubscribeFilter(server.Context(), changeChannel, filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
@@ -737,9 +750,15 @@ func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 }
 
 func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
-	programs, err := g.vm.Connection().Program(filter.Expression)
-	if err != nil {
-		return nil, err
+	var (
+		program cel.Program
+		err error
+	)
+	if filter.Expression != "" {
+		program, err = g.vm.Connection().Program(filter.Expression)
+		if err != nil {
+			return nil, err
+		}
 	}
 	var connections []*apipb.Connection
 	var pass bool
@@ -750,12 +769,15 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFil
 					return true
 				}
 			}
-
-			pass, err = g.vm.Connection().Eval(connection, programs)
-			if err != nil {
-				return true
-			}
-			if pass {
+			if program != nil {
+				pass, err = g.vm.Connection().Eval(connection, program)
+				if err != nil {
+					return true
+				}
+				if pass {
+					connections = append(connections, connection)
+				}
+			} else {
 				connections = append(connections, connection)
 			}
 			return len(connections) < int(filter.Limit)
@@ -786,33 +808,49 @@ func (n *Graph) HasConnection(ctx context.Context, path *apipb.Path) bool {
 
 func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Docs, error) {
 	var docs []*apipb.Doc
-	programs, err := n.vm.Doc().Program(filter.Expression)
-	if err != nil {
-		return nil, err
-	}
-	if err := n.rangeDocs(ctx, filter.Gtype, func(doc *apipb.Doc) bool {
-		pass, err := n.vm.Doc().Eval(doc, programs)
+	var program cel.Program
+	var err error
+	if filter.Expression != "" {
+		program, err = n.vm.Doc().Program(filter.Expression)
 		if err != nil {
-			return true
+			return nil, err
 		}
-		if pass {
+	}
+	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), func(doc *apipb.Doc) bool {
+		if program != nil {
+			pass, err := n.vm.Doc().Eval(doc, program)
+			if err != nil {
+				return true
+			}
+			if pass {
+				docs = append(docs, doc)
+			}
+		} else {
 			docs = append(docs, doc)
 		}
 		return len(docs) < int(filter.Limit)
-	}); err != nil {
+	})
+	if err != nil {
 		return nil, err
 	}
 	toReturn := &apipb.Docs{
-		Docs: docs,
+		Docs:     docs,
+		SeekNext: seek,
 	}
 	toReturn.Sort(filter.GetSort())
 	return toReturn, nil
 }
 
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
-	programs, err := g.vm.Connection().Program(filter.Expression)
-	if err != nil {
-		return nil, err
+	var (
+		program cel.Program
+		err error
+	)
+	if filter.Expression != "" {
+		program, err = g.vm.Connection().Program(filter.Expression)
+		if err != nil {
+			return nil, err
+		}
 	}
 	var connections []*apipb.Connection
 	var pass bool
@@ -823,12 +861,15 @@ func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilte
 					return true
 				}
 			}
-
-			pass, err = g.vm.Connection().Eval(connection, programs)
-			if err != nil {
-				return true
-			}
-			if pass {
+			if program != nil {
+				pass, err = g.vm.Connection().Eval(connection, program)
+				if err != nil {
+					return true
+				}
+				if pass {
+					connections = append(connections, connection)
+				}
+			} else {
 				connections = append(connections, connection)
 			}
 			return len(connections) < int(filter.Limit)
@@ -940,27 +981,39 @@ func (n *Graph) PatchConnections(ctx context.Context, patch *apipb.PatchFilter) 
 }
 
 func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*apipb.Connections, error) {
-	programs, err := e.vm.Connection().Program(filter.Expression)
-	if err != nil {
-		return nil, err
+	var (
+		program cel.Program
+		err error
+	)
+	if filter.Expression != "" {
+		program, err = e.vm.Connection().Program(filter.Expression)
+		if err != nil {
+			return nil, err
+		}
 	}
 	var connections []*apipb.Connection
-	if err := e.rangeConnections(ctx, filter.Gtype, func(connection *apipb.Connection) bool {
-		pass, err := e.vm.Connection().Eval(connection, programs)
-		if err != nil {
-			return true
-		}
-		if pass {
+	seek, err := e.rangeSeekConnections(ctx, filter.Gtype, filter.GetSeek(), func(connection *apipb.Connection) bool {
+		if program != nil {
+			pass, err := e.vm.Connection().Eval(connection, program)
+			if err != nil {
+				return true
+			}
+			if pass {
+				connections = append(connections, connection)
+			}
+		} else {
 			connections = append(connections, connection)
 		}
 		return len(connections) < int(filter.Limit)
-	}); err != nil {
+	})
+	if err != nil {
 		return nil, err
 	}
 	toReturn := &apipb.Connections{
 		Connections: connections,
+		SeekNext:    seek,
 	}
-	toReturn.Sort("")
+	toReturn.Sort(filter.GetSort())
 	return toReturn, nil
 }
 
@@ -1049,6 +1102,8 @@ func (g *Graph) GetDocDetail(ctx context.Context, filter *apipb.DocDetailFilter)
 				Gtype:      val.GetGtype(),
 				Expression: val.GetExpression(),
 				Limit:      val.GetLimit(),
+				Sort:       val.GetSort(),
+				Seek:       val.GetSeek(),
 			})
 			if err != nil {
 				return err
@@ -1068,6 +1123,8 @@ func (g *Graph) GetDocDetail(ctx context.Context, filter *apipb.DocDetailFilter)
 				Gtype:      val.GetGtype(),
 				Expression: val.GetExpression(),
 				Limit:      val.GetLimit(),
+				Sort:       val.GetSort(),
+				Seek:       val.GetSeek(),
 			})
 			if err != nil {
 				return err

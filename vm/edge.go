@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"errors"
 	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
@@ -23,6 +24,9 @@ func NewConnectionVM() (*ConnectionVM, error) {
 }
 
 func (n *ConnectionVM) Program(expression string) (cel.Program, error) {
+	if expression == "" {
+		return nil, errors.New("empty expression")
+	}
 	ast, iss := n.e.Compile(expression)
 	if iss.Err() != nil {
 		return nil, iss.Err()

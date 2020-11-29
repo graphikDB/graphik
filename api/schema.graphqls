@@ -48,6 +48,7 @@ type Doc {
 type Docs {
   # docs is an array of docs
   docs: [Doc!]
+  seek_next: String!
 }
 
 # Connection is a graph primitive that represents a relationship between two docs
@@ -69,6 +70,7 @@ type Connection {
 # Connections is an array of connections
 type Connections {
   connections: [Connection!]
+  seek_next: String!
 }
 
 # ConnectionDetail is an connection with both of it's connected docs fully loaded
@@ -197,6 +199,7 @@ input Filter {
   # limit is the maximum number of items to return
   limit: Int!
   sort: String
+  seek: String
 }
 
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
@@ -217,6 +220,8 @@ input ConnectionFilter {
   expression: String,
   # limit is the maximum number of connections to return
   limit: Int!
+  sort: String
+  seek: String
 }
 
 # ChannelFilter is used to filter messages in a pubsub channel
