@@ -353,6 +353,22 @@ func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Pat
 	return tx.Bucket(dbConnections).Bucket([]byte(connection.GetPath().GetGtype())).Delete([]byte(connection.GetPath().GetGid()))
 }
 
+func (n *Graph) filterDoc(ctx context.Context, docType string, filter func(doc *apipb.Doc) bool) (*apipb.Docs, error) {
+	var filtered []*apipb.Doc
+	if err := n.rangeDocs(ctx, docType, func(doc *apipb.Doc) bool {
+		if filter(doc) {
+			filtered = append(filtered, doc)
+		}
+		return true
+	}); err != nil {
+		return nil, err
+	}
+	toreturn := &apipb.Docs{
+		Docs: filtered,
+	}
+	return toreturn, nil
+}
+
 func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
 	var newPaths []*apipb.Path
 	for _, p := range paths {

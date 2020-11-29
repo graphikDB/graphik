@@ -380,6 +380,7 @@ Filter is a generic filter using Common Expression Language
 | gtype | [string](#string) |  | gtype is the doc/connection type to be filtered |
 | expressions | [string](#string) | repeated | expressions are CEL expressions used to filter connections |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return |
+| sort | [string](#string) |  |  |
 
 
 

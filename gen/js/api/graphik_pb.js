@@ -4136,7 +4136,8 @@ proto.api.Filter.toObject = function(includeInstance, msg) {
   var f, obj = {
     gtype: jspb.Message.getFieldWithDefault(msg, 1, ""),
     expressionsList: jspb.Message.getRepeatedField(msg, 2),
-    limit: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    limit: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    sort: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -4185,6 +4186,10 @@ proto.api.Filter.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readInt32());
       msg.setLimit(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSort(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -4232,6 +4237,13 @@ proto.api.Filter.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt32(
       3,
+      f
+    );
+  }
+  f = message.getSort();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -4294,6 +4306,21 @@ proto.api.Filter.prototype.getLimit = function() {
 /** @param {number} value */
 proto.api.Filter.prototype.setLimit = function(value) {
   jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional string sort = 4;
+ * @return {string}
+ */
+proto.api.Filter.prototype.getSort = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Filter.prototype.setSort = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

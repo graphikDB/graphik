@@ -865,25 +865,8 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	toReturn := &apipb.Docs{
 		Docs: docs,
 	}
-	toReturn.Sort("")
+	toReturn.Sort(filter.GetSort())
 	return toReturn, nil
-}
-
-func (n *Graph) FilterDoc(ctx context.Context, docType string, filter func(doc *apipb.Doc) bool) (*apipb.Docs, error) {
-	var filtered []*apipb.Doc
-	if err := n.rangeDocs(ctx, docType, func(doc *apipb.Doc) bool {
-		if filter(doc) {
-			filtered = append(filtered, doc)
-		}
-		return true
-	}); err != nil {
-		return nil, err
-	}
-	toreturn := &apipb.Docs{
-		Docs: filtered,
-	}
-	toreturn.Sort("")
-	return toreturn, nil
 }
 
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
@@ -1063,8 +1046,8 @@ func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*ap
 		}
 		graph.Connections.Connections = append(graph.Connections.Connections, connections.GetConnections()...)
 	}
-	graph.Connections.Sort("")
-	graph.Docs.Sort("")
+	graph.Connections.Sort(filter.GetConnectionFilter().GetSort())
+	graph.Docs.Sort(filter.GetDocFilter().GetSort())
 	return graph, err
 }
 

@@ -399,27 +399,35 @@ func (p *Paths) Sort(field string) {
 }
 
 func (n *Docs) Sort(field string) {
-	switch field {
-	case "path.gid":
+	switch {
+	case field == "path.gid":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetPath().GetGid() < n.GetDocs()[j].GetPath().GetGid()
 		})
-	case "path.gtype":
+	case field == "path.gtype":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetPath().GetGtype() < n.GetDocs()[j].GetPath().GetGtype()
 		})
-	case "metadata.sequence":
+	case field == "metadata.sequence":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetMetadata().GetSequence() < n.GetDocs()[j].GetMetadata().GetSequence()
 		})
-	case "metadata.version":
+	case field == "metadata.version":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetMetadata().GetVersion() < n.GetDocs()[j].GetMetadata().GetVersion()
 		})
-	case "metadata.created_at":
+	case field == "metadata.created_at":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetMetadata().GetCreatedAt().AsTime().Nanosecond() < n.GetDocs()[j].GetMetadata().GetCreatedAt().AsTime().Nanosecond()
 		})
+	//case strings.Contains(field, "attributes."):
+	//	split := strings.Split(field, "attributes.")
+	//	if len(split) == 2 {
+	//		key := split[1]
+	//		switch n.GetDocs()[i] {
+	//
+	//		}
+	//	}
 	default:
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < n.GetDocs()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
