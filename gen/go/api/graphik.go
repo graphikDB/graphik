@@ -250,9 +250,9 @@ func (n *Filter) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"gtype":       n.GetGtype(),
-		"expressions": n.GetExpressions(),
-		"limit":       n.GetLimit(),
+		"gtype":      n.GetGtype(),
+		"expression": n.GetExpression(),
+		"limit":      n.GetLimit(),
 	}
 }
 
@@ -261,10 +261,10 @@ func (n *ConnectionFilter) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"gtype":       n.GetGtype(),
-		"expressions": n.GetExpressions(),
-		"limit":       n.GetLimit(),
-		"doc_path":    n.GetDocPath(),
+		"gtype":      n.GetGtype(),
+		"expression": n.GetExpression(),
+		"limit":      n.GetLimit(),
+		"doc_path":   n.GetDocPath(),
 	}
 }
 
@@ -283,8 +283,8 @@ func (n *ChannelFilter) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"channel":     n.GetChannel(),
-		"expressions": n.GetExpressions(),
+		"channel":    n.GetChannel(),
+		"expression": n.GetExpression(),
 	}
 }
 
@@ -293,7 +293,7 @@ func (n *ExpressionFilter) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"expressions": n.GetExpressions(),
+		"expression": n.GetExpression(),
 	}
 }
 

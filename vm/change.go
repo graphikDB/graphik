@@ -42,7 +42,7 @@ func (n *ChangeVM) Programs(expressions []string) ([]cel.Program, error) {
 	return programs, nil
 }
 
-func (n *ChangeVM) Eval(programs []cel.Program, change *apipb.Change) (bool, error) {
+func (n *ChangeVM) Eval(change *apipb.Change, programs ...cel.Program) (bool, error) {
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}

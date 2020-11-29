@@ -79,7 +79,7 @@ ChannelFilter is used to filter messages in a pubsub channel
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | channel | [string](#string) |  | channel is the target channel to filter from |
-| expressions | [string](#string) | repeated | expressions are CEL expressions used to filter messages |
+| expression | [string](#string) |  | expression is CEL expression used to filter messages |
 
 
 
@@ -201,7 +201,7 @@ ConnectionFilter is used to fetch connections related to a single noted
 | ----- | ---- | ----- | ----------- |
 | doc_path | [Path](#api.Path) |  | doc_path is the path to the target doc |
 | gtype | [string](#string) |  | gtype is the type of connections to return |
-| expressions | [string](#string) | repeated | expressions are CEL expressions used to filter connections |
+| expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of connections to return |
 
 
@@ -362,7 +362,7 @@ Docs is an array of docs
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| expressions | [string](#string) | repeated | expressions are CEL expressions used to filter connections |
+| expression | [string](#string) |  | expression is a CEL expression used to filter connections/nodes |
 
 
 
@@ -378,7 +378,7 @@ Filter is a generic filter using Common Expression Language
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | gtype | [string](#string) |  | gtype is the doc/connection type to be filtered |
-| expressions | [string](#string) | repeated | expressions are CEL expressions used to filter connections |
+| expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return |
 | sort | [string](#string) |  |  |
 

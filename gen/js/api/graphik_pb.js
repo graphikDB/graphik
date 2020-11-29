@@ -3831,19 +3831,12 @@ proto.api.ConnectionDetails.prototype.clearConnectionsList = function() {
  * @constructor
  */
 proto.api.ConnectionFilter = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.ConnectionFilter.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.api.ConnectionFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.api.ConnectionFilter.displayName = 'proto.api.ConnectionFilter';
 }
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.api.ConnectionFilter.repeatedFields_ = [3];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -3875,7 +3868,7 @@ proto.api.ConnectionFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     docPath: (f = msg.getDocPath()) && proto.api.Path.toObject(includeInstance, f),
     gtype: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    expressionsList: jspb.Message.getRepeatedField(msg, 3),
+    expression: jspb.Message.getFieldWithDefault(msg, 3, ""),
     limit: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
@@ -3924,7 +3917,7 @@ proto.api.ConnectionFilter.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.addExpressions(value);
+      msg.setExpression(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readInt32());
@@ -3974,9 +3967,9 @@ proto.api.ConnectionFilter.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getExpressionsList();
+  f = message.getExpression();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       3,
       f
     );
@@ -4037,31 +4030,17 @@ proto.api.ConnectionFilter.prototype.setGtype = function(value) {
 
 
 /**
- * repeated string expressions = 3;
- * @return {!Array<string>}
+ * optional string expression = 3;
+ * @return {string}
  */
-proto.api.ConnectionFilter.prototype.getExpressionsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
+proto.api.ConnectionFilter.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
-/** @param {!Array<string>} value */
-proto.api.ConnectionFilter.prototype.setExpressionsList = function(value) {
-  jspb.Message.setField(this, 3, value || []);
-};
-
-
-/**
- * @param {!string} value
- * @param {number=} opt_index
- */
-proto.api.ConnectionFilter.prototype.addExpressions = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 3, value, opt_index);
-};
-
-
-proto.api.ConnectionFilter.prototype.clearExpressionsList = function() {
-  this.setExpressionsList([]);
+/** @param {string} value */
+proto.api.ConnectionFilter.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -4092,19 +4071,12 @@ proto.api.ConnectionFilter.prototype.setLimit = function(value) {
  * @constructor
  */
 proto.api.Filter = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.Filter.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.api.Filter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.api.Filter.displayName = 'proto.api.Filter';
 }
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.api.Filter.repeatedFields_ = [2];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -4135,7 +4107,7 @@ proto.api.Filter.prototype.toObject = function(opt_includeInstance) {
 proto.api.Filter.toObject = function(includeInstance, msg) {
   var f, obj = {
     gtype: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    expressionsList: jspb.Message.getRepeatedField(msg, 2),
+    expression: jspb.Message.getFieldWithDefault(msg, 2, ""),
     limit: jspb.Message.getFieldWithDefault(msg, 3, 0),
     sort: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
@@ -4180,7 +4152,7 @@ proto.api.Filter.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.addExpressions(value);
+      msg.setExpression(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt32());
@@ -4226,9 +4198,9 @@ proto.api.Filter.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getExpressionsList();
+  f = message.getExpression();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       2,
       f
     );
@@ -4266,31 +4238,17 @@ proto.api.Filter.prototype.setGtype = function(value) {
 
 
 /**
- * repeated string expressions = 2;
- * @return {!Array<string>}
+ * optional string expression = 2;
+ * @return {string}
  */
-proto.api.Filter.prototype.getExpressionsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
+proto.api.Filter.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
-/** @param {!Array<string>} value */
-proto.api.Filter.prototype.setExpressionsList = function(value) {
-  jspb.Message.setField(this, 2, value || []);
-};
-
-
-/**
- * @param {!string} value
- * @param {number=} opt_index
- */
-proto.api.Filter.prototype.addExpressions = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 2, value, opt_index);
-};
-
-
-proto.api.Filter.prototype.clearExpressionsList = function() {
-  this.setExpressionsList([]);
+/** @param {string} value */
+proto.api.Filter.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -4539,19 +4497,12 @@ proto.api.MeFilter.prototype.hasConnectionsTo = function() {
  * @constructor
  */
 proto.api.ChannelFilter = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.ChannelFilter.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.api.ChannelFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.api.ChannelFilter.displayName = 'proto.api.ChannelFilter';
 }
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.api.ChannelFilter.repeatedFields_ = [2];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -4582,7 +4533,7 @@ proto.api.ChannelFilter.prototype.toObject = function(opt_includeInstance) {
 proto.api.ChannelFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     channel: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    expressionsList: jspb.Message.getRepeatedField(msg, 2)
+    expression: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -4625,7 +4576,7 @@ proto.api.ChannelFilter.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.addExpressions(value);
+      msg.setExpression(value);
       break;
     default:
       reader.skipField();
@@ -4663,9 +4614,9 @@ proto.api.ChannelFilter.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getExpressionsList();
+  f = message.getExpression();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       2,
       f
     );
@@ -4689,31 +4640,17 @@ proto.api.ChannelFilter.prototype.setChannel = function(value) {
 
 
 /**
- * repeated string expressions = 2;
- * @return {!Array<string>}
+ * optional string expression = 2;
+ * @return {string}
  */
-proto.api.ChannelFilter.prototype.getExpressionsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
+proto.api.ChannelFilter.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
-/** @param {!Array<string>} value */
-proto.api.ChannelFilter.prototype.setExpressionsList = function(value) {
-  jspb.Message.setField(this, 2, value || []);
-};
-
-
-/**
- * @param {!string} value
- * @param {number=} opt_index
- */
-proto.api.ChannelFilter.prototype.addExpressions = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 2, value, opt_index);
-};
-
-
-proto.api.ChannelFilter.prototype.clearExpressionsList = function() {
-  this.setExpressionsList([]);
+/** @param {string} value */
+proto.api.ChannelFilter.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -7082,19 +7019,12 @@ proto.api.Change.prototype.clearDocChangesList = function() {
  * @constructor
  */
 proto.api.ExpressionFilter = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.ExpressionFilter.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.api.ExpressionFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.api.ExpressionFilter.displayName = 'proto.api.ExpressionFilter';
 }
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.api.ExpressionFilter.repeatedFields_ = [1];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -7124,7 +7054,7 @@ proto.api.ExpressionFilter.prototype.toObject = function(opt_includeInstance) {
  */
 proto.api.ExpressionFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
-    expressionsList: jspb.Message.getRepeatedField(msg, 1)
+    expression: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -7163,7 +7093,7 @@ proto.api.ExpressionFilter.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.addExpressions(value);
+      msg.setExpression(value);
       break;
     default:
       reader.skipField();
@@ -7194,9 +7124,9 @@ proto.api.ExpressionFilter.prototype.serializeBinary = function() {
  */
 proto.api.ExpressionFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getExpressionsList();
+  f = message.getExpression();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       1,
       f
     );
@@ -7205,31 +7135,17 @@ proto.api.ExpressionFilter.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * repeated string expressions = 1;
- * @return {!Array<string>}
+ * optional string expression = 1;
+ * @return {string}
  */
-proto.api.ExpressionFilter.prototype.getExpressionsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
+proto.api.ExpressionFilter.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
-/** @param {!Array<string>} value */
-proto.api.ExpressionFilter.prototype.setExpressionsList = function(value) {
-  jspb.Message.setField(this, 1, value || []);
-};
-
-
-/**
- * @param {!string} value
- * @param {number=} opt_index
- */
-proto.api.ExpressionFilter.prototype.addExpressions = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 1, value, opt_index);
-};
-
-
-proto.api.ExpressionFilter.prototype.clearExpressionsList = function() {
-  this.setExpressionsList([]);
+/** @param {string} value */
+proto.api.ExpressionFilter.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 

@@ -4,6 +4,7 @@ import (
 	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"github.com/pkg/errors"
 )
 
 type MessageVM struct {
@@ -23,9 +24,12 @@ func NewMessageVM() (*MessageVM, error) {
 }
 
 func (n *MessageVM) Program(expression string) (cel.Program, error) {
+	if expression == "" {
+		return nil, errors.New("empty expression")
+	}
 	ast, iss := n.e.Compile(expression)
-	if iss.Err() != nil {
-		return nil, iss.Err()
+	if err := iss.Err(); err != nil {
+		return nil, errors.Wrapf(err, "failed to compile expression: %s", expression)
 	}
 	return n.e.Program(ast)
 }
@@ -35,14 +39,14 @@ func (n *MessageVM) Programs(expressions []string) ([]cel.Program, error) {
 	for _, exp := range expressions {
 		prgm, err := n.Program(exp)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "failed to compile expression: %v", expressions)
 		}
 		programs = append(programs, prgm)
 	}
 	return programs, nil
 }
 
-func (n *MessageVM) Eval(programs []cel.Program, message *apipb.Message) (bool, error) {
+func (n *MessageVM) Eval(message *apipb.Message, programs ...cel.Program) (bool, error) {
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}
@@ -52,7 +56,7 @@ func (n *MessageVM) Eval(programs []cel.Program, message *apipb.Message) (bool, 
 			"message": message.AsMap(),
 		})
 		if err != nil {
-			return false, err
+			return false, errors.Wrap(err, "failed to evaluate message")
 		}
 		if val, ok := out.Value().(bool); !ok || !val {
 			passes = false

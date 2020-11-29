@@ -42,7 +42,7 @@ func (n *AuthVM) Programs(expressions []string) ([]cel.Program, error) {
 	return programs, nil
 }
 
-func (n *AuthVM) Eval(programs []cel.Program, req *apipb.Request) (bool, error) {
+func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error) {
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}

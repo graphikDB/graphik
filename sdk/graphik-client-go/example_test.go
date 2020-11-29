@@ -92,12 +92,10 @@ func ExampleClient_CreateDoc() {
 
 func ExampleClient_SearchDocs() {
 	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
-		Gtype: "dog",
-		Expressions: []string{
-			`doc.attributes.name.contains("Charl")`,
-		},
-		Limit: 1,
-		Sort:  "metadata.created_at",
+		Gtype:      "dog",
+		Expression: `doc.attributes.name.contains("Charl")`,
+		Limit:      1,
+		Sort:       "metadata.created_at",
 	})
 	if err != nil {
 		log.Print(err)
@@ -111,11 +109,9 @@ func ExampleClient_SearchDocs() {
 
 func ExampleClient_CreateConnection() {
 	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
-		Gtype: "dog",
-		Expressions: []string{
-			`doc.attributes.name.contains("Charl")`,
-		},
-		Limit: 1,
+		Gtype:      "dog",
+		Expression: `doc.attributes.name.contains("Charl")`,
+		Limit:      1,
 	})
 	if err != nil {
 		log.Print(err)
@@ -155,11 +151,9 @@ func ExampleClient_CreateConnection() {
 
 func ExampleClient_SearchConnections() {
 	owners, err := client.SearchConnections(context.Background(), &apipb.Filter{
-		Gtype: "owner",
-		Expressions: []string{
-			`connection.attributes.primary_owner`,
-		},
-		Limit: 1,
+		Gtype:      "owner",
+		Expression: `connection.attributes.primary_owner`,
+		Limit:      1,
 	})
 	if err != nil {
 		log.Print(err)
@@ -173,11 +167,9 @@ func ExampleClient_SearchConnections() {
 
 func ExampleClient_PatchDoc() {
 	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
-		Gtype: "dog",
-		Expressions: []string{
-			`doc.attributes.name.contains("Charl")`,
-		},
-		Limit: 1,
+		Gtype:      "dog",
+		Expression: `doc.attributes.name.contains("Charl")`,
+		Limit:      1,
 	})
 	if err != nil {
 		log.Print(err)
@@ -217,17 +209,16 @@ func ExampleClient_Subscribe() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
 		stream, err := client.Subscribe(context.Background(), &apipb.ChannelFilter{
-			Channel:     "testing",
-			Expressions: nil,
+			Channel: "testing",
 		})
 		if err != nil {
-			log.Print(err)
+			log.Print("failed to subscribe", err)
 			return
 		}
 		for {
 			msg, err := stream.Recv()
 			if err != nil {
-				log.Print(err)
+				log.Print("failed to receive message", err)
 				return
 			}
 			fmt.Println(msg.Data.GetFields()["text"].GetStringValue())

@@ -42,7 +42,7 @@ func (n *DocVM) Programs(expressions []string) ([]cel.Program, error) {
 	return programs, nil
 }
 
-func (n *DocVM) Eval(programs []cel.Program, doc *apipb.Doc) (bool, error) {
+func (n *DocVM) Eval(doc *apipb.Doc, programs ...cel.Program) (bool, error) {
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}

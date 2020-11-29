@@ -42,7 +42,7 @@ func (n *ConnectionVM) Programs(expressions []string) ([]cel.Program, error) {
 	return programs, nil
 }
 
-func (n *ConnectionVM) Eval(programs []cel.Program, connection *apipb.Connection) (bool, error) {
+func (n *ConnectionVM) Eval(connection *apipb.Connection, programs ...cel.Program) (bool, error) {
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}

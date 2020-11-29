@@ -163,8 +163,8 @@ message ConnectionFilter {
   Path doc_path =1 [(validator.field) = {msg_exists : true}];
   // gtype is the type of connections to return
   string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
-  // expressions are CEL expressions used to filter connections
-  repeated string expressions =3;
+  // expression is a CEL expression used to filter connections/modes
+  string expression =3;
   // limit is the maximum number of connections to return
   int32 limit =4 [(validator.field) = {int_gt : 0}];
 }
@@ -173,8 +173,8 @@ message ConnectionFilter {
 message Filter {
   // gtype is the doc/connection type to be filtered
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  // expressions are CEL expressions used to filter connections
-  repeated string expressions =2;
+  // expression is a CEL expression used to filter connections/modes
+  string expression =2;
   // limit is the maximum number of items to return
   int32 limit =3 [(validator.field) = {int_gt : 0}];
   string sort =4;
@@ -192,8 +192,8 @@ message MeFilter {
 message ChannelFilter {
   // channel is the target channel to filter from
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  // expressions are CEL expressions used to filter messages
-  repeated string expressions =2;
+  // expression is CEL expression used to filter messages
+  string expression =2;
 }
 
 // SubGraphFilter is used to filter docs/connections in the graph
@@ -290,8 +290,8 @@ message Change {
 }
 
 message ExpressionFilter {
-  // expressions are CEL expressions used to filter connections
-  repeated string expressions =1;
+  // expression is a CEL expression used to filter connections/nodes
+  string expression =1;
 }
 
 message Request {

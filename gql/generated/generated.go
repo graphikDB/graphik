@@ -1034,10 +1034,11 @@ input PathInput {
 input Filter {
   # gtype is the doc/connection type to be filtered
   gtype: String!
-  # expressions are CEL expressions used to filter connections
-  expressions: [String!]
+  # expression is a CEL expression used to filter connections/nodes
+  expression: String
   # limit is the maximum number of items to return
   limit: Int!
+  sort: String
 }
 
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
@@ -1054,18 +1055,18 @@ input ConnectionFilter {
   doc_path: PathInput!
   # gtype is the type of connections to return
   gtype: String!
-  # expressions are CEL expressions used to filter connections
-  expressions: [String!],
+  # expression is a CEL expression used to filter connections
+  expression: String,
   # limit is the maximum number of connections to return
   limit: Int!
 }
 
 # ChannelFilter is used to filter messages in a pubsub channel
 input ChannelFilter {
-  # channel is the target channel to filter from
+  # channel is the target channel to listen on
   channel: String!
-  # expressions are CEL expressions used to filter messages
-  expressions: [String]
+  # expression is a CEL expression used to filter messages
+  expression: String
 }
 
 # Patch patches the attributes of a Doc or Connection
@@ -1093,8 +1094,8 @@ input OutboundMessage {
 }
 
 input ExpressionFilter {
-  # expressions are CEL expressions used to filter messages/docs/connections
-  expressions: [String!]
+  # expression is a CEL expression used to filter messages/docs/connections
+  expression: String
 }
 
 type Mutation {
@@ -5001,11 +5002,11 @@ func (ec *executionContext) unmarshalInputChannelFilter(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
-		case "expressions":
+		case "expression":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
-			it.Expressions, err = ec.unmarshalOString2ᚕstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5089,11 +5090,11 @@ func (ec *executionContext) unmarshalInputConnectionFilter(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
-		case "expressions":
+		case "expression":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
-			it.Expressions, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5145,11 +5146,11 @@ func (ec *executionContext) unmarshalInputExpressionFilter(ctx context.Context, 
 
 	for k, v := range asMap {
 		switch k {
-		case "expressions":
+		case "expression":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
-			it.Expressions, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5173,11 +5174,11 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 			if err != nil {
 				return it, err
 			}
-		case "expressions":
+		case "expression":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expressions"))
-			it.Expressions, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5186,6 +5187,14 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
 			it.Limit, err = ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sort":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+			it.Sort, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7225,42 +7234,6 @@ func (ec *executionContext) unmarshalOString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
-}
-
-func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v interface{}) ([]string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]string, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalOString2string(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOString2ᚕstring(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalOString2string(ctx, sel, v[i])
-	}
-
-	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {

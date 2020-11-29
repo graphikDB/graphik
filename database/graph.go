@@ -177,10 +177,10 @@ func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetai
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		if filter.ConnectionsFrom != nil {
 			from, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
-				DocPath:     identity.GetPath(),
-				Gtype:       filter.GetConnectionsFrom().GetGtype(),
-				Expressions: filter.GetConnectionsFrom().GetExpressions(),
-				Limit:       filter.GetConnectionsFrom().GetLimit(),
+				DocPath:    identity.GetPath(),
+				Gtype:      filter.GetConnectionsFrom().GetGtype(),
+				Expression: filter.GetConnectionsFrom().GetExpression(),
+				Limit:      filter.GetConnectionsFrom().GetLimit(),
 			})
 			if err != nil {
 				return err
@@ -207,10 +207,10 @@ func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetai
 		}
 		if filter.ConnectionsTo != nil {
 			from, err := g.ConnectionsTo(ctx, &apipb.ConnectionFilter{
-				DocPath:     identity.GetPath(),
-				Gtype:       filter.GetConnectionsFrom().GetGtype(),
-				Expressions: filter.GetConnectionsFrom().GetExpressions(),
-				Limit:       filter.GetConnectionsFrom().GetLimit(),
+				DocPath:    identity.GetPath(),
+				Gtype:      filter.GetConnectionsFrom().GetGtype(),
+				Expression: filter.GetConnectionsFrom().GetExpression(),
+				Limit:      filter.GetConnectionsFrom().GetLimit(),
 			})
 			if err != nil {
 				return err
@@ -395,22 +395,33 @@ func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*e
 }
 
 func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseService_SubscribeServer) error {
-	programs, err := g.vm.Message().Programs(filter.Expressions)
-	if err != nil {
-		return err
-	}
-	filterFunc := func(msg interface{}) bool {
-		val, ok := msg.(*apipb.Message)
-		if !ok {
-			logger.Error("invalid message type received during subscription")
-			return false
+	var filterFunc  func(msg interface{}) bool
+	if filter.Expression == "" {
+		filterFunc = func(msg interface{}) bool {
+			_, ok := msg.(*apipb.Message)
+			if !ok {
+				return false
+			}
+			return true
 		}
-		result, err := g.vm.Message().Eval(programs, val)
+	} else {
+		programs, err := g.vm.Message().Program(filter.Expression)
 		if err != nil {
-			logger.Error("subscription filter failure", zap.Error(err))
-			return false
+			return err
 		}
-		return result
+		filterFunc = func(msg interface{}) bool {
+			val, ok := msg.(*apipb.Message)
+			if !ok {
+				logger.Error("invalid message type received during subscription")
+				return false
+			}
+			result, err := g.vm.Message().Eval(val, programs)
+			if err != nil {
+				logger.Error("subscription filter failure", zap.Error(err))
+				return false
+			}
+			return result
+		}
 	}
 	if err := g.machine.PubSub().SubscribeFilter(server.Context(), filter.Channel, filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
@@ -430,7 +441,7 @@ func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseServ
 }
 
 func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.DatabaseService_SubscribeChangesServer) error {
-	programs, err := g.vm.Change().Programs(filter.Expressions)
+	programs, err := g.vm.Change().Program(filter.Expression)
 	if err != nil {
 		return err
 	}
@@ -440,7 +451,7 @@ func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.Da
 			logger.Error("invalid message type received during change subscription")
 			return false
 		}
-		result, err := g.vm.Change().Eval(programs, val)
+		result, err := g.vm.Change().Eval(val, programs)
 		if err != nil {
 			logger.Error("subscription change failure", zap.Error(err))
 			return false
@@ -797,7 +808,7 @@ func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, 
 }
 
 func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
-	programs, err := g.vm.Connection().Programs(filter.Expressions)
+	programs, err := g.vm.Connection().Program(filter.Expression)
 	if err != nil {
 		return nil, err
 	}
@@ -811,7 +822,7 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFil
 				}
 			}
 
-			pass, err = g.vm.Connection().Eval(programs, connection)
+			pass, err = g.vm.Connection().Eval(connection, programs)
 			if err != nil {
 				return true
 			}
@@ -846,12 +857,12 @@ func (n *Graph) HasConnection(ctx context.Context, path *apipb.Path) bool {
 
 func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Docs, error) {
 	var docs []*apipb.Doc
-	programs, err := n.vm.Doc().Programs(filter.Expressions)
+	programs, err := n.vm.Doc().Program(filter.Expression)
 	if err != nil {
 		return nil, err
 	}
 	if err := n.rangeDocs(ctx, filter.Gtype, func(doc *apipb.Doc) bool {
-		pass, err := n.vm.Doc().Eval(programs, doc)
+		pass, err := n.vm.Doc().Eval(doc, programs)
 		if err != nil {
 			return true
 		}
@@ -870,7 +881,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 }
 
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
-	programs, err := g.vm.Connection().Programs(filter.Expressions)
+	programs, err := g.vm.Connection().Program(filter.Expression)
 	if err != nil {
 		return nil, err
 	}
@@ -884,7 +895,7 @@ func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilte
 				}
 			}
 
-			pass, err = g.vm.Connection().Eval(programs, connection)
+			pass, err = g.vm.Connection().Eval(connection, programs)
 			if err != nil {
 				return true
 			}
@@ -1000,13 +1011,13 @@ func (n *Graph) PatchConnections(ctx context.Context, patch *apipb.PatchFilter) 
 }
 
 func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*apipb.Connections, error) {
-	programs, err := e.vm.Connection().Programs(filter.Expressions)
+	programs, err := e.vm.Connection().Program(filter.Expression)
 	if err != nil {
 		return nil, err
 	}
 	var connections []*apipb.Connection
 	if err := e.rangeConnections(ctx, filter.Gtype, func(connection *apipb.Connection) bool {
-		pass, err := e.vm.Connection().Eval(programs, connection)
+		pass, err := e.vm.Connection().Eval(connection, programs)
 		if err != nil {
 			return true
 		}
@@ -1036,10 +1047,10 @@ func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*ap
 	for _, doc := range docs.GetDocs() {
 		graph.Docs.Docs = append(graph.Docs.Docs, doc)
 		connections, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
-			DocPath:     doc.Path,
-			Gtype:       filter.GetConnectionFilter().GetGtype(),
-			Expressions: filter.GetConnectionFilter().GetExpressions(),
-			Limit:       filter.GetConnectionFilter().GetLimit(),
+			DocPath:    doc.Path,
+			Gtype:      filter.GetConnectionFilter().GetGtype(),
+			Expression: filter.GetConnectionFilter().GetExpression(),
+			Limit:      filter.GetConnectionFilter().GetLimit(),
 		})
 		if err != nil {
 			return nil, err
@@ -1105,10 +1116,10 @@ func (g *Graph) GetDocDetail(ctx context.Context, filter *apipb.DocDetailFilter)
 		detail.Attributes = doc.Attributes
 		if val := filter.GetFromConnections(); val != nil {
 			connections, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
-				DocPath:     doc.Path,
-				Gtype:       val.GetGtype(),
-				Expressions: val.GetExpressions(),
-				Limit:       val.GetLimit(),
+				DocPath:    doc.Path,
+				Gtype:      val.GetGtype(),
+				Expression: val.GetExpression(),
+				Limit:      val.GetLimit(),
 			})
 			if err != nil {
 				return err
@@ -1124,10 +1135,10 @@ func (g *Graph) GetDocDetail(ctx context.Context, filter *apipb.DocDetailFilter)
 
 		if val := filter.GetToConnections(); val != nil {
 			connections, err := g.ConnectionsTo(ctx, &apipb.ConnectionFilter{
-				DocPath:     doc.Path,
-				Gtype:       val.GetGtype(),
-				Expressions: val.GetExpressions(),
-				Limit:       val.GetLimit(),
+				DocPath:    doc.Path,
+				Gtype:      val.GetGtype(),
+				Expression: val.GetExpression(),
+				Limit:      val.GetLimit(),
 			})
 			if err != nil {
 				return err

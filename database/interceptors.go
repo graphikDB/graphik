@@ -80,7 +80,7 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 				}
 				request.Request = apipb.NewStruct(reqMap)
 			}
-			result, err := g.vm.Auth().Eval(g.authorizers, request)
+			result, err := g.vm.Auth().Eval(request, g.authorizers...)
 			if err != nil {
 				return nil, err
 			}
@@ -140,7 +140,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 				}
 				request.Request = apipb.NewStruct(reqMap)
 			}
-			result, err := g.vm.Auth().Eval(g.authorizers, request)
+			result, err := g.vm.Auth().Eval(request, g.authorizers...)
 			if err != nil {
 				return err
 			}

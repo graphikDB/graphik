@@ -192,8 +192,8 @@ input PathInput {
 input Filter {
   # gtype is the doc/connection type to be filtered
   gtype: String!
-  # expressions are CEL expressions used to filter connections
-  expressions: [String!]
+  # expression is a CEL expression used to filter connections/nodes
+  expression: String
   # limit is the maximum number of items to return
   limit: Int!
   sort: String
@@ -213,18 +213,18 @@ input ConnectionFilter {
   doc_path: PathInput!
   # gtype is the type of connections to return
   gtype: String!
-  # expressions are CEL expressions used to filter connections
-  expressions: [String!],
+  # expression is a CEL expression used to filter connections
+  expression: String,
   # limit is the maximum number of connections to return
   limit: Int!
 }
 
 # ChannelFilter is used to filter messages in a pubsub channel
 input ChannelFilter {
-  # channel is the target channel to filter from
+  # channel is the target channel to listen on
   channel: String!
-  # expressions are CEL expressions used to filter messages
-  expressions: [String]
+  # expression is a CEL expression used to filter messages
+  expression: String
 }
 
 # Patch patches the attributes of a Doc or Connection
@@ -252,8 +252,8 @@ input OutboundMessage {
 }
 
 input ExpressionFilter {
-  # expressions are CEL expressions used to filter messages/docs/connections
-  expressions: [String!]
+  # expression is a CEL expression used to filter messages/docs/connections
+  expression: String
 }
 
 type Mutation {
