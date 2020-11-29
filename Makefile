@@ -10,7 +10,7 @@ help:
 	@echo "----------------------------------------------------------------"
 
 run:
-	@go run main.go
+	@go run main.go --open-id https://accounts.google.com/.well-known/openid-configuration
 
 gen: proto gql
 

@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/logger"
@@ -18,6 +19,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
@@ -47,7 +50,7 @@ type Graph struct {
 	db          *bbolt.DB
 	jwksMu      sync.RWMutex
 	jwksSet     *jwk.Set
-	jwksSource  string
+	openID      *openIDConnect
 	authorizers []cel.Program
 	// The path to the Bolt database file
 	path            string
@@ -84,7 +87,6 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		db:              handle,
 		jwksMu:          sync.RWMutex{},
 		jwksSet:         nil,
-		jwksSource:      flgs.JWKS,
 		authorizers:     programs,
 		path:            path,
 		mu:              sync.RWMutex{},
@@ -94,13 +96,28 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		closers:         closers,
 		closeOnce:       sync.Once{},
 	}
-	if flgs.JWKS != "" {
-		set, err := jwk.Fetch(flgs.JWKS)
+	if flgs.OpenIDConnect != "" {
+		resp, err := http.DefaultClient.Get(flgs.OpenIDConnect)
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+		var openID openIDConnect
+		bits, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		if err := json.Unmarshal(bits, &openID); err != nil {
+			return nil, err
+		}
+		g.openID = &openID
+		set, err := jwk.Fetch(openID.JwksURI)
 		if err != nil {
 			return nil, err
 		}
 		g.jwksSet = set
 	}
+
 	err = g.db.Update(func(tx *bbolt.Tx) error {
 		// Create all the buckets
 		_, err = tx.CreateBucketIfNotExists(dbDocs)
@@ -127,8 +144,8 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		return nil, err
 	}
 	g.machine.Go(func(routine machine.Routine) {
-		if g.jwksSource != "" {
-			set, err := jwk.Fetch(g.jwksSource)
+		if g.openID != nil {
+			set, err := jwk.Fetch(g.openID.JwksURI)
 			if err != nil {
 				logger.Error("failed to fetch jwks", zap.Error(err))
 				return
@@ -395,7 +412,7 @@ func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*e
 }
 
 func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseService_SubscribeServer) error {
-	var filterFunc  func(msg interface{}) bool
+	var filterFunc func(msg interface{}) bool
 	if filter.Expression == "" {
 		filterFunc = func(msg interface{}) bool {
 			_, ok := msg.(*apipb.Message)
@@ -1272,4 +1289,22 @@ func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empt
 		Timestamp:         timestamppb.Now(),
 		ConnectionChanges: changes,
 	})
+}
+
+type openIDConnect struct {
+	Issuer                            string   `json:"issuer"`
+	AuthorizationEndpoint             string   `json:"authorization_endpoint"`
+	DeviceAuthorizationEndpoint       string   `json:"device_authorization_endpoint"`
+	TokenEndpoint                     string   `json:"token_endpoint"`
+	UserinfoEndpoint                  string   `json:"userinfo_endpoint"`
+	RevocationEndpoint                string   `json:"revocation_endpoint"`
+	JwksURI                           string   `json:"jwks_uri"`
+	ResponseTypesSupported            []string `json:"response_types_supported"`
+	SubjectTypesSupported             []string `json:"subject_types_supported"`
+	IDTokenSigningAlgValuesSupported  []string `json:"id_token_signing_alg_values_supported"`
+	ScopesSupported                   []string `json:"scopes_supported"`
+	TokenEndpointAuthMethodsSupported []string `json:"token_endpoint_auth_methods_supported"`
+	ClaimsSupported                   []string `json:"claims_supported"`
+	CodeChallengeMethodsSupported     []string `json:"code_challenge_methods_supported"`
+	GrantTypesSupported               []string `json:"grant_types_supported"`
 }

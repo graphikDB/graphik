@@ -7,7 +7,7 @@ type PluginFlags struct {
 }
 
 type Flags struct {
-	JWKS           string
+	OpenIDConnect  string
 	StoragePath    string
 	Metrics        bool
 	Authorizers    []string
@@ -15,3 +15,4 @@ type Flags struct {
 	AllowedMethods []string
 	AllowedOrigins []string
 }
+
