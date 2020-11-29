@@ -48,7 +48,8 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
 		}
 		idToken := values[0]
-		if val, ok := g.cache.Get(idToken); ok {
+		idTokenHash := helpers.Hash([]byte(idToken))
+		if val, ok := g.cache.Get(idTokenHash); ok {
 			payload := val.(map[string]interface{})
 			ctx, err := g.check(ctx, info.FullMethod, req, payload)
 			if err != nil {
@@ -95,7 +96,7 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			}
 			payload = data
 		}
-		g.cache.Set(idToken, payload, time.Unix(exp, 0).Sub(time.Now()))
+		g.cache.Set(idTokenHash, payload, time.Unix(exp, 0).Sub(time.Now()))
 		ctx, err = g.check(ctx, info.FullMethod, req, payload)
 		if err != nil {
 			return nil, err
@@ -119,7 +120,8 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 			return status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
 		}
 		idToken := values[0]
-		if val, ok := g.cache.Get(idToken); ok {
+		idTokenHash := helpers.Hash([]byte(idToken))
+		if val, ok := g.cache.Get(idTokenHash); ok {
 			payload := val.(map[string]interface{})
 			ctx, err := g.check(ss.Context(), info.FullMethod, srv, payload)
 			if err != nil {
@@ -167,7 +169,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 			}
 			payload = data
 		}
-		g.cache.Set(idToken, payload, time.Unix(exp, 0).Sub(time.Now()))
+		g.cache.Set(idTokenHash, payload, time.Unix(exp, 0).Sub(time.Now()))
 		ctx, err := g.check(ss.Context(), info.FullMethod, srv, payload)
 		if err != nil {
 			return err
