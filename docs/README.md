@@ -203,10 +203,10 @@ ConnectionFilter is used to fetch connections related to a single noted
 | doc_path | [Path](#api.Path) |  | doc_path is the path to the target doc |
 | gtype | [string](#string) |  | gtype is the type of connections to return |
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
-| limit | [int32](#int32) |  | limit is the maximum number of connections to return |
-| sort | [string](#string) |  |  |
-| seek | [string](#string) |  |  |
-| reverse | [bool](#bool) |  |  |
+| limit | [int32](#int32) |  | limit is the maximum number of items to return |
+| sort | [string](#string) |  | custom sorting of the results. |
+| seek | [string](#string) |  | seek to a specific key for pagination |
+| reverse | [bool](#bool) |  | reverse the results |
 
 
 
@@ -388,7 +388,7 @@ Filter is a generic filter using Common Expression Language
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return |
 | sort | [string](#string) |  | custom sorting of the results. |
-| seek | [string](#string) |  | seek to a specific key |
+| seek | [string](#string) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
 
 

@@ -1111,11 +1111,14 @@ type ConnectionFilter struct {
 	Gtype string `protobuf:"bytes,2,opt,name=gtype,proto3" json:"gtype,omitempty"`
 	// expression is a CEL expression used to filter connections/modes
 	Expression string `protobuf:"bytes,3,opt,name=expression,proto3" json:"expression,omitempty"`
-	// limit is the maximum number of connections to return
-	Limit   int32  `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
-	Sort    string `protobuf:"bytes,5,opt,name=sort,proto3" json:"sort,omitempty"`
-	Seek    string `protobuf:"bytes,6,opt,name=seek,proto3" json:"seek,omitempty"`
-	Reverse bool   `protobuf:"varint,7,opt,name=reverse,proto3" json:"reverse,omitempty"`
+	// limit is the maximum number of items to return
+	Limit int32 `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
+	// custom sorting of the results.
+	Sort string `protobuf:"bytes,5,opt,name=sort,proto3" json:"sort,omitempty"`
+	// seek to a specific key for pagination
+	Seek string `protobuf:"bytes,6,opt,name=seek,proto3" json:"seek,omitempty"`
+	// reverse the results
+	Reverse bool `protobuf:"varint,7,opt,name=reverse,proto3" json:"reverse,omitempty"`
 }
 
 func (x *ConnectionFilter) Reset() {
@@ -1213,7 +1216,7 @@ type Filter struct {
 	Limit int32 `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	// custom sorting of the results.
 	Sort string `protobuf:"bytes,4,opt,name=sort,proto3" json:"sort,omitempty"`
-	// seek to a specific key
+	// seek to a specific key for pagination
 	Seek string `protobuf:"bytes,5,opt,name=seek,proto3" json:"seek,omitempty"`
 	// reverse the results
 	Reverse bool `protobuf:"varint,6,opt,name=reverse,proto3" json:"reverse,omitempty"`
