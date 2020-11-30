@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"encoding/json"
 	"fmt"
-	"github.com/autom8ter/graphik/database"
-	"github.com/autom8ter/graphik/flags"
-	"github.com/autom8ter/graphik/gen/go/api"
-	"github.com/autom8ter/graphik/gql"
-	"github.com/autom8ter/graphik/helpers"
-	"github.com/autom8ter/graphik/logger"
+	"github.com/graphikDB/graphik/database"
+	"github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/gql"
+	"github.com/graphikDB/graphik/helpers"
+	"github.com/graphikDB/graphik/logger"
 	"github.com/autom8ter/machine"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -20,8 +21,11 @@ import (
 	"github.com/soheilhy/cmux"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"net/http/pprof"
@@ -32,42 +36,23 @@ import (
 	"time"
 )
 
-var global = &flags.Flags{}
+var global = &apipb.Flags{}
 
 func init() {
 	godotenv.Load()
 	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
-	pflag.CommandLine.StringVar(&global.OpenIDConnect, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)")
-	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", boolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
-	pflag.CommandLine.StringSliceVar(&global.Authorizers, "authorizers", stringSliceEnvOr("GRAPHIK_AUTHORIZERS", nil), "registered authorizers (env: GRAPHIK_AUTHORIZERS)")
-	pflag.CommandLine.StringSliceVar(&global.AllowedHeaders, "allow-headers", stringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
-	pflag.CommandLine.StringSliceVar(&global.AllowedOrigins, "allow-origins", stringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
-	pflag.CommandLine.StringSliceVar(&global.AllowedMethods, "allow-methods", stringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
+	pflag.CommandLine.StringVar(&global.OpenIdDiscovery, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)")
+	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", helpers.BoolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
+	pflag.CommandLine.StringSliceVar(&global.AllowHeaders, "allow-headers", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowOrigins, "allow-origins", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowMethods, "allow-methods", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
+	pflag.CommandLine.StringSliceVar(&global.RootUsers, "root-users", helpers.StringSliceEnvOr("GRAPHIK_ROOT_USERS", nil), "cors allow methods (env: GRAPHIK_ROOT_USERS)")
+	pflag.CommandLine.StringVar(&global.TlsCert, "tls-cert", helpers.EnvOr("GRAPHIK_TLS_CERT", ""), "path to tls certificate (env: GRAPHIK_TLS_CERT)")
+	pflag.CommandLine.StringVar(&global.TlsKey, "tls-key", helpers.EnvOr("GRAPHIK_TLS_KEY", ""), "path to tls key (env: GRAPHIK_TLS_KEY)")
+	pflag.CommandLine.StringVar(&global.PlaygroundClientId, "playground-client-id", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_ID", ""), "playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)")
+	pflag.CommandLine.StringVar(&global.PlaygroundClientSecret, "playground-client-secret", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_SECRET", ""), "playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)")
+	pflag.CommandLine.StringVar(&global.PlaygroundRedirect, "playground-redirect", helpers.EnvOr("GRAPHIK_PLAYGROUND_REDIRECT", ""), "playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT)")
 	pflag.Parse()
-}
-
-func stringSliceEnvOr(key string, defaul []string) []string {
-	if value := os.Getenv(key); value != "" {
-		values := strings.Split(value, ",")
-		if len(value) > 0 && values[0] != "" {
-			return values
-		}
-	} else {
-		return defaul
-	}
-	return nil
-}
-
-func boolEnvOr(key string, defaul bool) bool {
-	if value := os.Getenv(key); value != "" {
-		switch value {
-		case "true", "y", "t", "yes":
-			return true
-		default:
-			return false
-		}
-	}
-	return defaul
 }
 
 func main() {
@@ -75,8 +60,9 @@ func main() {
 }
 
 const bind = ":7820"
+const metricsBind = ":7821"
 
-func run(ctx context.Context, cfg *flags.Flags) {
+func run(ctx context.Context, cfg *apipb.Flags) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
@@ -89,20 +75,25 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		return
 	}
 	defer g.Close()
-
-	router := http.NewServeMux()
-	if cfg.Metrics {
-		router.Handle("/metrics", promhttp.Handler())
-		router.HandleFunc("/debug/pprof/", pprof.Index)
-		router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-		router.HandleFunc("/debug/pprof/profile", pprof.Profile)
-		router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
-		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
-	}
-	lis, err := net.Listen("tcp", bind)
-	if err != nil {
-		logger.Error("failed to create http server listener", zap.Error(err))
-		return
+	var lis net.Listener
+	if global.TlsCert != "" && global.TlsKey != "" {
+		cer, err := tls.LoadX509KeyPair(global.TlsCert, global.TlsKey)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		config := &tls.Config{Certificates: []tls.Certificate{cer}}
+		lis, err = tls.Listen("tcp", bind, config)
+		if err != nil {
+			logger.Error("failed to create tls server listener", zap.Error(err))
+			return
+		}
+	} else {
+		lis, err = net.Listen("tcp", bind)
+		if err != nil {
+			logger.Error("failed to create server listener", zap.Error(err))
+			return
+		}
 	}
 	defer lis.Close()
 	self := fmt.Sprintf("localhost%v", bind)
@@ -111,14 +102,48 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		logger.Error("failed to setup graphql endpoint", zap.Error(err))
 		return
 	}
+	var config *oauth2.Config
+	if global.PlaygroundClientId != "" {
+		resp, err := http.DefaultClient.Get(global.OpenIdDiscovery)
+		if err != nil {
+			logger.Error("failed to get oidc", zap.Error(err))
+			return
+		}
+		defer resp.Body.Close()
+		var openID = map[string]interface{}{}
+		bits, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			logger.Error("failed to get oidc", zap.Error(err))
+			return
+		}
+		if err := json.Unmarshal(bits, &openID); err != nil {
+			logger.Error("failed to get oidc", zap.Error(err))
+			return
+		}
+		config = &oauth2.Config{
+			ClientID:     global.PlaygroundClientId,
+			ClientSecret: global.PlaygroundClientSecret,
+			Endpoint: oauth2.Endpoint{
+				AuthURL:  openID["authorization_endpoint"].(string),
+				TokenURL: openID["token_endpoint"].(string),
+			},
+			RedirectURL: global.PlaygroundRedirect,
+			Scopes:      []string{"openid", "email", "profile"},
+		}
+	}
 	resolver := gql.NewResolver(ctx, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
-		AllowedOrigins: global.AllowedOrigins,
-		AllowedMethods: global.AllowedMethods,
-		AllowedHeaders: global.AllowedHeaders,
-	}))
-	router.Handle("/query", resolver.QueryHandler())
-	server := &http.Server{
-		Handler: router,
+		AllowedOrigins: global.AllowOrigins,
+		AllowedMethods: global.AllowMethods,
+		AllowedHeaders: global.AllowHeaders,
+	}), config)
+	mux := http.NewServeMux()
+	mux.Handle("/", resolver.QueryHandler())
+	if config != nil {
+		mux.Handle("/playground", resolver.Playground())
+		mux.Handle("/playground/callback", resolver.PlaygroundCallback("/playground"))
+	}
+	httpServer := &http.Server{
+		Handler: mux,
 	}
 	cm := cmux.New(lis)
 	m.Go(func(routine machine.Routine) {
@@ -127,11 +152,33 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		logger.Info("starting http server",
 			zap.String("address", hmatcher.Addr().String()),
 		)
-		if err := server.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
+		if err := httpServer.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
 			logger.Error("http server failure", zap.Error(err))
 		}
 	})
-
+	var metricServer *http.Server
+	if cfg.Metrics {
+		router := http.NewServeMux()
+		router.Handle("/metrics", promhttp.Handler())
+		router.HandleFunc("/debug/pprof/", pprof.Index)
+		router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+		router.HandleFunc("/debug/pprof/profile", pprof.Profile)
+		router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
+		metricServer = &http.Server{Handler: router}
+		m.Go(func(routine machine.Routine) {
+			metricLis, err := net.Listen("tcp", metricsBind)
+			if err != nil {
+				logger.Error("metrics server failure", zap.Error(err))
+				return
+			}
+			defer metricLis.Close()
+			logger.Info("starting metrics server", zap.String("address", metricLis.Addr().String()))
+			if err := metricServer.Serve(metricLis); err != nil && err != http.ErrServerClosed {
+				logger.Error("metrics server failure", zap.Error(err))
+			}
+		})
+	}
 	gserver := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			grpc_prometheus.UnaryServerInterceptor,
@@ -148,24 +195,20 @@ func run(ctx context.Context, cfg *flags.Flags) {
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
-
 	apipb.RegisterDatabaseServiceServer(gserver, g)
 	reflection.Register(gserver)
 	grpc_prometheus.Register(gserver)
-
 	m.Go(func(routine machine.Routine) {
 		gmatcher := cm.Match(cmux.HTTP2())
 		defer gmatcher.Close()
-		logger.Info("starting gRPC server",
-			zap.String("address", lis.Addr().String()),
-		)
-		if err := gserver.Serve(gmatcher); err != nil && err != http.ErrServerClosed {
+		logger.Info("starting gRPC server", zap.String("address", lis.Addr().String()))
+		if err := gserver.Serve(gmatcher); err != nil && err != http.ErrServerClosed && !strings.Contains(err.Error(), "mux: listener closed") {
 			logger.Error("gRPC server failure", zap.Error(err))
 		}
 	})
 	m.Go(func(routine machine.Routine) {
-		if err := cm.Serve(); err != nil {
-			logger.Error("", zap.Error(err))
+		if err := cm.Serve(); err != nil && !strings.Contains(err.Error(), "closed network connection") {
+			logger.Error("listener mux error", zap.Error(err))
 		}
 	})
 	select {
@@ -181,14 +224,17 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
 
-	_ = server.Shutdown(shutdownCtx)
+	_ = httpServer.Shutdown(shutdownCtx)
+	if metricServer != nil {
+		_ = metricServer.Shutdown(shutdownCtx)
+	}
 	stopped := make(chan struct{})
 	go func() {
 		gserver.GracefulStop()
 		close(stopped)
 	}()
 
-	t := time.NewTimer(5 * time.Second)
+	t := time.NewTimer(10 * time.Second)
 	select {
 	case <-t.C:
 		gserver.Stop()

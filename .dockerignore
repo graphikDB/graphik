@@ -2,5 +2,11 @@ vendor
 images
 *.md
 Makefile
-gen/js
-gen/python
+gen/grpc/js
+gen/grpc/python
+gen/grpc/ruby
+gen/grpc/java
+gen/grpc/csharp
+gen/grpc/php
+.env
+bin

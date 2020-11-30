@@ -7,7 +7,9 @@ excludes:
   - helpers
   - sortable
   - vm
-  - graphik-ui
+  - docs
+  - bin
+  - graphik-client-go
 
 protoc:
   version: 3.6.1
@@ -29,26 +31,38 @@ lint:
 
 generate:
   go_options:
-    import_path: github.com/autom8ter/graphik
+    import_path: github.com/graphikDB/graphik
 
   plugins:
     - name: go
       type: go
       flags: plugins=grpc
-      output: gen/go
+      output: gen/grpc/go
 #    - name: grpc-gateway
 #      output: gen/go
 #    - name: swagger
 #      output: .
     - name: govalidators
       type: go
-      output: gen/go
-    - name: doc
-      flags: markdown,README.md
-      output: docs
+      output: gen/grpc/go
+#    - name: doc
+#      flags: markdown,README.md
+#      output: docs
     - flags: binary,import_style=commonjs
       name: js
-      output: gen/js
+      output: gen/grpc/js
     - name: python
       flags: plugins=grpc
-      output: gen/python
+      output: gen/grpc/python
+    - name: php
+      flags: plugins=grpc
+      output: gen/grpc/php
+    - name: csharp
+      #flags: plugins=grpc
+      output: gen/grpc/csharp
+    - name: java
+      #flags: plugins=grpc
+      output: gen/grpc/java
+    - name: ruby
+      #flags: plugins=grpc
+      output: gen/grpc/ruby

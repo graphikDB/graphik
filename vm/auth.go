@@ -2,9 +2,10 @@ package vm
 
 import (
 	"errors"
-	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"strings"
 )
 
 type AuthVM struct {
@@ -14,7 +15,7 @@ type AuthVM struct {
 func NewAuthVM() (*AuthVM, error) {
 	e, err := cel.NewEnv(
 		cel.Declarations(
-			decls.NewVar("request", decls.NewMapType(decls.String, decls.Any)),
+			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -53,22 +54,26 @@ func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error)
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}
-	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"request": map[string]interface{}{
+			"this": map[string]interface{}{
 				"method":    req.GetMethod(),
 				"request":   req.GetRequest().AsMap(),
-				"identity":  req.GetIdentity().AsMap(),
+				"user":      req.GetUser().AsMap(),
 				"timestamp": req.GetTimestamp().Seconds,
 			},
 		})
 		if err != nil {
+			if strings.Contains(err.Error(), "no such key") {
+				return false, nil
+			}
 			return false, err
 		}
-		if val, ok := out.Value().(bool); !ok || !val {
-			passes = false
+		if val, ok := out.Value().(bool); ok {
+			if val {
+				return true, nil
+			}
 		}
 	}
-	return passes, nil
+	return false, nil
 }

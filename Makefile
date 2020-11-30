@@ -1,4 +1,4 @@
-version := "0.0.20"
+version := "0.0.43"
 
 .DEFAULT_GOAL := help
 
@@ -24,10 +24,10 @@ push:
 	git push origin v$(version)
 
 docker-build:
-	@docker build -t colemanword/graphik:v$(version) .
+	@docker build -t graphikdb/graphik:v$(version) .
 
 docker-push:
-	@docker push colemanword/graphik:v$(version)
+	@docker push graphikdb/graphik:v$(version)
 
 .PHONY: proto
 proto: ## regenerate gRPC code
@@ -38,3 +38,10 @@ proto: ## regenerate gRPC code
 .PHONY: gql
 gql: ## regenerate graphql code
 	@gqlgen generate
+	@graphdoc -s ./schema.graphql -o ./docs --force
+
+release: ## build release binaries to ./bin
+	@mkdir -p bin
+	@gox -osarch="linux/amd64" -output="./bin/linux/{{.Dir}}"
+	@gox -osarch="darwin/amd64" -output="./bin/darwin/{{.Dir}}"
+	@gox -osarch="windows/amd64" -output="./bin/windows/{{.Dir}}"

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
+    <title>__InputValue</title>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
+</head>
+<body class="slds-scrollable--y">
+    <nav class="slds-grid slds-grid--vertical slds-col--rule-right">
+        <header class="slds-p-around--medium slds-col slds-shrik slds-grow-none">
+            <button class="slds-button slds-button--icon slds-float--right js-toggle-navigation less-than-medium">
+                <i class="material-icons">close</i>
+            </button>
+                <h3 class="slds-text-heading--medium"><a href="./">GraphQL Schema</a></h3>
+            <div class="slds-p-top--small">
+                <input id="type-search" type="text" placeholder="Search a type" autofocus="" class="slds-input" />
+            </div>
+        </header>
+        <div id="navication-scroll" class="slds-scrollable--y slds-col slds-grow">
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Schema</h4>
+    <ul>
+        <li  title="Query">
+            <a href="query.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Query
+            </a>
+        </li>
+        <li  title="Mutation">
+            <a href="mutation.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Mutation
+            </a>
+        </li>
+        <li  title="Subscription">
+            <a href="subscription.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Subscription
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Scalars</h4>
+    <ul>
+        <li  title="Boolean">
+            <a href="boolean.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Boolean
+            </a>
+        </li>
+        <li  title="Empty">
+            <a href="empty.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Empty
+            </a>
+        </li>
+        <li  title="Float">
+            <a href="float.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Float
+            </a>
+        </li>
+        <li  title="Int">
+            <a href="int.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Int
+            </a>
+        </li>
+        <li  title="Map">
+            <a href="map.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Map
+            </a>
+        </li>
+        <li  title="String">
+            <a href="string.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                String
+            </a>
+        </li>
+        <li  title="Time">
+            <a href="time.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Time
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
+    <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
+        <li  title="Algorithm">
+            <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Algorithm
+            </a>
+        </li>
+        <li  title="__DirectiveLocation">
+            <a href="directivelocation.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __DirectiveLocation
+            </a>
+        </li>
+        <li  title="__TypeKind">
+            <a href="typekind.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __TypeKind
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Objects</h4>
+    <ul>
+        <li  title="Authorizer">
+            <a href="authorizer.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Authorizer
+            </a>
+        </li>
+        <li  title="Authorizers">
+            <a href="authorizers.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Authorizers
+            </a>
+        </li>
+        <li  title="Connection">
+            <a href="connection.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Connection
+            </a>
+        </li>
+        <li  title="Connections">
+            <a href="connections.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Connections
+            </a>
+        </li>
+        <li  title="Doc">
+            <a href="doc.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Doc
+            </a>
+        </li>
+        <li  title="Docs">
+            <a href="docs.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Docs
+            </a>
+        </li>
+        <li  title="Index">
+            <a href="index.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Index
+            </a>
+        </li>
+        <li  title="Indexes">
+            <a href="indexes.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Indexes
+            </a>
+        </li>
+        <li  title="Message">
+            <a href="message.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Message
+            </a>
+        </li>
+        <li  title="Pong">
+            <a href="pong.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Pong
+            </a>
+        </li>
+        <li  title="Ref">
+            <a href="ref.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Ref
+            </a>
+        </li>
+        <li  title="Refs">
+            <a href="refs.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Refs
+            </a>
+        </li>
+        <li  title="Request">
+            <a href="request.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Request
+            </a>
+        </li>
+        <li  title="Schema">
+            <a href="schema.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Schema
+            </a>
+        </li>
+        <li  title="Traversal">
+            <a href="traversal.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Traversal
+            </a>
+        </li>
+        <li  title="Traversals">
+            <a href="traversals.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Traversals
+            </a>
+        </li>
+        <li  title="TypeValidator">
+            <a href="typevalidator.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TypeValidator
+            </a>
+        </li>
+        <li  title="TypeValidators">
+            <a href="typevalidators.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TypeValidators
+            </a>
+        </li>
+        <li  title="__Directive">
+            <a href="directive.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __Directive
+            </a>
+        </li>
+        <li  title="__EnumValue">
+            <a href="enumvalue.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __EnumValue
+            </a>
+        </li>
+        <li  title="__Field">
+            <a href="field.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __Field
+            </a>
+        </li>
+        <li class="slds-is-active" title="__InputValue">
+            <a href="inputvalue.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __InputValue
+            </a>
+        </li>
+        <li  title="__Schema">
+            <a href="schema.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __Schema
+            </a>
+        </li>
+        <li  title="__Type">
+            <a href="type.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __Type
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Input Objects</h4>
+    <ul>
+        <li  title="AggFilter">
+            <a href="aggfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                AggFilter
+            </a>
+        </li>
+        <li  title="AuthorizerInput">
+            <a href="authorizerinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                AuthorizerInput
+            </a>
+        </li>
+        <li  title="AuthorizersInput">
+            <a href="authorizersinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                AuthorizersInput
+            </a>
+        </li>
+        <li  title="CFilter">
+            <a href="cfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CFilter
+            </a>
+        </li>
+        <li  title="ChanFilter">
+            <a href="chanfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ChanFilter
+            </a>
+        </li>
+        <li  title="ConnectionConstructor">
+            <a href="connectionconstructor.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConnectionConstructor
+            </a>
+        </li>
+        <li  title="ConnectionConstructors">
+            <a href="connectionconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConnectionConstructors
+            </a>
+        </li>
+        <li  title="DocConstructor">
+            <a href="docconstructor.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                DocConstructor
+            </a>
+        </li>
+        <li  title="DocConstructors">
+            <a href="docconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                DocConstructors
+            </a>
+        </li>
+        <li  title="Edit">
+            <a href="edit.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Edit
+            </a>
+        </li>
+        <li  title="EFilter">
+            <a href="efilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                EFilter
+            </a>
+        </li>
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
+            </a>
+        </li>
+        <li  title="ExprFilter">
+            <a href="exprfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExprFilter
+            </a>
+        </li>
+        <li  title="Filter">
+            <a href="filter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Filter
+            </a>
+        </li>
+        <li  title="IndexesInput">
+            <a href="indexesinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                IndexesInput
+            </a>
+        </li>
+        <li  title="IndexInput">
+            <a href="indexinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                IndexInput
+            </a>
+        </li>
+        <li  title="OutboundMessage">
+            <a href="outboundmessage.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                OutboundMessage
+            </a>
+        </li>
+        <li  title="RefConstructor">
+            <a href="refconstructor.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RefConstructor
+            </a>
+        </li>
+        <li  title="RefInput">
+            <a href="refinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RefInput
+            </a>
+        </li>
+        <li  title="SConnectFilter">
+            <a href="sconnectfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SConnectFilter
+            </a>
+        </li>
+        <li  title="TFilter">
+            <a href="tfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TFilter
+            </a>
+        </li>
+        <li  title="TypeValidatorInput">
+            <a href="typevalidatorinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TypeValidatorInput
+            </a>
+        </li>
+        <li  title="TypeValidatorsInput">
+            <a href="typevalidatorsinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TypeValidatorsInput
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Directives</h4>
+    <ul>
+        <li  title="deprecated">
+            <a href="deprecated.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                deprecated
+            </a>
+        </li>
+        <li  title="include">
+            <a href="include.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                include
+            </a>
+        </li>
+        <li  title="skip">
+            <a href="skip.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                skip
+            </a>
+        </li>
+    </ul>
+</div>
+        </div>
+    </nav>
+    <main><section class="title slds-theme--inverse">
+    <div class="container slds-grid">
+        <div>
+        <button class="slds-button js-toggle-navigation less-than-medium">
+            <i class="material-icons slds-button__icon slds-button__icon--left">menu</i>
+            <span class="slds-text-title--caps">Types<span>
+        </button>
+        </div>
+        </div>
+    </div>
+    <div class="container">
+        <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
+        <h1 class="slds-text-heading--large">__InputValue</h1>
+        <div class="slds-text-body--regular"><p>Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.</p>
+</div>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <h2 id="graphql-schema-definition" class="graphdoc-section__title slds-text-heading--medium slds-m-top--small">
+            <a href="#graphql-schema-definition">
+                <i class="material-icons">link</i>
+            </a>
+            GraphQL Schema definition
+        </h2>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">__InputValue</span> {</li><li></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="meta">description</span>: <a class="support type" href="string.doc.html">String</a> </span></li><li></li><li><span class="tab"><span class="meta">type</span>: <a class="support type" href="type.spec.html">__Type</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   A GraphQL-formatted string representing the default value for this input value.</span></span></li><li><span class="tab"><span class="meta">defaultValue</span>: <a class="support type" href="string.doc.html">String</a> </span></li><li>}</li></ul></code>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <h2 id="require-by" class="graphdoc-section__title slds-text-heading--medium slds-m-top--small">
+            <a href="#require-by">
+                <i class="material-icons">link</i>
+            </a>
+            Require by
+        </h2>
+        <ul class="require-by"><li><a href="directive.spec.html" title="__Directive - A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.
+
+In some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.">__Directive<em>A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.
+
+In some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.</em></a><li><li><a href="field.spec.html" title="__Field - Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.">__Field<em>Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.</em></a><li><li><a href="type.spec.html" title="__Type - The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+
+Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.">__Type<em>The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+
+Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.</em></a><li></ul>
+    </div>
+</section>
+<footer>
+<div class="container slds-p-around--large">
+    <p class="slds-text-align--right slds-text-title--caps">
+        Generated with <a href="https://github.com/2fd/graphdoc#readme" target="_blank">graphdoc 2.4.0</a>
+    </p>
+</div>
+</footer>
+</main>
+    <script src="./scripts/focus-active.js"></script>
+    <script src="./scripts/filter-types.js"></script>
+    <script src="./scripts/toggle-navigation.js"></script>
+</body>

@@ -1,0 +1,446 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "apipb";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+// DatabaseService is the primary database service
+service DatabaseService {
+  // Ping returns PONG if the server is health
+  rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  // GetSchema gets schema about the Graph doc & connection types
+  rpc GetSchema(google.protobuf.Empty) returns(Schema){}
+  rpc SetAuthorizers(Authorizers) returns(google.protobuf.Empty){}
+  rpc SetIndexes(Indexes) returns(google.protobuf.Empty){}
+  rpc SetTypeValidators(TypeValidators) returns(google.protobuf.Empty){}
+  // Me returns a Doc of the currently logged in user
+  rpc Me(google.protobuf.Empty) returns(Doc){}
+  // CreateDoc creates a doc in the graph
+  rpc CreateDoc(DocConstructor) returns(Doc){}
+  // CreateDocs creates a batch of docs in the graph
+  rpc CreateDocs(DocConstructors) returns(Docs){}
+  // GetDoc gets a single doc in the graph
+  rpc GetDoc(Ref) returns(Doc){}
+  // SearchDocs searches the graph for docs
+  rpc SearchDocs(Filter) returns(Docs){}
+  // Traverse executes a depth first search of the graph for docs
+  rpc Traverse(TFilter) returns(Traversals){}
+  // EditDoc patches/edits a docs attributes
+  rpc EditDoc(Edit) returns(Doc){}
+  // EditDocs patches a batch of docs attributes that pass the patch filter
+  rpc EditDocs(EFilter) returns(Docs){}
+  // DelDoc deletes a doc & all of it's connected connections
+  rpc DelDoc(Ref) returns(google.protobuf.Empty){}
+  // DelDocs deletes a batch of docs that pass the filter
+  rpc DelDocs(Filter) returns(google.protobuf.Empty){}
+  // ExistsDoc searches for a Doc and returns a Boolean indicating if it exists in the graph
+  rpc ExistsDoc(ExistsFilter) returns(Boolean){}
+  // ExistsConnection searches for a Connection and returns a Boolean indicating if it exists in the graph
+  rpc ExistsConnection(ExistsFilter) returns(Boolean){}
+  // HasDoc searches for the Doc by Ref returns a Boolean indicating if it exists in the graph
+  rpc HasDoc(Ref) returns(Boolean){}
+  // HasConnection searches for the Connection by Ref returns a Boolean indicating if it exists in the graph
+  rpc HasConnection(Ref) returns(Boolean){}
+  // CreateConnection creates an connection in the graph
+  rpc CreateConnection(ConnectionConstructor) returns(Connection){}
+  // CreateConnections creates a batch of connections in the graph
+  rpc CreateConnections(ConnectionConstructors) returns(Connections){}
+  rpc SearchAndConnect(SConnectFilter) returns(Connections){}
+  // GetConnection gets a single connection in the graph
+  rpc GetConnection(Ref) returns(Connection){}
+  // SearchConnections searches the graph for connections
+  rpc SearchConnections(Filter) returns(Connections){}
+  // EditConnection patches an connections attributes
+  rpc EditConnection(Edit) returns(Connection){}
+  // EditConnections patches a batch of connections attributes that pass the patch filter
+  rpc EditConnections(EFilter) returns(Connections){}
+  // DelConnection deletes an connection from the graph
+  rpc DelConnection(Ref) returns(google.protobuf.Empty){}
+  // DelConnections deletes a batch of connections that pass the filter
+  rpc DelConnections(Filter) returns(google.protobuf.Empty){}
+  // ConnectionsFrom returns connections that source from the given doc ref that pass the filter
+  rpc ConnectionsFrom(CFilter) returns(Connections){}
+  // ConnectionsTo returns connections that point to the given doc ref that pass the filter
+  rpc ConnectionsTo(CFilter) returns(Connections){}
+  // AggregateDocs executes an aggregation function against the graph
+  rpc AggregateDocs(AggFilter) returns(Number){}
+  rpc AggregateConnections(AggFilter) returns(Number){}
+  // Publish publishes a message to a pubsub channel
+  rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
+  // Subscribe subscribes to messages on a pubsub channel
+  rpc Subscribe(ChanFilter) returns(stream Message){}
+  rpc PushDocConstructors(stream DocConstructor) returns (stream Doc){}
+  rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
+  rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
+  rpc SeedConnections(stream Connection) returns(google.protobuf.Empty){}
+}
+
+enum Algorithm {
+  // BFS is short for the breadth-first search algorithm
+  BFS = 0;
+  // DFS is short for the depth-first search algorithm
+  DFS = 1;
+}
+
+enum Aggregate {
+  COUNT =0;
+  SUM =1;
+  AVG =2;
+  MAX =3;
+  MIN =4;
+  PROD =5;
+}
+// Ref describes a doc/connection type & id
+message Ref {
+  // gtype is the type of the doc/connection ex: pet
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // gid is the unique id of the doc/connection within the context of it's type
+  string gid =2 [(validator.field) = {regex : "^.{1,225}$"}];
+}
+
+// RefConstructor creates a new Ref
+message RefConstructor {
+  // gtype is the type of the doc/connection ex: pet
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // gid is the unique id of the doc/connection within the context of it's type
+  string gid =2;
+}
+
+// Refs is an array of refs
+message Refs {
+  repeated Ref refs =1;
+}
+
+// Doc is a Graph primitive representing a single entity/resource. It is connected to other docs via Connections
+message Doc {
+  // ref is the ref to the doc
+  Ref ref =1 [(validator.field) = {msg_exists : true}];
+  // k/v pairs
+  google.protobuf.Struct attributes =2;
+}
+
+// DocConstructor is used to create a doc
+message DocConstructor {
+  // ref is the ref to the new Doc. If an id isn't present, one will be generated.
+  RefConstructor ref =1 [(validator.field) = {msg_exists : true}];
+  // arbitrary k/v pairs
+  google.protobuf.Struct attributes =2;
+}
+
+// DocConstructor is used to create a batch of docs
+message DocConstructors {
+  // docs is an array of doc constructors
+  repeated DocConstructor docs =1;
+}
+
+message Traversal {
+  Doc doc = 1;
+  repeated Ref traversal_path =2;
+  uint64 depth =3;
+  uint64 hops =4;
+}
+
+message Traversals {
+  repeated Traversal traversals =1;
+}
+
+// Docs is an array of docs
+message Docs {
+  // docs is an array of docs
+  repeated Doc docs =1;
+  string seek_next =2;
+}
+
+// Connection is a graph primitive that represents a relationship between two docs
+message Connection {
+  // ref is the ref to the connection
+  Ref ref =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
+  google.protobuf.Struct attributes =2;
+  // directed is false if the connection is bi-directional
+  bool directed =3;
+  // from is the doc ref that is the source of the connection
+  Ref from =4 [(validator.field) = {msg_exists : true}];
+  // to is the doc ref that is the destination of the connection
+  Ref to =5 [(validator.field) = {msg_exists : true}];
+}
+
+// ConnectionConstructor is used to create an Connection
+message ConnectionConstructor {
+  // ref is the ref to the new Connection. If an id isn't present, one will be generated.
+  RefConstructor ref =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
+  google.protobuf.Struct attributes =3;
+  // directed is false if the connection is bi-directional
+  bool directed =4;
+  // from is the doc ref that is the root of the connection
+  Ref from =5 [(validator.field) = {msg_exists : true}];
+  // to is the doc ref that is the destination of the connection
+  Ref to =6 [(validator.field) = {msg_exists : true}];
+}
+
+message SConnectFilter {
+  Filter filter =1;
+  string gtype =2;
+  // attributes are k/v pairs
+  google.protobuf.Struct attributes =3;
+  // directed is false if the connection is bi-directional
+  bool directed =4;
+  // from is the doc ref that is the root of the connection
+  Ref from =5 [(validator.field) = {msg_exists : true}];
+}
+
+// ConnectionConstructors is an array of ConnectionConstructor
+message ConnectionConstructors {
+  repeated ConnectionConstructor connections =1;
+}
+
+// Connections is an array of Connection
+message Connections {
+  repeated Connection connections =1;
+  string seek_next =2;
+}
+
+// CFilter is used to fetch connections related to a single noted
+message CFilter {
+  // doc_ref is the ref to the target doc. (validator.field) = {msg_exists : true}]
+  Ref doc_ref =1 [(validator.field) = {msg_exists : true}];
+  // gtype is the type of connections to return. (validator.field) = {regex : "^.{1,225}$"}
+  string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is a CEL expression used to filter connections/modes
+  string expression =3;
+  // limit is the maximum number of items to return. (validator.field) = {int_gt : 0}
+  uint64 limit =4 [(validator.field) = {int_gt : 0}];
+  // custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
+  string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
+  // seek to a specific key for pagination
+  string seek =6;
+  // reverse the results
+  bool reverse =7;
+}
+
+// Filter is a generic filter using Common Expression Language
+message Filter {
+  // gtype is the doc/connection type to be filtered
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is a CEL expression used to filter connections/modes
+  string expression =2;
+  // limit is the maximum number of items to return
+  uint64 limit =3 [(validator.field) = {int_gt : 0}];
+  // custom sorting of the results.
+  string sort =4 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
+  // seek to a specific key for pagination
+  string seek =5;
+  // reverse the results
+  bool reverse =6;
+  // search in a specific index
+  string index =7;
+}
+
+message AggFilter {
+  Filter filter =1[(validator.field) = {msg_exists : true}];
+  Aggregate aggregate =2;
+  string field =3[(validator.field) = {regex : "((^|, )(|^attributes.(.*)))+$"}];
+}
+
+message TFilter {
+  Ref root =1 [(validator.field) = {msg_exists : true}];
+  string doc_expression =2;
+  string connection_expression =3;
+  uint64 limit =4 [(validator.field) = {int_gt : 0}];
+  // custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
+  string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
+  bool reverse =6;
+  Algorithm algorithm = 7;
+  // maximum degree/depth of nodes to be visited during traversal
+  uint64 max_depth = 8[(validator.field) = {int_gt : 0}];
+  // maximum number of nodes to be visited during traversal
+  uint64 max_hops =9[(validator.field) = {int_gt : 0}];
+}
+
+message IndexConstructor {
+  string name =1[(validator.field) = {regex : "^.{1,225}$"}];
+  // gtype is the doc/connection type to be filtered
+  string gtype =3 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is a CEL expression used to filter connections/modes
+  string expression =4[(validator.field) = {regex : "^.{1,225}$"}];
+  // if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both.
+  bool docs =6;
+  // if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both.
+  bool connections =7;
+}
+
+message Authorizer {
+  string name =1[(validator.field) = {regex : "^.{1,225}$"}];
+  string expression =2[(validator.field) = {regex : "^.{1,225}$"}];
+}
+
+message Authorizers {
+  repeated Authorizer authorizers =1;
+}
+
+message TypeValidator {
+  string name =1[(validator.field) = {regex : "^.{1,225}$"}];
+  string gtype =2[(validator.field) = {regex : "^.{1,225}$"}];
+  string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
+  // if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
+  bool docs =4;
+  // if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
+  bool connections =5;
+}
+
+message TypeValidators {
+  repeated TypeValidator validators =1;
+}
+
+message Index {
+  string name =1[(validator.field) = {regex : "^.{1,225}$"}];
+  // gtype is the doc/connection type to be filtered
+  string gtype =3 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is a CEL expression used to filter connections/modes
+  string expression =4[(validator.field) = {regex : "^.{1,225}$"}];
+  // if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both.
+  bool docs =6;
+  // if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both.
+  bool connections =7;
+}
+
+message Indexes {
+  repeated Index indexes =1;
+}
+
+// ChanFilter is used to filter messages in a pubsub channel
+message ChanFilter {
+  // channel is the target channel to filter from
+  string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is CEL expression used to filter messages
+  string expression =2;
+}
+
+// Graph is an array of docs and connections
+message Graph {
+  // docs are docs present in the graph
+  Docs docs =1;
+  // connections are connections present in the graph
+  Connections connections =2;
+}
+
+message Flags {
+  // open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
+  string open_id_discovery =1;
+  // persistant storage ref (env: GRAPHIK_STORAGE_PATH)
+  string storage_path =2;
+  // enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
+  bool metrics =3;
+  // cors allow headers (env: GRAPHIK_ALLOW_HEADERS)
+  repeated string allow_headers =5;
+  // cors allow methods (env: GRAPHIK_ALLOW_METHODS)
+  repeated string allow_methods =6;
+  // cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)
+  repeated string allow_origins =7;
+  // root user is a list of email addresses that bypass authorizers. (env: GRAPHIK_ROOT_USERS)
+  repeated string root_users =8;
+  string tls_cert =9;
+  string tls_key=10;
+  string playground_client_id =11;
+  string playground_client_secret =12;
+  string playground_redirect =13;
+}
+
+// Boolean is a simple boolean value
+message Boolean {
+  bool value =1;
+}
+
+// Number is a simple double/float64 value
+message Number {
+  double value =1;
+}
+
+// ExistsFilter is used as input into all Exists(boolean) related queries.
+message ExistsFilter {
+  string gtype =1[(validator.field) = {regex : "^.{1,225}$"}];
+  string expression = 2[(validator.field) = {regex : "^.{1,225}$"}];
+  // seek to a specific key for pagination
+  string seek =3;
+  // reverse the results
+  bool reverse =4;
+  // search in a specific index
+  string index =5;
+}
+
+// Edit patches the attributes of a Doc or Connection
+message Edit {
+  // ref is the ref to the target doc/connection to patch
+  Ref ref =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
+  google.protobuf.Struct attributes =2;
+}
+
+// EFilter is used to patch/edit docs/connections
+message EFilter {
+  // filter is used to filter docs/connections to patch
+  Filter filter =1;
+  // attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter
+  google.protobuf.Struct attributes =2;
+}
+
+// Pong returns PONG if the server is healthy
+message Pong {
+  // message returns PONG if healthy
+  string message =1;
+}
+
+// OutboundMessage is a message to be published to a pubsub channel
+message OutboundMessage {
+  // channel is the target channel to send the message to
+  string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // data is the data to send with the message
+  google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
+}
+
+// Message is received on PubSub subscriptions
+message Message {
+  // channel is the channel the message was sent to
+  string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // data is the data sent with the message
+  google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
+  // sender is the user that sent the message
+  Ref sender =3 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the message was sent
+  google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
+}
+
+// Schema returns registered connection & doc types
+message Schema {
+  // connection_types are the types of connections in the graph
+  repeated string connection_types =1;
+  // doc_types are the types of docs in the graph
+  repeated string doc_types =2;
+  Authorizers authorizers =3;
+  TypeValidators validators =4;
+  Indexes indexes =5;
+}
+
+message ExprFilter {
+  // expression is a CEL expression used to filter connections/nodes
+  string expression =1;
+}
+
+message Request {
+  // method is the rpc method
+  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // user is the user making the request
+  Doc user =2 [(validator.field) = {msg_exists : true}];
+  // timestamp is when the intercept was received
+  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
+  // request is the intercepted request
+  google.protobuf.Struct request = 4;
+}
+

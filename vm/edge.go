@@ -2,9 +2,10 @@ package vm
 
 import (
 	"errors"
-	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"strings"
 )
 
 type ConnectionVM struct {
@@ -14,7 +15,7 @@ type ConnectionVM struct {
 func NewConnectionVM() (*ConnectionVM, error) {
 	e, err := cel.NewEnv(
 		cel.Declarations(
-			decls.NewVar("connection", decls.NewMapType(decls.String, decls.Any)),
+			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -53,9 +54,12 @@ func (n *ConnectionVM) Eval(connection *apipb.Connection, programs ...cel.Progra
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"connection": connection.AsMap(),
+			"this": connection.AsMap(),
 		})
 		if err != nil {
+			if strings.Contains(err.Error(), "no such key") {
+				return false, nil
+			}
 			return false, err
 		}
 		if val, ok := out.Value().(bool); !ok || !val {

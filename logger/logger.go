@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/autom8ter/graphik/version"
+	"github.com/graphikDB/graphik/version"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"

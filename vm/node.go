@@ -2,9 +2,10 @@ package vm
 
 import (
 	"errors"
-	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"strings"
 )
 
 type DocVM struct {
@@ -14,7 +15,7 @@ type DocVM struct {
 func NewDocVM() (*DocVM, error) {
 	e, err := cel.NewEnv(
 		cel.Declarations(
-			decls.NewVar("doc", decls.NewMapType(decls.String, decls.Any)),
+			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -56,9 +57,12 @@ func (n *DocVM) Eval(doc *apipb.Doc, programs ...cel.Program) (bool, error) {
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"doc": doc.AsMap(),
+			"this": doc.AsMap(),
 		})
 		if err != nil {
+			if strings.Contains(err.Error(), "no such key") {
+				return false, nil
+			}
 			return false, err
 		}
 		if val, ok := out.Value().(bool); !ok || !val {
