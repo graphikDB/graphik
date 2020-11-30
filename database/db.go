@@ -3,9 +3,12 @@ package database
 import (
 	"context"
 	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/autom8ter/graphik/logger"
+	"github.com/google/cel-go/cel"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
@@ -31,12 +34,12 @@ func (g *Graph) updateMeta(ctx context.Context, meta *apipb.Metadata) {
 	meta.Version += 1
 }
 
-func (g *Graph) rangeIndexes(fn func(index *apipb.Index) bool) {
+func (g *Graph) rangeIndexes(fn func(index *index) bool) {
 	g.indexes.Range(func(key, value interface{}) bool {
 		if value == nil {
 			return true
 		}
-		index := value.(*apipb.Index)
+		index := value.(*index)
 		return fn(index)
 	})
 }
@@ -44,49 +47,101 @@ func (g *Graph) rangeIndexes(fn func(index *apipb.Index) bool) {
 func (g *Graph) cacheIndexes() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbIndexes).ForEach(func(k, v []byte) error {
-			var index apipb.Index
-			if err := proto.Unmarshal(v, &index); err != nil {
+			var i apipb.Index
+			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			g.indexes.Set(index.GetName(), &index, 0)
+			program, err := g.vm.Doc().Program(i.Expression)
+			if err != nil {
+				return err
+			}
+			ind := &index{
+				index:   &i,
+				program: program,
+			}
+			g.indexes.Set(i.GetName(), ind, 0)
 			return nil
 		})
 	})
 }
 
-func (g *Graph) getIndex(name string) (*apipb.Index, error) {
-	val, ok := g.indexes.Get(name)
-	if !ok {
-		return nil, ErrNotFound
-	}
-	return val.(*apipb.Index), nil
-}
-
-func (g *Graph) delIndex(ctx context.Context, tx *bbolt.Tx, name string) error {
-	indexBucket := tx.Bucket(dbIndexes)
-	if err := indexBucket.Delete([]byte(name)); err != nil {
-		return err
-	}
-	g.indexes.Delete(name)
-	return nil
-}
-
-func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, index *apipb.Index) (*apipb.Index, error) {
+func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*apipb.Index, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	indexBucket := tx.Bucket(dbIndexes)
 	seq, _ := indexBucket.NextSequence()
-	index.Sequence = seq
-	bits, err := proto.Marshal(index)
+	i.Sequence = seq
+	bits, err := proto.Marshal(i)
 	if err != nil {
 		return nil, err
 	}
-	if err := indexBucket.Put([]byte(index.GetName()), bits); err != nil {
+	if err := indexBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
-	g.indexes.Set(index.GetName(), index, 0)
-	return index, nil
+	if i.Connections {
+		tx.Bucket(dbIndexConnections).CreateBucketIfNotExists([]byte(i.GetName()))
+	}
+	if i.Docs {
+		tx.Bucket(dbIndexDocs).CreateBucketIfNotExists([]byte(i.GetName()))
+	}
+	return i, g.cacheIndexes()
+}
+
+func (g *Graph) setIndexedDoc(ctx context.Context, tx *bbolt.Tx, index, gid string, doc []byte) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	bucket := tx.Bucket(dbIndexDocs).Bucket([]byte(index))
+	if bucket == nil {
+		return ErrNotFound
+	}
+	if err := bucket.Put([]byte(gid), doc); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Graph) setIndexedConnection(ctx context.Context, tx *bbolt.Tx, index, gid string, connection []byte) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	bucket := tx.Bucket(dbIndexConnections).Bucket([]byte(index))
+	if bucket == nil {
+		return ErrNotFound
+	}
+	if err := bucket.Put([]byte(gid), connection); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Graph) delIndexedDoc(ctx context.Context, tx *bbolt.Tx, index, gid string) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	bucket := tx.Bucket(dbIndexDocs).Bucket([]byte(index))
+	if bucket == nil {
+		return ErrNotFound
+	}
+	if err := bucket.Delete([]byte(gid)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (g *Graph) delIndexedConnection(ctx context.Context, tx *bbolt.Tx, index, gid string) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	bucket := tx.Bucket(dbIndexConnections).Bucket([]byte(index))
+	if bucket == nil {
+		return ErrNotFound
+	}
+	if err := bucket.Delete([]byte(gid)); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apipb.Doc, error) {
@@ -115,6 +170,28 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	if err := bucket.Put([]byte(doc.GetPath().GetGid()), bits); err != nil {
 		return nil, err
 	}
+	g.rangeIndexes(func(i *index) bool {
+		if i.index.Docs {
+			program, err := g.vm.Doc().Program(i.index.Expression)
+			if err != nil {
+				logger.Error("failed to create index", zap.Error(err))
+				return true
+			}
+			result, err := g.vm.Doc().Eval(doc, program)
+			if err != nil {
+				logger.Error("failed to evaluate index", zap.Error(err))
+				return true
+			}
+			if result {
+				err = g.setIndexedDoc(ctx, tx, i.index.Name, doc.GetPath().GetGid(), bits)
+				if err != nil {
+					logger.Error("failed to save index", zap.Error(err))
+					return true
+				}
+			}
+		}
+		return true
+	})
 	return doc, nil
 }
 
@@ -192,6 +269,28 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	}
 	sortPaths(g.connectionsFrom[connection.GetFrom().String()])
 	sortPaths(g.connectionsTo[connection.GetTo().String()])
+	g.rangeIndexes(func(i *index) bool {
+		if i.index.Connections {
+			program, err := g.vm.Connection().Program(i.index.Expression)
+			if err != nil {
+				logger.Error("failed to create index", zap.Error(err))
+				return true
+			}
+			result, err := g.vm.Connection().Eval(connection, program)
+			if err != nil {
+				logger.Error("failed to evaluate index", zap.Error(err))
+				return true
+			}
+			if result {
+				err = g.setIndexedConnection(ctx, tx, i.index.Name, connection.GetPath().GetGid(), bits)
+				if err != nil {
+					logger.Error("failed to save index", zap.Error(err))
+					return true
+				}
+			}
+		}
+		return true
+	})
 	return connection, nil
 }
 
@@ -393,6 +492,12 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) erro
 		g.delConnection(ctx, tx, e.GetPath())
 		return true
 	})
+	g.rangeIndexes(func(index *index) bool {
+		if index.index.Docs && index.index.GetGtype() == path.GetGtype() {
+			g.delIndexedDoc(ctx, tx, index.index.Name, path.GetGid())
+		}
+		return true
+	})
 	return bucket.Delete([]byte(doc.GetPath().GetGid()))
 }
 
@@ -407,6 +512,12 @@ func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Pat
 	toPaths := removeConnection(path, g.connectionsTo[connection.GetTo().String()])
 	g.connectionsTo[connection.GetTo().String()] = toPaths
 	g.mu.Unlock()
+	g.rangeIndexes(func(index *index) bool {
+		if index.index.Connections && index.index.GetGtype() == path.GetGtype() {
+			g.delIndexedConnection(ctx, tx, index.index.Name, path.GetGid())
+		}
+		return true
+	})
 	return tx.Bucket(dbConnections).Bucket([]byte(connection.GetPath().GetGtype())).Delete([]byte(connection.GetPath().GetGid()))
 }
 
@@ -551,4 +662,9 @@ func sortPaths(paths []*apipb.Path) {
 	sort.Slice(paths, func(i, j int) bool {
 		return paths[i].String() < paths[j].String()
 	})
+}
+
+type index struct {
+	index *apipb.Index
+	program cel.Program
 }
