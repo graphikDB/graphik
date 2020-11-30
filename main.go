@@ -75,6 +75,7 @@ func main() {
 }
 
 const bind = ":7820"
+const metricsBind = ":7821"
 
 func run(ctx context.Context, cfg *flags.Flags) {
 	ctx, cancel := context.WithCancel(ctx)
@@ -89,16 +90,6 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		return
 	}
 	defer g.Close()
-
-	router := http.NewServeMux()
-	if cfg.Metrics {
-		router.Handle("/metrics", promhttp.Handler())
-		router.HandleFunc("/debug/pprof/", pprof.Index)
-		router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-		router.HandleFunc("/debug/pprof/profile", pprof.Profile)
-		router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
-		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
-	}
 	lis, err := net.Listen("tcp", bind)
 	if err != nil {
 		logger.Error("failed to create http server listener", zap.Error(err))
@@ -116,9 +107,8 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		AllowedMethods: global.AllowedMethods,
 		AllowedHeaders: global.AllowedHeaders,
 	}))
-	router.Handle("/query", resolver.QueryHandler())
-	server := &http.Server{
-		Handler: router,
+	httpServer := &http.Server{
+		Handler: resolver.QueryHandler(),
 	}
 	cm := cmux.New(lis)
 	m.Go(func(routine machine.Routine) {
@@ -127,11 +117,33 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		logger.Info("starting http server",
 			zap.String("address", hmatcher.Addr().String()),
 		)
-		if err := server.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
+		if err := httpServer.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
 			logger.Error("http server failure", zap.Error(err))
 		}
 	})
-
+	var metricServer *http.Server
+	if cfg.Metrics {
+		router := http.NewServeMux()
+		router.Handle("/metrics", promhttp.Handler())
+		router.HandleFunc("/debug/pprof/", pprof.Index)
+		router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+		router.HandleFunc("/debug/pprof/profile", pprof.Profile)
+		router.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
+		metricServer = &http.Server{Handler: router}
+		m.Go(func(routine machine.Routine) {
+			metricLis, err := net.Listen("tcp", metricsBind)
+			if err != nil {
+				logger.Error("metrics server failure", zap.Error(err))
+				return
+			}
+			defer metricLis.Close()
+			logger.Info("starting metrics server", zap.String("address", metricLis.Addr().String()))
+			if err := metricServer.Serve(metricLis); err != nil && err != http.ErrServerClosed {
+				logger.Error("metrics server failure", zap.Error(err))
+			}
+		})
+	}
 	gserver := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			grpc_prometheus.UnaryServerInterceptor,
@@ -152,20 +164,17 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	apipb.RegisterDatabaseServiceServer(gserver, g)
 	reflection.Register(gserver)
 	grpc_prometheus.Register(gserver)
-
 	m.Go(func(routine machine.Routine) {
 		gmatcher := cm.Match(cmux.HTTP2())
 		defer gmatcher.Close()
-		logger.Info("starting gRPC server",
-			zap.String("address", lis.Addr().String()),
-		)
-		if err := gserver.Serve(gmatcher); err != nil && err != http.ErrServerClosed {
+		logger.Info("starting gRPC server", zap.String("address", lis.Addr().String()))
+		if err := gserver.Serve(gmatcher); err != nil && err != http.ErrServerClosed && !strings.Contains(err.Error(), "mux: listener closed") {
 			logger.Error("gRPC server failure", zap.Error(err))
 		}
 	})
 	m.Go(func(routine machine.Routine) {
-		if err := cm.Serve(); err != nil {
-			logger.Error("", zap.Error(err))
+		if err := cm.Serve(); err != nil && !strings.Contains(err.Error(), "closed network connection") {
+			logger.Error("listener mux error", zap.Error(err))
 		}
 	})
 	select {
@@ -181,7 +190,10 @@ func run(ctx context.Context, cfg *flags.Flags) {
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
 
-	_ = server.Shutdown(shutdownCtx)
+	_ = httpServer.Shutdown(shutdownCtx)
+	if metricServer != nil {
+		_ = metricServer.Shutdown(shutdownCtx)
+	}
 	stopped := make(chan struct{})
 	go func() {
 		gserver.GracefulStop()
