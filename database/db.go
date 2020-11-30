@@ -48,12 +48,21 @@ func (g *Graph) cacheIndexes() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbIndexes).ForEach(func(k, v []byte) error {
 			var i apipb.Index
+			var program cel.Program
+			var err error
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			program, err := g.vm.Doc().Program(i.Expression)
-			if err != nil {
-				return err
+			if i.Connections {
+				program, err = g.vm.Connection().Program(i.Expression)
+				if err != nil {
+					return err
+				}
+			} else if i.Docs {
+				program, err = g.vm.Doc().Program(i.Expression)
+				if err != nil {
+					return err
+				}
 			}
 			ind := &index{
 				index:   &i,
@@ -70,6 +79,27 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 		return nil, err
 	}
 	indexBucket := tx.Bucket(dbIndexes)
+	val := indexBucket.Get([]byte(i.GetName()))
+	if val != nil {
+		var current = &apipb.Index{}
+		err := proto.Unmarshal(val, current)
+		if err != nil {
+			return nil, err
+		}
+		current.Connections = i.Connections
+		current.Docs = i.Docs
+		current.Gtype = i.Gtype
+		current.Expression = i.Expression
+		bits, err := proto.Marshal(current)
+		if err != nil {
+			return nil, err
+		}
+		err = indexBucket.Put([]byte(i.GetName()), bits)
+		if err != nil {
+			return nil, err
+		}
+		return current, g.cacheIndexes()
+	}
 	seq, _ := indexBucket.NextSequence()
 	i.Sequence = seq
 	bits, err := proto.Marshal(i)
@@ -328,9 +358,13 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*ap
 }
 
 func (g *Graph) getConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Connection, error) {
+	if path == nil {
+		return nil, ErrNotFound
+	}
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
+
 	var connection apipb.Connection
 	bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
 	if bucket == nil {
@@ -627,7 +661,7 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int
 		}
 		return nil
 	}); err != nil && err != DONE {
-		return int64(helpers.BytesToUint64(lastKey)), err
+		return 0, err
 	}
 	return int64(helpers.BytesToUint64(lastKey)), nil
 }
