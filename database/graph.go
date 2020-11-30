@@ -46,8 +46,7 @@ type Graph struct {
 	machine         *machine.Machine
 	closers         []func()
 	closeOnce       sync.Once
-	indexes         map[string]*apipb.Filter
-	indexMu sync.RWMutex
+	indexes         *cache.Cache
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -85,6 +84,7 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		closers:         closers,
 		closeOnce:       sync.Once{},
 		jwtCache:        cache.New(m, 1*time.Minute),
+		indexes:         cache.New(m, 1*time.Minute),
 	}
 	if flgs.OpenIDConnect != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIDConnect)
@@ -119,11 +119,11 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 			return errors.Wrap(err, "failed to create connection bucket")
 		}
 		// Create all the buckets
-		_, err = tx.CreateBucketIfNotExists(indexDocs)
+		_, err = tx.CreateBucketIfNotExists(dbIndexDocs)
 		if err != nil {
 			return errors.Wrap(err, "failed to create doc/index bucket")
 		}
-		_, err = tx.CreateBucketIfNotExists(indexConnections)
+		_, err = tx.CreateBucketIfNotExists(dbIndexConnections)
 		if err != nil {
 			return errors.Wrap(err, "failed to create connection/index bucket")
 		}
@@ -1278,6 +1278,10 @@ func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empt
 		Timestamp:         timestamppb.Now(),
 		ConnectionChanges: changes,
 	})
+}
+
+func (g *Graph) l() {
+
 }
 
 type openIDConnect struct {

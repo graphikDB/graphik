@@ -195,6 +195,15 @@ message Filter {
   bool reverse =6;
 }
 
+message Index {
+  string name =1[(validator.field) = {regex : "^.{1,225}$"}];
+  // gtype is the doc/connection type to be filtered
+  string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is a CEL expression used to filter connections/modes
+  string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
+  uint64 sequence =4;
+}
+
 // MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
 message MeFilter {
   // connections_from is a filter used to filter connections from the identity making the request
