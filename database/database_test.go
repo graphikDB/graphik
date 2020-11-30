@@ -206,15 +206,14 @@ func TestGraph_GetDoc(t *testing.T) {
 	}
 }
 
-
 func TestGraph_GetDocDetail(t *testing.T) {
 	res, err := graph.GetDocDetail(ctx, &apipb.DocDetailFilter{
-		Path:            ashe.GetPath(),
+		Path: ashe.GetPath(),
 		FromConnections: &apipb.Filter{
-			Gtype:      "owner",
+			Gtype: "owner",
 		},
-		ToConnections:   &apipb.Filter{
-			Gtype:      "owner",
+		ToConnections: &apipb.Filter{
+			Gtype: "owner",
 		},
 	})
 	if err != nil {

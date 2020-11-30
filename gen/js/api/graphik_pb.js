@@ -4546,7 +4546,6 @@ proto.api.Index.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     gtype: jspb.Message.getFieldWithDefault(msg, 3, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    sequence: jspb.Message.getFieldWithDefault(msg, 5, 0),
     docs: jspb.Message.getFieldWithDefault(msg, 6, false),
     connections: jspb.Message.getFieldWithDefault(msg, 7, false)
   };
@@ -4596,10 +4595,6 @@ proto.api.Index.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setExpression(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readUint64());
-      msg.setSequence(value);
       break;
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -4656,13 +4651,6 @@ proto.api.Index.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       4,
-      f
-    );
-  }
-  f = message.getSequence();
-  if (f !== 0) {
-    writer.writeUint64(
-      5,
       f
     );
   }
@@ -4725,21 +4713,6 @@ proto.api.Index.prototype.getExpression = function() {
 /** @param {string} value */
 proto.api.Index.prototype.setExpression = function(value) {
   jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional uint64 sequence = 5;
- * @return {number}
- */
-proto.api.Index.prototype.getSequence = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/** @param {number} value */
-proto.api.Index.prototype.setSequence = function(value) {
-  jspb.Message.setProto3IntField(this, 5, value);
 };
 
 

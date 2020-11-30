@@ -425,7 +425,6 @@ Graph is an array of docs and connections
 | name | [string](#string) |  |  |
 | gtype | [string](#string) |  | gtype is the doc/connection type to be filtered |
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
-| sequence | [uint64](#uint64) |  |  |
 | docs | [bool](#bool) |  |  |
 | connections | [bool](#bool) |  |  |
 

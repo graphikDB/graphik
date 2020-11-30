@@ -100,8 +100,6 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 		}
 		return current, g.cacheIndexes()
 	}
-	seq, _ := indexBucket.NextSequence()
-	i.Sequence = seq
 	bits, err := proto.Marshal(i)
 	if err != nil {
 		return nil, err

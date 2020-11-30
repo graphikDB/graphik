@@ -201,7 +201,6 @@ message Index {
   string gtype =3 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is a CEL expression used to filter connections/modes
   string expression =4[(validator.field) = {regex : "^.{1,225}$"}];
-  uint64 sequence =5;
   bool docs =6;
   bool connections =7;
 }
