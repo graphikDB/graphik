@@ -40,11 +40,11 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 		}
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
-			return nil, status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
+			return nil, status.Errorf(codes.Unauthenticated, "empty X-ID-TOKEN")
 		}
-		values := md.Get("X-GRAPHIK-ID")
+		values := md.Get("X-ID-TOKEN")
 		if len(values) == 0 {
-			return nil, status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
+			return nil, status.Errorf(codes.Unauthenticated, "empty X-ID-TOKEN")
 		}
 		idToken := values[0]
 		idTokenHash := helpers.Hash([]byte(idToken))
@@ -112,11 +112,11 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		}
 		md, ok := metadata.FromIncomingContext(ss.Context())
 		if !ok {
-			return status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
+			return status.Errorf(codes.Unauthenticated, "empty X-ID-TOKEN")
 		}
-		values := md.Get("X-GRAPHIK-ID")
+		values := md.Get("X-ID-TOKEN")
 		if len(values) == 0 {
-			return status.Errorf(codes.Unauthenticated, "empty X-GRAPHIK-ID")
+			return status.Errorf(codes.Unauthenticated, "empty X-ID-TOKEN")
 		}
 		idToken := values[0]
 		idTokenHash := helpers.Hash([]byte(idToken))
