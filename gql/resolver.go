@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/autom8ter/graphik/gen/go/api"
-	"github.com/autom8ter/graphik/gql/generated"
+	"github.com/autom8ter/graphik/gen/gql/generated"
 	"github.com/autom8ter/machine"
 	"github.com/rs/cors"
 	"google.golang.org/grpc/metadata"

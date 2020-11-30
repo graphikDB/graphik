@@ -7,7 +7,7 @@ import (
 	"context"
 
 	apipb "github.com/autom8ter/graphik/gen/go/api"
-	"github.com/autom8ter/graphik/gql/generated"
+	generated1 "github.com/autom8ter/graphik/gen/gql/generated"
 	"github.com/autom8ter/graphik/logger"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -139,17 +139,17 @@ func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input apipb
 	return ch, nil
 }
 
-// Metadata returns generated.MetadataResolver implementation.
-func (r *Resolver) Metadata() generated.MetadataResolver { return &metadataResolver{r} }
+// Metadata returns generated1.MetadataResolver implementation.
+func (r *Resolver) Metadata() generated1.MetadataResolver { return &metadataResolver{r} }
 
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+// Mutation returns generated1.MutationResolver implementation.
+func (r *Resolver) Mutation() generated1.MutationResolver { return &mutationResolver{r} }
 
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+// Query returns generated1.QueryResolver implementation.
+func (r *Resolver) Query() generated1.QueryResolver { return &queryResolver{r} }
 
-// Subscription returns generated.SubscriptionResolver implementation.
-func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
+// Subscription returns generated1.SubscriptionResolver implementation.
+func (r *Resolver) Subscription() generated1.SubscriptionResolver { return &subscriptionResolver{r} }
 
 type metadataResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
