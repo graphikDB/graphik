@@ -5,6 +5,7 @@ package gql
 
 import (
 	"context"
+	"fmt"
 
 	apipb "github.com/autom8ter/graphik/gen/go"
 	generated1 "github.com/autom8ter/graphik/gen/gql/generated"
@@ -21,24 +22,24 @@ func (r *mutationResolver) CreateDoc(ctx context.Context, input apipb.DocConstru
 	return r.client.CreateDoc(ctx, &input)
 }
 
-func (r *mutationResolver) PatchDoc(ctx context.Context, input apipb.Patch) (*apipb.Doc, error) {
-	return r.client.PatchDoc(ctx, &input)
+func (r *mutationResolver) PatchDoc(ctx context.Context, input apipb.Edit) (*apipb.Doc, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) PatchDocs(ctx context.Context, input apipb.PatchFilter) (*apipb.Docs, error) {
-	return r.client.PatchDocs(ctx, &input)
+func (r *mutationResolver) PatchDocs(ctx context.Context, input apipb.EditFilter) (*apipb.Docs, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *mutationResolver) CreateConnection(ctx context.Context, input apipb.ConnectionConstructor) (*apipb.Connection, error) {
 	return r.client.CreateConnection(ctx, &input)
 }
 
-func (r *mutationResolver) PatchConnection(ctx context.Context, input apipb.Patch) (*apipb.Connection, error) {
-	return r.client.PatchConnection(ctx, &input)
+func (r *mutationResolver) PatchConnection(ctx context.Context, input apipb.Edit) (*apipb.Connection, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *mutationResolver) PatchConnections(ctx context.Context, input apipb.PatchFilter) (*apipb.Connections, error) {
-	return r.client.PatchConnections(ctx, &input)
+func (r *mutationResolver) PatchConnections(ctx context.Context, input apipb.EditFilter) (*apipb.Connections, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *mutationResolver) Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error) {
@@ -155,3 +156,22 @@ type metadataResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) EditDoc(ctx context.Context, input apipb.Edit) (*apipb.Doc, error) {
+	return r.client.EditDoc(ctx, &input)
+}
+func (r *mutationResolver) EditDocs(ctx context.Context, input apipb.EditFilter) (*apipb.Docs, error) {
+	return r.client.EditDocs(ctx, &input)
+}
+func (r *mutationResolver) EditConnection(ctx context.Context, input apipb.Edit) (*apipb.Connection, error) {
+	return r.client.EditConnection(ctx, &input)
+}
+func (r *mutationResolver) EditConnections(ctx context.Context, input apipb.EditFilter) (*apipb.Connections, error) {
+	return r.client.EditConnections(ctx, &input)
+}

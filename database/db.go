@@ -243,29 +243,29 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	}
 	docBucket := tx.Bucket(dbDocs)
 	{
-		fromBucket := docBucket.Bucket([]byte(connection.From.Gtype))
+		fromBucket := docBucket.Bucket([]byte(connection.GetFrom().GetGtype()))
 		if fromBucket == nil {
-			return nil, errors.Errorf("from doc %s does not exist", connection.From.String())
+			return nil, errors.Errorf("from doc %s does not exist", connection.GetFrom().String())
 		}
-		val := fromBucket.Get(helpers.Uint64ToBytes(uint64(connection.From.Gid)))
+		val := fromBucket.Get(helpers.Uint64ToBytes(uint64(connection.GetFrom().GetGid())))
 		if val == nil {
-			return nil, errors.Errorf("from doc %s does not exist", connection.From.String())
+			return nil, errors.Errorf("from doc %s does not exist", connection.GetFrom().String())
 		}
 	}
 	{
-		toBucket := docBucket.Bucket([]byte(connection.To.Gtype))
+		toBucket := docBucket.Bucket([]byte(connection.GetTo().GetGtype()))
 		if toBucket == nil {
-			return nil, errors.Errorf("to doc %s does not exist", connection.To.String())
+			return nil, errors.Errorf("to doc %s does not exist", connection.GetTo().String())
 		}
-		val := toBucket.Get(helpers.Uint64ToBytes(uint64(connection.To.Gid)))
+		val := toBucket.Get(helpers.Uint64ToBytes(uint64(connection.GetTo().GetGid())))
 		if val == nil {
-			return nil, errors.Errorf("to doc %s does not exist", connection.To.String())
+			return nil, errors.Errorf("to doc %s does not exist", connection.GetTo().String())
 		}
 	}
 	if connection.GetPath() == nil {
 		connection.Path = &apipb.Path{}
 	}
-	g.updateMeta(ctx, connection.Metadata)
+	g.updateMeta(ctx, connection.GetMetadata())
 	bits, err := proto.Marshal(connection)
 	if err != nil {
 		return nil, err

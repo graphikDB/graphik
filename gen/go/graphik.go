@@ -164,7 +164,7 @@ func (n *ExpressionFilter) AsMap() map[string]interface{} {
 	}
 }
 
-func (p *Patch) AsMap() map[string]interface{} {
+func (p *Edit) AsMap() map[string]interface{} {
 	if p == nil {
 		return map[string]interface{}{}
 	}
@@ -174,7 +174,7 @@ func (p *Patch) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *PatchFilter) AsMap() map[string]interface{} {
+func (n *EditFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}

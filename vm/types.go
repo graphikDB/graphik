@@ -8,7 +8,7 @@ import (
 var (
 	_expressionFilter  = &apipb.ExpressionFilter{}
 	_filter            = &apipb.Filter{}
-	_patchFilter       = &apipb.PatchFilter{}
+	_patchFilter       = &apipb.EditFilter{}
 	_subGraphFilter    = &apipb.SubGraphFilter{}
 	_docDetailFilter   = &apipb.DocDetailFilter{}
 	_connectionFilter  = &apipb.ConnectionFilter{}

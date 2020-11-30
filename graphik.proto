@@ -272,16 +272,16 @@ message Flags {
   repeated string allow_origins =7;
 }
 
-// Patch patches the attributes of a Doc or Connection
-message Patch {
+// Edit patches the attributes of a Doc or Connection
+message Edit {
   // path is the path to the target doc/connection to patch
   Path path =1 [(validator.field) = {msg_exists : true}];
   // attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   google.protobuf.Struct attributes =2;
 }
 
-// PatchFilter is used to patch docs/connections
-message PatchFilter {
+// EditFilter is used to patch docs/connections
+message EditFilter {
   // filter is used to filter docs/connections to patch
   Filter filter =1;
   // attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter
@@ -383,10 +383,10 @@ service DatabaseService {
   rpc GetDoc(Path) returns(Doc){}
   // SearchDocs searches the graph for docs
   rpc SearchDocs(Filter) returns(Docs){}
-  // PatchDoc patches a docs attributes
-  rpc PatchDoc(Patch) returns(Doc){}
-  // PatchDocs patches a batch of docs attributes that pass the patch filter
-  rpc PatchDocs(PatchFilter) returns(Docs){}
+  // EditDoc patches a docs attributes
+  rpc EditDoc(Edit) returns(Doc){}
+  // EditDocs patches a batch of docs attributes that pass the patch filter
+  rpc EditDocs(EditFilter) returns(Docs){}
   // DelDoc deletes a doc & all of it's connected connections
   rpc DelDoc(Path) returns(google.protobuf.Empty){}
   // DelDocs deletes a batch of docs that pass the filter
@@ -399,10 +399,10 @@ service DatabaseService {
   rpc GetConnection(Path) returns(Connection){}
   // SearchConnections searches the graph for connections
   rpc SearchConnections(Filter) returns(Connections){}
-  // PatchConnection patches an connections attributes
-  rpc PatchConnection(Patch) returns(Connection){}
-  // PatchConnections patches a batch of connections attributes that pass the patch filter
-  rpc PatchConnections(PatchFilter) returns(Connections){}
+  // EditConnection patches an connections attributes
+  rpc EditConnection(Edit) returns(Connection){}
+  // EditConnections patches a batch of connections attributes that pass the patch filter
+  rpc EditConnections(EditFilter) returns(Connections){}
   // DelConnection deletes an connection from the graph
   rpc DelConnection(Path) returns(google.protobuf.Empty){}
   // DelConnections deletes a batch of connections that pass the filter

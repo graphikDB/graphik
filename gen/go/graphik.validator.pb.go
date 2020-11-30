@@ -5,15 +5,15 @@ package apipb
 
 import (
 	fmt "fmt"
+	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/any"
-	_ "github.com/golang/protobuf/ptypes/empty"
 	_ "github.com/golang/protobuf/ptypes/struct"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
+	_ "github.com/golang/protobuf/ptypes/any"
+	_ "github.com/golang/protobuf/ptypes/empty"
 	_ "github.com/mwitkow/go-proto-validators"
-	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
-	math "math"
 	regexp "regexp"
+	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -473,7 +473,7 @@ func (this *Graph) Validate() error {
 func (this *Flags) Validate() error {
 	return nil
 }
-func (this *Patch) Validate() error {
+func (this *Edit) Validate() error {
 	if nil == this.Path {
 		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
 	}
@@ -489,7 +489,7 @@ func (this *Patch) Validate() error {
 	}
 	return nil
 }
-func (this *PatchFilter) Validate() error {
+func (this *EditFilter) Validate() error {
 	if this.Filter != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)

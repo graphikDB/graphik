@@ -249,16 +249,16 @@ input ChannelFilter {
   expression: String
 }
 
-# Patch patches the attributes of a Doc or Connection
-input Patch {
+# Edit patches the attributes of a Doc or Connection
+input Edit {
   # path is the path to the target doc/connection to patch
   path: PathInput!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Struct!
 }
 
-# PatchFilter is used to patch docs/connections
-input PatchFilter {
+# EditFilter is used to patch docs/connections
+input EditFilter {
   # filter is used to filter docs/connections to patch
   filter: Filter!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
@@ -294,15 +294,15 @@ type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
   # patchDoc patches a single doc in the graph
-  patchDoc(input: Patch!): Doc!
+  patchDoc(input: Edit!): Doc!
   # patchDocs patches 0-many docs in the graph
-  patchDocs(input: PatchFilter!): Docs!
+  patchDocs(input: EditFilter!): Docs!
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
   # patchConnection patches a single connection in the graph
-  patchConnection(input: Patch!): Connection!
+  patchConnection(input: Edit!): Connection!
   # patchConnections patches 0-many connections in the graph
-  patchConnections(input: PatchFilter!): Connections!
+  patchConnections(input: EditFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty!
   setIndexes(input: IndexesInput!): Schema!

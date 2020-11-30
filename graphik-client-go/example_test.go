@@ -160,7 +160,7 @@ func ExampleClient_SearchConnections() {
 	// Output: true
 }
 
-func ExampleClient_PatchDoc() {
+func ExampleClient_EditDoc() {
 	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
 		Gtype:      "dog",
 		Expression: `doc.attributes.name.contains("Charl")`,
@@ -171,7 +171,7 @@ func ExampleClient_PatchDoc() {
 		return
 	}
 	charlie := dogs.GetDocs()[0]
-	charlie, err = client.PatchDoc(context.Background(), &apipb.Patch{
+	charlie, err = client.EditDoc(context.Background(), &apipb.Edit{
 		Path: charlie.Path,
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"weight": 25,

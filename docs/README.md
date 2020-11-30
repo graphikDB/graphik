@@ -22,6 +22,8 @@
     - [DocDetailFilter](#api.DocDetailFilter)
     - [DocDetails](#api.DocDetails)
     - [Docs](#api.Docs)
+    - [Edit](#api.Edit)
+    - [EditFilter](#api.EditFilter)
     - [ExpressionFilter](#api.ExpressionFilter)
     - [Filter](#api.Filter)
     - [Flags](#api.Flags)
@@ -33,8 +35,6 @@
     - [Message](#api.Message)
     - [Metadata](#api.Metadata)
     - [OutboundMessage](#api.OutboundMessage)
-    - [Patch](#api.Patch)
-    - [PatchFilter](#api.PatchFilter)
     - [Path](#api.Path)
     - [Paths](#api.Paths)
     - [Pong](#api.Pong)
@@ -365,6 +365,38 @@ Docs is an array of docs
 
 
 
+<a name="api.Edit"></a>
+
+### Edit
+Edit patches the attributes of a Doc or Connection
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| path | [Path](#api.Path) |  | path is the path to the target doc/connection to patch |
+| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs used to overwrite k/v pairs on a doc/connection |
+
+
+
+
+
+
+<a name="api.EditFilter"></a>
+
+### EditFilter
+EditFilter is used to patch docs/connections
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [Filter](#api.Filter) |  | filter is used to filter docs/connections to patch |
+| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter |
+
+
+
+
+
+
 <a name="api.ExpressionFilter"></a>
 
 ### ExpressionFilter
@@ -560,38 +592,6 @@ OutboundMessage is a message to be published to a pubsub channel
 
 
 
-<a name="api.Patch"></a>
-
-### Patch
-Patch patches the attributes of a Doc or Connection
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the target doc/connection to patch |
-| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs used to overwrite k/v pairs on a doc/connection |
-
-
-
-
-
-
-<a name="api.PatchFilter"></a>
-
-### PatchFilter
-PatchFilter is used to patch docs/connections
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| filter | [Filter](#api.Filter) |  | filter is used to filter docs/connections to patch |
-| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter |
-
-
-
-
-
-
 <a name="api.Path"></a>
 
 ### Path
@@ -710,16 +710,16 @@ DatabaseService is the primary database service
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |
 | GetDoc | [Path](#api.Path) | [Doc](#api.Doc) | GetDoc gets a single doc in the graph |
 | SearchDocs | [Filter](#api.Filter) | [Docs](#api.Docs) | SearchDocs searches the graph for docs |
-| PatchDoc | [Patch](#api.Patch) | [Doc](#api.Doc) | PatchDoc patches a docs attributes |
-| PatchDocs | [PatchFilter](#api.PatchFilter) | [Docs](#api.Docs) | PatchDocs patches a batch of docs attributes that pass the patch filter |
+| EditDoc | [Edit](#api.Edit) | [Doc](#api.Doc) | EditDoc patches a docs attributes |
+| EditDocs | [EditFilter](#api.EditFilter) | [Docs](#api.Docs) | EditDocs patches a batch of docs attributes that pass the patch filter |
 | DelDoc | [Path](#api.Path) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDoc deletes a doc &amp; all of it&#39;s connected connections |
 | DelDocs | [Filter](#api.Filter) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDocs deletes a batch of docs that pass the filter |
 | CreateConnection | [ConnectionConstructor](#api.ConnectionConstructor) | [Connection](#api.Connection) | CreateConnection creates an connection in the graph |
 | CreateConnections | [ConnectionConstructors](#api.ConnectionConstructors) | [Connections](#api.Connections) | CreateConnections creates a batch of connections in the graph |
 | GetConnection | [Path](#api.Path) | [Connection](#api.Connection) | GetConnection gets a single connection in the graph |
 | SearchConnections | [Filter](#api.Filter) | [Connections](#api.Connections) | SearchConnections searches the graph for connections |
-| PatchConnection | [Patch](#api.Patch) | [Connection](#api.Connection) | PatchConnection patches an connections attributes |
-| PatchConnections | [PatchFilter](#api.PatchFilter) | [Connections](#api.Connections) | PatchConnections patches a batch of connections attributes that pass the patch filter |
+| EditConnection | [Edit](#api.Edit) | [Connection](#api.Connection) | EditConnection patches an connections attributes |
+| EditConnections | [EditFilter](#api.EditFilter) | [Connections](#api.Connections) | EditConnections patches a batch of connections attributes that pass the patch filter |
 | DelConnection | [Path](#api.Path) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelConnection deletes an connection from the graph |
 | DelConnections | [Filter](#api.Filter) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelConnections deletes a batch of connections that pass the filter |
 | ConnectionsFrom | [ConnectionFilter](#api.ConnectionFilter) | [Connections](#api.Connections) | ConnectionsFrom returns connections that source from the given doc path that pass the filter |

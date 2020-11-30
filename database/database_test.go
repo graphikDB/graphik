@@ -257,8 +257,8 @@ func TestGraph_SearchConnections(t *testing.T) {
 	}
 }
 
-func TestGraph_PatchDoc(t *testing.T) {
-	res, err := graph.PatchDoc(ctx, &apipb.Patch{
+func TestGraph_EditDoc(t *testing.T) {
+	res, err := graph.EditDoc(ctx, &apipb.Edit{
 		Path: ashe.GetPath(),
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"age": 13,

@@ -685,7 +685,7 @@ func (g *Graph) CreateDoc(ctx context.Context, constructor *apipb.DocConstructor
 	return docs.GetDocs()[0], nil
 }
 
-func (n *Graph) PatchDoc(ctx context.Context, value *apipb.Patch) (*apipb.Doc, error) {
+func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, error) {
 	identity := n.getIdentity(ctx)
 	var doc *apipb.Doc
 	var err error
@@ -721,7 +721,7 @@ func (n *Graph) PatchDoc(ctx context.Context, value *apipb.Patch) (*apipb.Doc, e
 	return doc, err
 }
 
-func (n *Graph) PatchDocs(ctx context.Context, patch *apipb.PatchFilter) (*apipb.Docs, error) {
+func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.Docs, error) {
 	identity := n.getIdentity(ctx)
 	var changes []*apipb.DocChange
 	var docs []*apipb.Doc
@@ -947,7 +947,7 @@ func (n *Graph) AllConnections(ctx context.Context) (*apipb.Connections, error) 
 	return toReturn, nil
 }
 
-func (n *Graph) PatchConnection(ctx context.Context, value *apipb.Patch) (*apipb.Connection, error) {
+func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.Connection, error) {
 	identity := n.getIdentity(ctx)
 	var connection *apipb.Connection
 	var err error
@@ -987,7 +987,7 @@ func (n *Graph) PatchConnection(ctx context.Context, value *apipb.Patch) (*apipb
 	return connection, nil
 }
 
-func (n *Graph) PatchConnections(ctx context.Context, patch *apipb.PatchFilter) (*apipb.Connections, error) {
+func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*apipb.Connections, error) {
 	identity := n.getIdentity(ctx)
 	var changes []*apipb.ConnectionChange
 	var connections []*apipb.Connection

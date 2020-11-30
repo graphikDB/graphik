@@ -124,12 +124,12 @@ func (c *Client) SearchDocs(ctx context.Context, in *apipb.Filter, opts ...grpc.
 	return c.graph.SearchDocs(ctx, in, opts...)
 }
 
-func (c *Client) PatchDoc(ctx context.Context, in *apipb.Patch, opts ...grpc.CallOption) (*apipb.Doc, error) {
-	return c.graph.PatchDoc(ctx, in, opts...)
+func (c *Client) EditDoc(ctx context.Context, in *apipb.Edit, opts ...grpc.CallOption) (*apipb.Doc, error) {
+	return c.graph.EditDoc(ctx, in, opts...)
 }
 
-func (c *Client) PatchDocs(ctx context.Context, in *apipb.PatchFilter, opts ...grpc.CallOption) (*apipb.Docs, error) {
-	return c.graph.PatchDocs(ctx, in, opts...)
+func (c *Client) EditDocs(ctx context.Context, in *apipb.EditFilter, opts ...grpc.CallOption) (*apipb.Docs, error) {
+	return c.graph.EditDocs(ctx, in, opts...)
 }
 
 func (c *Client) CreateConnection(ctx context.Context, in *apipb.ConnectionConstructor, opts ...grpc.CallOption) (*apipb.Connection, error) {
@@ -148,12 +148,12 @@ func (c *Client) SearchConnections(ctx context.Context, in *apipb.Filter, opts .
 	return c.graph.SearchConnections(ctx, in, opts...)
 }
 
-func (c *Client) PatchConnection(ctx context.Context, in *apipb.Patch, opts ...grpc.CallOption) (*apipb.Connection, error) {
-	return c.graph.PatchConnection(ctx, in, opts...)
+func (c *Client) EditConnection(ctx context.Context, in *apipb.Edit, opts ...grpc.CallOption) (*apipb.Connection, error) {
+	return c.graph.EditConnection(ctx, in, opts...)
 }
 
-func (c *Client) PatchConnections(ctx context.Context, in *apipb.PatchFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
-	return c.graph.PatchConnections(ctx, in, opts...)
+func (c *Client) EditConnections(ctx context.Context, in *apipb.EditFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+	return c.graph.EditConnections(ctx, in, opts...)
 }
 
 func (c *Client) ConnectionsFrom(ctx context.Context, in *apipb.ConnectionFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
