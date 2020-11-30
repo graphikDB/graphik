@@ -25,6 +25,7 @@
     - [ExpressionFilter](#api.ExpressionFilter)
     - [Filter](#api.Filter)
     - [Graph](#api.Graph)
+    - [Index](#api.Index)
     - [MeFilter](#api.MeFilter)
     - [Message](#api.Message)
     - [Metadata](#api.Metadata)
@@ -406,6 +407,24 @@ Graph is an array of docs and connections
 | ----- | ---- | ----- | ----------- |
 | docs | [Docs](#api.Docs) |  | docs are docs present in the graph |
 | connections | [Connections](#api.Connections) |  | connections are connections present in the graph |
+
+
+
+
+
+
+<a name="api.Index"></a>
+
+### Index
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| gtype | [string](#string) |  | gtype is the doc/connection type to be filtered |
+| expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
+| sequence | [uint64](#uint64) |  |  |
 
 
 

@@ -12,10 +12,11 @@ const (
 var (
 	DONE = errors.New("DONE")
 	// Bucket names we perform transactions in
-	dbConnections    = []byte("connections")
-	dbDocs           = []byte("docs")
-	indexDocs        = []byte("docs/index")
-	indexConnections = []byte("connections/index")
+	dbConnections      = []byte("connections")
+	dbDocs             = []byte("docs")
+	dbIndexes          = []byte("indexes")
+	dbIndexDocs        = []byte("docs/index")
+	dbIndexConnections = []byte("connections/index")
 	// An error indicating a given key does not exist
 	ErrNotFound = errors.New("not found")
 )

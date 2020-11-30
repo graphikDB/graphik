@@ -376,6 +376,23 @@ func (this *Filter) Validate() error {
 	}
 	return nil
 }
+
+var _regex_Index_Name = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Index_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Index_Expression = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *Index) Validate() error {
+	if !_regex_Index_Name.MatchString(this.Name) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Name", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Name))
+	}
+	if !_regex_Index_Gtype.MatchString(this.Gtype) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	}
+	if !_regex_Index_Expression.MatchString(this.Expression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	return nil
+}
 func (this *MeFilter) Validate() error {
 	if this.ConnectionsFrom != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ConnectionsFrom); err != nil {

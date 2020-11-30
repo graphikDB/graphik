@@ -31,6 +31,64 @@ func (g *Graph) updateMeta(ctx context.Context, meta *apipb.Metadata) {
 	meta.Version += 1
 }
 
+func (g *Graph) rangeIndexes(fn func(index *apipb.Index) bool) {
+	g.indexes.Range(func(key, value interface{}) bool {
+		if value == nil {
+			return true
+		}
+		index := value.(*apipb.Index)
+		return fn(index)
+	})
+}
+
+func (g *Graph) cacheIndexes() error {
+	return g.db.View(func(tx *bbolt.Tx) error {
+		return tx.Bucket(dbIndexes).ForEach(func(k, v []byte) error {
+			var index apipb.Index
+			if err := proto.Unmarshal(v, &index); err != nil {
+				return err
+			}
+			g.indexes.Set(index.GetName(), &index, 0)
+			return nil
+		})
+	})
+}
+
+func (g *Graph) getIndex(name string) (*apipb.Index, error) {
+	val, ok := g.indexes.Get(name)
+	if !ok {
+		return nil, ErrNotFound
+	}
+	return val.(*apipb.Index), nil
+}
+
+func (g *Graph) delIndex(ctx context.Context, tx *bbolt.Tx, name string) error {
+	indexBucket := tx.Bucket(dbIndexes)
+	if err := indexBucket.Delete([]byte(name)); err != nil {
+		return err
+	}
+	g.indexes.Delete(name)
+	return nil
+}
+
+func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, index *apipb.Index) (*apipb.Index, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	indexBucket := tx.Bucket(dbIndexes)
+	seq, _ := indexBucket.NextSequence()
+	index.Sequence = seq
+	bits, err := proto.Marshal(index)
+	if err != nil {
+		return nil, err
+	}
+	if err := indexBucket.Put([]byte(index.GetName()), bits); err != nil {
+		return nil, err
+	}
+	g.indexes.Set(index.GetName(), index, 0)
+	return index, nil
+}
+
 func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apipb.Doc, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
