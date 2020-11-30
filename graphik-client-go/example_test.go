@@ -3,8 +3,8 @@ package graphik_test
 import (
 	"context"
 	"fmt"
-	apipb2 "github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/gen/go"
+	apipb2 "github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/graphik-client-go"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"

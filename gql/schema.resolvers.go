@@ -45,8 +45,8 @@ func (r *mutationResolver) Publish(ctx context.Context, input apipb.OutboundMess
 	return r.client.Publish(ctx, &input)
 }
 
-func (r *mutationResolver) SetIndex(ctx context.Context, input apipb.Index) (*emptypb.Empty, error) {
-	return r.client.SetIndex(ctx, &input)
+func (r *mutationResolver) SetIndexes(ctx context.Context, input apipb.Indexes) (*apipb.Schema, error) {
+	return r.client.SetIndexes(ctx, &input)
 }
 
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {

@@ -39,6 +39,8 @@ goog.exportSymbol('proto.api.Filter', null, global);
 goog.exportSymbol('proto.api.Flags', null, global);
 goog.exportSymbol('proto.api.Graph', null, global);
 goog.exportSymbol('proto.api.Index', null, global);
+goog.exportSymbol('proto.api.IndexConstructor', null, global);
+goog.exportSymbol('proto.api.Indexes', null, global);
 goog.exportSymbol('proto.api.MeFilter', null, global);
 goog.exportSymbol('proto.api.Message', null, global);
 goog.exportSymbol('proto.api.Metadata', null, global);
@@ -4508,6 +4510,260 @@ proto.api.Filter.prototype.setIndex = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.api.IndexConstructor = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.api.IndexConstructor, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.api.IndexConstructor.displayName = 'proto.api.IndexConstructor';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.api.IndexConstructor.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.IndexConstructor.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.api.IndexConstructor} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.IndexConstructor.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    gtype: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    expression: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    docs: jspb.Message.getFieldWithDefault(msg, 6, false),
+    connections: jspb.Message.getFieldWithDefault(msg, 7, false)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.api.IndexConstructor}
+ */
+proto.api.IndexConstructor.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.api.IndexConstructor;
+  return proto.api.IndexConstructor.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.api.IndexConstructor} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.api.IndexConstructor}
+ */
+proto.api.IndexConstructor.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setGtype(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExpression(value);
+      break;
+    case 6:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDocs(value);
+      break;
+    case 7:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setConnections(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.api.IndexConstructor.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.api.IndexConstructor.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.api.IndexConstructor} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.IndexConstructor.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getGtype();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getExpression();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getDocs();
+  if (f) {
+    writer.writeBool(
+      6,
+      f
+    );
+  }
+  f = message.getConnections();
+  if (f) {
+    writer.writeBool(
+      7,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string name = 1;
+ * @return {string}
+ */
+proto.api.IndexConstructor.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.api.IndexConstructor.prototype.setName = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string gtype = 3;
+ * @return {string}
+ */
+proto.api.IndexConstructor.prototype.getGtype = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.api.IndexConstructor.prototype.setGtype = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string expression = 4;
+ * @return {string}
+ */
+proto.api.IndexConstructor.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.api.IndexConstructor.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional bool docs = 6;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.IndexConstructor.prototype.getDocs = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 6, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.IndexConstructor.prototype.setDocs = function(value) {
+  jspb.Message.setProto3BooleanField(this, 6, value);
+};
+
+
+/**
+ * optional bool connections = 7;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.IndexConstructor.prototype.getConnections = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 7, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.IndexConstructor.prototype.setConnections = function(value) {
+  jspb.Message.setProto3BooleanField(this, 7, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.api.Index = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -4748,6 +5004,174 @@ proto.api.Index.prototype.getConnections = function() {
 /** @param {boolean} value */
 proto.api.Index.prototype.setConnections = function(value) {
   jspb.Message.setProto3BooleanField(this, 7, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.api.Indexes = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.Indexes.repeatedFields_, null);
+};
+goog.inherits(proto.api.Indexes, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.api.Indexes.displayName = 'proto.api.Indexes';
+}
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.api.Indexes.repeatedFields_ = [1];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.api.Indexes.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.Indexes.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.api.Indexes} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Indexes.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    indexesList: jspb.Message.toObjectList(msg.getIndexesList(),
+    proto.api.Index.toObject, includeInstance)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.api.Indexes}
+ */
+proto.api.Indexes.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.api.Indexes;
+  return proto.api.Indexes.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.api.Indexes} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.api.Indexes}
+ */
+proto.api.Indexes.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.api.Index;
+      reader.readMessage(value,proto.api.Index.deserializeBinaryFromReader);
+      msg.addIndexes(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.api.Indexes.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.api.Indexes.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.api.Indexes} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Indexes.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getIndexesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      1,
+      f,
+      proto.api.Index.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * repeated Index indexes = 1;
+ * @return {!Array<!proto.api.Index>}
+ */
+proto.api.Indexes.prototype.getIndexesList = function() {
+  return /** @type{!Array<!proto.api.Index>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.api.Index, 1));
+};
+
+
+/** @param {!Array<!proto.api.Index>} value */
+proto.api.Indexes.prototype.setIndexesList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 1, value);
+};
+
+
+/**
+ * @param {!proto.api.Index=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.api.Index}
+ */
+proto.api.Indexes.prototype.addIndexes = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.api.Index, opt_index);
+};
+
+
+proto.api.Indexes.prototype.clearIndexesList = function() {
+  this.setIndexesList([]);
 };
 
 
@@ -6929,7 +7353,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.api.Schema.repeatedFields_ = [1,2,3];
+proto.api.Schema.repeatedFields_ = [1,2];
 
 
 
@@ -6962,8 +7386,7 @@ proto.api.Schema.toObject = function(includeInstance, msg) {
   var f, obj = {
     connectionTypesList: jspb.Message.getRepeatedField(msg, 1),
     docTypesList: jspb.Message.getRepeatedField(msg, 2),
-    indexesList: jspb.Message.toObjectList(msg.getIndexesList(),
-    proto.api.Index.toObject, includeInstance)
+    indexes: (f = msg.getIndexes()) && proto.api.Indexes.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -7009,9 +7432,9 @@ proto.api.Schema.deserializeBinaryFromReader = function(msg, reader) {
       msg.addDocTypes(value);
       break;
     case 3:
-      var value = new proto.api.Index;
-      reader.readMessage(value,proto.api.Index.deserializeBinaryFromReader);
-      msg.addIndexes(value);
+      var value = new proto.api.Indexes;
+      reader.readMessage(value,proto.api.Indexes.deserializeBinaryFromReader);
+      msg.setIndexes(value);
       break;
     default:
       reader.skipField();
@@ -7056,12 +7479,12 @@ proto.api.Schema.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getIndexesList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
+  f = message.getIndexes();
+  if (f != null) {
+    writer.writeMessage(
       3,
       f,
-      proto.api.Index.serializeBinaryToWriter
+      proto.api.Indexes.serializeBinaryToWriter
     );
   }
 };
@@ -7126,33 +7549,32 @@ proto.api.Schema.prototype.clearDocTypesList = function() {
 
 
 /**
- * repeated Index indexes = 3;
- * @return {!Array<!proto.api.Index>}
+ * optional Indexes indexes = 3;
+ * @return {?proto.api.Indexes}
  */
-proto.api.Schema.prototype.getIndexesList = function() {
-  return /** @type{!Array<!proto.api.Index>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.api.Index, 3));
+proto.api.Schema.prototype.getIndexes = function() {
+  return /** @type{?proto.api.Indexes} */ (
+    jspb.Message.getWrapperField(this, proto.api.Indexes, 3));
 };
 
 
-/** @param {!Array<!proto.api.Index>} value */
-proto.api.Schema.prototype.setIndexesList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 3, value);
+/** @param {?proto.api.Indexes|undefined} value */
+proto.api.Schema.prototype.setIndexes = function(value) {
+  jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+proto.api.Schema.prototype.clearIndexes = function() {
+  this.setIndexes(undefined);
 };
 
 
 /**
- * @param {!proto.api.Index=} opt_value
- * @param {number=} opt_index
- * @return {!proto.api.Index}
+ * Returns whether this field is set.
+ * @return {!boolean}
  */
-proto.api.Schema.prototype.addIndexes = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.api.Index, opt_index);
-};
-
-
-proto.api.Schema.prototype.clearIndexesList = function() {
-  this.setIndexesList([]);
+proto.api.Schema.prototype.hasIndexes = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

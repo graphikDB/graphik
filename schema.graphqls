@@ -114,13 +114,17 @@ type Index {
   connections: Boolean
 }
 
+type Indexes {
+  indexes: [Index!]
+}
+
 # Schema returns registered connection & doc types
 type Schema {
   # connection_types are the types of connections in the graph
   connection_types: [String!]
   # doc_types are the types of docs in the graph
   doc_types: [String!]
-  indexes: [Index!]
+  indexes: Indexes
 }
 
 # Message is received on PubSub subscriptions
@@ -282,6 +286,10 @@ input IndexInput {
   connections: Boolean
 }
 
+input IndexesInput {
+  indexes: [IndexInput!]
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
@@ -297,7 +305,7 @@ type Mutation {
   patchConnections(input: PatchFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty!
-  setIndex(input: IndexInput!): Empty!
+  setIndexes(input: IndexesInput!): Schema!
 }
 
 type Query {

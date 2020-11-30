@@ -194,22 +194,29 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 	return &apipb.Schema{
 		ConnectionTypes: e,
 		DocTypes:        n,
-		Indexes:         indexes,
+		Indexes:         &apipb.Indexes{Indexes: indexes},
 	}, nil
 }
 
-func (g *Graph) SetIndex(ctx context.Context, index2 *apipb.Index) (*empty.Empty, error) {
+func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*apipb.Schema, error) {
 	identity := g.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
+	var indexes []*apipb.Index
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		_, err := g.setIndex(ctx, tx, index2)
-		return err
+		for _, index := range index2.GetIndexes() {
+			i, err := g.setIndex(ctx, tx, index)
+			if err != nil {
+				return err
+			}
+			indexes = append(indexes, i)
+		}
+		return nil
 	}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &empty.Empty{}, nil
+	return g.GetSchema(ctx, &empty.Empty{})
 }
 
 func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetail, error) {

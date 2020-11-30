@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
-	apipb2 "github.com/autom8ter/graphik/gen/go"
 	apipb "github.com/autom8ter/graphik/gen/go"
+	apipb2 "github.com/autom8ter/graphik/gen/go"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"testing"
@@ -12,13 +12,13 @@ import (
 
 func init() {
 	graph, err = NewGraph(context.Background(), &apipb.Flags{
-		OpenIdDiscovery:  "",
-		StoragePath:    "/tmp/testing/graphik",
-		Metrics:        false,
-		Authorizers:    nil,
-		AllowHeaders: nil,
-		AllowMethods: nil,
-		AllowOrigins: nil,
+		OpenIdDiscovery: "",
+		StoragePath:     "/tmp/testing/graphik",
+		Metrics:         false,
+		Authorizers:     nil,
+		AllowHeaders:    nil,
+		AllowMethods:    nil,
+		AllowOrigins:    nil,
 	})
 	if err != nil {
 		fmt.Println(err.Error())
@@ -64,21 +64,23 @@ var (
 )
 
 func TestGraph_SetIndex(t *testing.T) {
-	_, err := graph.SetIndex(ctx, &apipb.Index{
-		Name:       "testing",
-		Gtype:      "pokemon",
-		Expression: `doc.attributes.type.contains("fire")`,
-		Docs:       true,
-	})
+	_, err := graph.SetIndexes(ctx, &apipb.Indexes{Indexes: []*apipb.Index{
+		{
+			Name:       "testing",
+			Gtype:      "pokemon",
+			Expression: `doc.attributes.type.contains("fire")`,
+			Docs:       true,
+		},
+		{
+			Name:        "testing2",
+			Gtype:       "owner",
+			Expression:  `connection.attributes.primary`,
+			Connections: true,
+		},
+	}})
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = graph.SetIndex(ctx, &apipb.Index{
-		Name:        "testing2",
-		Gtype:       "owner",
-		Expression:  `connection.attributes.primary`,
-		Connections: true,
-	})
 	if err != nil {
 		t.Fatal(err)
 	}

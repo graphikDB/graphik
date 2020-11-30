@@ -3,7 +3,7 @@ package graphik
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/autom8ter/graphik/gen/go"
 	"github.com/golang/protobuf/ptypes/empty"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"github.com/pkg/errors"
@@ -188,8 +188,8 @@ func (c *Client) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.Ca
 	return c.graph.GetSchema(ctx, in, opts...)
 }
 
-func (c *Client) SetIndex(ctx context.Context, in *apipb.Index, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.SetIndex(ctx, in, opts...)
+func (c *Client) SetIndexes(ctx context.Context, in *apipb.Indexes, opts ...grpc.CallOption) (*apipb.Schema, error) {
+	return c.graph.SetIndexes(ctx, in, opts...)
 }
 
 func (c *Client) Shutdown(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {

@@ -5,15 +5,15 @@ package apipb
 
 import (
 	fmt "fmt"
-	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/struct"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
 	_ "github.com/golang/protobuf/ptypes/any"
 	_ "github.com/golang/protobuf/ptypes/empty"
+	_ "github.com/golang/protobuf/ptypes/struct"
+	_ "github.com/golang/protobuf/ptypes/timestamp"
 	_ "github.com/mwitkow/go-proto-validators"
-	regexp "regexp"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
+	math "math"
+	regexp "regexp"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -373,6 +373,23 @@ func (this *Filter) Validate() error {
 	return nil
 }
 
+var _regex_IndexConstructor_Name = regexp.MustCompile(`^.{1,225}$`)
+var _regex_IndexConstructor_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_IndexConstructor_Expression = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *IndexConstructor) Validate() error {
+	if !_regex_IndexConstructor_Name.MatchString(this.Name) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Name", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Name))
+	}
+	if !_regex_IndexConstructor_Gtype.MatchString(this.Gtype) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	}
+	if !_regex_IndexConstructor_Expression.MatchString(this.Expression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	return nil
+}
+
 var _regex_Index_Name = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Index_Gtype = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Index_Expression = regexp.MustCompile(`^.{1,225}$`)
@@ -386,6 +403,16 @@ func (this *Index) Validate() error {
 	}
 	if !_regex_Index_Expression.MatchString(this.Expression) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	return nil
+}
+func (this *Indexes) Validate() error {
+	for _, item := range this.Indexes {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Indexes", err)
+			}
+		}
 	}
 	return nil
 }
@@ -529,11 +556,9 @@ func (this *Message) Validate() error {
 	return nil
 }
 func (this *Schema) Validate() error {
-	for _, item := range this.Indexes {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Indexes", err)
-			}
+	if this.Indexes != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Indexes); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Indexes", err)
 		}
 	}
 	return nil

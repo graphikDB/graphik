@@ -27,6 +27,8 @@
     - [Flags](#api.Flags)
     - [Graph](#api.Graph)
     - [Index](#api.Index)
+    - [IndexConstructor](#api.IndexConstructor)
+    - [Indexes](#api.Indexes)
     - [MeFilter](#api.MeFilter)
     - [Message](#api.Message)
     - [Metadata](#api.Metadata)
@@ -447,8 +449,42 @@ Graph is an array of docs and connections
 | name | [string](#string) |  |  |
 | gtype | [string](#string) |  | gtype is the doc/connection type to be filtered |
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
-| docs | [bool](#bool) |  |  |
-| connections | [bool](#bool) |  |  |
+| docs | [bool](#bool) |  | if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both. |
+| connections | [bool](#bool) |  | if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both. |
+
+
+
+
+
+
+<a name="api.IndexConstructor"></a>
+
+### IndexConstructor
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| gtype | [string](#string) |  | gtype is the doc/connection type to be filtered |
+| expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
+| docs | [bool](#bool) |  | if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both. |
+| connections | [bool](#bool) |  | if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both. |
+
+
+
+
+
+
+<a name="api.Indexes"></a>
+
+### Indexes
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| indexes | [Index](#api.Index) | repeated |  |
 
 
 
@@ -630,7 +666,7 @@ Schema returns registered connection &amp; doc types
 | ----- | ---- | ----- | ----------- |
 | connection_types | [string](#string) | repeated | connection_types are the types of connections in the graph |
 | doc_types | [string](#string) | repeated | doc_types are the types of docs in the graph |
-| indexes | [Index](#api.Index) | repeated |  |
+| indexes | [Indexes](#api.Indexes) |  |  |
 
 
 
@@ -668,7 +704,7 @@ DatabaseService is the primary database service
 | ----------- | ------------ | ------------- | ------------|
 | Ping | [.google.protobuf.Empty](#google.protobuf.Empty) | [Pong](#api.Pong) | Ping returns PONG if the server is health |
 | GetSchema | [.google.protobuf.Empty](#google.protobuf.Empty) | [Schema](#api.Schema) | GetSchema gets schema about the Graph doc &amp; connection types |
-| SetIndex | [Index](#api.Index) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
+| SetIndexes | [Indexes](#api.Indexes) | [Schema](#api.Schema) |  |
 | Me | [MeFilter](#api.MeFilter) | [DocDetail](#api.DocDetail) | Me returns a DocDetail of the currently logged in identity(the subject of the JWT) |
 | CreateDoc | [DocConstructor](#api.DocConstructor) | [Doc](#api.Doc) | CreateDoc creates a doc in the graph |
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |

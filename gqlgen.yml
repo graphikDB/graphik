@@ -53,6 +53,8 @@ models:
     model: github.com/autom8ter/graphik/gen/go.Path
   IndexInput:
     model: github.com/autom8ter/graphik/gen/go.Index
+  IndexesInput:
+    model: github.com/autom8ter/graphik/gen/go.Indexes
 
   ID:
     model:

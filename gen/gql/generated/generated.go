@@ -122,6 +122,10 @@ type ComplexityRoot struct {
 		Name        func(childComplexity int) int
 	}
 
+	Indexes struct {
+		Indexes func(childComplexity int) int
+	}
+
 	Message struct {
 		Channel   func(childComplexity int) int
 		Data      func(childComplexity int) int
@@ -145,7 +149,7 @@ type ComplexityRoot struct {
 		PatchDoc         func(childComplexity int, input apipb.Patch) int
 		PatchDocs        func(childComplexity int, input apipb.PatchFilter) int
 		Publish          func(childComplexity int, input apipb.OutboundMessage) int
-		SetIndex         func(childComplexity int, input apipb.Index) int
+		SetIndexes       func(childComplexity int, input apipb.Indexes) int
 	}
 
 	Path struct {
@@ -192,7 +196,7 @@ type MutationResolver interface {
 	PatchConnection(ctx context.Context, input apipb.Patch) (*apipb.Connection, error)
 	PatchConnections(ctx context.Context, input apipb.PatchFilter) (*apipb.Connections, error)
 	Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error)
-	SetIndex(ctx context.Context, input apipb.Index) (*emptypb.Empty, error)
+	SetIndexes(ctx context.Context, input apipb.Indexes) (*apipb.Schema, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error)
@@ -498,6 +502,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Index.Name(childComplexity), true
 
+	case "Indexes.indexes":
+		if e.complexity.Indexes.Indexes == nil {
+			break
+		}
+
+		return e.complexity.Indexes.Indexes(childComplexity), true
+
 	case "Message.channel":
 		if e.complexity.Message.Channel == nil {
 			break
@@ -645,17 +656,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Publish(childComplexity, args["input"].(apipb.OutboundMessage)), true
 
-	case "Mutation.setIndex":
-		if e.complexity.Mutation.SetIndex == nil {
+	case "Mutation.setIndexes":
+		if e.complexity.Mutation.SetIndexes == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_setIndex_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_setIndexes_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetIndex(childComplexity, args["input"].(apipb.Index)), true
+		return e.complexity.Mutation.SetIndexes(childComplexity, args["input"].(apipb.Indexes)), true
 
 	case "Path.gid":
 		if e.complexity.Path.Gid == nil {
@@ -1028,13 +1039,17 @@ type Index {
   connections: Boolean
 }
 
+type Indexes {
+  indexes: [Index!]
+}
+
 # Schema returns registered connection & doc types
 type Schema {
   # connection_types are the types of connections in the graph
   connection_types: [String!]
   # doc_types are the types of docs in the graph
   doc_types: [String!]
-  indexes: [Index!]
+  indexes: Indexes
 }
 
 # Message is received on PubSub subscriptions
@@ -1196,6 +1211,10 @@ input IndexInput {
   connections: Boolean
 }
 
+input IndexesInput {
+  indexes: [IndexInput!]
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
@@ -1211,7 +1230,7 @@ type Mutation {
   patchConnections(input: PatchFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty!
-  setIndex(input: IndexInput!): Empty!
+  setIndexes(input: IndexesInput!): Schema!
 }
 
 type Query {
@@ -1353,13 +1372,13 @@ func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, raw
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_setIndex_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_setIndexes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 apipb.Index
+	var arg0 apipb.Indexes
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNIndexInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndex(ctx, tmp)
+		arg0, err = ec.unmarshalNIndexesInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexes(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2888,6 +2907,38 @@ func (ec *executionContext) _Index_connections(ctx context.Context, field graphq
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Indexes_indexes(ctx context.Context, field graphql.CollectedField, obj *apipb.Indexes) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Indexes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Indexes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*apipb.Index)
+	fc.Result = res
+	return ec.marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Message_channel(ctx context.Context, field graphql.CollectedField, obj *apipb.Message) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3497,7 +3548,7 @@ func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql
 	return ec.marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setIndex(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setIndexes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3514,7 +3565,7 @@ func (ec *executionContext) _Mutation_setIndex(ctx context.Context, field graphq
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setIndex_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_setIndexes_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3522,7 +3573,7 @@ func (ec *executionContext) _Mutation_setIndex(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SetIndex(rctx, args["input"].(apipb.Index))
+		return ec.resolvers.Mutation().SetIndexes(rctx, args["input"].(apipb.Indexes))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3534,9 +3585,9 @@ func (ec *executionContext) _Mutation_setIndex(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*emptypb.Empty)
+	res := resTmp.(*apipb.Schema)
 	fc.Result = res
-	return ec.marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+	return ec.marshalNSchema2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐSchema(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Path_gtype(ctx context.Context, field graphql.CollectedField, obj *apipb.Path) (ret graphql.Marshaler) {
@@ -4184,9 +4235,9 @@ func (ec *executionContext) _Schema_indexes(ctx context.Context, field graphql.C
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*apipb.Index)
+	res := resTmp.(*apipb.Indexes)
 	fc.Result = res
-	return ec.marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexᚄ(ctx, field.Selections, res)
+	return ec.marshalOIndexes2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexes(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
@@ -5696,6 +5747,26 @@ func (ec *executionContext) unmarshalInputIndexInput(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputIndexesInput(ctx context.Context, obj interface{}) (apipb.Indexes, error) {
+	var it apipb.Indexes
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "indexes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("indexes"))
+			it.Indexes, err = ec.unmarshalOIndexInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputMeFilter(ctx context.Context, obj interface{}) (apipb.MeFilter, error) {
 	var it apipb.MeFilter
 	var asMap = obj.(map[string]interface{})
@@ -6218,6 +6289,30 @@ func (ec *executionContext) _Index(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
+var indexesImplementors = []string{"Indexes"}
+
+func (ec *executionContext) _Indexes(ctx context.Context, sel ast.SelectionSet, obj *apipb.Indexes) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, indexesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Indexes")
+		case "indexes":
+			out.Values[i] = ec._Indexes_indexes(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var messageImplementors = []string{"Message"}
 
 func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, obj *apipb.Message) graphql.Marshaler {
@@ -6366,8 +6461,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "setIndex":
-			out.Values[i] = ec._Mutation_setIndex(ctx, field)
+		case "setIndexes":
+			out.Values[i] = ec._Mutation_setIndexes(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -7087,8 +7182,13 @@ func (ec *executionContext) marshalNIndex2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 	return ec._Index(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNIndexInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndex(ctx context.Context, v interface{}) (apipb.Index, error) {
+func (ec *executionContext) unmarshalNIndexInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndex(ctx context.Context, v interface{}) (*apipb.Index, error) {
 	res, err := ec.unmarshalInputIndexInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNIndexesInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexes(ctx context.Context, v interface{}) (apipb.Indexes, error) {
+	res, err := ec.unmarshalInputIndexesInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -7816,6 +7916,37 @@ func (ec *executionContext) marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraph
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalOIndexInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexᚄ(ctx context.Context, v interface{}) ([]*apipb.Index, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*apipb.Index, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNIndexInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndex(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOIndexes2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexes(ctx context.Context, sel ast.SelectionSet, v *apipb.Indexes) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Indexes(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOInt2int64(ctx context.Context, v interface{}) (int64, error) {
