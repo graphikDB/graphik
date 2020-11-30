@@ -165,12 +165,20 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 }
 
 func (g *Graph) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
+	identity := g.getIdentity(ctx)
+	if identity == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	}
 	return &apipb.Pong{
 		Message: "PONG",
 	}, nil
 }
 
 func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, error) {
+	identity := g.getIdentity(ctx)
+	if identity == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	}
 	e, err := g.ConnectionTypes(ctx)
 	if err != nil {
 		return nil, err
@@ -192,6 +200,10 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 }
 
 func (g *Graph) SetIndex(ctx context.Context, index2 *apipb.Index) (*empty.Empty, error) {
+	identity := g.getIdentity(ctx)
+	if identity == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		_, err := g.setIndex(ctx, tx, index2)
 		return err
