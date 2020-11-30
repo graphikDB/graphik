@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/autom8ter/graphik/cache"
-	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
@@ -50,7 +49,7 @@ type Graph struct {
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
-func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
+func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 	os.MkdirAll(flgs.StoragePath, 0700)
 	path := filepath.Join(flgs.StoragePath, "graph.db")
 	handle, err := bbolt.Open(path, dbFileMode, nil)
@@ -86,8 +85,8 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		jwtCache:        cache.New(m, 1*time.Minute),
 		indexes:         cache.New(m, 1*time.Minute),
 	}
-	if flgs.OpenIDConnect != "" {
-		resp, err := http.DefaultClient.Get(flgs.OpenIDConnect)
+	if flgs.OpenIdDiscovery != "" {
+		resp, err := http.DefaultClient.Get(flgs.OpenIdDiscovery)
 		if err != nil {
 			return nil, err
 		}

@@ -24,6 +24,7 @@
     - [Docs](#api.Docs)
     - [ExpressionFilter](#api.ExpressionFilter)
     - [Filter](#api.Filter)
+    - [Flags](#api.Flags)
     - [Graph](#api.Graph)
     - [Index](#api.Index)
     - [MeFilter](#api.MeFilter)
@@ -392,6 +393,27 @@ Filter is a generic filter using Common Expression Language
 | seek | [int64](#int64) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
 | index | [string](#string) |  | search in a specific index |
+
+
+
+
+
+
+<a name="api.Flags"></a>
+
+### Flags
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| open_id_discovery | [string](#string) |  | open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) |
+| storage_path | [string](#string) |  | persistant storage path (env: GRAPHIK_STORAGE_PATH) |
+| metrics | [bool](#bool) |  | enable prometheus &amp; pprof metrics (emv: GRAPHIK_METRICS = true) |
+| authorizers | [string](#string) | repeated | registered CEL authorizers (env: GRAPHIK_AUTHORIZERS) |
+| allow_headers | [string](#string) | repeated | cors allow headers (env: GRAPHIK_ALLOW_HEADERS) |
+| allow_methods | [string](#string) | repeated | cors allow methods (env: GRAPHIK_ALLOW_METHODS) |
+| allow_origins | [string](#string) | repeated | cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) |
 
 
 

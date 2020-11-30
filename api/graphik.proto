@@ -237,6 +237,23 @@ message Graph {
   Connections connections =2;
 }
 
+message Flags {
+  // open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
+  string open_id_discovery =1;
+  // persistant storage path (env: GRAPHIK_STORAGE_PATH)
+  string storage_path =2;
+  // enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
+  bool metrics =3;
+  // registered CEL authorizers (env: GRAPHIK_AUTHORIZERS)
+  repeated string authorizers =4;
+  // cors allow headers (env: GRAPHIK_ALLOW_HEADERS)
+  repeated string allow_headers =5;
+  // cors allow methods (env: GRAPHIK_ALLOW_METHODS)
+  repeated string allow_methods =6;
+  // cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)
+  repeated string allow_origins =7;
+}
+
 // Patch patches the attributes of a Doc or Connection
 message Patch {
   // path is the path to the target doc/connection to patch

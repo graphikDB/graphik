@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/flags"
 	apipb "github.com/autom8ter/graphik/gen/go/api"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -11,14 +10,14 @@ import (
 )
 
 func init() {
-	graph, err = NewGraph(context.Background(), &flags.Flags{
-		OpenIDConnect:  "",
-		StoragePath:    "/tmp/testing/graphik",
-		Metrics:        false,
-		Authorizers:    nil,
-		AllowedHeaders: nil,
-		AllowedMethods: nil,
-		AllowedOrigins: nil,
+	graph, err = NewGraph(context.Background(), &apipb.Flags{
+		OpenIdDiscovery: "",
+		StoragePath:     "/tmp/testing/graphik",
+		Metrics:         false,
+		Authorizers:     nil,
+		AllowHeaders:    nil,
+		AllowMethods:    nil,
+		AllowOrigins:    nil,
 	})
 	if err != nil {
 		fmt.Println(err.Error())

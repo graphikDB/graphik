@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/autom8ter/graphik/database"
-	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/gql"
 	"github.com/autom8ter/graphik/helpers"
@@ -32,17 +31,17 @@ import (
 	"time"
 )
 
-var global = &flags.Flags{}
+var global = &apipb.Flags{}
 
 func init() {
 	godotenv.Load()
 	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
-	pflag.CommandLine.StringVar(&global.OpenIDConnect, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)")
+	pflag.CommandLine.StringVar(&global.OpenIdDiscovery, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)")
 	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", boolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
-	pflag.CommandLine.StringSliceVar(&global.Authorizers, "authorizers", stringSliceEnvOr("GRAPHIK_AUTHORIZERS", nil), "registered authorizers (env: GRAPHIK_AUTHORIZERS)")
-	pflag.CommandLine.StringSliceVar(&global.AllowedHeaders, "allow-headers", stringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
-	pflag.CommandLine.StringSliceVar(&global.AllowedOrigins, "allow-origins", stringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
-	pflag.CommandLine.StringSliceVar(&global.AllowedMethods, "allow-methods", stringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
+	pflag.CommandLine.StringSliceVar(&global.Authorizers, "authorizers", stringSliceEnvOr("GRAPHIK_AUTHORIZERS", nil), "registered CEL authorizers (env: GRAPHIK_AUTHORIZERS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowHeaders, "allow-headers", stringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowOrigins, "allow-origins", stringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowMethods, "allow-methods", stringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
 	pflag.Parse()
 }
 
@@ -77,7 +76,7 @@ func main() {
 const bind = ":7820"
 const metricsBind = ":7821"
 
-func run(ctx context.Context, cfg *flags.Flags) {
+func run(ctx context.Context, cfg *apipb.Flags) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)
@@ -103,9 +102,9 @@ func run(ctx context.Context, cfg *flags.Flags) {
 		return
 	}
 	resolver := gql.NewResolver(ctx, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
-		AllowedOrigins: global.AllowedOrigins,
-		AllowedMethods: global.AllowedMethods,
-		AllowedHeaders: global.AllowedHeaders,
+		AllowedOrigins: global.AllowOrigins,
+		AllowedMethods: global.AllowMethods,
+		AllowedHeaders: global.AllowHeaders,
 	}))
 	httpServer := &http.Server{
 		Handler: resolver.QueryHandler(),
