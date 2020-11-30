@@ -585,17 +585,26 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path
 	return nil
 }
 
-func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek string, fn func(e *apipb.Connection) bool) (string, error) {
+func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek, index string, fn func(e *apipb.Connection) bool) (string, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
 	var lastKey []byte
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbConnections).Bucket([]byte(gType))
-		if bucket == nil {
-			return ErrNotFound
+		var c *bbolt.Cursor
+		if index != "" {
+			bucket := tx.Bucket(dbIndexConnections).Bucket([]byte(index))
+			if bucket == nil {
+				return ErrNotFound
+			}
+			c = bucket.Cursor()
+		} else {
+			bucket := tx.Bucket(dbConnections).Bucket([]byte(gType))
+			if bucket == nil {
+				return ErrNotFound
+			}
+			c = bucket.Cursor()
 		}
-		c := bucket.Cursor()
 		for k, v := c.Seek([]byte(seek)); k != nil; k, v = c.Next() {
 			if ctx.Err() != nil {
 				return ctx.Err()
@@ -616,17 +625,26 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek string, fn
 	return string(lastKey), nil
 }
 
-func (g *Graph) rangeSeekDocs(ctx context.Context, gType, seek string, fn func(e *apipb.Doc) bool) (string, error) {
+func (g *Graph) rangeSeekDocs(ctx context.Context, gType, seek, index string, fn func(e *apipb.Doc) bool) (string, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
 	var lastKey []byte
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbDocs).Bucket([]byte(gType))
-		if bucket == nil {
-			return ErrNotFound
+		var c *bbolt.Cursor
+		if index != "" {
+			bucket := tx.Bucket(dbIndexDocs).Bucket([]byte(index))
+			if bucket == nil {
+				return ErrNotFound
+			}
+			c = bucket.Cursor()
+		} else {
+			bucket := tx.Bucket(dbDocs).Bucket([]byte(gType))
+			if bucket == nil {
+				return ErrNotFound
+			}
+			c = bucket.Cursor()
 		}
-		c := bucket.Cursor()
 		for k, v := c.Seek([]byte(seek)); k != nil; k, v = c.Next() {
 			if ctx.Err() != nil {
 				return ctx.Err()
@@ -665,6 +683,6 @@ func sortPaths(paths []*apipb.Path) {
 }
 
 type index struct {
-	index *apipb.Index
+	index   *apipb.Index
 	program cel.Program
 }

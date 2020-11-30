@@ -4303,7 +4303,8 @@ proto.api.Filter.toObject = function(includeInstance, msg) {
     limit: jspb.Message.getFieldWithDefault(msg, 3, 0),
     sort: jspb.Message.getFieldWithDefault(msg, 4, ""),
     seek: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    reverse: jspb.Message.getFieldWithDefault(msg, 6, false)
+    reverse: jspb.Message.getFieldWithDefault(msg, 6, false),
+    index: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -4363,6 +4364,10 @@ proto.api.Filter.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setReverse(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIndex(value);
       break;
     default:
       reader.skipField();
@@ -4432,6 +4437,13 @@ proto.api.Filter.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       6,
+      f
+    );
+  }
+  f = message.getIndex();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
       f
     );
   }
@@ -4527,6 +4539,21 @@ proto.api.Filter.prototype.getReverse = function() {
 /** @param {boolean} value */
 proto.api.Filter.prototype.setReverse = function(value) {
   jspb.Message.setProto3BooleanField(this, 6, value);
+};
+
+
+/**
+ * optional string index = 7;
+ * @return {string}
+ */
+proto.api.Filter.prototype.getIndex = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Filter.prototype.setIndex = function(value) {
+  jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
@@ -6620,7 +6647,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.api.Schema.repeatedFields_ = [1,2];
+proto.api.Schema.repeatedFields_ = [1,2,3];
 
 
 
@@ -6652,7 +6679,9 @@ proto.api.Schema.prototype.toObject = function(opt_includeInstance) {
 proto.api.Schema.toObject = function(includeInstance, msg) {
   var f, obj = {
     connectionTypesList: jspb.Message.getRepeatedField(msg, 1),
-    docTypesList: jspb.Message.getRepeatedField(msg, 2)
+    docTypesList: jspb.Message.getRepeatedField(msg, 2),
+    indexesList: jspb.Message.toObjectList(msg.getIndexesList(),
+    proto.api.Index.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -6697,6 +6726,11 @@ proto.api.Schema.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.addDocTypes(value);
       break;
+    case 3:
+      var value = new proto.api.Index;
+      reader.readMessage(value,proto.api.Index.deserializeBinaryFromReader);
+      msg.addIndexes(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -6738,6 +6772,14 @@ proto.api.Schema.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedString(
       2,
       f
+    );
+  }
+  f = message.getIndexesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
+      f,
+      proto.api.Index.serializeBinaryToWriter
     );
   }
 };
@@ -6798,6 +6840,37 @@ proto.api.Schema.prototype.addDocTypes = function(value, opt_index) {
 
 proto.api.Schema.prototype.clearDocTypesList = function() {
   this.setDocTypesList([]);
+};
+
+
+/**
+ * repeated Index indexes = 3;
+ * @return {!Array<!proto.api.Index>}
+ */
+proto.api.Schema.prototype.getIndexesList = function() {
+  return /** @type{!Array<!proto.api.Index>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.api.Index, 3));
+};
+
+
+/** @param {!Array<!proto.api.Index>} value */
+proto.api.Schema.prototype.setIndexesList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.api.Index=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.api.Index}
+ */
+proto.api.Schema.prototype.addIndexes = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.api.Index, opt_index);
+};
+
+
+proto.api.Schema.prototype.clearIndexesList = function() {
+  this.setIndexesList([]);
 };
 
 

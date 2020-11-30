@@ -391,6 +391,7 @@ Filter is a generic filter using Common Expression Language
 | sort | [string](#string) |  | custom sorting of the results. |
 | seek | [string](#string) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
+| index | [string](#string) |  | search in a specific index |
 
 
 
@@ -609,6 +610,7 @@ Schema returns registered connection &amp; doc types
 | ----- | ---- | ----- | ----------- |
 | connection_types | [string](#string) | repeated | connection_types are the types of connections in the graph |
 | doc_types | [string](#string) | repeated | doc_types are the types of docs in the graph |
+| indexes | [Index](#api.Index) | repeated |  |
 
 
 
@@ -646,6 +648,7 @@ DatabaseService is the primary database service
 | ----------- | ------------ | ------------- | ------------|
 | Ping | [.google.protobuf.Empty](#google.protobuf.Empty) | [Pong](#api.Pong) | Ping returns PONG if the server is health |
 | GetSchema | [.google.protobuf.Empty](#google.protobuf.Empty) | [Schema](#api.Schema) | GetSchema gets schema about the Graph doc &amp; connection types |
+| SetIndex | [Index](#api.Index) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 | Me | [MeFilter](#api.MeFilter) | [DocDetail](#api.DocDetail) | Me returns a DocDetail of the currently logged in identity(the subject of the JWT) |
 | CreateDoc | [DocConstructor](#api.DocConstructor) | [Doc](#api.Doc) | CreateDoc creates a doc in the graph |
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |

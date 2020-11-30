@@ -179,10 +179,26 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 	if err != nil {
 		return nil, err
 	}
+	var indexes []*apipb.Index
+	g.rangeIndexes(func(index *index) bool {
+		indexes = append(indexes, index.index)
+		return true
+	})
 	return &apipb.Schema{
 		ConnectionTypes: e,
 		DocTypes:        n,
+		Indexes:         indexes,
 	}, nil
+}
+
+func (g *Graph) SetIndex(ctx context.Context, index2 *apipb.Index) (*empty.Empty, error) {
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+		_, err := g.setIndex(ctx, tx, index2)
+		return err
+	}); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &empty.Empty{}, nil
 }
 
 func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetail, error) {
@@ -820,7 +836,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 			return nil, err
 		}
 	}
-	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), func(doc *apipb.Doc) bool {
+	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), func(doc *apipb.Doc) bool {
 		if program != nil {
 			pass, err := n.vm.Doc().Eval(doc, program)
 			if err != nil {
@@ -1002,7 +1018,7 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 		}
 	}
 	var connections []*apipb.Connection
-	seek, err := e.rangeSeekConnections(ctx, filter.Gtype, filter.GetSeek(), func(connection *apipb.Connection) bool {
+	seek, err := e.rangeSeekConnections(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), func(connection *apipb.Connection) bool {
 		if program != nil {
 			pass, err := e.vm.Connection().Eval(connection, program)
 			if err != nil {

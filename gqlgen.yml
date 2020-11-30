@@ -51,6 +51,8 @@ models:
     model: github.com/autom8ter/graphik/gql/scalars.TimestampScalar
   PathInput:
     model: github.com/autom8ter/graphik/gen/go/api.Path
+  IndexInput:
+    model: github.com/autom8ter/graphik/gen/go/api.Index
 
   ID:
     model:

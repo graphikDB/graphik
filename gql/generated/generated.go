@@ -114,6 +114,14 @@ type ComplexityRoot struct {
 		SeekNext func(childComplexity int) int
 	}
 
+	Index struct {
+		Connections func(childComplexity int) int
+		Docs        func(childComplexity int) int
+		Expression  func(childComplexity int) int
+		Gtype       func(childComplexity int) int
+		Name        func(childComplexity int) int
+	}
+
 	Message struct {
 		Channel   func(childComplexity int) int
 		Data      func(childComplexity int) int
@@ -138,6 +146,7 @@ type ComplexityRoot struct {
 		PatchDoc         func(childComplexity int, input apipb.Patch) int
 		PatchDocs        func(childComplexity int, input apipb.PatchFilter) int
 		Publish          func(childComplexity int, input apipb.OutboundMessage) int
+		SetIndex         func(childComplexity int, input apipb.Index) int
 	}
 
 	Path struct {
@@ -164,6 +173,7 @@ type ComplexityRoot struct {
 	Schema struct {
 		ConnectionTypes func(childComplexity int) int
 		DocTypes        func(childComplexity int) int
+		Indexes         func(childComplexity int) int
 	}
 
 	Subscription struct {
@@ -184,6 +194,7 @@ type MutationResolver interface {
 	PatchConnection(ctx context.Context, input apipb.Patch) (*apipb.Connection, error)
 	PatchConnections(ctx context.Context, input apipb.PatchFilter) (*apipb.Connections, error)
 	Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error)
+	SetIndex(ctx context.Context, input apipb.Index) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error)
@@ -454,6 +465,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Docs.SeekNext(childComplexity), true
 
+	case "Index.connections":
+		if e.complexity.Index.Connections == nil {
+			break
+		}
+
+		return e.complexity.Index.Connections(childComplexity), true
+
+	case "Index.docs":
+		if e.complexity.Index.Docs == nil {
+			break
+		}
+
+		return e.complexity.Index.Docs(childComplexity), true
+
+	case "Index.expression":
+		if e.complexity.Index.Expression == nil {
+			break
+		}
+
+		return e.complexity.Index.Expression(childComplexity), true
+
+	case "Index.gtype":
+		if e.complexity.Index.Gtype == nil {
+			break
+		}
+
+		return e.complexity.Index.Gtype(childComplexity), true
+
+	case "Index.name":
+		if e.complexity.Index.Name == nil {
+			break
+		}
+
+		return e.complexity.Index.Name(childComplexity), true
+
 	case "Message.channel":
 		if e.complexity.Message.Channel == nil {
 			break
@@ -608,6 +654,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Publish(childComplexity, args["input"].(apipb.OutboundMessage)), true
 
+	case "Mutation.setIndex":
+		if e.complexity.Mutation.SetIndex == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setIndex_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetIndex(childComplexity, args["input"].(apipb.Index)), true
+
 	case "Path.gid":
 		if e.complexity.Path.Gid == nil {
 			break
@@ -750,6 +808,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Schema.DocTypes(childComplexity), true
+
+	case "Schema.indexes":
+		if e.complexity.Schema.Indexes == nil {
+			break
+		}
+
+		return e.complexity.Schema.Indexes(childComplexity), true
 
 	case "Subscription.subscribe":
 		if e.complexity.Subscription.Subscribe == nil {
@@ -966,12 +1031,21 @@ type DocDetail {
   metadata: Metadata
 }
 
+type Index {
+  name: String!
+  gtype: String!
+  expression: String!
+  docs: Boolean
+  connections: Boolean
+}
+
 # Schema returns registered connection & doc types
 type Schema {
   # connection_types are the types of connections in the graph
   connection_types: [String!]
   # doc_types are the types of docs in the graph
   doc_types: [String!]
+  indexes: [Index!]
 }
 
 # Message is received on PubSub subscriptions
@@ -1056,9 +1130,14 @@ input Filter {
   expression: String
   # limit is the maximum number of items to return
   limit: Int!
+  # custom sorting of the results.
   sort: String
+  # seek to a specific key for pagination
   seek: String
+  # reverse the results
   reverse: Boolean
+  # search in a specific index
+  index: String
 }
 
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
@@ -1124,6 +1203,14 @@ input ExpressionFilter {
   expression: String
 }
 
+input IndexInput {
+  name: String!
+  gtype: String!
+  expression: String!
+  docs: Boolean
+  connections: Boolean
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
@@ -1139,6 +1226,7 @@ type Mutation {
   patchConnections(input: PatchFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty!
+  setIndex(input: IndexInput!): Empty!
 }
 
 type Query {
@@ -1272,6 +1360,21 @@ func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, raw
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNOutboundMessage2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐOutboundMessage(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_setIndex_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 apipb.Index
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNIndexInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐIndex(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2631,6 +2734,175 @@ func (ec *executionContext) _Docs_seek_next(ctx context.Context, field graphql.C
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Index_name(ctx context.Context, field graphql.CollectedField, obj *apipb.Index) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Index",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Index_gtype(ctx context.Context, field graphql.CollectedField, obj *apipb.Index) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Index",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gtype, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Index_expression(ctx context.Context, field graphql.CollectedField, obj *apipb.Index) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Index",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Expression, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Index_docs(ctx context.Context, field graphql.CollectedField, obj *apipb.Index) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Index",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Docs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Index_connections(ctx context.Context, field graphql.CollectedField, obj *apipb.Index) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Index",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Connections, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Message_channel(ctx context.Context, field graphql.CollectedField, obj *apipb.Message) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3275,6 +3547,48 @@ func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql
 	return ec.marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_setIndex(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_setIndex_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SetIndex(rctx, args["input"].(apipb.Index))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Path_gtype(ctx context.Context, field graphql.CollectedField, obj *apipb.Path) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3891,6 +4205,38 @@ func (ec *executionContext) _Schema_doc_types(ctx context.Context, field graphql
 	res := resTmp.([]string)
 	fc.Result = res
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schema_indexes(ctx context.Context, field graphql.CollectedField, obj *apipb.Schema) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schema",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Indexes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*apipb.Index)
+	fc.Result = res
+	return ec.marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐIndexᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
@@ -5334,6 +5680,66 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 			if err != nil {
 				return it, err
 			}
+		case "index":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("index"))
+			it.Index, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputIndexInput(ctx context.Context, obj interface{}) (apipb.Index, error) {
+	var it apipb.Index
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gtype":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
+			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "docs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("docs"))
+			it.Docs, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "connections":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections"))
+			it.Connections, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -5821,6 +6227,47 @@ func (ec *executionContext) _Docs(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var indexImplementors = []string{"Index"}
+
+func (ec *executionContext) _Index(ctx context.Context, sel ast.SelectionSet, obj *apipb.Index) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, indexImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Index")
+		case "name":
+			out.Values[i] = ec._Index_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "gtype":
+			out.Values[i] = ec._Index_gtype(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "expression":
+			out.Values[i] = ec._Index_expression(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "docs":
+			out.Values[i] = ec._Index_docs(ctx, field, obj)
+		case "connections":
+			out.Values[i] = ec._Index_connections(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var messageImplementors = []string{"Message"}
 
 func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, obj *apipb.Message) graphql.Marshaler {
@@ -5980,6 +6427,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "publish":
 			out.Values[i] = ec._Mutation_publish(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "setIndex":
+			out.Values[i] = ec._Mutation_setIndex(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -6224,6 +6676,8 @@ func (ec *executionContext) _Schema(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = ec._Schema_connection_types(ctx, field, obj)
 		case "doc_types":
 			out.Values[i] = ec._Schema_doc_types(ctx, field, obj)
+		case "indexes":
+			out.Values[i] = ec._Schema_indexes(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6685,6 +7139,21 @@ func (ec *executionContext) unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphik�
 func (ec *executionContext) unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐFilter(ctx context.Context, v interface{}) (*apipb.Filter, error) {
 	res, err := ec.unmarshalInputFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNIndex2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐIndex(ctx context.Context, sel ast.SelectionSet, v *apipb.Index) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Index(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNIndexInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐIndex(ctx context.Context, v interface{}) (apipb.Index, error) {
+	res, err := ec.unmarshalInputIndexInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
@@ -7356,6 +7825,46 @@ func (ec *executionContext) unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraph
 	}
 	res, err := ec.unmarshalInputFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐIndexᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Index) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNIndex2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐIndex(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) unmarshalOMeFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐMeFilter(ctx context.Context, v interface{}) (*apipb.MeFilter, error) {

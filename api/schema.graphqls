@@ -108,12 +108,21 @@ type DocDetail {
   metadata: Metadata
 }
 
+type Index {
+  name: String!
+  gtype: String!
+  expression: String!
+  docs: Boolean
+  connections: Boolean
+}
+
 # Schema returns registered connection & doc types
 type Schema {
   # connection_types are the types of connections in the graph
   connection_types: [String!]
   # doc_types are the types of docs in the graph
   doc_types: [String!]
+  indexes: [Index!]
 }
 
 # Message is received on PubSub subscriptions
@@ -198,9 +207,14 @@ input Filter {
   expression: String
   # limit is the maximum number of items to return
   limit: Int!
+  # custom sorting of the results.
   sort: String
+  # seek to a specific key for pagination
   seek: String
+  # reverse the results
   reverse: Boolean
+  # search in a specific index
+  index: String
 }
 
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
@@ -266,6 +280,14 @@ input ExpressionFilter {
   expression: String
 }
 
+input IndexInput {
+  name: String!
+  gtype: String!
+  expression: String!
+  docs: Boolean
+  connections: Boolean
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
@@ -281,6 +303,7 @@ type Mutation {
   patchConnections(input: PatchFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty!
+  setIndex(input: IndexInput!): Empty!
 }
 
 type Query {

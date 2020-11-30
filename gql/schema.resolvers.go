@@ -5,7 +5,6 @@ package gql
 
 import (
 	"context"
-
 	apipb "github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/gql/generated"
 	"github.com/autom8ter/graphik/logger"
@@ -47,6 +46,10 @@ func (r *mutationResolver) PatchConnections(ctx context.Context, input apipb.Pat
 
 func (r *mutationResolver) Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error) {
 	return r.client.Publish(ctx, &input)
+}
+
+func (r *mutationResolver) SetIndex(ctx context.Context, input apipb.Index) (*emptypb.Empty, error) {
+	return r.client.SetIndex(ctx, &input)
 }
 
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {
