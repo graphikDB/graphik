@@ -67,16 +67,14 @@ func ExampleClient_Me() {
 		log.Print(err)
 		return
 	}
-	issuer := me.GetAttributes().GetFields()["iss"].GetStringValue() // token issuer
+	issuer := me.GetAttributes().GetFields()["sub"].GetStringValue() // token issuer
 	fmt.Println(issuer)
-	// Output: https://accounts.google.com
+	// Output: 107146673535247272789
 }
 
 func ExampleClient_CreateDoc() {
 	charlie, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
-		Path: &apipb.Path{
-			Gtype: "dog",
-		},
+		Gtype: "dog",
 		Attributes: apipb.NewStruct(map[string]interface{}{
 			"name": "Charlie",
 		}),
@@ -119,9 +117,7 @@ func ExampleClient_CreateConnection() {
 	}
 	charlie := dogs.GetDocs()[0]
 	coleman, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
-		Path: &apipb.Path{
-			Gtype: "human",
-		},
+		Gtype: "human",
 		Attributes: apipb.NewStruct(map[string]interface{}{
 			"name": "Coleman",
 		}),
@@ -131,9 +127,7 @@ func ExampleClient_CreateConnection() {
 		return
 	}
 	ownerConnection, err := client.CreateConnection(context.Background(), &apipb.ConnectionConstructor{
-		Path: &apipb.Path{
-			Gtype: "owner",
-		},
+		Gtype: "owner",
 		Attributes: apipb.NewStruct(map[string]interface{}{
 			"primary_owner": true,
 		}),

@@ -15,7 +15,7 @@ message Path {
   // gtype is the type of the doc/connection ex: pet
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // gid is the unique id of the doc/connection within the context of it's type
-  string gid =2;
+  int64 gid =2 [(validator.field) = {int_gt : 0}];
 }
 
 // Metadata is general metadata collected on docs/connections
@@ -28,8 +28,6 @@ message Metadata {
   Path created_by =3;
   // updated_by is the identity that last modified the doc/connection
   Path updated_by =4 [(validator.field) = {msg_exists : true}];
-  // sequence is the sequence within the context of the doc/connection type
-  uint64 sequence =5 [(validator.field) = {int_gt : 0}];
   // version iterates by 1 every time the doc/connection is modified
   uint64 version =6 [(validator.field) = {int_gt : 0}];
 }
@@ -51,10 +49,10 @@ message Doc {
 
 // DocConstructor is used to create a doc
 message DocConstructor {
-  // path is the path to the doc. If an id is not provided, a unique id will be generated
-  Path path =1 [(validator.field) = {msg_exists : true}];
+  // gtype is the type of the doc/connection ex: pet
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // arbitrary k/v pairs
-  google.protobuf.Struct attributes =3;
+  google.protobuf.Struct attributes =2;
 }
 
 // DocConstructor is used to create a batch of docs
@@ -67,7 +65,7 @@ message DocConstructors {
 message Docs {
   // docs is an array of docs
   repeated Doc docs =1;
-  string seek_next =2;
+  int64 seek_next =2;
 }
 
 // DocDetail is a doc with its connected connections
@@ -87,7 +85,7 @@ message DocDetail {
 // DocDetails is an array of DocDetail
 message DocDetails {
   repeated DocDetail doc_details =1;
-  string seek_next =2;
+  int64 seek_next =2;
 }
 
 // DocDetailFilter is used to fetch doc details
@@ -116,8 +114,8 @@ message Connection {
 
 // ConnectionConstructor is used to create an Connection
 message ConnectionConstructor {
-  // path is the path to the connection. If an id is not provided, a unique id will be generated
-  Path path =1 [(validator.field) = {msg_exists : true}];
+  // gtype is the type of the doc/connection ex: pet
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // attributes are k/v pairs
   google.protobuf.Struct attributes =3;
   // directed is false if the connection is bi-directional
@@ -136,7 +134,7 @@ message ConnectionConstructors {
 // Connections is an array of Connection
 message Connections {
   repeated Connection connections =1;
-  string seek_next =2;
+  int64 seek_next =2;
 }
 
 // ConnectionDetail is an connection with both of it's connected docs fully loaded
@@ -158,7 +156,7 @@ message ConnectionDetail {
 // ConnectionDetails is an array of ConnectionDetail
 message ConnectionDetails {
   repeated ConnectionDetail connections =1;
-  string seek_next =2;
+  int64 seek_next =2;
 }
 
 // ConnectionFilter is used to fetch connections related to a single noted
@@ -174,7 +172,7 @@ message ConnectionFilter {
   // custom sorting of the results.
   string sort =5;
   // seek to a specific key for pagination
-  string seek =6;
+  int64 seek =6;
   // reverse the results
   bool reverse =7;
 }
@@ -190,7 +188,7 @@ message Filter {
   // custom sorting of the results.
   string sort =4;
   // seek to a specific key for pagination
-  string seek =5;
+  int64 seek =5;
   // reverse the results
   bool reverse =6;
   // search in a specific index

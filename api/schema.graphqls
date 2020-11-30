@@ -15,7 +15,7 @@ type Path {
   # gtype is the type of the doc/connection ex: pet
   gtype: String!
   # gid is the unique id of the doc/connection within the context of it's type
-  gid: String!
+  gid: Int!
 }
 
 # Metadata is general metadata collected about the doc
@@ -28,8 +28,6 @@ type Metadata {
   createdBy: Path!
   # updated_by is the identity that last modified the doc/connection
   updated_by: Path!
-  # sequence is the sequence within the context of the doc/connection type
-  sequence: Int!
   # version iterates by 1 every time the doc/connection is modified
   version: Int!
 }
@@ -48,7 +46,7 @@ type Doc {
 type Docs {
   # docs is an array of docs
   docs: [Doc!]
-  seek_next: String!
+  seek_next: Int!
 }
 
 # Connection is a graph primitive that represents a relationship between two docs
@@ -70,7 +68,7 @@ type Connection {
 # Connections is an array of connections
 type Connections {
   connections: [Connection!]
-  seek_next: String!
+  seek_next: Int!
 }
 
 # ConnectionDetail is an connection with both of it's connected docs fully loaded
@@ -139,18 +137,14 @@ type Message {
 
 # DocConstructor is used to create a Doc
 input DocConstructor {
-  # path is the path to the doc.
-  # if an id is not present in the path, a unique id will be generated
-  path: PathInput!
+  gtype: String!
   # attributes are k/v pairs
   attributes: Struct
 }
 
 # ConnectionConstructor is used to create an Connection
 input ConnectionConstructor {
-  # path is the path to the connection.
-  # if an id is not present in the path, a unique id will be generated
-  path: PathInput!
+  gtype: String!
   # directed is false if the connection is bi-directional
   directed: Boolean
 
@@ -196,7 +190,7 @@ input PathInput {
   # path is the path to the target doc/connection to patch
   gtype: String!
   # path is the path to the target doc/connection to patch
-  gid: String
+  gid: Int!
 }
 
 # Filter is a generic filter using Common Expression Language
@@ -210,7 +204,7 @@ input Filter {
   # custom sorting of the results.
   sort: String
   # seek to a specific key for pagination
-  seek: String
+  seek: Int
   # reverse the results
   reverse: Boolean
   # search in a specific index
@@ -238,7 +232,7 @@ input ConnectionFilter {
   # custom sorting of the results.
   sort: String
   # seek to a specific key for pagination
-  seek: String
+  seek: Int
   # reverse the results
   reverse: Boolean
 }

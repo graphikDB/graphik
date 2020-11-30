@@ -6,12 +6,12 @@ import (
 	"github.com/autom8ter/graphik/cache"
 	"github.com/autom8ter/graphik/flags"
 	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/cel-go/cel"
-	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
@@ -302,12 +302,22 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		docBucket := tx.Bucket(dbDocs)
 		for _, constructor := range constructors.GetDocs() {
-			bucket := docBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
-			if constructor.Path.GetGid() == "" {
-				constructor.Path.Gid = uuid.New().String()
+			bucket := docBucket.Bucket([]byte(constructor.GetGtype()))
+			if bucket == nil {
+				bucket, err = docBucket.CreateBucketIfNotExists([]byte(constructor.GetGtype()))
+				if err != nil {
+					return err
+				}
+			}
+			seq, err := bucket.NextSequence()
+			if err != nil {
+				return err
 			}
 			doc := &apipb.Doc{
-				Path:       constructor.GetPath(),
+				Path: &apipb.Path{
+					Gtype: constructor.GetGtype(),
+					Gid:   int64(seq),
+				},
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
 					CreatedAt: now,
@@ -315,15 +325,7 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 					UpdatedBy: identity.GetPath(),
 				},
 			}
-			if bucket == nil {
-				bucket, err = docBucket.CreateBucketIfNotExists([]byte(doc.GetPath().GetGtype()))
-				if err != nil {
-					return err
-				}
-			}
-			seq, _ := bucket.NextSequence()
-			doc.Metadata.Sequence = seq
-			doc, err := g.setDoc(ctx, tx, doc)
+			doc, err = g.setDoc(ctx, tx, doc)
 			if err != nil {
 				return err
 			}
@@ -376,21 +378,27 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		connectionBucket := tx.Bucket(dbConnections)
 		for _, constructor := range constructors.GetConnections() {
-			bucket := connectionBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+			bucket := connectionBucket.Bucket([]byte(constructor.GetGtype()))
 			if bucket == nil {
-				bucket, err = connectionBucket.CreateBucketIfNotExists([]byte(constructor.GetPath().GetGtype()))
+				bucket, err = connectionBucket.CreateBucketIfNotExists([]byte(constructor.GetGtype()))
 				if err != nil {
 					return err
 				}
 			}
-			if constructor.Path.GetGid() == "" {
-				constructor.Path.Gid = uuid.New().String()
+
+			seq, err := bucket.NextSequence()
+			if err != nil {
+				return err
 			}
 			connection := &apipb.Connection{
-				Path:       constructor.GetPath(),
+				Path: &apipb.Path{
+					Gtype: constructor.GetGtype(),
+					Gid:   int64(seq),
+				},
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
 					CreatedAt: now,
+					CreatedBy: identity.GetPath(),
 					UpdatedAt: now,
 					UpdatedBy: identity.GetPath(),
 				},
@@ -398,8 +406,6 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 				From:     constructor.GetFrom(),
 				To:       constructor.GetTo(),
 			}
-			seq, _ := bucket.NextSequence()
-			connection.Metadata.Sequence = seq
 			connections = append(connections, connection)
 		}
 		return nil
@@ -939,7 +945,7 @@ func (n *Graph) PatchConnection(ctx context.Context, value *apipb.Patch) (*apipb
 			return ErrNotFound
 		}
 		var e apipb.Connection
-		bits := bucket.Get([]byte(value.GetPath().Gid))
+		bits := bucket.Get(helpers.Uint64ToBytes(uint64(value.GetPath().Gid)))
 		if err := proto.Unmarshal(bits, &e); err != nil {
 			return err
 		}

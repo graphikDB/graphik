@@ -3,9 +3,9 @@ package database
 import (
 	"context"
 	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/google/cel-go/cel"
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
@@ -88,7 +88,7 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 	return i, g.cacheIndexes()
 }
 
-func (g *Graph) setIndexedDoc(ctx context.Context, tx *bbolt.Tx, index, gid string, doc []byte) error {
+func (g *Graph) setIndexedDoc(ctx context.Context, tx *bbolt.Tx, index string, gid, doc []byte) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -96,13 +96,13 @@ func (g *Graph) setIndexedDoc(ctx context.Context, tx *bbolt.Tx, index, gid stri
 	if bucket == nil {
 		return ErrNotFound
 	}
-	if err := bucket.Put([]byte(gid), doc); err != nil {
+	if err := bucket.Put(gid, doc); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (g *Graph) setIndexedConnection(ctx context.Context, tx *bbolt.Tx, index, gid string, connection []byte) error {
+func (g *Graph) setIndexedConnection(ctx context.Context, tx *bbolt.Tx, index, gid, connection []byte) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -110,35 +110,35 @@ func (g *Graph) setIndexedConnection(ctx context.Context, tx *bbolt.Tx, index, g
 	if bucket == nil {
 		return ErrNotFound
 	}
-	if err := bucket.Put([]byte(gid), connection); err != nil {
+	if err := bucket.Put(gid, connection); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (g *Graph) delIndexedDoc(ctx context.Context, tx *bbolt.Tx, index, gid string) error {
+func (g *Graph) delIndexedDoc(ctx context.Context, tx *bbolt.Tx, index, gid []byte) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	bucket := tx.Bucket(dbIndexDocs).Bucket([]byte(index))
+	bucket := tx.Bucket(dbIndexDocs).Bucket(index)
 	if bucket == nil {
 		return ErrNotFound
 	}
-	if err := bucket.Delete([]byte(gid)); err != nil {
+	if err := bucket.Delete(gid); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (g *Graph) delIndexedConnection(ctx context.Context, tx *bbolt.Tx, index, gid string) error {
+func (g *Graph) delIndexedConnection(ctx context.Context, tx *bbolt.Tx, index, gid []byte) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	bucket := tx.Bucket(dbIndexConnections).Bucket([]byte(index))
+	bucket := tx.Bucket(dbIndexConnections).Bucket(index)
 	if bucket == nil {
 		return ErrNotFound
 	}
-	if err := bucket.Delete([]byte(gid)); err != nil {
+	if err := bucket.Delete(gid); err != nil {
 		return err
 	}
 	return nil
@@ -150,9 +150,6 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	}
 	if doc.GetPath() == nil {
 		doc.Path = &apipb.Path{}
-	}
-	if doc.GetPath().Gid == "" {
-		doc.Path.Gid = uuid.New().String()
 	}
 	g.updateMeta(ctx, doc.Metadata)
 	bits, err := proto.Marshal(doc)
@@ -167,7 +164,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 			return nil, errors.Wrapf(err, "failed to create bucket %s", doc.GetPath().GetGtype())
 		}
 	}
-	if err := bucket.Put([]byte(doc.GetPath().GetGid()), bits); err != nil {
+	if err := bucket.Put(helpers.Uint64ToBytes(uint64(doc.GetPath().GetGid())), bits); err != nil {
 		return nil, err
 	}
 	g.rangeIndexes(func(i *index) bool {
@@ -183,7 +180,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 				return true
 			}
 			if result {
-				err = g.setIndexedDoc(ctx, tx, i.index.Name, doc.GetPath().GetGid(), bits)
+				err = g.setIndexedDoc(ctx, tx, i.index.Name, helpers.Uint64ToBytes(uint64(doc.GetPath().GetGid())), bits)
 				if err != nil {
 					logger.Error("failed to save index", zap.Error(err))
 					return true
@@ -222,7 +219,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 		if fromBucket == nil {
 			return nil, errors.Errorf("from doc %s does not exist", connection.From.String())
 		}
-		val := fromBucket.Get([]byte(connection.From.Gid))
+		val := fromBucket.Get(helpers.Uint64ToBytes(uint64(connection.From.Gid)))
 		if val == nil {
 			return nil, errors.Errorf("from doc %s does not exist", connection.From.String())
 		}
@@ -232,16 +229,13 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 		if toBucket == nil {
 			return nil, errors.Errorf("to doc %s does not exist", connection.To.String())
 		}
-		val := toBucket.Get([]byte(connection.To.Gid))
+		val := toBucket.Get(helpers.Uint64ToBytes(uint64(connection.To.Gid)))
 		if val == nil {
 			return nil, errors.Errorf("to doc %s does not exist", connection.To.String())
 		}
 	}
 	if connection.GetPath() == nil {
 		connection.Path = &apipb.Path{}
-	}
-	if connection.GetPath().Gid == "" {
-		connection.Path.Gid = uuid.New().String()
 	}
 	g.updateMeta(ctx, connection.Metadata)
 	bits, err := proto.Marshal(connection)
@@ -256,7 +250,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			return nil, errors.Wrapf(err, "failed to create bucket %s", connection.GetPath().GetGtype())
 		}
 	}
-	if err := connectionBucket.Put([]byte(connection.GetPath().GetGid()), bits); err != nil {
+	if err := connectionBucket.Put(helpers.Uint64ToBytes(uint64(connection.GetPath().GetGid())), bits); err != nil {
 		return nil, err
 	}
 	g.mu.Lock()
@@ -282,7 +276,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 				return true
 			}
 			if result {
-				err = g.setIndexedConnection(ctx, tx, i.index.Name, connection.GetPath().GetGid(), bits)
+				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), helpers.Uint64ToBytes(uint64(connection.GetPath().GetGid())), bits)
 				if err != nil {
 					logger.Error("failed to save index", zap.Error(err))
 					return true
@@ -311,7 +305,6 @@ func (g *Graph) setConnections(ctx context.Context, connections ...*apipb.Connec
 	}); err != nil {
 		return nil, err
 	}
-	edgs.Sort("")
 	return edgs, nil
 }
 
@@ -324,7 +317,7 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*ap
 	if bucket == nil {
 		return nil, ErrNotFound
 	}
-	bits := bucket.Get([]byte(path.Gid))
+	bits := bucket.Get(helpers.Uint64ToBytes(uint64(path.Gid)))
 	if len(bits) == 0 {
 		return nil, ErrNotFound
 	}
@@ -343,7 +336,7 @@ func (g *Graph) getConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Pat
 	if bucket == nil {
 		return nil, ErrNotFound
 	}
-	bits := bucket.Get([]byte(path.Gid))
+	bits := bucket.Get(helpers.Uint64ToBytes(uint64(path.Gid)))
 	if len(bits) == 0 {
 		return nil, ErrNotFound
 	}
@@ -437,35 +430,45 @@ func (g *Graph) rangeDocs(ctx context.Context, gType string, fn func(n *apipb.Do
 }
 
 func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstructor) (*apipb.Doc, error) {
-	now := timestamppb.Now()
-	var err error
-	if constructor.Path.Gid == "" {
-		constructor.Path.Gid = uuid.New().String()
-	}
-	newDock := &apipb.Doc{
-		Path:       constructor.GetPath(),
-		Attributes: constructor.GetAttributes(),
-		Metadata: &apipb.Metadata{
-			CreatedAt: now,
-			UpdatedAt: now,
-			CreatedBy: constructor.GetPath(),
-			UpdatedBy: constructor.GetPath(),
-		},
-	}
+
+	var (
+		err     error
+		now     = timestamppb.Now()
+		newDock *apipb.Doc
+	)
+
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		docBucket := tx.Bucket(dbDocs)
-		bucket := docBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+		bucket := docBucket.Bucket([]byte(constructor.GetGtype()))
 		if bucket == nil {
-			bucket, err = docBucket.CreateBucket([]byte(newDock.GetPath().GetGtype()))
+			bucket, err = docBucket.CreateBucket([]byte(constructor.GetGtype()))
 			if err != nil {
-				return errors.Wrapf(err, "%s", newDock.GetPath().GetGtype())
+				return errors.Wrapf(err, "%s", constructor.GetGtype())
 			}
 		}
 		seq, err := bucket.NextSequence()
 		if err != nil {
 			return errors.Wrap(err, "failed to get next sequence")
 		}
-		newDock.Metadata.Sequence = seq
+		newDock = &apipb.Doc{
+			Path: &apipb.Path{
+				Gtype: constructor.GetGtype(),
+				Gid:   int64(seq),
+			},
+			Attributes: constructor.GetAttributes(),
+			Metadata: &apipb.Metadata{
+				CreatedAt: now,
+				UpdatedAt: now,
+				CreatedBy: &apipb.Path{
+					Gtype: constructor.GetGtype(),
+					Gid:   int64(seq),
+				},
+				UpdatedBy: &apipb.Path{
+					Gtype: constructor.GetGtype(),
+					Gid:   int64(seq),
+				},
+			},
+		}
 		newDock, err = g.setDoc(ctx, tx, newDock)
 		if err != nil {
 			return err
@@ -483,7 +486,7 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) erro
 		return err
 	}
 	bucket := tx.Bucket(dbDocs).Bucket([]byte(doc.GetPath().GetGtype()))
-
+	idBuf := helpers.Uint64ToBytes(uint64(doc.GetPath().GetGid()))
 	g.rangeFrom(ctx, tx, path, func(e *apipb.Connection) bool {
 		g.delConnection(ctx, tx, e.GetPath())
 		return true
@@ -494,11 +497,11 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) erro
 	})
 	g.rangeIndexes(func(index *index) bool {
 		if index.index.Docs && index.index.GetGtype() == path.GetGtype() {
-			g.delIndexedDoc(ctx, tx, index.index.Name, path.GetGid())
+			g.delIndexedDoc(ctx, tx, []byte(index.index.Name), idBuf)
 		}
 		return true
 	})
-	return bucket.Delete([]byte(doc.GetPath().GetGid()))
+	return bucket.Delete(idBuf)
 }
 
 func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
@@ -514,11 +517,11 @@ func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Pat
 	g.mu.Unlock()
 	g.rangeIndexes(func(index *index) bool {
 		if index.index.Connections && index.index.GetGtype() == path.GetGtype() {
-			g.delIndexedConnection(ctx, tx, index.index.Name, path.GetGid())
+			g.delIndexedConnection(ctx, tx, []byte(index.index.Name), helpers.Uint64ToBytes(uint64(path.GetGid())))
 		}
 		return true
 	})
-	return tx.Bucket(dbConnections).Bucket([]byte(connection.GetPath().GetGtype())).Delete([]byte(connection.GetPath().GetGid()))
+	return tx.Bucket(dbConnections).Bucket([]byte(connection.GetPath().GetGtype())).Delete(helpers.Uint64ToBytes(uint64(connection.GetPath().GetGid())))
 }
 
 func (n *Graph) filterDoc(ctx context.Context, docType string, filter func(doc *apipb.Doc) bool) (*apipb.Docs, error) {
@@ -550,7 +553,7 @@ func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, 
 			return ErrNotFound
 		}
 		var connection apipb.Connection
-		bits := bucket.Get([]byte(path.Gid))
+		bits := bucket.Get(helpers.Uint64ToBytes(uint64(path.Gid)))
 		if err := proto.Unmarshal(bits, &connection); err != nil {
 			return err
 		}
@@ -574,7 +577,7 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path
 			return ErrNotFound
 		}
 		var connection apipb.Connection
-		bits := bucket.Get([]byte(path.Gid))
+		bits := bucket.Get(helpers.Uint64ToBytes(uint64(path.Gid)))
 		if err := proto.Unmarshal(bits, &connection); err != nil {
 			return err
 		}
@@ -585,7 +588,7 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path
 	return nil
 }
 
-func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek, index string, fn func(e *apipb.Connection) bool) (string, error) {
+func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int64, index string, fn func(e *apipb.Connection) bool) (int64, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
@@ -605,7 +608,7 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek, index str
 			}
 			c = bucket.Cursor()
 		}
-		for k, v := c.Seek([]byte(seek)); k != nil; k, v = c.Next() {
+		for k, v := c.Seek(helpers.Uint64ToBytes(uint64(seek))); k != nil; k, v = c.Next() {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
@@ -620,12 +623,12 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType, seek, index str
 		}
 		return nil
 	}); err != nil && err != DONE {
-		return string(lastKey), err
+		return int64(helpers.BytesToUint64(lastKey)), err
 	}
-	return string(lastKey), nil
+	return int64(helpers.BytesToUint64(lastKey)), nil
 }
 
-func (g *Graph) rangeSeekDocs(ctx context.Context, gType, seek, index string, fn func(e *apipb.Doc) bool) (string, error) {
+func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek int64, index string, fn func(e *apipb.Doc) bool) (int64, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
@@ -645,7 +648,7 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType, seek, index string, fn
 			}
 			c = bucket.Cursor()
 		}
-		for k, v := c.Seek([]byte(seek)); k != nil; k, v = c.Next() {
+		for k, v := c.Seek(helpers.Uint64ToBytes(uint64(seek))); k != nil; k, v = c.Next() {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
@@ -660,9 +663,9 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType, seek, index string, fn
 		}
 		return nil
 	}); err != nil && err != DONE {
-		return string(lastKey), err
+		return int64(helpers.BytesToUint64(lastKey)), err
 	}
-	return string(lastKey), nil
+	return int64(helpers.BytesToUint64(lastKey)), nil
 }
 
 func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {

@@ -5,16 +5,13 @@ package gql
 
 import (
 	"context"
+
 	apipb "github.com/autom8ter/graphik/gen/go/api"
 	"github.com/autom8ter/graphik/gql/generated"
 	"github.com/autom8ter/graphik/logger"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
-
-func (r *metadataResolver) Sequence(ctx context.Context, obj *apipb.Metadata) (int, error) {
-	return int(obj.Sequence), nil
-}
 
 func (r *metadataResolver) Version(ctx context.Context, obj *apipb.Metadata) (int, error) {
 	return int(obj.Version), nil

@@ -12,7 +12,6 @@ import (
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jws"
 	"github.com/pkg/errors"
-	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -181,46 +180,31 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 }
 
 func (a *Graph) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Doc, error) {
-	path := &apipb.Path{
-		Gtype: identityType,
-		Gid:   payload[emailClaim].(string),
+	if _, ok := payload["email"].(string); !ok {
+		return nil, nil, errors.New("email not present in token claims")
 	}
-	var (
-		doc apipb.Doc
-		err error
-	)
-	if err = a.db.View(func(tx *bbolt.Tx) error {
-		getDoc, err := a.getDoc(ctx, tx, path)
-		if err != nil {
-			return err
-		}
-		doc = *getDoc
-		return err
-	}); err != nil && err != ErrNotFound {
-		return ctx, nil, err
-	}
-	if doc.GetPath() == nil {
-		logger.Info("creating identity",
-			zap.String("gtype", path.GetGtype()),
-			zap.String("gid", path.GetGid()),
-		)
+	docs, _ := a.SearchDocs(ctx, &apipb.Filter{
+		Gtype:      identityType,
+		Expression: fmt.Sprintf(`doc.attributes.email.contains("%s")`, payload["email"].(string)),
+		Limit:      1,
+	})
+	if docs == nil || len(docs.GetDocs()) == 0 {
+		docs = &apipb.Docs{}
+		logger.Info("creating identity", zap.String("email", payload["email"].(string)))
 		strct, err := structpb.NewStruct(payload)
 		if err != nil {
 			return nil, nil, err
 		}
-		docP, err := a.createIdentity(ctx, &apipb.DocConstructor{
-			Path:       path,
+		doc, err := a.createIdentity(ctx, &apipb.DocConstructor{
+			Gtype:      identityType,
 			Attributes: strct,
 		})
 		if err != nil {
 			return nil, nil, err
 		}
-		doc = *docP
+		docs.Docs = []*apipb.Doc{doc}
 	}
-	if doc.GetPath() == nil {
-		return nil, nil, errors.New("empty doc")
-	}
-	return context.WithValue(ctx, authCtxKey, &doc), &doc, nil
+	return context.WithValue(ctx, authCtxKey, docs.GetDocs()[0]), docs.GetDocs()[0], nil
 }
 
 func (s *Graph) getIdentity(ctx context.Context) *apipb.Doc {

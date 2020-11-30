@@ -32,8 +32,12 @@ func Hash(val []byte) string {
 	return hex.EncodeToString(bs)
 }
 
-func Uint64ToBytes(seq uint64) []byte {
+func Uint64ToBytes(i uint64) []byte {
 	buf := make([]byte, binary.MaxVarintLen64)
-	binary.PutUvarint(buf, seq)
+	binary.PutUvarint(buf, i)
 	return buf
+}
+
+func BytesToUint64(data []byte) uint64 {
+	return binary.BigEndian.Uint64(data)
 }

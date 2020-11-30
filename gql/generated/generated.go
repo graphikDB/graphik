@@ -132,7 +132,6 @@ type ComplexityRoot struct {
 	Metadata struct {
 		CreatedAt func(childComplexity int) int
 		CreatedBy func(childComplexity int) int
-		Sequence  func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		UpdatedBy func(childComplexity int) int
 		Version   func(childComplexity int) int
@@ -183,7 +182,6 @@ type ComplexityRoot struct {
 }
 
 type MetadataResolver interface {
-	Sequence(ctx context.Context, obj *apipb.Metadata) (int, error)
 	Version(ctx context.Context, obj *apipb.Metadata) (int, error)
 }
 type MutationResolver interface {
@@ -541,13 +539,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Metadata.CreatedBy(childComplexity), true
-
-	case "Metadata.sequence":
-		if e.complexity.Metadata.Sequence == nil {
-			break
-		}
-
-		return e.complexity.Metadata.Sequence(childComplexity), true
 
 	case "Metadata.updated_at":
 		if e.complexity.Metadata.UpdatedAt == nil {
@@ -938,7 +929,7 @@ type Path {
   # gtype is the type of the doc/connection ex: pet
   gtype: String!
   # gid is the unique id of the doc/connection within the context of it's type
-  gid: String!
+  gid: Int!
 }
 
 # Metadata is general metadata collected about the doc
@@ -951,8 +942,6 @@ type Metadata {
   createdBy: Path!
   # updated_by is the identity that last modified the doc/connection
   updated_by: Path!
-  # sequence is the sequence within the context of the doc/connection type
-  sequence: Int!
   # version iterates by 1 every time the doc/connection is modified
   version: Int!
 }
@@ -971,7 +960,7 @@ type Doc {
 type Docs {
   # docs is an array of docs
   docs: [Doc!]
-  seek_next: String!
+  seek_next: Int!
 }
 
 # Connection is a graph primitive that represents a relationship between two docs
@@ -993,7 +982,7 @@ type Connection {
 # Connections is an array of connections
 type Connections {
   connections: [Connection!]
-  seek_next: String!
+  seek_next: Int!
 }
 
 # ConnectionDetail is an connection with both of it's connected docs fully loaded
@@ -1062,18 +1051,14 @@ type Message {
 
 # DocConstructor is used to create a Doc
 input DocConstructor {
-  # path is the path to the doc.
-  # if an id is not present in the path, a unique id will be generated
-  path: PathInput!
+  gtype: String!
   # attributes are k/v pairs
   attributes: Struct
 }
 
 # ConnectionConstructor is used to create an Connection
 input ConnectionConstructor {
-  # path is the path to the connection.
-  # if an id is not present in the path, a unique id will be generated
-  path: PathInput!
+  gtype: String!
   # directed is false if the connection is bi-directional
   directed: Boolean
 
@@ -1119,7 +1104,7 @@ input PathInput {
   # path is the path to the target doc/connection to patch
   gtype: String!
   # path is the path to the target doc/connection to patch
-  gid: String
+  gid: Int!
 }
 
 # Filter is a generic filter using Common Expression Language
@@ -1133,7 +1118,7 @@ input Filter {
   # custom sorting of the results.
   sort: String
   # seek to a specific key for pagination
-  seek: String
+  seek: Int
   # reverse the results
   reverse: Boolean
   # search in a specific index
@@ -1161,7 +1146,7 @@ input ConnectionFilter {
   # custom sorting of the results.
   sort: String
   # seek to a specific key for pagination
-  seek: String
+  seek: Int
   # reverse the results
   reverse: Boolean
 }
@@ -2333,9 +2318,9 @@ func (ec *executionContext) _Connections_seek_next(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int64)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Doc_path(ctx context.Context, field graphql.CollectedField, obj *apipb.Doc) (ret graphql.Marshaler) {
@@ -2729,9 +2714,9 @@ func (ec *executionContext) _Docs_seek_next(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int64)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Index_name(ctx context.Context, field graphql.CollectedField, obj *apipb.Index) (ret graphql.Marshaler) {
@@ -3183,41 +3168,6 @@ func (ec *executionContext) _Metadata_updated_by(ctx context.Context, field grap
 	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐPath(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Metadata_sequence(ctx context.Context, field graphql.CollectedField, obj *apipb.Metadata) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Metadata",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Metadata().Sequence(rctx, obj)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Metadata_version(ctx context.Context, field graphql.CollectedField, obj *apipb.Metadata) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3654,9 +3604,9 @@ func (ec *executionContext) _Path_gid(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int64)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pong_message(ctx context.Context, field graphql.CollectedField, obj *apipb.Pong) (ret graphql.Marshaler) {
@@ -5464,11 +5414,11 @@ func (ec *executionContext) unmarshalInputConnectionConstructor(ctx context.Cont
 
 	for k, v := range asMap {
 		switch k {
-		case "path":
+		case "gtype":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
-			it.Path, err = ec.unmarshalNPathInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐPath(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
+			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5560,7 +5510,7 @@ func (ec *executionContext) unmarshalInputConnectionFilter(ctx context.Context, 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seek"))
-			it.Seek, err = ec.unmarshalOString2string(ctx, v)
+			it.Seek, err = ec.unmarshalOInt2int64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5584,11 +5534,11 @@ func (ec *executionContext) unmarshalInputDocConstructor(ctx context.Context, ob
 
 	for k, v := range asMap {
 		switch k {
-		case "path":
+		case "gtype":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
-			it.Path, err = ec.unmarshalNPathInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐPath(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
+			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5668,7 +5618,7 @@ func (ec *executionContext) unmarshalInputFilter(ctx context.Context, obj interf
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seek"))
-			it.Seek, err = ec.unmarshalOString2string(ctx, v)
+			it.Seek, err = ec.unmarshalOInt2int64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5876,7 +5826,7 @@ func (ec *executionContext) unmarshalInputPathInput(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gid"))
-			it.Gid, err = ec.unmarshalOString2string(ctx, v)
+			it.Gid, err = ec.unmarshalNInt2int64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6341,20 +6291,6 @@ func (ec *executionContext) _Metadata(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "sequence":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Metadata_sequence(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
 		case "version":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -7186,6 +7122,21 @@ func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.Selec
 	return res
 }
 
+func (ec *executionContext) unmarshalNInt2int64(ctx context.Context, v interface{}) (int64, error) {
+	res, err := graphql.UnmarshalInt64(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
+	res := graphql.MarshalInt64(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) marshalNMessage2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐMessage(ctx context.Context, sel ast.SelectionSet, v apipb.Message) graphql.Marshaler {
 	return ec._Message(ctx, sel, &v)
 }
@@ -7865,6 +7816,15 @@ func (ec *executionContext) marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraph
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalOInt2int64(ctx context.Context, v interface{}) (int64, error) {
+	res, err := graphql.UnmarshalInt64(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
+	return graphql.MarshalInt64(v)
 }
 
 func (ec *executionContext) unmarshalOMeFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚋapiᚐMeFilter(ctx context.Context, v interface{}) (*apipb.MeFilter, error) {

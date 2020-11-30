@@ -3,10 +3,8 @@ package apipb
 import (
 	"fmt"
 	"google.golang.org/protobuf/types/known/structpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
 	"strings"
-	"time"
 )
 
 const (
@@ -22,10 +20,6 @@ type Mapper interface {
 	AsMap() map[string]interface{}
 }
 
-type FromMapper interface {
-	FromMap(data map[string]interface{})
-}
-
 func (m *Path) AsMap() map[string]interface{} {
 	if m == nil {
 		return map[string]interface{}{}
@@ -33,15 +27,6 @@ func (m *Path) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"gid":   m.GetGid(),
 		"gtype": m.GetGtype(),
-	}
-}
-
-func (m *Path) FromMap(data map[string]interface{}) {
-	if val, ok := data["gid"]; ok {
-		m.Gid = val.(string)
-	}
-	if val, ok := data["gtype"]; ok {
-		m.Gtype = val.(string)
 	}
 }
 
@@ -53,25 +38,7 @@ func (m *Metadata) AsMap() map[string]interface{} {
 		"created_at": m.GetCreatedAt(),
 		"updated_at": m.GetUpdatedAt(),
 		"updated_by": m.GetUpdatedBy(),
-		"sequence":   m.GetSequence(),
 		"version":    m.GetVersion(),
-	}
-}
-
-func (m *Metadata) FromMap(data map[string]interface{}) {
-	if val, ok := data["created_at"]; ok {
-		m.CreatedAt = timestamppb.New(val.(time.Time))
-	}
-	if val, ok := data["updated_at"]; ok {
-		m.UpdatedAt = timestamppb.New(val.(time.Time))
-	}
-	if val, ok := data["sequence"]; ok {
-		m.Sequence = val.(uint64)
-	}
-	if val, ok := data["updated_by"]; ok {
-		if val, ok := val.(map[string]interface{}); ok {
-			m.UpdatedBy.FromMap(val)
-		}
 	}
 }
 
@@ -83,39 +50,6 @@ func (n *Doc) AsMap() map[string]interface{} {
 		"path":       n.GetPath().AsMap(),
 		"attributes": n.GetAttributes().AsMap(),
 		"metadata":   n.GetMetadata().AsMap(),
-	}
-}
-
-func (m *Doc) FromMap(data map[string]interface{}) {
-	if val, ok := data["metadata"]; ok {
-		if m.Metadata == nil {
-			m.Metadata = &Metadata{}
-		}
-		if val, ok := val.(map[string]interface{}); ok {
-			m.Metadata.FromMap(val)
-		}
-		if val, ok := val.(*Metadata); ok {
-			m.Metadata = val
-		}
-	}
-	if val, ok := data["path"]; ok {
-		if m.Path == nil {
-			m.Path = &Path{}
-		}
-		if val, ok := val.(map[string]interface{}); ok {
-			m.Path.FromMap(val)
-		}
-		if val, ok := val.(*Path); ok {
-			m.Path = val
-		}
-	}
-	if val, ok := data["attributes"]; ok {
-		if val, ok := val.(map[string]interface{}); ok {
-			m.Attributes = NewStruct(val)
-		}
-		if val, ok := val.(*structpb.Struct); ok {
-			m.Attributes = val
-		}
 	}
 }
 
@@ -133,61 +67,10 @@ func (n *Connection) AsMap() map[string]interface{} {
 	}
 }
 
-func (m *Connection) FromMap(data map[string]interface{}) {
-	if val, ok := data["metadata"]; ok {
-		if m.Metadata == nil {
-			m.Metadata = &Metadata{}
-		}
-		m.Metadata.FromMap(val.(map[string]interface{}))
-	}
-	if val, ok := data["path"]; ok {
-		if m.Path == nil {
-			m.Path = &Path{}
-		}
-		if val, ok := val.(map[string]interface{}); ok {
-			m.Path.FromMap(val)
-		}
-		if val, ok := val.(*Path); ok {
-			m.Path = val
-		}
-	}
-	if val, ok := data["from"]; ok {
-		if m.From == nil {
-			m.From = &Path{}
-		}
-		if val, ok := val.(map[string]interface{}); ok {
-			m.From.FromMap(val)
-		}
-		if val, ok := val.(*Path); ok {
-			m.From = val
-		}
-	}
-	if val, ok := data["to"]; ok {
-		if m.To == nil {
-			m.To = &Path{}
-		}
-		if val, ok := val.(map[string]interface{}); ok {
-			m.To.FromMap(val)
-		}
-		if val, ok := val.(*Path); ok {
-			m.To = val
-		}
-	}
-	if val, ok := data["attributes"]; ok {
-		if val, ok := val.(map[string]interface{}); ok {
-			m.Attributes = NewStruct(val)
-		}
-		if val, ok := val.(*structpb.Struct); ok {
-			m.Attributes = val
-		}
-	}
-}
-
 func (n *Message) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
-
 	return map[string]interface{}{
 		"channel":   n.GetChannel(),
 		"sender":    n.GetSender().AsMap(),
@@ -316,7 +199,7 @@ func (e *ConnectionConstructor) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"path":       e.GetPath().AsMap(),
+		"gtype":      e.GetGtype(),
 		"attributes": e.GetAttributes().AsMap(),
 		"directed":   e.GetDirected(),
 		"from":       e.GetFrom().AsMap(),
@@ -329,7 +212,7 @@ func (e *DocConstructor) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"path":       e.GetPath().AsMap(),
+		"gtype":      e.GetGtype(),
 		"attributes": e.GetAttributes().AsMap(),
 	}
 }
@@ -400,10 +283,6 @@ func (n *Docs) Sort(field string) {
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetPath().GetGtype() < n.GetDocs()[j].GetPath().GetGtype()
 		})
-	case field == "metadata.sequence":
-		sort.Slice(n.GetDocs(), func(i, j int) bool {
-			return n.GetDocs()[i].GetMetadata().GetSequence() < n.GetDocs()[j].GetMetadata().GetSequence()
-		})
 	case field == "metadata.version":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
 			return n.GetDocs()[i].GetMetadata().GetVersion() < n.GetDocs()[j].GetMetadata().GetVersion()
@@ -453,10 +332,6 @@ func (e *Connections) Sort(field string) {
 	case field == "path.gtype":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetPath().GetGtype() < e.GetConnections()[j].GetPath().GetGtype()
-		})
-	case field == "metadata.sequence":
-		sort.Slice(e.GetConnections(), func(i, j int) bool {
-			return e.GetConnections()[i].GetMetadata().GetSequence() < e.GetConnections()[j].GetMetadata().GetSequence()
 		})
 	case field == "metadata.version":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
@@ -527,10 +402,6 @@ func (e *ConnectionDetails) Sort(field string) {
 	case field == "from.path.gid":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
 			return e.GetConnections()[i].GetFrom().GetPath().GetGid() < e.GetConnections()[j].GetFrom().GetPath().GetGid()
-		})
-	case field == "metadata.sequence":
-		sort.Slice(e.GetConnections(), func(i, j int) bool {
-			return e.GetConnections()[i].GetMetadata().GetSequence() < e.GetConnections()[j].GetMetadata().GetSequence()
 		})
 	case field == "metadata.version":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {

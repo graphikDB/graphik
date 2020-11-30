@@ -131,7 +131,7 @@ ConnectionConstructor is used to create an Connection
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the connection. If an id is not provided, a unique id will be generated |
+| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs |
 | directed | [bool](#bool) |  | directed is false if the connection is bi-directional |
 | from | [Path](#api.Path) |  | from is the doc path that is the root of the connection |
@@ -186,7 +186,7 @@ ConnectionDetails is an array of ConnectionDetail
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | connections | [ConnectionDetail](#api.ConnectionDetail) | repeated |  |
-| seek_next | [string](#string) |  |  |
+| seek_next | [int64](#int64) |  |  |
 
 
 
@@ -206,7 +206,7 @@ ConnectionFilter is used to fetch connections related to a single noted
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return |
 | sort | [string](#string) |  | custom sorting of the results. |
-| seek | [string](#string) |  | seek to a specific key for pagination |
+| seek | [int64](#int64) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
 
 
@@ -223,7 +223,7 @@ Connections is an array of Connection
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | connections | [Connection](#api.Connection) | repeated |  |
-| seek_next | [string](#string) |  |  |
+| seek_next | [int64](#int64) |  |  |
 
 
 
@@ -271,7 +271,7 @@ DocConstructor is used to create a doc
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the doc. If an id is not provided, a unique id will be generated |
+| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | arbitrary k/v pairs |
 
 
@@ -339,7 +339,7 @@ DocDetails is an array of DocDetail
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | doc_details | [DocDetail](#api.DocDetail) | repeated |  |
-| seek_next | [string](#string) |  |  |
+| seek_next | [int64](#int64) |  |  |
 
 
 
@@ -355,7 +355,7 @@ Docs is an array of docs
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | docs | [Doc](#api.Doc) | repeated | docs is an array of docs |
-| seek_next | [string](#string) |  |  |
+| seek_next | [int64](#int64) |  |  |
 
 
 
@@ -389,7 +389,7 @@ Filter is a generic filter using Common Expression Language
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return |
 | sort | [string](#string) |  | custom sorting of the results. |
-| seek | [string](#string) |  | seek to a specific key for pagination |
+| seek | [int64](#int64) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
 | index | [string](#string) |  | search in a specific index |
 
@@ -480,7 +480,6 @@ Metadata is general metadata collected on docs/connections
 | updated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | updated_at is the unix timestamp when the doc/connection was last updated |
 | created_by | [Path](#api.Path) |  | created_by is the identity that initially created the doc/connection |
 | updated_by | [Path](#api.Path) |  | updated_by is the identity that last modified the doc/connection |
-| sequence | [uint64](#uint64) |  | sequence is the sequence within the context of the doc/connection type |
 | version | [uint64](#uint64) |  | version iterates by 1 every time the doc/connection is modified |
 
 
@@ -545,7 +544,7 @@ Path describes a doc/connection type &amp; id
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
-| gid | [string](#string) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
+| gid | [int64](#int64) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
 
 
 
