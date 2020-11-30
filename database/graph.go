@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/autom8ter/graphik/cache"
-	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/vm"

@@ -2,7 +2,7 @@ package vm
 
 import (
 	"errors"
-	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/autom8ter/graphik/gen/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
 )

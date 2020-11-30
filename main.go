@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/autom8ter/graphik/database"
-	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/gql"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"

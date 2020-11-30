@@ -3,9 +3,10 @@ package graphik_test
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/gen/go/api"
+	apipb2 "github.com/autom8ter/graphik/gen/go"
+	"github.com/autom8ter/graphik/gen/go"
+	"github.com/autom8ter/graphik/graphik-client-go"
 	"github.com/autom8ter/graphik/logger"
-	"github.com/autom8ter/graphik/sdk/graphik-client-go"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
@@ -75,7 +76,7 @@ func ExampleClient_Me() {
 func ExampleClient_CreateDoc() {
 	charlie, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
 		Gtype: "dog",
-		Attributes: apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Charlie",
 		}),
 	})
@@ -118,7 +119,7 @@ func ExampleClient_CreateConnection() {
 	charlie := dogs.GetDocs()[0]
 	coleman, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
 		Gtype: "human",
-		Attributes: apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Coleman",
 		}),
 	})
@@ -128,7 +129,7 @@ func ExampleClient_CreateConnection() {
 	}
 	ownerConnection, err := client.CreateConnection(context.Background(), &apipb.ConnectionConstructor{
 		Gtype: "owner",
-		Attributes: apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"primary_owner": true,
 		}),
 		From: charlie.Path,
@@ -172,7 +173,7 @@ func ExampleClient_PatchDoc() {
 	charlie := dogs.GetDocs()[0]
 	charlie, err = client.PatchDoc(context.Background(), &apipb.Patch{
 		Path: charlie.Path,
-		Attributes: apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"weight": 25,
 		}),
 	})
@@ -187,7 +188,7 @@ func ExampleClient_PatchDoc() {
 func ExampleClient_Publish() {
 	res, err := client.Publish(context.Background(), &apipb.OutboundMessage{
 		Channel: "testing",
-		Data: apipb.NewStruct(map[string]interface{}{
+		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
 		}),
 	})
@@ -223,7 +224,7 @@ func ExampleClient_Subscribe() {
 	time.Sleep(1 * time.Second)
 	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
 		Channel: "testing",
-		Data: apipb.NewStruct(map[string]interface{}{
+		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
 		}),
 	})

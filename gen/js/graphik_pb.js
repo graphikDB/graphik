@@ -15,7 +15,7 @@ var google_protobuf_struct_pb = require('google-protobuf/google/protobuf/struct_
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 var google_protobuf_any_pb = require('google-protobuf/google/protobuf/any_pb.js');
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
-var github_com_mwitkow_go$proto$validators_validator_pb = require('../github.com/mwitkow/go-proto-validators/validator_pb.js');
+var github_com_mwitkow_go$proto$validators_validator_pb = require('./github.com/mwitkow/go-proto-validators/validator_pb.js');
 goog.exportSymbol('proto.api.Change', null, global);
 goog.exportSymbol('proto.api.ChannelFilter', null, global);
 goog.exportSymbol('proto.api.Connection', null, global);

@@ -1,7 +1,7 @@
 package vm
 
 import (
-	"github.com/autom8ter/graphik/gen/go/api"
+	"github.com/autom8ter/graphik/gen/go"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 

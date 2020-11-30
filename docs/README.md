@@ -3,7 +3,7 @@
 
 ## Table of Contents
 
-- [api/graphik.proto](#api/graphik.proto)
+- [graphik.proto](#graphik.proto)
     - [Change](#api.Change)
     - [ChannelFilter](#api.ChannelFilter)
     - [Connection](#api.Connection)
@@ -46,10 +46,10 @@
 
 
 
-<a name="api/graphik.proto"></a>
+<a name="graphik.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## api/graphik.proto
+## graphik.proto
 
 
 

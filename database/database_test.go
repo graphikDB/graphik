@@ -3,7 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
-	apipb "github.com/autom8ter/graphik/gen/go/api"
+	apipb2 "github.com/autom8ter/graphik/gen/go"
+	apipb "github.com/autom8ter/graphik/gen/go"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"testing"
@@ -11,13 +12,13 @@ import (
 
 func init() {
 	graph, err = NewGraph(context.Background(), &apipb.Flags{
-		OpenIdDiscovery: "",
-		StoragePath:     "/tmp/testing/graphik",
-		Metrics:         false,
-		Authorizers:     nil,
-		AllowHeaders:    nil,
-		AllowMethods:    nil,
-		AllowOrigins:    nil,
+		OpenIdDiscovery:  "",
+		StoragePath:    "/tmp/testing/graphik",
+		Metrics:        false,
+		Authorizers:    nil,
+		AllowHeaders: nil,
+		AllowMethods: nil,
+		AllowOrigins: nil,
 	})
 	if err != nil {
 		fmt.Println(err.Error())
@@ -33,7 +34,7 @@ var (
 			Gtype: identityType,
 			Gid:   4,
 		},
-		Attributes: apipb.NewStruct(map[string]interface{}{}),
+		Attributes: apipb2.NewStruct(map[string]interface{}{}),
 		Metadata: &apipb.Metadata{
 			CreatedAt: timestamppb.Now(),
 			UpdatedAt: timestamppb.Now(),
@@ -88,32 +89,32 @@ func TestGraph_CreateDocs(t *testing.T) {
 		Docs: []*apipb.DocConstructor{
 			{
 				Gtype: "trainer",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "ashe",
 				}),
 			},
 			{
 				Gtype: "pokemon",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "pikachu",
 				}),
 			},
 			{
 				Gtype: "pokemon",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "charmander",
 					"type": "fire",
 				}),
 			},
 			{
 				Gtype: "pokemon",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "bulbasaur",
 				}),
 			},
 			{
 				Gtype: "pokemon",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "squirtle",
 				}),
 			},
@@ -146,7 +147,7 @@ func TestGraph_CreateConnections(t *testing.T) {
 		Connections: []*apipb.ConnectionConstructor{
 			{
 				Gtype: "owner",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"primary": true,
 				}),
 				From:     ashe.GetPath(),
@@ -155,7 +156,7 @@ func TestGraph_CreateConnections(t *testing.T) {
 			},
 			{
 				Gtype: "owner",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"primary": true,
 				}),
 				From:     ashe.GetPath(),
@@ -164,7 +165,7 @@ func TestGraph_CreateConnections(t *testing.T) {
 			},
 			{
 				Gtype: "owner",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"primary": true,
 				}),
 				From:     ashe.GetPath(),
@@ -173,7 +174,7 @@ func TestGraph_CreateConnections(t *testing.T) {
 			},
 			{
 				Gtype: "owner",
-				Attributes: apipb.NewStruct(map[string]interface{}{
+				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"primary": true,
 				}),
 				From:     ashe.GetPath(),
@@ -257,7 +258,7 @@ func TestGraph_SearchConnections(t *testing.T) {
 func TestGraph_PatchDoc(t *testing.T) {
 	res, err := graph.PatchDoc(ctx, &apipb.Patch{
 		Path: ashe.GetPath(),
-		Attributes: apipb.NewStruct(map[string]interface{}{
+		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"age": 13,
 		}),
 	})
