@@ -209,7 +209,8 @@ func ExampleClient_Subscribe() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
 		stream, err := client.Subscribe(context.Background(), &apipb.ChannelFilter{
-			Channel: "testing",
+			Channel:    "testing",
+			Expression: `message.data.text.contains("hello")`,
 		})
 		if err != nil {
 			log.Print("failed to subscribe", err)

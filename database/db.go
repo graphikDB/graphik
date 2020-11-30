@@ -11,7 +11,7 @@ import (
 	"sort"
 )
 
-func (g *Graph) metaDefaults(ctx context.Context, meta *apipb.Metadata) {
+func (g *Graph) updateMeta(ctx context.Context, meta *apipb.Metadata) {
 	identity := g.getIdentity(ctx)
 	if meta == nil {
 		meta = &apipb.Metadata{}
@@ -41,7 +41,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	if doc.GetPath().Gid == "" {
 		doc.Path.Gid = uuid.New().String()
 	}
-	g.metaDefaults(ctx, doc.Metadata)
+	g.updateMeta(ctx, doc.Metadata)
 	bits, err := proto.Marshal(doc)
 	if err != nil {
 		return nil, err
@@ -108,7 +108,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	if connection.GetPath().Gid == "" {
 		connection.Path.Gid = uuid.New().String()
 	}
-	g.metaDefaults(ctx, connection.Metadata)
+	g.updateMeta(ctx, connection.Metadata)
 	bits, err := proto.Marshal(connection)
 	if err != nil {
 		return nil, err

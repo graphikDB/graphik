@@ -29,28 +29,13 @@ import (
 	"time"
 )
 
-const (
-	// Permissions to use on the db file. This is only used if the
-	// database file does not exist and needs to be created.
-	dbFileMode    = 0600
-	changeChannel = "changes"
-)
-
-var (
-	DONE = errors.New("DONE")
-	// Bucket names we perform transactions in
-	dbConnections = []byte("connections")
-	dbDocs        = []byte("docs")
-	// An error indicating a given key does not exist
-	ErrNotFound = errors.New("not found")
-)
-
 type Graph struct {
 	vm *vm.VM
 	// db is the underlying handle to the db.
 	db          *bbolt.DB
 	jwksMu      sync.RWMutex
 	jwksSet     *jwk.Set
+	jwtCache    *cache.Cache
 	openID      *openIDConnect
 	authorizers []cel.Program
 	// The path to the Bolt database file
@@ -61,7 +46,8 @@ type Graph struct {
 	machine         *machine.Machine
 	closers         []func()
 	closeOnce       sync.Once
-	cache           *cache.Cache
+	indexes         map[string]*apipb.Filter
+	indexMu sync.RWMutex
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -98,7 +84,7 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},
-		cache:           cache.New(m, 1*time.Minute),
+		jwtCache:        cache.New(m, 1*time.Minute),
 	}
 	if flgs.OpenIDConnect != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIDConnect)
@@ -131,6 +117,15 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		_, err = tx.CreateBucketIfNotExists(dbConnections)
 		if err != nil {
 			return errors.Wrap(err, "failed to create connection bucket")
+		}
+		// Create all the buckets
+		_, err = tx.CreateBucketIfNotExists(indexDocs)
+		if err != nil {
+			return errors.Wrap(err, "failed to create doc/index bucket")
+		}
+		_, err = tx.CreateBucketIfNotExists(indexConnections)
+		if err != nil {
+			return errors.Wrap(err, "failed to create connection/index bucket")
 		}
 		return nil
 	})
