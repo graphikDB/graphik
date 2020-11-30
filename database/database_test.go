@@ -193,6 +193,39 @@ func TestGraph_CreateConnections(t *testing.T) {
 	}
 }
 
+func TestGraph_GetDoc(t *testing.T) {
+	res, err := graph.GetDoc(ctx, ashe.GetPath())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := res.Validate(); err != nil {
+		t.Fatal(err)
+	}
+	if res.String() != ashe.String() {
+		t.Fatal("expected ashe")
+	}
+}
+
+
+func TestGraph_GetDocDetail(t *testing.T) {
+	res, err := graph.GetDocDetail(ctx, &apipb.DocDetailFilter{
+		Path:            ashe.GetPath(),
+		FromConnections: &apipb.Filter{
+			Gtype:      "owner",
+		},
+		ToConnections:   &apipb.Filter{
+			Gtype:      "owner",
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := res.Validate(); err != nil {
+		t.Fatal(err)
+	}
+	t.Log(res.String())
+}
+
 func TestGraph_SearchDocs(t *testing.T) {
 	res, err := graph.SearchDocs(ctx, &apipb.Filter{
 		Gtype:      "pokemon",
