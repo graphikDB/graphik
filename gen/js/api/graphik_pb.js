@@ -4578,9 +4578,11 @@ proto.api.Index.prototype.toObject = function(opt_includeInstance) {
 proto.api.Index.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    gtype: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    expression: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    sequence: jspb.Message.getFieldWithDefault(msg, 4, 0)
+    gtype: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    expression: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    sequence: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    docs: jspb.Message.getFieldWithDefault(msg, 6, false),
+    connections: jspb.Message.getFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -4621,17 +4623,25 @@ proto.api.Index.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
-    case 2:
+    case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setGtype(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setExpression(value);
       break;
-    case 4:
+    case 5:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setSequence(value);
+      break;
+    case 6:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDocs(value);
+      break;
+    case 7:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setConnections(value);
       break;
     default:
       reader.skipField();
@@ -4672,21 +4682,35 @@ proto.api.Index.serializeBinaryToWriter = function(message, writer) {
   f = message.getGtype();
   if (f.length > 0) {
     writer.writeString(
-      2,
+      3,
       f
     );
   }
   f = message.getExpression();
   if (f.length > 0) {
     writer.writeString(
-      3,
+      4,
       f
     );
   }
   f = message.getSequence();
   if (f !== 0) {
     writer.writeUint64(
-      4,
+      5,
+      f
+    );
+  }
+  f = message.getDocs();
+  if (f) {
+    writer.writeBool(
+      6,
+      f
+    );
+  }
+  f = message.getConnections();
+  if (f) {
+    writer.writeBool(
+      7,
       f
     );
   }
@@ -4709,47 +4733,81 @@ proto.api.Index.prototype.setName = function(value) {
 
 
 /**
- * optional string gtype = 2;
+ * optional string gtype = 3;
  * @return {string}
  */
 proto.api.Index.prototype.getGtype = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/** @param {string} value */
-proto.api.Index.prototype.setGtype = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string expression = 3;
- * @return {string}
- */
-proto.api.Index.prototype.getExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.api.Index.prototype.setExpression = function(value) {
+proto.api.Index.prototype.setGtype = function(value) {
   jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional uint64 sequence = 4;
+ * optional string expression = 4;
+ * @return {string}
+ */
+proto.api.Index.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Index.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional uint64 sequence = 5;
  * @return {number}
  */
 proto.api.Index.prototype.getSequence = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /** @param {number} value */
 proto.api.Index.prototype.setSequence = function(value) {
-  jspb.Message.setProto3IntField(this, 4, value);
+  jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional bool docs = 6;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Index.prototype.getDocs = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 6, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Index.prototype.setDocs = function(value) {
+  jspb.Message.setProto3BooleanField(this, 6, value);
+};
+
+
+/**
+ * optional bool connections = 7;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Index.prototype.getConnections = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 7, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Index.prototype.setConnections = function(value) {
+  jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 

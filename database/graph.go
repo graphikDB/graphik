@@ -118,7 +118,10 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		if err != nil {
 			return errors.Wrap(err, "failed to create connection bucket")
 		}
-		// Create all the buckets
+		_, err = tx.CreateBucketIfNotExists(dbIndexes)
+		if err != nil {
+			return errors.Wrap(err, "failed to create index bucket")
+		}
 		_, err = tx.CreateBucketIfNotExists(dbIndexDocs)
 		if err != nil {
 			return errors.Wrap(err, "failed to create doc/index bucket")
@@ -139,6 +142,10 @@ func NewGraph(ctx context.Context, flgs *flags.Flags) (*Graph, error) {
 		g.connectionsTo[e.To.String()] = append(g.connectionsTo[e.To.String()], e.Path)
 		return true
 	})
+	if err != nil {
+		return nil, err
+	}
+	err = g.cacheIndexes()
 	if err != nil {
 		return nil, err
 	}
