@@ -588,7 +588,7 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path
 	return nil
 }
 
-func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int64, index string, fn func(e *apipb.Connection) bool) (int64, error) {
+func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int64, index string, reverse bool, fn func(e *apipb.Connection) bool) (int64, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
@@ -608,7 +608,11 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int
 			}
 			c = bucket.Cursor()
 		}
-		for k, v := c.Seek(helpers.Uint64ToBytes(uint64(seek))); k != nil; k, v = c.Next() {
+		var iter = c.Next
+		if reverse {
+			iter = c.Prev
+		}
+		for k, v := c.Seek(helpers.Uint64ToBytes(uint64(seek))); k != nil; k, v = iter() {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
@@ -628,7 +632,7 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int
 	return int64(helpers.BytesToUint64(lastKey)), nil
 }
 
-func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek int64, index string, fn func(e *apipb.Doc) bool) (int64, error) {
+func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek int64, index string, reverse bool, fn func(e *apipb.Doc) bool) (int64, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
@@ -648,7 +652,11 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek int64, ind
 			}
 			c = bucket.Cursor()
 		}
-		for k, v := c.Seek(helpers.Uint64ToBytes(uint64(seek))); k != nil; k, v = c.Next() {
+		var iter = c.Next
+		if reverse {
+			iter = c.Prev
+		}
+		for k, v := c.Seek(helpers.Uint64ToBytes(uint64(seek))); k != nil; k, v = iter() {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}

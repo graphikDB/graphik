@@ -444,39 +444,3 @@ func (e *ConnectionDetails) Sort(field string) {
 	}
 
 }
-
-func (n *Docs) Reverse() {
-	if n == nil {
-		return
-	}
-	docs := n.GetDocs()
-	for i := 0; i < len(docs)/2; i++ {
-		j := len(docs) - i - 1
-		docs[i], docs[j] = docs[j], docs[i]
-	}
-	n.Docs = docs
-}
-
-func (n *Connections) Reverse() {
-	if n == nil {
-		return
-	}
-	values := n.GetConnections()
-	for i := 0; i < len(values)/2; i++ {
-		j := len(values) - i - 1
-		values[i], values[j] = values[j], values[i]
-	}
-	n.Connections = values
-}
-
-func (n *ConnectionDetails) Reverse() {
-	if n == nil {
-		return
-	}
-	values := n.GetConnections()
-	for i := 0; i < len(values)/2; i++ {
-		j := len(values) - i - 1
-		values[i], values[j] = values[j], values[i]
-	}
-	n.Connections = values
-}

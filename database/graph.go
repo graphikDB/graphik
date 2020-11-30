@@ -842,7 +842,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 			return nil, err
 		}
 	}
-	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), func(doc *apipb.Doc) bool {
+	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), filter.GetReverse(), func(doc *apipb.Doc) bool {
 		if program != nil {
 			pass, err := n.vm.Doc().Eval(doc, program)
 			if err != nil {
@@ -864,9 +864,6 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 		SeekNext: seek,
 	}
 	toReturn.Sort(filter.GetSort())
-	if filter.Reverse {
-		toReturn.Reverse()
-	}
 	return toReturn, nil
 }
 
@@ -914,9 +911,6 @@ func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilte
 		Connections: connections,
 	}
 	toReturn.Sort(filter.GetSort())
-	if filter.Reverse {
-		toReturn.Reverse()
-	}
 	return toReturn, err
 }
 
@@ -1024,7 +1018,7 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 		}
 	}
 	var connections []*apipb.Connection
-	seek, err := e.rangeSeekConnections(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), func(connection *apipb.Connection) bool {
+	seek, err := e.rangeSeekConnections(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), filter.GetReverse(), func(connection *apipb.Connection) bool {
 		if program != nil {
 			pass, err := e.vm.Connection().Eval(connection, program)
 			if err != nil {
@@ -1046,9 +1040,6 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 		SeekNext:    seek,
 	}
 	toReturn.Sort(filter.GetSort())
-	if filter.Reverse {
-		toReturn.Reverse()
-	}
 	return toReturn, nil
 }
 
@@ -1068,6 +1059,9 @@ func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*ap
 			Gtype:      filter.GetConnectionFilter().GetGtype(),
 			Expression: filter.GetConnectionFilter().GetExpression(),
 			Limit:      filter.GetConnectionFilter().GetLimit(),
+			Sort:       filter.GetConnectionFilter().GetSort(),
+			Seek:       filter.GetConnectionFilter().GetSeek(),
+			Reverse:    filter.GetConnectionFilter().GetReverse(),
 		})
 		if err != nil {
 			return nil, err
@@ -1075,13 +1069,7 @@ func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*ap
 		graph.Connections.Connections = append(graph.Connections.Connections, connections.GetConnections()...)
 	}
 	graph.Connections.Sort(filter.GetConnectionFilter().GetSort())
-	if filter.GetConnectionFilter().GetReverse() {
-		graph.GetConnections().Reverse()
-	}
 	graph.Docs.Sort(filter.GetDocFilter().GetSort())
-	if filter.GetDocFilter().GetReverse() {
-		graph.GetDocs().Reverse()
-	}
 	return graph, err
 }
 
@@ -1185,13 +1173,7 @@ func (g *Graph) GetDocDetail(ctx context.Context, filter *apipb.DocDetailFilter)
 		return nil, err
 	}
 	detail.ConnectionsTo.Sort(filter.GetToConnections().GetSort())
-	if filter.GetToConnections().Reverse {
-		detail.GetConnectionsTo().Reverse()
-	}
 	detail.ConnectionsFrom.Sort(filter.GetFromConnections().GetSort())
-	if filter.GetFromConnections().Reverse {
-		detail.GetConnectionsFrom().Reverse()
-	}
 	return detail, err
 }
 
