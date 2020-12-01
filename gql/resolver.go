@@ -3,12 +3,17 @@ package gql
 import (
 	"context"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/lru"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/gen/gql/generated"
 	"github.com/autom8ter/machine"
+	"github.com/gorilla/websocket"
 	"github.com/rs/cors"
 	"google.golang.org/grpc/metadata"
 	"net/http"
+	"time"
 )
 
 // This file will not be regenerated automatically.
@@ -25,11 +30,41 @@ func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *
 }
 
 func (r *Resolver) QueryHandler() http.Handler {
-	return r.cors.Handler(r.authMiddleware(handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
+	srv := handler.New(generated.NewExecutableSchema(generated.Config{
 		Resolvers:  r,
 		Directives: generated.DirectiveRoot{},
 		Complexity: generated.ComplexityRoot{},
-	}))))
+	}))
+	srv.AddTransport(transport.Websocket{
+		Upgrader: websocket.Upgrader{
+			HandshakeTimeout: 0,
+			ReadBufferSize:   0,
+			WriteBufferSize:  0,
+			WriteBufferPool:  nil,
+			Subprotocols:     nil,
+			Error:            nil,
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+			EnableCompression: false,
+		},
+		InitFunc: func(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
+			auth := initPayload.Authorization()
+			ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", auth)
+			return ctx, nil
+		},
+		KeepAlivePingInterval: 10 * time.Second,
+	})
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
+	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.MultipartForm{})
+	srv.SetQueryCache(lru.New(1000))
+	srv.Use(extension.Introspection{})
+	srv.Use(extension.AutomaticPersistedQuery{
+		Cache: lru.New(100),
+	})
+	return r.cors.Handler(r.authMiddleware(srv))
 }
 
 func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {
