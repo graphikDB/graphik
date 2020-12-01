@@ -37,16 +37,9 @@ func (r *Resolver) QueryHandler() http.Handler {
 	}))
 	srv.AddTransport(transport.Websocket{
 		Upgrader: websocket.Upgrader{
-			HandshakeTimeout: 0,
-			ReadBufferSize:   0,
-			WriteBufferSize:  0,
-			WriteBufferPool:  nil,
-			Subprotocols:     nil,
-			Error:            nil,
 			CheckOrigin: func(r *http.Request) bool {
 				return true
 			},
-			EnableCompression: false,
 		},
 		InitFunc: func(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
 			auth := initPayload.Authorization()

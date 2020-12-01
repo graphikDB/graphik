@@ -118,6 +118,15 @@ type Indexes {
   indexes: [Index!]
 }
 
+type Authorizer {
+  name: String!
+  expression: String!
+}
+
+type Authorizers {
+  authorizers: [Authorizer!]
+}
+
 # Schema returns registered connection & doc types
 type Schema {
   # connection_types are the types of connections in the graph
@@ -125,6 +134,7 @@ type Schema {
   # doc_types are the types of docs in the graph
   doc_types: [String!]
   indexes: Indexes
+  authorizers: Authorizers
 }
 
 # Message is received on PubSub subscriptions
@@ -191,9 +201,9 @@ type Change {
 
 # PathInput is the path to a doc/connection
 input PathInput {
-  # path is the path to the target doc/connection to patch
+  # path is the path to the target doc/connection to edit
   gtype: String!
-  # path is the path to the target doc/connection to patch
+  # path is the path to the target doc/connection to edit
   gid: Int!
 }
 
@@ -249,17 +259,17 @@ input ChannelFilter {
   expression: String
 }
 
-# Edit patches the attributes of a Doc or Connection
+# Edit edites the attributes of a Doc or Connection
 input Edit {
-  # path is the path to the target doc/connection to patch
+  # path is the path to the target doc/connection to edit
   path: PathInput!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Struct!
 }
 
-# EditFilter is used to patch docs/connections
+# EditFilter is used to edit docs/connections
 input EditFilter {
-  # filter is used to filter docs/connections to patch
+  # filter is used to filter docs/connections to edit
   filter: Filter!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Struct!
@@ -290,22 +300,32 @@ input IndexesInput {
   indexes: [IndexInput!]
 }
 
+input AuthorizerInput {
+  name: String!
+  expression: String!
+}
+
+input AuthorizersInput {
+  authorizers: [AuthorizerInput!]
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
-  # patchDoc patches a single doc in the graph
-  patchDoc(input: Edit!): Doc!
-  # patchDocs patches 0-many docs in the graph
-  patchDocs(input: EditFilter!): Docs!
+  # editDoc edites a single doc in the graph
+  editDoc(input: Edit!): Doc!
+  # editDocs edites 0-many docs in the graph
+  editDocs(input: EditFilter!): Docs!
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
-  # patchConnection patches a single connection in the graph
-  patchConnection(input: Edit!): Connection!
-  # patchConnections patches 0-many connections in the graph
-  patchConnections(input: EditFilter!): Connections!
+  # editConnection edites a single connection in the graph
+  editConnection(input: Edit!): Connection!
+  # editConnections edites 0-many connections in the graph
+  editConnections(input: EditFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
-  publish(input: OutboundMessage!): Empty!
-  setIndexes(input: IndexesInput!): Schema!
+  publish(input: OutboundMessage!): Empty
+  setIndexes(input: IndexesInput!): Empty
+  setAuthorizers(input: AuthorizersInput!): Empty
 }
 
 type Query {

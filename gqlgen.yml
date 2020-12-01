@@ -55,6 +55,10 @@ models:
     model: github.com/autom8ter/graphik/gen/go.Index
   IndexesInput:
     model: github.com/autom8ter/graphik/gen/go.Indexes
+  AuthorizerInput:
+    model: github.com/autom8ter/graphik/gen/go.Authorizer
+  AuthorizersInput:
+    model: github.com/autom8ter/graphik/gen/go.Authorizers
 
   ID:
     model:

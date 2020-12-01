@@ -4,6 +4,8 @@
 ## Table of Contents
 
 - [graphik.proto](#graphik.proto)
+    - [Authorizer](#api.Authorizer)
+    - [Authorizers](#api.Authorizers)
     - [Change](#api.Change)
     - [ChannelFilter](#api.ChannelFilter)
     - [Connection](#api.Connection)
@@ -52,6 +54,37 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## graphik.proto
+
+
+
+<a name="api.Authorizer"></a>
+
+### Authorizer
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| expression | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="api.Authorizers"></a>
+
+### Authorizers
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| authorizers | [Authorizer](#api.Authorizer) | repeated |  |
+
+
+
 
 
 
@@ -444,7 +477,6 @@ Filter is a generic filter using Common Expression Language
 | open_id_discovery | [string](#string) |  | open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) |
 | storage_path | [string](#string) |  | persistant storage path (env: GRAPHIK_STORAGE_PATH) |
 | metrics | [bool](#bool) |  | enable prometheus &amp; pprof metrics (emv: GRAPHIK_METRICS = true) |
-| authorizers | [string](#string) | repeated | registered CEL authorizers (env: GRAPHIK_AUTHORIZERS) |
 | allow_headers | [string](#string) | repeated | cors allow headers (env: GRAPHIK_ALLOW_HEADERS) |
 | allow_methods | [string](#string) | repeated | cors allow methods (env: GRAPHIK_ALLOW_METHODS) |
 | allow_origins | [string](#string) | repeated | cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) |
@@ -666,6 +698,7 @@ Schema returns registered connection &amp; doc types
 | ----- | ---- | ----- | ----------- |
 | connection_types | [string](#string) | repeated | connection_types are the types of connections in the graph |
 | doc_types | [string](#string) | repeated | doc_types are the types of docs in the graph |
+| authorizers | [Authorizers](#api.Authorizers) |  |  |
 | indexes | [Indexes](#api.Indexes) |  |  |
 
 
@@ -704,7 +737,8 @@ DatabaseService is the primary database service
 | ----------- | ------------ | ------------- | ------------|
 | Ping | [.google.protobuf.Empty](#google.protobuf.Empty) | [Pong](#api.Pong) | Ping returns PONG if the server is health |
 | GetSchema | [.google.protobuf.Empty](#google.protobuf.Empty) | [Schema](#api.Schema) | GetSchema gets schema about the Graph doc &amp; connection types |
-| SetIndexes | [Indexes](#api.Indexes) | [Schema](#api.Schema) |  |
+| SetAuthorizers | [Authorizers](#api.Authorizers) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
+| SetIndexes | [Indexes](#api.Indexes) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 | Me | [MeFilter](#api.MeFilter) | [DocDetail](#api.DocDetail) | Me returns a DocDetail of the currently logged in identity(the subject of the JWT) |
 | CreateDoc | [DocConstructor](#api.DocConstructor) | [Doc](#api.Doc) | CreateDoc creates a doc in the graph |
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |

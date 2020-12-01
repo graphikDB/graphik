@@ -53,7 +53,6 @@ func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error)
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}
-	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
 			"request": map[string]interface{}{
@@ -66,9 +65,9 @@ func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error)
 		if err != nil {
 			return false, err
 		}
-		if val, ok := out.Value().(bool); !ok || !val {
-			passes = false
+		if val, ok := out.Value().(bool); ok && val {
+			return true, nil
 		}
 	}
-	return passes, nil
+	return false, nil
 }

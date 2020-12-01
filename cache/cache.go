@@ -84,3 +84,14 @@ func (c *Cache) Range(f func(key, value interface{}) bool) {
 func (c *Cache) Delete(key interface{}) {
 	c.items.Delete(key)
 }
+
+func (c *Cache) Len() int {
+	count := 0
+	c.Range(func(key, value interface{}) bool {
+		if value != nil {
+			count++
+		}
+		return true
+	})
+	return count
+}

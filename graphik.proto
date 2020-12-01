@@ -207,6 +207,15 @@ message IndexConstructor {
   bool connections =7;
 }
 
+message Authorizer {
+  string name =1[(validator.field) = {regex : "^.{1,225}$"}];
+  string expression =2[(validator.field) = {regex : "^.{1,225}$"}];
+}
+
+message Authorizers {
+  repeated Authorizer authorizers =1;
+}
+
 message Index {
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   // gtype is the doc/connection type to be filtered
@@ -262,8 +271,6 @@ message Flags {
   string storage_path =2;
   // enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
   bool metrics =3;
-  // registered CEL authorizers (env: GRAPHIK_AUTHORIZERS)
-  repeated string authorizers =4;
   // cors allow headers (env: GRAPHIK_ALLOW_HEADERS)
   repeated string allow_headers =5;
   // cors allow methods (env: GRAPHIK_ALLOW_METHODS)
@@ -320,7 +327,8 @@ message Schema {
   repeated string connection_types =1;
   // doc_types are the types of docs in the graph
   repeated string doc_types =2;
-  Indexes indexes =3;
+  Authorizers authorizers =3;
+  Indexes indexes =4;
 }
 
 // DocChange is a single state change to a doc
@@ -372,7 +380,8 @@ service DatabaseService {
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
   // GetSchema gets schema about the Graph doc & connection types
   rpc GetSchema(google.protobuf.Empty) returns(Schema){}
-  rpc SetIndexes(Indexes) returns(Schema){}
+  rpc SetAuthorizers(Authorizers) returns(google.protobuf.Empty){}
+  rpc SetIndexes(Indexes) returns(google.protobuf.Empty){}
  // Me returns a DocDetail of the currently logged in identity(the subject of the JWT)
   rpc Me(MeFilter) returns(DocDetail){}
   // CreateDoc creates a doc in the graph

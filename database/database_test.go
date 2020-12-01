@@ -15,7 +15,6 @@ func init() {
 		OpenIdDiscovery: "",
 		StoragePath:     "/tmp/testing/graphik",
 		Metrics:         false,
-		Authorizers:     nil,
 		AllowHeaders:    nil,
 		AllowMethods:    nil,
 		AllowOrigins:    nil,

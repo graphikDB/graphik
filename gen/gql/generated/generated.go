@@ -50,6 +50,15 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Authorizer struct {
+		Expression func(childComplexity int) int
+		Name       func(childComplexity int) int
+	}
+
+	Authorizers struct {
+		Authorizers func(childComplexity int) int
+	}
+
 	Change struct {
 		ConnectionChanges func(childComplexity int) int
 		DocChanges        func(childComplexity int) int
@@ -144,11 +153,12 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateConnection func(childComplexity int, input apipb.ConnectionConstructor) int
 		CreateDoc        func(childComplexity int, input apipb.DocConstructor) int
-		PatchConnection  func(childComplexity int, input apipb.Edit) int
-		PatchConnections func(childComplexity int, input apipb.EditFilter) int
-		PatchDoc         func(childComplexity int, input apipb.Edit) int
-		PatchDocs        func(childComplexity int, input apipb.EditFilter) int
+		EditConnection   func(childComplexity int, input apipb.Edit) int
+		EditConnections  func(childComplexity int, input apipb.EditFilter) int
+		EditDoc          func(childComplexity int, input apipb.Edit) int
+		EditDocs         func(childComplexity int, input apipb.EditFilter) int
 		Publish          func(childComplexity int, input apipb.OutboundMessage) int
+		SetAuthorizers   func(childComplexity int, input apipb.Authorizers) int
 		SetIndexes       func(childComplexity int, input apipb.Indexes) int
 	}
 
@@ -174,6 +184,7 @@ type ComplexityRoot struct {
 	}
 
 	Schema struct {
+		Authorizers     func(childComplexity int) int
 		ConnectionTypes func(childComplexity int) int
 		DocTypes        func(childComplexity int) int
 		Indexes         func(childComplexity int) int
@@ -190,13 +201,14 @@ type MetadataResolver interface {
 }
 type MutationResolver interface {
 	CreateDoc(ctx context.Context, input apipb.DocConstructor) (*apipb.Doc, error)
-	PatchDoc(ctx context.Context, input apipb.Edit) (*apipb.Doc, error)
-	PatchDocs(ctx context.Context, input apipb.EditFilter) (*apipb.Docs, error)
+	EditDoc(ctx context.Context, input apipb.Edit) (*apipb.Doc, error)
+	EditDocs(ctx context.Context, input apipb.EditFilter) (*apipb.Docs, error)
 	CreateConnection(ctx context.Context, input apipb.ConnectionConstructor) (*apipb.Connection, error)
-	PatchConnection(ctx context.Context, input apipb.Edit) (*apipb.Connection, error)
-	PatchConnections(ctx context.Context, input apipb.EditFilter) (*apipb.Connections, error)
+	EditConnection(ctx context.Context, input apipb.Edit) (*apipb.Connection, error)
+	EditConnections(ctx context.Context, input apipb.EditFilter) (*apipb.Connections, error)
 	Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error)
-	SetIndexes(ctx context.Context, input apipb.Indexes) (*apipb.Schema, error)
+	SetIndexes(ctx context.Context, input apipb.Indexes) (*emptypb.Empty, error)
+	SetAuthorizers(ctx context.Context, input apipb.Authorizers) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error)
@@ -228,6 +240,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Authorizer.expression":
+		if e.complexity.Authorizer.Expression == nil {
+			break
+		}
+
+		return e.complexity.Authorizer.Expression(childComplexity), true
+
+	case "Authorizer.name":
+		if e.complexity.Authorizer.Name == nil {
+			break
+		}
+
+		return e.complexity.Authorizer.Name(childComplexity), true
+
+	case "Authorizers.authorizers":
+		if e.complexity.Authorizers.Authorizers == nil {
+			break
+		}
+
+		return e.complexity.Authorizers.Authorizers(childComplexity), true
 
 	case "Change.connection_changes":
 		if e.complexity.Change.ConnectionChanges == nil {
@@ -596,53 +629,53 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateDoc(childComplexity, args["input"].(apipb.DocConstructor)), true
 
-	case "Mutation.patchConnection":
-		if e.complexity.Mutation.PatchConnection == nil {
+	case "Mutation.editConnection":
+		if e.complexity.Mutation.EditConnection == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_patchConnection_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_editConnection_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchConnection(childComplexity, args["input"].(apipb.Edit)), true
+		return e.complexity.Mutation.EditConnection(childComplexity, args["input"].(apipb.Edit)), true
 
-	case "Mutation.patchConnections":
-		if e.complexity.Mutation.PatchConnections == nil {
+	case "Mutation.editConnections":
+		if e.complexity.Mutation.EditConnections == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_patchConnections_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_editConnections_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchConnections(childComplexity, args["input"].(apipb.EditFilter)), true
+		return e.complexity.Mutation.EditConnections(childComplexity, args["input"].(apipb.EditFilter)), true
 
-	case "Mutation.patchDoc":
-		if e.complexity.Mutation.PatchDoc == nil {
+	case "Mutation.editDoc":
+		if e.complexity.Mutation.EditDoc == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_patchDoc_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_editDoc_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchDoc(childComplexity, args["input"].(apipb.Edit)), true
+		return e.complexity.Mutation.EditDoc(childComplexity, args["input"].(apipb.Edit)), true
 
-	case "Mutation.patchDocs":
-		if e.complexity.Mutation.PatchDocs == nil {
+	case "Mutation.editDocs":
+		if e.complexity.Mutation.EditDocs == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_patchDocs_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_editDocs_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PatchDocs(childComplexity, args["input"].(apipb.EditFilter)), true
+		return e.complexity.Mutation.EditDocs(childComplexity, args["input"].(apipb.EditFilter)), true
 
 	case "Mutation.publish":
 		if e.complexity.Mutation.Publish == nil {
@@ -655,6 +688,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Publish(childComplexity, args["input"].(apipb.OutboundMessage)), true
+
+	case "Mutation.setAuthorizers":
+		if e.complexity.Mutation.SetAuthorizers == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setAuthorizers_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetAuthorizers(childComplexity, args["input"].(apipb.Authorizers)), true
 
 	case "Mutation.setIndexes":
 		if e.complexity.Mutation.SetIndexes == nil {
@@ -796,6 +841,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.SearchDocs(childComplexity, args["input"].(apipb.Filter)), true
+
+	case "Schema.authorizers":
+		if e.complexity.Schema.Authorizers == nil {
+			break
+		}
+
+		return e.complexity.Schema.Authorizers(childComplexity), true
 
 	case "Schema.connection_types":
 		if e.complexity.Schema.ConnectionTypes == nil {
@@ -1043,6 +1095,15 @@ type Indexes {
   indexes: [Index!]
 }
 
+type Authorizer {
+  name: String!
+  expression: String!
+}
+
+type Authorizers {
+  authorizers: [Authorizer!]
+}
+
 # Schema returns registered connection & doc types
 type Schema {
   # connection_types are the types of connections in the graph
@@ -1050,6 +1111,7 @@ type Schema {
   # doc_types are the types of docs in the graph
   doc_types: [String!]
   indexes: Indexes
+  authorizers: Authorizers
 }
 
 # Message is received on PubSub subscriptions
@@ -1116,9 +1178,9 @@ type Change {
 
 # PathInput is the path to a doc/connection
 input PathInput {
-  # path is the path to the target doc/connection to patch
+  # path is the path to the target doc/connection to edit
   gtype: String!
-  # path is the path to the target doc/connection to patch
+  # path is the path to the target doc/connection to edit
   gid: Int!
 }
 
@@ -1174,17 +1236,17 @@ input ChannelFilter {
   expression: String
 }
 
-# Edit patches the attributes of a Doc or Connection
+# Edit edites the attributes of a Doc or Connection
 input Edit {
-  # path is the path to the target doc/connection to patch
+  # path is the path to the target doc/connection to edit
   path: PathInput!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Struct!
 }
 
-# EditFilter is used to patch docs/connections
+# EditFilter is used to edit docs/connections
 input EditFilter {
-  # filter is used to filter docs/connections to patch
+  # filter is used to filter docs/connections to edit
   filter: Filter!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Struct!
@@ -1215,22 +1277,32 @@ input IndexesInput {
   indexes: [IndexInput!]
 }
 
+input AuthorizerInput {
+  name: String!
+  expression: String!
+}
+
+input AuthorizersInput {
+  authorizers: [AuthorizerInput!]
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
-  # patchDoc patches a single doc in the graph
-  patchDoc(input: Edit!): Doc!
-  # patchDocs patches 0-many docs in the graph
-  patchDocs(input: EditFilter!): Docs!
+  # editDoc edites a single doc in the graph
+  editDoc(input: Edit!): Doc!
+  # editDocs edites 0-many docs in the graph
+  editDocs(input: EditFilter!): Docs!
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
-  # patchConnection patches a single connection in the graph
-  patchConnection(input: Edit!): Connection!
-  # patchConnections patches 0-many connections in the graph
-  patchConnections(input: EditFilter!): Connections!
+  # editConnection edites a single connection in the graph
+  editConnection(input: Edit!): Connection!
+  # editConnections edites 0-many connections in the graph
+  editConnections(input: EditFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
-  publish(input: OutboundMessage!): Empty!
-  setIndexes(input: IndexesInput!): Schema!
+  publish(input: OutboundMessage!): Empty
+  setIndexes(input: IndexesInput!): Empty
+  setAuthorizers(input: AuthorizersInput!): Empty
 }
 
 type Query {
@@ -1297,7 +1369,7 @@ func (ec *executionContext) field_Mutation_createDoc_args(ctx context.Context, r
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_patchConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_editConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.Edit
@@ -1312,7 +1384,7 @@ func (ec *executionContext) field_Mutation_patchConnection_args(ctx context.Cont
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_patchConnections_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_editConnections_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.EditFilter
@@ -1327,7 +1399,7 @@ func (ec *executionContext) field_Mutation_patchConnections_args(ctx context.Con
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_patchDoc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_editDoc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.Edit
@@ -1342,7 +1414,7 @@ func (ec *executionContext) field_Mutation_patchDoc_args(ctx context.Context, ra
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_patchDocs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_editDocs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 apipb.EditFilter
@@ -1364,6 +1436,21 @@ func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, raw
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNOutboundMessage2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐOutboundMessage(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_setAuthorizers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 apipb.Authorizers
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNAuthorizersInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizers(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1604,6 +1691,108 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Authorizer_name(ctx context.Context, field graphql.CollectedField, obj *apipb.Authorizer) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Authorizer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Authorizer_expression(ctx context.Context, field graphql.CollectedField, obj *apipb.Authorizer) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Authorizer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Expression, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Authorizers_authorizers(ctx context.Context, field graphql.CollectedField, obj *apipb.Authorizers) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Authorizers",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Authorizers, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*apipb.Authorizer)
+	fc.Result = res
+	return ec.marshalOAuthorizer2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizerᚄ(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Change_method(ctx context.Context, field graphql.CollectedField, obj *apipb.Change) (ret graphql.Marshaler) {
 	defer func() {
@@ -3296,7 +3485,7 @@ func (ec *executionContext) _Mutation_createDoc(ctx context.Context, field graph
 	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDoc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_patchDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_editDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3313,7 +3502,7 @@ func (ec *executionContext) _Mutation_patchDoc(ctx context.Context, field graphq
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_patchDoc_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_editDoc_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3321,7 +3510,7 @@ func (ec *executionContext) _Mutation_patchDoc(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchDoc(rctx, args["input"].(apipb.Edit))
+		return ec.resolvers.Mutation().EditDoc(rctx, args["input"].(apipb.Edit))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3338,7 +3527,7 @@ func (ec *executionContext) _Mutation_patchDoc(ctx context.Context, field graphq
 	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDoc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_patchDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_editDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3355,7 +3544,7 @@ func (ec *executionContext) _Mutation_patchDocs(ctx context.Context, field graph
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_patchDocs_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_editDocs_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3363,7 +3552,7 @@ func (ec *executionContext) _Mutation_patchDocs(ctx context.Context, field graph
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchDocs(rctx, args["input"].(apipb.EditFilter))
+		return ec.resolvers.Mutation().EditDocs(rctx, args["input"].(apipb.EditFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3422,7 +3611,7 @@ func (ec *executionContext) _Mutation_createConnection(ctx context.Context, fiel
 	return ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_patchConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_editConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3439,7 +3628,7 @@ func (ec *executionContext) _Mutation_patchConnection(ctx context.Context, field
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_patchConnection_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_editConnection_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3447,7 +3636,7 @@ func (ec *executionContext) _Mutation_patchConnection(ctx context.Context, field
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchConnection(rctx, args["input"].(apipb.Edit))
+		return ec.resolvers.Mutation().EditConnection(rctx, args["input"].(apipb.Edit))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3464,7 +3653,7 @@ func (ec *executionContext) _Mutation_patchConnection(ctx context.Context, field
 	return ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_patchConnections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_editConnections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3481,7 +3670,7 @@ func (ec *executionContext) _Mutation_patchConnections(ctx context.Context, fiel
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_patchConnections_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_editConnections_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3489,7 +3678,7 @@ func (ec *executionContext) _Mutation_patchConnections(ctx context.Context, fiel
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PatchConnections(rctx, args["input"].(apipb.EditFilter))
+		return ec.resolvers.Mutation().EditConnections(rctx, args["input"].(apipb.EditFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3538,14 +3727,11 @@ func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(*emptypb.Empty)
 	fc.Result = res
-	return ec.marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_setIndexes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3580,14 +3766,50 @@ func (ec *executionContext) _Mutation_setIndexes(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Schema)
+	res := resTmp.(*emptypb.Empty)
 	fc.Result = res
-	return ec.marshalNSchema2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐSchema(ctx, field.Selections, res)
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_setAuthorizers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_setAuthorizers_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SetAuthorizers(rctx, args["input"].(apipb.Authorizers))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Path_gtype(ctx context.Context, field graphql.CollectedField, obj *apipb.Path) (ret graphql.Marshaler) {
@@ -4238,6 +4460,38 @@ func (ec *executionContext) _Schema_indexes(ctx context.Context, field graphql.C
 	res := resTmp.(*apipb.Indexes)
 	fc.Result = res
 	return ec.marshalOIndexes2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexes(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Schema_authorizers(ctx context.Context, field graphql.CollectedField, obj *apipb.Schema) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Schema",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Authorizers, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Authorizers)
+	fc.Result = res
+	return ec.marshalOAuthorizers2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizers(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
@@ -5431,6 +5685,54 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAuthorizerInput(ctx context.Context, obj interface{}) (apipb.Authorizer, error) {
+	var it apipb.Authorizer
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputAuthorizersInput(ctx context.Context, obj interface{}) (apipb.Authorizers, error) {
+	var it apipb.Authorizers
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "authorizers":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authorizers"))
+			it.Authorizers, err = ec.unmarshalOAuthorizerInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizerᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputChannelFilter(ctx context.Context, obj interface{}) (apipb.ChannelFilter, error) {
 	var it apipb.ChannelFilter
 	var asMap = obj.(map[string]interface{})
@@ -5914,6 +6216,62 @@ func (ec *executionContext) unmarshalInputPathInput(ctx context.Context, obj int
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var authorizerImplementors = []string{"Authorizer"}
+
+func (ec *executionContext) _Authorizer(ctx context.Context, sel ast.SelectionSet, obj *apipb.Authorizer) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, authorizerImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Authorizer")
+		case "name":
+			out.Values[i] = ec._Authorizer_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "expression":
+			out.Values[i] = ec._Authorizer_expression(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var authorizersImplementors = []string{"Authorizers"}
+
+func (ec *executionContext) _Authorizers(ctx context.Context, sel ast.SelectionSet, obj *apipb.Authorizers) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, authorizersImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Authorizers")
+		case "authorizers":
+			out.Values[i] = ec._Authorizers_authorizers(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var changeImplementors = []string{"Change"}
 
@@ -6431,13 +6789,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "patchDoc":
-			out.Values[i] = ec._Mutation_patchDoc(ctx, field)
+		case "editDoc":
+			out.Values[i] = ec._Mutation_editDoc(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "patchDocs":
-			out.Values[i] = ec._Mutation_patchDocs(ctx, field)
+		case "editDocs":
+			out.Values[i] = ec._Mutation_editDocs(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -6446,26 +6804,22 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "patchConnection":
-			out.Values[i] = ec._Mutation_patchConnection(ctx, field)
+		case "editConnection":
+			out.Values[i] = ec._Mutation_editConnection(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "patchConnections":
-			out.Values[i] = ec._Mutation_patchConnections(ctx, field)
+		case "editConnections":
+			out.Values[i] = ec._Mutation_editConnections(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "publish":
 			out.Values[i] = ec._Mutation_publish(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "setIndexes":
 			out.Values[i] = ec._Mutation_setIndexes(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
+		case "setAuthorizers":
+			out.Values[i] = ec._Mutation_setAuthorizers(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6709,6 +7063,8 @@ func (ec *executionContext) _Schema(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = ec._Schema_doc_types(ctx, field, obj)
 		case "indexes":
 			out.Values[i] = ec._Schema_indexes(ctx, field, obj)
+		case "authorizers":
+			out.Values[i] = ec._Schema_authorizers(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6987,6 +7343,26 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAuthorizer2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizer(ctx context.Context, sel ast.SelectionSet, v *apipb.Authorizer) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Authorizer(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNAuthorizerInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizer(ctx context.Context, v interface{}) (*apipb.Authorizer, error) {
+	res, err := ec.unmarshalInputAuthorizerInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNAuthorizersInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizers(ctx context.Context, v interface{}) (apipb.Authorizers, error) {
+	res, err := ec.unmarshalInputAuthorizersInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7144,27 +7520,6 @@ func (ec *executionContext) unmarshalNEdit2githubᚗcomᚋautom8terᚋgraphikᚋ
 func (ec *executionContext) unmarshalNEditFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐEditFilter(ctx context.Context, v interface{}) (apipb.EditFilter, error) {
 	res, err := ec.unmarshalInputEditFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx context.Context, v interface{}) (*emptypb.Empty, error) {
-	res, err := scalars.UnmarshalEmptyScalar(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx context.Context, sel ast.SelectionSet, v *emptypb.Empty) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := scalars.MarshalEmptyScalar(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
 }
 
 func (ec *executionContext) unmarshalNExpressionFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐExpressionFilter(ctx context.Context, v interface{}) (apipb.ExpressionFilter, error) {
@@ -7608,6 +7963,77 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalOAuthorizer2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizerᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Authorizer) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAuthorizer2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizer(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) unmarshalOAuthorizerInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizerᚄ(ctx context.Context, v interface{}) ([]*apipb.Authorizer, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*apipb.Authorizer, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNAuthorizerInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizer(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOAuthorizers2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐAuthorizers(ctx context.Context, sel ast.SelectionSet, v *apipb.Authorizers) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Authorizers(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
