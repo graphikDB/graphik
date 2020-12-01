@@ -15,13 +15,10 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"io/ioutil"
-	"net/http"
 	"time"
 )
 
@@ -34,19 +31,10 @@ const (
 
 func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		bearer, err := grpc_auth.AuthFromMD(ctx, "Bearer")
+		idToken, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
-		md, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			return nil, status.Errorf(codes.Unauthenticated, "empty X-ID-TOKEN")
-		}
-		values := md.Get("X-ID-TOKEN")
-		if len(values) == 0 {
-			return nil, status.Errorf(codes.Unauthenticated, "empty X-ID-TOKEN")
-		}
-		idToken := values[0]
 		idTokenHash := helpers.Hash([]byte(idToken))
 		if val, ok := g.jwtCache.Get(idTokenHash); ok {
 			payload := val.(map[string]interface{})
@@ -74,27 +62,6 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			exp = int64(val)
 		}
 		ctx = g.methodToContext(ctx, info.FullMethod)
-		if g.openID != nil && g.openID.UserinfoEndpoint != "" {
-			req, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, err.Error())
-			}
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bearer))
-			resp, err := http.DefaultClient.Do(req)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, err.Error())
-			}
-			defer resp.Body.Close()
-			bits, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, err.Error())
-			}
-			data := map[string]interface{}{}
-			if err := json.Unmarshal(bits, &data); err != nil {
-				return nil, status.Errorf(codes.Internal, err.Error())
-			}
-			payload = data
-		}
 		g.jwtCache.Set(idTokenHash, payload, time.Unix(exp, 0).Sub(time.Now()))
 		ctx, err = g.check(ctx, info.FullMethod, req, payload)
 		if err != nil {
@@ -106,19 +73,10 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 
 func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		bearer, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
+		idToken, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
 			return err
 		}
-		md, ok := metadata.FromIncomingContext(ss.Context())
-		if !ok {
-			return status.Errorf(codes.Unauthenticated, "empty X-ID-TOKEN")
-		}
-		values := md.Get("X-ID-TOKEN")
-		if len(values) == 0 {
-			return status.Errorf(codes.Unauthenticated, "empty X-ID-TOKEN")
-		}
-		idToken := values[0]
 		idTokenHash := helpers.Hash([]byte(idToken))
 		if val, ok := g.jwtCache.Get(idTokenHash); ok {
 			payload := val.(map[string]interface{})
@@ -146,27 +104,6 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 				return status.Errorf(codes.Unauthenticated, "token expired")
 			}
 			exp = int64(val)
-		}
-		if g.openID != nil && g.openID.UserinfoEndpoint != "" {
-			req, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
-			if err != nil {
-				return status.Errorf(codes.Internal, err.Error())
-			}
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bearer))
-			resp, err := http.DefaultClient.Do(req)
-			if err != nil {
-				return status.Errorf(codes.Internal, err.Error())
-			}
-			defer resp.Body.Close()
-			bits, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				return status.Errorf(codes.Internal, err.Error())
-			}
-			data := map[string]interface{}{}
-			if err := json.Unmarshal(bits, &data); err != nil {
-				return status.Errorf(codes.Internal, err.Error())
-			}
-			payload = data
 		}
 		g.jwtCache.Set(idTokenHash, payload, time.Unix(exp, 0).Sub(time.Now()))
 		ctx, err := g.check(ss.Context(), info.FullMethod, srv, payload)

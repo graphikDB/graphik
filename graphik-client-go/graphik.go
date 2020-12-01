@@ -99,8 +99,7 @@ func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Con
 	}
 	return metadata.AppendToOutgoingContext(
 		ctx,
-		"Authorization", fmt.Sprintf("Bearer %v", token.AccessToken),
-		"X-ID-TOKEN", id.(string),
+		"Authorization", fmt.Sprintf("Bearer %v", id),
 	), nil
 }
 
