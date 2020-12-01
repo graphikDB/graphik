@@ -59,6 +59,32 @@ func ExampleNewClient() {
 	// Output: PONG
 }
 
+func ExampleClient_SetAuthorizers() {
+	_, err := client.SetAuthorizers(context.Background(), &apipb.Authorizers{
+		Authorizers: []*apipb.Authorizer{
+			{
+				Name:       "testing",
+				Expression: `request.identity.attributes.email.contains("coleman")`,
+			},
+		},
+	})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	schema, err := client.GetSchema(context.Background(), &empty.Empty{})
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	var authorizers []string
+	for _, a := range schema.GetAuthorizers().GetAuthorizers() {
+		authorizers = append(authorizers, a.Name)
+	}
+	fmt.Printf("%s", strings.Join(authorizers, ","))
+	// Output: testing
+}
+
 func ExampleClient_Me() {
 	me, err := client.Me(context.Background(), &apipb.MeFilter{
 		ConnectionsFrom: nil,
@@ -243,7 +269,13 @@ func ExampleClient_GetSchema() {
 		return
 	}
 	fmt.Printf("doc types: %s\n", strings.Join(schema.DocTypes, ","))
-	fmt.Printf("connection types: %s", strings.Join(schema.ConnectionTypes, ","))
+	fmt.Printf("connection types: %s\n", strings.Join(schema.ConnectionTypes, ","))
+	var authorizers []string
+	for _, a := range schema.GetAuthorizers().GetAuthorizers() {
+		authorizers = append(authorizers, a.Name)
+	}
+	fmt.Printf("authorizers: %s", strings.Join(authorizers, ","))
 	// Output: doc types: dog,human,identity
 	//connection types: owner
+	//authorizers: testing
 }

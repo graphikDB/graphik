@@ -7,6 +7,7 @@ import (
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
+	"github.com/google/cel-go/cel"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/lestrrat-go/jwx/jwa"
@@ -222,7 +223,7 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	if len(g.authorizers) > 0 {
+	if !isGraphikAdmin(identity) {
 		now := time.Now()
 		request := &apipb.Request{
 			Method:    method,
@@ -237,16 +238,18 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 			}
 			request.Request = apipb.NewStruct(reqMap)
 		}
-		result, err := g.vm.Auth().Eval(request, g.authorizers...)
+		var programs []cel.Program
+		g.rangeAuthorizers(func(a *authorizer) bool {
+			programs = append(programs, a.program)
+			return true
+		})
+		result, err := g.vm.Auth().Eval(request, programs...)
 		if err != nil {
 			return nil, err
 		}
 		if !result {
 			return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
 		}
-	}
-	if g.getIdentity(ctx) == nil {
-		return nil, status.Error(codes.Internal, "empty identity")
 	}
 	return ctx, nil
 }

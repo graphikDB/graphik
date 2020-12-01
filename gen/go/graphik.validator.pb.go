@@ -373,6 +373,26 @@ func (this *Filter) Validate() error {
 	return nil
 }
 
+var _regex_DepthFilter_ConnectionExpression = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *DepthFilter) Validate() error {
+	if nil == this.Root {
+		return github_com_mwitkow_go_proto_validators.FieldError("Root", fmt.Errorf("message must exist"))
+	}
+	if this.Root != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Root); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Root", err)
+		}
+	}
+	if !_regex_DepthFilter_ConnectionExpression.MatchString(this.ConnectionExpression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("ConnectionExpression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.ConnectionExpression))
+	}
+	if !(this.Limit > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
+	}
+	return nil
+}
+
 var _regex_IndexConstructor_Name = regexp.MustCompile(`^.{1,225}$`)
 var _regex_IndexConstructor_Gtype = regexp.MustCompile(`^.{1,225}$`)
 var _regex_IndexConstructor_Expression = regexp.MustCompile(`^.{1,225}$`)
@@ -386,6 +406,29 @@ func (this *IndexConstructor) Validate() error {
 	}
 	if !_regex_IndexConstructor_Expression.MatchString(this.Expression) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	return nil
+}
+
+var _regex_Authorizer_Name = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Authorizer_Expression = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *Authorizer) Validate() error {
+	if !_regex_Authorizer_Name.MatchString(this.Name) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Name", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Name))
+	}
+	if !_regex_Authorizer_Expression.MatchString(this.Expression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	return nil
+}
+func (this *Authorizers) Validate() error {
+	for _, item := range this.Authorizers {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Authorizers", err)
+			}
+		}
 	}
 	return nil
 }
@@ -556,6 +599,11 @@ func (this *Message) Validate() error {
 	return nil
 }
 func (this *Schema) Validate() error {
+	if this.Authorizers != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Authorizers); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Authorizers", err)
+		}
+	}
 	if this.Indexes != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Indexes); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Indexes", err)

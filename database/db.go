@@ -11,8 +11,17 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"sort"
 )
+
+type index struct {
+	index   *apipb.Index
+	program cel.Program
+}
+
+type authorizer struct {
+	authorizer *apipb.Authorizer
+	program    cel.Program
+}
 
 func (g *Graph) updateMeta(ctx context.Context, meta *apipb.Metadata) {
 	identity := g.getIdentity(ctx)
@@ -41,6 +50,16 @@ func (g *Graph) rangeIndexes(fn func(index *index) bool) {
 		}
 		index := value.(*index)
 		return fn(index)
+	})
+}
+
+func (g *Graph) cacheConnectionPaths() error {
+	return g.rangeConnections(context.Background(), apipb.Any, func(e *apipb.Connection) bool {
+		g.mu.Lock()
+		defer g.mu.Unlock()
+		g.connectionsFrom[e.From.String()] = append(g.connectionsFrom[e.From.String()], e.Path)
+		g.connectionsTo[e.To.String()] = append(g.connectionsTo[e.To.String()], e.Path)
+		return true
 	})
 }
 
@@ -74,13 +93,43 @@ func (g *Graph) cacheIndexes() error {
 	})
 }
 
+func (g *Graph) rangeAuthorizers(fn func(a *authorizer) bool) {
+	g.authorizers.Range(func(key, value interface{}) bool {
+		return fn(value.(*authorizer))
+	})
+}
+
+func (g *Graph) cacheAuthorizers() error {
+	return g.db.View(func(tx *bbolt.Tx) error {
+		return tx.Bucket(dbAuthorizers).ForEach(func(k, v []byte) error {
+			var i apipb.Authorizer
+			var err error
+			if err := proto.Unmarshal(v, &i); err != nil {
+				return err
+			}
+			program, err := g.vm.Auth().Program(i.Expression)
+			if err != nil {
+				return err
+			}
+			g.authorizers.Set(i.GetName(), &authorizer{
+				authorizer: &i,
+				program:    program,
+			}, 0)
+			return nil
+		})
+	})
+}
+
 func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*apipb.Index, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	indexBucket := tx.Bucket(dbIndexes)
+	if indexBucket == nil {
+		return nil, errors.New("empty index bucket")
+	}
 	val := indexBucket.Get([]byte(i.GetName()))
-	if val != nil {
+	if val != nil && len(val) > 0 {
 		var current = &apipb.Index{}
 		err := proto.Unmarshal(val, current)
 		if err != nil {
@@ -114,6 +163,39 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 		tx.Bucket(dbIndexDocs).CreateBucketIfNotExists([]byte(i.GetName()))
 	}
 	return i, g.cacheIndexes()
+}
+
+func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Authorizer) (*apipb.Authorizer, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	authBucket := tx.Bucket(dbAuthorizers)
+	val := authBucket.Get([]byte(i.GetName()))
+	if val != nil && len(val) > 0 {
+		var current = &apipb.Authorizer{}
+		err := proto.Unmarshal(val, current)
+		if err != nil {
+			return nil, err
+		}
+		current.Expression = i.Expression
+		bits, err := proto.Marshal(current)
+		if err != nil {
+			return nil, err
+		}
+		err = authBucket.Put([]byte(i.GetName()), bits)
+		if err != nil {
+			return nil, err
+		}
+		return current, g.cacheAuthorizers()
+	}
+	bits, err := proto.Marshal(i)
+	if err != nil {
+		return nil, err
+	}
+	if err := authBucket.Put([]byte(i.GetName()), bits); err != nil {
+		return nil, err
+	}
+	return i, g.cacheAuthorizers()
 }
 
 func (g *Graph) setIndexedDoc(ctx context.Context, tx *bbolt.Tx, index string, gid, doc []byte) error {
@@ -706,26 +788,4 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek int64, ind
 		return int64(helpers.BytesToUint64(lastKey)), err
 	}
 	return int64(helpers.BytesToUint64(lastKey)), nil
-}
-
-func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
-	var newPaths []*apipb.Path
-	for _, p := range paths {
-		if path.Gid == p.Gid && path.Gtype == p.Gtype {
-			newPaths = append(newPaths, p)
-		}
-	}
-	sortPaths(newPaths)
-	return newPaths
-}
-
-func sortPaths(paths []*apipb.Path) {
-	sort.Slice(paths, func(i, j int) bool {
-		return paths[i].String() < paths[j].String()
-	})
-}
-
-type index struct {
-	index   *apipb.Index
-	program cel.Program
 }

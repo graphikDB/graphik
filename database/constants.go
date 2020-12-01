@@ -5,8 +5,9 @@ import "errors"
 const (
 	// Permissions to use on the db file. This is only used if the
 	// database file does not exist and needs to be created.
-	dbFileMode    = 0600
-	changeChannel = "changes"
+	dbFileMode       = 0600
+	changeChannel    = "changes"
+	graphikAdminRole = "graphik-admin"
 )
 
 var (
@@ -15,8 +16,9 @@ var (
 	dbConnections      = []byte("connections")
 	dbDocs             = []byte("docs")
 	dbIndexes          = []byte("indexes")
-	dbIndexDocs        = []byte("docs/index")
-	dbIndexConnections = []byte("connections/index")
+	dbAuthorizers      = []byte("authorizers")
+	dbIndexDocs        = []byte("indexedDocs")
+	dbIndexConnections = []byte("indexedConnections")
 	// An error indicating a given key does not exist
 	ErrNotFound = errors.New("not found")
 )

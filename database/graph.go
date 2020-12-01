@@ -31,13 +31,11 @@ import (
 type Graph struct {
 	vm *vm.VM
 	// db is the underlying handle to the db.
-	db          *bbolt.DB
-	jwksMu      sync.RWMutex
-	jwksSet     *jwk.Set
-	jwtCache    *cache.Cache
-	openID      *openIDConnect
-	authorizers []cel.Program
-	// The path to the Bolt database file
+	db              *bbolt.DB
+	jwksMu          sync.RWMutex
+	jwksSet         *jwk.Set
+	jwtCache        *cache.Cache
+	openID          *openIDConnect
 	path            string
 	mu              sync.RWMutex
 	connectionsTo   map[string][]*apipb.Path
@@ -46,6 +44,7 @@ type Graph struct {
 	closers         []func()
 	closeOnce       sync.Once
 	indexes         *cache.Cache
+	authorizers     *cache.Cache
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -61,20 +60,12 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		return nil, err
 	}
 	var closers []func()
-	var programs []cel.Program
-	if len(flgs.Authorizers) > 0 && flgs.Authorizers[0] != "" {
-		programs, err = vMachine.Auth().Programs(flgs.Authorizers)
-		if err != nil {
-			return nil, err
-		}
-	}
-	m := machine.New(ctx)
+	m := machine.New(ctx, machine.WithMaxRoutines(100000))
 	g := &Graph{
 		vm:              vMachine,
 		db:              handle,
 		jwksMu:          sync.RWMutex{},
 		jwksSet:         nil,
-		authorizers:     programs,
 		path:            path,
 		mu:              sync.RWMutex{},
 		connectionsTo:   map[string][]*apipb.Path{},
@@ -84,6 +75,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		closeOnce:       sync.Once{},
 		jwtCache:        cache.New(m, 1*time.Minute),
 		indexes:         cache.New(m, 1*time.Minute),
+		authorizers:     cache.New(m, 1*time.Minute),
 	}
 	if flgs.OpenIdDiscovery != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIdDiscovery)
@@ -121,6 +113,10 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		if err != nil {
 			return errors.Wrap(err, "failed to create index bucket")
 		}
+		_, err = tx.CreateBucketIfNotExists(dbAuthorizers)
+		if err != nil {
+			return errors.Wrap(err, "failed to create authorizers bucket")
+		}
 		_, err = tx.CreateBucketIfNotExists(dbIndexDocs)
 		if err != nil {
 			return errors.Wrap(err, "failed to create doc/index bucket")
@@ -134,18 +130,13 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = g.rangeConnections(ctx, apipb.Any, func(e *apipb.Connection) bool {
-		g.mu.Lock()
-		defer g.mu.Unlock()
-		g.connectionsFrom[e.From.String()] = append(g.connectionsFrom[e.From.String()], e.Path)
-		g.connectionsTo[e.To.String()] = append(g.connectionsTo[e.To.String()], e.Path)
-		return true
-	})
-	if err != nil {
+	if err := g.cacheConnectionPaths(); err != nil {
 		return nil, err
 	}
-	err = g.cacheIndexes()
-	if err != nil {
+	if err := g.cacheIndexes(); err != nil {
+		return nil, err
+	}
+	if err := g.cacheAuthorizers(); err != nil {
 		return nil, err
 	}
 	g.machine.Go(func(routine machine.Routine) {
@@ -191,14 +182,26 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 		indexes = append(indexes, index.index)
 		return true
 	})
+	sort.Slice(indexes, func(i, j int) bool {
+		return indexes[i].Name < indexes[j].Name
+	})
+	var authorizers []*apipb.Authorizer
+	g.rangeAuthorizers(func(a *authorizer) bool {
+		authorizers = append(authorizers, a.authorizer)
+		return true
+	})
+	sort.Slice(authorizers, func(i, j int) bool {
+		return authorizers[i].Name < authorizers[j].Name
+	})
 	return &apipb.Schema{
 		ConnectionTypes: e,
 		DocTypes:        n,
 		Indexes:         &apipb.Indexes{Indexes: indexes},
+		Authorizers:     &apipb.Authorizers{Authorizers: authorizers},
 	}, nil
 }
 
-func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*apipb.Schema, error) {
+func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.Empty, error) {
 	identity := g.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
@@ -216,7 +219,26 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*apipb.S
 	}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return g.GetSchema(ctx, &empty.Empty{})
+	return &empty.Empty{}, g.cacheIndexes()
+}
+
+func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*empty.Empty, error) {
+	identity := g.getIdentity(ctx)
+	if identity == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	}
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+		for _, a := range as.GetAuthorizers() {
+			_, err := g.setAuthorizer(ctx, tx, a)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &empty.Empty{}, g.cacheAuthorizers()
 }
 
 func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetail, error) {
@@ -883,6 +905,17 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	}
 	toReturn.Sort(filter.GetSort())
 	return toReturn, nil
+}
+
+func (n *Graph) DepthSearchDocs(ctx context.Context, filter *apipb.DepthFilter) (*apipb.Docs, error) {
+	dfs := n.NewdepthFirst(filter)
+	if err := n.db.View(func(tx *bbolt.Tx) error {
+		return dfs.Walk(ctx, tx)
+	}); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return dfs.docs, nil
 }
 
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {

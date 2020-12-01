@@ -16,6 +16,8 @@ var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/time
 var google_protobuf_any_pb = require('google-protobuf/google/protobuf/any_pb.js');
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 var github_com_mwitkow_go$proto$validators_validator_pb = require('./github.com/mwitkow/go-proto-validators/validator_pb.js');
+goog.exportSymbol('proto.api.Authorizer', null, global);
+goog.exportSymbol('proto.api.Authorizers', null, global);
 goog.exportSymbol('proto.api.Change', null, global);
 goog.exportSymbol('proto.api.ChannelFilter', null, global);
 goog.exportSymbol('proto.api.Connection', null, global);
@@ -26,6 +28,7 @@ goog.exportSymbol('proto.api.ConnectionDetail', null, global);
 goog.exportSymbol('proto.api.ConnectionDetails', null, global);
 goog.exportSymbol('proto.api.ConnectionFilter', null, global);
 goog.exportSymbol('proto.api.Connections', null, global);
+goog.exportSymbol('proto.api.DepthFilter', null, global);
 goog.exportSymbol('proto.api.Doc', null, global);
 goog.exportSymbol('proto.api.DocChange', null, global);
 goog.exportSymbol('proto.api.DocConstructor', null, global);
@@ -4510,6 +4513,273 @@ proto.api.Filter.prototype.setIndex = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.api.DepthFilter = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.api.DepthFilter, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.api.DepthFilter.displayName = 'proto.api.DepthFilter';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.api.DepthFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.DepthFilter.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.api.DepthFilter} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.DepthFilter.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    root: (f = msg.getRoot()) && proto.api.Path.toObject(includeInstance, f),
+    docExpression: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    connectionExpression: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    limit: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    sort: jspb.Message.getFieldWithDefault(msg, 5, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.api.DepthFilter}
+ */
+proto.api.DepthFilter.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.api.DepthFilter;
+  return proto.api.DepthFilter.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.api.DepthFilter} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.api.DepthFilter}
+ */
+proto.api.DepthFilter.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.api.Path;
+      reader.readMessage(value,proto.api.Path.deserializeBinaryFromReader);
+      msg.setRoot(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDocExpression(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setConnectionExpression(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setLimit(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSort(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.api.DepthFilter.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.api.DepthFilter.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.api.DepthFilter} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.DepthFilter.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getRoot();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.api.Path.serializeBinaryToWriter
+    );
+  }
+  f = message.getDocExpression();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getConnectionExpression();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getLimit();
+  if (f !== 0) {
+    writer.writeInt32(
+      4,
+      f
+    );
+  }
+  f = message.getSort();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional Path root = 1;
+ * @return {?proto.api.Path}
+ */
+proto.api.DepthFilter.prototype.getRoot = function() {
+  return /** @type{?proto.api.Path} */ (
+    jspb.Message.getWrapperField(this, proto.api.Path, 1));
+};
+
+
+/** @param {?proto.api.Path|undefined} value */
+proto.api.DepthFilter.prototype.setRoot = function(value) {
+  jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+proto.api.DepthFilter.prototype.clearRoot = function() {
+  this.setRoot(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.api.DepthFilter.prototype.hasRoot = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional string doc_expression = 2;
+ * @return {string}
+ */
+proto.api.DepthFilter.prototype.getDocExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.DepthFilter.prototype.setDocExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string connection_expression = 3;
+ * @return {string}
+ */
+proto.api.DepthFilter.prototype.getConnectionExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.api.DepthFilter.prototype.setConnectionExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional int32 limit = 4;
+ * @return {number}
+ */
+proto.api.DepthFilter.prototype.getLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/** @param {number} value */
+proto.api.DepthFilter.prototype.setLimit = function(value) {
+  jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional string sort = 5;
+ * @return {string}
+ */
+proto.api.DepthFilter.prototype.getSort = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/** @param {string} value */
+proto.api.DepthFilter.prototype.setSort = function(value) {
+  jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.api.IndexConstructor = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -4750,6 +5020,343 @@ proto.api.IndexConstructor.prototype.getConnections = function() {
 /** @param {boolean} value */
 proto.api.IndexConstructor.prototype.setConnections = function(value) {
   jspb.Message.setProto3BooleanField(this, 7, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.api.Authorizer = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.api.Authorizer, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.api.Authorizer.displayName = 'proto.api.Authorizer';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.api.Authorizer.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.Authorizer.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.api.Authorizer} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Authorizer.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    expression: jspb.Message.getFieldWithDefault(msg, 2, "")
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.api.Authorizer}
+ */
+proto.api.Authorizer.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.api.Authorizer;
+  return proto.api.Authorizer.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.api.Authorizer} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.api.Authorizer}
+ */
+proto.api.Authorizer.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExpression(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.api.Authorizer.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.api.Authorizer.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.api.Authorizer} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Authorizer.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getExpression();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string name = 1;
+ * @return {string}
+ */
+proto.api.Authorizer.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Authorizer.prototype.setName = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string expression = 2;
+ * @return {string}
+ */
+proto.api.Authorizer.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Authorizer.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.api.Authorizers = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.Authorizers.repeatedFields_, null);
+};
+goog.inherits(proto.api.Authorizers, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.api.Authorizers.displayName = 'proto.api.Authorizers';
+}
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.api.Authorizers.repeatedFields_ = [1];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.api.Authorizers.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.Authorizers.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.api.Authorizers} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Authorizers.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    authorizersList: jspb.Message.toObjectList(msg.getAuthorizersList(),
+    proto.api.Authorizer.toObject, includeInstance)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.api.Authorizers}
+ */
+proto.api.Authorizers.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.api.Authorizers;
+  return proto.api.Authorizers.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.api.Authorizers} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.api.Authorizers}
+ */
+proto.api.Authorizers.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.api.Authorizer;
+      reader.readMessage(value,proto.api.Authorizer.deserializeBinaryFromReader);
+      msg.addAuthorizers(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.api.Authorizers.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.api.Authorizers.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.api.Authorizers} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Authorizers.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getAuthorizersList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      1,
+      f,
+      proto.api.Authorizer.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * repeated Authorizer authorizers = 1;
+ * @return {!Array<!proto.api.Authorizer>}
+ */
+proto.api.Authorizers.prototype.getAuthorizersList = function() {
+  return /** @type{!Array<!proto.api.Authorizer>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.api.Authorizer, 1));
+};
+
+
+/** @param {!Array<!proto.api.Authorizer>} value */
+proto.api.Authorizers.prototype.setAuthorizersList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 1, value);
+};
+
+
+/**
+ * @param {!proto.api.Authorizer=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.api.Authorizer}
+ */
+proto.api.Authorizers.prototype.addAuthorizers = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.api.Authorizer, opt_index);
+};
+
+
+proto.api.Authorizers.prototype.clearAuthorizersList = function() {
+  this.setAuthorizersList([]);
 };
 
 
@@ -5976,7 +6583,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.api.Flags.repeatedFields_ = [4,5,6,7];
+proto.api.Flags.repeatedFields_ = [5,6,7];
 
 
 
@@ -6010,7 +6617,6 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     openIdDiscovery: jspb.Message.getFieldWithDefault(msg, 1, ""),
     storagePath: jspb.Message.getFieldWithDefault(msg, 2, ""),
     metrics: jspb.Message.getFieldWithDefault(msg, 3, false),
-    authorizersList: jspb.Message.getRepeatedField(msg, 4),
     allowHeadersList: jspb.Message.getRepeatedField(msg, 5),
     allowMethodsList: jspb.Message.getRepeatedField(msg, 6),
     allowOriginsList: jspb.Message.getRepeatedField(msg, 7)
@@ -6061,10 +6667,6 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setMetrics(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.addAuthorizers(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
@@ -6125,13 +6727,6 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       3,
-      f
-    );
-  }
-  f = message.getAuthorizersList();
-  if (f.length > 0) {
-    writer.writeRepeatedString(
-      4,
       f
     );
   }
@@ -6203,35 +6798,6 @@ proto.api.Flags.prototype.getMetrics = function() {
 /** @param {boolean} value */
 proto.api.Flags.prototype.setMetrics = function(value) {
   jspb.Message.setProto3BooleanField(this, 3, value);
-};
-
-
-/**
- * repeated string authorizers = 4;
- * @return {!Array<string>}
- */
-proto.api.Flags.prototype.getAuthorizersList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 4));
-};
-
-
-/** @param {!Array<string>} value */
-proto.api.Flags.prototype.setAuthorizersList = function(value) {
-  jspb.Message.setField(this, 4, value || []);
-};
-
-
-/**
- * @param {!string} value
- * @param {number=} opt_index
- */
-proto.api.Flags.prototype.addAuthorizers = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 4, value, opt_index);
-};
-
-
-proto.api.Flags.prototype.clearAuthorizersList = function() {
-  this.setAuthorizersList([]);
 };
 
 
@@ -7386,6 +7952,7 @@ proto.api.Schema.toObject = function(includeInstance, msg) {
   var f, obj = {
     connectionTypesList: jspb.Message.getRepeatedField(msg, 1),
     docTypesList: jspb.Message.getRepeatedField(msg, 2),
+    authorizers: (f = msg.getAuthorizers()) && proto.api.Authorizers.toObject(includeInstance, f),
     indexes: (f = msg.getIndexes()) && proto.api.Indexes.toObject(includeInstance, f)
   };
 
@@ -7432,6 +7999,11 @@ proto.api.Schema.deserializeBinaryFromReader = function(msg, reader) {
       msg.addDocTypes(value);
       break;
     case 3:
+      var value = new proto.api.Authorizers;
+      reader.readMessage(value,proto.api.Authorizers.deserializeBinaryFromReader);
+      msg.setAuthorizers(value);
+      break;
+    case 4:
       var value = new proto.api.Indexes;
       reader.readMessage(value,proto.api.Indexes.deserializeBinaryFromReader);
       msg.setIndexes(value);
@@ -7479,10 +8051,18 @@ proto.api.Schema.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getIndexes();
+  f = message.getAuthorizers();
   if (f != null) {
     writer.writeMessage(
       3,
+      f,
+      proto.api.Authorizers.serializeBinaryToWriter
+    );
+  }
+  f = message.getIndexes();
+  if (f != null) {
+    writer.writeMessage(
+      4,
       f,
       proto.api.Indexes.serializeBinaryToWriter
     );
@@ -7549,18 +8129,48 @@ proto.api.Schema.prototype.clearDocTypesList = function() {
 
 
 /**
- * optional Indexes indexes = 3;
+ * optional Authorizers authorizers = 3;
+ * @return {?proto.api.Authorizers}
+ */
+proto.api.Schema.prototype.getAuthorizers = function() {
+  return /** @type{?proto.api.Authorizers} */ (
+    jspb.Message.getWrapperField(this, proto.api.Authorizers, 3));
+};
+
+
+/** @param {?proto.api.Authorizers|undefined} value */
+proto.api.Schema.prototype.setAuthorizers = function(value) {
+  jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+proto.api.Schema.prototype.clearAuthorizers = function() {
+  this.setAuthorizers(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.api.Schema.prototype.hasAuthorizers = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional Indexes indexes = 4;
  * @return {?proto.api.Indexes}
  */
 proto.api.Schema.prototype.getIndexes = function() {
   return /** @type{?proto.api.Indexes} */ (
-    jspb.Message.getWrapperField(this, proto.api.Indexes, 3));
+    jspb.Message.getWrapperField(this, proto.api.Indexes, 4));
 };
 
 
 /** @param {?proto.api.Indexes|undefined} value */
 proto.api.Schema.prototype.setIndexes = function(value) {
-  jspb.Message.setWrapperField(this, 3, value);
+  jspb.Message.setWrapperField(this, 4, value);
 };
 
 
@@ -7574,7 +8184,7 @@ proto.api.Schema.prototype.clearIndexes = function() {
  * @return {!boolean}
  */
 proto.api.Schema.prototype.hasIndexes = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

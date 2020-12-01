@@ -5,8 +5,6 @@ package gql
 
 import (
 	"context"
-	"fmt"
-
 	apipb "github.com/autom8ter/graphik/gen/go"
 	generated1 "github.com/autom8ter/graphik/gen/gql/generated"
 	"github.com/autom8ter/graphik/logger"
@@ -22,32 +20,36 @@ func (r *mutationResolver) CreateDoc(ctx context.Context, input apipb.DocConstru
 	return r.client.CreateDoc(ctx, &input)
 }
 
-func (r *mutationResolver) PatchDoc(ctx context.Context, input apipb.Edit) (*apipb.Doc, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) EditDoc(ctx context.Context, input apipb.Edit) (*apipb.Doc, error) {
+	return r.client.EditDoc(ctx, &input)
 }
 
-func (r *mutationResolver) PatchDocs(ctx context.Context, input apipb.EditFilter) (*apipb.Docs, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) EditDocs(ctx context.Context, input apipb.EditFilter) (*apipb.Docs, error) {
+	return r.client.EditDocs(ctx, &input)
 }
 
 func (r *mutationResolver) CreateConnection(ctx context.Context, input apipb.ConnectionConstructor) (*apipb.Connection, error) {
 	return r.client.CreateConnection(ctx, &input)
 }
 
-func (r *mutationResolver) PatchConnection(ctx context.Context, input apipb.Edit) (*apipb.Connection, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) EditConnection(ctx context.Context, input apipb.Edit) (*apipb.Connection, error) {
+	return r.client.EditConnection(ctx, &input)
 }
 
-func (r *mutationResolver) PatchConnections(ctx context.Context, input apipb.EditFilter) (*apipb.Connections, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) EditConnections(ctx context.Context, input apipb.EditFilter) (*apipb.Connections, error) {
+	return r.client.EditConnections(ctx, &input)
 }
 
 func (r *mutationResolver) Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error) {
 	return r.client.Publish(ctx, &input)
 }
 
-func (r *mutationResolver) SetIndexes(ctx context.Context, input apipb.Indexes) (*apipb.Schema, error) {
+func (r *mutationResolver) SetIndexes(ctx context.Context, input apipb.Indexes) (*emptypb.Empty, error) {
 	return r.client.SetIndexes(ctx, &input)
+}
+
+func (r *mutationResolver) SetAuthorizers(ctx context.Context, input apipb.Authorizers) (*emptypb.Empty, error) {
+	return r.client.SetAuthorizers(ctx, &input)
 }
 
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {
@@ -68,6 +70,10 @@ func (r *queryResolver) GetDoc(ctx context.Context, input apipb.Path) (*apipb.Do
 
 func (r *queryResolver) SearchDocs(ctx context.Context, input apipb.Filter) (*apipb.Docs, error) {
 	return r.client.SearchDocs(ctx, &input)
+}
+
+func (r *queryResolver) DepthSearchDocs(ctx context.Context, input apipb.DepthFilter) (*apipb.Docs, error) {
+	return r.client.DepthSearchDocs(ctx, &input)
 }
 
 func (r *queryResolver) GetConnection(ctx context.Context, input apipb.Path) (*apipb.Connection, error) {
@@ -156,22 +162,3 @@ type metadataResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) EditDoc(ctx context.Context, input apipb.Edit) (*apipb.Doc, error) {
-	return r.client.EditDoc(ctx, &input)
-}
-func (r *mutationResolver) EditDocs(ctx context.Context, input apipb.EditFilter) (*apipb.Docs, error) {
-	return r.client.EditDocs(ctx, &input)
-}
-func (r *mutationResolver) EditConnection(ctx context.Context, input apipb.Edit) (*apipb.Connection, error) {
-	return r.client.EditConnection(ctx, &input)
-}
-func (r *mutationResolver) EditConnections(ctx context.Context, input apipb.EditFilter) (*apipb.Connections, error) {
-	return r.client.EditConnections(ctx, &input)
-}
