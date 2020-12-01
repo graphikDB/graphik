@@ -223,7 +223,7 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	if g.authorizers.Len() > 0 {
+	if !isGraphikAdmin(identity) {
 		now := time.Now()
 		request := &apipb.Request{
 			Method:    method,
@@ -250,9 +250,6 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 		if !result {
 			return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
 		}
-	}
-	if g.getIdentity(ctx) == nil {
-		return nil, status.Error(codes.Internal, "empty identity")
 	}
 	return ctx, nil
 }

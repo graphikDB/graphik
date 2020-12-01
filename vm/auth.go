@@ -65,8 +65,10 @@ func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error)
 		if err != nil {
 			return false, err
 		}
-		if val, ok := out.Value().(bool); ok && val {
-			return true, nil
+		if val, ok := out.Value().(bool); ok {
+			if val {
+				return true, nil
+			}
 		}
 	}
 	return false, nil

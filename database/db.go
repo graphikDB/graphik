@@ -95,9 +95,6 @@ func (g *Graph) cacheIndexes() error {
 
 func (g *Graph) rangeAuthorizers(fn func(a *authorizer) bool) {
 	g.authorizers.Range(func(key, value interface{}) bool {
-		if value == nil {
-			return true
-		}
 		return fn(value.(*authorizer))
 	})
 }
@@ -106,20 +103,18 @@ func (g *Graph) cacheAuthorizers() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbAuthorizers).ForEach(func(k, v []byte) error {
 			var i apipb.Authorizer
-			var program cel.Program
 			var err error
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			program, err = g.vm.Auth().Program(i.Expression)
+			program, err := g.vm.Auth().Program(i.Expression)
 			if err != nil {
 				return err
 			}
-			a := &authorizer{
+			g.authorizers.Set(i.GetName(), &authorizer{
 				authorizer: &i,
 				program:    program,
-			}
-			g.authorizers.Set(i.GetName(), a, 0)
+			}, 0)
 			return nil
 		})
 	})
