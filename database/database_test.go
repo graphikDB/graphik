@@ -86,9 +86,6 @@ func TestGraph_SetIndex(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err != nil {
-		t.Fatal(err)
-	}
 }
 
 func TestGraph_SetAuthorizers(t *testing.T) {
@@ -258,6 +255,21 @@ func TestGraph_SearchDocs(t *testing.T) {
 		t.Fatal("expected to find one document")
 	}
 	//t.Log(res.GetDocs()[0].String())
+}
+
+func TestGraph_DepthSearchDocs(t *testing.T) {
+	res, err := graph.DepthSearchDocs(ctx, &apipb.DepthFilter{
+		Root:                 ashe.GetPath(),
+		DocExpression:        "",
+		ConnectionExpression: "",
+		Limit:                4,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, doc := range res.GetDocs() {
+		t.Log(doc.String())
+	}
 }
 
 func TestGraph_SearchConnections(t *testing.T) {

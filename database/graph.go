@@ -219,7 +219,7 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.E
 	}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &empty.Empty{}, nil
+	return &empty.Empty{}, g.cacheIndexes()
 }
 
 func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*empty.Empty, error) {
@@ -908,7 +908,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 }
 
 func (n *Graph) DepthSearchDocs(ctx context.Context, filter *apipb.DepthFilter) (*apipb.Docs, error) {
-	dfs := n.NewDepthFirst(filter)
+	dfs := n.NewdepthFirst(filter)
 	if err := n.db.View(func(tx *bbolt.Tx) error {
 		return dfs.Walk(ctx, tx)
 	}); err != nil {
