@@ -225,6 +225,19 @@ input Filter {
   index: String
 }
 
+input DepthFilter {
+  # gtype is the doc/connection type to be filtered
+  root: PathInput!
+  # expression is a CEL expression used to filter connections/nodes
+  doc_expression: String
+  connection_expression: String
+  # limit is the maximum number of items to return
+  limit: Int!
+  # custom sorting of the results.
+  sort: String
+}
+
+
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
 input MeFilter {
   # connections_from is a filter used to filter connections from the identity making the request
@@ -339,6 +352,8 @@ type Query {
   getDoc(input: PathInput!): Doc!
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
+  # depthSearchDocs searches for 0-many docs using dfs search
+  depthSearchDocs(input: DepthFilter!): Docs!
   # getConnection gets a connection at the given path
   getConnection(input: PathInput!): Connection!
   # searchConnections searches for 0-many connections

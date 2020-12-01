@@ -16,6 +16,7 @@
     - [ConnectionDetails](#api.ConnectionDetails)
     - [ConnectionFilter](#api.ConnectionFilter)
     - [Connections](#api.Connections)
+    - [DepthFilter](#api.DepthFilter)
     - [Doc](#api.Doc)
     - [DocChange](#api.DocChange)
     - [DocConstructor](#api.DocConstructor)
@@ -260,6 +261,25 @@ Connections is an array of Connection
 | ----- | ---- | ----- | ----------- |
 | connections | [Connection](#api.Connection) | repeated |  |
 | seek_next | [int64](#int64) |  |  |
+
+
+
+
+
+
+<a name="api.DepthFilter"></a>
+
+### DepthFilter
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| root | [Path](#api.Path) |  |  |
+| doc_expression | [string](#string) |  |  |
+| connection_expression | [string](#string) |  |  |
+| limit | [int32](#int32) |  |  |
+| sort | [string](#string) |  | custom sorting of the results. |
 
 
 
@@ -744,6 +764,7 @@ DatabaseService is the primary database service
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |
 | GetDoc | [Path](#api.Path) | [Doc](#api.Doc) | GetDoc gets a single doc in the graph |
 | SearchDocs | [Filter](#api.Filter) | [Docs](#api.Docs) | SearchDocs searches the graph for docs |
+| DepthSearchDocs | [DepthFilter](#api.DepthFilter) | [Docs](#api.Docs) | DepthSearchDocs searches the graph for docs |
 | EditDoc | [Edit](#api.Edit) | [Doc](#api.Doc) | EditDoc patches a docs attributes |
 | EditDocs | [EditFilter](#api.EditFilter) | [Docs](#api.Docs) | EditDocs patches a batch of docs attributes that pass the patch filter |
 | DelDoc | [Path](#api.Path) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDoc deletes a doc &amp; all of it&#39;s connected connections |

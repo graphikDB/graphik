@@ -72,6 +72,10 @@ func (r *queryResolver) SearchDocs(ctx context.Context, input apipb.Filter) (*ap
 	return r.client.SearchDocs(ctx, &input)
 }
 
+func (r *queryResolver) DepthSearchDocs(ctx context.Context, input apipb.DepthFilter) (*apipb.Docs, error) {
+	return r.client.DepthSearchDocs(ctx, &input)
+}
+
 func (r *queryResolver) GetConnection(ctx context.Context, input apipb.Path) (*apipb.Connection, error) {
 	return r.client.GetConnection(ctx, &input)
 }

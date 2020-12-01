@@ -174,6 +174,7 @@ type ComplexityRoot struct {
 	Query struct {
 		ConnectionsFrom   func(childComplexity int, input apipb.ConnectionFilter) int
 		ConnectionsTo     func(childComplexity int, input apipb.ConnectionFilter) int
+		DepthSearchDocs   func(childComplexity int, input apipb.DepthFilter) int
 		GetConnection     func(childComplexity int, input apipb.Path) int
 		GetDoc            func(childComplexity int, input apipb.Path) int
 		GetSchema         func(childComplexity int, input *emptypb.Empty) int
@@ -216,6 +217,7 @@ type QueryResolver interface {
 	Me(ctx context.Context, input *apipb.MeFilter) (*apipb.DocDetail, error)
 	GetDoc(ctx context.Context, input apipb.Path) (*apipb.Doc, error)
 	SearchDocs(ctx context.Context, input apipb.Filter) (*apipb.Docs, error)
+	DepthSearchDocs(ctx context.Context, input apipb.DepthFilter) (*apipb.Docs, error)
 	GetConnection(ctx context.Context, input apipb.Path) (*apipb.Connection, error)
 	SearchConnections(ctx context.Context, input apipb.Filter) (*apipb.Connections, error)
 	ConnectionsFrom(ctx context.Context, input apipb.ConnectionFilter) (*apipb.Connections, error)
@@ -758,6 +760,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ConnectionsTo(childComplexity, args["input"].(apipb.ConnectionFilter)), true
 
+	case "Query.depthSearchDocs":
+		if e.complexity.Query.DepthSearchDocs == nil {
+			break
+		}
+
+		args, err := ec.field_Query_depthSearchDocs_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DepthSearchDocs(childComplexity, args["input"].(apipb.DepthFilter)), true
+
 	case "Query.getConnection":
 		if e.complexity.Query.GetConnection == nil {
 			break
@@ -1202,6 +1216,19 @@ input Filter {
   index: String
 }
 
+input DepthFilter {
+  # gtype is the doc/connection type to be filtered
+  root: PathInput!
+  # expression is a CEL expression used to filter connections/nodes
+  doc_expression: String
+  connection_expression: String
+  # limit is the maximum number of items to return
+  limit: Int!
+  # custom sorting of the results.
+  sort: String
+}
+
+
 # MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
 input MeFilter {
   # connections_from is a filter used to filter connections from the identity making the request
@@ -1316,6 +1343,8 @@ type Query {
   getDoc(input: PathInput!): Doc!
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
+  # depthSearchDocs searches for 0-many docs using dfs search
+  depthSearchDocs(input: DepthFilter!): Docs!
   # getConnection gets a connection at the given path
   getConnection(input: PathInput!): Connection!
   # searchConnections searches for 0-many connections
@@ -1511,6 +1540,21 @@ func (ec *executionContext) field_Query_connectionsTo_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNConnectionFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_depthSearchDocs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 apipb.DepthFilter
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDepthFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDepthFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -4127,6 +4171,48 @@ func (ec *executionContext) _Query_searchDocs(ctx context.Context, field graphql
 	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocs(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_depthSearchDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_depthSearchDocs_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DepthSearchDocs(rctx, args["input"].(apipb.DepthFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Docs)
+	fc.Result = res
+	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocs(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_getConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -5881,6 +5967,58 @@ func (ec *executionContext) unmarshalInputConnectionFilter(ctx context.Context, 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDepthFilter(ctx context.Context, obj interface{}) (apipb.DepthFilter, error) {
+	var it apipb.DepthFilter
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "root":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("root"))
+			it.Root, err = ec.unmarshalNPathInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐPath(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "doc_expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("doc_expression"))
+			it.DocExpression, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "connection_expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connection_expression"))
+			it.ConnectionExpression, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "limit":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			it.Limit, err = ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sort":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+			it.Sort, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputDocConstructor(ctx context.Context, obj interface{}) (apipb.DocConstructor, error) {
 	var it apipb.DocConstructor
 	var asMap = obj.(map[string]interface{})
@@ -6975,6 +7113,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "depthSearchDocs":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_depthSearchDocs(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "getConnection":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -7453,6 +7605,11 @@ func (ec *executionContext) marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgr
 		return graphql.Null
 	}
 	return ec._Connections(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDepthFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDepthFilter(ctx context.Context, v interface{}) (apipb.DepthFilter, error) {
+	res, err := ec.unmarshalInputDepthFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNDoc2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDoc(ctx context.Context, sel ast.SelectionSet, v apipb.Doc) graphql.Marshaler {

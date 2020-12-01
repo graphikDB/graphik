@@ -373,6 +373,26 @@ func (this *Filter) Validate() error {
 	return nil
 }
 
+var _regex_DepthFilter_ConnectionExpression = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *DepthFilter) Validate() error {
+	if nil == this.Root {
+		return github_com_mwitkow_go_proto_validators.FieldError("Root", fmt.Errorf("message must exist"))
+	}
+	if this.Root != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Root); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Root", err)
+		}
+	}
+	if !_regex_DepthFilter_ConnectionExpression.MatchString(this.ConnectionExpression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("ConnectionExpression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.ConnectionExpression))
+	}
+	if !(this.Limit > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
+	}
+	return nil
+}
+
 var _regex_IndexConstructor_Name = regexp.MustCompile(`^.{1,225}$`)
 var _regex_IndexConstructor_Gtype = regexp.MustCompile(`^.{1,225}$`)
 var _regex_IndexConstructor_Expression = regexp.MustCompile(`^.{1,225}$`)

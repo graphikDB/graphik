@@ -907,6 +907,17 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	return toReturn, nil
 }
 
+func (n *Graph) DepthSearchDocs(ctx context.Context, filter *apipb.DepthFilter) (*apipb.Docs, error) {
+	dfs := n.NewDepthFirst(filter)
+	if err := n.db.View(func(tx *bbolt.Tx) error {
+		return dfs.Walk(ctx, tx)
+	}); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return dfs.docs, nil
+}
+
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
 	var (
 		program cel.Program
