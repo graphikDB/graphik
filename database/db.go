@@ -147,7 +147,7 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 		if err != nil {
 			return nil, err
 		}
-		return current, g.cacheIndexes()
+		return current, nil
 	}
 	bits, err := proto.Marshal(i)
 	if err != nil {
@@ -162,7 +162,7 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 	if i.Docs {
 		tx.Bucket(dbIndexDocs).CreateBucketIfNotExists([]byte(i.GetName()))
 	}
-	return i, g.cacheIndexes()
+	return i, nil
 }
 
 func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Authorizer) (*apipb.Authorizer, error) {
@@ -186,7 +186,7 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 		if err != nil {
 			return nil, err
 		}
-		return current, g.cacheAuthorizers()
+		return current, nil
 	}
 	bits, err := proto.Marshal(i)
 	if err != nil {
@@ -195,7 +195,7 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 	if err := authBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
-	return i, g.cacheAuthorizers()
+	return i, nil
 }
 
 func (g *Graph) setIndexedDoc(ctx context.Context, tx *bbolt.Tx, index string, gid, doc []byte) error {
