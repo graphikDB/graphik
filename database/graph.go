@@ -219,7 +219,7 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.E
 	}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &empty.Empty{}, nil
+	return &empty.Empty{}, g.cacheIndexes()
 }
 
 func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*empty.Empty, error) {
@@ -227,20 +227,18 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	var authorizers []*apipb.Authorizer
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		for _, a := range as.GetAuthorizers() {
-			i, err := g.setAuthorizer(ctx, tx, a)
+			_, err := g.setAuthorizer(ctx, tx, a)
 			if err != nil {
 				return err
 			}
-			authorizers = append(authorizers, i)
 		}
 		return nil
 	}); err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &empty.Empty{}, nil
+	return &empty.Empty{}, g.cacheAuthorizers()
 }
 
 func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetail, error) {

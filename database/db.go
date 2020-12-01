@@ -130,8 +130,11 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 		return nil, err
 	}
 	indexBucket := tx.Bucket(dbIndexes)
+	if indexBucket == nil {
+		return nil, errors.New("empty index bucket")
+	}
 	val := indexBucket.Get([]byte(i.GetName()))
-	if val != nil {
+	if val != nil && len(val) > 0 {
 		var current = &apipb.Index{}
 		err := proto.Unmarshal(val, current)
 		if err != nil {
@@ -173,7 +176,7 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 	}
 	authBucket := tx.Bucket(dbAuthorizers)
 	val := authBucket.Get([]byte(i.GetName()))
-	if val != nil {
+	if val != nil && len(val) > 0 {
 		var current = &apipb.Authorizer{}
 		err := proto.Unmarshal(val, current)
 		if err != nil {

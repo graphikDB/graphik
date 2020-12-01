@@ -7,10 +7,16 @@ import (
 	apipb2 "github.com/autom8ter/graphik/gen/go"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"os"
 	"testing"
 )
 
 func init() {
+	err := os.RemoveAll("/tmp/testing")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	graph, err = NewGraph(context.Background(), &apipb.Flags{
 		OpenIdDiscovery: "",
 		StoragePath:     "/tmp/testing/graphik",
@@ -80,6 +86,18 @@ func TestGraph_SetIndex(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestGraph_SetAuthorizers(t *testing.T) {
+	_, err := graph.SetAuthorizers(ctx, &apipb.Authorizers{Authorizers: []*apipb.Authorizer{
+		{
+			Name:       "testing",
+			Expression: `request.method.contains("test")`,
+		},
+	}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -223,7 +241,7 @@ func TestGraph_GetDocDetail(t *testing.T) {
 	if err := res.Validate(); err != nil {
 		t.Fatal(err)
 	}
-	t.Log(res.String())
+	//t.Log(res.String())
 }
 
 func TestGraph_SearchDocs(t *testing.T) {
@@ -239,7 +257,7 @@ func TestGraph_SearchDocs(t *testing.T) {
 	if len(res.GetDocs()) != 1 {
 		t.Fatal("expected to find one document")
 	}
-	t.Log(res.GetDocs()[0].String())
+	//t.Log(res.GetDocs()[0].String())
 }
 
 func TestGraph_SearchConnections(t *testing.T) {
@@ -283,7 +301,7 @@ func TestGraph_AllDocs(t *testing.T) {
 		if err := r.Validate(); err != nil {
 			t.Fatal(err)
 		}
-		t.Log(r.String())
+		//	t.Log(r.String())
 	}
 }
 
@@ -299,16 +317,22 @@ func TestGraph_AllConnections(t *testing.T) {
 		if err := r.Validate(); err != nil {
 			t.Fatal(err)
 		}
-		t.Log(r.String())
+		//	t.Log(r.String())
 	}
 }
 
 func TestGraph_GetSchema(t *testing.T) {
-	res, err := graph.GetSchema(ctx, &empty.Empty{})
+	schema, err := graph.GetSchema(ctx, &empty.Empty{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(res.String())
+	if len(schema.GetAuthorizers().GetAuthorizers()) == 0 {
+		t.Fatal("expected at least one authorizer")
+	}
+	if len(schema.GetIndexes().GetIndexes()) == 0 {
+		t.Fatal("expected at least one index")
+	}
+	t.Log(schema.String())
 }
 
 func TestGraph_DelDocs(t *testing.T) {

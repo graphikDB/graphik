@@ -16,8 +16,8 @@ var (
 	dbDocs             = []byte("docs")
 	dbIndexes          = []byte("indexes")
 	dbAuthorizers      = []byte("authorizers")
-	dbIndexDocs        = []byte("docs/index")
-	dbIndexConnections = []byte("connections/index")
+	dbIndexDocs        = []byte("indexedDocs")
+	dbIndexConnections = []byte("indexedConnections")
 	// An error indicating a given key does not exist
 	ErrNotFound = errors.New("not found")
 )
