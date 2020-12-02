@@ -5,6 +5,7 @@ import (
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"strings"
 )
 
 type ConnectionVM struct {
@@ -56,6 +57,9 @@ func (n *ConnectionVM) Eval(connection *apipb.Connection, programs ...cel.Progra
 			"connection": connection.AsMap(),
 		})
 		if err != nil {
+			if strings.Contains(err.Error(), "no such key") {
+				return false, nil
+			}
 			return false, err
 		}
 		if val, ok := out.Value().(bool); !ok || !val {

@@ -5,6 +5,7 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
 	"github.com/pkg/errors"
+	"strings"
 )
 
 type MessageVM struct {
@@ -56,6 +57,9 @@ func (n *MessageVM) Eval(message *apipb.Message, programs ...cel.Program) (bool,
 			"message": message.AsMap(),
 		})
 		if err != nil {
+			if strings.Contains(err.Error(), "no such key") {
+				return false, nil
+			}
 			return false, errors.Wrap(err, "failed to evaluate message")
 		}
 		if val, ok := out.Value().(bool); !ok || !val {

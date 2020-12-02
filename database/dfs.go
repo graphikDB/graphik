@@ -8,6 +8,7 @@ import (
 	"github.com/google/cel-go/cel"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
+	"strings"
 )
 
 // depthFirst implements stateful depth-first graph traversal.
@@ -68,9 +69,12 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 				d.docs.Docs = append(d.docs.Docs, doc)
 			}
 		}
-		d.visited[d.filter.Root.String()] = struct{}{}
+		//d.visited[d.filter.Root.String()] = struct{}{}
 	}
 	for d.stack.Len() > 0 {
+		if err := ctx.Err(); err != nil {
+			return nil
+		}
 		t := d.stack.Pop()
 		if len(d.docs.Docs) >= int(d.filter.Limit) {
 			return nil
@@ -79,7 +83,9 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 			if connectionProgram != nil {
 				res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
 				if err != nil {
-					logger.Error("dfs failure", zap.Error(err))
+					if !strings.Contains(err.Error(), "no such key") {
+						logger.Error("dfs failure", zap.Error(err))
+					}
 					return true
 				}
 				if !res {
@@ -89,7 +95,9 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 			if _, ok := d.visited[e.To.String()]; !ok {
 				to, err := d.g.getDoc(ctx, tx, e.To)
 				if err != nil {
-					logger.Error("dfs failure", zap.Error(err))
+					if !strings.Contains(err.Error(), "no such key") {
+						logger.Error("dfs failure", zap.Error(err))
+					}
 					return true
 				}
 				if docProgram == nil {
@@ -97,14 +105,16 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 				} else {
 					res, err := d.g.vm.Doc().Eval(to, *docProgram)
 					if err != nil {
-						logger.Error("dfs failure", zap.Error(err))
+						if !strings.Contains(err.Error(), "no such key") {
+							logger.Error("dfs failure", zap.Error(err))
+						}
 						return true
 					}
 					if res {
 						d.docs.Docs = append(d.docs.Docs, to)
 					}
 				}
-				d.visited[to.String()] = struct{}{}
+				//d.visited[to.String()] = struct{}{}
 				d.stack.Push(to)
 			}
 			return len(d.docs.Docs) >= int(d.filter.Limit)

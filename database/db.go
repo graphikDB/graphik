@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"strings"
 )
 
 type index struct {
@@ -279,7 +280,12 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	}
 	g.rangeIndexes(func(i *index) bool {
 		if i.index.Docs {
-			result, _ := g.vm.Doc().Eval(doc, i.program)
+			result, err := g.vm.Doc().Eval(doc, i.program)
+			if err != nil {
+				if !strings.Contains(err.Error(), "no such key") {
+					logger.Error("set index failure", zap.Error(err))
+				}
+			}
 			if result {
 				err = g.setIndexedDoc(ctx, tx, i.index.Name, helpers.Uint64ToBytes(uint64(doc.GetPath().GetGid())), bits)
 				if err != nil {

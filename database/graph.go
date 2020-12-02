@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 )
@@ -886,6 +887,9 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 		if program != nil {
 			pass, err := n.vm.Doc().Eval(doc, program)
 			if err != nil {
+				if !strings.Contains(err.Error(), "no such key") {
+					logger.Error("search docs failure", zap.Error(err))
+				}
 				return true
 			}
 			if pass {

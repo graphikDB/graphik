@@ -5,6 +5,7 @@ import (
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"strings"
 )
 
 type DocVM struct {
@@ -59,6 +60,9 @@ func (n *DocVM) Eval(doc *apipb.Doc, programs ...cel.Program) (bool, error) {
 			"doc": doc.AsMap(),
 		})
 		if err != nil {
+			if strings.Contains(err.Error(), "no such key") {
+				return false, nil
+			}
 			return false, err
 		}
 		if val, ok := out.Value().(bool); !ok || !val {

@@ -5,6 +5,7 @@ import (
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"strings"
 )
 
 type AuthVM struct {
@@ -63,6 +64,9 @@ func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error)
 			},
 		})
 		if err != nil {
+			if strings.Contains(err.Error(), "no such key") {
+				return false, nil
+			}
 			return false, err
 		}
 		if val, ok := out.Value().(bool); ok {

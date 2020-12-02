@@ -259,9 +259,9 @@ func TestGraph_SearchDocs(t *testing.T) {
 
 func TestGraph_DepthSearchDocs(t *testing.T) {
 	res, err := graph.DepthSearchDocs(ctx, &apipb.DepthFilter{
-		Root:                 ashe.GetPath(),
-		DocExpression:        "",
-		ConnectionExpression: "",
+		Root: ashe.GetPath(),
+		//DocExpression:        `doc.path.gtype.contains("pokemon")`,
+		ConnectionExpression: "connection.attributes.secondary",
 		Limit:                4,
 	})
 	if err != nil {
