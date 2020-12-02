@@ -39,6 +39,7 @@
     - [Metadata](#api.Metadata)
     - [OutboundMessage](#api.OutboundMessage)
     - [Path](#api.Path)
+    - [PathConstructor](#api.PathConstructor)
     - [Paths](#api.Paths)
     - [Pong](#api.Pong)
     - [Request](#api.Request)
@@ -168,7 +169,7 @@ ConnectionConstructor is used to create an Connection
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
+| path | [PathConstructor](#api.PathConstructor) |  | path is the path to the new Connection. If an id isn&#39;t present, one will be generated. |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs |
 | directed | [bool](#bool) |  | directed is false if the connection is bi-directional |
 | from | [Path](#api.Path) |  | from is the doc path that is the root of the connection |
@@ -327,7 +328,7 @@ DocConstructor is used to create a doc
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
+| path | [PathConstructor](#api.PathConstructor) |  | path is the path to the new Doc. If an id isn&#39;t present, one will be generated. |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | arbitrary k/v pairs |
 
 
@@ -653,7 +654,23 @@ Path describes a doc/connection type &amp; id
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
-| gid | [int64](#int64) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
+| gid | [string](#string) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
+
+
+
+
+
+
+<a name="api.PathConstructor"></a>
+
+### PathConstructor
+PathConstructor creates a new Path
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
+| gid | [string](#string) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
 
 
 

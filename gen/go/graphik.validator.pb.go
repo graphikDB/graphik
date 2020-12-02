@@ -22,13 +22,23 @@ var _ = fmt.Errorf
 var _ = math.Inf
 
 var _regex_Path_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Path_Gid = regexp.MustCompile(`^.{1,225}$`)
 
 func (this *Path) Validate() error {
 	if !_regex_Path_Gtype.MatchString(this.Gtype) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
 	}
-	if !(this.Gid > 0) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Gid", fmt.Errorf(`value '%v' must be greater than '0'`, this.Gid))
+	if !_regex_Path_Gid.MatchString(this.Gid) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Gid", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gid))
+	}
+	return nil
+}
+
+var _regex_PathConstructor_Gtype = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *PathConstructor) Validate() error {
+	if !_regex_PathConstructor_Gtype.MatchString(this.Gtype) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
 	}
 	return nil
 }
@@ -101,12 +111,14 @@ func (this *Doc) Validate() error {
 	}
 	return nil
 }
-
-var _regex_DocConstructor_Gtype = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *DocConstructor) Validate() error {
-	if !_regex_DocConstructor_Gtype.MatchString(this.Gtype) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
+	if this.Path != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
+		}
 	}
 	if this.Attributes != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
@@ -240,12 +252,14 @@ func (this *Connection) Validate() error {
 	}
 	return nil
 }
-
-var _regex_ConnectionConstructor_Gtype = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *ConnectionConstructor) Validate() error {
-	if !_regex_ConnectionConstructor_Gtype.MatchString(this.Gtype) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	if nil == this.Path {
+		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
+	}
+	if this.Path != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
+		}
 	}
 	if this.Attributes != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {

@@ -129,31 +129,32 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 }
 
 func (a *Graph) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Doc, error) {
-	if _, ok := payload["email"].(string); !ok {
+	email, ok := payload["email"].(string)
+	if !ok {
 		return nil, nil, errors.New("email not present in userinfo")
 	}
-	docs, _ := a.SearchDocs(ctx, &apipb.Filter{
-		Gtype:      identityType,
-		Expression: fmt.Sprintf(`doc.attributes.email.contains("%s")`, payload["email"].(string)),
-		Limit:      1,
+	doc, _ := a.GetDoc(ctx, &apipb.Path{
+		Gtype: identityType,
+		Gid:   email,
 	})
-	if docs == nil || len(docs.GetDocs()) == 0 {
-		docs = &apipb.Docs{}
-		logger.Info("creating identity", zap.String("email", payload["email"].(string)))
+	if doc == nil {
+		logger.Info("creating identity", zap.String("email", email))
 		strct, err := structpb.NewStruct(payload)
 		if err != nil {
 			return nil, nil, err
 		}
-		doc, err := a.createIdentity(ctx, &apipb.DocConstructor{
-			Gtype:      identityType,
+		doc, err = a.createIdentity(ctx, &apipb.DocConstructor{
+			Path: &apipb.PathConstructor{
+				Gtype: identityType,
+				Gid:   email,
+			},
 			Attributes: strct,
 		})
 		if err != nil {
 			return nil, nil, err
 		}
-		docs.Docs = []*apipb.Doc{doc}
 	}
-	return context.WithValue(ctx, authCtxKey, docs.GetDocs()[0]), docs.GetDocs()[0], nil
+	return context.WithValue(ctx, authCtxKey, doc), doc, nil
 }
 
 func (s *Graph) getIdentity(ctx context.Context) *apipb.Doc {

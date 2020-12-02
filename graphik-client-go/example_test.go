@@ -101,7 +101,7 @@ func ExampleClient_Me() {
 
 func ExampleClient_CreateDoc() {
 	charlie, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
-		Gtype: "dog",
+		Path: &apipb.PathConstructor{Gtype: "dog"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Charlie",
 		}),
@@ -144,7 +144,7 @@ func ExampleClient_CreateConnection() {
 	}
 	charlie := dogs.GetDocs()[0]
 	coleman, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
-		Gtype: "human",
+		Path: &apipb.PathConstructor{Gtype: "human"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Coleman",
 		}),
@@ -154,7 +154,7 @@ func ExampleClient_CreateConnection() {
 		return
 	}
 	ownerConnection, err := client.CreateConnection(context.Background(), &apipb.ConnectionConstructor{
-		Gtype: "owner",
+		Path: &apipb.PathConstructor{Gtype: "owner"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"primary_owner": true,
 		}),
@@ -197,6 +197,7 @@ func ExampleClient_EditDoc() {
 		return
 	}
 	charlie := dogs.GetDocs()[0]
+	log.Println(charlie.String())
 	charlie, err = client.EditDoc(context.Background(), &apipb.Edit{
 		Path: charlie.Path,
 		Attributes: apipb2.NewStruct(map[string]interface{}{

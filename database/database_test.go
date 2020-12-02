@@ -6,6 +6,7 @@ import (
 	apipb "github.com/autom8ter/graphik/gen/go"
 	apipb2 "github.com/autom8ter/graphik/gen/go"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/segmentio/ksuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"os"
 	"testing"
@@ -37,7 +38,7 @@ var (
 	ctx   = context.WithValue(context.Background(), authCtxKey, &apipb.Doc{
 		Path: &apipb.Path{
 			Gtype: identityType,
-			Gid:   4,
+			Gid:   ksuid.New().String(),
 		},
 		Attributes: apipb2.NewStruct(map[string]interface{}{}),
 		Metadata: &apipb.Metadata{
@@ -104,32 +105,32 @@ func TestGraph_CreateDocs(t *testing.T) {
 	res, err := graph.CreateDocs(ctx, &apipb.DocConstructors{
 		Docs: []*apipb.DocConstructor{
 			{
-				Gtype: "trainer",
+				Path: &apipb.PathConstructor{Gtype: "trainer"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "ashe",
 				}),
 			},
 			{
-				Gtype: "pokemon",
+				Path: &apipb.PathConstructor{Gtype: "pokemon"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "pikachu",
 				}),
 			},
 			{
-				Gtype: "pokemon",
+				Path: &apipb.PathConstructor{Gtype: "pokemon"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "charmander",
 					"type": "fire",
 				}),
 			},
 			{
-				Gtype: "pokemon",
+				Path: &apipb.PathConstructor{Gtype: "pokemon"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "bulbasaur",
 				}),
 			},
 			{
-				Gtype: "pokemon",
+				Path: &apipb.PathConstructor{Gtype: "pokemon"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"name": "squirtle",
 				}),
@@ -162,7 +163,7 @@ func TestGraph_CreateConnections(t *testing.T) {
 	res, err := graph.CreateConnections(ctx, &apipb.ConnectionConstructors{
 		Connections: []*apipb.ConnectionConstructor{
 			{
-				Gtype: "owner",
+				Path: &apipb.PathConstructor{Gtype: "owner"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"primary": true,
 				}),
@@ -171,7 +172,7 @@ func TestGraph_CreateConnections(t *testing.T) {
 				To:       pikachu.GetPath(),
 			},
 			{
-				Gtype: "owner",
+				Path: &apipb.PathConstructor{Gtype: "owner"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"primary": true,
 				}),
@@ -180,7 +181,7 @@ func TestGraph_CreateConnections(t *testing.T) {
 				To:       charmander.GetPath(),
 			},
 			{
-				Gtype: "owner",
+				Path: &apipb.PathConstructor{Gtype: "owner"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"primary": true,
 				}),
@@ -189,7 +190,7 @@ func TestGraph_CreateConnections(t *testing.T) {
 				To:       bulbasaur.GetPath(),
 			},
 			{
-				Gtype: "owner",
+				Path: &apipb.PathConstructor{Gtype: "owner"},
 				Attributes: apipb2.NewStruct(map[string]interface{}{
 					"primary": true,
 				}),

@@ -15,7 +15,7 @@ type Path {
   # gtype is the type of the doc/connection ex: pet
   gtype: String!
   # gid is the unique id of the doc/connection within the context of it's type
-  gid: Int!
+  gid: String!
 }
 
 # Metadata is general metadata collected about the doc
@@ -149,16 +149,22 @@ type Message {
   timestamp: Timestamp!
 }
 
+# PathConstructor is used to create a Path
+input PathConstructor {
+  gtype: String!
+  gid: String
+}
+
 # DocConstructor is used to create a Doc
 input DocConstructor {
-  gtype: String!
+  path: PathConstructor!
   # attributes are k/v pairs
   attributes: Struct
 }
 
 # ConnectionConstructor is used to create an Connection
 input ConnectionConstructor {
-  gtype: String!
+  path: PathConstructor!
   # directed is false if the connection is bi-directional
   directed: Boolean
 
@@ -204,7 +210,7 @@ input PathInput {
   # path is the path to the target doc/connection to edit
   gtype: String!
   # path is the path to the target doc/connection to edit
-  gid: Int!
+  gid: String!
 }
 
 # Filter is a generic filter using Common Expression Language

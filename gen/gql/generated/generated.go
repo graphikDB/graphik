@@ -1006,7 +1006,7 @@ type Path {
   # gtype is the type of the doc/connection ex: pet
   gtype: String!
   # gid is the unique id of the doc/connection within the context of it's type
-  gid: Int!
+  gid: String!
 }
 
 # Metadata is general metadata collected about the doc
@@ -1140,16 +1140,22 @@ type Message {
   timestamp: Timestamp!
 }
 
+# PathConstructor is used to create a Path
+input PathConstructor {
+  gtype: String!
+  gid: String
+}
+
 # DocConstructor is used to create a Doc
 input DocConstructor {
-  gtype: String!
+  path: PathConstructor!
   # attributes are k/v pairs
   attributes: Struct
 }
 
 # ConnectionConstructor is used to create an Connection
 input ConnectionConstructor {
-  gtype: String!
+  path: PathConstructor!
   # directed is false if the connection is bi-directional
   directed: Boolean
 
@@ -1195,7 +1201,7 @@ input PathInput {
   # path is the path to the target doc/connection to edit
   gtype: String!
   # path is the path to the target doc/connection to edit
-  gid: Int!
+  gid: String!
 }
 
 # Filter is a generic filter using Common Expression Language
@@ -3921,9 +3927,9 @@ func (ec *executionContext) _Path_gid(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int64)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNInt2int64(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pong_message(ctx context.Context, field graphql.CollectedField, obj *apipb.Pong) (ret graphql.Marshaler) {
@@ -5853,11 +5859,11 @@ func (ec *executionContext) unmarshalInputConnectionConstructor(ctx context.Cont
 
 	for k, v := range asMap {
 		switch k {
-		case "gtype":
+		case "path":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
-			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
+			it.Path, err = ec.unmarshalNPathConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐPathConstructor(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6025,11 +6031,11 @@ func (ec *executionContext) unmarshalInputDocConstructor(ctx context.Context, ob
 
 	for k, v := range asMap {
 		switch k {
-		case "gtype":
+		case "path":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
-			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("path"))
+			it.Path, err = ec.unmarshalNPathConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐPathConstructor(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6319,6 +6325,34 @@ func (ec *executionContext) unmarshalInputOutboundMessage(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPathConstructor(ctx context.Context, obj interface{}) (apipb.PathConstructor, error) {
+	var it apipb.PathConstructor
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "gtype":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
+			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gid"))
+			it.Gid, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputPathInput(ctx context.Context, obj interface{}) (apipb.Path, error) {
 	var it apipb.Path
 	var asMap = obj.(map[string]interface{})
@@ -6337,7 +6371,7 @@ func (ec *executionContext) unmarshalInputPathInput(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gid"))
-			it.Gid, err = ec.unmarshalNInt2int64(ctx, v)
+			it.Gid, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7796,6 +7830,11 @@ func (ec *executionContext) marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Path(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPathConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐPathConstructor(ctx context.Context, v interface{}) (*apipb.PathConstructor, error) {
+	res, err := ec.unmarshalInputPathConstructor(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNPathInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐPath(ctx context.Context, v interface{}) (apipb.Path, error) {

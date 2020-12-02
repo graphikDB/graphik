@@ -15,7 +15,15 @@ message Path {
   // gtype is the type of the doc/connection ex: pet
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // gid is the unique id of the doc/connection within the context of it's type
-  int64 gid =2 [(validator.field) = {int_gt : 0}];
+  string gid =2 [(validator.field) = {regex : "^.{1,225}$"}];
+}
+
+// PathConstructor creates a new Path
+message PathConstructor {
+  // gtype is the type of the doc/connection ex: pet
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // gid is the unique id of the doc/connection within the context of it's type
+  string gid =2;
 }
 
 // Metadata is general metadata collected on docs/connections
@@ -49,8 +57,8 @@ message Doc {
 
 // DocConstructor is used to create a doc
 message DocConstructor {
-  // gtype is the type of the doc/connection ex: pet
-  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // path is the path to the new Doc. If an id isn't present, one will be generated.
+  PathConstructor path =1 [(validator.field) = {msg_exists : true}];
   // arbitrary k/v pairs
   google.protobuf.Struct attributes =2;
 }
@@ -114,8 +122,8 @@ message Connection {
 
 // ConnectionConstructor is used to create an Connection
 message ConnectionConstructor {
-  // gtype is the type of the doc/connection ex: pet
-  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // path is the path to the new Connection. If an id isn't present, one will be generated.
+  PathConstructor path =1 [(validator.field) = {msg_exists : true}];
   // attributes are k/v pairs
   google.protobuf.Struct attributes =3;
   // directed is false if the connection is bi-directional

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/autom8ter/graphik/cache"
 	"github.com/autom8ter/graphik/gen/go"
-	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"
@@ -13,6 +12,7 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
+	"github.com/segmentio/ksuid"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -343,27 +343,28 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		docBucket := tx.Bucket(dbDocs)
 		for _, constructor := range constructors.GetDocs() {
-			bucket := docBucket.Bucket([]byte(constructor.GetGtype()))
+			bucket := docBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
 			if bucket == nil {
-				bucket, err = docBucket.CreateBucketIfNotExists([]byte(constructor.GetGtype()))
+				bucket, err = docBucket.CreateBucketIfNotExists([]byte(constructor.GetPath().GetGtype()))
 				if err != nil {
 					return err
 				}
 			}
-			seq, err := bucket.NextSequence()
-			if err != nil {
-				return err
+			if constructor.GetPath().Gid == "" {
+				constructor.GetPath().Gid = ksuid.New().String()
+			}
+			path := &apipb.Path{
+				Gtype: constructor.GetPath().GetGtype(),
+				Gid:   constructor.GetPath().GetGid(),
 			}
 			doc := &apipb.Doc{
-				Path: &apipb.Path{
-					Gtype: constructor.GetGtype(),
-					Gid:   int64(seq),
-				},
+				Path:       path,
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
 					CreatedAt: now,
 					UpdatedAt: now,
 					UpdatedBy: identity.GetPath(),
+					CreatedBy: identity.GetPath(),
 				},
 			}
 			doc, err = g.setDoc(ctx, tx, doc)
@@ -421,23 +422,23 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		connectionBucket := tx.Bucket(dbConnections)
 		for _, constructor := range constructors.GetConnections() {
-			bucket := connectionBucket.Bucket([]byte(constructor.GetGtype()))
+			bucket := connectionBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
 			if bucket == nil {
-				bucket, err = connectionBucket.CreateBucketIfNotExists([]byte(constructor.GetGtype()))
+				bucket, err = connectionBucket.CreateBucketIfNotExists([]byte(constructor.GetPath().GetGtype()))
 				if err != nil {
 					return err
 				}
 			}
 
-			seq, err := bucket.NextSequence()
-			if err != nil {
-				return err
+			if constructor.GetPath().Gid == "" {
+				constructor.GetPath().Gid = ksuid.New().String()
+			}
+			path := &apipb.Path{
+				Gtype: constructor.GetPath().GetGtype(),
+				Gid:   constructor.GetPath().GetGid(),
 			}
 			connection := &apipb.Connection{
-				Path: &apipb.Path{
-					Gtype: constructor.GetGtype(),
-					Gid:   int64(seq),
-				},
+				Path:       path,
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
 					CreatedAt: now,
@@ -1002,7 +1003,7 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 			return ErrNotFound
 		}
 		var e apipb.Connection
-		bits := bucket.Get(helpers.Uint64ToBytes(uint64(value.GetPath().Gid)))
+		bits := bucket.Get([]byte(value.GetPath().Gid))
 		if err := proto.Unmarshal(bits, &e); err != nil {
 			return err
 		}

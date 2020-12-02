@@ -194,12 +194,22 @@ func (m *MeFilter) AsMap() map[string]interface{} {
 	}
 }
 
+func (e *PathConstructor) AsMap() map[string]interface{} {
+	if e == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"gtype": e.GetGtype(),
+		"gid":   e.GetGid(),
+	}
+}
+
 func (e *ConnectionConstructor) AsMap() map[string]interface{} {
 	if e == nil {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"gtype":      e.GetGtype(),
+		"path":       e.GetPath().AsMap(),
 		"attributes": e.GetAttributes().AsMap(),
 		"directed":   e.GetDirected(),
 		"from":       e.GetFrom().AsMap(),
@@ -212,7 +222,7 @@ func (e *DocConstructor) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"gtype":      e.GetGtype(),
+		"path":       e.GetPath().AsMap(),
 		"attributes": e.GetAttributes().AsMap(),
 	}
 }
