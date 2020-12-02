@@ -20,6 +20,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"io/ioutil"
+	"net/http"
 	"time"
 )
 
@@ -32,12 +34,12 @@ const (
 
 func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		idToken, err := grpc_auth.AuthFromMD(ctx, "Bearer")
+		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
-		idTokenHash := helpers.Hash([]byte(idToken))
-		if val, ok := g.jwtCache.Get(idTokenHash); ok {
+		tokenHash := helpers.Hash([]byte(token))
+		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
 			ctx, err := g.check(ctx, info.FullMethod, req, payload)
 			if err != nil {
@@ -45,25 +47,29 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			}
 			return handler(ctx, req)
 		}
-		payload, err := g.verifyJWT(idToken)
-		if err != nil {
-			return nil, status.Errorf(codes.Unauthenticated, err.Error())
-		}
-		var exp int64
-		if val, ok := payload["exp"].(int64); ok {
-			if val < time.Now().Unix() {
-				return nil, status.Errorf(codes.Unauthenticated, "token expired")
-			}
-			exp = val
-		}
-		if val, ok := payload["exp"].(int); ok {
-			if int64(val) < time.Now().Unix() {
-				return nil, status.Errorf(codes.Unauthenticated, "token expired")
-			}
-			exp = int64(val)
-		}
 		ctx = g.methodToContext(ctx, info.FullMethod)
-		g.jwtCache.Set(idTokenHash, payload, time.Unix(exp, 0).Sub(time.Now()))
+		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get userinfo")
+		}
+		userinfoReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+		resp, err := http.DefaultClient.Do(userinfoReq)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get userinfo")
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return nil, errors.Errorf("failed to get userinfo: status = %v", resp.StatusCode)
+		}
+		bits, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get userinfo")
+		}
+		payload := map[string]interface{}{}
+		if err := json.Unmarshal(bits, &payload); err != nil {
+			return nil, errors.Wrap(err, "failed to decode userinfo")
+		}
+		g.jwtCache.Set(tokenHash, payload, 1*time.Hour)
 		ctx, err = g.check(ctx, info.FullMethod, req, payload)
 		if err != nil {
 			return nil, err
@@ -74,12 +80,12 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 
 func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		idToken, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
+		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
 		if err != nil {
 			return err
 		}
-		idTokenHash := helpers.Hash([]byte(idToken))
-		if val, ok := g.jwtCache.Get(idTokenHash); ok {
+		tokenHash := helpers.Hash([]byte(token))
+		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
 			ctx, err := g.check(ss.Context(), info.FullMethod, srv, payload)
 			if err != nil {
@@ -89,25 +95,30 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 			wrapped.WrappedContext = ctx
 			return handler(srv, wrapped)
 		}
-		payload, err := g.verifyJWT(idToken)
+		ctx := g.methodToContext(ss.Context(), info.FullMethod)
+		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
 		if err != nil {
-			return status.Errorf(codes.Unauthenticated, err.Error())
+			return errors.Wrap(err, "failed to get userinfo")
 		}
-		var exp int64
-		if val, ok := payload["exp"].(int64); ok {
-			if val < time.Now().Unix() {
-				return status.Errorf(codes.Unauthenticated, "token expired")
-			}
-			exp = val
+		userinfoReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+		resp, err := http.DefaultClient.Do(userinfoReq)
+		if err != nil {
+			return errors.Wrap(err, "failed to get userinfo")
 		}
-		if val, ok := payload["exp"].(int); ok {
-			if int64(val) < time.Now().Unix() {
-				return status.Errorf(codes.Unauthenticated, "token expired")
-			}
-			exp = int64(val)
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return errors.Errorf("failed to get userinfo: status = %v", resp.StatusCode)
 		}
-		g.jwtCache.Set(idTokenHash, payload, time.Unix(exp, 0).Sub(time.Now()))
-		ctx, err := g.check(ss.Context(), info.FullMethod, srv, payload)
+		bits, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return errors.Wrap(err, "failed to get userinfo")
+		}
+		payload := map[string]interface{}{}
+		if err := json.Unmarshal(bits, &payload); err != nil {
+			return errors.Wrap(err, "failed to decode userinfo")
+		}
+		g.jwtCache.Set(tokenHash, payload, 1*time.Hour)
+		ctx, err = g.check(ctx, info.FullMethod, srv, payload)
 		if err != nil {
 			return err
 		}
@@ -119,7 +130,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 
 func (a *Graph) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Doc, error) {
 	if _, ok := payload["email"].(string); !ok {
-		return nil, nil, errors.New("email not present in token claims")
+		return nil, nil, errors.New("email not present in userinfo")
 	}
 	docs, _ := a.SearchDocs(ctx, &apipb.Filter{
 		Gtype:      identityType,

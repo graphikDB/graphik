@@ -6,7 +6,6 @@ import (
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/golang/protobuf/ptypes/empty"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
-	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -93,13 +92,9 @@ func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Con
 	if err != nil {
 		return ctx, err
 	}
-	id := token.Extra("id_token")
-	if id == nil {
-		return nil, errors.New("empty id token")
-	}
 	return metadata.AppendToOutgoingContext(
 		ctx,
-		"Authorization", fmt.Sprintf("Bearer %v", id),
+		"Authorization", fmt.Sprintf("Bearer %v", token.AccessToken),
 	), nil
 }
 

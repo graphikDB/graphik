@@ -20,7 +20,7 @@ type depthFirst struct {
 	filter  *apipb.DepthFilter
 }
 
-func (g *Graph) NewdepthFirst(filter *apipb.DepthFilter) *depthFirst {
+func (g *Graph) newDepthFirst(filter *apipb.DepthFilter) *depthFirst {
 	return &depthFirst{
 		g:       g,
 		filter:  filter,

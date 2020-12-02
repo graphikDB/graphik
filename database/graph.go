@@ -382,12 +382,14 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 			After: doc,
 		})
 	}
-	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Change{
 		Method:     method,
 		Identity:   identity,
 		Timestamp:  now,
 		DocChanges: changes,
-	})
+	}); err != nil {
+		return nil, err
+	}
 	docs.Sort("")
 	return docs, nil
 }
@@ -463,12 +465,14 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 			After: doc,
 		})
 	}
-	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Change{
 		Method:            method,
 		Identity:          identity,
 		Timestamp:         now,
 		ConnectionChanges: changes,
-	})
+	}); err != nil {
+		return nil, err
+	}
 	connectionss.Sort("")
 	return connectionss, nil
 }
@@ -728,13 +732,15 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 			return err
 		}
 		docChange.After = doc
-		n.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		if err := n.machine.PubSub().Publish(changeChannel, &apipb.Change{
 			Method:            n.getMethod(ctx),
 			Identity:          identity,
 			Timestamp:         doc.Metadata.UpdatedAt,
 			ConnectionChanges: nil,
 			DocChanges:        []*apipb.DocChange{docChange},
-		})
+		}); err != nil {
+			return err
+		}
 
 		return nil
 	}); err != nil {
@@ -772,13 +778,15 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 	if err != nil {
 		return nil, err
 	}
-	n.machine.PubSub().Publish(changeChannel, &apipb.Change{
+	if err := n.machine.PubSub().Publish(changeChannel, &apipb.Change{
 		Method:            method,
 		Identity:          identity,
 		Timestamp:         now,
 		ConnectionChanges: nil,
 		DocChanges:        changes,
-	})
+	}); err != nil {
+		return nil, err
+	}
 	return docss, nil
 }
 
@@ -912,7 +920,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 }
 
 func (n *Graph) DepthSearchDocs(ctx context.Context, filter *apipb.DepthFilter) (*apipb.Docs, error) {
-	dfs := n.NewdepthFirst(filter)
+	dfs := n.newDepthFirst(filter)
 	if err := n.db.View(func(tx *bbolt.Tx) error {
 		return dfs.Walk(ctx, tx)
 	}); err != nil {
@@ -1011,12 +1019,14 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 		if err != nil {
 			return err
 		}
-		n.machine.PubSub().Publish(changeChannel, &apipb.Change{
+		if err := n.machine.PubSub().Publish(changeChannel, &apipb.Change{
 			Method:            n.getMethod(ctx),
 			Identity:          identity,
 			Timestamp:         connection.Metadata.UpdatedAt,
 			ConnectionChanges: []*apipb.ConnectionChange{change},
-		})
+		}); err != nil {
+			return err
+		}
 		return nil
 	}); err != nil {
 		return nil, err
@@ -1052,12 +1062,14 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*
 	if err != nil {
 		return nil, err
 	}
-	n.machine.PubSub().Publish(changeChannel, &apipb.Change{
+	if err := n.machine.PubSub().Publish(changeChannel, &apipb.Change{
 		Method:            method,
 		Identity:          identity,
 		Timestamp:         now,
 		ConnectionChanges: changes,
-	})
+	}); err != nil {
+		return nil, err
+	}
 	return connectionss, nil
 }
 
@@ -1249,7 +1261,7 @@ func (g *Graph) DelDoc(ctx context.Context, path *apipb.Path) (*empty.Empty, err
 	}); err != nil {
 		return nil, err
 	}
-	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Change{
 		Method:    g.getMethod(ctx),
 		Identity:  g.getIdentity(ctx),
 		Timestamp: timestamppb.Now(),
@@ -1257,7 +1269,9 @@ func (g *Graph) DelDoc(ctx context.Context, path *apipb.Path) (*empty.Empty, err
 			Before: n,
 			After:  nil,
 		}},
-	})
+	}); err != nil {
+		return nil, err
+	}
 	return &empty.Empty{}, nil
 }
 
@@ -1306,7 +1320,7 @@ func (g *Graph) DelConnection(ctx context.Context, path *apipb.Path) (*empty.Emp
 	}); err != nil {
 		return nil, err
 	}
-	g.machine.PubSub().Publish(changeChannel, &apipb.Change{
+	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Change{
 		Method:    g.getMethod(ctx),
 		Identity:  g.getIdentity(ctx),
 		Timestamp: timestamppb.Now(),
@@ -1314,7 +1328,9 @@ func (g *Graph) DelConnection(ctx context.Context, path *apipb.Path) (*empty.Emp
 			Before: n,
 			After:  nil,
 		}},
-	})
+	}); err != nil {
+		return nil, err
+	}
 	return &empty.Empty{}, nil
 }
 
@@ -1344,10 +1360,6 @@ func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empt
 		Timestamp:         timestamppb.Now(),
 		ConnectionChanges: changes,
 	})
-}
-
-func (g *Graph) l() {
-
 }
 
 type openIDConnect struct {
