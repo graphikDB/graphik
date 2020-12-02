@@ -6787,7 +6787,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.api.Flags.repeatedFields_ = [5,6,7];
+proto.api.Flags.repeatedFields_ = [5,6,7,8];
 
 
 
@@ -6823,7 +6823,8 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     metrics: jspb.Message.getFieldWithDefault(msg, 3, false),
     allowHeadersList: jspb.Message.getRepeatedField(msg, 5),
     allowMethodsList: jspb.Message.getRepeatedField(msg, 6),
-    allowOriginsList: jspb.Message.getRepeatedField(msg, 7)
+    allowOriginsList: jspb.Message.getRepeatedField(msg, 7),
+    rootUsersList: jspb.Message.getRepeatedField(msg, 8)
   };
 
   if (includeInstance) {
@@ -6883,6 +6884,10 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.addAllowOrigins(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addRootUsers(value);
       break;
     default:
       reader.skipField();
@@ -6952,6 +6957,13 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeRepeatedString(
       7,
+      f
+    );
+  }
+  f = message.getRootUsersList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      8,
       f
     );
   }
@@ -7089,6 +7101,35 @@ proto.api.Flags.prototype.addAllowOrigins = function(value, opt_index) {
 
 proto.api.Flags.prototype.clearAllowOriginsList = function() {
   this.setAllowOriginsList([]);
+};
+
+
+/**
+ * repeated string root_users = 8;
+ * @return {!Array<string>}
+ */
+proto.api.Flags.prototype.getRootUsersList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 8));
+};
+
+
+/** @param {!Array<string>} value */
+proto.api.Flags.prototype.setRootUsersList = function(value) {
+  jspb.Message.setField(this, 8, value || []);
+};
+
+
+/**
+ * @param {!string} value
+ * @param {number=} opt_index
+ */
+proto.api.Flags.prototype.addRootUsers = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 8, value, opt_index);
+};
+
+
+proto.api.Flags.prototype.clearRootUsersList = function() {
+  this.setRootUsersList([]);
 };
 
 

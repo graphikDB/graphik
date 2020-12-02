@@ -235,7 +235,7 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	if !isGraphikAdmin(identity) {
+	if !g.isGraphikAdmin(identity) {
 		now := time.Now()
 		request := &apipb.Request{
 			Method:    method,

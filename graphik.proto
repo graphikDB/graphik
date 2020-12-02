@@ -294,6 +294,8 @@ message Flags {
   repeated string allow_methods =6;
   // cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)
   repeated string allow_origins =7;
+  // root user is a list of email addresses that bypass authorizers. (env: GRAPHIK_ROOT_USERS)
+  repeated string root_users =8;
 }
 
 // Edit patches the attributes of a Doc or Connection

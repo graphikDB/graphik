@@ -37,35 +37,12 @@ func init() {
 	godotenv.Load()
 	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
 	pflag.CommandLine.StringVar(&global.OpenIdDiscovery, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)")
-	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", boolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
-	pflag.CommandLine.StringSliceVar(&global.AllowHeaders, "allow-headers", stringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
-	pflag.CommandLine.StringSliceVar(&global.AllowOrigins, "allow-origins", stringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
-	pflag.CommandLine.StringSliceVar(&global.AllowMethods, "allow-methods", stringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
+	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", helpers.BoolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
+	pflag.CommandLine.StringSliceVar(&global.AllowHeaders, "allow-headers", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowOrigins, "allow-origins", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
+	pflag.CommandLine.StringSliceVar(&global.AllowMethods, "allow-methods", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
+	pflag.CommandLine.StringSliceVar(&global.RootUsers, "root-users", helpers.StringSliceEnvOr("GRAPHIK_ROOT_USERS", nil), "cors allow methods (env: GRAPHIK_ROOT_USERS)")
 	pflag.Parse()
-}
-
-func stringSliceEnvOr(key string, defaul []string) []string {
-	if value := os.Getenv(key); value != "" {
-		values := strings.Split(value, ",")
-		if len(value) > 0 && values[0] != "" {
-			return values
-		}
-	} else {
-		return defaul
-	}
-	return nil
-}
-
-func boolEnvOr(key string, defaul bool) bool {
-	if value := os.Getenv(key); value != "" {
-		switch value {
-		case "true", "y", "t", "yes":
-			return true
-		default:
-			return false
-		}
-	}
-	return defaul
 }
 
 func main() {
@@ -198,7 +175,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		close(stopped)
 	}()
 
-	t := time.NewTimer(5 * time.Second)
+	t := time.NewTimer(10 * time.Second)
 	select {
 	case <-t.C:
 		gserver.Stop()

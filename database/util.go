@@ -2,24 +2,15 @@ package database
 
 import (
 	apipb "github.com/autom8ter/graphik/gen/go"
+	"github.com/autom8ter/graphik/helpers"
 	"sort"
 )
 
-func isGraphikAdmin(identity *apipb.Doc) bool {
-	if identity == nil {
+func (g *Graph) isGraphikAdmin(identity *apipb.Doc) bool {
+	if identity.GetAttributes().GetFields() == nil {
 		return false
 	}
-	var isGraphikAdmin = false
-	if attributes := identity.GetAttributes(); attributes != nil {
-		if roles := attributes.Fields["roles"].GetListValue(); len(roles.GetValues()) > 0 {
-			for _, role := range roles.GetValues() {
-				if role.GetStringValue() == graphikAdminRole {
-					isGraphikAdmin = true
-				}
-			}
-		}
-	}
-	return isGraphikAdmin
+	return helpers.ContainsString(identity.GetAttributes().GetFields()["email"].GetStringValue(), g.rootUsers)
 }
 
 func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {

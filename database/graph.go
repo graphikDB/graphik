@@ -46,6 +46,7 @@ type Graph struct {
 	closeOnce       sync.Once
 	indexes         *cache.Cache
 	authorizers     *cache.Cache
+	rootUsers []string
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -77,6 +78,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		jwtCache:        cache.New(m, 1*time.Minute),
 		indexes:         cache.New(m, 1*time.Minute),
 		authorizers:     cache.New(m, 1*time.Minute),
+		rootUsers: flgs.RootUsers,
 	}
 	if flgs.OpenIdDiscovery != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIdDiscovery)
