@@ -279,16 +279,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	}
 	g.rangeIndexes(func(i *index) bool {
 		if i.index.Docs {
-			program, err := g.vm.Doc().Program(i.index.Expression)
-			if err != nil {
-				logger.Error("failed to create index", zap.Error(err))
-				return true
-			}
-			result, err := g.vm.Doc().Eval(doc, program)
-			if err != nil {
-				logger.Error("failed to evaluate index", zap.Error(err))
-				return true
-			}
+			result, _ := g.vm.Doc().Eval(doc, i.program)
 			if result {
 				err = g.setIndexedDoc(ctx, tx, i.index.Name, helpers.Uint64ToBytes(uint64(doc.GetPath().GetGid())), bits)
 				if err != nil {
@@ -375,16 +366,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	sortPaths(g.connectionsTo[connection.GetTo().String()])
 	g.rangeIndexes(func(i *index) bool {
 		if i.index.Connections {
-			program, err := g.vm.Connection().Program(i.index.Expression)
-			if err != nil {
-				logger.Error("failed to create index", zap.Error(err))
-				return true
-			}
-			result, err := g.vm.Connection().Eval(connection, program)
-			if err != nil {
-				logger.Error("failed to evaluate index", zap.Error(err))
-				return true
-			}
+			result, _ := g.vm.Connection().Eval(connection, i.program)
 			if result {
 				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), helpers.Uint64ToBytes(uint64(connection.GetPath().GetGid())), bits)
 				if err != nil {
