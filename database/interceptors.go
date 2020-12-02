@@ -25,13 +25,6 @@ import (
 	"time"
 )
 
-const (
-	authCtxKey   = "x-graphik-auth-ctx"
-	identityType = "identity"
-	emailClaim   = "email"
-	methodCtxKey = "x-grpc-full-method"
-)
-
 func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
@@ -264,4 +257,11 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 		}
 	}
 	return ctx, nil
+}
+
+func (g *Graph) isGraphikAdmin(identity *apipb.Doc) bool {
+	if identity.GetAttributes().GetFields() == nil {
+		return false
+	}
+	return helpers.ContainsString(identity.GetAttributes().GetFields()["email"].GetStringValue(), g.rootUsers)
 }

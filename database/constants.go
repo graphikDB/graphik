@@ -5,9 +5,11 @@ import "errors"
 const (
 	// Permissions to use on the db file. This is only used if the
 	// database file does not exist and needs to be created.
-	dbFileMode       = 0600
-	changeChannel    = "changes"
-	graphikAdminRole = "graphik-admin"
+	dbFileMode    = 0600
+	changeChannel = "changes"
+	authCtxKey    = "x-graphik-auth-ctx"
+	identityType  = "identity"
+	methodCtxKey  = "x-grpc-full-method"
 )
 
 var (
