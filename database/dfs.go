@@ -16,7 +16,7 @@ type depthFirst struct {
 	g       *Graph
 	stack   *stack.Stack
 	visited map[string]struct{}
-	docs    *apipb.Docs
+	docs    *apipb.DocTraversals
 	filter  *apipb.DepthFilter
 }
 
@@ -26,14 +26,14 @@ func (g *Graph) newDepthFirst(filter *apipb.DepthFilter) *depthFirst {
 		filter:  filter,
 		stack:   stack.New(),
 		visited: map[string]struct{}{},
-		docs:    &apipb.Docs{},
+		docs:    &apipb.DocTraversals{},
 	}
 }
 
 func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
-	defer func() {
-		d.docs.Sort(d.filter.Sort)
-	}()
+	//defer func() {
+	//	d.docs.Sort(d.filter.Sort)
+	//}()
 	var (
 		docProgram        *cel.Program
 		connectionProgram *cel.Program
@@ -59,14 +59,20 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 		}
 		d.stack.Push(doc)
 		if docProgram == nil {
-			d.docs.Docs = append(d.docs.Docs, doc)
+			d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
+				Doc:          doc,
+				RelativePath: nil,
+			})
 		} else {
 			res, err := d.g.vm.Doc().Eval(doc, *docProgram)
 			if err != nil {
 				return err
 			}
 			if res {
-				d.docs.Docs = append(d.docs.Docs, doc)
+				d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
+					Doc:          doc,
+					RelativePath: nil,
+				})
 			}
 		}
 		//d.visited[d.filter.Root.String()] = struct{}{}
@@ -76,7 +82,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 			return nil
 		}
 		t := d.stack.Pop()
-		if len(d.docs.Docs) >= int(d.filter.Limit) {
+		if len(d.docs.Traversals) >= int(d.filter.Limit) {
 			return nil
 		}
 		if err := d.g.rangeFrom(ctx, tx, t.(*apipb.Doc).GetPath(), func(e *apipb.Connection) bool {
@@ -101,7 +107,10 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 				if docProgram == nil {
-					d.docs.Docs = append(d.docs.Docs, to)
+					d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
+						Doc:          to,
+						RelativePath: nil,
+					})
 				} else {
 					res, err := d.g.vm.Doc().Eval(to, *docProgram)
 					if err != nil {
@@ -111,13 +120,16 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						return true
 					}
 					if res {
-						d.docs.Docs = append(d.docs.Docs, to)
+						d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
+							Doc:          to,
+							RelativePath: nil,
+						})
 					}
 				}
 				//d.visited[to.String()] = struct{}{}
 				d.stack.Push(to)
 			}
-			return len(d.docs.Docs) >= int(d.filter.Limit)
+			return len(d.docs.Traversals) >= int(d.filter.Limit)
 		}); err != nil {
 			return err
 		}

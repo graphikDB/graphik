@@ -24,6 +24,8 @@
     - [DocDetail](#api.DocDetail)
     - [DocDetailFilter](#api.DocDetailFilter)
     - [DocDetails](#api.DocDetails)
+    - [DocTraversal](#api.DocTraversal)
+    - [DocTraversals](#api.DocTraversals)
     - [Docs](#api.Docs)
     - [Edit](#api.Edit)
     - [EditFilter](#api.EditFilter)
@@ -403,6 +405,37 @@ DocDetails is an array of DocDetail
 
 
 
+<a name="api.DocTraversal"></a>
+
+### DocTraversal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| doc | [Doc](#api.Doc) |  |  |
+| relative_path | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="api.DocTraversals"></a>
+
+### DocTraversals
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| traversals | [DocTraversal](#api.DocTraversal) | repeated |  |
+
+
+
+
+
+
 <a name="api.Docs"></a>
 
 ### Docs
@@ -501,7 +534,7 @@ Filter is a generic filter using Common Expression Language
 | allow_headers | [string](#string) | repeated | cors allow headers (env: GRAPHIK_ALLOW_HEADERS) |
 | allow_methods | [string](#string) | repeated | cors allow methods (env: GRAPHIK_ALLOW_METHODS) |
 | allow_origins | [string](#string) | repeated | cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) |
-| root_users | [string](#string) | repeated | root user is a list of email addresses that bypass authorizers. |
+| root_users | [string](#string) | repeated | root user is a list of email addresses that bypass authorizers. (env: GRAPHIK_ROOT_USERS) |
 
 
 
@@ -782,7 +815,7 @@ DatabaseService is the primary database service
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |
 | GetDoc | [Path](#api.Path) | [Doc](#api.Doc) | GetDoc gets a single doc in the graph |
 | SearchDocs | [Filter](#api.Filter) | [Docs](#api.Docs) | SearchDocs searches the graph for docs |
-| DepthSearchDocs | [DepthFilter](#api.DepthFilter) | [Docs](#api.Docs) | DepthSearchDocs searches the graph for docs |
+| DepthSearchDocs | [DepthFilter](#api.DepthFilter) | [DocTraversals](#api.DocTraversals) | DepthSearchDocs searches the graph for docs |
 | EditDoc | [Edit](#api.Edit) | [Doc](#api.Doc) | EditDoc patches a docs attributes |
 | EditDocs | [EditFilter](#api.EditFilter) | [Docs](#api.Docs) | EditDocs patches a batch of docs attributes that pass the patch filter |
 | DelDoc | [Path](#api.Path) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDoc deletes a doc &amp; all of it&#39;s connected connections |

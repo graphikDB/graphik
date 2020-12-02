@@ -49,6 +49,15 @@ type Docs {
   seek_next: Int!
 }
 
+type DocTraversal {
+  doc: Doc!
+  relative_path: [String!]!
+}
+
+type DocTraversals {
+  traversals: [DocTraversal]!
+}
+
 # Connection is a graph primitive that represents a relationship between two docs
 type Connection {
   # path is the path to the connection
@@ -359,7 +368,7 @@ type Query {
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
   # depthSearchDocs searches for 0-many docs using dfs search
-  depthSearchDocs(input: DepthFilter!): Docs!
+  depthSearchDocs(input: DepthFilter!): DocTraversals!
   # getConnection gets a connection at the given path
   getConnection(input: PathInput!): Connection!
   # searchConnections searches for 0-many connections

@@ -76,6 +76,15 @@ message Docs {
   int64 seek_next =2;
 }
 
+message DocTraversal {
+  Doc doc =1;
+  repeated string relative_path =2;
+}
+
+message DocTraversals {
+  repeated DocTraversal traversals =1;
+}
+
 // DocDetail is a doc with its connected connections
 message DocDetail {
   // path is the path to the doc
@@ -412,7 +421,7 @@ service DatabaseService {
   // SearchDocs searches the graph for docs
   rpc SearchDocs(Filter) returns(Docs){}
   // DepthSearchDocs searches the graph for docs
-  rpc DepthSearchDocs(DepthFilter) returns(Docs){}
+  rpc DepthSearchDocs(DepthFilter) returns(DocTraversals){}
   // EditDoc patches a docs attributes
   rpc EditDoc(Edit) returns(Doc){}
   // EditDocs patches a batch of docs attributes that pass the patch filter

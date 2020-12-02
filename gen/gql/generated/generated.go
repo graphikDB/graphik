@@ -118,6 +118,15 @@ type ComplexityRoot struct {
 		Path            func(childComplexity int) int
 	}
 
+	DocTraversal struct {
+		Doc          func(childComplexity int) int
+		RelativePath func(childComplexity int) int
+	}
+
+	DocTraversals struct {
+		Traversals func(childComplexity int) int
+	}
+
 	Docs struct {
 		Docs     func(childComplexity int) int
 		SeekNext func(childComplexity int) int
@@ -217,7 +226,7 @@ type QueryResolver interface {
 	Me(ctx context.Context, input *apipb.MeFilter) (*apipb.DocDetail, error)
 	GetDoc(ctx context.Context, input apipb.Path) (*apipb.Doc, error)
 	SearchDocs(ctx context.Context, input apipb.Filter) (*apipb.Docs, error)
-	DepthSearchDocs(ctx context.Context, input apipb.DepthFilter) (*apipb.Docs, error)
+	DepthSearchDocs(ctx context.Context, input apipb.DepthFilter) (*apipb.DocTraversals, error)
 	GetConnection(ctx context.Context, input apipb.Path) (*apipb.Connection, error)
 	SearchConnections(ctx context.Context, input apipb.Filter) (*apipb.Connections, error)
 	ConnectionsFrom(ctx context.Context, input apipb.ConnectionFilter) (*apipb.Connections, error)
@@ -487,6 +496,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.DocDetail.Path(childComplexity), true
+
+	case "DocTraversal.doc":
+		if e.complexity.DocTraversal.Doc == nil {
+			break
+		}
+
+		return e.complexity.DocTraversal.Doc(childComplexity), true
+
+	case "DocTraversal.relative_path":
+		if e.complexity.DocTraversal.RelativePath == nil {
+			break
+		}
+
+		return e.complexity.DocTraversal.RelativePath(childComplexity), true
+
+	case "DocTraversals.traversals":
+		if e.complexity.DocTraversals.Traversals == nil {
+			break
+		}
+
+		return e.complexity.DocTraversals.Traversals(childComplexity), true
 
 	case "Docs.docs":
 		if e.complexity.Docs.Docs == nil {
@@ -1040,6 +1070,15 @@ type Docs {
   seek_next: Int!
 }
 
+type DocTraversal {
+  doc: Doc!
+  relative_path: [String!]!
+}
+
+type DocTraversals {
+  traversals: [DocTraversal]!
+}
+
 # Connection is a graph primitive that represents a relationship between two docs
 type Connection {
   # path is the path to the connection
@@ -1350,7 +1389,7 @@ type Query {
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
   # depthSearchDocs searches for 0-many docs using dfs search
-  depthSearchDocs(input: DepthFilter!): Docs!
+  depthSearchDocs(input: DepthFilter!): DocTraversals!
   # getConnection gets a connection at the given path
   getConnection(input: PathInput!): Connection!
   # searchConnections searches for 0-many connections
@@ -2910,6 +2949,111 @@ func (ec *executionContext) _DocDetail_metadata(ctx context.Context, field graph
 	return ec.marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐMetadata(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _DocTraversal_doc(ctx context.Context, field graphql.CollectedField, obj *apipb.DocTraversal) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocTraversal",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Doc, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*apipb.Doc)
+	fc.Result = res
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDoc(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocTraversal_relative_path(ctx context.Context, field graphql.CollectedField, obj *apipb.DocTraversal) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocTraversal",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RelativePath, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DocTraversals_traversals(ctx context.Context, field graphql.CollectedField, obj *apipb.DocTraversals) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DocTraversals",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Traversals, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*apipb.DocTraversal)
+	fc.Result = res
+	return ec.marshalNDocTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocTraversal(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Docs_docs(ctx context.Context, field graphql.CollectedField, obj *apipb.Docs) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4214,9 +4358,9 @@ func (ec *executionContext) _Query_depthSearchDocs(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.Docs)
+	res := resTmp.(*apipb.DocTraversals)
 	fc.Result = res
-	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocs(ctx, field.Selections, res)
+	return ec.marshalNDocTraversals2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocTraversals(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6749,6 +6893,65 @@ func (ec *executionContext) _DocDetail(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var docTraversalImplementors = []string{"DocTraversal"}
+
+func (ec *executionContext) _DocTraversal(ctx context.Context, sel ast.SelectionSet, obj *apipb.DocTraversal) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, docTraversalImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DocTraversal")
+		case "doc":
+			out.Values[i] = ec._DocTraversal_doc(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "relative_path":
+			out.Values[i] = ec._DocTraversal_relative_path(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var docTraversalsImplementors = []string{"DocTraversals"}
+
+func (ec *executionContext) _DocTraversals(ctx context.Context, sel ast.SelectionSet, obj *apipb.DocTraversals) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, docTraversalsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DocTraversals")
+		case "traversals":
+			out.Values[i] = ec._DocTraversals_traversals(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var docsImplementors = []string{"Docs"}
 
 func (ec *executionContext) _Docs(ctx context.Context, sel ast.SelectionSet, obj *apipb.Docs) graphql.Marshaler {
@@ -7689,6 +7892,57 @@ func (ec *executionContext) marshalNDocDetail2ᚖgithubᚗcomᚋautom8terᚋgrap
 	return ec._DocDetail(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNDocTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocTraversal(ctx context.Context, sel ast.SelectionSet, v []*apipb.DocTraversal) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalODocTraversal2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocTraversal(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNDocTraversals2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocTraversals(ctx context.Context, sel ast.SelectionSet, v apipb.DocTraversals) graphql.Marshaler {
+	return ec._DocTraversals(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDocTraversals2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocTraversals(ctx context.Context, sel ast.SelectionSet, v *apipb.DocTraversals) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._DocTraversals(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNDocs2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocs(ctx context.Context, sel ast.SelectionSet, v apipb.Docs) graphql.Marshaler {
 	return ec._Docs(ctx, sel, &v)
 }
@@ -7888,6 +8142,36 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx context.Context, v interface{}) (*structpb.Struct, error) {
@@ -8475,6 +8759,13 @@ func (ec *executionContext) marshalODocChange2ᚕᚖgithubᚗcomᚋautom8terᚋg
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalODocTraversal2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocTraversal(ctx context.Context, sel ast.SelectionSet, v *apipb.DocTraversal) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DocTraversal(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx context.Context, v interface{}) (*emptypb.Empty, error) {

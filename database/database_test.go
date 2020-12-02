@@ -268,7 +268,7 @@ func TestGraph_DepthSearchDocs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, doc := range res.GetDocs() {
+	for _, doc := range res.GetTraversals() {
 		t.Log(doc.String())
 	}
 }
