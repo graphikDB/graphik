@@ -2,7 +2,7 @@ package cache_test
 
 import (
 	"context"
-	cache2 "github.com/autom8ter/graphik/cache"
+	cache2 "github.com/autom8ter/graphik/generic/cache"
 	"github.com/autom8ter/machine"
 	"testing"
 	"time"

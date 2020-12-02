@@ -1,7 +1,7 @@
 package stack_test
 
 import (
-	stack2 "github.com/autom8ter/graphik/stack"
+	stack2 "github.com/autom8ter/graphik/generic/stack"
 	"testing"
 )
 

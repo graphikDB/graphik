@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"encoding/json"
-	"github.com/autom8ter/graphik/cache"
 	"github.com/autom8ter/graphik/gen/go"
+	"github.com/autom8ter/graphik/generic/cache"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"
