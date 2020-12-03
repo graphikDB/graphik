@@ -61,7 +61,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 		if docProgram == nil {
 			d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 				Doc:          doc,
-				RelativePath: []*apipb.Path{doc.GetPath()},
+				RelativePath: &apipb.Paths{Paths: []*apipb.Path{doc.GetPath()}},
 			})
 		} else {
 			res, err := d.g.vm.Doc().Eval(doc, *docProgram)
@@ -71,7 +71,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 			if res {
 				d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 					Doc:          doc,
-					RelativePath: []*apipb.Path{doc.GetPath()},
+					RelativePath: &apipb.Paths{Paths: []*apipb.Path{doc.GetPath()}},
 				})
 			}
 		}
@@ -112,7 +112,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					traversalPath = append(traversalPath, e.GetPath(), from.GetPath())
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 						Doc:          from,
-						RelativePath: traversalPath,
+						RelativePath: &apipb.Paths{Paths: traversalPath},
 					})
 				} else {
 					res, err := d.g.vm.Doc().Eval(from, *docProgram)
@@ -126,7 +126,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						traversalPath = append(traversalPath, e.GetPath(), from.GetPath())
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 							Doc:          from,
-							RelativePath: traversalPath,
+							RelativePath: &apipb.Paths{Paths: traversalPath},
 						})
 					}
 				}
@@ -145,7 +145,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					traversalPath = append(traversalPath, e.GetPath(), to.GetPath())
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 						Doc:          to,
-						RelativePath: traversalPath,
+						RelativePath: &apipb.Paths{Paths: traversalPath},
 					})
 				} else {
 					res, err := d.g.vm.Doc().Eval(to, *docProgram)
@@ -159,7 +159,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						traversalPath = append(traversalPath, e.GetPath(), to.GetPath())
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 							Doc:          to,
-							RelativePath: traversalPath,
+							RelativePath: &apipb.Paths{Paths: traversalPath},
 						})
 					}
 				}

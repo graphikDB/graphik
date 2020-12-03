@@ -22,7 +22,6 @@ goog.exportSymbol('proto.api.Bytes', null, global);
 goog.exportSymbol('proto.api.Change', null, global);
 goog.exportSymbol('proto.api.ChannelFilter', null, global);
 goog.exportSymbol('proto.api.Connection', null, global);
-goog.exportSymbol('proto.api.ConnectionChange', null, global);
 goog.exportSymbol('proto.api.ConnectionConstructor', null, global);
 goog.exportSymbol('proto.api.ConnectionConstructors', null, global);
 goog.exportSymbol('proto.api.ConnectionDetail', null, global);
@@ -31,7 +30,6 @@ goog.exportSymbol('proto.api.ConnectionFilter', null, global);
 goog.exportSymbol('proto.api.Connections', null, global);
 goog.exportSymbol('proto.api.DepthFilter', null, global);
 goog.exportSymbol('proto.api.Doc', null, global);
-goog.exportSymbol('proto.api.DocChange', null, global);
 goog.exportSymbol('proto.api.DocConstructor', null, global);
 goog.exportSymbol('proto.api.DocConstructors', null, global);
 goog.exportSymbol('proto.api.DocDetail', null, global);
@@ -1877,19 +1875,12 @@ proto.api.Docs.prototype.setSeekNext = function(value) {
  * @constructor
  */
 proto.api.DocTraversal = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.DocTraversal.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.api.DocTraversal, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.api.DocTraversal.displayName = 'proto.api.DocTraversal';
 }
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.api.DocTraversal.repeatedFields_ = [2];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -1920,8 +1911,7 @@ proto.api.DocTraversal.prototype.toObject = function(opt_includeInstance) {
 proto.api.DocTraversal.toObject = function(includeInstance, msg) {
   var f, obj = {
     doc: (f = msg.getDoc()) && proto.api.Doc.toObject(includeInstance, f),
-    relativePathList: jspb.Message.toObjectList(msg.getRelativePathList(),
-    proto.api.Path.toObject, includeInstance)
+    relativePath: (f = msg.getRelativePath()) && proto.api.Paths.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1964,9 +1954,9 @@ proto.api.DocTraversal.deserializeBinaryFromReader = function(msg, reader) {
       msg.setDoc(value);
       break;
     case 2:
-      var value = new proto.api.Path;
-      reader.readMessage(value,proto.api.Path.deserializeBinaryFromReader);
-      msg.addRelativePath(value);
+      var value = new proto.api.Paths;
+      reader.readMessage(value,proto.api.Paths.deserializeBinaryFromReader);
+      msg.setRelativePath(value);
       break;
     default:
       reader.skipField();
@@ -2005,12 +1995,12 @@ proto.api.DocTraversal.serializeBinaryToWriter = function(message, writer) {
       proto.api.Doc.serializeBinaryToWriter
     );
   }
-  f = message.getRelativePathList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
+  f = message.getRelativePath();
+  if (f != null) {
+    writer.writeMessage(
       2,
       f,
-      proto.api.Path.serializeBinaryToWriter
+      proto.api.Paths.serializeBinaryToWriter
     );
   }
 };
@@ -2047,33 +2037,32 @@ proto.api.DocTraversal.prototype.hasDoc = function() {
 
 
 /**
- * repeated Path relative_path = 2;
- * @return {!Array<!proto.api.Path>}
+ * optional Paths relative_path = 2;
+ * @return {?proto.api.Paths}
  */
-proto.api.DocTraversal.prototype.getRelativePathList = function() {
-  return /** @type{!Array<!proto.api.Path>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.api.Path, 2));
+proto.api.DocTraversal.prototype.getRelativePath = function() {
+  return /** @type{?proto.api.Paths} */ (
+    jspb.Message.getWrapperField(this, proto.api.Paths, 2));
 };
 
 
-/** @param {!Array<!proto.api.Path>} value */
-proto.api.DocTraversal.prototype.setRelativePathList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 2, value);
+/** @param {?proto.api.Paths|undefined} value */
+proto.api.DocTraversal.prototype.setRelativePath = function(value) {
+  jspb.Message.setWrapperField(this, 2, value);
+};
+
+
+proto.api.DocTraversal.prototype.clearRelativePath = function() {
+  this.setRelativePath(undefined);
 };
 
 
 /**
- * @param {!proto.api.Path=} opt_value
- * @param {number=} opt_index
- * @return {!proto.api.Path}
+ * Returns whether this field is set.
+ * @return {!boolean}
  */
-proto.api.DocTraversal.prototype.addRelativePath = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.api.Path, opt_index);
-};
-
-
-proto.api.DocTraversal.prototype.clearRelativePathList = function() {
-  this.setRelativePathList([]);
+proto.api.DocTraversal.prototype.hasRelativePath = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -9461,426 +9450,13 @@ proto.api.Schema.prototype.hasIndexes = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.DocChange = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.api.DocChange, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.api.DocChange.displayName = 'proto.api.DocChange';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.api.DocChange.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.DocChange.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.api.DocChange} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.api.DocChange.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    before: (f = msg.getBefore()) && proto.api.Doc.toObject(includeInstance, f),
-    after: (f = msg.getAfter()) && proto.api.Doc.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.DocChange}
- */
-proto.api.DocChange.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.DocChange;
-  return proto.api.DocChange.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.api.DocChange} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.DocChange}
- */
-proto.api.DocChange.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 4:
-      var value = new proto.api.Doc;
-      reader.readMessage(value,proto.api.Doc.deserializeBinaryFromReader);
-      msg.setBefore(value);
-      break;
-    case 5:
-      var value = new proto.api.Doc;
-      reader.readMessage(value,proto.api.Doc.deserializeBinaryFromReader);
-      msg.setAfter(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.api.DocChange.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.api.DocChange.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.api.DocChange} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.api.DocChange.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getBefore();
-  if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      proto.api.Doc.serializeBinaryToWriter
-    );
-  }
-  f = message.getAfter();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      proto.api.Doc.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional Doc before = 4;
- * @return {?proto.api.Doc}
- */
-proto.api.DocChange.prototype.getBefore = function() {
-  return /** @type{?proto.api.Doc} */ (
-    jspb.Message.getWrapperField(this, proto.api.Doc, 4));
-};
-
-
-/** @param {?proto.api.Doc|undefined} value */
-proto.api.DocChange.prototype.setBefore = function(value) {
-  jspb.Message.setWrapperField(this, 4, value);
-};
-
-
-proto.api.DocChange.prototype.clearBefore = function() {
-  this.setBefore(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.DocChange.prototype.hasBefore = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * optional Doc after = 5;
- * @return {?proto.api.Doc}
- */
-proto.api.DocChange.prototype.getAfter = function() {
-  return /** @type{?proto.api.Doc} */ (
-    jspb.Message.getWrapperField(this, proto.api.Doc, 5));
-};
-
-
-/** @param {?proto.api.Doc|undefined} value */
-proto.api.DocChange.prototype.setAfter = function(value) {
-  jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-proto.api.DocChange.prototype.clearAfter = function() {
-  this.setAfter(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.DocChange.prototype.hasAfter = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.api.ConnectionChange = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.api.ConnectionChange, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.api.ConnectionChange.displayName = 'proto.api.ConnectionChange';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.api.ConnectionChange.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.ConnectionChange.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.api.ConnectionChange} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.api.ConnectionChange.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    before: (f = msg.getBefore()) && proto.api.Connection.toObject(includeInstance, f),
-    after: (f = msg.getAfter()) && proto.api.Connection.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.ConnectionChange}
- */
-proto.api.ConnectionChange.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.ConnectionChange;
-  return proto.api.ConnectionChange.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.api.ConnectionChange} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.ConnectionChange}
- */
-proto.api.ConnectionChange.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 4:
-      var value = new proto.api.Connection;
-      reader.readMessage(value,proto.api.Connection.deserializeBinaryFromReader);
-      msg.setBefore(value);
-      break;
-    case 5:
-      var value = new proto.api.Connection;
-      reader.readMessage(value,proto.api.Connection.deserializeBinaryFromReader);
-      msg.setAfter(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.api.ConnectionChange.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.api.ConnectionChange.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.api.ConnectionChange} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.api.ConnectionChange.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getBefore();
-  if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      proto.api.Connection.serializeBinaryToWriter
-    );
-  }
-  f = message.getAfter();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      proto.api.Connection.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional Connection before = 4;
- * @return {?proto.api.Connection}
- */
-proto.api.ConnectionChange.prototype.getBefore = function() {
-  return /** @type{?proto.api.Connection} */ (
-    jspb.Message.getWrapperField(this, proto.api.Connection, 4));
-};
-
-
-/** @param {?proto.api.Connection|undefined} value */
-proto.api.ConnectionChange.prototype.setBefore = function(value) {
-  jspb.Message.setWrapperField(this, 4, value);
-};
-
-
-proto.api.ConnectionChange.prototype.clearBefore = function() {
-  this.setBefore(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.ConnectionChange.prototype.hasBefore = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * optional Connection after = 5;
- * @return {?proto.api.Connection}
- */
-proto.api.ConnectionChange.prototype.getAfter = function() {
-  return /** @type{?proto.api.Connection} */ (
-    jspb.Message.getWrapperField(this, proto.api.Connection, 5));
-};
-
-
-/** @param {?proto.api.Connection|undefined} value */
-proto.api.ConnectionChange.prototype.setAfter = function(value) {
-  jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-proto.api.ConnectionChange.prototype.clearAfter = function() {
-  this.setAfter(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.ConnectionChange.prototype.hasAfter = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
 proto.api.Change = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.Change.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.api.Change, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.api.Change.displayName = 'proto.api.Change';
 }
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.api.Change.repeatedFields_ = [4,5];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -9913,10 +9489,7 @@ proto.api.Change.toObject = function(includeInstance, msg) {
     method: jspb.Message.getFieldWithDefault(msg, 1, ""),
     identity: (f = msg.getIdentity()) && proto.api.Doc.toObject(includeInstance, f),
     timestamp: (f = msg.getTimestamp()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    connectionChangesList: jspb.Message.toObjectList(msg.getConnectionChangesList(),
-    proto.api.ConnectionChange.toObject, includeInstance),
-    docChangesList: jspb.Message.toObjectList(msg.getDocChangesList(),
-    proto.api.DocChange.toObject, includeInstance)
+    pathsAffected: (f = msg.getPathsAffected()) && proto.api.Paths.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -9968,14 +9541,9 @@ proto.api.Change.deserializeBinaryFromReader = function(msg, reader) {
       msg.setTimestamp(value);
       break;
     case 4:
-      var value = new proto.api.ConnectionChange;
-      reader.readMessage(value,proto.api.ConnectionChange.deserializeBinaryFromReader);
-      msg.addConnectionChanges(value);
-      break;
-    case 5:
-      var value = new proto.api.DocChange;
-      reader.readMessage(value,proto.api.DocChange.deserializeBinaryFromReader);
-      msg.addDocChanges(value);
+      var value = new proto.api.Paths;
+      reader.readMessage(value,proto.api.Paths.deserializeBinaryFromReader);
+      msg.setPathsAffected(value);
       break;
     default:
       reader.skipField();
@@ -10029,20 +9597,12 @@ proto.api.Change.serializeBinaryToWriter = function(message, writer) {
       google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
-  f = message.getConnectionChangesList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
+  f = message.getPathsAffected();
+  if (f != null) {
+    writer.writeMessage(
       4,
       f,
-      proto.api.ConnectionChange.serializeBinaryToWriter
-    );
-  }
-  f = message.getDocChangesList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      5,
-      f,
-      proto.api.DocChange.serializeBinaryToWriter
+      proto.api.Paths.serializeBinaryToWriter
     );
   }
 };
@@ -10124,64 +9684,32 @@ proto.api.Change.prototype.hasTimestamp = function() {
 
 
 /**
- * repeated ConnectionChange connection_changes = 4;
- * @return {!Array<!proto.api.ConnectionChange>}
+ * optional Paths paths_affected = 4;
+ * @return {?proto.api.Paths}
  */
-proto.api.Change.prototype.getConnectionChangesList = function() {
-  return /** @type{!Array<!proto.api.ConnectionChange>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.api.ConnectionChange, 4));
+proto.api.Change.prototype.getPathsAffected = function() {
+  return /** @type{?proto.api.Paths} */ (
+    jspb.Message.getWrapperField(this, proto.api.Paths, 4));
 };
 
 
-/** @param {!Array<!proto.api.ConnectionChange>} value */
-proto.api.Change.prototype.setConnectionChangesList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 4, value);
+/** @param {?proto.api.Paths|undefined} value */
+proto.api.Change.prototype.setPathsAffected = function(value) {
+  jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+proto.api.Change.prototype.clearPathsAffected = function() {
+  this.setPathsAffected(undefined);
 };
 
 
 /**
- * @param {!proto.api.ConnectionChange=} opt_value
- * @param {number=} opt_index
- * @return {!proto.api.ConnectionChange}
+ * Returns whether this field is set.
+ * @return {!boolean}
  */
-proto.api.Change.prototype.addConnectionChanges = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.api.ConnectionChange, opt_index);
-};
-
-
-proto.api.Change.prototype.clearConnectionChangesList = function() {
-  this.setConnectionChangesList([]);
-};
-
-
-/**
- * repeated DocChange doc_changes = 5;
- * @return {!Array<!proto.api.DocChange>}
- */
-proto.api.Change.prototype.getDocChangesList = function() {
-  return /** @type{!Array<!proto.api.DocChange>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.api.DocChange, 5));
-};
-
-
-/** @param {!Array<!proto.api.DocChange>} value */
-proto.api.Change.prototype.setDocChangesList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 5, value);
-};
-
-
-/**
- * @param {!proto.api.DocChange=} opt_value
- * @param {number=} opt_index
- * @return {!proto.api.DocChange}
- */
-proto.api.Change.prototype.addDocChanges = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.api.DocChange, opt_index);
-};
-
-
-proto.api.Change.prototype.clearDocChangesList = function() {
-  this.setDocChangesList([]);
+proto.api.Change.prototype.hasPathsAffected = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

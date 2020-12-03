@@ -79,30 +79,27 @@ func (n *Message) AsMap() map[string]interface{} {
 	}
 }
 
+func (p *Paths) AsMap() map[string]interface{} {
+	if p == nil {
+		return map[string]interface{}{}
+	}
+	var paths []interface{}
+	for _, path := range p.GetPaths() {
+		paths = append(paths, path.AsMap())
+	}
+	return map[string]interface{}{
+		"paths": paths,
+	}
+}
 func (c *Change) AsMap() map[string]interface{} {
 	if c == nil {
 		return map[string]interface{}{}
 	}
-	var connectionChanges []interface{}
-	var docChanges []interface{}
-	for _, change := range c.GetConnectionChanges() {
-		connectionChanges = append(connectionChanges, map[string]interface{}{
-			"before": change.GetBefore().AsMap(),
-			"after":  change.GetAfter().AsMap(),
-		})
-	}
-	for _, change := range c.GetDocChanges() {
-		docChanges = append(docChanges, map[string]interface{}{
-			"before": change.GetBefore().AsMap(),
-			"after":  change.GetAfter().AsMap(),
-		})
-	}
 	return map[string]interface{}{
-		"method":             c.GetMethod(),
-		"timestamp":          c.GetTimestamp(),
-		"identity":           c.GetIdentity(),
-		"connection_changes": connectionChanges,
-		"doc_changes":        docChanges,
+		"method":         c.GetMethod(),
+		"timestamp":      c.GetTimestamp(),
+		"identity":       c.GetIdentity(),
+		"paths_affected": c.PathsAffected.AsMap(),
 	}
 }
 
@@ -269,7 +266,7 @@ func (p *Paths) Sort(field string) {
 		return
 	}
 	switch field {
-	case "path.gid":
+	case "gid":
 		sort.Slice(p.GetPaths(), func(i, j int) bool {
 			return p.GetPaths()[i].GetGid() < p.GetPaths()[j].GetGid()
 		})
@@ -353,7 +350,7 @@ func (n *DocTraversals) Sort(field string) {
 		})
 	case field == "relative_path":
 		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return len(n.GetTraversals()[i].GetRelativePath()) < len(n.GetTraversals()[j].GetRelativePath())
+			return len(n.GetTraversals()[i].GetRelativePath().GetPaths()) < len(n.GetTraversals()[j].GetRelativePath().GetPaths())
 		})
 	case strings.Contains(field, "attributes."):
 		split := strings.Split(field, "attributes.")

@@ -142,7 +142,7 @@ message Docs {
 
 message DocTraversal {
   Doc doc =1;
-  repeated Path relative_path =2;
+  Paths relative_path =2;
 }
 
 message DocTraversals {
@@ -438,19 +438,6 @@ message Schema {
   Indexes indexes =5;
 }
 
-// DocChange is a single state change to a doc
-message DocChange {
-  // before is the doc before state change
-  Doc before = 4;
-  // after is the doc after state change
-  Doc after = 5;
-}
-
-message ConnectionChange {
-  Connection before = 4;
-  Connection after = 5;
-}
-
 // Change represents a set of state changes in the graph
 message Change {
   // method is the gRPC method invoked
@@ -459,10 +446,8 @@ message Change {
   Doc identity =2 [(validator.field) = {msg_exists : true}];
   // timestamp is when the change was made
   google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
-  // connection_changes are state changes to connections
-  repeated ConnectionChange connection_changes =4;
-  // doc_changes are state changes to docs
-  repeated  DocChange doc_changes =5;
+  // paths_affected are paths to docs/connections that have been affected by the change
+  Paths paths_affected =4;
 }
 
 message ExpressionFilter {

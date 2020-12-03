@@ -10,7 +10,6 @@
     - [Change](#api.Change)
     - [ChannelFilter](#api.ChannelFilter)
     - [Connection](#api.Connection)
-    - [ConnectionChange](#api.ConnectionChange)
     - [ConnectionConstructor](#api.ConnectionConstructor)
     - [ConnectionConstructors](#api.ConnectionConstructors)
     - [ConnectionDetail](#api.ConnectionDetail)
@@ -19,7 +18,6 @@
     - [Connections](#api.Connections)
     - [DepthFilter](#api.DepthFilter)
     - [Doc](#api.Doc)
-    - [DocChange](#api.DocChange)
     - [DocConstructor](#api.DocConstructor)
     - [DocConstructors](#api.DocConstructors)
     - [DocDetail](#api.DocDetail)
@@ -121,8 +119,7 @@ Change represents a set of state changes in the graph
 | method | [string](#string) |  | method is the gRPC method invoked |
 | identity | [Doc](#api.Doc) |  | identity is the identity invoking the change |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is when the change was made |
-| connection_changes | [ConnectionChange](#api.ConnectionChange) | repeated | connection_changes are state changes to connections |
-| doc_changes | [DocChange](#api.DocChange) | repeated | doc_changes are state changes to docs |
+| paths_affected | [Paths](#api.Paths) |  | paths_affected are paths to docs/connections that have been affected by the change |
 
 
 
@@ -159,22 +156,6 @@ Connection is a graph primitive that represents a relationship between two docs
 | from | [Path](#api.Path) |  | from is the doc path that is the source of the connection |
 | to | [Path](#api.Path) |  | to is the doc path that is the destination of the connection |
 | metadata | [Metadata](#api.Metadata) |  | metadata is general metadata collected about the connection |
-
-
-
-
-
-
-<a name="api.ConnectionChange"></a>
-
-### ConnectionChange
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| before | [Connection](#api.Connection) |  |  |
-| after | [Connection](#api.Connection) |  |  |
 
 
 
@@ -324,22 +305,6 @@ Doc is a Graph primitive representing a single entity/resource. It is connected 
 
 
 
-<a name="api.DocChange"></a>
-
-### DocChange
-DocChange is a single state change to a doc
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| before | [Doc](#api.Doc) |  | before is the doc before state change |
-| after | [Doc](#api.Doc) |  | after is the doc after state change |
-
-
-
-
-
-
 <a name="api.DocConstructor"></a>
 
 ### DocConstructor
@@ -432,7 +397,7 @@ DocDetails is an array of DocDetail
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | doc | [Doc](#api.Doc) |  |  |
-| relative_path | [Path](#api.Path) | repeated |  |
+| relative_path | [Paths](#api.Paths) |  |  |
 
 
 

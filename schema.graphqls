@@ -49,9 +49,13 @@ type Docs {
   seek_next: Int!
 }
 
+type Paths {
+  paths: [Path!]
+}
+
 type DocTraversal {
   doc: Doc!
-  relative_path: [Path!]!
+  relative_path: Paths!
 }
 
 type DocTraversals {
@@ -199,22 +203,6 @@ input ConnectionConstructor {
   to: PathInput!
 }
 
-# DocChange is a single state change to a doc
-type DocChange {
-  # before is the doc before state change
-  before: Doc
-  # after is the doc after state change
-  after: Doc
-}
-
-# ConnectionChange is a single state change to an connection
-type ConnectionChange {
-  # before is the connection before state change
-  before: Connection
-  # after is the connection after state change
-  after: Connection
-}
-
 # Change represents a set of state changes in the graph
 type Change {
   # method is the gRPC method invoked
@@ -223,10 +211,8 @@ type Change {
   identity: Doc!
   # timestamp is when the change was made
   timestamp: Timestamp!
-  # connection_changes are state changes to connections
-  connection_changes: [ConnectionChange!]
-  # doc_changes are state changes to docs
-  doc_changes: [DocChange!]
+  # paths_affected are paths to docs/connections that have been affected by the change
+  paths_affected: Paths!
 }
 
 # PathInput is the path to a doc/connection

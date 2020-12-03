@@ -157,11 +157,9 @@ func (this *DocTraversal) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Doc", err)
 		}
 	}
-	for _, item := range this.RelativePath {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("RelativePath", err)
-			}
+	if this.RelativePath != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RelativePath); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("RelativePath", err)
 		}
 	}
 	return nil
@@ -686,32 +684,6 @@ func (this *Schema) Validate() error {
 	}
 	return nil
 }
-func (this *DocChange) Validate() error {
-	if this.Before != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Before); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Before", err)
-		}
-	}
-	if this.After != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.After); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("After", err)
-		}
-	}
-	return nil
-}
-func (this *ConnectionChange) Validate() error {
-	if this.Before != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Before); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Before", err)
-		}
-	}
-	if this.After != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.After); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("After", err)
-		}
-	}
-	return nil
-}
 
 var _regex_Change_Method = regexp.MustCompile(`^.{1,225}$`)
 
@@ -735,18 +707,9 @@ func (this *Change) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", err)
 		}
 	}
-	for _, item := range this.ConnectionChanges {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("ConnectionChanges", err)
-			}
-		}
-	}
-	for _, item := range this.DocChanges {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("DocChanges", err)
-			}
+	if this.PathsAffected != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.PathsAffected); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("PathsAffected", err)
 		}
 	}
 	return nil

@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='api',
   syntax='proto3',
   serialized_options=_b('Z\005apipb'),
-  serialized_pb=_b('\n\rgraphik.proto\x12\x03\x61pi\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x36github.com/mwitkow/go-proto-validators/validator.proto\"\x16\n\x05\x42ytes\x12\r\n\x05\x62ytes\x18\x01 \x01(\x0c\"F\n\x04Path\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1d\n\x03gid\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\"?\n\x0fPathConstructor\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0b\n\x03gid\x18\x02 \x01(\t\"\xd9\x01\n\x08Metadata\x12\x36\n\ncreated_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12\x36\n\nupdated_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12\x1d\n\ncreated_by\x18\x03 \x01(\x0b\x32\t.api.Path\x12%\n\nupdated_by\x18\x04 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x17\n\x07version\x18\x06 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\"!\n\x05Paths\x12\x18\n\x05paths\x18\x01 \x03(\x0b\x32\t.api.Path\"|\n\x03\x44oc\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\'\n\x08metadata\x18\x03 \x01(\x0b\x32\r.api.MetadataB\x06\xe2\xdf\x1f\x02 \x01\"i\n\x0e\x44ocConstructor\x12*\n\x04path\x18\x01 \x01(\x0b\x32\x14.api.PathConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"4\n\x0f\x44ocConstructors\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.api.DocConstructor\"1\n\x04\x44ocs\x12\x16\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x08.api.Doc\x12\x11\n\tseek_next\x18\x02 \x01(\x03\"G\n\x0c\x44ocTraversal\x12\x15\n\x03\x64oc\x18\x01 \x01(\x0b\x32\x08.api.Doc\x12 \n\rrelative_path\x18\x02 \x03(\x0b\x32\t.api.Path\"6\n\rDocTraversals\x12%\n\ntraversals\x18\x01 \x03(\x0b\x32\x11.api.DocTraversal\"\xe4\x01\n\tDocDetail\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x30\n\x10\x63onnections_from\x18\x03 \x01(\x0b\x32\x16.api.ConnectionDetails\x12.\n\x0e\x63onnections_to\x18\x04 \x01(\x0b\x32\x16.api.ConnectionDetails\x12\'\n\x08metadata\x18\x05 \x01(\x0b\x32\r.api.MetadataB\x06\xe2\xdf\x1f\x02 \x01\"D\n\nDocDetails\x12#\n\x0b\x64oc_details\x18\x01 \x03(\x0b\x32\x0e.api.DocDetail\x12\x11\n\tseek_next\x18\x02 \x01(\x03\"~\n\x0f\x44ocDetailFilter\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12%\n\x10\x66rom_connections\x18\x02 \x01(\x0b\x32\x0b.api.Filter\x12#\n\x0eto_connections\x18\x03 \x01(\x0b\x32\x0b.api.Filter\"\xd5\x01\n\nConnection\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x03 \x01(\x08\x12\x1f\n\x04\x66rom\x18\x04 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x1d\n\x02to\x18\x05 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\'\n\x08metadata\x18\x06 \x01(\x0b\x32\r.api.MetadataB\x06\xe2\xdf\x1f\x02 \x01\"\xc2\x01\n\x15\x43onnectionConstructor\x12*\n\x04path\x18\x01 \x01(\x0b\x32\x14.api.PathConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1f\n\x04\x66rom\x18\x05 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x1d\n\x02to\x18\x06 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\"I\n\x16\x43onnectionConstructors\x12/\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x1a.api.ConnectionConstructor\"F\n\x0b\x43onnections\x12$\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x0f.api.Connection\x12\x11\n\tseek_next\x18\x02 \x01(\x03\"\xd9\x01\n\x10\x43onnectionDetail\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x03 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x04 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x05 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\'\n\x08metadata\x18\x06 \x01(\x0b\x32\r.api.MetadataB\x06\xe2\xdf\x1f\x02 \x01\"R\n\x11\x43onnectionDetails\x12*\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x15.api.ConnectionDetail\x12\x11\n\tseek_next\x18\x02 \x01(\x03\"\xb0\x01\n\x10\x43onnectionFilter\x12#\n\x08\x64oc_path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x0c\n\x04sort\x18\x05 \x01(\t\x12\x0c\n\x04seek\x18\x06 \x01(\x03\x12\x0f\n\x07reverse\x18\x07 \x01(\x08\"\x90\x01\n\x06\x46ilter\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\x12\x15\n\x05limit\x18\x03 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x0c\n\x04sort\x18\x04 \x01(\t\x12\x0c\n\x04seek\x18\x05 \x01(\x03\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\x12\r\n\x05index\x18\x07 \x01(\t\"\x9c\x01\n\x0b\x44\x65pthFilter\x12\x1f\n\x04root\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x16\n\x0e\x64oc_expression\x18\x02 \x01(\t\x12/\n\x15\x63onnection_expression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x15\n\x05limit\x18\x04 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x0c\n\x04sort\x18\x05 \x01(\t\"\x9c\x01\n\x10IndexConstructor\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"R\n\nAuthorizer\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\"3\n\x0b\x41uthorizers\x12$\n\x0b\x61uthorizers\x18\x01 \x03(\x0b\x32\x0f.api.Authorizer\"\x99\x01\n\rTypeValidator\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x04 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x05 \x01(\x08\"8\n\x0eTypeValidators\x12&\n\nvalidators\x18\x01 \x03(\x0b\x32\x12.api.TypeValidator\"\x91\x01\n\x05Index\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"&\n\x07Indexes\x12\x1b\n\x07indexes\x18\x01 \x03(\x0b\x32\n.api.Index\"V\n\x08MeFilter\x12%\n\x10\x63onnections_from\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12#\n\x0e\x63onnections_to\x18\x02 \x01(\x0b\x32\x0b.api.Filter\"F\n\rChannelFilter\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\"i\n\x0eSubGraphFilter\x12\'\n\ndoc_filter\x18\x01 \x01(\x0b\x32\x0b.api.FilterB\x06\xe2\xdf\x1f\x02 \x01\x12.\n\x11\x63onnection_filter\x18\x02 \x01(\x0b\x32\x0b.api.FilterB\x06\xe2\xdf\x1f\x02 \x01\"G\n\x05Graph\x12\x17\n\x04\x64ocs\x18\x01 \x01(\x0b\x32\t.api.Docs\x12%\n\x0b\x63onnections\x18\x02 \x01(\x0b\x32\x10.api.Connections\"\xa2\x01\n\x05\x46lags\x12\x19\n\x11open_id_discovery\x18\x01 \x01(\t\x12\x14\n\x0cstorage_path\x18\x02 \x01(\t\x12\x0f\n\x07metrics\x18\x03 \x01(\x08\x12\x15\n\rallow_headers\x18\x05 \x03(\t\x12\x15\n\rallow_methods\x18\x06 \x03(\t\x12\x15\n\rallow_origins\x18\x07 \x03(\t\x12\x12\n\nroot_users\x18\x08 \x03(\t\"T\n\x04\x45\x64it\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"V\n\nEditFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"\x17\n\x04Pong\x12\x0f\n\x07message\x18\x01 \x01(\t\"c\n\x0fOutboundMessage\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\"\xb5\x01\n\x07Message\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\x12!\n\x06sender\x18\x03 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\"\xa4\x01\n\x06Schema\x12\x18\n\x10\x63onnection_types\x18\x01 \x03(\t\x12\x11\n\tdoc_types\x18\x02 \x03(\t\x12%\n\x0b\x61uthorizers\x18\x03 \x01(\x0b\x32\x10.api.Authorizers\x12\'\n\nvalidators\x18\x04 \x01(\x0b\x32\x13.api.TypeValidators\x12\x1d\n\x07indexes\x18\x05 \x01(\x0b\x32\x0c.api.Indexes\">\n\tDocChange\x12\x18\n\x06\x62\x65\x66ore\x18\x04 \x01(\x0b\x32\x08.api.Doc\x12\x17\n\x05\x61\x66ter\x18\x05 \x01(\x0b\x32\x08.api.Doc\"S\n\x10\x43onnectionChange\x12\x1f\n\x06\x62\x65\x66ore\x18\x04 \x01(\x0b\x32\x0f.api.Connection\x12\x1e\n\x05\x61\x66ter\x18\x05 \x01(\x0b\x32\x0f.api.Connection\"\xdd\x01\n\x06\x43hange\x12 \n\x06method\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\"\n\x08identity\x18\x02 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12\x31\n\x12\x63onnection_changes\x18\x04 \x03(\x0b\x32\x15.api.ConnectionChange\x12#\n\x0b\x64oc_changes\x18\x05 \x03(\x0b\x32\x0e.api.DocChange\"&\n\x10\x45xpressionFilter\x12\x12\n\nexpression\x18\x01 \x01(\t\"\xb0\x01\n\x07Request\x12 \n\x06method\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\"\n\x08identity\x18\x02 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12(\n\x07request\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct2\x86\r\n\x0f\x44\x61tabaseService\x12+\n\x04Ping\x12\x16.google.protobuf.Empty\x1a\t.api.Pong\"\x00\x12\x32\n\tGetSchema\x12\x16.google.protobuf.Empty\x1a\x0b.api.Schema\"\x00\x12<\n\x0eSetAuthorizers\x12\x10.api.Authorizers\x1a\x16.google.protobuf.Empty\"\x00\x12\x34\n\nSetIndexes\x12\x0c.api.Indexes\x1a\x16.google.protobuf.Empty\"\x00\x12\x42\n\x11SetTypeValidators\x12\x13.api.TypeValidators\x1a\x16.google.protobuf.Empty\"\x00\x12%\n\x02Me\x12\r.api.MeFilter\x1a\x0e.api.DocDetail\"\x00\x12,\n\tCreateDoc\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00\x12/\n\nCreateDocs\x12\x14.api.DocConstructors\x1a\t.api.Docs\"\x00\x12\x1f\n\x06GetDoc\x12\t.api.Path\x1a\x08.api.Doc\"\x00\x12&\n\nSearchDocs\x12\x0b.api.Filter\x1a\t.api.Docs\"\x00\x12\x39\n\x0f\x44\x65pthSearchDocs\x12\x10.api.DepthFilter\x1a\x12.api.DocTraversals\"\x00\x12 \n\x07\x45\x64itDoc\x12\t.api.Edit\x1a\x08.api.Doc\"\x00\x12(\n\x08\x45\x64itDocs\x12\x0f.api.EditFilter\x1a\t.api.Docs\"\x00\x12-\n\x06\x44\x65lDoc\x12\t.api.Path\x1a\x16.google.protobuf.Empty\"\x00\x12\x30\n\x07\x44\x65lDocs\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12\x41\n\x10\x43reateConnection\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00\x12\x44\n\x11\x43reateConnections\x12\x1b.api.ConnectionConstructors\x1a\x10.api.Connections\"\x00\x12-\n\rGetConnection\x12\t.api.Path\x1a\x0f.api.Connection\"\x00\x12\x34\n\x11SearchConnections\x12\x0b.api.Filter\x1a\x10.api.Connections\"\x00\x12.\n\x0e\x45\x64itConnection\x12\t.api.Edit\x1a\x0f.api.Connection\"\x00\x12\x36\n\x0f\x45\x64itConnections\x12\x0f.api.EditFilter\x1a\x10.api.Connections\"\x00\x12\x34\n\rDelConnection\x12\t.api.Path\x1a\x16.google.protobuf.Empty\"\x00\x12\x37\n\x0e\x44\x65lConnections\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12<\n\x0f\x43onnectionsFrom\x12\x15.api.ConnectionFilter\x1a\x10.api.Connections\"\x00\x12:\n\rConnectionsTo\x12\x15.api.ConnectionFilter\x1a\x10.api.Connections\"\x00\x12\x39\n\x07Publish\x12\x14.api.OutboundMessage\x1a\x16.google.protobuf.Empty\"\x00\x12\x31\n\tSubscribe\x12\x12.api.ChannelFilter\x1a\x0c.api.Message\"\x00\x30\x01\x12:\n\x10SubscribeChanges\x12\x15.api.ExpressionFilter\x1a\x0b.api.Change\"\x00\x30\x01\x12:\n\x13PushDocConstructors\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00(\x01\x30\x01\x12O\n\x1aPushConnectionConstructors\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00(\x01\x30\x01\x12-\n\x08SubGraph\x12\x13.api.SubGraphFilter\x1a\n.api.Graph\"\x00\x42\x07Z\x05\x61pipbb\x06proto3')
+  serialized_pb=_b('\n\rgraphik.proto\x12\x03\x61pi\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x36github.com/mwitkow/go-proto-validators/validator.proto\"\x16\n\x05\x42ytes\x12\r\n\x05\x62ytes\x18\x01 \x01(\x0c\"F\n\x04Path\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1d\n\x03gid\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\"?\n\x0fPathConstructor\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0b\n\x03gid\x18\x02 \x01(\t\"\xd9\x01\n\x08Metadata\x12\x36\n\ncreated_at\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12\x36\n\nupdated_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12\x1d\n\ncreated_by\x18\x03 \x01(\x0b\x32\t.api.Path\x12%\n\nupdated_by\x18\x04 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x17\n\x07version\x18\x06 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\"!\n\x05Paths\x12\x18\n\x05paths\x18\x01 \x03(\x0b\x32\t.api.Path\"|\n\x03\x44oc\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\'\n\x08metadata\x18\x03 \x01(\x0b\x32\r.api.MetadataB\x06\xe2\xdf\x1f\x02 \x01\"i\n\x0e\x44ocConstructor\x12*\n\x04path\x18\x01 \x01(\x0b\x32\x14.api.PathConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"4\n\x0f\x44ocConstructors\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.api.DocConstructor\"1\n\x04\x44ocs\x12\x16\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x08.api.Doc\x12\x11\n\tseek_next\x18\x02 \x01(\x03\"H\n\x0c\x44ocTraversal\x12\x15\n\x03\x64oc\x18\x01 \x01(\x0b\x32\x08.api.Doc\x12!\n\rrelative_path\x18\x02 \x01(\x0b\x32\n.api.Paths\"6\n\rDocTraversals\x12%\n\ntraversals\x18\x01 \x03(\x0b\x32\x11.api.DocTraversal\"\xe4\x01\n\tDocDetail\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x30\n\x10\x63onnections_from\x18\x03 \x01(\x0b\x32\x16.api.ConnectionDetails\x12.\n\x0e\x63onnections_to\x18\x04 \x01(\x0b\x32\x16.api.ConnectionDetails\x12\'\n\x08metadata\x18\x05 \x01(\x0b\x32\r.api.MetadataB\x06\xe2\xdf\x1f\x02 \x01\"D\n\nDocDetails\x12#\n\x0b\x64oc_details\x18\x01 \x03(\x0b\x32\x0e.api.DocDetail\x12\x11\n\tseek_next\x18\x02 \x01(\x03\"~\n\x0f\x44ocDetailFilter\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12%\n\x10\x66rom_connections\x18\x02 \x01(\x0b\x32\x0b.api.Filter\x12#\n\x0eto_connections\x18\x03 \x01(\x0b\x32\x0b.api.Filter\"\xd5\x01\n\nConnection\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x03 \x01(\x08\x12\x1f\n\x04\x66rom\x18\x04 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x1d\n\x02to\x18\x05 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\'\n\x08metadata\x18\x06 \x01(\x0b\x32\r.api.MetadataB\x06\xe2\xdf\x1f\x02 \x01\"\xc2\x01\n\x15\x43onnectionConstructor\x12*\n\x04path\x18\x01 \x01(\x0b\x32\x14.api.PathConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1f\n\x04\x66rom\x18\x05 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x1d\n\x02to\x18\x06 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\"I\n\x16\x43onnectionConstructors\x12/\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x1a.api.ConnectionConstructor\"F\n\x0b\x43onnections\x12$\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x0f.api.Connection\x12\x11\n\tseek_next\x18\x02 \x01(\x03\"\xd9\x01\n\x10\x43onnectionDetail\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x03 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x04 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x05 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\'\n\x08metadata\x18\x06 \x01(\x0b\x32\r.api.MetadataB\x06\xe2\xdf\x1f\x02 \x01\"R\n\x11\x43onnectionDetails\x12*\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x15.api.ConnectionDetail\x12\x11\n\tseek_next\x18\x02 \x01(\x03\"\xb0\x01\n\x10\x43onnectionFilter\x12#\n\x08\x64oc_path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x0c\n\x04sort\x18\x05 \x01(\t\x12\x0c\n\x04seek\x18\x06 \x01(\x03\x12\x0f\n\x07reverse\x18\x07 \x01(\x08\"\x90\x01\n\x06\x46ilter\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\x12\x15\n\x05limit\x18\x03 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x0c\n\x04sort\x18\x04 \x01(\t\x12\x0c\n\x04seek\x18\x05 \x01(\x03\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\x12\r\n\x05index\x18\x07 \x01(\t\"\x9c\x01\n\x0b\x44\x65pthFilter\x12\x1f\n\x04root\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x16\n\x0e\x64oc_expression\x18\x02 \x01(\t\x12/\n\x15\x63onnection_expression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x15\n\x05limit\x18\x04 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x0c\n\x04sort\x18\x05 \x01(\t\"\x9c\x01\n\x10IndexConstructor\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"R\n\nAuthorizer\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\"3\n\x0b\x41uthorizers\x12$\n\x0b\x61uthorizers\x18\x01 \x03(\x0b\x32\x0f.api.Authorizer\"\x99\x01\n\rTypeValidator\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x04 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x05 \x01(\x08\"8\n\x0eTypeValidators\x12&\n\nvalidators\x18\x01 \x03(\x0b\x32\x12.api.TypeValidator\"\x91\x01\n\x05Index\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"&\n\x07Indexes\x12\x1b\n\x07indexes\x18\x01 \x03(\x0b\x32\n.api.Index\"V\n\x08MeFilter\x12%\n\x10\x63onnections_from\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12#\n\x0e\x63onnections_to\x18\x02 \x01(\x0b\x32\x0b.api.Filter\"F\n\rChannelFilter\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\"i\n\x0eSubGraphFilter\x12\'\n\ndoc_filter\x18\x01 \x01(\x0b\x32\x0b.api.FilterB\x06\xe2\xdf\x1f\x02 \x01\x12.\n\x11\x63onnection_filter\x18\x02 \x01(\x0b\x32\x0b.api.FilterB\x06\xe2\xdf\x1f\x02 \x01\"G\n\x05Graph\x12\x17\n\x04\x64ocs\x18\x01 \x01(\x0b\x32\t.api.Docs\x12%\n\x0b\x63onnections\x18\x02 \x01(\x0b\x32\x10.api.Connections\"\xa2\x01\n\x05\x46lags\x12\x19\n\x11open_id_discovery\x18\x01 \x01(\t\x12\x14\n\x0cstorage_path\x18\x02 \x01(\t\x12\x0f\n\x07metrics\x18\x03 \x01(\x08\x12\x15\n\rallow_headers\x18\x05 \x03(\t\x12\x15\n\rallow_methods\x18\x06 \x03(\t\x12\x15\n\rallow_origins\x18\x07 \x03(\t\x12\x12\n\nroot_users\x18\x08 \x03(\t\"T\n\x04\x45\x64it\x12\x1f\n\x04path\x18\x01 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"V\n\nEditFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"\x17\n\x04Pong\x12\x0f\n\x07message\x18\x01 \x01(\t\"c\n\x0fOutboundMessage\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\"\xb5\x01\n\x07Message\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\x12!\n\x06sender\x18\x03 \x01(\x0b\x32\t.api.PathB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\"\xa4\x01\n\x06Schema\x12\x18\n\x10\x63onnection_types\x18\x01 \x03(\t\x12\x11\n\tdoc_types\x18\x02 \x03(\t\x12%\n\x0b\x61uthorizers\x18\x03 \x01(\x0b\x32\x10.api.Authorizers\x12\'\n\nvalidators\x18\x04 \x01(\x0b\x32\x13.api.TypeValidators\x12\x1d\n\x07indexes\x18\x05 \x01(\x0b\x32\x0c.api.Indexes\"\xa9\x01\n\x06\x43hange\x12 \n\x06method\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\"\n\x08identity\x18\x02 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12\"\n\x0epaths_affected\x18\x04 \x01(\x0b\x32\n.api.Paths\"&\n\x10\x45xpressionFilter\x12\x12\n\nexpression\x18\x01 \x01(\t\"\xb0\x01\n\x07Request\x12 \n\x06method\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\"\n\x08identity\x18\x02 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12(\n\x07request\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct2\x86\r\n\x0f\x44\x61tabaseService\x12+\n\x04Ping\x12\x16.google.protobuf.Empty\x1a\t.api.Pong\"\x00\x12\x32\n\tGetSchema\x12\x16.google.protobuf.Empty\x1a\x0b.api.Schema\"\x00\x12<\n\x0eSetAuthorizers\x12\x10.api.Authorizers\x1a\x16.google.protobuf.Empty\"\x00\x12\x34\n\nSetIndexes\x12\x0c.api.Indexes\x1a\x16.google.protobuf.Empty\"\x00\x12\x42\n\x11SetTypeValidators\x12\x13.api.TypeValidators\x1a\x16.google.protobuf.Empty\"\x00\x12%\n\x02Me\x12\r.api.MeFilter\x1a\x0e.api.DocDetail\"\x00\x12,\n\tCreateDoc\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00\x12/\n\nCreateDocs\x12\x14.api.DocConstructors\x1a\t.api.Docs\"\x00\x12\x1f\n\x06GetDoc\x12\t.api.Path\x1a\x08.api.Doc\"\x00\x12&\n\nSearchDocs\x12\x0b.api.Filter\x1a\t.api.Docs\"\x00\x12\x39\n\x0f\x44\x65pthSearchDocs\x12\x10.api.DepthFilter\x1a\x12.api.DocTraversals\"\x00\x12 \n\x07\x45\x64itDoc\x12\t.api.Edit\x1a\x08.api.Doc\"\x00\x12(\n\x08\x45\x64itDocs\x12\x0f.api.EditFilter\x1a\t.api.Docs\"\x00\x12-\n\x06\x44\x65lDoc\x12\t.api.Path\x1a\x16.google.protobuf.Empty\"\x00\x12\x30\n\x07\x44\x65lDocs\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12\x41\n\x10\x43reateConnection\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00\x12\x44\n\x11\x43reateConnections\x12\x1b.api.ConnectionConstructors\x1a\x10.api.Connections\"\x00\x12-\n\rGetConnection\x12\t.api.Path\x1a\x0f.api.Connection\"\x00\x12\x34\n\x11SearchConnections\x12\x0b.api.Filter\x1a\x10.api.Connections\"\x00\x12.\n\x0e\x45\x64itConnection\x12\t.api.Edit\x1a\x0f.api.Connection\"\x00\x12\x36\n\x0f\x45\x64itConnections\x12\x0f.api.EditFilter\x1a\x10.api.Connections\"\x00\x12\x34\n\rDelConnection\x12\t.api.Path\x1a\x16.google.protobuf.Empty\"\x00\x12\x37\n\x0e\x44\x65lConnections\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12<\n\x0f\x43onnectionsFrom\x12\x15.api.ConnectionFilter\x1a\x10.api.Connections\"\x00\x12:\n\rConnectionsTo\x12\x15.api.ConnectionFilter\x1a\x10.api.Connections\"\x00\x12\x39\n\x07Publish\x12\x14.api.OutboundMessage\x1a\x16.google.protobuf.Empty\"\x00\x12\x31\n\tSubscribe\x12\x12.api.ChannelFilter\x1a\x0c.api.Message\"\x00\x30\x01\x12:\n\x10SubscribeChanges\x12\x15.api.ExpressionFilter\x1a\x0b.api.Change\"\x00\x30\x01\x12:\n\x13PushDocConstructors\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00(\x01\x30\x01\x12O\n\x1aPushConnectionConstructors\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00(\x01\x30\x01\x12-\n\x08SubGraph\x12\x13.api.SubGraphFilter\x1a\n.api.Graph\"\x00\x42\x07Z\x05\x61pipbb\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,google_dot_protobuf_dot_any__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,github_dot_com_dot_mwitkow_dot_go__proto__validators_dot_validator__pb2.DESCRIPTOR,])
 
@@ -396,8 +396,8 @@ _DOCTRAVERSAL = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='relative_path', full_name='api.DocTraversal.relative_path', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -414,7 +414,7 @@ _DOCTRAVERSAL = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=951,
-  serialized_end=1022,
+  serialized_end=1023,
 )
 
 
@@ -444,8 +444,8 @@ _DOCTRAVERSALS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1024,
-  serialized_end=1078,
+  serialized_start=1025,
+  serialized_end=1079,
 )
 
 
@@ -503,8 +503,8 @@ _DOCDETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1081,
-  serialized_end=1309,
+  serialized_start=1082,
+  serialized_end=1310,
 )
 
 
@@ -541,8 +541,8 @@ _DOCDETAILS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1311,
-  serialized_end=1379,
+  serialized_start=1312,
+  serialized_end=1380,
 )
 
 
@@ -586,8 +586,8 @@ _DOCDETAILFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1381,
-  serialized_end=1507,
+  serialized_start=1382,
+  serialized_end=1508,
 )
 
 
@@ -652,8 +652,8 @@ _CONNECTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1510,
-  serialized_end=1723,
+  serialized_start=1511,
+  serialized_end=1724,
 )
 
 
@@ -711,8 +711,8 @@ _CONNECTIONCONSTRUCTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1726,
-  serialized_end=1920,
+  serialized_start=1727,
+  serialized_end=1921,
 )
 
 
@@ -742,8 +742,8 @@ _CONNECTIONCONSTRUCTORS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1922,
-  serialized_end=1995,
+  serialized_start=1923,
+  serialized_end=1996,
 )
 
 
@@ -780,8 +780,8 @@ _CONNECTIONS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1997,
-  serialized_end=2067,
+  serialized_start=1998,
+  serialized_end=2068,
 )
 
 
@@ -846,8 +846,8 @@ _CONNECTIONDETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2070,
-  serialized_end=2287,
+  serialized_start=2071,
+  serialized_end=2288,
 )
 
 
@@ -884,8 +884,8 @@ _CONNECTIONDETAILS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2289,
-  serialized_end=2371,
+  serialized_start=2290,
+  serialized_end=2372,
 )
 
 
@@ -957,8 +957,8 @@ _CONNECTIONFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2374,
-  serialized_end=2550,
+  serialized_start=2375,
+  serialized_end=2551,
 )
 
 
@@ -1030,8 +1030,8 @@ _FILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2553,
-  serialized_end=2697,
+  serialized_start=2554,
+  serialized_end=2698,
 )
 
 
@@ -1089,8 +1089,8 @@ _DEPTHFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2700,
-  serialized_end=2856,
+  serialized_start=2701,
+  serialized_end=2857,
 )
 
 
@@ -1148,8 +1148,8 @@ _INDEXCONSTRUCTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2859,
-  serialized_end=3015,
+  serialized_start=2860,
+  serialized_end=3016,
 )
 
 
@@ -1186,8 +1186,8 @@ _AUTHORIZER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3017,
-  serialized_end=3099,
+  serialized_start=3018,
+  serialized_end=3100,
 )
 
 
@@ -1217,8 +1217,8 @@ _AUTHORIZERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3101,
-  serialized_end=3152,
+  serialized_start=3102,
+  serialized_end=3153,
 )
 
 
@@ -1276,8 +1276,8 @@ _TYPEVALIDATOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3155,
-  serialized_end=3308,
+  serialized_start=3156,
+  serialized_end=3309,
 )
 
 
@@ -1307,8 +1307,8 @@ _TYPEVALIDATORS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3310,
-  serialized_end=3366,
+  serialized_start=3311,
+  serialized_end=3367,
 )
 
 
@@ -1366,8 +1366,8 @@ _INDEX = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3369,
-  serialized_end=3514,
+  serialized_start=3370,
+  serialized_end=3515,
 )
 
 
@@ -1397,8 +1397,8 @@ _INDEXES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3516,
-  serialized_end=3554,
+  serialized_start=3517,
+  serialized_end=3555,
 )
 
 
@@ -1435,8 +1435,8 @@ _MEFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3556,
-  serialized_end=3642,
+  serialized_start=3557,
+  serialized_end=3643,
 )
 
 
@@ -1473,8 +1473,8 @@ _CHANNELFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3644,
-  serialized_end=3714,
+  serialized_start=3645,
+  serialized_end=3715,
 )
 
 
@@ -1511,8 +1511,8 @@ _SUBGRAPHFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3716,
-  serialized_end=3821,
+  serialized_start=3717,
+  serialized_end=3822,
 )
 
 
@@ -1549,8 +1549,8 @@ _GRAPH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3823,
-  serialized_end=3894,
+  serialized_start=3824,
+  serialized_end=3895,
 )
 
 
@@ -1622,8 +1622,8 @@ _FLAGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3897,
-  serialized_end=4059,
+  serialized_start=3898,
+  serialized_end=4060,
 )
 
 
@@ -1660,8 +1660,8 @@ _EDIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4061,
-  serialized_end=4145,
+  serialized_start=4062,
+  serialized_end=4146,
 )
 
 
@@ -1698,8 +1698,8 @@ _EDITFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4147,
-  serialized_end=4233,
+  serialized_start=4148,
+  serialized_end=4234,
 )
 
 
@@ -1729,8 +1729,8 @@ _PONG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4235,
-  serialized_end=4258,
+  serialized_start=4236,
+  serialized_end=4259,
 )
 
 
@@ -1767,8 +1767,8 @@ _OUTBOUNDMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4260,
-  serialized_end=4359,
+  serialized_start=4261,
+  serialized_end=4360,
 )
 
 
@@ -1819,8 +1819,8 @@ _MESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4362,
-  serialized_end=4543,
+  serialized_start=4363,
+  serialized_end=4544,
 )
 
 
@@ -1878,84 +1878,8 @@ _SCHEMA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4546,
-  serialized_end=4710,
-)
-
-
-_DOCCHANGE = _descriptor.Descriptor(
-  name='DocChange',
-  full_name='api.DocChange',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='before', full_name='api.DocChange.before', index=0,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='after', full_name='api.DocChange.after', index=1,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=4712,
-  serialized_end=4774,
-)
-
-
-_CONNECTIONCHANGE = _descriptor.Descriptor(
-  name='ConnectionChange',
-  full_name='api.ConnectionChange',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='before', full_name='api.ConnectionChange.before', index=0,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='after', full_name='api.ConnectionChange.after', index=1,
-      number=5, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=4776,
-  serialized_end=4859,
+  serialized_start=4547,
+  serialized_end=4711,
 )
 
 
@@ -1988,16 +1912,9 @@ _CHANGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=_b('\342\337\037\002 \001'), file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='connection_changes', full_name='api.Change.connection_changes', index=3,
-      number=4, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='doc_changes', full_name='api.Change.doc_changes', index=4,
-      number=5, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='paths_affected', full_name='api.Change.paths_affected', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -2013,8 +1930,8 @@ _CHANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4862,
-  serialized_end=5083,
+  serialized_start=4714,
+  serialized_end=4883,
 )
 
 
@@ -2044,8 +1961,8 @@ _EXPRESSIONFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5085,
-  serialized_end=5123,
+  serialized_start=4885,
+  serialized_end=4923,
 )
 
 
@@ -2096,8 +2013,8 @@ _REQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5126,
-  serialized_end=5302,
+  serialized_start=4926,
+  serialized_end=5102,
 )
 
 _METADATA.fields_by_name['created_at'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
@@ -2113,7 +2030,7 @@ _DOCCONSTRUCTOR.fields_by_name['attributes'].message_type = google_dot_protobuf_
 _DOCCONSTRUCTORS.fields_by_name['docs'].message_type = _DOCCONSTRUCTOR
 _DOCS.fields_by_name['docs'].message_type = _DOC
 _DOCTRAVERSAL.fields_by_name['doc'].message_type = _DOC
-_DOCTRAVERSAL.fields_by_name['relative_path'].message_type = _PATH
+_DOCTRAVERSAL.fields_by_name['relative_path'].message_type = _PATHS
 _DOCTRAVERSALS.fields_by_name['traversals'].message_type = _DOCTRAVERSAL
 _DOCDETAIL.fields_by_name['path'].message_type = _PATH
 _DOCDETAIL.fields_by_name['attributes'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
@@ -2163,14 +2080,9 @@ _MESSAGE.fields_by_name['timestamp'].message_type = google_dot_protobuf_dot_time
 _SCHEMA.fields_by_name['authorizers'].message_type = _AUTHORIZERS
 _SCHEMA.fields_by_name['validators'].message_type = _TYPEVALIDATORS
 _SCHEMA.fields_by_name['indexes'].message_type = _INDEXES
-_DOCCHANGE.fields_by_name['before'].message_type = _DOC
-_DOCCHANGE.fields_by_name['after'].message_type = _DOC
-_CONNECTIONCHANGE.fields_by_name['before'].message_type = _CONNECTION
-_CONNECTIONCHANGE.fields_by_name['after'].message_type = _CONNECTION
 _CHANGE.fields_by_name['identity'].message_type = _DOC
 _CHANGE.fields_by_name['timestamp'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
-_CHANGE.fields_by_name['connection_changes'].message_type = _CONNECTIONCHANGE
-_CHANGE.fields_by_name['doc_changes'].message_type = _DOCCHANGE
+_CHANGE.fields_by_name['paths_affected'].message_type = _PATHS
 _REQUEST.fields_by_name['identity'].message_type = _DOC
 _REQUEST.fields_by_name['timestamp'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _REQUEST.fields_by_name['request'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
@@ -2215,8 +2127,6 @@ DESCRIPTOR.message_types_by_name['Pong'] = _PONG
 DESCRIPTOR.message_types_by_name['OutboundMessage'] = _OUTBOUNDMESSAGE
 DESCRIPTOR.message_types_by_name['Message'] = _MESSAGE
 DESCRIPTOR.message_types_by_name['Schema'] = _SCHEMA
-DESCRIPTOR.message_types_by_name['DocChange'] = _DOCCHANGE
-DESCRIPTOR.message_types_by_name['ConnectionChange'] = _CONNECTIONCHANGE
 DESCRIPTOR.message_types_by_name['Change'] = _CHANGE
 DESCRIPTOR.message_types_by_name['ExpressionFilter'] = _EXPRESSIONFILTER
 DESCRIPTOR.message_types_by_name['Request'] = _REQUEST
@@ -2509,20 +2419,6 @@ Schema = _reflection.GeneratedProtocolMessageType('Schema', (_message.Message,),
   ))
 _sym_db.RegisterMessage(Schema)
 
-DocChange = _reflection.GeneratedProtocolMessageType('DocChange', (_message.Message,), dict(
-  DESCRIPTOR = _DOCCHANGE,
-  __module__ = 'graphik_pb2'
-  # @@protoc_insertion_point(class_scope:api.DocChange)
-  ))
-_sym_db.RegisterMessage(DocChange)
-
-ConnectionChange = _reflection.GeneratedProtocolMessageType('ConnectionChange', (_message.Message,), dict(
-  DESCRIPTOR = _CONNECTIONCHANGE,
-  __module__ = 'graphik_pb2'
-  # @@protoc_insertion_point(class_scope:api.ConnectionChange)
-  ))
-_sym_db.RegisterMessage(ConnectionChange)
-
 Change = _reflection.GeneratedProtocolMessageType('Change', (_message.Message,), dict(
   DESCRIPTOR = _CHANGE,
   __module__ = 'graphik_pb2'
@@ -2612,8 +2508,8 @@ _DATABASESERVICE = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=5305,
-  serialized_end=6975,
+  serialized_start=5105,
+  serialized_end=6775,
   methods=[
   _descriptor.MethodDescriptor(
     name='Ping',
