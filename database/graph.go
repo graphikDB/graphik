@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/generic/cache"
 	"github.com/autom8ter/graphik/logger"
@@ -46,6 +47,7 @@ type Graph struct {
 	closeOnce       sync.Once
 	indexes         *cache.Cache
 	authorizers     *cache.Cache
+	typeValidators  *cache.Cache
 	rootUsers       []string
 }
 
@@ -76,8 +78,9 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		closers:         closers,
 		closeOnce:       sync.Once{},
 		jwtCache:        cache.New(m, 1*time.Minute),
-		indexes:         cache.New(m, 1*time.Minute),
-		authorizers:     cache.New(m, 1*time.Minute),
+		indexes:         cache.New(m, 1*time.Hour),
+		authorizers:     cache.New(m, 1*time.Hour),
+		typeValidators:  cache.New(m, 1*time.Hour),
 		rootUsers:       flgs.RootUsers,
 	}
 	if flgs.OpenIdDiscovery != "" {
@@ -196,11 +199,22 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 	sort.Slice(authorizers, func(i, j int) bool {
 		return authorizers[i].Name < authorizers[j].Name
 	})
+	var typeValidators []*apipb.TypeValidator
+	g.rangeTypeValidators(func(v *typeValidator) bool {
+		typeValidators = append(typeValidators, v.validator)
+		return true
+	})
+	sort.Slice(typeValidators, func(i, j int) bool {
+		ival := typeValidators[i]
+		jval := typeValidators[j]
+		return fmt.Sprintf("%s.%s", ival.Gtype, ival.Name) < fmt.Sprintf("%s.%s", jval.Gtype, jval.Name)
+	})
 	return &apipb.Schema{
 		ConnectionTypes: e,
 		DocTypes:        n,
-		Indexes:         &apipb.Indexes{Indexes: indexes},
 		Authorizers:     &apipb.Authorizers{Authorizers: authorizers},
+		Validators:      &apipb.TypeValidators{Validators: typeValidators},
+		Indexes:         &apipb.Indexes{Indexes: indexes},
 	}, nil
 }
 
@@ -249,19 +263,18 @@ func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	//if err := g.db.Update(func(tx *bbolt.Tx) error {
-	//	for _, a := range as.GetValidators() {
-	//		_, err := g.setAuthorizer(ctx, tx, a)
-	//		if err != nil {
-	//			return err
-	//		}
-	//	}
-	//	return nil
-	//}); err != nil {
-	//	return nil, status.Error(codes.Internal, err.Error())
-	//}
-	//return &empty.Empty{}, g.cacheAuthorizers()
-	return nil, status.Error(codes.Unimplemented, "na")
+	if err := g.db.Update(func(tx *bbolt.Tx) error {
+		for _, v := range as.GetValidators() {
+			_, err := g.setTypedValidator(ctx, tx, v)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &empty.Empty{}, g.cacheTypeValidators()
 }
 
 func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetail, error) {

@@ -25,6 +25,11 @@ type authorizer struct {
 	program    cel.Program
 }
 
+type typeValidator struct {
+	validator *apipb.TypeValidator
+	program   cel.Program
+}
+
 func (g *Graph) updateMeta(ctx context.Context, meta *apipb.Metadata) {
 	identity := g.getIdentity(ctx)
 	if meta == nil {
@@ -101,9 +106,18 @@ func (g *Graph) rangeAuthorizers(fn func(a *authorizer) bool) {
 	})
 }
 
+func (g *Graph) rangeTypeValidators(fn func(a *typeValidator) bool) {
+	g.typeValidators.Range(func(key, value interface{}) bool {
+		return fn(value.(*typeValidator))
+	})
+}
+
 func (g *Graph) cacheAuthorizers() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbAuthorizers).ForEach(func(k, v []byte) error {
+			if v == nil {
+				return nil
+			}
 			var i apipb.Authorizer
 			var err error
 			if err := proto.Unmarshal(v, &i); err != nil {
@@ -116,6 +130,39 @@ func (g *Graph) cacheAuthorizers() error {
 			g.authorizers.Set(i.GetName(), &authorizer{
 				authorizer: &i,
 				program:    program,
+			}, 0)
+			return nil
+		})
+	})
+}
+
+func (g *Graph) cacheTypeValidators() error {
+	return g.db.View(func(tx *bbolt.Tx) error {
+		return tx.Bucket(dbTypeValidators).ForEach(func(k, v []byte) error {
+			if v == nil {
+				return nil
+			}
+			var i apipb.TypeValidator
+			var err error
+			if err := proto.Unmarshal(v, &i); err != nil {
+				return err
+			}
+			var program cel.Program
+			if i.GetConnections() {
+				program, err = g.vm.Connection().Program(i.Expression)
+				if err != nil {
+					return err
+				}
+			}
+			if i.GetDocs() {
+				program, err = g.vm.Doc().Program(i.Expression)
+				if err != nil {
+					return err
+				}
+			}
+			g.typeValidators.Set(i.GetName(), &typeValidator{
+				validator: &i,
+				program:   program,
 			}, 0)
 			return nil
 		})
@@ -195,6 +242,42 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 		return nil, err
 	}
 	if err := authBucket.Put([]byte(i.GetName()), bits); err != nil {
+		return nil, err
+	}
+	return i, nil
+}
+
+func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.TypeValidator) (*apipb.TypeValidator, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	validatorBucket := tx.Bucket(dbTypeValidators)
+	val := validatorBucket.Get([]byte(i.GetName()))
+	if val != nil && len(val) > 0 {
+		var current = &apipb.TypeValidator{}
+		err := proto.Unmarshal(val, current)
+		if err != nil {
+			return nil, err
+		}
+		current.Expression = i.Expression
+		current.Docs = i.Docs
+		current.Connections = i.Connections
+		current.Gtype = i.Gtype
+		bits, err := proto.Marshal(current)
+		if err != nil {
+			return nil, err
+		}
+		err = validatorBucket.Put([]byte(i.GetName()), bits)
+		if err != nil {
+			return nil, err
+		}
+		return current, nil
+	}
+	bits, err := proto.Marshal(i)
+	if err != nil {
+		return nil, err
+	}
+	if err := validatorBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
 	return i, nil

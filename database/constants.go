@@ -19,6 +19,7 @@ var (
 	dbDocs             = []byte("docs")
 	dbIndexes          = []byte("indexes")
 	dbAuthorizers      = []byte("authorizers")
+	dbTypeValidators   = []byte("typeValidators")
 	dbIndexDocs        = []byte("indexedDocs")
 	dbIndexConnections = []byte("indexedConnections")
 	// An error indicating a given key does not exist
