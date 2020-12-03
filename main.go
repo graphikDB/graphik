@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/autom8ter/graphik/database"
 	"github.com/autom8ter/graphik/gen/go"
@@ -21,6 +22,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"log"
 	"net"
 	"net/http"
 	"net/http/pprof"
@@ -42,6 +44,8 @@ func init() {
 	pflag.CommandLine.StringSliceVar(&global.AllowOrigins, "allow-origins", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
 	pflag.CommandLine.StringSliceVar(&global.AllowMethods, "allow-methods", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
 	pflag.CommandLine.StringSliceVar(&global.RootUsers, "root-users", helpers.StringSliceEnvOr("GRAPHIK_ROOT_USERS", nil), "cors allow methods (env: GRAPHIK_ROOT_USERS)")
+	pflag.CommandLine.StringVar(&global.TlsCert, "tls-cert", helpers.EnvOr("GRAPHIK_TLS_CERT", ""), "path to tls certificate (env: GRAPHIK_TLS_CERT)")
+	pflag.CommandLine.StringVar(&global.TlsKey1, "tls-key", helpers.EnvOr("GRAPHIK_TLS_KEY", ""), "path to tls key (env: GRAPHIK_TLS_KEY)")
 	pflag.Parse()
 }
 
@@ -65,10 +69,25 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		return
 	}
 	defer g.Close()
-	lis, err := net.Listen("tcp", bind)
-	if err != nil {
-		logger.Error("failed to create http server listener", zap.Error(err))
-		return
+	var lis net.Listener
+	if global.TlsCert != "" && global.TlsKey1 != "" {
+		cer, err := tls.LoadX509KeyPair(global.TlsCert, global.TlsKey1)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		config := &tls.Config{Certificates: []tls.Certificate{cer}}
+		lis, err = tls.Listen("tcp", bind, config)
+		if err != nil {
+			logger.Error("failed to create tls server listener", zap.Error(err))
+			return
+		}
+	} else {
+		lis, err = net.Listen("tcp", bind)
+		if err != nil {
+			logger.Error("failed to create server listener", zap.Error(err))
+			return
+		}
 	}
 	defer lis.Close()
 	self := fmt.Sprintf("localhost%v", bind)

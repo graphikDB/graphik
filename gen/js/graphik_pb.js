@@ -7786,7 +7786,9 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     allowHeadersList: jspb.Message.getRepeatedField(msg, 5),
     allowMethodsList: jspb.Message.getRepeatedField(msg, 6),
     allowOriginsList: jspb.Message.getRepeatedField(msg, 7),
-    rootUsersList: jspb.Message.getRepeatedField(msg, 8)
+    rootUsersList: jspb.Message.getRepeatedField(msg, 8),
+    tlsCert: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    tlsKey1: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -7850,6 +7852,14 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 8:
       var value = /** @type {string} */ (reader.readString());
       msg.addRootUsers(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTlsCert(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTlsKey1(value);
       break;
     default:
       reader.skipField();
@@ -7926,6 +7936,20 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeRepeatedString(
       8,
+      f
+    );
+  }
+  f = message.getTlsCert();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
+  f = message.getTlsKey1();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
       f
     );
   }
@@ -8092,6 +8116,36 @@ proto.api.Flags.prototype.addRootUsers = function(value, opt_index) {
 
 proto.api.Flags.prototype.clearRootUsersList = function() {
   this.setRootUsersList([]);
+};
+
+
+/**
+ * optional string tls_cert = 9;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getTlsCert = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setTlsCert = function(value) {
+  jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional string tls_key1 = 10;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getTlsKey1 = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setTlsKey1 = function(value) {
+  jspb.Message.setProto3StringField(this, 10, value);
 };
 
 

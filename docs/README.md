@@ -518,6 +518,8 @@ Filter is a generic filter using Common Expression Language
 | allow_methods | [string](#string) | repeated | cors allow methods (env: GRAPHIK_ALLOW_METHODS) |
 | allow_origins | [string](#string) | repeated | cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) |
 | root_users | [string](#string) | repeated | root user is a list of email addresses that bypass authorizers. (env: GRAPHIK_ROOT_USERS) |
+| tls_cert | [string](#string) |  |  |
+| tls_key1 | [string](#string) |  |  |
 
 
 

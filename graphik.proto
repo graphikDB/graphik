@@ -383,6 +383,8 @@ message Flags {
   repeated string allow_origins =7;
   // root user is a list of email addresses that bypass authorizers. (env: GRAPHIK_ROOT_USERS)
   repeated string root_users =8;
+  string tls_cert =9;
+  string tls_key1=10;
 }
 
 // Edit patches the attributes of a Doc or Connection
