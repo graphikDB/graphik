@@ -58,9 +58,11 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
       --allow-headers strings   cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
       --allow-methods strings   cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
       --allow-origins strings   cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
-      --authorizers strings     registered authorizers (env: GRAPHIK_AUTHORIZERS)
-      --jwks strings            authorized jwks uris ex: https://www.googleapis.com/oauth2/v3/certs (env: GRAPHIK_JWKS_URIS)
-      --metrics                 enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
+      --metrics                 enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true) (default true)
+      --open-id string          open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
+      --root-users strings      cors allow methods (env: GRAPHIK_ROOT_USERS)
       --storage string          persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
+      --tls-cert string         path to tls certificate (env: GRAPHIK_TLS_CERT)
+      --tls-key string          path to tls key (env: GRAPHIK_TLS_KEY)
 
 ```
