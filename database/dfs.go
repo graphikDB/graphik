@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	apipb "github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/generic/stack"
 	"github.com/autom8ter/graphik/logger"
@@ -77,15 +78,17 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 		}
 		//d.visited[d.filter.Root.String()] = struct{}{}
 	}
+	var traversalPath []string
 	for d.stack.Len() > 0 {
 		if err := ctx.Err(); err != nil {
 			return nil
 		}
-		t := d.stack.Pop()
+		popped := d.stack.Pop().(*apipb.Doc)
+		traversalPath = append(traversalPath, fmt.Sprintf("%s.%s", popped.GetPath().GetGtype(), popped.GetPath().GetGid()))
 		if len(d.docs.Traversals) >= int(d.filter.Limit) {
 			return nil
 		}
-		if err := d.g.rangeFrom(ctx, tx, t.(*apipb.Doc).GetPath(), func(e *apipb.Connection) bool {
+		if err := d.g.rangeFrom(ctx, tx, popped.GetPath(), func(e *apipb.Connection) bool {
 			if connectionProgram != nil {
 				res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
 				if err != nil {
@@ -109,7 +112,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 				if docProgram == nil {
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 						Doc:          to,
-						RelativePath: nil,
+						RelativePath: traversalPath,
 					})
 				} else {
 					res, err := d.g.vm.Doc().Eval(to, *docProgram)
@@ -122,7 +125,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					if res {
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 							Doc:          to,
-							RelativePath: nil,
+							RelativePath: traversalPath,
 						})
 					}
 				}
