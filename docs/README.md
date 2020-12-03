@@ -887,6 +887,8 @@ DatabaseService is the primary database service
 | Publish | [OutboundMessage](#api.OutboundMessage) | [.google.protobuf.Empty](#google.protobuf.Empty) | Publish publishes a message to a pubsub channel |
 | Subscribe | [ChannelFilter](#api.ChannelFilter) | [Message](#api.Message) stream | Subscribe subscribes to messages on a pubsub channel |
 | SubscribeChanges | [ExpressionFilter](#api.ExpressionFilter) | [Change](#api.Change) stream |  |
+| PushDocConstructors | [DocConstructor](#api.DocConstructor) stream | [Doc](#api.Doc) stream |  |
+| PushConnectionConstructors | [ConnectionConstructor](#api.ConnectionConstructor) stream | [Connection](#api.Connection) stream |  |
 | SubGraph | [SubGraphFilter](#api.SubGraphFilter) | [Graph](#api.Graph) | SubGraph returns a subgraph using the given filter |
 
  

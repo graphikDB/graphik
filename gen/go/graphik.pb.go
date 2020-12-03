@@ -3480,7 +3480,7 @@ var file_graphik_proto_rawDesc = []byte{
 	0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x31, 0x0a, 0x07, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
 	0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52,
-	0x07, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x32, 0xf9, 0x0b, 0x0a, 0x0f, 0x44, 0x61, 0x74,
+	0x07, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x32, 0x86, 0x0d, 0x0a, 0x0f, 0x44, 0x61, 0x74,
 	0x61, 0x62, 0x61, 0x73, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x2b, 0x0a, 0x04,
 	0x50, 0x69, 0x6e, 0x67, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x09, 0x2e, 0x61,
@@ -3573,11 +3573,20 @@ var file_graphik_proto_rawDesc = []byte{
 	0x73, 0x63, 0x72, 0x69, 0x62, 0x65, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x73, 0x12, 0x15, 0x2e,
 	0x61, 0x70, 0x69, 0x2e, 0x45, 0x78, 0x70, 0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x46, 0x69,
 	0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x68, 0x61, 0x6e, 0x67,
-	0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x2d, 0x0a, 0x08, 0x53, 0x75, 0x62, 0x47, 0x72, 0x61, 0x70,
-	0x68, 0x12, 0x13, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x75, 0x62, 0x47, 0x72, 0x61, 0x70, 0x68,
-	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x72, 0x61,
-	0x70, 0x68, 0x22, 0x00, 0x42, 0x07, 0x5a, 0x05, 0x61, 0x70, 0x69, 0x70, 0x62, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x3a, 0x0a, 0x13, 0x50, 0x75, 0x73, 0x68, 0x44, 0x6f, 0x63,
+	0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x13, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f,
+	0x72, 0x1a, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x22, 0x00, 0x28, 0x01, 0x30,
+	0x01, 0x12, 0x4f, 0x0a, 0x1a, 0x50, 0x75, 0x73, 0x68, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x12,
+	0x1a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x1a, 0x0f, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x00, 0x28, 0x01,
+	0x30, 0x01, 0x12, 0x2d, 0x0a, 0x08, 0x53, 0x75, 0x62, 0x47, 0x72, 0x61, 0x70, 0x68, 0x12, 0x13,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x75, 0x62, 0x47, 0x72, 0x61, 0x70, 0x68, 0x46, 0x69, 0x6c,
+	0x74, 0x65, 0x72, 0x1a, 0x0a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x22,
+	0x00, 0x42, 0x07, 0x5a, 0x05, 0x61, 0x70, 0x69, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -3747,38 +3756,42 @@ var file_graphik_proto_depIdxs = []int32{
 	38,  // 99: api.DatabaseService.Publish:input_type -> api.OutboundMessage
 	31,  // 100: api.DatabaseService.Subscribe:input_type -> api.ChannelFilter
 	44,  // 101: api.DatabaseService.SubscribeChanges:input_type -> api.ExpressionFilter
-	32,  // 102: api.DatabaseService.SubGraph:input_type -> api.SubGraphFilter
-	37,  // 103: api.DatabaseService.Ping:output_type -> api.Pong
-	40,  // 104: api.DatabaseService.GetSchema:output_type -> api.Schema
-	48,  // 105: api.DatabaseService.SetAuthorizers:output_type -> google.protobuf.Empty
-	48,  // 106: api.DatabaseService.SetIndexes:output_type -> google.protobuf.Empty
-	48,  // 107: api.DatabaseService.SetTypeValidators:output_type -> google.protobuf.Empty
-	11,  // 108: api.DatabaseService.Me:output_type -> api.DocDetail
-	5,   // 109: api.DatabaseService.CreateDoc:output_type -> api.Doc
-	8,   // 110: api.DatabaseService.CreateDocs:output_type -> api.Docs
-	5,   // 111: api.DatabaseService.GetDoc:output_type -> api.Doc
-	8,   // 112: api.DatabaseService.SearchDocs:output_type -> api.Docs
-	10,  // 113: api.DatabaseService.DepthSearchDocs:output_type -> api.DocTraversals
-	5,   // 114: api.DatabaseService.EditDoc:output_type -> api.Doc
-	8,   // 115: api.DatabaseService.EditDocs:output_type -> api.Docs
-	48,  // 116: api.DatabaseService.DelDoc:output_type -> google.protobuf.Empty
-	48,  // 117: api.DatabaseService.DelDocs:output_type -> google.protobuf.Empty
-	14,  // 118: api.DatabaseService.CreateConnection:output_type -> api.Connection
-	17,  // 119: api.DatabaseService.CreateConnections:output_type -> api.Connections
-	14,  // 120: api.DatabaseService.GetConnection:output_type -> api.Connection
-	17,  // 121: api.DatabaseService.SearchConnections:output_type -> api.Connections
-	14,  // 122: api.DatabaseService.EditConnection:output_type -> api.Connection
-	17,  // 123: api.DatabaseService.EditConnections:output_type -> api.Connections
-	48,  // 124: api.DatabaseService.DelConnection:output_type -> google.protobuf.Empty
-	48,  // 125: api.DatabaseService.DelConnections:output_type -> google.protobuf.Empty
-	17,  // 126: api.DatabaseService.ConnectionsFrom:output_type -> api.Connections
-	17,  // 127: api.DatabaseService.ConnectionsTo:output_type -> api.Connections
-	48,  // 128: api.DatabaseService.Publish:output_type -> google.protobuf.Empty
-	39,  // 129: api.DatabaseService.Subscribe:output_type -> api.Message
-	43,  // 130: api.DatabaseService.SubscribeChanges:output_type -> api.Change
-	33,  // 131: api.DatabaseService.SubGraph:output_type -> api.Graph
-	103, // [103:132] is the sub-list for method output_type
-	74,  // [74:103] is the sub-list for method input_type
+	6,   // 102: api.DatabaseService.PushDocConstructors:input_type -> api.DocConstructor
+	15,  // 103: api.DatabaseService.PushConnectionConstructors:input_type -> api.ConnectionConstructor
+	32,  // 104: api.DatabaseService.SubGraph:input_type -> api.SubGraphFilter
+	37,  // 105: api.DatabaseService.Ping:output_type -> api.Pong
+	40,  // 106: api.DatabaseService.GetSchema:output_type -> api.Schema
+	48,  // 107: api.DatabaseService.SetAuthorizers:output_type -> google.protobuf.Empty
+	48,  // 108: api.DatabaseService.SetIndexes:output_type -> google.protobuf.Empty
+	48,  // 109: api.DatabaseService.SetTypeValidators:output_type -> google.protobuf.Empty
+	11,  // 110: api.DatabaseService.Me:output_type -> api.DocDetail
+	5,   // 111: api.DatabaseService.CreateDoc:output_type -> api.Doc
+	8,   // 112: api.DatabaseService.CreateDocs:output_type -> api.Docs
+	5,   // 113: api.DatabaseService.GetDoc:output_type -> api.Doc
+	8,   // 114: api.DatabaseService.SearchDocs:output_type -> api.Docs
+	10,  // 115: api.DatabaseService.DepthSearchDocs:output_type -> api.DocTraversals
+	5,   // 116: api.DatabaseService.EditDoc:output_type -> api.Doc
+	8,   // 117: api.DatabaseService.EditDocs:output_type -> api.Docs
+	48,  // 118: api.DatabaseService.DelDoc:output_type -> google.protobuf.Empty
+	48,  // 119: api.DatabaseService.DelDocs:output_type -> google.protobuf.Empty
+	14,  // 120: api.DatabaseService.CreateConnection:output_type -> api.Connection
+	17,  // 121: api.DatabaseService.CreateConnections:output_type -> api.Connections
+	14,  // 122: api.DatabaseService.GetConnection:output_type -> api.Connection
+	17,  // 123: api.DatabaseService.SearchConnections:output_type -> api.Connections
+	14,  // 124: api.DatabaseService.EditConnection:output_type -> api.Connection
+	17,  // 125: api.DatabaseService.EditConnections:output_type -> api.Connections
+	48,  // 126: api.DatabaseService.DelConnection:output_type -> google.protobuf.Empty
+	48,  // 127: api.DatabaseService.DelConnections:output_type -> google.protobuf.Empty
+	17,  // 128: api.DatabaseService.ConnectionsFrom:output_type -> api.Connections
+	17,  // 129: api.DatabaseService.ConnectionsTo:output_type -> api.Connections
+	48,  // 130: api.DatabaseService.Publish:output_type -> google.protobuf.Empty
+	39,  // 131: api.DatabaseService.Subscribe:output_type -> api.Message
+	43,  // 132: api.DatabaseService.SubscribeChanges:output_type -> api.Change
+	5,   // 133: api.DatabaseService.PushDocConstructors:output_type -> api.Doc
+	14,  // 134: api.DatabaseService.PushConnectionConstructors:output_type -> api.Connection
+	33,  // 135: api.DatabaseService.SubGraph:output_type -> api.Graph
+	105, // [105:136] is the sub-list for method output_type
+	74,  // [74:105] is the sub-list for method input_type
 	74,  // [74:74] is the sub-list for extension type_name
 	74,  // [74:74] is the sub-list for extension extendee
 	0,   // [0:74] is the sub-list for field type_name
@@ -4427,6 +4440,8 @@ type DatabaseServiceClient interface {
 	// Subscribe subscribes to messages on a pubsub channel
 	Subscribe(ctx context.Context, in *ChannelFilter, opts ...grpc.CallOption) (DatabaseService_SubscribeClient, error)
 	SubscribeChanges(ctx context.Context, in *ExpressionFilter, opts ...grpc.CallOption) (DatabaseService_SubscribeChangesClient, error)
+	PushDocConstructors(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_PushDocConstructorsClient, error)
+	PushConnectionConstructors(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_PushConnectionConstructorsClient, error)
 	// SubGraph returns a subgraph using the given filter
 	SubGraph(ctx context.Context, in *SubGraphFilter, opts ...grpc.CallOption) (*Graph, error)
 }
@@ -4737,6 +4752,68 @@ func (x *databaseServiceSubscribeChangesClient) Recv() (*Change, error) {
 	return m, nil
 }
 
+func (c *databaseServiceClient) PushDocConstructors(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_PushDocConstructorsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_DatabaseService_serviceDesc.Streams[2], "/api.DatabaseService/PushDocConstructors", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &databaseServicePushDocConstructorsClient{stream}
+	return x, nil
+}
+
+type DatabaseService_PushDocConstructorsClient interface {
+	Send(*DocConstructor) error
+	Recv() (*Doc, error)
+	grpc.ClientStream
+}
+
+type databaseServicePushDocConstructorsClient struct {
+	grpc.ClientStream
+}
+
+func (x *databaseServicePushDocConstructorsClient) Send(m *DocConstructor) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *databaseServicePushDocConstructorsClient) Recv() (*Doc, error) {
+	m := new(Doc)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *databaseServiceClient) PushConnectionConstructors(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_PushConnectionConstructorsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_DatabaseService_serviceDesc.Streams[3], "/api.DatabaseService/PushConnectionConstructors", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &databaseServicePushConnectionConstructorsClient{stream}
+	return x, nil
+}
+
+type DatabaseService_PushConnectionConstructorsClient interface {
+	Send(*ConnectionConstructor) error
+	Recv() (*Connection, error)
+	grpc.ClientStream
+}
+
+type databaseServicePushConnectionConstructorsClient struct {
+	grpc.ClientStream
+}
+
+func (x *databaseServicePushConnectionConstructorsClient) Send(m *ConnectionConstructor) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *databaseServicePushConnectionConstructorsClient) Recv() (*Connection, error) {
+	m := new(Connection)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *databaseServiceClient) SubGraph(ctx context.Context, in *SubGraphFilter, opts ...grpc.CallOption) (*Graph, error) {
 	out := new(Graph)
 	err := c.cc.Invoke(ctx, "/api.DatabaseService/SubGraph", in, out, opts...)
@@ -4800,6 +4877,8 @@ type DatabaseServiceServer interface {
 	// Subscribe subscribes to messages on a pubsub channel
 	Subscribe(*ChannelFilter, DatabaseService_SubscribeServer) error
 	SubscribeChanges(*ExpressionFilter, DatabaseService_SubscribeChangesServer) error
+	PushDocConstructors(DatabaseService_PushDocConstructorsServer) error
+	PushConnectionConstructors(DatabaseService_PushConnectionConstructorsServer) error
 	// SubGraph returns a subgraph using the given filter
 	SubGraph(context.Context, *SubGraphFilter) (*Graph, error)
 }
@@ -4891,6 +4970,12 @@ func (*UnimplementedDatabaseServiceServer) Subscribe(*ChannelFilter, DatabaseSer
 }
 func (*UnimplementedDatabaseServiceServer) SubscribeChanges(*ExpressionFilter, DatabaseService_SubscribeChangesServer) error {
 	return status.Errorf(codes.Unimplemented, "method SubscribeChanges not implemented")
+}
+func (*UnimplementedDatabaseServiceServer) PushDocConstructors(DatabaseService_PushDocConstructorsServer) error {
+	return status.Errorf(codes.Unimplemented, "method PushDocConstructors not implemented")
+}
+func (*UnimplementedDatabaseServiceServer) PushConnectionConstructors(DatabaseService_PushConnectionConstructorsServer) error {
+	return status.Errorf(codes.Unimplemented, "method PushConnectionConstructors not implemented")
 }
 func (*UnimplementedDatabaseServiceServer) SubGraph(context.Context, *SubGraphFilter) (*Graph, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubGraph not implemented")
@@ -5410,6 +5495,58 @@ func (x *databaseServiceSubscribeChangesServer) Send(m *Change) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _DatabaseService_PushDocConstructors_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(DatabaseServiceServer).PushDocConstructors(&databaseServicePushDocConstructorsServer{stream})
+}
+
+type DatabaseService_PushDocConstructorsServer interface {
+	Send(*Doc) error
+	Recv() (*DocConstructor, error)
+	grpc.ServerStream
+}
+
+type databaseServicePushDocConstructorsServer struct {
+	grpc.ServerStream
+}
+
+func (x *databaseServicePushDocConstructorsServer) Send(m *Doc) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *databaseServicePushDocConstructorsServer) Recv() (*DocConstructor, error) {
+	m := new(DocConstructor)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _DatabaseService_PushConnectionConstructors_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(DatabaseServiceServer).PushConnectionConstructors(&databaseServicePushConnectionConstructorsServer{stream})
+}
+
+type DatabaseService_PushConnectionConstructorsServer interface {
+	Send(*Connection) error
+	Recv() (*ConnectionConstructor, error)
+	grpc.ServerStream
+}
+
+type databaseServicePushConnectionConstructorsServer struct {
+	grpc.ServerStream
+}
+
+func (x *databaseServicePushConnectionConstructorsServer) Send(m *Connection) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *databaseServicePushConnectionConstructorsServer) Recv() (*ConnectionConstructor, error) {
+	m := new(ConnectionConstructor)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func _DatabaseService_SubGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubGraphFilter)
 	if err := dec(in); err != nil {
@@ -5551,6 +5688,18 @@ var _DatabaseService_serviceDesc = grpc.ServiceDesc{
 			StreamName:    "SubscribeChanges",
 			Handler:       _DatabaseService_SubscribeChanges_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "PushDocConstructors",
+			Handler:       _DatabaseService_PushDocConstructors_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "PushConnectionConstructors",
+			Handler:       _DatabaseService_PushConnectionConstructors_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "graphik.proto",

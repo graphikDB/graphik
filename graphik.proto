@@ -475,6 +475,8 @@ service DatabaseService {
   // Subscribe subscribes to messages on a pubsub channel
   rpc Subscribe(ChannelFilter) returns(stream Message){}
   rpc SubscribeChanges(ExpressionFilter) returns(stream Change){}
+  rpc PushDocConstructors(stream DocConstructor) returns (stream Doc){}
+  rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   // SubGraph returns a subgraph using the given filter
   rpc SubGraph(SubGraphFilter) returns(Graph){}
 }
