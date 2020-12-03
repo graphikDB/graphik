@@ -47,6 +47,8 @@
     - [Request](#api.Request)
     - [Schema](#api.Schema)
     - [SubGraphFilter](#api.SubGraphFilter)
+    - [TypeValidator](#api.TypeValidator)
+    - [TypeValidators](#api.TypeValidators)
   
     - [DatabaseService](#api.DatabaseService)
   
@@ -770,6 +772,7 @@ Schema returns registered connection &amp; doc types
 | connection_types | [string](#string) | repeated | connection_types are the types of connections in the graph |
 | doc_types | [string](#string) | repeated | doc_types are the types of docs in the graph |
 | authorizers | [Authorizers](#api.Authorizers) |  |  |
+| validators | [TypeValidators](#api.TypeValidators) |  |  |
 | indexes | [Indexes](#api.Indexes) |  |  |
 
 
@@ -787,6 +790,40 @@ SubGraphFilter is used to filter docs/connections in the graph
 | ----- | ---- | ----- | ----------- |
 | doc_filter | [Filter](#api.Filter) |  | doc_filter is a filter used to filter docs in the graph |
 | connection_filter | [Filter](#api.Filter) |  | connection_filter is a filter used to filter the connections of each doc returned by the doc_filter |
+
+
+
+
+
+
+<a name="api.TypeValidator"></a>
+
+### TypeValidator
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| gtype | [string](#string) |  |  |
+| expression | [string](#string) |  |  |
+| docs | [bool](#bool) |  | if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both. |
+| connections | [bool](#bool) |  | if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both. |
+
+
+
+
+
+
+<a name="api.TypeValidators"></a>
+
+### TypeValidators
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| validators | [TypeValidator](#api.TypeValidator) | repeated |  |
 
 
 
@@ -810,6 +847,7 @@ DatabaseService is the primary database service
 | GetSchema | [.google.protobuf.Empty](#google.protobuf.Empty) | [Schema](#api.Schema) | GetSchema gets schema about the Graph doc &amp; connection types |
 | SetAuthorizers | [Authorizers](#api.Authorizers) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 | SetIndexes | [Indexes](#api.Indexes) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
+| SetTypeValidators | [TypeValidators](#api.TypeValidators) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 | Me | [MeFilter](#api.MeFilter) | [DocDetail](#api.DocDetail) | Me returns a DocDetail of the currently logged in identity(the subject of the JWT) |
 | CreateDoc | [DocConstructor](#api.DocConstructor) | [Doc](#api.Doc) | CreateDoc creates a doc in the graph |
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |

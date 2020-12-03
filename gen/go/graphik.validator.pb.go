@@ -472,6 +472,33 @@ func (this *Authorizers) Validate() error {
 	return nil
 }
 
+var _regex_TypeValidator_Name = regexp.MustCompile(`^.{1,225}$`)
+var _regex_TypeValidator_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_TypeValidator_Expression = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *TypeValidator) Validate() error {
+	if !_regex_TypeValidator_Name.MatchString(this.Name) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Name", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Name))
+	}
+	if !_regex_TypeValidator_Gtype.MatchString(this.Gtype) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	}
+	if !_regex_TypeValidator_Expression.MatchString(this.Expression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	return nil
+}
+func (this *TypeValidators) Validate() error {
+	for _, item := range this.Validators {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Validators", err)
+			}
+		}
+	}
+	return nil
+}
+
 var _regex_Index_Name = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Index_Gtype = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Index_Expression = regexp.MustCompile(`^.{1,225}$`)
@@ -641,6 +668,11 @@ func (this *Schema) Validate() error {
 	if this.Authorizers != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Authorizers); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Authorizers", err)
+		}
+	}
+	if this.Validators != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Validators); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Validators", err)
 		}
 	}
 	if this.Indexes != nil {

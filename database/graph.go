@@ -244,6 +244,26 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 	return &empty.Empty{}, g.cacheAuthorizers()
 }
 
+func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators) (*empty.Empty, error) {
+	identity := g.getIdentity(ctx)
+	if identity == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	}
+	//if err := g.db.Update(func(tx *bbolt.Tx) error {
+	//	for _, a := range as.GetValidators() {
+	//		_, err := g.setAuthorizer(ctx, tx, a)
+	//		if err != nil {
+	//			return err
+	//		}
+	//	}
+	//	return nil
+	//}); err != nil {
+	//	return nil, status.Error(codes.Internal, err.Error())
+	//}
+	//return &empty.Empty{}, g.cacheAuthorizers()
+	return nil, status.Error(codes.Unimplemented, "na")
+}
+
 func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetail, error) {
 	identity := g.getIdentity(ctx)
 	if identity == nil {
