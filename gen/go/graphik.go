@@ -330,6 +330,60 @@ func (n *Docs) Sort(field string) {
 	}
 }
 
+func (n *DocTraversals) Sort(field string) {
+	if n == nil {
+		return
+	}
+	switch {
+	case field == "path.gid":
+		sort.Slice(n.GetTraversals(), func(i, j int) bool {
+			return n.GetTraversals()[i].GetDoc().GetPath().GetGid() < n.GetTraversals()[j].GetDoc().GetPath().GetGid()
+		})
+	case field == "path.gtype":
+		sort.Slice(n.GetTraversals(), func(i, j int) bool {
+			return n.GetTraversals()[i].GetDoc().GetPath().GetGtype() < n.GetTraversals()[j].GetDoc().GetPath().GetGtype()
+		})
+	case field == "metadata.version":
+		sort.Slice(n.GetTraversals(), func(i, j int) bool {
+			return n.GetTraversals()[i].GetDoc().GetMetadata().GetVersion() < n.GetTraversals()[j].GetDoc().GetMetadata().GetVersion()
+		})
+	case field == "metadata.created_at":
+		sort.Slice(n.GetTraversals(), func(i, j int) bool {
+			return n.GetTraversals()[i].GetDoc().GetMetadata().GetCreatedAt().AsTime().UnixNano() < n.GetTraversals()[j].GetDoc().GetMetadata().GetCreatedAt().AsTime().UnixNano()
+		})
+	case field == "relative_path":
+		sort.Slice(n.GetTraversals(), func(i, j int) bool {
+			return len(n.GetTraversals()[i].GetRelativePath()) < len(n.GetTraversals()[j].GetRelativePath())
+		})
+	case strings.Contains(field, "attributes."):
+		split := strings.Split(field, "attributes.")
+		if len(split) == 2 {
+			key := split[1]
+			sort.Slice(n.GetTraversals(), func(i, j int) bool {
+				fields := n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()
+				if fields == nil {
+					return true
+				}
+				if fields[key] == nil {
+					return true
+				}
+				switch n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()[key].GetKind() {
+				case &structpb.Value_NumberValue{}:
+					return n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()[key].GetNumberValue() < n.GetTraversals()[j].GetDoc().GetAttributes().GetFields()[key].GetNumberValue()
+				case &structpb.Value_StringValue{}:
+					return n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()[key].GetStringValue() < n.GetTraversals()[j].GetDoc().GetAttributes().GetFields()[key].GetStringValue()
+				default:
+					return fmt.Sprint(n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()[key].AsInterface()) < fmt.Sprint(n.GetTraversals()[j].GetDoc().GetAttributes().GetFields()[key].AsInterface())
+				}
+			})
+		}
+	default:
+		sort.Slice(n.GetTraversals(), func(i, j int) bool {
+			return n.GetTraversals()[i].GetDoc().GetMetadata().GetUpdatedAt().AsTime().UnixNano() < n.GetTraversals()[j].GetDoc().GetMetadata().GetUpdatedAt().AsTime().UnixNano()
+		})
+	}
+}
+
 func (e *Connections) Sort(field string) {
 	if e == nil {
 		return

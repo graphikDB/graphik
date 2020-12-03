@@ -414,7 +414,7 @@ DocDetails is an array of DocDetail
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | doc | [Doc](#api.Doc) |  |  |
-| relative_path | [string](#string) | repeated |  |
+| relative_path | [Path](#api.Path) | repeated |  |
 
 
 

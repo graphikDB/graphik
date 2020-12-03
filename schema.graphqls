@@ -51,7 +51,7 @@ type Docs {
 
 type DocTraversal {
   doc: Doc!
-  relative_path: [String!]!
+  relative_path: [Path!]!
 }
 
 type DocTraversals {

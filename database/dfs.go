@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	apipb "github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/generic/stack"
 	"github.com/autom8ter/graphik/logger"
@@ -32,9 +31,9 @@ func (g *Graph) newDepthFirst(filter *apipb.DepthFilter) *depthFirst {
 }
 
 func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
-	//defer func() {
-	//	d.docs.Sort(d.filter.Sort)
-	//}()
+	defer func() {
+		d.docs.Sort(d.filter.Sort)
+	}()
 	var (
 		docProgram        *cel.Program
 		connectionProgram *cel.Program
@@ -62,7 +61,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 		if docProgram == nil {
 			d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 				Doc:          doc,
-				RelativePath: nil,
+				RelativePath: []*apipb.Path{doc.GetPath()},
 			})
 		} else {
 			res, err := d.g.vm.Doc().Eval(doc, *docProgram)
@@ -72,19 +71,19 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 			if res {
 				d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 					Doc:          doc,
-					RelativePath: nil,
+					RelativePath: []*apipb.Path{doc.GetPath()},
 				})
 			}
 		}
 		//d.visited[d.filter.Root.String()] = struct{}{}
 	}
-	var traversalPath []string
+	var traversalPath []*apipb.Path
 	for d.stack.Len() > 0 {
 		if err := ctx.Err(); err != nil {
 			return nil
 		}
 		popped := d.stack.Pop().(*apipb.Doc)
-		traversalPath = append(traversalPath, fmt.Sprintf("%s.%s", popped.GetPath().GetGtype(), popped.GetPath().GetGid()))
+		traversalPath = append(traversalPath, popped.GetPath())
 		if len(d.docs.Traversals) >= int(d.filter.Limit) {
 			return nil
 		}
@@ -110,6 +109,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 				if docProgram == nil {
+					traversalPath = append(traversalPath, to.GetPath())
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 						Doc:          to,
 						RelativePath: traversalPath,
@@ -123,13 +123,14 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						return true
 					}
 					if res {
+						traversalPath = append(traversalPath, to.GetPath())
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 							Doc:          to,
 							RelativePath: traversalPath,
 						})
 					}
 				}
-				//d.visited[to.String()] = struct{}{}
+				d.visited[to.String()] = struct{}{}
 				d.stack.Push(to)
 			}
 			return len(d.docs.Traversals) >= int(d.filter.Limit)

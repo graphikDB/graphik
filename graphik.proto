@@ -78,7 +78,7 @@ message Docs {
 
 message DocTraversal {
   Doc doc =1;
-  repeated string relative_path =2;
+  repeated Path relative_path =2;
 }
 
 message DocTraversals {

@@ -1751,7 +1751,8 @@ proto.api.DocTraversal.prototype.toObject = function(opt_includeInstance) {
 proto.api.DocTraversal.toObject = function(includeInstance, msg) {
   var f, obj = {
     doc: (f = msg.getDoc()) && proto.api.Doc.toObject(includeInstance, f),
-    relativePathList: jspb.Message.getRepeatedField(msg, 2)
+    relativePathList: jspb.Message.toObjectList(msg.getRelativePathList(),
+    proto.api.Path.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -1794,7 +1795,8 @@ proto.api.DocTraversal.deserializeBinaryFromReader = function(msg, reader) {
       msg.setDoc(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
+      var value = new proto.api.Path;
+      reader.readMessage(value,proto.api.Path.deserializeBinaryFromReader);
       msg.addRelativePath(value);
       break;
     default:
@@ -1836,9 +1838,10 @@ proto.api.DocTraversal.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getRelativePathList();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeRepeatedMessage(
       2,
-      f
+      f,
+      proto.api.Path.serializeBinaryToWriter
     );
   }
 };
@@ -1875,26 +1878,28 @@ proto.api.DocTraversal.prototype.hasDoc = function() {
 
 
 /**
- * repeated string relative_path = 2;
- * @return {!Array<string>}
+ * repeated Path relative_path = 2;
+ * @return {!Array<!proto.api.Path>}
  */
 proto.api.DocTraversal.prototype.getRelativePathList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
+  return /** @type{!Array<!proto.api.Path>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.api.Path, 2));
 };
 
 
-/** @param {!Array<string>} value */
+/** @param {!Array<!proto.api.Path>} value */
 proto.api.DocTraversal.prototype.setRelativePathList = function(value) {
-  jspb.Message.setField(this, 2, value || []);
+  jspb.Message.setRepeatedWrapperField(this, 2, value);
 };
 
 
 /**
- * @param {!string} value
+ * @param {!proto.api.Path=} opt_value
  * @param {number=} opt_index
+ * @return {!proto.api.Path}
  */
-proto.api.DocTraversal.prototype.addRelativePath = function(value, opt_index) {
-  jspb.Message.addToRepeatedField(this, 2, value, opt_index);
+proto.api.DocTraversal.prototype.addRelativePath = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.api.Path, opt_index);
 };
 
 
