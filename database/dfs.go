@@ -75,10 +75,10 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 				})
 			}
 		}
-		//d.visited[d.filter.Root.String()] = struct{}{}
+		d.visited[d.filter.Root.String()] = struct{}{}
 	}
 	var traversalPath []*apipb.Path
-	for d.stack.Len() > 0 {
+	for d.stack.Len() > 0 && len(d.docs.Traversals) < int(d.filter.Limit) {
 		if err := ctx.Err(); err != nil {
 			return nil
 		}
@@ -100,6 +100,39 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 			}
+			if _, ok := d.visited[e.From.String()]; !ok {
+				from, err := d.g.getDoc(ctx, tx, e.From)
+				if err != nil {
+					if !strings.Contains(err.Error(), "no such key") {
+						logger.Error("dfs failure", zap.Error(err))
+					}
+					return true
+				}
+				if docProgram == nil {
+					traversalPath = append(traversalPath, e.GetPath(), from.GetPath())
+					d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
+						Doc:          from,
+						RelativePath: traversalPath,
+					})
+				} else {
+					res, err := d.g.vm.Doc().Eval(from, *docProgram)
+					if err != nil {
+						if !strings.Contains(err.Error(), "no such key") {
+							logger.Error("dfs failure", zap.Error(err))
+						}
+						return true
+					}
+					if res {
+						traversalPath = append(traversalPath, e.GetPath(), from.GetPath())
+						d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
+							Doc:          from,
+							RelativePath: traversalPath,
+						})
+					}
+				}
+				d.visited[from.Path.String()] = struct{}{}
+				d.stack.Push(from)
+			}
 			if _, ok := d.visited[e.To.String()]; !ok {
 				to, err := d.g.getDoc(ctx, tx, e.To)
 				if err != nil {
@@ -109,7 +142,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 				if docProgram == nil {
-					traversalPath = append(traversalPath, to.GetPath())
+					traversalPath = append(traversalPath, e.GetPath(), to.GetPath())
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 						Doc:          to,
 						RelativePath: traversalPath,
@@ -123,17 +156,17 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						return true
 					}
 					if res {
-						traversalPath = append(traversalPath, to.GetPath())
+						traversalPath = append(traversalPath, e.GetPath(), to.GetPath())
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.DocTraversal{
 							Doc:          to,
 							RelativePath: traversalPath,
 						})
 					}
 				}
-				d.visited[to.String()] = struct{}{}
+				d.visited[to.Path.String()] = struct{}{}
 				d.stack.Push(to)
 			}
-			return len(d.docs.Traversals) >= int(d.filter.Limit)
+			return len(d.docs.Traversals) < int(d.filter.Limit)
 		}); err != nil {
 			return err
 		}

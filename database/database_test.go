@@ -5,6 +5,7 @@ import (
 	"fmt"
 	apipb "github.com/autom8ter/graphik/gen/go"
 	apipb2 "github.com/autom8ter/graphik/gen/go"
+	"github.com/autom8ter/graphik/helpers"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/segmentio/ksuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -263,13 +264,14 @@ func TestGraph_DepthSearchDocs(t *testing.T) {
 		Root: ashe.GetPath(),
 		//DocExpression:        `doc.path.gtype.contains("pokemon")`,
 		ConnectionExpression: "connection.attributes.primary",
-		Limit:                4,
+		Limit:                5,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, doc := range res.GetTraversals() {
-		t.Log(doc.String())
+		bits, _ := helpers.MarshalJSON(doc)
+		t.Logf("%s\n", string(bits))
 	}
 }
 
