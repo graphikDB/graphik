@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
@@ -10,6 +11,8 @@ import (
 	"github.com/segmentio/ksuid"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
@@ -347,6 +350,24 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 		doc.Path = &apipb.Path{}
 	}
 	g.updateMeta(ctx, doc.Metadata)
+	var validationErr error
+	g.rangeTypeValidators(func(v *typeValidator) bool {
+		if v.validator.GetDocs() && v.validator.GetGtype() == doc.GetPath().GetGtype() {
+			res, err := g.vm.Doc().Eval(doc, v.program)
+			if err != nil {
+				validationErr = err
+				return false
+			}
+			if !res {
+				validationErr = errors.New(fmt.Sprintf("%s.%s document validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression()))
+				return false
+			}
+		}
+		return true
+	})
+	if validationErr != nil {
+		return nil, status.Error(codes.InvalidArgument, validationErr.Error())
+	}
 	bits, err := proto.Marshal(doc)
 	if err != nil {
 		return nil, err
@@ -429,6 +450,24 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 		connection.Path = &apipb.Path{}
 	}
 	g.updateMeta(ctx, connection.GetMetadata())
+	var validationErr error
+	g.rangeTypeValidators(func(v *typeValidator) bool {
+		if v.validator.GetConnections() && v.validator.GetGtype() == connection.GetPath().GetGtype() {
+			res, err := g.vm.Connection().Eval(connection, v.program)
+			if err != nil {
+				validationErr = err
+				return false
+			}
+			if !res {
+				validationErr = errors.New(fmt.Sprintf("%s.%s connection validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression()))
+				return false
+			}
+		}
+		return true
+	})
+	if validationErr != nil {
+		return nil, status.Error(codes.InvalidArgument, validationErr.Error())
+	}
 	bits, err := proto.Marshal(connection)
 	if err != nil {
 		return nil, err

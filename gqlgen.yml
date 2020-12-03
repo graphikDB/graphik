@@ -59,6 +59,10 @@ models:
     model: github.com/autom8ter/graphik/gen/go.Authorizer
   AuthorizersInput:
     model: github.com/autom8ter/graphik/gen/go.Authorizers
+  TypeValidatorInput:
+    model: github.com/autom8ter/graphik/gen/go.TypeValidator
+  TypeValidatorsInput:
+    model: github.com/autom8ter/graphik/gen/go.TypeValidators
 
   ID:
     model:

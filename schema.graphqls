@@ -58,6 +58,20 @@ type DocTraversals {
   traversals: [DocTraversal]!
 }
 
+type TypeValidator {
+  name: String!
+  gtype: String!
+  expression: String!
+  # if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
+  docs: Boolean
+  # if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
+  connections: Boolean
+}
+
+type TypeValidators {
+  validators: [TypeValidator!]
+}
+
 # Connection is a graph primitive that represents a relationship between two docs
 type Connection {
   # path is the path to the connection
@@ -142,8 +156,9 @@ type Schema {
   connection_types: [String!]
   # doc_types are the types of docs in the graph
   doc_types: [String!]
-  indexes: Indexes
   authorizers: Authorizers
+  validators: TypeValidators
+  indexes: Indexes
 }
 
 # Message is received on PubSub subscriptions
@@ -337,6 +352,20 @@ input AuthorizersInput {
   authorizers: [AuthorizerInput!]
 }
 
+input TypeValidatorInput {
+  name: String!
+  gtype: String!
+  expression: String!
+  # if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
+  docs: Boolean
+  # if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
+  connections: Boolean
+}
+
+input TypeValidatorsInput {
+  validators: [TypeValidatorInput!]
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
@@ -354,6 +383,7 @@ type Mutation {
   publish(input: OutboundMessage!): Empty
   setIndexes(input: IndexesInput!): Empty
   setAuthorizers(input: AuthorizersInput!): Empty
+  setTypeValidators(input: TypeValidatorsInput!): Empty
 }
 
 type Query {

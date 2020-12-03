@@ -53,6 +53,10 @@ func (r *mutationResolver) SetAuthorizers(ctx context.Context, input apipb.Autho
 	return r.client.SetAuthorizers(ctx, &input)
 }
 
+func (r *mutationResolver) SetTypeValidators(ctx context.Context, input apipb.TypeValidators) (*emptypb.Empty, error) {
+	return r.client.SetTypeValidators(ctx, &input)
+}
+
 func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {
 	return r.client.Ping(ctx, &emptypb.Empty{})
 }
