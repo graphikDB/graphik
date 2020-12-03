@@ -7788,7 +7788,7 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     allowOriginsList: jspb.Message.getRepeatedField(msg, 7),
     rootUsersList: jspb.Message.getRepeatedField(msg, 8),
     tlsCert: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    tlsKey1: jspb.Message.getFieldWithDefault(msg, 10, "")
+    tlsKey: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -7859,7 +7859,7 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 10:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTlsKey1(value);
+      msg.setTlsKey(value);
       break;
     default:
       reader.skipField();
@@ -7946,7 +7946,7 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getTlsKey1();
+  f = message.getTlsKey();
   if (f.length > 0) {
     writer.writeString(
       10,
@@ -8135,16 +8135,16 @@ proto.api.Flags.prototype.setTlsCert = function(value) {
 
 
 /**
- * optional string tls_key1 = 10;
+ * optional string tls_key = 10;
  * @return {string}
  */
-proto.api.Flags.prototype.getTlsKey1 = function() {
+proto.api.Flags.prototype.getTlsKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
 };
 
 
 /** @param {string} value */
-proto.api.Flags.prototype.setTlsKey1 = function(value) {
+proto.api.Flags.prototype.setTlsKey = function(value) {
   jspb.Message.setProto3StringField(this, 10, value);
 };
 

@@ -45,7 +45,7 @@ func init() {
 	pflag.CommandLine.StringSliceVar(&global.AllowMethods, "allow-methods", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
 	pflag.CommandLine.StringSliceVar(&global.RootUsers, "root-users", helpers.StringSliceEnvOr("GRAPHIK_ROOT_USERS", nil), "cors allow methods (env: GRAPHIK_ROOT_USERS)")
 	pflag.CommandLine.StringVar(&global.TlsCert, "tls-cert", helpers.EnvOr("GRAPHIK_TLS_CERT", ""), "path to tls certificate (env: GRAPHIK_TLS_CERT)")
-	pflag.CommandLine.StringVar(&global.TlsKey1, "tls-key", helpers.EnvOr("GRAPHIK_TLS_KEY", ""), "path to tls key (env: GRAPHIK_TLS_KEY)")
+	pflag.CommandLine.StringVar(&global.TlsKey, "tls-key", helpers.EnvOr("GRAPHIK_TLS_KEY", ""), "path to tls key (env: GRAPHIK_TLS_KEY)")
 	pflag.Parse()
 }
 
@@ -70,8 +70,8 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	}
 	defer g.Close()
 	var lis net.Listener
-	if global.TlsCert != "" && global.TlsKey1 != "" {
-		cer, err := tls.LoadX509KeyPair(global.TlsCert, global.TlsKey1)
+	if global.TlsCert != "" && global.TlsKey != "" {
+		cer, err := tls.LoadX509KeyPair(global.TlsCert, global.TlsKey)
 		if err != nil {
 			log.Println(err)
 			return
