@@ -616,49 +616,6 @@ func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.Da
 	return nil
 }
 
-func (r *Graph) Export(ctx context.Context, _ *empty.Empty) (*apipb.Graph, error) {
-	identity := r.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
-	}
-	docs, err := r.AllDocs(ctx)
-	if err != nil {
-		return nil, err
-	}
-	connections, err := r.AllConnections(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return &apipb.Graph{
-		Docs:        docs,
-		Connections: connections,
-	}, nil
-}
-
-func (r *Graph) Import(ctx context.Context, graph *apipb.Graph) (*apipb.Graph, error) {
-	identity := r.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
-	}
-	docs, err := r.setDocs(ctx, graph.GetDocs().GetDocs()...)
-	if err != nil {
-		return nil, err
-	}
-	connections, err := r.setConnections(ctx, graph.GetConnections().GetConnections()...)
-	if err != nil {
-		return nil, err
-	}
-	return &apipb.Graph{
-		Docs:        docs,
-		Connections: connections,
-	}, nil
-}
-
-func (g *Graph) Shutdown(ctx context.Context, e *empty.Empty) (*empty.Empty, error) {
-	go g.Close()
-	return &empty.Empty{}, nil
-}
-
 // Close is used to gracefully close the Database.
 func (b *Graph) Close() {
 	b.closeOnce.Do(func() {

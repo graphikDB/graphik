@@ -406,7 +406,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 
 func (g *Graph) setDocs(ctx context.Context, docs ...*apipb.Doc) (*apipb.Docs, error) {
 	var nds = &apipb.Docs{}
-	if err := g.db.Update(func(tx *bbolt.Tx) error {
+	if err := g.db.Batch(func(tx *bbolt.Tx) error {
 		for _, doc := range docs {
 			n, err := g.setDoc(ctx, tx, doc)
 			if err != nil {
@@ -514,7 +514,7 @@ func (g *Graph) setConnections(ctx context.Context, connections ...*apipb.Connec
 		return nil, err
 	}
 	var edgs = &apipb.Connections{}
-	if err := g.db.Update(func(tx *bbolt.Tx) error {
+	if err := g.db.Batch(func(tx *bbolt.Tx) error {
 		for _, connection := range connections {
 			e, err := g.setConnection(ctx, tx, connection)
 			if err != nil {

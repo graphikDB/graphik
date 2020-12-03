@@ -6,6 +6,7 @@
 - [graphik.proto](#graphik.proto)
     - [Authorizer](#api.Authorizer)
     - [Authorizers](#api.Authorizers)
+    - [Bytes](#api.Bytes)
     - [Change](#api.Change)
     - [ChannelFilter](#api.ChannelFilter)
     - [Connection](#api.Connection)
@@ -88,6 +89,21 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | authorizers | [Authorizer](#api.Authorizer) | repeated |  |
+
+
+
+
+
+
+<a name="api.Bytes"></a>
+
+### Bytes
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bytes | [bytes](#bytes) |  |  |
 
 
 
@@ -871,10 +887,7 @@ DatabaseService is the primary database service
 | Publish | [OutboundMessage](#api.OutboundMessage) | [.google.protobuf.Empty](#google.protobuf.Empty) | Publish publishes a message to a pubsub channel |
 | Subscribe | [ChannelFilter](#api.ChannelFilter) | [Message](#api.Message) stream | Subscribe subscribes to messages on a pubsub channel |
 | SubscribeChanges | [ExpressionFilter](#api.ExpressionFilter) | [Change](#api.Change) stream |  |
-| Import | [Graph](#api.Graph) | [Graph](#api.Graph) | Import imports the Graph into the database |
-| Export | [.google.protobuf.Empty](#google.protobuf.Empty) | [Graph](#api.Graph) | Export returns the Graph data |
 | SubGraph | [SubGraphFilter](#api.SubGraphFilter) | [Graph](#api.Graph) | SubGraph returns a subgraph using the given filter |
-| Shutdown | [.google.protobuf.Empty](#google.protobuf.Empty) | [.google.protobuf.Empty](#google.protobuf.Empty) | Shutdown shuts down the database |
 
  
 

@@ -10,6 +10,10 @@ import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
+message Bytes {
+  bytes bytes =1;
+}
+
 // Path describes a doc/connection type & id
 message Path {
   // gtype is the type of the doc/connection ex: pet
@@ -471,12 +475,6 @@ service DatabaseService {
   // Subscribe subscribes to messages on a pubsub channel
   rpc Subscribe(ChannelFilter) returns(stream Message){}
   rpc SubscribeChanges(ExpressionFilter) returns(stream Change){}
-  // Import imports the Graph into the database
-  rpc Import(Graph) returns(Graph){}
-  // Export returns the Graph data
-  rpc Export(google.protobuf.Empty) returns (Graph){}
   // SubGraph returns a subgraph using the given filter
   rpc SubGraph(SubGraphFilter) returns(Graph){}
-  // Shutdown shuts down the database
-  rpc Shutdown(google.protobuf.Empty) returns(google.protobuf.Empty){}
 }

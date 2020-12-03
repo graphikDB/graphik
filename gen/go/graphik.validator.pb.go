@@ -21,6 +21,10 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *Bytes) Validate() error {
+	return nil
+}
+
 var _regex_Path_Gtype = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Path_Gid = regexp.MustCompile(`^.{1,225}$`)
 

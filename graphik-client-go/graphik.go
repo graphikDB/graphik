@@ -189,7 +189,3 @@ func (c *Client) SetIndexes(ctx context.Context, in *apipb.Indexes, opts ...grpc
 func (c *Client) SetAuthorizers(ctx context.Context, in *apipb.Authorizers, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.SetAuthorizers(ctx, in, opts...)
 }
-
-func (c *Client) Shutdown(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.Shutdown(ctx, in, opts...)
-}
