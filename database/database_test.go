@@ -262,7 +262,7 @@ func TestGraph_DepthSearchDocs(t *testing.T) {
 	res, err := graph.DepthSearchDocs(ctx, &apipb.DepthFilter{
 		Root: ashe.GetPath(),
 		//DocExpression:        `doc.path.gtype.contains("pokemon")`,
-		ConnectionExpression: "connection.attributes.secondary",
+		ConnectionExpression: "connection.attributes.primary",
 		Limit:                4,
 	})
 	if err != nil {
