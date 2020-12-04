@@ -7788,7 +7788,10 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     allowOriginsList: jspb.Message.getRepeatedField(msg, 7),
     rootUsersList: jspb.Message.getRepeatedField(msg, 8),
     tlsCert: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    tlsKey: jspb.Message.getFieldWithDefault(msg, 10, "")
+    tlsKey: jspb.Message.getFieldWithDefault(msg, 10, ""),
+    playgroundClientId: jspb.Message.getFieldWithDefault(msg, 11, ""),
+    playgroundClientSecret: jspb.Message.getFieldWithDefault(msg, 12, ""),
+    playgroundRedirect: jspb.Message.getFieldWithDefault(msg, 13, "")
   };
 
   if (includeInstance) {
@@ -7860,6 +7863,18 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 10:
       var value = /** @type {string} */ (reader.readString());
       msg.setTlsKey(value);
+      break;
+    case 11:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPlaygroundClientId(value);
+      break;
+    case 12:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPlaygroundClientSecret(value);
+      break;
+    case 13:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPlaygroundRedirect(value);
       break;
     default:
       reader.skipField();
@@ -7950,6 +7965,27 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       10,
+      f
+    );
+  }
+  f = message.getPlaygroundClientId();
+  if (f.length > 0) {
+    writer.writeString(
+      11,
+      f
+    );
+  }
+  f = message.getPlaygroundClientSecret();
+  if (f.length > 0) {
+    writer.writeString(
+      12,
+      f
+    );
+  }
+  f = message.getPlaygroundRedirect();
+  if (f.length > 0) {
+    writer.writeString(
+      13,
       f
     );
   }
@@ -8146,6 +8182,51 @@ proto.api.Flags.prototype.getTlsKey = function() {
 /** @param {string} value */
 proto.api.Flags.prototype.setTlsKey = function(value) {
   jspb.Message.setProto3StringField(this, 10, value);
+};
+
+
+/**
+ * optional string playground_client_id = 11;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getPlaygroundClientId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setPlaygroundClientId = function(value) {
+  jspb.Message.setProto3StringField(this, 11, value);
+};
+
+
+/**
+ * optional string playground_client_secret = 12;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getPlaygroundClientSecret = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setPlaygroundClientSecret = function(value) {
+  jspb.Message.setProto3StringField(this, 12, value);
+};
+
+
+/**
+ * optional string playground_redirect = 13;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getPlaygroundRedirect = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setPlaygroundRedirect = function(value) {
+  jspb.Message.setProto3StringField(this, 13, value);
 };
 
 

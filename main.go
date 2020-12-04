@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"github.com/autom8ter/graphik/database"
 	"github.com/autom8ter/graphik/gen/go"
+	"github.com/autom8ter/graphik/generic/cache"
 	"github.com/autom8ter/graphik/gql"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
@@ -20,8 +22,10 @@ import (
 	"github.com/soheilhy/cmux"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -46,6 +50,9 @@ func init() {
 	pflag.CommandLine.StringSliceVar(&global.RootUsers, "root-users", helpers.StringSliceEnvOr("GRAPHIK_ROOT_USERS", nil), "cors allow methods (env: GRAPHIK_ROOT_USERS)")
 	pflag.CommandLine.StringVar(&global.TlsCert, "tls-cert", helpers.EnvOr("GRAPHIK_TLS_CERT", ""), "path to tls certificate (env: GRAPHIK_TLS_CERT)")
 	pflag.CommandLine.StringVar(&global.TlsKey, "tls-key", helpers.EnvOr("GRAPHIK_TLS_KEY", ""), "path to tls key (env: GRAPHIK_TLS_KEY)")
+	pflag.CommandLine.StringVar(&global.PlaygroundClientId, "playground-client-id", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_ID", ""), "playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)")
+	pflag.CommandLine.StringVar(&global.PlaygroundClientSecret, "playground-client-secret", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_SECRET", ""), "playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)")
+	pflag.CommandLine.StringVar(&global.PlaygroundRedirect, "playground-redirect", helpers.EnvOr("GRAPHIK_PLAYGROUND_REDIRECT", ""), "playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT)")
 	pflag.Parse()
 }
 
@@ -96,13 +103,48 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		logger.Error("failed to setup graphql endpoint", zap.Error(err))
 		return
 	}
+	var config *oauth2.Config
+	if global.PlaygroundClientId != "" {
+		resp, err := http.DefaultClient.Get(global.OpenIdDiscovery)
+		if err != nil {
+			logger.Error("failed to get oidc", zap.Error(err))
+			return
+		}
+		defer resp.Body.Close()
+		var openID = map[string]interface{}{}
+		bits, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			logger.Error("failed to get oidc", zap.Error(err))
+			return
+		}
+		if err := json.Unmarshal(bits, &openID); err != nil {
+			logger.Error("failed to get oidc", zap.Error(err))
+			return
+		}
+		config = &oauth2.Config{
+			ClientID:     global.PlaygroundClientId,
+			ClientSecret: global.PlaygroundClientSecret,
+			Endpoint: oauth2.Endpoint{
+				AuthURL:  openID["authorization_endpoint"].(string),
+				TokenURL: openID["token_endpoint"].(string),
+			},
+			RedirectURL: global.PlaygroundRedirect,
+			Scopes:      []string{"openid", "email", "profile"},
+		}
+	}
 	resolver := gql.NewResolver(ctx, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
 		AllowedOrigins: global.AllowOrigins,
 		AllowedMethods: global.AllowMethods,
 		AllowedHeaders: global.AllowHeaders,
-	}))
+	}), config, cache.New(m, 5*time.Minute))
+	mux := http.NewServeMux()
+	mux.Handle("/", resolver.QueryHandler())
+	if config != nil {
+		mux.Handle("/playground", resolver.Playground())
+		mux.Handle("/playground/callback", resolver.PlaygroundCallback("/playground"))
+	}
 	httpServer := &http.Server{
-		Handler: resolver.QueryHandler(),
+		Handler: mux,
 	}
 	cm := cmux.New(lis)
 	m.Go(func(routine machine.Routine) {

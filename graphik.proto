@@ -385,6 +385,9 @@ message Flags {
   repeated string root_users =8;
   string tls_cert =9;
   string tls_key=10;
+  string playground_client_id =11;
+  string playground_client_secret =12;
+  string playground_redirect =13;
 }
 
 // Edit patches the attributes of a Doc or Connection

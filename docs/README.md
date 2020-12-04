@@ -520,6 +520,9 @@ Filter is a generic filter using Common Expression Language
 | root_users | [string](#string) | repeated | root user is a list of email addresses that bypass authorizers. (env: GRAPHIK_ROOT_USERS) |
 | tls_cert | [string](#string) |  |  |
 | tls_key | [string](#string) |  |  |
+| playground_client_id | [string](#string) |  |  |
+| playground_client_secret | [string](#string) |  |  |
+| playground_redirect | [string](#string) |  |  |
 
 
 
