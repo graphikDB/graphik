@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/autom8ter/graphik/database"
 	"github.com/autom8ter/graphik/gen/go"
-	"github.com/autom8ter/graphik/generic/cache"
 	"github.com/autom8ter/graphik/gql"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
@@ -136,7 +135,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		AllowedOrigins: global.AllowOrigins,
 		AllowedMethods: global.AllowMethods,
 		AllowedHeaders: global.AllowHeaders,
-	}), config, cache.New(m, 5*time.Minute))
+	}), config)
 	mux := http.NewServeMux()
 	mux.Handle("/", resolver.QueryHandler())
 	if config != nil {

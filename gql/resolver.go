@@ -10,10 +10,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/gen/gql/generated"
-	"github.com/autom8ter/graphik/generic/cache"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
+	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
 	"github.com/rs/cors"
 	"github.com/segmentio/ksuid"
@@ -36,20 +36,23 @@ type Resolver struct {
 	client     apipb.DatabaseServiceClient
 	cors       *cors.Cors
 	machine    *machine.Machine
-	store      *cache.Cache
+	store      *sessions.CookieStore
 	config     *oauth2.Config
 	cookieName string
 }
 
-func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config, cache *cache.Cache) *Resolver {
-	return &Resolver{
+func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config) *Resolver {
+	r := &Resolver{
 		client:     client,
 		cors:       cors,
 		machine:    machine.New(ctx),
 		config:     config,
-		store:      cache,
 		cookieName: "graphik",
 	}
+	if config != nil {
+		r.store = sessions.NewCookieStore([]byte(config.ClientSecret))
+	}
+	return r
 }
 
 func (r *Resolver) QueryHandler() http.Handler {
@@ -87,9 +90,9 @@ func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
 		if r.store != nil {
-			cookie, _ := req.Cookie("graphik")
-			if cookie != nil && cookie.Value != "" && req.Header.Get("Authorization") == "" {
-				val, ok := r.store.Get(cookie.Value)
+			sess, _ := r.store.Get(req, r.cookieName)
+			if sess != nil && req.Header.Get("Authorization") == "" {
+				val, ok := sess.Values["token"]
 				if ok {
 					token, ok := val.(*oauth2.Token)
 					if ok && token.Expiry.After(time.Now()) {
@@ -113,32 +116,36 @@ func (r *Resolver) Playground() http.HandlerFunc {
 			http.Error(w, "playground disabled", http.StatusNotFound)
 			return
 		}
-		cookie, err := req.Cookie(r.cookieName)
+		sess, err := r.store.Get(req, r.cookieName)
 		if err != nil {
-			logger.Info("unauthenticed - redirecting to login")
-			r.redirectLogin(w, req)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if cookie.Value == "" {
-			r.redirectLogin(w, req)
+		defer func() {
+			if err := sess.Save(req, w); err != nil {
+				logger.Error("failed to save session", zap.Error(err))
+			}
+		}()
+		if sess.Values["token"] == nil {
+			r.redirectLogin(sess, w, req)
 			return
 		}
-		val, ok := r.store.Get(cookie.Value)
+		val, ok := sess.Values["token"]
 		if !ok {
-			r.redirectLogin(w, req)
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		authToken, ok := val.(*oauth2.Token)
 		if !ok {
-			r.redirectLogin(w, req)
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		if authToken == nil {
-			r.redirectLogin(w, req)
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		if authToken.Expiry.Before(time.Now()) {
-			r.redirectLogin(w, req)
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		w.Header().Add("Content-Type", "text/html")
@@ -217,9 +224,14 @@ func (r *Resolver) Playground() http.HandlerFunc {
 	}
 }
 
-func (r *Resolver) redirectLogin(w http.ResponseWriter, req *http.Request) {
+func (r *Resolver) redirectLogin(sess *sessions.Session, w http.ResponseWriter, req *http.Request) {
 	state := helpers.Hash([]byte(ksuid.New().String()))
+	sess.Values["state"] = state
 	redirect := r.config.AuthCodeURL(state)
+	if err := sess.Save(req, w); err != nil {
+		http.Error(w, "failed to save session", http.StatusInternalServerError)
+		return
+	}
 	http.Redirect(w, req, redirect, http.StatusTemporaryRedirect)
 }
 
@@ -239,28 +251,31 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 			http.Error(w, "empty authorization state", http.StatusBadRequest)
 			return
 		}
-		//stateVal := sess.Values["state"]
-		//if stateVal == nil {
-		//	http.Error(w, "failed to get session state", http.StatusForbidden)
-		//	return
-		//}
-		//if stateVal.(string) != state {
-		//	http.Error(w, fmt.Sprintf("session state mismatch: %s", stateVal.(string)), http.StatusForbidden)
-		//	return
-		//}
+		sess, err := r.store.Get(req, r.cookieName)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		stateVal := sess.Values["state"]
+		if stateVal == nil {
+			http.Error(w, "failed to get session state", http.StatusForbidden)
+			return
+		}
+		if stateVal.(string) != state {
+			http.Error(w, fmt.Sprintf("session state mismatch: %s", stateVal.(string)), http.StatusForbidden)
+			return
+		}
 		token, err := r.config.Exchange(req.Context(), code)
 		if err != nil {
 			logger.Error("failed to exchange authorization code", zap.Error(err))
 			http.Error(w, "failed to exchange authorization code", http.StatusInternalServerError)
 			return
 		}
-		id := helpers.Hash([]byte(ksuid.New().String()))
-		http.SetCookie(w, &http.Cookie{
-			Name:    r.cookieName,
-			Value:   id,
-			Expires: time.Now().Add(24 * time.Hour),
-		})
-		r.store.Set(id, token, 1*time.Hour)
+		sess.Values["token"] = token
+		if err := sess.Save(req, w); err != nil {
+			http.Error(w, "failed to save session", http.StatusInternalServerError)
+			return
+		}
 		http.Redirect(w, req, playgroundRedirect, http.StatusTemporaryRedirect)
 	}
 }
