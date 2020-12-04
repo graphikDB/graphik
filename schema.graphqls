@@ -98,41 +98,6 @@ type Connections {
   seek_next: Int!
 }
 
-# ConnectionDetail is an connection with both of it's connected docs fully loaded
-type ConnectionDetail {
-  # path is the path to the connection
-  path: Path!
-  # attributes are k/v pairs
-  attributes: Struct
-  # directed is false if the connection is bi-directional
-  directed: Boolean
-  # from is the full doc that is the root of the connection
-  from: Doc!
-  # to is the full doc that is the destination of the connection
-  to: Doc!
-  # metadata is general metadata collected about the connection
-  metadata: Metadata
-}
-
-# ConnectionDetails details is an array of connection details
-type ConnectionDetails {
-  connections: [ConnectionDetail!]
-}
-
-# DocDetail is a doc with its connected connections
-type DocDetail {
-  # path is the path to the doc
-  path: Path!
-  # arbitrary k/v pairs
-  attributes: Struct
-  # connections_from are connections that source from this doc
-  connections_from: ConnectionDetails
-  # connections_to are connections that point toward this doc
-  connections_to: ConnectionDetails
-  # metadata is general metadata collected about the doc
-  metadata: Metadata
-}
-
 type Index {
   name: String!
   gtype: String!
@@ -253,15 +218,6 @@ input DepthFilter {
   sort: String
 }
 
-
-# MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
-input MeFilter {
-  # connections_from is a filter used to filter connections from the identity making the request
-  connections_from: Filter
-  # connections_to is a filter used to filter connections to the identity making the request
-  connections_to: Filter
-}
-
 # ConnectionFilter is used to fetch connections related to a single noted
 input ConnectionFilter {
   # doc_path is the path to the target doc
@@ -378,7 +334,7 @@ type Query {
   # getSchema gets information about the graph schema
   getSchema(input: Empty): Schema!
   # me returns your identity + connections
-  me(input: MeFilter): DocDetail!
+  me(input: Empty): Doc!
   # getDoc gets a doc at the given path
   getDoc(input: PathInput!): Doc!
   # searchDocs searches for 0-many docs

@@ -277,90 +277,12 @@ func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators)
 	return &empty.Empty{}, g.cacheTypeValidators()
 }
 
-func (g *Graph) Me(ctx context.Context, filter *apipb.MeFilter) (*apipb.DocDetail, error) {
+func (g *Graph) Me(ctx context.Context, _ *empty.Empty) (*apipb.Doc, error) {
 	identity := g.getIdentity(ctx)
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	detail := &apipb.DocDetail{
-		Path:            identity.Path,
-		Attributes:      identity.Attributes,
-		ConnectionsFrom: &apipb.ConnectionDetails{},
-		ConnectionsTo:   &apipb.ConnectionDetails{},
-		Metadata:        identity.Metadata,
-	}
-	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if filter.ConnectionsFrom != nil {
-			from, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
-				DocPath:    identity.GetPath(),
-				Gtype:      filter.GetConnectionsFrom().GetGtype(),
-				Expression: filter.GetConnectionsFrom().GetExpression(),
-				Limit:      filter.GetConnectionsFrom().GetLimit(),
-				Sort:       filter.GetConnectionsFrom().GetSort(),
-				Seek:       filter.GetConnectionsFrom().GetSeek(),
-				Reverse:    filter.GetConnectionsFrom().GetReverse(),
-			})
-			if err != nil {
-				return err
-			}
-			for _, f := range from.GetConnections() {
-				toDoc, err := g.getDoc(ctx, tx, f.To)
-				if err != nil {
-					return err
-				}
-				fromDoc, err := g.getDoc(ctx, tx, f.From)
-				if err != nil {
-					return err
-				}
-				edetail := &apipb.ConnectionDetail{
-					Path:       f.Path,
-					Attributes: f.Attributes,
-					Directed:   f.Directed,
-					From:       fromDoc,
-					To:         toDoc,
-					Metadata:   f.Metadata,
-				}
-				detail.ConnectionsFrom.Connections = append(detail.ConnectionsFrom.Connections, edetail)
-			}
-		}
-		if filter.ConnectionsTo != nil {
-			from, err := g.ConnectionsTo(ctx, &apipb.ConnectionFilter{
-				DocPath:    identity.GetPath(),
-				Gtype:      filter.GetConnectionsTo().GetGtype(),
-				Expression: filter.GetConnectionsTo().GetExpression(),
-				Limit:      filter.GetConnectionsTo().GetLimit(),
-				Sort:       filter.GetConnectionsTo().GetSort(),
-				Seek:       filter.GetConnectionsTo().GetSeek(),
-				Reverse:    filter.GetConnectionsTo().GetReverse(),
-			})
-			if err != nil {
-				return err
-			}
-			for _, f := range from.GetConnections() {
-				toDoc, err := g.getDoc(ctx, tx, f.To)
-				if err != nil {
-					return err
-				}
-				fromDoc, err := g.getDoc(ctx, tx, f.From)
-				if err != nil {
-					return err
-				}
-				edetail := &apipb.ConnectionDetail{
-					Path:       f.Path,
-					Attributes: f.Attributes,
-					Directed:   f.Directed,
-					From:       fromDoc,
-					To:         toDoc,
-					Metadata:   f.Metadata,
-				}
-				detail.ConnectionsTo.Connections = append(detail.ConnectionsTo.Connections, edetail)
-			}
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	return detail, nil
+	return g.GetDoc(ctx, identity.GetPath())
 }
 
 func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstructors) (*apipb.Docs, error) {
@@ -902,6 +824,47 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	return toReturn, nil
 }
 
+//
+//func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.Filter) (int, error) {
+//	var docs []*apipb.Doc
+//	var program cel.Program
+//	var err error
+//	if filter.Expression != "" {
+//		program, err = n.vm.Doc().Program(filter.Expression)
+//		if err != nil {
+//			return 0, err
+//		}
+//	}
+//	count := 0
+//	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), filter.GetReverse(), func(doc *apipb.Doc) bool {
+//		if program != nil {
+//			pass, err := n.vm.Doc().Eval(doc, program)
+//			if err != nil {
+//				if !strings.Contains(err.Error(), "no such key") {
+//					logger.Error("search docs failure", zap.Error(err))
+//				}
+//				return true
+//			}
+//			if pass {
+//				count++
+//				docs = append(docs, doc)
+//			}
+//		} else {
+//			docs = append(docs, doc)
+//		}
+//		return len(docs) < int(filter.Limit)
+//	})
+//	if err != nil {
+//		return nil, err
+//	}
+//	toReturn := &apipb.Docs{
+//		Docs:     docs,
+//		SeekNext: seek,
+//	}
+//	toReturn.Sort(filter.GetSort())
+//	return toReturn, nil
+//}
+
 func (n *Graph) DepthSearchDocs(ctx context.Context, filter *apipb.DepthFilter) (*apipb.DocTraversals, error) {
 	dfs := n.newDepthFirst(filter)
 	if err := n.db.View(func(tx *bbolt.Tx) error {
@@ -1113,110 +1076,6 @@ func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*ap
 	graph.Connections.Sort(filter.GetConnectionFilter().GetSort())
 	graph.Docs.Sort(filter.GetDocFilter().GetSort())
 	return graph, err
-}
-
-func (g *Graph) GetConnectionDetail(ctx context.Context, path *apipb.Path) (*apipb.ConnectionDetail, error) {
-	var (
-		err        error
-		connection *apipb.Connection
-		from       *apipb.Doc
-		to         *apipb.Doc
-	)
-	if err = g.db.View(func(tx *bbolt.Tx) error {
-		connection, err = g.getConnection(ctx, tx, path)
-		if err != nil {
-			return err
-		}
-		from, err = g.getDoc(ctx, tx, connection.From)
-		if err != nil {
-			return err
-		}
-		to, err = g.getDoc(ctx, tx, connection.To)
-		if err != nil {
-			return err
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-
-	return &apipb.ConnectionDetail{
-		Path:       connection.GetPath(),
-		Attributes: connection.GetAttributes(),
-		Directed:   connection.GetDirected(),
-		From:       from,
-		To:         to,
-		Metadata:   connection.GetMetadata(),
-	}, nil
-}
-
-func (g *Graph) GetDocDetail(ctx context.Context, filter *apipb.DocDetailFilter) (*apipb.DocDetail, error) {
-	detail := &apipb.DocDetail{
-		Path:            filter.GetPath(),
-		ConnectionsTo:   &apipb.ConnectionDetails{},
-		ConnectionsFrom: &apipb.ConnectionDetails{},
-	}
-	var (
-		err error
-		doc *apipb.Doc
-	)
-	if err = g.db.View(func(tx *bbolt.Tx) error {
-		doc, err = g.getDoc(ctx, tx, filter.GetPath())
-		if err != nil {
-			return err
-		}
-		detail.Metadata = doc.Metadata
-		detail.Attributes = doc.Attributes
-		if val := filter.GetFromConnections(); val != nil {
-			connections, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
-				DocPath:    doc.Path,
-				Gtype:      val.GetGtype(),
-				Expression: val.GetExpression(),
-				Limit:      val.GetLimit(),
-				Sort:       val.GetSort(),
-				Seek:       val.GetSeek(),
-				Reverse:    val.GetReverse(),
-			})
-			if err != nil {
-				return err
-			}
-			for _, connection := range connections.GetConnections() {
-				eDetail, err := g.GetConnectionDetail(ctx, connection.GetPath())
-				if err != nil {
-					return err
-				}
-				detail.ConnectionsFrom.Connections = append(detail.ConnectionsFrom.Connections, eDetail)
-			}
-		}
-
-		if val := filter.GetToConnections(); val != nil {
-			connections, err := g.ConnectionsTo(ctx, &apipb.ConnectionFilter{
-				DocPath:    doc.Path,
-				Gtype:      val.GetGtype(),
-				Expression: val.GetExpression(),
-				Limit:      val.GetLimit(),
-				Sort:       val.GetSort(),
-				Seek:       val.GetSeek(),
-				Reverse:    val.GetReverse(),
-			})
-			if err != nil {
-				return err
-			}
-			for _, connection := range connections.GetConnections() {
-				eDetail, err := g.GetConnectionDetail(ctx, connection.GetPath())
-				if err != nil {
-					return err
-				}
-				detail.ConnectionsTo.Connections = append(detail.ConnectionsTo.Connections, eDetail)
-			}
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	detail.ConnectionsTo.Sort(filter.GetToConnections().GetSort())
-	detail.ConnectionsFrom.Sort(filter.GetFromConnections().GetSort())
-	return detail, err
 }
 
 func (g *Graph) DelDoc(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {

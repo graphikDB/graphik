@@ -65,7 +65,7 @@ func (r *queryResolver) GetSchema(ctx context.Context, input *emptypb.Empty) (*a
 	return r.client.GetSchema(ctx, &emptypb.Empty{})
 }
 
-func (r *queryResolver) Me(ctx context.Context, input *apipb.MeFilter) (*apipb.DocDetail, error) {
+func (r *queryResolver) Me(ctx context.Context, input *emptypb.Empty) (*apipb.Doc, error) {
 	return r.client.Me(ctx, input)
 }
 

@@ -224,25 +224,6 @@ func TestGraph_GetDoc(t *testing.T) {
 	}
 }
 
-func TestGraph_GetDocDetail(t *testing.T) {
-	res, err := graph.GetDocDetail(ctx, &apipb.DocDetailFilter{
-		Path: ashe.GetPath(),
-		FromConnections: &apipb.Filter{
-			Gtype: "owner",
-		},
-		ToConnections: &apipb.Filter{
-			Gtype: "owner",
-		},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := res.Validate(); err != nil {
-		t.Fatal(err)
-	}
-	//t.Log(res.String())
-}
-
 func TestGraph_SearchDocs(t *testing.T) {
 	res, err := graph.SearchDocs(ctx, &apipb.Filter{
 		Gtype:      "pokemon",

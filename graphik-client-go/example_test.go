@@ -86,10 +86,7 @@ func ExampleClient_SetAuthorizers() {
 }
 
 func ExampleClient_Me() {
-	me, err := client.Me(context.Background(), &apipb.MeFilter{
-		ConnectionsFrom: nil,
-		ConnectionsTo:   nil,
-	})
+	me, err := client.Me(context.Background(), &empty.Empty{})
 	if err != nil {
 		log.Print(err)
 		return

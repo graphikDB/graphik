@@ -75,19 +75,6 @@ type ComplexityRoot struct {
 		To         func(childComplexity int) int
 	}
 
-	ConnectionDetail struct {
-		Attributes func(childComplexity int) int
-		Directed   func(childComplexity int) int
-		From       func(childComplexity int) int
-		Metadata   func(childComplexity int) int
-		Path       func(childComplexity int) int
-		To         func(childComplexity int) int
-	}
-
-	ConnectionDetails struct {
-		Connections func(childComplexity int) int
-	}
-
 	Connections struct {
 		Connections func(childComplexity int) int
 		SeekNext    func(childComplexity int) int
@@ -97,14 +84,6 @@ type ComplexityRoot struct {
 		Attributes func(childComplexity int) int
 		Metadata   func(childComplexity int) int
 		Path       func(childComplexity int) int
-	}
-
-	DocDetail struct {
-		Attributes      func(childComplexity int) int
-		ConnectionsFrom func(childComplexity int) int
-		ConnectionsTo   func(childComplexity int) int
-		Metadata        func(childComplexity int) int
-		Path            func(childComplexity int) int
 	}
 
 	DocTraversal struct {
@@ -181,7 +160,7 @@ type ComplexityRoot struct {
 		GetConnection     func(childComplexity int, input apipb.Path) int
 		GetDoc            func(childComplexity int, input apipb.Path) int
 		GetSchema         func(childComplexity int, input *emptypb.Empty) int
-		Me                func(childComplexity int, input *apipb.MeFilter) int
+		Me                func(childComplexity int, input *emptypb.Empty) int
 		Ping              func(childComplexity int, input *emptypb.Empty) int
 		SearchConnections func(childComplexity int, input apipb.Filter) int
 		SearchDocs        func(childComplexity int, input apipb.Filter) int
@@ -231,7 +210,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error)
 	GetSchema(ctx context.Context, input *emptypb.Empty) (*apipb.Schema, error)
-	Me(ctx context.Context, input *apipb.MeFilter) (*apipb.DocDetail, error)
+	Me(ctx context.Context, input *emptypb.Empty) (*apipb.Doc, error)
 	GetDoc(ctx context.Context, input apipb.Path) (*apipb.Doc, error)
 	SearchDocs(ctx context.Context, input apipb.Filter) (*apipb.Docs, error)
 	DepthSearchDocs(ctx context.Context, input apipb.DepthFilter) (*apipb.DocTraversals, error)
@@ -351,55 +330,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Connection.To(childComplexity), true
 
-	case "ConnectionDetail.attributes":
-		if e.complexity.ConnectionDetail.Attributes == nil {
-			break
-		}
-
-		return e.complexity.ConnectionDetail.Attributes(childComplexity), true
-
-	case "ConnectionDetail.directed":
-		if e.complexity.ConnectionDetail.Directed == nil {
-			break
-		}
-
-		return e.complexity.ConnectionDetail.Directed(childComplexity), true
-
-	case "ConnectionDetail.from":
-		if e.complexity.ConnectionDetail.From == nil {
-			break
-		}
-
-		return e.complexity.ConnectionDetail.From(childComplexity), true
-
-	case "ConnectionDetail.metadata":
-		if e.complexity.ConnectionDetail.Metadata == nil {
-			break
-		}
-
-		return e.complexity.ConnectionDetail.Metadata(childComplexity), true
-
-	case "ConnectionDetail.path":
-		if e.complexity.ConnectionDetail.Path == nil {
-			break
-		}
-
-		return e.complexity.ConnectionDetail.Path(childComplexity), true
-
-	case "ConnectionDetail.to":
-		if e.complexity.ConnectionDetail.To == nil {
-			break
-		}
-
-		return e.complexity.ConnectionDetail.To(childComplexity), true
-
-	case "ConnectionDetails.connections":
-		if e.complexity.ConnectionDetails.Connections == nil {
-			break
-		}
-
-		return e.complexity.ConnectionDetails.Connections(childComplexity), true
-
 	case "Connections.connections":
 		if e.complexity.Connections.Connections == nil {
 			break
@@ -434,41 +364,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Doc.Path(childComplexity), true
-
-	case "DocDetail.attributes":
-		if e.complexity.DocDetail.Attributes == nil {
-			break
-		}
-
-		return e.complexity.DocDetail.Attributes(childComplexity), true
-
-	case "DocDetail.connections_from":
-		if e.complexity.DocDetail.ConnectionsFrom == nil {
-			break
-		}
-
-		return e.complexity.DocDetail.ConnectionsFrom(childComplexity), true
-
-	case "DocDetail.connections_to":
-		if e.complexity.DocDetail.ConnectionsTo == nil {
-			break
-		}
-
-		return e.complexity.DocDetail.ConnectionsTo(childComplexity), true
-
-	case "DocDetail.metadata":
-		if e.complexity.DocDetail.Metadata == nil {
-			break
-		}
-
-		return e.complexity.DocDetail.Metadata(childComplexity), true
-
-	case "DocDetail.path":
-		if e.complexity.DocDetail.Path == nil {
-			break
-		}
-
-		return e.complexity.DocDetail.Path(childComplexity), true
 
 	case "DocTraversal.doc":
 		if e.complexity.DocTraversal.Doc == nil {
@@ -840,7 +735,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Me(childComplexity, args["input"].(*apipb.MeFilter)), true
+		return e.complexity.Query.Me(childComplexity, args["input"].(*emptypb.Empty)), true
 
 	case "Query.ping":
 		if e.complexity.Query.Ping == nil {
@@ -1160,41 +1055,6 @@ type Connections {
   seek_next: Int!
 }
 
-# ConnectionDetail is an connection with both of it's connected docs fully loaded
-type ConnectionDetail {
-  # path is the path to the connection
-  path: Path!
-  # attributes are k/v pairs
-  attributes: Struct
-  # directed is false if the connection is bi-directional
-  directed: Boolean
-  # from is the full doc that is the root of the connection
-  from: Doc!
-  # to is the full doc that is the destination of the connection
-  to: Doc!
-  # metadata is general metadata collected about the connection
-  metadata: Metadata
-}
-
-# ConnectionDetails details is an array of connection details
-type ConnectionDetails {
-  connections: [ConnectionDetail!]
-}
-
-# DocDetail is a doc with its connected connections
-type DocDetail {
-  # path is the path to the doc
-  path: Path!
-  # arbitrary k/v pairs
-  attributes: Struct
-  # connections_from are connections that source from this doc
-  connections_from: ConnectionDetails
-  # connections_to are connections that point toward this doc
-  connections_to: ConnectionDetails
-  # metadata is general metadata collected about the doc
-  metadata: Metadata
-}
-
 type Index {
   name: String!
   gtype: String!
@@ -1315,15 +1175,6 @@ input DepthFilter {
   sort: String
 }
 
-
-# MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
-input MeFilter {
-  # connections_from is a filter used to filter connections from the identity making the request
-  connections_from: Filter
-  # connections_to is a filter used to filter connections to the identity making the request
-  connections_to: Filter
-}
-
 # ConnectionFilter is used to fetch connections related to a single noted
 input ConnectionFilter {
   # doc_path is the path to the target doc
@@ -1440,7 +1291,7 @@ type Query {
   # getSchema gets information about the graph schema
   getSchema(input: Empty): Schema!
   # me returns your identity + connections
-  me(input: MeFilter): DocDetail!
+  me(input: Empty): Doc!
   # getDoc gets a doc at the given path
   getDoc(input: PathInput!): Doc!
   # searchDocs searches for 0-many docs
@@ -1728,10 +1579,10 @@ func (ec *executionContext) field_Query_getSchema_args(ctx context.Context, rawA
 func (ec *executionContext) field_Query_me_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *apipb.MeFilter
+	var arg0 *emptypb.Empty
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalOMeFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐMeFilter(ctx, tmp)
+		arg0, err = ec.unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2299,239 +2150,6 @@ func (ec *executionContext) _Connection_metadata(ctx context.Context, field grap
 	return ec.marshalNMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐMetadata(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ConnectionDetail_path(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "ConnectionDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Path, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Path)
-	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐPath(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _ConnectionDetail_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "ConnectionDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Attributes, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*structpb.Struct)
-	fc.Result = res
-	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _ConnectionDetail_directed(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "ConnectionDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Directed, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _ConnectionDetail_from(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "ConnectionDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.From, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Doc)
-	fc.Result = res
-	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDoc(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _ConnectionDetail_to(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "ConnectionDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.To, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Doc)
-	fc.Result = res
-	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDoc(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _ConnectionDetail_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "ConnectionDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Metadata, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Metadata)
-	fc.Result = res
-	return ec.marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐMetadata(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _ConnectionDetails_connections(ctx context.Context, field graphql.CollectedField, obj *apipb.ConnectionDetails) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "ConnectionDetails",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Connections, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*apipb.ConnectionDetail)
-	fc.Result = res
-	return ec.marshalOConnectionDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionDetailᚄ(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Connections_connections(ctx context.Context, field graphql.CollectedField, obj *apipb.Connections) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2699,169 +2317,6 @@ func (ec *executionContext) _Doc_metadata(ctx context.Context, field graphql.Col
 	res := resTmp.(*apipb.Metadata)
 	fc.Result = res
 	return ec.marshalNMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐMetadata(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _DocDetail_path(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "DocDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Path, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Path)
-	fc.Result = res
-	return ec.marshalNPath2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐPath(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _DocDetail_attributes(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "DocDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Attributes, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*structpb.Struct)
-	fc.Result = res
-	return ec.marshalOStruct2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋstructpbᚐStruct(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _DocDetail_connections_from(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "DocDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ConnectionsFrom, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.ConnectionDetails)
-	fc.Result = res
-	return ec.marshalOConnectionDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionDetails(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _DocDetail_connections_to(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "DocDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ConnectionsTo, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.ConnectionDetails)
-	fc.Result = res
-	return ec.marshalOConnectionDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionDetails(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _DocDetail_metadata(ctx context.Context, field graphql.CollectedField, obj *apipb.DocDetail) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "DocDetail",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Metadata, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*apipb.Metadata)
-	fc.Result = res
-	return ec.marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐMetadata(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _DocTraversal_doc(ctx context.Context, field graphql.CollectedField, obj *apipb.DocTraversal) (ret graphql.Marshaler) {
@@ -4206,7 +3661,7 @@ func (ec *executionContext) _Query_me(ctx context.Context, field graphql.Collect
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Me(rctx, args["input"].(*apipb.MeFilter))
+		return ec.resolvers.Query().Me(rctx, args["input"].(*emptypb.Empty))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4218,9 +3673,9 @@ func (ec *executionContext) _Query_me(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*apipb.DocDetail)
+	res := resTmp.(*apipb.Doc)
 	fc.Result = res
-	return ec.marshalNDocDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocDetail(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDoc(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6632,34 +6087,6 @@ func (ec *executionContext) unmarshalInputIndexesInput(ctx context.Context, obj 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputMeFilter(ctx context.Context, obj interface{}) (apipb.MeFilter, error) {
-	var it apipb.MeFilter
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "connections_from":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections_from"))
-			it.ConnectionsFrom, err = ec.unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐFilter(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "connections_to":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections_to"))
-			it.ConnectionsTo, err = ec.unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐFilter(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputOutboundMessage(ctx context.Context, obj interface{}) (apipb.OutboundMessage, error) {
 	var it apipb.OutboundMessage
 	var asMap = obj.(map[string]interface{})
@@ -6968,73 +6395,6 @@ func (ec *executionContext) _Connection(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var connectionDetailImplementors = []string{"ConnectionDetail"}
-
-func (ec *executionContext) _ConnectionDetail(ctx context.Context, sel ast.SelectionSet, obj *apipb.ConnectionDetail) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, connectionDetailImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ConnectionDetail")
-		case "path":
-			out.Values[i] = ec._ConnectionDetail_path(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "attributes":
-			out.Values[i] = ec._ConnectionDetail_attributes(ctx, field, obj)
-		case "directed":
-			out.Values[i] = ec._ConnectionDetail_directed(ctx, field, obj)
-		case "from":
-			out.Values[i] = ec._ConnectionDetail_from(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "to":
-			out.Values[i] = ec._ConnectionDetail_to(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "metadata":
-			out.Values[i] = ec._ConnectionDetail_metadata(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var connectionDetailsImplementors = []string{"ConnectionDetails"}
-
-func (ec *executionContext) _ConnectionDetails(ctx context.Context, sel ast.SelectionSet, obj *apipb.ConnectionDetails) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, connectionDetailsImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("ConnectionDetails")
-		case "connections":
-			out.Values[i] = ec._ConnectionDetails_connections(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var connectionsImplementors = []string{"Connections"}
 
 func (ec *executionContext) _Connections(ctx context.Context, sel ast.SelectionSet, obj *apipb.Connections) graphql.Marshaler {
@@ -7087,41 +6447,6 @@ func (ec *executionContext) _Doc(ctx context.Context, sel ast.SelectionSet, obj 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var docDetailImplementors = []string{"DocDetail"}
-
-func (ec *executionContext) _DocDetail(ctx context.Context, sel ast.SelectionSet, obj *apipb.DocDetail) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, docDetailImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("DocDetail")
-		case "path":
-			out.Values[i] = ec._DocDetail_path(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "attributes":
-			out.Values[i] = ec._DocDetail_attributes(ctx, field, obj)
-		case "connections_from":
-			out.Values[i] = ec._DocDetail_connections_from(ctx, field, obj)
-		case "connections_to":
-			out.Values[i] = ec._DocDetail_connections_to(ctx, field, obj)
-		case "metadata":
-			out.Values[i] = ec._DocDetail_metadata(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8138,16 +7463,6 @@ func (ec *executionContext) unmarshalNConnectionConstructor2githubᚗcomᚋautom
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNConnectionDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionDetail(ctx context.Context, sel ast.SelectionSet, v *apipb.ConnectionDetail) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._ConnectionDetail(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNConnectionFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionFilter(ctx context.Context, v interface{}) (apipb.ConnectionFilter, error) {
 	res, err := ec.unmarshalInputConnectionFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -8189,20 +7504,6 @@ func (ec *executionContext) marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋ
 func (ec *executionContext) unmarshalNDocConstructor2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocConstructor(ctx context.Context, v interface{}) (apipb.DocConstructor, error) {
 	res, err := ec.unmarshalInputDocConstructor(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNDocDetail2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocDetail(ctx context.Context, sel ast.SelectionSet, v apipb.DocDetail) graphql.Marshaler {
-	return ec._DocDetail(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNDocDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocDetail(ctx context.Context, sel ast.SelectionSet, v *apipb.DocDetail) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._DocDetail(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNDocTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocTraversal(ctx context.Context, sel ast.SelectionSet, v []*apipb.DocTraversal) graphql.Marshaler {
@@ -8893,53 +8194,6 @@ func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalOConnectionDetail2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionDetailᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.ConnectionDetail) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNConnectionDetail2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionDetail(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOConnectionDetails2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐConnectionDetails(ctx context.Context, sel ast.SelectionSet, v *apipb.ConnectionDetails) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._ConnectionDetails(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalODoc2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐDocᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Doc) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -9000,14 +8254,6 @@ func (ec *executionContext) marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋ
 		return graphql.Null
 	}
 	return scalars.MarshalEmptyScalar(v)
-}
-
-func (ec *executionContext) unmarshalOFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐFilter(ctx context.Context, v interface{}) (*apipb.Filter, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputFilter(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐIndexᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Index) graphql.Marshaler {
@@ -9088,21 +8334,6 @@ func (ec *executionContext) unmarshalOInt2int64(ctx context.Context, v interface
 
 func (ec *executionContext) marshalOInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
 	return graphql.MarshalInt64(v)
-}
-
-func (ec *executionContext) unmarshalOMeFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐMeFilter(ctx context.Context, v interface{}) (*apipb.MeFilter, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputMeFilter(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOMetadata2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐMetadata(ctx context.Context, sel ast.SelectionSet, v *apipb.Metadata) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Metadata(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOPath2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgoᚐPathᚄ(ctx context.Context, sel ast.SelectionSet, v []*apipb.Path) graphql.Marshaler {

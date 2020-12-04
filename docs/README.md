@@ -12,17 +12,12 @@
     - [Connection](#api.Connection)
     - [ConnectionConstructor](#api.ConnectionConstructor)
     - [ConnectionConstructors](#api.ConnectionConstructors)
-    - [ConnectionDetail](#api.ConnectionDetail)
-    - [ConnectionDetails](#api.ConnectionDetails)
     - [ConnectionFilter](#api.ConnectionFilter)
     - [Connections](#api.Connections)
     - [DepthFilter](#api.DepthFilter)
     - [Doc](#api.Doc)
     - [DocConstructor](#api.DocConstructor)
     - [DocConstructors](#api.DocConstructors)
-    - [DocDetail](#api.DocDetail)
-    - [DocDetailFilter](#api.DocDetailFilter)
-    - [DocDetails](#api.DocDetails)
     - [DocTraversal](#api.DocTraversal)
     - [DocTraversals](#api.DocTraversals)
     - [Docs](#api.Docs)
@@ -35,7 +30,6 @@
     - [Index](#api.Index)
     - [IndexConstructor](#api.IndexConstructor)
     - [Indexes](#api.Indexes)
-    - [MeFilter](#api.MeFilter)
     - [Message](#api.Message)
     - [Metadata](#api.Metadata)
     - [OutboundMessage](#api.OutboundMessage)
@@ -196,42 +190,6 @@ ConnectionConstructors is an array of ConnectionConstructor
 
 
 
-<a name="api.ConnectionDetail"></a>
-
-### ConnectionDetail
-ConnectionDetail is an connection with both of it&#39;s connected docs fully loaded
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the connection |
-| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs |
-| directed | [bool](#bool) |  | directed is false if the connection is bi-directional |
-| from | [Doc](#api.Doc) |  | from is the full doc that is the root of the connection |
-| to | [Doc](#api.Doc) |  | to is the full doc that is the destination of the connection |
-| metadata | [Metadata](#api.Metadata) |  | metadata is general metadata collected about the connection |
-
-
-
-
-
-
-<a name="api.ConnectionDetails"></a>
-
-### ConnectionDetails
-ConnectionDetails is an array of ConnectionDetail
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| connections | [ConnectionDetail](#api.ConnectionDetail) | repeated |  |
-| seek_next | [int64](#int64) |  |  |
-
-
-
-
-
-
 <a name="api.ConnectionFilter"></a>
 
 ### ConnectionFilter
@@ -240,11 +198,11 @@ ConnectionFilter is used to fetch connections related to a single noted
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| doc_path | [Path](#api.Path) |  | doc_path is the path to the target doc |
-| gtype | [string](#string) |  | gtype is the type of connections to return |
+| doc_path | [Path](#api.Path) |  | doc_path is the path to the target doc. (validator.field) = {msg_exists : true}] |
+| gtype | [string](#string) |  | gtype is the type of connections to return. (validator.field) = {regex : &#34;^.{1,225}$&#34;} |
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
-| limit | [int32](#int32) |  | limit is the maximum number of items to return |
-| sort | [string](#string) |  | custom sorting of the results. |
+| limit | [int32](#int32) |  | limit is the maximum number of items to return. (validator.field) = {int_gt : 0} |
+| sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))&#43;$&#34;} |
 | seek | [int64](#int64) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
 
@@ -330,58 +288,6 @@ DocConstructor is used to create a batch of docs
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | docs | [DocConstructor](#api.DocConstructor) | repeated | docs is an array of doc constructors |
-
-
-
-
-
-
-<a name="api.DocDetail"></a>
-
-### DocDetail
-DocDetail is a doc with its connected connections
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the doc |
-| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | arbitrary k/v pairs |
-| connections_from | [ConnectionDetails](#api.ConnectionDetails) |  | connections_from are connections that source from this doc |
-| connections_to | [ConnectionDetails](#api.ConnectionDetails) |  | connections_to are connections that point toward this doc |
-| metadata | [Metadata](#api.Metadata) |  | metadata is general metadata collected about the doc |
-
-
-
-
-
-
-<a name="api.DocDetailFilter"></a>
-
-### DocDetailFilter
-DocDetailFilter is used to fetch doc details
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the doc |
-| from_connections | [Filter](#api.Filter) |  |  |
-| to_connections | [Filter](#api.Filter) |  |  |
-
-
-
-
-
-
-<a name="api.DocDetails"></a>
-
-### DocDetails
-DocDetails is an array of DocDetail
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| doc_details | [DocDetail](#api.DocDetail) | repeated |  |
-| seek_next | [int64](#int64) |  |  |
 
 
 
@@ -592,22 +498,6 @@ Graph is an array of docs and connections
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | indexes | [Index](#api.Index) | repeated |  |
-
-
-
-
-
-
-<a name="api.MeFilter"></a>
-
-### MeFilter
-MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| connections_from | [Filter](#api.Filter) |  | connections_from is a filter used to filter connections from the identity making the request |
-| connections_to | [Filter](#api.Filter) |  | connections_to is a filter used to filter connections to the identity making the request |
 
 
 
@@ -834,7 +724,7 @@ DatabaseService is the primary database service
 | SetAuthorizers | [Authorizers](#api.Authorizers) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 | SetIndexes | [Indexes](#api.Indexes) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 | SetTypeValidators | [TypeValidators](#api.TypeValidators) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| Me | [MeFilter](#api.MeFilter) | [DocDetail](#api.DocDetail) | Me returns a DocDetail of the currently logged in identity(the subject of the JWT) |
+| Me | [.google.protobuf.Empty](#google.protobuf.Empty) | [Doc](#api.Doc) | Me returns a Doc of the currently logged in identity(the subject of the JWT) |
 | CreateDoc | [DocConstructor](#api.DocConstructor) | [Doc](#api.Doc) | CreateDoc creates a doc in the graph |
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |
 | GetDoc | [Path](#api.Path) | [Doc](#api.Doc) | GetDoc gets a single doc in the graph |

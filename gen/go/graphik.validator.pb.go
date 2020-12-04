@@ -174,71 +174,6 @@ func (this *DocTraversals) Validate() error {
 	}
 	return nil
 }
-func (this *DocDetail) Validate() error {
-	if nil == this.Path {
-		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
-	}
-	if this.Path != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
-		}
-	}
-	if this.Attributes != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
-		}
-	}
-	if this.ConnectionsFrom != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ConnectionsFrom); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ConnectionsFrom", err)
-		}
-	}
-	if this.ConnectionsTo != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ConnectionsTo); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ConnectionsTo", err)
-		}
-	}
-	if nil == this.Metadata {
-		return github_com_mwitkow_go_proto_validators.FieldError("Metadata", fmt.Errorf("message must exist"))
-	}
-	if this.Metadata != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
-		}
-	}
-	return nil
-}
-func (this *DocDetails) Validate() error {
-	for _, item := range this.DocDetails {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("DocDetails", err)
-			}
-		}
-	}
-	return nil
-}
-func (this *DocDetailFilter) Validate() error {
-	if nil == this.Path {
-		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
-	}
-	if this.Path != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
-		}
-	}
-	if this.FromConnections != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.FromConnections); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("FromConnections", err)
-		}
-	}
-	if this.ToConnections != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ToConnections); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ToConnections", err)
-		}
-	}
-	return nil
-}
 func (this *Connection) Validate() error {
 	if nil == this.Path {
 		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
@@ -322,56 +257,6 @@ func (this *ConnectionConstructors) Validate() error {
 	return nil
 }
 func (this *Connections) Validate() error {
-	for _, item := range this.Connections {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Connections", err)
-			}
-		}
-	}
-	return nil
-}
-func (this *ConnectionDetail) Validate() error {
-	if nil == this.Path {
-		return github_com_mwitkow_go_proto_validators.FieldError("Path", fmt.Errorf("message must exist"))
-	}
-	if this.Path != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Path); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Path", err)
-		}
-	}
-	if this.Attributes != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
-		}
-	}
-	if nil == this.From {
-		return github_com_mwitkow_go_proto_validators.FieldError("From", fmt.Errorf("message must exist"))
-	}
-	if this.From != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.From); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("From", err)
-		}
-	}
-	if nil == this.To {
-		return github_com_mwitkow_go_proto_validators.FieldError("To", fmt.Errorf("message must exist"))
-	}
-	if this.To != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.To); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("To", err)
-		}
-	}
-	if nil == this.Metadata {
-		return github_com_mwitkow_go_proto_validators.FieldError("Metadata", fmt.Errorf("message must exist"))
-	}
-	if this.Metadata != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Metadata); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Metadata", err)
-		}
-	}
-	return nil
-}
-func (this *ConnectionDetails) Validate() error {
 	for _, item := range this.Connections {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -535,19 +420,6 @@ func (this *Indexes) Validate() error {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("Indexes", err)
 			}
-		}
-	}
-	return nil
-}
-func (this *MeFilter) Validate() error {
-	if this.ConnectionsFrom != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ConnectionsFrom); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ConnectionsFrom", err)
-		}
-	}
-	if this.ConnectionsTo != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ConnectionsTo); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ConnectionsTo", err)
 		}
 	}
 	return nil

@@ -19,8 +19,8 @@ service DatabaseService {
   rpc SetAuthorizers(Authorizers) returns(google.protobuf.Empty){}
   rpc SetIndexes(Indexes) returns(google.protobuf.Empty){}
   rpc SetTypeValidators(TypeValidators) returns(google.protobuf.Empty){}
-  // Me returns a DocDetail of the currently logged in identity(the subject of the JWT)
-  rpc Me(MeFilter) returns(DocDetail){}
+  // Me returns a Doc of the currently logged in identity(the subject of the JWT)
+  rpc Me(google.protobuf.Empty) returns(Doc){}
   // CreateDoc creates a doc in the graph
   rpc CreateDoc(DocConstructor) returns(Doc){}
   // CreateDocs creates a batch of docs in the graph
@@ -149,34 +149,6 @@ message DocTraversals {
   repeated DocTraversal traversals =1;
 }
 
-// DocDetail is a doc with its connected connections
-message DocDetail {
-  // path is the path to the doc
-  Path path =1 [(validator.field) = {msg_exists : true}];
-  // arbitrary k/v pairs
-  google.protobuf.Struct attributes =2;
-  // connections_from are connections that source from this doc
-  ConnectionDetails connections_from =3;
-  // connections_to are connections that point toward this doc
-  ConnectionDetails connections_to =4;
-  // metadata is general metadata collected about the doc
-  Metadata metadata =5 [(validator.field) = {msg_exists : true}];
-}
-
-// DocDetails is an array of DocDetail
-message DocDetails {
-  repeated DocDetail doc_details =1;
-  int64 seek_next =2;
-}
-
-// DocDetailFilter is used to fetch doc details
-message DocDetailFilter {
-  // path is the path to the doc
-  Path path =1 [(validator.field) = {msg_exists : true}];
-  Filter from_connections =2;
-  Filter to_connections =3;
-}
-
 // Connection is a graph primitive that represents a relationship between two docs
 message Connection {
   // path is the path to the connection
@@ -215,28 +187,6 @@ message ConnectionConstructors {
 // Connections is an array of Connection
 message Connections {
   repeated Connection connections =1;
-  int64 seek_next =2;
-}
-
-// ConnectionDetail is an connection with both of it's connected docs fully loaded
-message ConnectionDetail {
-  // path is the path to the connection
-  Path path =1 [(validator.field) = {msg_exists : true}];
-  // attributes are k/v pairs
-  google.protobuf.Struct attributes =2;
-  // directed is false if the connection is bi-directional
-  bool directed =3;
-  // from is the full doc that is the root of the connection
-  Doc from =4 [(validator.field) = {msg_exists : true}];
-  // to is the full doc that is the destination of the connection
-  Doc to =5 [(validator.field) = {msg_exists : true}];
-  // metadata is general metadata collected about the connection
-  Metadata metadata =6 [(validator.field) = {msg_exists : true}];
-}
-
-// ConnectionDetails is an array of ConnectionDetail
-message ConnectionDetails {
-  repeated ConnectionDetail connections =1;
   int64 seek_next =2;
 }
 
@@ -334,14 +284,6 @@ message Index {
 
 message Indexes {
   repeated Index indexes =1;
-}
-
-// MeFilter is used to fetch a DocDetail representing the identity in the inbound JWT token
-message MeFilter {
-  // connections_from is a filter used to filter connections from the identity making the request
-  Filter connections_from =1;
-  // connections_to is a filter used to filter connections to the identity making the request
-  Filter connections_to =2;
 }
 
 // ChannelFilter is used to filter messages in a pubsub channel
