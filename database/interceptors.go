@@ -13,6 +13,7 @@ import (
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jws"
 	"github.com/pkg/errors"
+	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -126,9 +127,19 @@ func (a *Graph) identityToContext(ctx context.Context, payload map[string]interf
 	if !ok {
 		return nil, nil, errors.New("email not present in userinfo")
 	}
-	doc, _ := a.GetDoc(ctx, &apipb.Path{
-		Gtype: identityType,
-		Gid:   email,
+	var (
+		doc *apipb.Doc
+		err error
+	)
+	a.db.View(func(tx *bbolt.Tx) error {
+		doc, err = a.getDoc(ctx, tx, &apipb.Path{
+			Gtype: identityType,
+			Gid:   email,
+		})
+		if err != nil {
+			return err
+		}
+		return nil
 	})
 	if doc == nil {
 		logger.Info("creating identity", zap.String("email", email))

@@ -210,7 +210,7 @@ func (r *Resolver) Playground() http.HandlerFunc {
 		subscriptionsEndpoint: wsProto + '//' + location.host,
 		shareEnabled: true,
 		headers: {
-			'Authorization': 'Bearer {{.token }}'
+			'Authorization': 'Bearer {{ .token }}'
 		},
 		settings: {
 			'request.credentials': 'same-origin'

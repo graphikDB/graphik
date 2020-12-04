@@ -5,15 +5,15 @@ package apipb
 
 import (
 	fmt "fmt"
+	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/any"
-	_ "github.com/golang/protobuf/ptypes/empty"
+	_ "github.com/mwitkow/go-proto-validators"
 	_ "github.com/golang/protobuf/ptypes/struct"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
-	_ "github.com/mwitkow/go-proto-validators"
-	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
-	math "math"
+	_ "github.com/golang/protobuf/ptypes/any"
+	_ "github.com/golang/protobuf/ptypes/empty"
 	regexp "regexp"
+	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -307,7 +307,6 @@ func (this *Filter) Validate() error {
 	return nil
 }
 
-var _regex_DepthFilter_ConnectionExpression = regexp.MustCompile(`^.{1,225}$`)
 var _regex_DepthFilter_Sort = regexp.MustCompile(`((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$`)
 
 func (this *DepthFilter) Validate() error {
@@ -318,9 +317,6 @@ func (this *DepthFilter) Validate() error {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Root); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Root", err)
 		}
-	}
-	if !_regex_DepthFilter_ConnectionExpression.MatchString(this.ConnectionExpression) {
-		return github_com_mwitkow_go_proto_validators.FieldError("ConnectionExpression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.ConnectionExpression))
 	}
 	if !(this.Limit > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))

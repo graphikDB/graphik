@@ -8,7 +8,6 @@ import (
 	"github.com/autom8ter/graphik/logger"
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
-	"github.com/segmentio/ksuid"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -670,9 +669,6 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 			if err != nil {
 				return errors.Wrapf(err, "%s", constructor.GetPath().GetGtype())
 			}
-		}
-		if constructor.GetPath().Gid == "" {
-			constructor.GetPath().Gid = ksuid.New().String()
 		}
 		path := &apipb.Path{Gid: constructor.GetPath().GetGid(), Gtype: constructor.GetPath().GetGtype()}
 		newDock = &apipb.Doc{

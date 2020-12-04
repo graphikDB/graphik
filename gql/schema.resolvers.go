@@ -66,7 +66,7 @@ func (r *queryResolver) GetSchema(ctx context.Context, input *emptypb.Empty) (*a
 }
 
 func (r *queryResolver) Me(ctx context.Context, input *emptypb.Empty) (*apipb.Doc, error) {
-	return r.client.Me(ctx, input)
+	return r.client.Me(ctx, &emptypb.Empty{})
 }
 
 func (r *queryResolver) GetDoc(ctx context.Context, input apipb.Path) (*apipb.Doc, error) {
