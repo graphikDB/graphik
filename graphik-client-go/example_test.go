@@ -230,21 +230,18 @@ func ExampleClient_Publish() {
 func ExampleClient_Subscribe() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
-		stream, err := client.Subscribe(context.Background(), &apipb.ChannelFilter{
+		err := client.Subscribe(context.Background(), &apipb.ChannelFilter{
 			Channel:    "testing",
 			Expression: `message.data.text.contains("hello")`,
+		}, func(msg *apipb2.Message) bool {
+			if msg.Data.GetFields()["text"] != nil && msg.Data.GetFields()["text"].GetStringValue() == "hello world" {
+				fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
+				return false
+			}
+			return true
 		})
 		if err != nil {
 			log.Print("failed to subscribe", err)
-			return
-		}
-		for {
-			msg, err := stream.Recv()
-			if err != nil {
-				log.Print("failed to receive message", err)
-				return
-			}
-			fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
 			return
 		}
 	})

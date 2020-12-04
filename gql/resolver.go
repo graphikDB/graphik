@@ -276,7 +276,7 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 			return
 		}
 		sess.Values["token"] = token
-		sess.Values["exp"] = time.Now().Add(1 *time.Hour).Unix()
+		sess.Values["exp"] = time.Now().Add(1 * time.Hour).Unix()
 		if err := sess.Save(req, w); err != nil {
 			logger.Error("failed to save session", zap.Error(err))
 			http.Error(w, "failed to save session", http.StatusInternalServerError)

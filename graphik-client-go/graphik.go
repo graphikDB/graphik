@@ -162,12 +162,80 @@ func (c *Client) Publish(ctx context.Context, in *apipb.OutboundMessage, opts ..
 	return c.graph.Publish(ctx, in, opts...)
 }
 
-func (c *Client) Subscribe(ctx context.Context, in *apipb.ChannelFilter, opts ...grpc.CallOption) (apipb.DatabaseService_SubscribeClient, error) {
-	return c.graph.Subscribe(ctx, in, opts...)
+func (c *Client) Subscribe(ctx context.Context, in *apipb.ChannelFilter, handler func(msg *apipb.Message) bool, opts ...grpc.CallOption) error {
+	stream, err := c.graph.Subscribe(ctx, in, opts...)
+	if err != nil {
+		return err
+	}
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			msg, err := stream.Recv()
+			if err != nil {
+				return err
+			}
+			if !handler(msg) {
+				return nil
+			}
+		}
+	}
 }
 
-func (c *Client) SubscribeChanges(ctx context.Context, in *apipb.ExpressionFilter, opts ...grpc.CallOption) (apipb.DatabaseService_SubscribeChangesClient, error) {
-	return c.graph.SubscribeChanges(ctx, in, opts...)
+func (c *Client) SubscribeChanges(ctx context.Context, in *apipb.ExpressionFilter, handler func(change *apipb.Change) bool, opts ...grpc.CallOption) error {
+	stream, err := c.graph.SubscribeChanges(ctx, in, opts...)
+	if err != nil {
+		return err
+	}
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			change, err := stream.Recv()
+			if err != nil {
+				return err
+			}
+			if !handler(change) {
+				return nil
+			}
+		}
+	}
+}
+
+func (c *Client) PushDocConstructors(ctx context.Context, ch <-chan *apipb.DocConstructor, opts ...grpc.CallOption) error {
+	stream, err := c.graph.PushDocConstructors(ctx, opts...)
+	if err != nil {
+		return err
+	}
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case msg := <-ch:
+			if err := stream.Send(msg); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+func (c *Client) PushConnectionConstructors(ctx context.Context, ch <-chan *apipb.ConnectionConstructor, opts ...grpc.CallOption) error {
+	stream, err := c.graph.PushConnectionConstructors(ctx, opts...)
+	if err != nil {
+		return err
+	}
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case msg := <-ch:
+			if err := stream.Send(msg); err != nil {
+				return err
+			}
+		}
+	}
 }
 
 func (c *Client) SubGraph(ctx context.Context, in *apipb.SubGraphFilter) (*apipb.Graph, error) {
@@ -188,4 +256,8 @@ func (c *Client) SetIndexes(ctx context.Context, in *apipb.Indexes, opts ...grpc
 
 func (c *Client) SetAuthorizers(ctx context.Context, in *apipb.Authorizers, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.SetAuthorizers(ctx, in, opts...)
+}
+
+func (c *Client) SetTypeValidators(ctx context.Context, in *apipb.TypeValidators, opts ...grpc.CallOption) (*empty.Empty, error) {
+	return c.graph.SetTypeValidators(ctx, in, opts...)
 }
