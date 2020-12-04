@@ -242,16 +242,16 @@ message ConnectionDetails {
 
 // ConnectionFilter is used to fetch connections related to a single noted
 message ConnectionFilter {
-  // doc_path is the path to the target doc
+  // doc_path is the path to the target doc. (validator.field) = {msg_exists : true}]
   Path doc_path =1 [(validator.field) = {msg_exists : true}];
-  // gtype is the type of connections to return
+  // gtype is the type of connections to return. (validator.field) = {regex : "^.{1,225}$"}
   string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is a CEL expression used to filter connections/modes
   string expression =3;
-  // limit is the maximum number of items to return
+  // limit is the maximum number of items to return. (validator.field) = {int_gt : 0}
   int32 limit =4 [(validator.field) = {int_gt : 0}];
-  // custom sorting of the results.
-  string sort =5;
+  // custom sorting of the results. (validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}
+  string sort =5 [(validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}];
   // seek to a specific key for pagination
   int64 seek =6;
   // reverse the results
@@ -267,7 +267,7 @@ message Filter {
   // limit is the maximum number of items to return
   int32 limit =3 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results.
-  string sort =4;
+  string sort =4 [(validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}];
   // seek to a specific key for pagination
   int64 seek =5;
   // reverse the results
@@ -282,7 +282,7 @@ message DepthFilter {
   string connection_expression =3[(validator.field) = {regex : "^.{1,225}$"}];
   int32 limit =4 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results.
-  string sort =5;
+  string sort =5 [(validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}];
 }
 
 message IndexConstructor {

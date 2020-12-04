@@ -174,6 +174,7 @@ func ExampleClient_SearchConnections() {
 	owners, err := client.SearchConnections(context.Background(), &apipb.Filter{
 		Gtype:      "owner",
 		Expression: `connection.attributes.primary_owner`,
+		Sort:       "metadata.created_at",
 		Limit:      1,
 	})
 	if err != nil {

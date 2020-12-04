@@ -383,6 +383,7 @@ func (this *ConnectionDetails) Validate() error {
 }
 
 var _regex_ConnectionFilter_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_ConnectionFilter_Sort = regexp.MustCompile(`((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$`)
 
 func (this *ConnectionFilter) Validate() error {
 	if nil == this.DocPath {
@@ -399,10 +400,14 @@ func (this *ConnectionFilter) Validate() error {
 	if !(this.Limit > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
 	}
+	if !_regex_ConnectionFilter_Sort.MatchString(this.Sort) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"`, this.Sort))
+	}
 	return nil
 }
 
 var _regex_Filter_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Filter_Sort = regexp.MustCompile(`((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$`)
 
 func (this *Filter) Validate() error {
 	if !_regex_Filter_Gtype.MatchString(this.Gtype) {
@@ -411,10 +416,14 @@ func (this *Filter) Validate() error {
 	if !(this.Limit > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
 	}
+	if !_regex_Filter_Sort.MatchString(this.Sort) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"`, this.Sort))
+	}
 	return nil
 }
 
 var _regex_DepthFilter_ConnectionExpression = regexp.MustCompile(`^.{1,225}$`)
+var _regex_DepthFilter_Sort = regexp.MustCompile(`((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$`)
 
 func (this *DepthFilter) Validate() error {
 	if nil == this.Root {
@@ -430,6 +439,9 @@ func (this *DepthFilter) Validate() error {
 	}
 	if !(this.Limit > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
+	}
+	if !_regex_DepthFilter_Sort.MatchString(this.Sort) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"`, this.Sort))
 	}
 	return nil
 }
