@@ -144,7 +144,11 @@ func (r *Resolver) Playground() http.HandlerFunc {
 			r.redirectLogin(sess, w, req)
 			return
 		}
-		if authToken.Expiry.Before(time.Now()) {
+		if !authToken.Valid() {
+			r.redirectLogin(sess, w, req)
+			return
+		}
+		if time.Unix(sess.Values["exp"].(int64), 0).Before(time.Now()) {
 			r.redirectLogin(sess, w, req)
 			return
 		}
@@ -272,7 +276,9 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 			return
 		}
 		sess.Values["token"] = token
+		sess.Values["exp"] = time.Now().Add(1 *time.Hour).Unix()
 		if err := sess.Save(req, w); err != nil {
+			logger.Error("failed to save session", zap.Error(err))
 			http.Error(w, "failed to save session", http.StatusInternalServerError)
 			return
 		}
