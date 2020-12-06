@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/autom8ter/graphik/gen/go"
-	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
@@ -799,7 +798,7 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path
 	return nil
 }
 
-func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int64, index string, reverse bool, fn func(e *apipb.Connection) bool) (int64, error) {
+func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek string, index string, reverse bool, fn func(e *apipb.Connection) bool) (string, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
@@ -823,7 +822,7 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int
 		if reverse {
 			iter = c.Prev
 		}
-		for k, v := c.Seek(helpers.Uint64ToBytes(uint64(seek))); k != nil; k, v = iter() {
+		for k, v := c.Seek([]byte(seek)); k != nil; k, v = iter() {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
@@ -838,12 +837,12 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek int
 		}
 		return nil
 	}); err != nil && err != DONE {
-		return 0, err
+		return string(lastKey), err
 	}
-	return int64(helpers.BytesToUint64(lastKey)), nil
+	return string(lastKey), nil
 }
 
-func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek int64, index string, reverse bool, fn func(e *apipb.Doc) bool) (int64, error) {
+func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, index string, reverse bool, fn func(e *apipb.Doc) bool) (string, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
@@ -867,7 +866,7 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek int64, ind
 		if reverse {
 			iter = c.Prev
 		}
-		for k, v := c.Seek(helpers.Uint64ToBytes(uint64(seek))); k != nil; k, v = iter() {
+		for k, v := c.Seek([]byte(seek)); k != nil; k, v = iter() {
 			if ctx.Err() != nil {
 				return ctx.Err()
 			}
@@ -882,7 +881,7 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek int64, ind
 		}
 		return nil
 	}); err != nil && err != DONE {
-		return int64(helpers.BytesToUint64(lastKey)), err
+		return string(lastKey), err
 	}
-	return int64(helpers.BytesToUint64(lastKey)), nil
+	return string(lastKey), nil
 }

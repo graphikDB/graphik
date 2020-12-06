@@ -4,9 +4,9 @@
 ## Table of Contents
 
 - [graphik.proto](#graphik.proto)
+    - [AggregateFilter](#api.AggregateFilter)
     - [Authorizer](#api.Authorizer)
     - [Authorizers](#api.Authorizers)
-    - [Bytes](#api.Bytes)
     - [Change](#api.Change)
     - [ChannelFilter](#api.ChannelFilter)
     - [Connection](#api.Connection)
@@ -56,6 +56,23 @@
 
 
 
+<a name="api.AggregateFilter"></a>
+
+### AggregateFilter
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [Filter](#api.Filter) |  |  |
+| aggregate | [string](#string) |  |  |
+| field | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="api.Authorizer"></a>
 
 ### Authorizer
@@ -81,21 +98,6 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | authorizers | [Authorizer](#api.Authorizer) | repeated |  |
-
-
-
-
-
-
-<a name="api.Bytes"></a>
-
-### Bytes
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| bytes | [bytes](#bytes) |  |  |
 
 
 
@@ -203,7 +205,7 @@ ConnectionFilter is used to fetch connections related to a single noted
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return. (validator.field) = {int_gt : 0} |
 | sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))&#43;$&#34;} |
-| seek | [int64](#int64) |  | seek to a specific key for pagination |
+| seek | [string](#string) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
 
 
@@ -220,7 +222,7 @@ Connections is an array of Connection
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | connections | [Connection](#api.Connection) | repeated |  |
-| seek_next | [int64](#int64) |  |  |
+| seek_next | [string](#string) |  |  |
 
 
 
@@ -334,7 +336,7 @@ Docs is an array of docs
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | docs | [Doc](#api.Doc) | repeated | docs is an array of docs |
-| seek_next | [int64](#int64) |  |  |
+| seek_next | [string](#string) |  |  |
 
 
 
@@ -400,7 +402,7 @@ Filter is a generic filter using Common Expression Language
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return |
 | sort | [string](#string) |  | custom sorting of the results. |
-| seek | [int64](#int64) |  | seek to a specific key for pagination |
+| seek | [string](#string) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
 | index | [string](#string) |  | search in a specific index |
 
@@ -744,6 +746,8 @@ DatabaseService is the primary database service
 | DelConnections | [Filter](#api.Filter) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelConnections deletes a batch of connections that pass the filter |
 | ConnectionsFrom | [ConnectionFilter](#api.ConnectionFilter) | [Connections](#api.Connections) | ConnectionsFrom returns connections that source from the given doc path that pass the filter |
 | ConnectionsTo | [ConnectionFilter](#api.ConnectionFilter) | [Connections](#api.Connections) | ConnectionsTo returns connections that point to the given doc path that pass the filter |
+| AggregateDocs | [AggregateFilter](#api.AggregateFilter) | [.google.protobuf.Value](#google.protobuf.Value) |  |
+| AggregateConnections | [AggregateFilter](#api.AggregateFilter) | [.google.protobuf.Value](#google.protobuf.Value) |  |
 | Publish | [OutboundMessage](#api.OutboundMessage) | [.google.protobuf.Empty](#google.protobuf.Empty) | Publish publishes a message to a pubsub channel |
 | Subscribe | [ChannelFilter](#api.ChannelFilter) | [Message](#api.Message) stream | Subscribe subscribes to messages on a pubsub channel |
 | SubscribeChanges | [ExpressionFilter](#api.ExpressionFilter) | [Change](#api.Change) stream |  |

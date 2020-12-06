@@ -8,98 +8,166 @@ import (
 
 	apipb "github.com/autom8ter/graphik/gen/go"
 	generated1 "github.com/autom8ter/graphik/gen/gql/generated"
+	"github.com/autom8ter/graphik/gen/gql/model"
 	"github.com/autom8ter/graphik/logger"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (r *metadataResolver) Version(ctx context.Context, obj *apipb.Metadata) (int, error) {
-	return int(obj.Version), nil
+func (r *mutationResolver) CreateDoc(ctx context.Context, input model.DocConstructor) (*model.Doc, error) {
+	doc, err := r.client.CreateDoc(ctx, protoDocC(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlDoc(doc), nil
 }
 
-func (r *mutationResolver) CreateDoc(ctx context.Context, input apipb.DocConstructor) (*apipb.Doc, error) {
-	return r.client.CreateDoc(ctx, &input)
+func (r *mutationResolver) EditDoc(ctx context.Context, input model.Edit) (*model.Doc, error) {
+	res, err := r.client.EditDoc(ctx, protoEdit(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlDoc(res), nil
 }
 
-func (r *mutationResolver) EditDoc(ctx context.Context, input apipb.Edit) (*apipb.Doc, error) {
-	return r.client.EditDoc(ctx, &input)
+func (r *mutationResolver) EditDocs(ctx context.Context, input model.EditFilter) (*model.Docs, error) {
+	docs, err := r.client.EditDocs(ctx, protoEditFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlDocs(docs), nil
 }
 
-func (r *mutationResolver) EditDocs(ctx context.Context, input apipb.EditFilter) (*apipb.Docs, error) {
-	return r.client.EditDocs(ctx, &input)
+func (r *mutationResolver) CreateConnection(ctx context.Context, input model.ConnectionConstructor) (*model.Connection, error) {
+	res, err := r.client.CreateConnection(ctx, protoConnectionC(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlConnection(res), nil
 }
 
-func (r *mutationResolver) CreateConnection(ctx context.Context, input apipb.ConnectionConstructor) (*apipb.Connection, error) {
-	return r.client.CreateConnection(ctx, &input)
+func (r *mutationResolver) EditConnection(ctx context.Context, input model.Edit) (*model.Connection, error) {
+	res, err := r.client.EditConnection(ctx, protoEdit(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlConnection(res), nil
 }
 
-func (r *mutationResolver) EditConnection(ctx context.Context, input apipb.Edit) (*apipb.Connection, error) {
-	return r.client.EditConnection(ctx, &input)
+func (r *mutationResolver) EditConnections(ctx context.Context, input model.EditFilter) (*model.Connections, error) {
+	connections, err := r.client.EditConnections(ctx, protoEditFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlConnections(connections), nil
 }
 
-func (r *mutationResolver) EditConnections(ctx context.Context, input apipb.EditFilter) (*apipb.Connections, error) {
-	return r.client.EditConnections(ctx, &input)
+func (r *mutationResolver) Publish(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error) {
+	return r.client.Publish(ctx, &apipb.OutboundMessage{
+		Channel: input.Channel,
+		Data:    apipb.NewStruct(input.Data),
+	})
 }
 
-func (r *mutationResolver) Publish(ctx context.Context, input apipb.OutboundMessage) (*emptypb.Empty, error) {
-	return r.client.Publish(ctx, &input)
+func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*model.Pong, error) {
+	res, err := r.client.Ping(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, err
+	}
+	return &model.Pong{Message: res.GetMessage()}, nil
 }
 
-func (r *mutationResolver) SetIndexes(ctx context.Context, input apipb.Indexes) (*emptypb.Empty, error) {
-	return r.client.SetIndexes(ctx, &input)
+func (r *queryResolver) GetSchema(ctx context.Context, input *emptypb.Empty) (*model.Schema, error) {
+	res, err := r.client.GetSchema(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, err
+	}
+	return gqlSchema(res), nil
 }
 
-func (r *mutationResolver) SetAuthorizers(ctx context.Context, input apipb.Authorizers) (*emptypb.Empty, error) {
-	return r.client.SetAuthorizers(ctx, &input)
+func (r *queryResolver) Me(ctx context.Context, input *emptypb.Empty) (*model.Doc, error) {
+	res, err := r.client.Me(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, err
+	}
+	return gqlDoc(res), nil
 }
 
-func (r *mutationResolver) SetTypeValidators(ctx context.Context, input apipb.TypeValidators) (*emptypb.Empty, error) {
-	return r.client.SetTypeValidators(ctx, &input)
+func (r *queryResolver) GetDoc(ctx context.Context, input model.PathInput) (*model.Doc, error) {
+	res, err := r.client.GetDoc(ctx, protoIPath(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlDoc(res), nil
 }
 
-func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*apipb.Pong, error) {
-	return r.client.Ping(ctx, &emptypb.Empty{})
+func (r *queryResolver) SearchDocs(ctx context.Context, input model.Filter) (*model.Docs, error) {
+	res, err := r.client.SearchDocs(ctx, protoFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlDocs(res), nil
 }
 
-func (r *queryResolver) GetSchema(ctx context.Context, input *emptypb.Empty) (*apipb.Schema, error) {
-	return r.client.GetSchema(ctx, &emptypb.Empty{})
+func (r *queryResolver) DepthSearchDocs(ctx context.Context, input model.DepthFilter) (*model.DocTraversals, error) {
+	res, err := r.client.DepthSearchDocs(ctx, protoDepthFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlTraversals(res), nil
 }
 
-func (r *queryResolver) Me(ctx context.Context, input *emptypb.Empty) (*apipb.Doc, error) {
-	return r.client.Me(ctx, &emptypb.Empty{})
+func (r *queryResolver) GetConnection(ctx context.Context, input model.PathInput) (*model.Connection, error) {
+	res, err := r.client.GetConnection(ctx, protoIPath(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlConnection(res), nil
 }
 
-func (r *queryResolver) GetDoc(ctx context.Context, input apipb.Path) (*apipb.Doc, error) {
-	return r.client.GetDoc(ctx, &input)
+func (r *queryResolver) SearchConnections(ctx context.Context, input model.Filter) (*model.Connections, error) {
+	res, err := r.client.SearchConnections(ctx, protoFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) SearchDocs(ctx context.Context, input apipb.Filter) (*apipb.Docs, error) {
-	return r.client.SearchDocs(ctx, &input)
+func (r *queryResolver) ConnectionsFrom(ctx context.Context, input model.ConnectionFilter) (*model.Connections, error) {
+	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) DepthSearchDocs(ctx context.Context, input apipb.DepthFilter) (*apipb.DocTraversals, error) {
-	return r.client.DepthSearchDocs(ctx, &input)
+func (r *queryResolver) ConnectionsTo(ctx context.Context, input model.ConnectionFilter) (*model.Connections, error) {
+	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) GetConnection(ctx context.Context, input apipb.Path) (*apipb.Connection, error) {
-	return r.client.GetConnection(ctx, &input)
+func (r *queryResolver) AggregateDocs(ctx context.Context, input model.AggregateFilter) (interface{}, error) {
+	res, err := r.client.AggregateDocs(ctx, protoAggFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return res.GetNumberValue(), nil
 }
 
-func (r *queryResolver) SearchConnections(ctx context.Context, input apipb.Filter) (*apipb.Connections, error) {
-	return r.client.SearchConnections(ctx, &input)
+func (r *queryResolver) AggregateConnections(ctx context.Context, input model.AggregateFilter) (interface{}, error) {
+	res, err := r.client.AggregateConnections(ctx, protoAggFilter(&input))
+	if err != nil {
+		return nil, err
+	}
+	return res.GetNumberValue(), nil
 }
 
-func (r *queryResolver) ConnectionsFrom(ctx context.Context, input apipb.ConnectionFilter) (*apipb.Connections, error) {
-	return r.client.ConnectionsFrom(ctx, &input)
-}
-
-func (r *queryResolver) ConnectionsTo(ctx context.Context, input apipb.ConnectionFilter) (*apipb.Connections, error) {
-	return r.client.ConnectionsFrom(ctx, &input)
-}
-
-func (r *subscriptionResolver) Subscribe(ctx context.Context, input apipb.ChannelFilter) (<-chan *apipb.Message, error) {
-	ch := make(chan *apipb.Message)
-	stream, err := r.client.Subscribe(ctx, &input)
+func (r *subscriptionResolver) Subscribe(ctx context.Context, input model.ChannelFilter) (<-chan *model.Message, error) {
+	ch := make(chan *model.Message)
+	stream, err := r.client.Subscribe(ctx, protoChannelFilter(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -117,16 +185,21 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, input apipb.Channe
 					logger.Error("failed to receive subsription message", zap.Error(err))
 					continue
 				}
-				ch <- msg
+				ch <- &model.Message{
+					Channel:   msg.GetChannel(),
+					Data:      msg.GetData().AsMap(),
+					Sender:    gqlPath(msg.GetSender()),
+					Timestamp: msg.GetTimestamp().AsTime(),
+				}
 			}
 		}
 	}()
 	return ch, nil
 }
 
-func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input apipb.ExpressionFilter) (<-chan *apipb.Change, error) {
-	ch := make(chan *apipb.Change)
-	stream, err := r.client.SubscribeChanges(ctx, &input)
+func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input model.ExpressionFilter) (<-chan *model.Change, error) {
+	ch := make(chan *model.Change)
+	stream, err := r.client.SubscribeChanges(ctx, protoExpressionFilter(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -144,15 +217,17 @@ func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input apipb
 					logger.Error("failed to receive change", zap.Error(err))
 					continue
 				}
-				ch <- msg
+				ch <- &model.Change{
+					Method:        msg.GetMethod(),
+					Identity:      gqlDoc(msg.GetIdentity()),
+					Timestamp:     msg.GetTimestamp().AsTime(),
+					PathsAffected: gqlPaths(msg.GetPathsAffected()),
+				}
 			}
 		}
 	}()
 	return ch, nil
 }
-
-// Metadata returns generated1.MetadataResolver implementation.
-func (r *Resolver) Metadata() generated1.MetadataResolver { return &metadataResolver{r} }
 
 // Mutation returns generated1.MutationResolver implementation.
 func (r *Resolver) Mutation() generated1.MutationResolver { return &mutationResolver{r} }
@@ -163,7 +238,6 @@ func (r *Resolver) Query() generated1.QueryResolver { return &queryResolver{r} }
 // Subscription returns generated1.SubscriptionResolver implementation.
 func (r *Resolver) Subscription() generated1.SubscriptionResolver { return &subscriptionResolver{r} }
 
-type metadataResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }

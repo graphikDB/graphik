@@ -2,6 +2,7 @@ package apipb
 
 import (
 	"fmt"
+	"gonum.org/v1/gonum/floats"
 	"google.golang.org/protobuf/types/known/structpb"
 	"sort"
 	"strings"
@@ -423,4 +424,112 @@ func (e *Connections) Sort(field string) {
 			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
 		})
 	}
+}
+
+func (d *Docs) Range(fn func(d *Doc) bool) {
+	for _, d := range d.GetDocs() {
+		if !fn(d) {
+			return
+		}
+	}
+}
+
+func (d *Connections) Range(fn func(d *Connection) bool) {
+	for _, d := range d.GetConnections() {
+		if !fn(d) {
+			return
+		}
+	}
+}
+
+func (d *Docs) Aggregate(aggregate string, field string) float64 {
+	if aggregate == "count" {
+		return float64(len(d.GetDocs()))
+	}
+	var values []float64
+	d.Range(func(d *Doc) bool {
+		switch {
+		case field == "metadata.version":
+			values = append(values, float64(d.GetMetadata().GetVersion()))
+		case field == "metadata.created_at":
+			values = append(values, float64(d.GetMetadata().GetCreatedAt().GetSeconds()))
+		case field == "metadata.updated_at":
+			values = append(values, float64(d.GetMetadata().GetUpdatedAt().GetSeconds()))
+		case strings.Contains(field, "attributes."):
+			if fields := d.GetAttributes().GetFields(); fields != nil {
+				split := strings.Split(field, "attributes.")
+				if len(split) == 2 {
+					key := split[1]
+					if val := fields[key]; val != nil {
+						values = append(values, val.GetNumberValue())
+					}
+				}
+			}
+		}
+		return true
+	})
+	if len(values) == 0 {
+		return 0
+	}
+	switch aggregate {
+	case "sum":
+		return floats.Sum(values)
+	case "min":
+		return floats.Min(values)
+	case "max":
+		return floats.Max(values)
+	case "prod":
+		return floats.Prod(values)
+	case "avg":
+		return floats.Sum(values) / float64(len(values))
+	}
+	return 0
+}
+
+func (c *Connections) Aggregate(aggregate string, field string) float64 {
+	if aggregate == "count" {
+		return float64(len(c.GetConnections()))
+	}
+	var values []float64
+	c.Range(func(c *Connection) bool {
+		switch {
+		case field == "metadata.version":
+			values = append(values, float64(c.GetMetadata().GetVersion()))
+		case field == "metadata.created_at":
+			values = append(values, float64(c.GetMetadata().GetCreatedAt().GetSeconds()))
+		case field == "metadata.updated_at":
+			values = append(values, float64(c.GetMetadata().GetUpdatedAt().GetSeconds()))
+		case strings.Contains(field, "attributes."):
+			if fields := c.GetAttributes().GetFields(); fields != nil {
+				split := strings.Split(field, "attributes.")
+				if len(split) == 2 {
+					key := split[1]
+					if val := fields[key]; val != nil {
+						values = append(values, val.GetNumberValue())
+					}
+				}
+			}
+		}
+		return true
+	})
+	if len(values) == 0 {
+		return 0
+	}
+	switch aggregate {
+	case "sum":
+		return floats.Sum(values)
+	case "min":
+		return floats.Min(values)
+	case "max":
+		return floats.Max(values)
+	case "count":
+		return float64(floats.Count(func(f float64) bool {
+			return true
+		}, values))
+	case "prod":
+		return floats.Prod(values)
+	case "avg":
+		return floats.Sum(values) / float64(len(values))
+	}
+	return 0
 }

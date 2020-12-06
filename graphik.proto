@@ -59,6 +59,8 @@ service DatabaseService {
   rpc ConnectionsFrom(ConnectionFilter) returns(Connections){}
   // ConnectionsTo returns connections that point to the given doc path that pass the filter
   rpc ConnectionsTo(ConnectionFilter) returns(Connections){}
+  rpc AggregateDocs(AggregateFilter) returns(google.protobuf.Value){}
+  rpc AggregateConnections(AggregateFilter) returns(google.protobuf.Value){}
   // Publish publishes a message to a pubsub channel
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
@@ -68,10 +70,6 @@ service DatabaseService {
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   // SubGraph returns a subgraph using the given filter
   rpc SubGraph(SubGraphFilter) returns(Graph){}
-}
-
-message Bytes {
-  bytes bytes =1;
 }
 
 // Path describes a doc/connection type & id
@@ -137,7 +135,7 @@ message DocConstructors {
 message Docs {
   // docs is an array of docs
   repeated Doc docs =1;
-  int64 seek_next =2;
+  string seek_next =2;
 }
 
 message DocTraversal {
@@ -187,7 +185,7 @@ message ConnectionConstructors {
 // Connections is an array of Connection
 message Connections {
   repeated Connection connections =1;
-  int64 seek_next =2;
+  string seek_next =2;
 }
 
 // ConnectionFilter is used to fetch connections related to a single noted
@@ -203,7 +201,7 @@ message ConnectionFilter {
   // custom sorting of the results. (validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}
   string sort =5 [(validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}];
   // seek to a specific key for pagination
-  int64 seek =6;
+  string seek =6;
   // reverse the results
   bool reverse =7;
 }
@@ -219,11 +217,17 @@ message Filter {
   // custom sorting of the results.
   string sort =4 [(validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}];
   // seek to a specific key for pagination
-  int64 seek =5;
+  string seek =5;
   // reverse the results
   bool reverse =6;
   // search in a specific index
   string index =7;
+}
+
+message AggregateFilter {
+  Filter filter =1[(validator.field) = {msg_exists : true}];
+  string aggregate =2[(validator.field) = {regex : "((^|, )(sum|count|max|min|avg|prod))+$"}];
+  string field =3[(validator.field) = {regex : "((^|, )(metadata.created_at|metadata.updated_at|metadata.version|^attributes.(.*)))+$"}];
 }
 
 message DepthFilter {

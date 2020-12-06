@@ -25,6 +25,7 @@ require (
 	go.etcd.io/bbolt v1.3.5
 	go.uber.org/zap v1.16.0
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+	gonum.org/v1/gonum v0.8.2
 	google.golang.org/grpc v1.33.2
 	google.golang.org/grpc/examples v0.0.0-20201123174403-6d0f0110bf69 // indirect
 	google.golang.org/protobuf v1.25.0

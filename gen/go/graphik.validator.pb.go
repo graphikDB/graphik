@@ -5,25 +5,21 @@ package apipb
 
 import (
 	fmt "fmt"
-	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/mwitkow/go-proto-validators"
-	_ "github.com/golang/protobuf/ptypes/struct"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
 	_ "github.com/golang/protobuf/ptypes/any"
 	_ "github.com/golang/protobuf/ptypes/empty"
-	regexp "regexp"
+	_ "github.com/golang/protobuf/ptypes/struct"
+	_ "github.com/golang/protobuf/ptypes/timestamp"
+	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
+	math "math"
+	regexp "regexp"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
-
-func (this *Bytes) Validate() error {
-	return nil
-}
 
 var _regex_Path_Gtype = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Path_Gid = regexp.MustCompile(`^.{1,225}$`)
@@ -303,6 +299,27 @@ func (this *Filter) Validate() error {
 	}
 	if !_regex_Filter_Sort.MatchString(this.Sort) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"`, this.Sort))
+	}
+	return nil
+}
+
+var _regex_AggregateFilter_Aggregate = regexp.MustCompile(`((^|, )(sum|count|max|min|avg|prod))+$`)
+var _regex_AggregateFilter_Field = regexp.MustCompile(`((^|, )(metadata.created_at|metadata.updated_at|metadata.version|^attributes.(.*)))+$`)
+
+func (this *AggregateFilter) Validate() error {
+	if nil == this.Filter {
+		return github_com_mwitkow_go_proto_validators.FieldError("Filter", fmt.Errorf("message must exist"))
+	}
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	if !_regex_AggregateFilter_Aggregate.MatchString(this.Aggregate) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Aggregate", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(sum|count|max|min|avg|prod))+$"`, this.Aggregate))
+	}
+	if !_regex_AggregateFilter_Field.MatchString(this.Field) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Field", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(metadata.created_at|metadata.updated_at|metadata.version|^attributes.(.*)))+$"`, this.Field))
 	}
 	return nil
 }

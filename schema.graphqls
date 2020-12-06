@@ -1,9 +1,7 @@
-# Timestamp directly corresponds to google's well known timestamppb protobuf
-scalar Timestamp
-# Struct directly corresponds to google's well known structpb protobuf
-scalar Struct
-# Empty directly corresponds to google's well known emptypb protobuf
+scalar Time
+scalar Map
 scalar Empty
+scalar Any
 
 # Pong returns PONG if the server is healthy
 type Pong {
@@ -21,9 +19,9 @@ type Path {
 # Metadata is general metadata collected about the doc
 type Metadata {
   # created_at is the unix timestamp when the doc/connection was created
-  created_at: Timestamp!
+  created_at: Time!
   # updated_at is the unix timestamp when the doc/connection was last updated
-  updated_at: Timestamp!
+  updated_at: Time!
   # created_by is the identity that initially created the doc/connection
   createdBy: Path!
   # updated_by is the identity that last modified the doc/connection
@@ -37,7 +35,7 @@ type Doc {
   # path is the path to the doc
   path: Path!
   # k/v pairs
-  attributes: Struct
+  attributes: Map
   # metadata is general metadata collected about the doc
   metadata: Metadata!
 }
@@ -46,7 +44,7 @@ type Doc {
 type Docs {
   # docs is an array of docs
   docs: [Doc!]
-  seek_next: Int!
+  seek_next: String!
 }
 
 type Paths {
@@ -81,9 +79,9 @@ type Connection {
   # path is the path to the connection
   path: Path!
   # k/v pairs
-  attributes: Struct
+  attributes: Map
   # directed is false if the connection is bi-directional
-  directed: Boolean
+  directed: Boolean!
   # from is the doc path that is the source of the connection
   from: Path!
   # to is the doc path that is the destination of the connection
@@ -95,7 +93,7 @@ type Connection {
 # Connections is an array of connections
 type Connections {
   connections: [Connection!]
-  seek_next: Int!
+  seek_next: String!
 }
 
 type Index {
@@ -135,11 +133,11 @@ type Message {
   # channel is the channel the message was sent to
   channel: String!
   # data is the data sent with the message
-  data: Struct!
+  data: Map!
   # sender is the identity that sent the message
   sender: Path!
   # timestamp is when the message was sent
-  timestamp: Timestamp!
+  timestamp: Time!
 }
 
 # PathConstructor is used to create a Path
@@ -152,16 +150,16 @@ input PathConstructor {
 input DocConstructor {
   path: PathConstructor!
   # attributes are k/v pairs
-  attributes: Struct
+  attributes: Map
 }
 
 # ConnectionConstructor is used to create an Connection
 input ConnectionConstructor {
   path: PathConstructor!
   # directed is false if the connection is bi-directional
-  directed: Boolean
+  directed: Boolean!
 
-  attributes: Struct
+  attributes: Map
   # from is the doc path that is the source of the connection
   from: PathInput!
   # to is the doc path that is the destination of the connection
@@ -175,7 +173,7 @@ type Change {
   # identity is the identity invoking the change
   identity: Doc!
   # timestamp is when the change was made
-  timestamp: Timestamp!
+  timestamp: Time!
   # paths_affected are paths to docs/connections that have been affected by the change
   paths_affected: Paths!
 }
@@ -199,11 +197,18 @@ input Filter {
   # custom sorting of the results.
   sort: String
   # seek to a specific key for pagination
-  seek: Int
+  seek: String
   # reverse the results
   reverse: Boolean
   # search in a specific index
   index: String
+}
+
+
+input AggregateFilter {
+  filter: Filter!
+  aggregate: String!
+  field: String!
 }
 
 input DepthFilter {
@@ -231,7 +236,7 @@ input ConnectionFilter {
   # custom sorting of the results.
   sort: String
   # seek to a specific key for pagination
-  seek: Int
+  seek: String
   # reverse the results
   reverse: Boolean
 }
@@ -249,7 +254,7 @@ input Edit {
   # path is the path to the target doc/connection to edit
   path: PathInput!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
-  attributes: Struct!
+  attributes: Map!
 }
 
 # EditFilter is used to edit docs/connections
@@ -257,7 +262,7 @@ input EditFilter {
   # filter is used to filter docs/connections to edit
   filter: Filter!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
-  attributes: Struct!
+  attributes: Map!
 }
 
 # OutboundMessage is a message to be published to a pubsub channel
@@ -265,7 +270,7 @@ input OutboundMessage {
   # channel is the target channel to send the message to
   channel: String!
   # data is the data to send with the message
-  data: Struct!
+  data: Map!
 }
 
 input ExpressionFilter {
@@ -323,9 +328,9 @@ type Mutation {
   editConnections(input: EditFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty
-  setIndexes(input: IndexesInput!): Empty
-  setAuthorizers(input: AuthorizersInput!): Empty
-  setTypeValidators(input: TypeValidatorsInput!): Empty
+  #setIndexes(input: IndexesInput!): Empty
+  #setAuthorizers(input: AuthorizersInput!): Empty
+ # setTypeValidators(input: TypeValidatorsInput!): Empty
 }
 
 type Query {
@@ -349,6 +354,8 @@ type Query {
   connectionsFrom(input: ConnectionFilter!): Connections!
   # connectionsTo returns connections to the given doc that pass the filter
   connectionsTo(input: ConnectionFilter!): Connections!
+  aggregateDocs(input: AggregateFilter!): Any!
+  aggregateConnections(input: AggregateFilter!): Any!
 }
 
 type Subscription {

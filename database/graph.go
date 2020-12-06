@@ -10,6 +10,7 @@ import (
 	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/cel-go/cel"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
@@ -824,46 +825,25 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	return toReturn, nil
 }
 
-//
-//func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.Filter) (int, error) {
-//	var docs []*apipb.Doc
-//	var program cel.Program
-//	var err error
-//	if filter.Expression != "" {
-//		program, err = n.vm.Doc().Program(filter.Expression)
-//		if err != nil {
-//			return 0, err
-//		}
-//	}
-//	count := 0
-//	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), filter.GetReverse(), func(doc *apipb.Doc) bool {
-//		if program != nil {
-//			pass, err := n.vm.Doc().Eval(doc, program)
-//			if err != nil {
-//				if !strings.Contains(err.Error(), "no such key") {
-//					logger.Error("search docs failure", zap.Error(err))
-//				}
-//				return true
-//			}
-//			if pass {
-//				count++
-//				docs = append(docs, doc)
-//			}
-//		} else {
-//			docs = append(docs, doc)
-//		}
-//		return len(docs) < int(filter.Limit)
-//	})
-//	if err != nil {
-//		return nil, err
-//	}
-//	toReturn := &apipb.Docs{
-//		Docs:     docs,
-//		SeekNext: seek,
-//	}
-//	toReturn.Sort(filter.GetSort())
-//	return toReturn, nil
-//}
+func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.AggregateFilter) (*structpb.Value, error) {
+	docs, err := n.SearchDocs(ctx, filter.GetFilter())
+	if err != nil {
+		return nil, err
+	}
+	return &structpb.Value{
+		Kind: &structpb.Value_NumberValue{NumberValue: docs.Aggregate(filter.GetAggregate(), filter.GetField())},
+	}, nil
+}
+
+func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.AggregateFilter) (*structpb.Value, error) {
+	connections, err := n.SearchConnections(ctx, filter.GetFilter())
+	if err != nil {
+		return nil, err
+	}
+	return &structpb.Value{
+		Kind: &structpb.Value_NumberValue{NumberValue: connections.Aggregate(filter.GetAggregate(), filter.GetField())},
+	}, nil
+}
 
 func (n *Graph) DepthSearchDocs(ctx context.Context, filter *apipb.DepthFilter) (*apipb.DocTraversals, error) {
 	dfs := n.newDepthFirst(filter)
