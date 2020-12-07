@@ -1232,3 +1232,23 @@ func (g *Graph) SeedConnections(server apipb.DatabaseService_SeedConnectionsServ
 		}
 	}
 }
+
+func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SConnectFilter) (*apipb.Connections, error) {
+	docs, err := g.SearchDocs(ctx, filter.GetFilter())
+	if err != nil {
+		return nil, err
+	}
+	var connections []*apipb.ConnectionConstructor
+	for _, doc := range docs.GetDocs() {
+		connections = append(connections, &apipb.ConnectionConstructor{
+			Path: &apipb.PathConstructor{
+				Gtype: filter.GetGtype(),
+			},
+			Attributes: filter.GetAttributes(),
+			Directed:   filter.GetDirected(),
+			From:       filter.GetFrom(),
+			To:         doc.GetPath(),
+		})
+	}
+	return g.CreateConnections(ctx, &apipb.ConnectionConstructors{Connections: connections})
+}

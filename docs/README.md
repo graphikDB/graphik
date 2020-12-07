@@ -35,6 +35,7 @@
     - [Paths](#api.Paths)
     - [Pong](#api.Pong)
     - [Request](#api.Request)
+    - [SConnectFilter](#api.SConnectFilter)
     - [Schema](#api.Schema)
     - [TFilter](#api.TFilter)
     - [Traversal](#api.Traversal)
@@ -590,6 +591,25 @@ Pong returns PONG if the server is healthy
 
 
 
+<a name="api.SConnectFilter"></a>
+
+### SConnectFilter
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [Filter](#api.Filter) |  |  |
+| gtype | [string](#string) |  |  |
+| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs |
+| directed | [bool](#bool) |  | directed is false if the connection is bi-directional |
+| from | [Path](#api.Path) |  | from is the doc path that is the root of the connection |
+
+
+
+
+
+
 <a name="api.Schema"></a>
 
 ### Schema
@@ -737,6 +757,7 @@ DatabaseService is the primary database service
 | DelDocs | [Filter](#api.Filter) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDocs deletes a batch of docs that pass the filter |
 | CreateConnection | [ConnectionConstructor](#api.ConnectionConstructor) | [Connection](#api.Connection) | CreateConnection creates an connection in the graph |
 | CreateConnections | [ConnectionConstructors](#api.ConnectionConstructors) | [Connections](#api.Connections) | CreateConnections creates a batch of connections in the graph |
+| SearchAndConnect | [SConnectFilter](#api.SConnectFilter) | [Connections](#api.Connections) |  |
 | GetConnection | [Path](#api.Path) | [Connection](#api.Connection) | GetConnection gets a single connection in the graph |
 | SearchConnections | [Filter](#api.Filter) | [Connections](#api.Connections) | SearchConnections searches the graph for connections |
 | EditConnection | [Edit](#api.Edit) | [Connection](#api.Connection) | EditConnection patches an connections attributes |

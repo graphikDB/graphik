@@ -184,6 +184,14 @@ type Pong struct {
 	Message string `json:"message"`
 }
 
+type SConnectFilter struct {
+	Filter     *Filter                `json:"filter"`
+	Gtype      string                 `json:"gtype"`
+	Attributes map[string]interface{} `json:"attributes"`
+	Directed   bool                   `json:"directed"`
+	From       *PathInput             `json:"from"`
+}
+
 type Schema struct {
 	ConnectionTypes []string        `json:"connection_types"`
 	DocTypes        []string        `json:"doc_types"`

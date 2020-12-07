@@ -43,6 +43,7 @@ service DatabaseService {
   rpc CreateConnection(ConnectionConstructor) returns(Connection){}
   // CreateConnections creates a batch of connections in the graph
   rpc CreateConnections(ConnectionConstructors) returns(Connections){}
+  rpc SearchAndConnect(SConnectFilter) returns(Connections){}
   // GetConnection gets a single connection in the graph
   rpc GetConnection(Path) returns(Connection){}
   // SearchConnections searches the graph for connections
@@ -182,6 +183,17 @@ message ConnectionConstructor {
   Path from =5 [(validator.field) = {msg_exists : true}];
   // to is the doc path that is the destination of the connection
   Path to =6 [(validator.field) = {msg_exists : true}];
+}
+
+message SConnectFilter {
+  Filter filter =1;
+  string gtype =2;
+  // attributes are k/v pairs
+  google.protobuf.Struct attributes =3;
+  // directed is false if the connection is bi-directional
+  bool directed =4;
+  // from is the doc path that is the root of the connection
+  Path from =5 [(validator.field) = {msg_exists : true}];
 }
 
 // ConnectionConstructors is an array of ConnectionConstructor

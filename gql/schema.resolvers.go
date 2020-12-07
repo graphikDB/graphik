@@ -195,6 +195,20 @@ func (r *queryResolver) AggregateConnections(ctx context.Context, input model.Ag
 	return res.GetNumberValue(), nil
 }
 
+func (r *queryResolver) SearchAndConnect(ctx context.Context, input model.SConnectFilter) (*model.Connections, error) {
+	connections, err := r.client.SearchAndConnect(ctx, &apipb.SConnectFilter{
+		Filter:     protoFilter(input.Filter),
+		Gtype:      input.Gtype,
+		Attributes: apipb.NewStruct(input.Attributes),
+		Directed:   input.Directed,
+		From:       protoIPath(input.From),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return gqlConnections(connections), nil
+}
+
 func (r *subscriptionResolver) Subscribe(ctx context.Context, input model.ChanFilter) (<-chan *model.Message, error) {
 	ch := make(chan *model.Message)
 	stream, err := r.client.Subscribe(ctx, protoChanFilter(&input))

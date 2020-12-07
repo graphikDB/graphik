@@ -242,6 +242,27 @@ func (this *ConnectionConstructor) Validate() error {
 	}
 	return nil
 }
+func (this *SConnectFilter) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	if this.Attributes != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
+		}
+	}
+	if nil == this.From {
+		return github_com_mwitkow_go_proto_validators.FieldError("From", fmt.Errorf("message must exist"))
+	}
+	if this.From != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.From); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("From", err)
+		}
+	}
+	return nil
+}
 func (this *ConnectionConstructors) Validate() error {
 	for _, item := range this.Connections {
 		if item != nil {

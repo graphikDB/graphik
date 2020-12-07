@@ -152,6 +152,7 @@ type ComplexityRoot struct {
 		GetSchema            func(childComplexity int, input *emptypb.Empty) int
 		Me                   func(childComplexity int, input *emptypb.Empty) int
 		Ping                 func(childComplexity int, input *emptypb.Empty) int
+		SearchAndConnect     func(childComplexity int, input model.SConnectFilter) int
 		SearchConnections    func(childComplexity int, input model.Filter) int
 		SearchDocs           func(childComplexity int, input model.Filter) int
 		Traverse             func(childComplexity int, input model.TFilter) int
@@ -218,6 +219,7 @@ type QueryResolver interface {
 	ConnectionsTo(ctx context.Context, input model.CFilter) (*model.Connections, error)
 	AggregateDocs(ctx context.Context, input model.AggFilter) (interface{}, error)
 	AggregateConnections(ctx context.Context, input model.AggFilter) (interface{}, error)
+	SearchAndConnect(ctx context.Context, input model.SConnectFilter) (*model.Connections, error)
 }
 type SubscriptionResolver interface {
 	Subscribe(ctx context.Context, input model.ChanFilter) (<-chan *model.Message, error)
@@ -740,6 +742,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Ping(childComplexity, args["input"].(*emptypb.Empty)), true
 
+	case "Query.searchAndConnect":
+		if e.complexity.Query.SearchAndConnect == nil {
+			break
+		}
+
+		args, err := ec.field_Query_searchAndConnect_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SearchAndConnect(childComplexity, args["input"].(model.SConnectFilter)), true
+
 	case "Query.searchConnections":
 		if e.complexity.Query.SearchConnections == nil {
 			break
@@ -1199,6 +1213,13 @@ input Filter {
   index: String
 }
 
+input SConnectFilter {
+  filter: Filter!
+  gtype: String!
+  attributes: Map
+  directed: Boolean!
+  from: PathInput!
+}
 
 input AggFilter {
   filter: Filter!
@@ -1344,13 +1365,14 @@ type Query {
   # getConnection gets a connection at the given path
   getConnection(input: PathInput!): Connection!
   # searchConnections searches for 0-many connections
-  searchConnections(input: Filter!): Connections
+  searchConnections(input: Filter!): Connections!
   # connectionsFrom returns connections from the given doc that pass the filter
   connectionsFrom(input: CFilter!): Connections!
   # connectionsTo returns connections to the given doc that pass the filter
   connectionsTo(input: CFilter!): Connections!
   aggregateDocs(input: AggFilter!): Any!
   aggregateConnections(input: AggFilter!): Any!
+  searchAndConnect(input: SConnectFilter!): Connections!
 }
 
 type Subscription {
@@ -1658,6 +1680,21 @@ func (ec *executionContext) field_Query_ping_args(ctx context.Context, rawArgs m
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_searchAndConnect_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SConnectFilter
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNSConnectFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐSConnectFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3851,11 +3888,14 @@ func (ec *executionContext) _Query_searchConnections(ctx context.Context, field 
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*model.Connections)
 	fc.Result = res
-	return ec.marshalOConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐConnections(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_connectionsFrom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4024,6 +4064,48 @@ func (ec *executionContext) _Query_aggregateConnections(ctx context.Context, fie
 	res := resTmp.(interface{})
 	fc.Result = res
 	return ec.marshalNAny2interface(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_searchAndConnect(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_searchAndConnect_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().SearchAndConnect(rctx, args["input"].(model.SConnectFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Connections)
+	fc.Result = res
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6349,6 +6431,58 @@ func (ec *executionContext) unmarshalInputPathInput(ctx context.Context, obj int
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSConnectFilter(ctx context.Context, obj interface{}) (model.SConnectFilter, error) {
+	var it model.SConnectFilter
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "filter":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gtype":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
+			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "attributes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+			it.Attributes, err = ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "directed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directed"))
+			it.Directed, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "from":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+			it.From, err = ec.unmarshalNPathInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐPathInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputTFilter(ctx context.Context, obj interface{}) (model.TFilter, error) {
 	var it model.TFilter
 	var asMap = obj.(map[string]interface{})
@@ -7143,6 +7277,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_searchConnections(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "connectionsFrom":
@@ -7196,6 +7333,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_aggregateConnections(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "searchAndConnect":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_searchAndConnect(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -7964,6 +8115,11 @@ func (ec *executionContext) marshalNPong2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 	return ec._Pong(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNSConnectFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐSConnectFilter(ctx context.Context, v interface{}) (model.SConnectFilter, error) {
+	res, err := ec.unmarshalInputSConnectFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNSchema2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐSchema(ctx context.Context, sel ast.SelectionSet, v model.Schema) graphql.Marshaler {
 	return ec._Schema(ctx, sel, &v)
 }
@@ -8446,13 +8602,6 @@ func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋ
 	}
 	wg.Wait()
 	return ret
-}
-
-func (ec *executionContext) marshalOConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐConnections(ctx context.Context, sel ast.SelectionSet, v *model.Connections) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Connections(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalODoc2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐDocᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Doc) graphql.Marshaler {

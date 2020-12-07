@@ -211,6 +211,13 @@ input Filter {
   index: String
 }
 
+input SConnectFilter {
+  filter: Filter!
+  gtype: String!
+  attributes: Map
+  directed: Boolean!
+  from: PathInput!
+}
 
 input AggFilter {
   filter: Filter!
@@ -356,13 +363,14 @@ type Query {
   # getConnection gets a connection at the given path
   getConnection(input: PathInput!): Connection!
   # searchConnections searches for 0-many connections
-  searchConnections(input: Filter!): Connections
+  searchConnections(input: Filter!): Connections!
   # connectionsFrom returns connections from the given doc that pass the filter
   connectionsFrom(input: CFilter!): Connections!
   # connectionsTo returns connections to the given doc that pass the filter
   connectionsTo(input: CFilter!): Connections!
   aggregateDocs(input: AggFilter!): Any!
   aggregateConnections(input: AggFilter!): Any!
+  searchAndConnect(input: SConnectFilter!): Connections!
 }
 
 type Subscription {
