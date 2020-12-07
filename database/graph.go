@@ -1167,7 +1167,7 @@ func (g *Graph) PushDocConstructors(server apipb.DatabaseService_PushDocConstruc
 }
 
 func (g *Graph) PushConnectionConstructors(server apipb.DatabaseService_PushConnectionConstructorsServer) error {
-	ctx, cancel := context.WithCancel(server.Context())
+	ctx, cancel := context.WithCancel(context.WithValue(server.Context(), importOverrideCtxKey, true))
 	defer cancel()
 	for {
 		select {
@@ -1184,6 +1184,50 @@ func (g *Graph) PushConnectionConstructors(server apipb.DatabaseService_PushConn
 			}
 			if err := server.Send(resp); err != nil {
 				return status.Error(codes.Internal, err.Error())
+			}
+		}
+	}
+}
+
+func (g *Graph) SeedDocs(server apipb.DatabaseService_SeedDocsServer) error {
+	ctx, cancel := context.WithCancel(context.WithValue(server.Context(), importOverrideCtxKey, true))
+	defer cancel()
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			msg, err := server.Recv()
+			if err != nil {
+				return err
+			}
+			if err := g.db.Update(func(tx *bbolt.Tx) error {
+				_, err := g.setDoc(ctx, tx, msg)
+				return err
+			}); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+func (g *Graph) SeedConnections(server apipb.DatabaseService_SeedConnectionsServer) error {
+	ctx, cancel := context.WithCancel(server.Context())
+	defer cancel()
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			msg, err := server.Recv()
+			if err != nil {
+				return err
+			}
+			if err := g.db.Update(func(tx *bbolt.Tx) error {
+				_, err := g.setConnection(ctx, tx, msg)
+				return err
+			}); err != nil {
+				return err
 			}
 		}
 	}

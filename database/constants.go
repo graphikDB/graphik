@@ -2,14 +2,17 @@ package database
 
 import "errors"
 
+type ctxKey string
+
 const (
 	// Permissions to use on the db file. This is only used if the
 	// database file does not exist and needs to be created.
-	dbFileMode    = 0600
-	changeChannel = "changes"
-	authCtxKey    = "x-graphik-auth-ctx"
-	identityType  = "identity"
-	methodCtxKey  = "x-grpc-full-method"
+	dbFileMode                  = 0600
+	changeChannel               = "changes"
+	authCtxKey           ctxKey = "x-graphik-auth-ctx"
+	userType             ctxKey = "users"
+	methodCtxKey         ctxKey = "x-graphik-full-method"
+	importOverrideCtxKey ctxKey = "x-graphik-import-override"
 )
 
 var (

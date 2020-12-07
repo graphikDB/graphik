@@ -68,6 +68,8 @@ service DatabaseService {
   rpc SubscribeChanges(ExprFilter) returns(stream Change){}
   rpc PushDocConstructors(stream DocConstructor) returns (stream Doc){}
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
+  rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
+  rpc SeedConnections(stream Connection) returns(google.protobuf.Empty){}
 }
 
 enum Direction {

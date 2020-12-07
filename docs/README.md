@@ -752,6 +752,8 @@ DatabaseService is the primary database service
 | SubscribeChanges | [ExprFilter](#api.ExprFilter) | [Change](#api.Change) stream |  |
 | PushDocConstructors | [DocConstructor](#api.DocConstructor) stream | [Doc](#api.Doc) stream |  |
 | PushConnectionConstructors | [ConnectionConstructor](#api.ConnectionConstructor) stream | [Connection](#api.Connection) stream |  |
+| SeedDocs | [Doc](#api.Doc) stream | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
+| SeedConnections | [Connection](#api.Connection) stream | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 
  
 

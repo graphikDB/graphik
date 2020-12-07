@@ -38,7 +38,7 @@ var (
 	err   error
 	ctx   = context.WithValue(context.Background(), authCtxKey, &apipb.Doc{
 		Path: &apipb.Path{
-			Gtype: identityType,
+			Gtype: string(userType),
 			Gid:   ksuid.New().String(),
 		},
 		Attributes: apipb2.NewStruct(map[string]interface{}{}),

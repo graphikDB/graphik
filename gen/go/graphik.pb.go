@@ -2968,8 +2968,8 @@ var file_graphik_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x07, 0x72, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x2a, 0x27, 0x0a, 0x09, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x69,
 	0x6f, 0x6e, 0x12, 0x08, 0x0a, 0x04, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04,
-	0x46, 0x72, 0x6f, 0x6d, 0x10, 0x01, 0x12, 0x06, 0x0a, 0x02, 0x54, 0x6f, 0x10, 0x02, 0x32, 0xa8,
-	0x0d, 0x0a, 0x0f, 0x44, 0x61, 0x74, 0x61, 0x62, 0x61, 0x73, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69,
+	0x46, 0x72, 0x6f, 0x6d, 0x10, 0x01, 0x12, 0x06, 0x0a, 0x02, 0x54, 0x6f, 0x10, 0x02, 0x32, 0x9a,
+	0x0e, 0x0a, 0x0f, 0x44, 0x61, 0x74, 0x61, 0x62, 0x61, 0x73, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69,
 	0x63, 0x65, 0x12, 0x2b, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70,
 	0x74, 0x79, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x50, 0x6f, 0x6e, 0x67, 0x22, 0x00, 0x12,
@@ -3075,8 +3075,15 @@ var file_graphik_proto_rawDesc = []byte{
 	0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x1a, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e,
 	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x6f, 0x72, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x07, 0x5a, 0x05, 0x61, 0x70, 0x69,
-	0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6f, 0x6e, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x12, 0x30, 0x0a, 0x08, 0x53, 0x65, 0x65,
+	0x64, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x1a,
+	0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x28, 0x01, 0x12, 0x3e, 0x0a, 0x0f, 0x53,
+	0x65, 0x65, 0x64, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x0f,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x1a,
+	0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x28, 0x01, 0x42, 0x07, 0x5a, 0x05, 0x61,
+	0x70, 0x69, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3222,40 +3229,44 @@ var file_graphik_proto_depIdxs = []int32{
 	36, // 81: api.DatabaseService.SubscribeChanges:input_type -> api.ExprFilter
 	6,  // 82: api.DatabaseService.PushDocConstructors:input_type -> api.DocConstructor
 	12, // 83: api.DatabaseService.PushConnectionConstructors:input_type -> api.ConnectionConstructor
-	31, // 84: api.DatabaseService.Ping:output_type -> api.Pong
-	34, // 85: api.DatabaseService.GetSchema:output_type -> api.Schema
-	40, // 86: api.DatabaseService.SetAuthorizers:output_type -> google.protobuf.Empty
-	40, // 87: api.DatabaseService.SetIndexes:output_type -> google.protobuf.Empty
-	40, // 88: api.DatabaseService.SetTypeValidators:output_type -> google.protobuf.Empty
-	5,  // 89: api.DatabaseService.Me:output_type -> api.Doc
-	5,  // 90: api.DatabaseService.CreateDoc:output_type -> api.Doc
-	8,  // 91: api.DatabaseService.CreateDocs:output_type -> api.Docs
-	5,  // 92: api.DatabaseService.GetDoc:output_type -> api.Doc
-	8,  // 93: api.DatabaseService.SearchDocs:output_type -> api.Docs
-	10, // 94: api.DatabaseService.Traverse:output_type -> api.Traversals
-	5,  // 95: api.DatabaseService.EditDoc:output_type -> api.Doc
-	8,  // 96: api.DatabaseService.EditDocs:output_type -> api.Docs
-	40, // 97: api.DatabaseService.DelDoc:output_type -> google.protobuf.Empty
-	40, // 98: api.DatabaseService.DelDocs:output_type -> google.protobuf.Empty
-	11, // 99: api.DatabaseService.CreateConnection:output_type -> api.Connection
-	14, // 100: api.DatabaseService.CreateConnections:output_type -> api.Connections
-	11, // 101: api.DatabaseService.GetConnection:output_type -> api.Connection
-	14, // 102: api.DatabaseService.SearchConnections:output_type -> api.Connections
-	11, // 103: api.DatabaseService.EditConnection:output_type -> api.Connection
-	14, // 104: api.DatabaseService.EditConnections:output_type -> api.Connections
-	40, // 105: api.DatabaseService.DelConnection:output_type -> google.protobuf.Empty
-	40, // 106: api.DatabaseService.DelConnections:output_type -> google.protobuf.Empty
-	14, // 107: api.DatabaseService.ConnectionsFrom:output_type -> api.Connections
-	14, // 108: api.DatabaseService.ConnectionsTo:output_type -> api.Connections
-	41, // 109: api.DatabaseService.AggregateDocs:output_type -> google.protobuf.Value
-	41, // 110: api.DatabaseService.AggregateConnections:output_type -> google.protobuf.Value
-	40, // 111: api.DatabaseService.Publish:output_type -> google.protobuf.Empty
-	33, // 112: api.DatabaseService.Subscribe:output_type -> api.Message
-	35, // 113: api.DatabaseService.SubscribeChanges:output_type -> api.Change
-	5,  // 114: api.DatabaseService.PushDocConstructors:output_type -> api.Doc
-	11, // 115: api.DatabaseService.PushConnectionConstructors:output_type -> api.Connection
-	84, // [84:116] is the sub-list for method output_type
-	52, // [52:84] is the sub-list for method input_type
+	5,  // 84: api.DatabaseService.SeedDocs:input_type -> api.Doc
+	11, // 85: api.DatabaseService.SeedConnections:input_type -> api.Connection
+	31, // 86: api.DatabaseService.Ping:output_type -> api.Pong
+	34, // 87: api.DatabaseService.GetSchema:output_type -> api.Schema
+	40, // 88: api.DatabaseService.SetAuthorizers:output_type -> google.protobuf.Empty
+	40, // 89: api.DatabaseService.SetIndexes:output_type -> google.protobuf.Empty
+	40, // 90: api.DatabaseService.SetTypeValidators:output_type -> google.protobuf.Empty
+	5,  // 91: api.DatabaseService.Me:output_type -> api.Doc
+	5,  // 92: api.DatabaseService.CreateDoc:output_type -> api.Doc
+	8,  // 93: api.DatabaseService.CreateDocs:output_type -> api.Docs
+	5,  // 94: api.DatabaseService.GetDoc:output_type -> api.Doc
+	8,  // 95: api.DatabaseService.SearchDocs:output_type -> api.Docs
+	10, // 96: api.DatabaseService.Traverse:output_type -> api.Traversals
+	5,  // 97: api.DatabaseService.EditDoc:output_type -> api.Doc
+	8,  // 98: api.DatabaseService.EditDocs:output_type -> api.Docs
+	40, // 99: api.DatabaseService.DelDoc:output_type -> google.protobuf.Empty
+	40, // 100: api.DatabaseService.DelDocs:output_type -> google.protobuf.Empty
+	11, // 101: api.DatabaseService.CreateConnection:output_type -> api.Connection
+	14, // 102: api.DatabaseService.CreateConnections:output_type -> api.Connections
+	11, // 103: api.DatabaseService.GetConnection:output_type -> api.Connection
+	14, // 104: api.DatabaseService.SearchConnections:output_type -> api.Connections
+	11, // 105: api.DatabaseService.EditConnection:output_type -> api.Connection
+	14, // 106: api.DatabaseService.EditConnections:output_type -> api.Connections
+	40, // 107: api.DatabaseService.DelConnection:output_type -> google.protobuf.Empty
+	40, // 108: api.DatabaseService.DelConnections:output_type -> google.protobuf.Empty
+	14, // 109: api.DatabaseService.ConnectionsFrom:output_type -> api.Connections
+	14, // 110: api.DatabaseService.ConnectionsTo:output_type -> api.Connections
+	41, // 111: api.DatabaseService.AggregateDocs:output_type -> google.protobuf.Value
+	41, // 112: api.DatabaseService.AggregateConnections:output_type -> google.protobuf.Value
+	40, // 113: api.DatabaseService.Publish:output_type -> google.protobuf.Empty
+	33, // 114: api.DatabaseService.Subscribe:output_type -> api.Message
+	35, // 115: api.DatabaseService.SubscribeChanges:output_type -> api.Change
+	5,  // 116: api.DatabaseService.PushDocConstructors:output_type -> api.Doc
+	11, // 117: api.DatabaseService.PushConnectionConstructors:output_type -> api.Connection
+	40, // 118: api.DatabaseService.SeedDocs:output_type -> google.protobuf.Empty
+	40, // 119: api.DatabaseService.SeedConnections:output_type -> google.protobuf.Empty
+	86, // [86:120] is the sub-list for method output_type
+	52, // [52:86] is the sub-list for method input_type
 	52, // [52:52] is the sub-list for extension type_name
 	52, // [52:52] is the sub-list for extension extendee
 	0,  // [0:52] is the sub-list for field type_name
@@ -3801,6 +3812,8 @@ type DatabaseServiceClient interface {
 	SubscribeChanges(ctx context.Context, in *ExprFilter, opts ...grpc.CallOption) (DatabaseService_SubscribeChangesClient, error)
 	PushDocConstructors(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_PushDocConstructorsClient, error)
 	PushConnectionConstructors(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_PushConnectionConstructorsClient, error)
+	SeedDocs(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_SeedDocsClient, error)
+	SeedConnections(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_SeedConnectionsClient, error)
 }
 
 type databaseServiceClient struct {
@@ -4189,6 +4202,74 @@ func (x *databaseServicePushConnectionConstructorsClient) Recv() (*Connection, e
 	return m, nil
 }
 
+func (c *databaseServiceClient) SeedDocs(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_SeedDocsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_DatabaseService_serviceDesc.Streams[4], "/api.DatabaseService/SeedDocs", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &databaseServiceSeedDocsClient{stream}
+	return x, nil
+}
+
+type DatabaseService_SeedDocsClient interface {
+	Send(*Doc) error
+	CloseAndRecv() (*empty.Empty, error)
+	grpc.ClientStream
+}
+
+type databaseServiceSeedDocsClient struct {
+	grpc.ClientStream
+}
+
+func (x *databaseServiceSeedDocsClient) Send(m *Doc) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *databaseServiceSeedDocsClient) CloseAndRecv() (*empty.Empty, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(empty.Empty)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *databaseServiceClient) SeedConnections(ctx context.Context, opts ...grpc.CallOption) (DatabaseService_SeedConnectionsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_DatabaseService_serviceDesc.Streams[5], "/api.DatabaseService/SeedConnections", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &databaseServiceSeedConnectionsClient{stream}
+	return x, nil
+}
+
+type DatabaseService_SeedConnectionsClient interface {
+	Send(*Connection) error
+	CloseAndRecv() (*empty.Empty, error)
+	grpc.ClientStream
+}
+
+type databaseServiceSeedConnectionsClient struct {
+	grpc.ClientStream
+}
+
+func (x *databaseServiceSeedConnectionsClient) Send(m *Connection) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *databaseServiceSeedConnectionsClient) CloseAndRecv() (*empty.Empty, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(empty.Empty)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // DatabaseServiceServer is the server API for DatabaseService service.
 type DatabaseServiceServer interface {
 	// Ping returns PONG if the server is health
@@ -4247,6 +4328,8 @@ type DatabaseServiceServer interface {
 	SubscribeChanges(*ExprFilter, DatabaseService_SubscribeChangesServer) error
 	PushDocConstructors(DatabaseService_PushDocConstructorsServer) error
 	PushConnectionConstructors(DatabaseService_PushConnectionConstructorsServer) error
+	SeedDocs(DatabaseService_SeedDocsServer) error
+	SeedConnections(DatabaseService_SeedConnectionsServer) error
 }
 
 // UnimplementedDatabaseServiceServer can be embedded to have forward compatible implementations.
@@ -4348,6 +4431,12 @@ func (*UnimplementedDatabaseServiceServer) PushDocConstructors(DatabaseService_P
 }
 func (*UnimplementedDatabaseServiceServer) PushConnectionConstructors(DatabaseService_PushConnectionConstructorsServer) error {
 	return status.Errorf(codes.Unimplemented, "method PushConnectionConstructors not implemented")
+}
+func (*UnimplementedDatabaseServiceServer) SeedDocs(DatabaseService_SeedDocsServer) error {
+	return status.Errorf(codes.Unimplemented, "method SeedDocs not implemented")
+}
+func (*UnimplementedDatabaseServiceServer) SeedConnections(DatabaseService_SeedConnectionsServer) error {
+	return status.Errorf(codes.Unimplemented, "method SeedConnections not implemented")
 }
 
 func RegisterDatabaseServiceServer(s *grpc.Server, srv DatabaseServiceServer) {
@@ -4952,6 +5041,58 @@ func (x *databaseServicePushConnectionConstructorsServer) Recv() (*ConnectionCon
 	return m, nil
 }
 
+func _DatabaseService_SeedDocs_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(DatabaseServiceServer).SeedDocs(&databaseServiceSeedDocsServer{stream})
+}
+
+type DatabaseService_SeedDocsServer interface {
+	SendAndClose(*empty.Empty) error
+	Recv() (*Doc, error)
+	grpc.ServerStream
+}
+
+type databaseServiceSeedDocsServer struct {
+	grpc.ServerStream
+}
+
+func (x *databaseServiceSeedDocsServer) SendAndClose(m *empty.Empty) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *databaseServiceSeedDocsServer) Recv() (*Doc, error) {
+	m := new(Doc)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _DatabaseService_SeedConnections_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(DatabaseServiceServer).SeedConnections(&databaseServiceSeedConnectionsServer{stream})
+}
+
+type DatabaseService_SeedConnectionsServer interface {
+	SendAndClose(*empty.Empty) error
+	Recv() (*Connection, error)
+	grpc.ServerStream
+}
+
+type databaseServiceSeedConnectionsServer struct {
+	grpc.ServerStream
+}
+
+func (x *databaseServiceSeedConnectionsServer) SendAndClose(m *empty.Empty) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *databaseServiceSeedConnectionsServer) Recv() (*Connection, error) {
+	m := new(Connection)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 var _DatabaseService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "api.DatabaseService",
 	HandlerType: (*DatabaseServiceServer)(nil),
@@ -5090,6 +5231,16 @@ var _DatabaseService_serviceDesc = grpc.ServiceDesc{
 			StreamName:    "PushConnectionConstructors",
 			Handler:       _DatabaseService_PushConnectionConstructors_Handler,
 			ServerStreams: true,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "SeedDocs",
+			Handler:       _DatabaseService_SeedDocs_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "SeedConnections",
+			Handler:       _DatabaseService_SeedConnections_Handler,
 			ClientStreams: true,
 		},
 	},

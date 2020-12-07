@@ -195,7 +195,6 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
-
 	apipb.RegisterDatabaseServiceServer(gserver, g)
 	reflection.Register(gserver)
 	grpc_prometheus.Register(gserver)

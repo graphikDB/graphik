@@ -133,7 +133,7 @@ func (a *Graph) identityToContext(ctx context.Context, payload map[string]interf
 	)
 	a.db.View(func(tx *bbolt.Tx) error {
 		doc, err = a.getDoc(ctx, tx, &apipb.Path{
-			Gtype: identityType,
+			Gtype: string(userType),
 			Gid:   email,
 		})
 		if err != nil {
@@ -149,7 +149,7 @@ func (a *Graph) identityToContext(ctx context.Context, payload map[string]interf
 		}
 		doc, err = a.createIdentity(ctx, &apipb.DocConstructor{
 			Path: &apipb.PathConstructor{
-				Gtype: identityType,
+				Gtype: string(userType),
 				Gid:   email,
 			},
 			Attributes: strct,

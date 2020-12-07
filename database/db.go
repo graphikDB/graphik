@@ -344,10 +344,12 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	if doc.GetPath() == nil {
-		doc.Path = &apipb.Path{}
+	if ctx.Value(importOverrideCtxKey) == nil {
+		if doc.GetPath() == nil {
+			doc.Path = &apipb.Path{}
+		}
+		g.updateMeta(ctx, doc.Metadata)
 	}
-	g.updateMeta(ctx, doc.Metadata)
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
 		if v.validator.GetDocs() && v.validator.GetGtype() == doc.GetPath().GetGtype() {
@@ -444,10 +446,13 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			return nil, errors.Errorf("to doc %s does not exist", connection.GetTo().String())
 		}
 	}
-	if connection.GetPath() == nil {
-		connection.Path = &apipb.Path{}
+	if ctx.Value(importOverrideCtxKey) == nil {
+		if connection.GetPath() == nil {
+			connection.Path = &apipb.Path{}
+		}
+		g.updateMeta(ctx, connection.GetMetadata())
 	}
-	g.updateMeta(ctx, connection.GetMetadata())
+
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
 		if v.validator.GetConnections() && v.validator.GetGtype() == connection.GetPath().GetGtype() {

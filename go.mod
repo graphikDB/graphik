@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/autom8ter/machine v1.1.2
+	github.com/gocarina/gocsv v0.0.0-20201204095220-fdebcd3dd3f2 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/google/cel-go v0.6.0
 	github.com/google/uuid v1.1.2 // indirect
