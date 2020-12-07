@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/generic/cache"
+	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"
@@ -41,8 +42,8 @@ type Graph struct {
 	openID          *openIDConnect
 	path            string
 	mu              sync.RWMutex
-	connectionsTo   map[string][]*apipb.Path
-	connectionsFrom map[string][]*apipb.Path
+	connectionsTo   map[string][]*apipb.Ref
+	connectionsFrom map[string][]*apipb.Ref
 	machine         *machine.Machine
 	closers         []func()
 	closeOnce       sync.Once
@@ -73,8 +74,8 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		jwksSet:         nil,
 		path:            path,
 		mu:              sync.RWMutex{},
-		connectionsTo:   map[string][]*apipb.Path{},
-		connectionsFrom: map[string][]*apipb.Path{},
+		connectionsTo:   map[string][]*apipb.Ref{},
+		connectionsFrom: map[string][]*apipb.Ref{},
 		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},
@@ -137,7 +138,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := g.cacheConnectionPaths(); err != nil {
+	if err := g.cacheConnectionRefs(); err != nil {
 		return nil, err
 	}
 	if err := g.cacheIndexes(); err != nil {
@@ -283,7 +284,7 @@ func (g *Graph) Me(ctx context.Context, _ *empty.Empty) (*apipb.Doc, error) {
 	if identity == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
 	}
-	return g.GetDoc(ctx, identity.GetPath())
+	return g.GetDoc(ctx, identity.GetRef())
 }
 
 func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstructors) (*apipb.Docs, error) {
@@ -295,62 +296,57 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	now := timestamppb.Now()
 	method := g.getMethod(ctx)
 	var docs = &apipb.Docs{}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		docBucket := tx.Bucket(dbDocs)
 		for _, constructor := range constructors.GetDocs() {
-			bucket := docBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+			bucket := docBucket.Bucket([]byte(constructor.GetRef().GetGtype()))
 			if bucket == nil {
-				bucket, err = docBucket.CreateBucketIfNotExists([]byte(constructor.GetPath().GetGtype()))
+				bucket, err = docBucket.CreateBucketIfNotExists([]byte(constructor.GetRef().GetGtype()))
 				if err != nil {
 					return err
 				}
 			}
-			if constructor.GetPath().Gid == "" {
-				constructor.GetPath().Gid = ksuid.New().String()
+			if constructor.GetRef().Gid == "" {
+				constructor.GetRef().Gid = ksuid.New().String()
 			}
-			path := &apipb.Path{
-				Gtype: constructor.GetPath().GetGtype(),
-				Gid:   constructor.GetPath().GetGid(),
+			path := &apipb.Ref{
+				Gtype: constructor.GetRef().GetGtype(),
+				Gid:   constructor.GetRef().GetGid(),
 			}
 			if doc, err := g.getDoc(ctx, tx, path); err == nil || doc != nil {
 				return ErrAlreadyExists
 			}
 			doc := &apipb.Doc{
-				Path:       path,
+				Ref:        path,
 				Attributes: constructor.GetAttributes(),
-				Metadata: &apipb.Metadata{
-					CreatedAt: now,
-					UpdatedAt: now,
-				},
 			}
 			doc, err = g.setDoc(ctx, tx, doc)
 			if err != nil {
 				return err
 			}
-			if doc.GetPath().GetGid() != identity.GetPath().GetGid() && doc.GetPath().GetGtype() != identity.GetPath().GetGtype() {
+			if doc.GetRef().GetGid() != identity.GetRef().GetGid() && doc.GetRef().GetGtype() != identity.GetRef().GetGtype() {
 				_, err := g.setConnection(ctx, tx, &apipb.Connection{
-					Path: &apipb.Path{Gtype: "created", Gid: ksuid.New().String()},
+					Ref: &apipb.Ref{Gtype: "created", Gid: ksuid.New().String()},
 					Attributes: apipb.NewStruct(map[string]interface{}{
 						"method": method,
 					}),
 					Directed: true,
-					From:     identity.GetPath(),
-					To:       doc.GetPath(),
+					From:     identity.GetRef(),
+					To:       doc.GetRef(),
 				})
 				if err != nil {
 					return err
 				}
 				_, err = g.setConnection(ctx, tx, &apipb.Connection{
-					Path: &apipb.Path{Gtype: "created_by", Gid: ksuid.New().String()},
+					Ref: &apipb.Ref{Gtype: "created_by", Gid: ksuid.New().String()},
 					Attributes: apipb.NewStruct(map[string]interface{}{
 						"method": method,
 					}),
 					Directed: true,
-					To:       identity.GetPath(),
-					From:     doc.GetPath(),
+					To:       identity.GetRef(),
+					From:     doc.GetRef(),
 				})
 				if err != nil {
 					return err
@@ -359,19 +355,6 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 			docs.Docs = append(docs.Docs, doc)
 		}
 		return nil
-	}); err != nil {
-		return nil, err
-	}
-	var changes = &apipb.Paths{}
-	for _, doc := range docs.GetDocs() {
-		changes.Paths = append(changes.Paths, doc.GetPath())
-	}
-	changes.Sort("")
-	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:        method,
-		Identity:      identity,
-		Timestamp:     now,
-		PathsAffected: changes,
 	}); err != nil {
 		return nil, err
 	}
@@ -400,56 +383,38 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	now := timestamppb.Now()
-	var changes = &apipb.Paths{}
-	method := g.getMethod(ctx)
 	var connections = &apipb.Connections{}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		connectionBucket := tx.Bucket(dbConnections)
 		for _, constructor := range constructors.GetConnections() {
-			bucket := connectionBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+			bucket := connectionBucket.Bucket([]byte(constructor.GetRef().GetGtype()))
 			if bucket == nil {
-				bucket, err = connectionBucket.CreateBucketIfNotExists([]byte(constructor.GetPath().GetGtype()))
+				bucket, err = connectionBucket.CreateBucketIfNotExists([]byte(constructor.GetRef().GetGtype()))
 				if err != nil {
 					return err
 				}
 			}
-			if constructor.GetPath().Gid == "" {
-				constructor.GetPath().Gid = ksuid.New().String()
+			if constructor.GetRef().Gid == "" {
+				constructor.GetRef().Gid = ksuid.New().String()
 			}
-			path := &apipb.Path{
-				Gtype: constructor.GetPath().GetGtype(),
-				Gid:   constructor.GetPath().GetGid(),
+			path := &apipb.Ref{
+				Gtype: constructor.GetRef().GetGtype(),
+				Gid:   constructor.GetRef().GetGid(),
 			}
 			connection := &apipb.Connection{
-				Path:       path,
+				Ref:        path,
 				Attributes: constructor.GetAttributes(),
-				Metadata: &apipb.Metadata{
-					CreatedAt: now,
-					UpdatedAt: now,
-				},
-				Directed: constructor.Directed,
-				From:     constructor.GetFrom(),
-				To:       constructor.GetTo(),
+				Directed:   constructor.Directed,
+				From:       constructor.GetFrom(),
+				To:         constructor.GetTo(),
 			}
 			connection, err = g.setConnection(ctx, tx, connection)
 			if err != nil {
 				return err
 			}
-			changes.Paths = append(changes.Paths, connection.GetPath())
 			connections.Connections = append(connections.Connections, connection)
 		}
 		return nil
-	}); err != nil {
-		return nil, err
-	}
-
-	changes.Sort("")
-	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:        method,
-		Identity:      identity,
-		Timestamp:     now,
-		PathsAffected: changes,
 	}); err != nil {
 		return nil, err
 	}
@@ -465,7 +430,7 @@ func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*e
 	return &empty.Empty{}, g.machine.PubSub().Publish(message.Channel, &apipb.Message{
 		Channel:   message.Channel,
 		Data:      message.Data,
-		Sender:    identity.GetPath(),
+		Sender:    identity.GetRef(),
 		Timestamp: timestamppb.Now(),
 	})
 }
@@ -516,50 +481,6 @@ func (g *Graph) Subscribe(filter *apipb.ChanFilter, server apipb.DatabaseService
 	return nil
 }
 
-func (g *Graph) SubscribeChanges(filter *apipb.ExprFilter, server apipb.DatabaseService_SubscribeChangesServer) error {
-	var (
-		program cel.Program
-		err     error
-	)
-	if filter.Expression != "" {
-		program, err = g.vm.Connection().Program(filter.Expression)
-		if err != nil {
-			return err
-		}
-	}
-	filterFunc := func(msg interface{}) bool {
-		val, ok := msg.(*apipb.Change)
-		if !ok {
-			logger.Error("invalid message type received during change subscription")
-			return false
-		}
-		if program != nil {
-			result, err := g.vm.Change().Eval(val, program)
-			if err != nil {
-				logger.Error("subscription change failure", zap.Error(err))
-				return false
-			}
-			return result
-		}
-		return true
-	}
-	if err := g.machine.PubSub().SubscribeFilter(server.Context(), changeChannel, filterFunc, func(msg interface{}) {
-		if err, ok := msg.(error); ok && err != nil {
-			logger.Error("failed to send change", zap.Error(err))
-			return
-		}
-		if val, ok := msg.(*apipb.Change); ok && val != nil {
-			if err := server.Send(val); err != nil {
-				logger.Error("failed to send change", zap.Error(err))
-				return
-			}
-		}
-	}); err != nil {
-		return err
-	}
-	return nil
-}
-
 // Close is used to gracefully close the Database.
 func (b *Graph) Close() {
 	b.closeOnce.Do(func() {
@@ -574,7 +495,7 @@ func (b *Graph) Close() {
 	})
 }
 
-func (g *Graph) GetConnection(ctx context.Context, path *apipb.Path) (*apipb.Connection, error) {
+func (g *Graph) GetConnection(ctx context.Context, path *apipb.Ref) (*apipb.Connection, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
@@ -617,7 +538,7 @@ func (n *Graph) AllDocs(ctx context.Context) (*apipb.Docs, error) {
 	return toReturn, nil
 }
 
-func (g *Graph) GetDoc(ctx context.Context, path *apipb.Path) (*apipb.Doc, error) {
+func (g *Graph) GetDoc(ctx context.Context, path *apipb.Ref) (*apipb.Doc, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
@@ -654,7 +575,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 	var doc *apipb.Doc
 	var err error
 	if err = n.db.Update(func(tx *bbolt.Tx) error {
-		doc, err = n.getDoc(ctx, tx, value.GetPath())
+		doc, err = n.getDoc(ctx, tx, value.GetRef())
 		if err != nil {
 			return err
 		}
@@ -665,14 +586,34 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 		if err != nil {
 			return err
 		}
-
-		if err := n.machine.PubSub().Publish(changeChannel, &apipb.Change{
-			Method:        n.getMethod(ctx),
-			Identity:      identity,
-			Timestamp:     doc.Metadata.UpdatedAt,
-			PathsAffected: &apipb.Paths{Paths: []*apipb.Path{doc.GetPath()}},
-		}); err != nil {
-			return err
+		if doc.GetRef().GetGid() != identity.GetRef().GetGid() && doc.GetRef().GetGtype() != identity.GetRef().GetGtype() {
+			id := helpers.Hash([]byte(fmt.Sprintf("%s-%s", identity.GetRef().String(), doc.GetRef().String())))
+			editedRef := &apipb.Ref{Gid: id, Gtype: "edited"}
+			if !n.hasConnectionFrom(identity.GetRef(), editedRef) {
+				_, err := n.setConnection(ctx, tx, &apipb.Connection{
+					Ref:        editedRef,
+					Attributes: apipb.NewStruct(map[string]interface{}{}),
+					Directed:   true,
+					From:       identity.GetRef(),
+					To:         doc.GetRef(),
+				})
+				if err != nil {
+					return err
+				}
+			}
+			editedByRef := &apipb.Ref{Gtype: "edited_by", Gid: id}
+			if !n.hasConnectionFrom(doc.GetRef(), editedByRef) {
+				_, err := n.setConnection(ctx, tx, &apipb.Connection{
+					Ref:        editedByRef,
+					Attributes: apipb.NewStruct(map[string]interface{}{}),
+					Directed:   true,
+					To:         identity.GetRef(),
+					From:       doc.GetRef(),
+				})
+				if err != nil {
+					return err
+				}
+			}
 		}
 
 		return nil
@@ -684,11 +625,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 }
 
 func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EFilter) (*apipb.Docs, error) {
-	identity := n.getIdentity(ctx)
-	var changes = &apipb.Paths{}
 	var docs []*apipb.Doc
-	method := n.getMethod(ctx)
-	now := timestamppb.Now()
 	before, err := n.SearchDocs(ctx, patch.GetFilter())
 	if err != nil {
 		return nil, err
@@ -697,22 +634,11 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EFilter) (*apipb.Docs
 		for k, v := range patch.GetAttributes().GetFields() {
 			doc.Attributes.GetFields()[k] = v
 		}
-		doc.GetMetadata().UpdatedAt = now
 		docs = append(docs, doc)
-		changes.Paths = append(changes.Paths, doc.GetPath())
 	}
 
 	docss, err := n.setDocs(ctx, docs...)
 	if err != nil {
-		return nil, err
-	}
-	changes.Sort("")
-	if err := n.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:        method,
-		Identity:      identity,
-		Timestamp:     now,
-		PathsAffected: changes,
-	}); err != nil {
 		return nil, err
 	}
 	return docss, nil
@@ -766,9 +692,9 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.CFilter) (*ap
 	var connections []*apipb.Connection
 	var pass bool
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if err = g.rangeFrom(ctx, tx, filter.DocPath, func(connection *apipb.Connection) bool {
+		if err = g.rangeFrom(ctx, tx, filter.GetDocRef(), func(connection *apipb.Connection) bool {
 			if filter.Gtype != "*" {
-				if connection.GetPath().GetGtype() != filter.Gtype {
+				if connection.GetRef().GetGtype() != filter.Gtype {
 					return true
 				}
 			}
@@ -799,12 +725,12 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.CFilter) (*ap
 	return toReturn, err
 }
 
-func (n *Graph) HasDoc(ctx context.Context, path *apipb.Path) bool {
+func (n *Graph) HasDoc(ctx context.Context, path *apipb.Ref) bool {
 	doc, _ := n.GetDoc(ctx, path)
 	return doc != nil
 }
 
-func (n *Graph) HasConnection(ctx context.Context, path *apipb.Path) bool {
+func (n *Graph) HasConnection(ctx context.Context, path *apipb.Ref) bool {
 	connection, _ := n.GetConnection(ctx, path)
 	return connection != nil
 }
@@ -892,9 +818,9 @@ func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.CFilter) (*apip
 	var connections []*apipb.Connection
 	var pass bool
 	if err := g.db.View(func(tx *bbolt.Tx) error {
-		if err = g.rangeTo(ctx, tx, filter.DocPath, func(connection *apipb.Connection) bool {
+		if err = g.rangeTo(ctx, tx, filter.GetDocRef(), func(connection *apipb.Connection) bool {
 			if filter.Gtype != "*" {
-				if connection.GetPath().GetGtype() != filter.Gtype {
+				if connection.GetRef().GetGtype() != filter.Gtype {
 					return true
 				}
 			}
@@ -941,33 +867,23 @@ func (n *Graph) AllConnections(ctx context.Context) (*apipb.Connections, error) 
 }
 
 func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.Connection, error) {
-	identity := n.getIdentity(ctx)
 	var connection *apipb.Connection
 	var err error
 	if err = n.db.Update(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(dbConnections).Bucket([]byte(value.GetPath().Gtype))
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(value.GetRef().Gtype))
 		if bucket == nil {
 			return ErrNotFound
 		}
 		var e apipb.Connection
-		bits := bucket.Get([]byte(value.GetPath().Gid))
+		bits := bucket.Get([]byte(value.GetRef().Gid))
 		if err := proto.Unmarshal(bits, &e); err != nil {
 			return err
 		}
 		for k, v := range value.GetAttributes().GetFields() {
 			connection.Attributes.GetFields()[k] = v
 		}
-		connection.GetMetadata().UpdatedAt = timestamppb.Now()
 		connection, err = n.setConnection(ctx, tx, connection)
 		if err != nil {
-			return err
-		}
-		if err := n.machine.PubSub().Publish(changeChannel, &apipb.Change{
-			Method:        n.getMethod(ctx),
-			Identity:      identity,
-			Timestamp:     connection.Metadata.UpdatedAt,
-			PathsAffected: &apipb.Paths{Paths: []*apipb.Path{connection.GetPath()}},
-		}); err != nil {
 			return err
 		}
 		return nil
@@ -978,37 +894,27 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 }
 
 func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EFilter) (*apipb.Connections, error) {
-	identity := n.getIdentity(ctx)
-	var changes = &apipb.Paths{}
-	var connections []*apipb.Connection
-	method := n.getMethod(ctx)
-	now := timestamppb.Now()
+	var connections = &apipb.Connections{}
 	before, err := n.SearchConnections(ctx, patch.GetFilter())
 	if err != nil {
 		return nil, err
 	}
-	for _, connection := range before.GetConnections() {
-		for k, v := range patch.GetAttributes().GetFields() {
-			connection.Attributes.GetFields()[k] = v
+	if err := n.db.Update(func(tx *bbolt.Tx) error {
+		for _, connection := range before.GetConnections() {
+			for k, v := range patch.GetAttributes().GetFields() {
+				connection.Attributes.GetFields()[k] = v
+			}
+			connection, err := n.setConnection(ctx, tx, connection)
+			if err != nil {
+				return err
+			}
+			connections.Connections = append(connections.Connections, connection)
 		}
-		connection.GetMetadata().UpdatedAt = now
-		connections = append(connections, connection)
-		changes.Paths = append(changes.Paths, connection.GetPath())
-	}
-
-	connectionss, err := n.setConnections(ctx, connections...)
-	if err != nil {
-		return nil, err
-	}
-	if err := n.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:        method,
-		Identity:      identity,
-		Timestamp:     now,
-		PathsAffected: changes,
+		return nil
 	}); err != nil {
 		return nil, err
 	}
-	return connectionss, nil
+	return connections, nil
 }
 
 func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*apipb.Connections, error) {
@@ -1048,7 +954,7 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 	return toReturn, nil
 }
 
-func (g *Graph) DelDoc(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
+func (g *Graph) DelDoc(ctx context.Context, path *apipb.Ref) (*empty.Empty, error) {
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		_, err := g.getDoc(ctx, tx, path)
 		if err != nil {
@@ -1061,19 +967,10 @@ func (g *Graph) DelDoc(ctx context.Context, path *apipb.Path) (*empty.Empty, err
 	}); err != nil {
 		return nil, err
 	}
-	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:        g.getMethod(ctx),
-		Identity:      g.getIdentity(ctx),
-		Timestamp:     timestamppb.Now(),
-		PathsAffected: &apipb.Paths{Paths: []*apipb.Path{path}},
-	}); err != nil {
-		return nil, err
-	}
 	return &empty.Empty{}, nil
 }
 
 func (g *Graph) DelDocs(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
-	var changes = &apipb.Paths{}
 	before, err := g.SearchDocs(ctx, filter)
 	if err != nil {
 		return nil, err
@@ -1083,33 +980,19 @@ func (g *Graph) DelDocs(ctx context.Context, filter *apipb.Filter) (*empty.Empty
 	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		for _, doc := range before.GetDocs() {
-			if err := g.delDoc(ctx, tx, doc.GetPath()); err != nil {
+			if err := g.delDoc(ctx, tx, doc.GetRef()); err != nil {
 				return err
 			}
-			changes.Paths = append(changes.Paths, doc.GetPath())
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	return &empty.Empty{}, g.machine.PubSub().Publish(changeChannel, &apipb.Change{
-		Method:        g.getMethod(ctx),
-		Identity:      g.getIdentity(ctx),
-		Timestamp:     timestamppb.Now(),
-		PathsAffected: changes,
-	})
+	return &empty.Empty{}, nil
 }
 
-func (g *Graph) DelConnection(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {
-	var (
-		n   *apipb.Connection
-		err error
-	)
+func (g *Graph) DelConnection(ctx context.Context, path *apipb.Ref) (*empty.Empty, error) {
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
-		n, err = g.getConnection(ctx, tx, path)
-		if err != nil {
-			return err
-		}
 		if err := g.delConnection(ctx, tx, path); err != nil {
 			return err
 		}
@@ -1117,21 +1000,10 @@ func (g *Graph) DelConnection(ctx context.Context, path *apipb.Path) (*empty.Emp
 	}); err != nil {
 		return nil, err
 	}
-	change := &apipb.Change{
-		Method:        g.getMethod(ctx),
-		Identity:      g.getIdentity(ctx),
-		Timestamp:     timestamppb.Now(),
-		PathsAffected: &apipb.Paths{Paths: []*apipb.Path{n.GetPath()}},
-	}
-	change.PathsAffected.Sort("gtype")
-	if err := g.machine.PubSub().Publish(changeChannel, change); err != nil {
-		return nil, err
-	}
 	return &empty.Empty{}, nil
 }
 
 func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
-	var changes = &apipb.Paths{}
 	before, err := g.SearchConnections(ctx, filter)
 	if err != nil {
 		return nil, err
@@ -1141,23 +1013,12 @@ func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empt
 	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		for _, doc := range before.GetConnections() {
-			if err := g.delConnection(ctx, tx, doc.GetPath()); err != nil {
+			if err := g.delConnection(ctx, tx, doc.GetRef()); err != nil {
 				return err
 			}
-			changes.Paths = append(changes.Paths, doc.GetPath())
 		}
 		return nil
 	}); err != nil {
-		return nil, err
-	}
-	change := &apipb.Change{
-		Method:        g.getMethod(ctx),
-		Identity:      g.getIdentity(ctx),
-		Timestamp:     timestamppb.Now(),
-		PathsAffected: changes,
-	}
-	change.PathsAffected.Sort("")
-	if err := g.machine.PubSub().Publish(changeChannel, change); err != nil {
 		return nil, err
 	}
 	return &empty.Empty{}, nil
@@ -1261,13 +1122,13 @@ func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SConnectFilt
 	var connections []*apipb.ConnectionConstructor
 	for _, doc := range docs.GetDocs() {
 		connections = append(connections, &apipb.ConnectionConstructor{
-			Path: &apipb.PathConstructor{
+			Ref: &apipb.RefConstructor{
 				Gtype: filter.GetGtype(),
 			},
 			Attributes: filter.GetAttributes(),
 			Directed:   filter.GetDirected(),
 			From:       filter.GetFrom(),
-			To:         doc.GetPath(),
+			To:         doc.GetRef(),
 		})
 	}
 	return g.CreateConnections(ctx, &apipb.ConnectionConstructors{Connections: connections})

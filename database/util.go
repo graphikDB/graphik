@@ -23,18 +23,18 @@ type openIDConnect struct {
 	GrantTypesSupported               []string `json:"grant_types_supported"`
 }
 
-func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
-	var newPaths []*apipb.Path
+func removeConnection(path *apipb.Ref, paths []*apipb.Ref) []*apipb.Ref {
+	var newRefs []*apipb.Ref
 	for _, p := range paths {
 		if path.Gid == p.Gid && path.Gtype == p.Gtype {
-			newPaths = append(newPaths, p)
+			newRefs = append(newRefs, p)
 		}
 	}
-	sortPaths(newPaths)
-	return newPaths
+	sortRefs(newRefs)
+	return newRefs
 }
 
-func sortPaths(paths []*apipb.Path) {
+func sortRefs(paths []*apipb.Ref) {
 	sort.Slice(paths, func(i, j int) bool {
 		return paths[i].String() < paths[j].String()
 	})

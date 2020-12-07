@@ -60,8 +60,8 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 		d.stack.Push(doc)
 		if docProgram == nil {
 			d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-				Doc:          doc,
-				RelativePath: &apipb.Paths{Paths: []*apipb.Path{doc.GetPath()}},
+				Doc:         doc,
+				RelativeRef: &apipb.Refs{Refs: []*apipb.Ref{doc.GetRef()}},
 			})
 		} else {
 			res, err := d.g.vm.Doc().Eval(doc, *docProgram)
@@ -70,24 +70,24 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 			}
 			if res {
 				d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-					Doc:          doc,
-					RelativePath: &apipb.Paths{Paths: []*apipb.Path{doc.GetPath()}},
+					Doc:         doc,
+					RelativeRef: &apipb.Refs{Refs: []*apipb.Ref{doc.GetRef()}},
 				})
 			}
 		}
 		d.visited[d.filter.Root.String()] = struct{}{}
 	}
-	var traversalPath []*apipb.Path
+	var traversalRef []*apipb.Ref
 	for d.stack.Len() > 0 && len(d.docs.Traversals) < int(d.filter.Limit) {
 		if err := ctx.Err(); err != nil {
 			return nil
 		}
 		popped := d.stack.Pop().(*apipb.Doc)
-		traversalPath = append(traversalPath, popped.GetPath())
+		traversalRef = append(traversalRef, popped.GetRef())
 		if len(d.docs.Traversals) >= int(d.filter.Limit) {
 			return nil
 		}
-		if err := d.g.rangeFrom(ctx, tx, popped.GetPath(), func(e *apipb.Connection) bool {
+		if err := d.g.rangeFrom(ctx, tx, popped.GetRef(), func(e *apipb.Connection) bool {
 			if connectionProgram != nil {
 				res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
 				if err != nil {
@@ -109,11 +109,11 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 				if docProgram == nil {
-					traversalPath = append(traversalPath, e.GetPath(), from.GetPath())
+					traversalRef = append(traversalRef, from.GetRef())
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-						Doc:          from,
-						RelativePath: &apipb.Paths{Paths: traversalPath},
-						Direction:    apipb.Direction_From,
+						Doc:         from,
+						RelativeRef: &apipb.Refs{Refs: traversalRef},
+						Direction:   apipb.Direction_From,
 					})
 				} else {
 					res, err := d.g.vm.Doc().Eval(from, *docProgram)
@@ -124,15 +124,15 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						return true
 					}
 					if res {
-						traversalPath = append(traversalPath, e.GetPath(), from.GetPath())
+						traversalRef = append(traversalRef, from.GetRef())
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-							Doc:          from,
-							RelativePath: &apipb.Paths{Paths: traversalPath},
-							Direction:    apipb.Direction_From,
+							Doc:         from,
+							RelativeRef: &apipb.Refs{Refs: traversalRef},
+							Direction:   apipb.Direction_From,
 						})
 					}
 				}
-				d.visited[from.Path.String()] = struct{}{}
+				d.visited[from.Ref.String()] = struct{}{}
 				d.stack.Push(from)
 			}
 			if _, ok := d.visited[e.To.String()]; !ok {
@@ -144,11 +144,11 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 				if docProgram == nil {
-					traversalPath = append(traversalPath, e.GetPath(), to.GetPath())
+					traversalRef = append(traversalRef, to.GetRef())
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-						Doc:          to,
-						RelativePath: &apipb.Paths{Paths: traversalPath},
-						Direction:    apipb.Direction_From,
+						Doc:         to,
+						RelativeRef: &apipb.Refs{Refs: traversalRef},
+						Direction:   apipb.Direction_From,
 					})
 				} else {
 					res, err := d.g.vm.Doc().Eval(to, *docProgram)
@@ -159,22 +159,22 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						return true
 					}
 					if res {
-						traversalPath = append(traversalPath, e.GetPath(), to.GetPath())
+						traversalRef = append(traversalRef, to.GetRef())
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-							Doc:          to,
-							RelativePath: &apipb.Paths{Paths: traversalPath},
-							Direction:    apipb.Direction_From,
+							Doc:         to,
+							RelativeRef: &apipb.Refs{Refs: traversalRef},
+							Direction:   apipb.Direction_From,
 						})
 					}
 				}
-				d.visited[to.Path.String()] = struct{}{}
+				d.visited[to.Ref.String()] = struct{}{}
 				d.stack.Push(to)
 			}
 			return len(d.docs.Traversals) < int(d.filter.Limit)
 		}); err != nil {
 			return err
 		}
-		if err := d.g.rangeTo(ctx, tx, popped.GetPath(), func(e *apipb.Connection) bool {
+		if err := d.g.rangeTo(ctx, tx, popped.GetRef(), func(e *apipb.Connection) bool {
 			if connectionProgram != nil {
 				res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
 				if err != nil {
@@ -196,11 +196,11 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 				if docProgram == nil {
-					traversalPath = append(traversalPath, e.GetPath(), from.GetPath())
+					traversalRef = append(traversalRef, from.GetRef())
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-						Doc:          from,
-						RelativePath: &apipb.Paths{Paths: traversalPath},
-						Direction:    apipb.Direction_To,
+						Doc:         from,
+						RelativeRef: &apipb.Refs{Refs: traversalRef},
+						Direction:   apipb.Direction_To,
 					})
 				} else {
 					res, err := d.g.vm.Doc().Eval(from, *docProgram)
@@ -211,15 +211,15 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						return true
 					}
 					if res {
-						traversalPath = append(traversalPath, e.GetPath(), from.GetPath())
+						traversalRef = append(traversalRef, from.GetRef())
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-							Doc:          from,
-							RelativePath: &apipb.Paths{Paths: traversalPath},
-							Direction:    apipb.Direction_To,
+							Doc:         from,
+							RelativeRef: &apipb.Refs{Refs: traversalRef},
+							Direction:   apipb.Direction_To,
 						})
 					}
 				}
-				d.visited[from.Path.String()] = struct{}{}
+				d.visited[from.Ref.String()] = struct{}{}
 				d.stack.Push(from)
 			}
 			if _, ok := d.visited[e.To.String()]; !ok {
@@ -231,11 +231,11 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 				if docProgram == nil {
-					traversalPath = append(traversalPath, e.GetPath(), to.GetPath())
+					traversalRef = append(traversalRef, to.GetRef())
 					d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-						Doc:          to,
-						RelativePath: &apipb.Paths{Paths: traversalPath},
-						Direction:    apipb.Direction_To,
+						Doc:         to,
+						RelativeRef: &apipb.Refs{Refs: traversalRef},
+						Direction:   apipb.Direction_To,
 					})
 				} else {
 					res, err := d.g.vm.Doc().Eval(to, *docProgram)
@@ -246,15 +246,15 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 						return true
 					}
 					if res {
-						traversalPath = append(traversalPath, e.GetPath(), to.GetPath())
+						traversalRef = append(traversalRef, to.GetRef())
 						d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-							Doc:          to,
-							RelativePath: &apipb.Paths{Paths: traversalPath},
-							Direction:    apipb.Direction_To,
+							Doc:         to,
+							RelativeRef: &apipb.Refs{Refs: traversalRef},
+							Direction:   apipb.Direction_To,
 						})
 					}
 				}
-				d.visited[to.Path.String()] = struct{}{}
+				d.visited[to.Ref.String()] = struct{}{}
 				d.stack.Push(to)
 			}
 			return len(d.docs.Traversals) < int(d.filter.Limit)

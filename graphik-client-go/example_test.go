@@ -98,7 +98,7 @@ func ExampleClient_Me() {
 
 func ExampleClient_CreateDoc() {
 	charlie, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
-		Path: &apipb.PathConstructor{Gtype: "dog"},
+		Ref: &apipb.RefConstructor{Gtype: "dog"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Charlie",
 		}),
@@ -117,7 +117,7 @@ func ExampleClient_SearchDocs() {
 		Gtype:      "dog",
 		Expression: `doc.attributes.name.contains("Charl")`,
 		Limit:      1,
-		Sort:       "metadata.created_at",
+		Sort:       "ref.gid",
 	})
 	if err != nil {
 		log.Print(err)
@@ -141,7 +141,7 @@ func ExampleClient_CreateConnection() {
 	}
 	charlie := dogs.GetDocs()[0]
 	coleman, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
-		Path: &apipb.PathConstructor{Gtype: "human"},
+		Ref: &apipb.RefConstructor{Gtype: "human"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Coleman",
 		}),
@@ -151,12 +151,12 @@ func ExampleClient_CreateConnection() {
 		return
 	}
 	ownerConnection, err := client.CreateConnection(context.Background(), &apipb.ConnectionConstructor{
-		Path: &apipb.PathConstructor{Gtype: "owner"},
+		Ref: &apipb.RefConstructor{Gtype: "owner"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"primary_owner": true,
 		}),
-		From: charlie.Path,
-		To:   coleman.Path,
+		From: charlie.Ref,
+		To:   coleman.Ref,
 	})
 	if err != nil {
 		log.Print(err)
@@ -171,7 +171,7 @@ func ExampleClient_SearchConnections() {
 	owners, err := client.SearchConnections(context.Background(), &apipb.Filter{
 		Gtype:      "owner",
 		Expression: `connection.attributes.primary_owner`,
-		Sort:       "metadata.created_at",
+		Sort:       "ref.gtype",
 		Limit:      1,
 	})
 	if err != nil {
@@ -197,7 +197,7 @@ func ExampleClient_EditDoc() {
 	charlie := dogs.GetDocs()[0]
 	log.Println(charlie.String())
 	charlie, err = client.EditDoc(context.Background(), &apipb.Edit{
-		Path: charlie.Path,
+		Ref: charlie.Ref,
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"weight": 25,
 		}),
@@ -271,7 +271,7 @@ func ExampleClient_GetSchema() {
 		authorizers = append(authorizers, a.Name)
 	}
 	fmt.Printf("authorizers: %s", strings.Join(authorizers, ","))
-	// Output: doc types: dog,human,identity
-	//connection types: owner
+	// Output: doc types: dog,human,users
+	//connection types: created,created_by,edited,edited_by,owner
 	//authorizers: testing
 }

@@ -12,7 +12,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
 )
 
@@ -31,17 +30,6 @@ type typeValidator struct {
 	program   cel.Program
 }
 
-func (g *Graph) updateMeta(ctx context.Context, meta *apipb.Metadata) {
-	if meta == nil {
-		meta = &apipb.Metadata{}
-	}
-	if meta.GetCreatedAt() == nil {
-		meta.CreatedAt = timestamppb.Now()
-	}
-	meta.UpdatedAt = timestamppb.Now()
-	meta.Version += 1
-}
-
 func (g *Graph) rangeIndexes(fn func(index *index) bool) {
 	g.indexes.Range(func(key, value interface{}) bool {
 		if value == nil {
@@ -52,12 +40,12 @@ func (g *Graph) rangeIndexes(fn func(index *index) bool) {
 	})
 }
 
-func (g *Graph) cacheConnectionPaths() error {
+func (g *Graph) cacheConnectionRefs() error {
 	return g.rangeConnections(context.Background(), apipb.Any, func(e *apipb.Connection) bool {
 		g.mu.Lock()
 		defer g.mu.Unlock()
-		g.connectionsFrom[e.From.String()] = append(g.connectionsFrom[e.From.String()], e.Path)
-		g.connectionsTo[e.To.String()] = append(g.connectionsTo[e.To.String()], e.Path)
+		g.connectionsFrom[e.From.String()] = append(g.connectionsFrom[e.From.String()], e.GetRef())
+		g.connectionsTo[e.To.String()] = append(g.connectionsTo[e.To.String()], e.GetRef())
 		return true
 	})
 }
@@ -335,15 +323,9 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	if ctx.Value(importOverrideCtxKey) == nil {
-		if doc.GetPath() == nil {
-			doc.Path = &apipb.Path{}
-		}
-		g.updateMeta(ctx, doc.Metadata)
-	}
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
-		if v.validator.GetDocs() && v.validator.GetGtype() == doc.GetPath().GetGtype() {
+		if v.validator.GetDocs() && v.validator.GetGtype() == doc.GetRef().GetGtype() {
 			res, err := g.vm.Doc().Eval(doc, v.program)
 			if err != nil {
 				validationErr = err
@@ -364,14 +346,14 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 		return nil, err
 	}
 	docBucket := tx.Bucket(dbDocs)
-	bucket := docBucket.Bucket([]byte(doc.GetPath().GetGtype()))
+	bucket := docBucket.Bucket([]byte(doc.GetRef().GetGtype()))
 	if bucket == nil {
-		bucket, err = docBucket.CreateBucketIfNotExists([]byte(doc.GetPath().GetGtype()))
+		bucket, err = docBucket.CreateBucketIfNotExists([]byte(doc.GetRef().GetGtype()))
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to create bucket %s", doc.GetPath().GetGtype())
+			return nil, errors.Wrapf(err, "failed to create bucket %s", doc.GetRef().GetGtype())
 		}
 	}
-	if err := bucket.Put([]byte(doc.GetPath().GetGid()), bits); err != nil {
+	if err := bucket.Put([]byte(doc.GetRef().GetGid()), bits); err != nil {
 		return nil, err
 	}
 	g.rangeIndexes(func(i *index) bool {
@@ -383,7 +365,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 				}
 			}
 			if result {
-				err = g.setIndexedDoc(ctx, tx, i.index.Name, []byte(doc.GetPath().GetGid()), bits)
+				err = g.setIndexedDoc(ctx, tx, i.index.Name, []byte(doc.GetRef().GetGid()), bits)
 				if err != nil {
 					logger.Error("failed to save index", zap.Error(err))
 					return true
@@ -437,16 +419,10 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			return nil, errors.Errorf("to doc %s does not exist", connection.GetTo().String())
 		}
 	}
-	if ctx.Value(importOverrideCtxKey) == nil {
-		if connection.GetPath() == nil {
-			connection.Path = &apipb.Path{}
-		}
-		g.updateMeta(ctx, connection.GetMetadata())
-	}
 
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
-		if v.validator.GetConnections() && v.validator.GetGtype() == connection.GetPath().GetGtype() {
+		if v.validator.GetConnections() && v.validator.GetGtype() == connection.GetRef().GetGtype() {
 			res, err := g.vm.Connection().Eval(connection, v.program)
 			if err != nil {
 				validationErr = err
@@ -467,31 +443,31 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 		return nil, err
 	}
 	bucket := tx.Bucket(dbConnections)
-	connectionBucket := bucket.Bucket([]byte(connection.GetPath().GetGtype()))
+	connectionBucket := bucket.Bucket([]byte(connection.GetRef().GetGtype()))
 	if connectionBucket == nil {
-		connectionBucket, err = bucket.CreateBucketIfNotExists([]byte(connection.GetPath().GetGtype()))
+		connectionBucket, err = bucket.CreateBucketIfNotExists([]byte(connection.GetRef().GetGtype()))
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to create bucket %s", connection.GetPath().GetGtype())
+			return nil, errors.Wrapf(err, "failed to create bucket %s", connection.GetRef().GetGtype())
 		}
 	}
-	if err := connectionBucket.Put([]byte(connection.GetPath().GetGid()), bits); err != nil {
+	if err := connectionBucket.Put([]byte(connection.GetRef().GetGid()), bits); err != nil {
 		return nil, err
 	}
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	g.connectionsFrom[connection.GetFrom().String()] = append(g.connectionsFrom[connection.GetFrom().String()], connection.GetPath())
-	g.connectionsTo[connection.GetTo().String()] = append(g.connectionsTo[connection.GetTo().String()], connection.GetPath())
+	g.connectionsFrom[connection.GetFrom().String()] = append(g.connectionsFrom[connection.GetFrom().String()], connection.GetRef())
+	g.connectionsTo[connection.GetTo().String()] = append(g.connectionsTo[connection.GetTo().String()], connection.GetRef())
 	if !connection.Directed {
-		g.connectionsTo[connection.GetFrom().String()] = append(g.connectionsTo[connection.GetFrom().String()], connection.GetPath())
-		g.connectionsFrom[connection.GetTo().String()] = append(g.connectionsFrom[connection.GetTo().String()], connection.GetPath())
+		g.connectionsTo[connection.GetFrom().String()] = append(g.connectionsTo[connection.GetFrom().String()], connection.GetRef())
+		g.connectionsFrom[connection.GetTo().String()] = append(g.connectionsFrom[connection.GetTo().String()], connection.GetRef())
 	}
-	sortPaths(g.connectionsFrom[connection.GetFrom().String()])
-	sortPaths(g.connectionsTo[connection.GetTo().String()])
+	sortRefs(g.connectionsFrom[connection.GetFrom().String()])
+	sortRefs(g.connectionsTo[connection.GetTo().String()])
 	g.rangeIndexes(func(i *index) bool {
 		if i.index.Connections {
 			result, _ := g.vm.Connection().Eval(connection, i.program)
 			if result {
-				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), []byte(connection.GetPath().GetGid()), bits)
+				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), []byte(connection.GetRef().GetGid()), bits)
 				if err != nil {
 					logger.Error("failed to save index", zap.Error(err))
 					return true
@@ -518,7 +494,7 @@ func (g *Graph) setConnections(ctx context.Context, tx *bbolt.Tx, connections ..
 	return edgs, nil
 }
 
-func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Doc, error) {
+func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) (*apipb.Doc, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
@@ -541,7 +517,7 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*ap
 	return &doc, nil
 }
 
-func (g *Graph) getConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*apipb.Connection, error) {
+func (g *Graph) getConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) (*apipb.Connection, error) {
 	if path == nil {
 		return nil, ErrNotFound
 	}
@@ -651,27 +627,22 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 
 	var (
 		err     error
-		now     = timestamppb.Now()
 		newDock *apipb.Doc
 	)
 
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		docBucket := tx.Bucket(dbDocs)
-		bucket := docBucket.Bucket([]byte(constructor.GetPath().GetGtype()))
+		bucket := docBucket.Bucket([]byte(constructor.GetRef().GetGtype()))
 		if bucket == nil {
-			bucket, err = docBucket.CreateBucket([]byte(constructor.GetPath().GetGtype()))
+			bucket, err = docBucket.CreateBucket([]byte(constructor.GetRef().GetGtype()))
 			if err != nil {
-				return errors.Wrapf(err, "%s", constructor.GetPath().GetGtype())
+				return errors.Wrapf(err, "%s", constructor.GetRef().GetGtype())
 			}
 		}
-		path := &apipb.Path{Gid: constructor.GetPath().GetGid(), Gtype: constructor.GetPath().GetGtype()}
+		path := &apipb.Ref{Gid: constructor.GetRef().GetGid(), Gtype: constructor.GetRef().GetGtype()}
 		newDock = &apipb.Doc{
-			Path:       path,
+			Ref:        path,
 			Attributes: constructor.GetAttributes(),
-			Metadata: &apipb.Metadata{
-				CreatedAt: now,
-				UpdatedAt: now,
-			},
 		}
 		newDock, err = g.setDoc(ctx, tx, newDock)
 		if err != nil {
@@ -684,18 +655,18 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 	return newDock, nil
 }
 
-func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
+func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) error {
 	doc, err := g.getDoc(ctx, tx, path)
 	if err != nil {
 		return err
 	}
-	bucket := tx.Bucket(dbDocs).Bucket([]byte(doc.GetPath().GetGtype()))
+	bucket := tx.Bucket(dbDocs).Bucket([]byte(doc.GetRef().GetGtype()))
 	g.rangeFrom(ctx, tx, path, func(e *apipb.Connection) bool {
-		g.delConnection(ctx, tx, e.GetPath())
+		g.delConnection(ctx, tx, e.GetRef())
 		return true
 	})
 	g.rangeTo(ctx, tx, path, func(e *apipb.Connection) bool {
-		g.delConnection(ctx, tx, e.GetPath())
+		g.delConnection(ctx, tx, e.GetRef())
 		return true
 	})
 	g.rangeIndexes(func(index *index) bool {
@@ -707,16 +678,16 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) erro
 	return bucket.Delete([]byte(path.GetGid()))
 }
 
-func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) error {
+func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) error {
 	connection, err := g.getConnection(ctx, tx, path)
 	if err != nil {
 		return err
 	}
 	g.mu.Lock()
-	fromPaths := removeConnection(path, g.connectionsFrom[connection.GetFrom().String()])
-	g.connectionsFrom[connection.GetFrom().String()] = fromPaths
-	toPaths := removeConnection(path, g.connectionsTo[connection.GetTo().String()])
-	g.connectionsTo[connection.GetTo().String()] = toPaths
+	fromRefs := removeConnection(path, g.connectionsFrom[connection.GetFrom().String()])
+	g.connectionsFrom[connection.GetFrom().String()] = fromRefs
+	toRefs := removeConnection(path, g.connectionsTo[connection.GetTo().String()])
+	g.connectionsTo[connection.GetTo().String()] = toRefs
 	g.mu.Unlock()
 	g.rangeIndexes(func(index *index) bool {
 		if index.index.Connections && index.index.GetGtype() == path.GetGtype() {
@@ -724,7 +695,7 @@ func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Pat
 		}
 		return true
 	})
-	return tx.Bucket(dbConnections).Bucket([]byte(connection.GetPath().GetGtype())).Delete([]byte(connection.GetPath().GetGid()))
+	return tx.Bucket(dbConnections).Bucket([]byte(connection.GetRef().GetGtype())).Delete([]byte(connection.GetRef().GetGid()))
 }
 
 func (n *Graph) filterDoc(ctx context.Context, docType string, filter func(doc *apipb.Doc) bool) (*apipb.Docs, error) {
@@ -743,9 +714,9 @@ func (n *Graph) filterDoc(ctx context.Context, docType string, filter func(doc *
 	return toreturn, nil
 }
 
-func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, fn func(e *apipb.Connection) bool) error {
+func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn func(e *apipb.Connection) bool) error {
 	g.mu.RLock()
-	paths := g.connectionsTo[docPath.String()]
+	paths := g.connectionsTo[docRef.String()]
 	g.mu.RUnlock()
 	for _, path := range paths {
 		if err := ctx.Err(); err != nil {
@@ -767,9 +738,9 @@ func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, 
 	return nil
 }
 
-func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docPath *apipb.Path, fn func(e *apipb.Connection) bool) error {
+func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn func(e *apipb.Connection) bool) error {
 	g.mu.RLock()
-	paths := g.connectionsFrom[docPath.String()]
+	paths := g.connectionsFrom[docRef.String()]
 	g.mu.RUnlock()
 	for _, path := range paths {
 		if err := ctx.Err(); err != nil {
@@ -877,4 +848,28 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, in
 		return string(lastKey), err
 	}
 	return string(lastKey), nil
+}
+
+func (g *Graph) hasConnectionFrom(doc, connection *apipb.Ref) bool {
+	g.mu.RLock()
+	defer g.mu.RUnlock()
+	values := g.connectionsFrom[doc.String()]
+	for _, val := range values {
+		if val.Gid == connection.Gid && val.GetGtype() == connection.GetGtype() {
+			return true
+		}
+	}
+	return false
+}
+
+func (g *Graph) hasConnectionTo(doc, connection *apipb.Ref) bool {
+	g.mu.RLock()
+	defer g.mu.RUnlock()
+	values := g.connectionsTo[doc.String()]
+	for _, val := range values {
+		if val.Gid == connection.Gid && val.GetGtype() == connection.GetGtype() {
+			return true
+		}
+	}
+	return false
 }

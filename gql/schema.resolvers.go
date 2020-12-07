@@ -123,8 +123,8 @@ func (r *queryResolver) Me(ctx context.Context, input *emptypb.Empty) (*model.Do
 	return gqlDoc(res), nil
 }
 
-func (r *queryResolver) GetDoc(ctx context.Context, input model.PathInput) (*model.Doc, error) {
-	res, err := r.client.GetDoc(ctx, protoIPath(&input))
+func (r *queryResolver) GetDoc(ctx context.Context, input model.RefInput) (*model.Doc, error) {
+	res, err := r.client.GetDoc(ctx, protoIRef(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -147,8 +147,8 @@ func (r *queryResolver) Traverse(ctx context.Context, input model.TFilter) (*mod
 	return gqlTraversals(res), nil
 }
 
-func (r *queryResolver) GetConnection(ctx context.Context, input model.PathInput) (*model.Connection, error) {
-	res, err := r.client.GetConnection(ctx, protoIPath(&input))
+func (r *queryResolver) GetConnection(ctx context.Context, input model.RefInput) (*model.Connection, error) {
+	res, err := r.client.GetConnection(ctx, protoIRef(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +201,7 @@ func (r *queryResolver) SearchAndConnect(ctx context.Context, input model.SConne
 		Gtype:      input.Gtype,
 		Attributes: apipb.NewStruct(input.Attributes),
 		Directed:   input.Directed,
-		From:       protoIPath(input.From),
+		From:       protoIRef(input.From),
 	})
 	if err != nil {
 		return nil, err
@@ -232,40 +232,8 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, input model.ChanFi
 				ch <- &model.Message{
 					Channel:   msg.GetChannel(),
 					Data:      msg.GetData().AsMap(),
-					Sender:    gqlPath(msg.GetSender()),
+					Sender:    gqlRef(msg.GetSender()),
 					Timestamp: msg.GetTimestamp().AsTime(),
-				}
-			}
-		}
-	}()
-	return ch, nil
-}
-
-func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input model.ExprFilter) (<-chan *model.Change, error) {
-	ch := make(chan *model.Change)
-	stream, err := r.client.SubscribeChanges(ctx, protoExpressionFilter(&input))
-	if err != nil {
-		return nil, err
-	}
-	go func() {
-		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
-		for {
-			select {
-			case <-ctx.Done():
-				close(ch)
-				return
-			default:
-				msg, err := stream.Recv()
-				if err != nil {
-					logger.Error("failed to receive change", zap.Error(err))
-					continue
-				}
-				ch <- &model.Change{
-					Method:        msg.GetMethod(),
-					Identity:      gqlDoc(msg.GetIdentity()),
-					Timestamp:     msg.GetTimestamp().AsTime(),
-					PathsAffected: gqlPaths(msg.GetPathsAffected()),
 				}
 			}
 		}

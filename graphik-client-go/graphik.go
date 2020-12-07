@@ -110,7 +110,7 @@ func (c *Client) CreateDocs(ctx context.Context, in *apipb.DocConstructors, opts
 	return c.graph.CreateDocs(ctx, in, opts...)
 }
 
-func (c *Client) GetDoc(ctx context.Context, in *apipb.Path, opts ...grpc.CallOption) (*apipb.Doc, error) {
+func (c *Client) GetDoc(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*apipb.Doc, error) {
 	return c.graph.GetDoc(ctx, in, opts...)
 }
 
@@ -134,7 +134,7 @@ func (c *Client) CreateConnections(ctx context.Context, in *apipb.ConnectionCons
 	return c.graph.CreateConnections(ctx, in, opts...)
 }
 
-func (c *Client) GetConnection(ctx context.Context, in *apipb.Path, opts ...grpc.CallOption) (*apipb.Connection, error) {
+func (c *Client) GetConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*apipb.Connection, error) {
 	return c.graph.GetConnection(ctx, in, opts...)
 }
 
@@ -177,27 +177,6 @@ func (c *Client) Subscribe(ctx context.Context, in *apipb.ChanFilter, handler fu
 				return err
 			}
 			if !handler(msg) {
-				return nil
-			}
-		}
-	}
-}
-
-func (c *Client) SubscribeChanges(ctx context.Context, in *apipb.ExprFilter, handler func(change *apipb.Change) bool, opts ...grpc.CallOption) error {
-	stream, err := c.graph.SubscribeChanges(ctx, in, opts...)
-	if err != nil {
-		return err
-	}
-	for {
-		select {
-		case <-ctx.Done():
-			return nil
-		default:
-			change, err := stream.Recv()
-			if err != nil {
-				return err
-			}
-			if !handler(change) {
 				return nil
 			}
 		}

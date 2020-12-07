@@ -26,17 +26,17 @@ service DatabaseService {
   // CreateDocs creates a batch of docs in the graph
   rpc CreateDocs(DocConstructors) returns(Docs){}
   // GetDoc gets a single doc in the graph
-  rpc GetDoc(Path) returns(Doc){}
+  rpc GetDoc(Ref) returns(Doc){}
   // SearchDocs searches the graph for docs
   rpc SearchDocs(Filter) returns(Docs){}
   // Traverse executes a depth first search of the graph for docs
   rpc Traverse(TFilter) returns(Traversals){}
-  // EditDoc patches a docs attributes
+  // EditDoc patches/edits a docs attributes
   rpc EditDoc(Edit) returns(Doc){}
   // EditDocs patches a batch of docs attributes that pass the patch filter
   rpc EditDocs(EFilter) returns(Docs){}
   // DelDoc deletes a doc & all of it's connected connections
-  rpc DelDoc(Path) returns(google.protobuf.Empty){}
+  rpc DelDoc(Ref) returns(google.protobuf.Empty){}
   // DelDocs deletes a batch of docs that pass the filter
   rpc DelDocs(Filter) returns(google.protobuf.Empty){}
   // CreateConnection creates an connection in the graph
@@ -45,7 +45,7 @@ service DatabaseService {
   rpc CreateConnections(ConnectionConstructors) returns(Connections){}
   rpc SearchAndConnect(SConnectFilter) returns(Connections){}
   // GetConnection gets a single connection in the graph
-  rpc GetConnection(Path) returns(Connection){}
+  rpc GetConnection(Ref) returns(Connection){}
   // SearchConnections searches the graph for connections
   rpc SearchConnections(Filter) returns(Connections){}
   // EditConnection patches an connections attributes
@@ -53,12 +53,12 @@ service DatabaseService {
   // EditConnections patches a batch of connections attributes that pass the patch filter
   rpc EditConnections(EFilter) returns(Connections){}
   // DelConnection deletes an connection from the graph
-  rpc DelConnection(Path) returns(google.protobuf.Empty){}
+  rpc DelConnection(Ref) returns(google.protobuf.Empty){}
   // DelConnections deletes a batch of connections that pass the filter
   rpc DelConnections(Filter) returns(google.protobuf.Empty){}
-  // ConnectionsFrom returns connections that source from the given doc path that pass the filter
+  // ConnectionsFrom returns connections that source from the given doc ref that pass the filter
   rpc ConnectionsFrom(CFilter) returns(Connections){}
-  // ConnectionsTo returns connections that point to the given doc path that pass the filter
+  // ConnectionsTo returns connections that point to the given doc ref that pass the filter
   rpc ConnectionsTo(CFilter) returns(Connections){}
   rpc AggregateDocs(AggFilter) returns(google.protobuf.Value){}
   rpc AggregateConnections(AggFilter) returns(google.protobuf.Value){}
@@ -66,7 +66,6 @@ service DatabaseService {
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
   rpc Subscribe(ChanFilter) returns(stream Message){}
-  rpc SubscribeChanges(ExprFilter) returns(stream Change){}
   rpc PushDocConstructors(stream DocConstructor) returns (stream Doc){}
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
@@ -79,51 +78,39 @@ enum Direction {
   To = 2;
 }
 
-// Path describes a doc/connection type & id
-message Path {
+// Ref describes a doc/connection type & id
+message Ref {
   // gtype is the type of the doc/connection ex: pet
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // gid is the unique id of the doc/connection within the context of it's type
   string gid =2 [(validator.field) = {regex : "^.{1,225}$"}];
 }
 
-// PathConstructor creates a new Path
-message PathConstructor {
+// RefConstructor creates a new Ref
+message RefConstructor {
   // gtype is the type of the doc/connection ex: pet
   string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // gid is the unique id of the doc/connection within the context of it's type
   string gid =2;
 }
 
-// Metadata is general metadata collected on docs/connections
-message Metadata {
-  // created_at is the unix timestamp when the doc/connection was created
-  google.protobuf.Timestamp created_at =1 [(validator.field) = {msg_exists : true}];
-  // updated_at is the unix timestamp when the doc/connection was last updated
-  google.protobuf.Timestamp updated_at =2 [(validator.field) = {msg_exists : true}];
-  // version iterates by 1 every time the doc/connection is modified
-  uint64 version =3 [(validator.field) = {int_gt : 0}];
-}
-
-// Paths is an array of paths
-message Paths {
-  repeated Path paths =1;
+// Refs is an array of refs
+message Refs {
+  repeated Ref refs =1;
 }
 
 // Doc is a Graph primitive representing a single entity/resource. It is connected to other docs via Connections
 message Doc {
-  // path is the path to the doc
-  Path path =1 [(validator.field) = {msg_exists : true}];
+  // ref is the ref to the doc
+  Ref ref =1 [(validator.field) = {msg_exists : true}];
   // k/v pairs
   google.protobuf.Struct attributes =2;
-  // metadata is general metadata collected about the doc
-  Metadata metadata =3 [(validator.field) = {msg_exists : true}];
 }
 
 // DocConstructor is used to create a doc
 message DocConstructor {
-  // path is the path to the new Doc. If an id isn't present, one will be generated.
-  PathConstructor path =1 [(validator.field) = {msg_exists : true}];
+  // ref is the ref to the new Doc. If an id isn't present, one will be generated.
+  RefConstructor ref =1 [(validator.field) = {msg_exists : true}];
   // arbitrary k/v pairs
   google.protobuf.Struct attributes =2;
 }
@@ -143,7 +130,7 @@ message Docs {
 
 message Traversal {
   Doc doc =1;
-  Paths relative_path =2;
+  Refs relative_ref =2;
   Direction direction =3;
 }
 
@@ -153,32 +140,30 @@ message Traversals {
 
 // Connection is a graph primitive that represents a relationship between two docs
 message Connection {
-  // path is the path to the connection
-  Path path =1 [(validator.field) = {msg_exists : true}];
+  // ref is the ref to the connection
+  Ref ref =1 [(validator.field) = {msg_exists : true}];
   // attributes are k/v pairs
   google.protobuf.Struct attributes =2;
   // directed is false if the connection is bi-directional
   bool directed =3;
-  // from is the doc path that is the source of the connection
-  Path from =4 [(validator.field) = {msg_exists : true}];
-  // to is the doc path that is the destination of the connection
-  Path to =5 [(validator.field) = {msg_exists : true}];
-  // metadata is general metadata collected about the connection
-  Metadata metadata =6 [(validator.field) = {msg_exists : true}];
+  // from is the doc ref that is the source of the connection
+  Ref from =4 [(validator.field) = {msg_exists : true}];
+  // to is the doc ref that is the destination of the connection
+  Ref to =5 [(validator.field) = {msg_exists : true}];
 }
 
 // ConnectionConstructor is used to create an Connection
 message ConnectionConstructor {
-  // path is the path to the new Connection. If an id isn't present, one will be generated.
-  PathConstructor path =1 [(validator.field) = {msg_exists : true}];
+  // ref is the ref to the new Connection. If an id isn't present, one will be generated.
+  RefConstructor ref =1 [(validator.field) = {msg_exists : true}];
   // attributes are k/v pairs
   google.protobuf.Struct attributes =3;
   // directed is false if the connection is bi-directional
   bool directed =4;
-  // from is the doc path that is the root of the connection
-  Path from =5 [(validator.field) = {msg_exists : true}];
-  // to is the doc path that is the destination of the connection
-  Path to =6 [(validator.field) = {msg_exists : true}];
+  // from is the doc ref that is the root of the connection
+  Ref from =5 [(validator.field) = {msg_exists : true}];
+  // to is the doc ref that is the destination of the connection
+  Ref to =6 [(validator.field) = {msg_exists : true}];
 }
 
 message SConnectFilter {
@@ -188,8 +173,8 @@ message SConnectFilter {
   google.protobuf.Struct attributes =3;
   // directed is false if the connection is bi-directional
   bool directed =4;
-  // from is the doc path that is the root of the connection
-  Path from =5 [(validator.field) = {msg_exists : true}];
+  // from is the doc ref that is the root of the connection
+  Ref from =5 [(validator.field) = {msg_exists : true}];
 }
 
 // ConnectionConstructors is an array of ConnectionConstructor
@@ -205,16 +190,16 @@ message Connections {
 
 // CFilter is used to fetch connections related to a single noted
 message CFilter {
-  // doc_path is the path to the target doc. (validator.field) = {msg_exists : true}]
-  Path doc_path =1 [(validator.field) = {msg_exists : true}];
+  // doc_ref is the ref to the target doc. (validator.field) = {msg_exists : true}]
+  Ref doc_ref =1 [(validator.field) = {msg_exists : true}];
   // gtype is the type of connections to return. (validator.field) = {regex : "^.{1,225}$"}
   string gtype =2 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is a CEL expression used to filter connections/modes
   string expression =3;
   // limit is the maximum number of items to return. (validator.field) = {int_gt : 0}
   int32 limit =4 [(validator.field) = {int_gt : 0}];
-  // custom sorting of the results. (validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}
-  string sort =5 [(validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}];
+  // custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
+  string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
   // seek to a specific key for pagination
   string seek =6;
   // reverse the results
@@ -230,7 +215,7 @@ message Filter {
   // limit is the maximum number of items to return
   int32 limit =3 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results.
-  string sort =4 [(validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}];
+  string sort =4 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
   // seek to a specific key for pagination
   string seek =5;
   // reverse the results
@@ -242,16 +227,16 @@ message Filter {
 message AggFilter {
   Filter filter =1[(validator.field) = {msg_exists : true}];
   string aggregate =2[(validator.field) = {regex : "((^|, )(sum|count|max|min|avg|prod))+$"}];
-  string field =3[(validator.field) = {regex : "((^|, )(metadata.created_at|metadata.updated_at|metadata.version|^attributes.(.*)))+$"}];
+  string field =3[(validator.field) = {regex : "((^|, )(|^attributes.(.*)))+$"}];
 }
 
 message TFilter {
-  Path root =1 [(validator.field) = {msg_exists : true}];
+  Ref root =1 [(validator.field) = {msg_exists : true}];
   string doc_expression =2;
   string connection_expression =3;
   int32 limit =4 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results.
-  string sort =5 [(validator.field) = {regex : "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"}];
+  string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
 }
 
 message IndexConstructor {
@@ -324,7 +309,7 @@ message Graph {
 message Flags {
   // open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
   string open_id_discovery =1;
-  // persistant storage path (env: GRAPHIK_STORAGE_PATH)
+  // persistant storage ref (env: GRAPHIK_STORAGE_PATH)
   string storage_path =2;
   // enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
   bool metrics =3;
@@ -345,8 +330,8 @@ message Flags {
 
 // Edit patches the attributes of a Doc or Connection
 message Edit {
-  // path is the path to the target doc/connection to patch
-  Path path =1 [(validator.field) = {msg_exists : true}];
+  // ref is the ref to the target doc/connection to patch
+  Ref ref =1 [(validator.field) = {msg_exists : true}];
   // attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   google.protobuf.Struct attributes =2;
 }
@@ -380,7 +365,7 @@ message Message {
   // data is the data sent with the message
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
   // sender is the identity that sent the message
-  Path sender =3 [(validator.field) = {msg_exists : true}];
+  Ref sender =3 [(validator.field) = {msg_exists : true}];
   // timestamp is when the message was sent
   google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
 }
@@ -394,18 +379,6 @@ message Schema {
   Authorizers authorizers =3;
   TypeValidators validators =4;
   Indexes indexes =5;
-}
-
-// Change represents a set of state changes in the graph
-message Change {
-  // method is the gRPC method invoked
-  string method =1 [(validator.field) = {regex : "^.{1,225}$"}];
-  // identity is the identity invoking the change
-  Doc identity =2 [(validator.field) = {msg_exists : true}];
-  // timestamp is when the change was made
-  google.protobuf.Timestamp timestamp =3 [(validator.field) = {msg_exists : true}];
-  // paths_affected are paths to docs/connections that have been affected by the change
-  Paths paths_affected =4;
 }
 
 message ExprFilter {

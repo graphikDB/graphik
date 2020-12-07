@@ -21,7 +21,7 @@ type Mapper interface {
 	AsMap() map[string]interface{}
 }
 
-func (m *Path) AsMap() map[string]interface{} {
+func (m *Ref) AsMap() map[string]interface{} {
 	if m == nil {
 		return map[string]interface{}{}
 	}
@@ -31,25 +31,13 @@ func (m *Path) AsMap() map[string]interface{} {
 	}
 }
 
-func (m *Metadata) AsMap() map[string]interface{} {
-	if m == nil {
-		return map[string]interface{}{}
-	}
-	return map[string]interface{}{
-		"created_at": m.GetCreatedAt(),
-		"updated_at": m.GetUpdatedAt(),
-		"version":    m.GetVersion(),
-	}
-}
-
 func (n *Doc) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"path":       n.GetPath().AsMap(),
+		"ref":        n.GetRef().AsMap(),
 		"attributes": n.GetAttributes().AsMap(),
-		"metadata":   n.GetMetadata().AsMap(),
 	}
 }
 
@@ -58,12 +46,11 @@ func (n *Connection) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"path":       n.GetPath().AsMap(),
+		"ref":        n.GetRef().AsMap(),
 		"attributes": n.GetAttributes().AsMap(),
 		"directed":   n.GetDirected(),
 		"from":       n.GetFrom().AsMap(),
 		"to":         n.GetTo().AsMap(),
-		"metadata":   n.GetMetadata().AsMap(),
 	}
 }
 
@@ -79,27 +66,16 @@ func (n *Message) AsMap() map[string]interface{} {
 	}
 }
 
-func (p *Paths) AsMap() map[string]interface{} {
+func (p *Refs) AsMap() map[string]interface{} {
 	if p == nil {
 		return map[string]interface{}{}
 	}
-	var paths []interface{}
-	for _, path := range p.GetPaths() {
-		paths = append(paths, path.AsMap())
+	var refs []interface{}
+	for _, ref := range p.GetRefs() {
+		refs = append(refs, ref.AsMap())
 	}
 	return map[string]interface{}{
-		"paths": paths,
-	}
-}
-func (c *Change) AsMap() map[string]interface{} {
-	if c == nil {
-		return map[string]interface{}{}
-	}
-	return map[string]interface{}{
-		"method":         c.GetMethod(),
-		"timestamp":      c.GetTimestamp(),
-		"identity":       c.GetIdentity(),
-		"paths_affected": c.PathsAffected.AsMap(),
+		"refs": refs,
 	}
 }
 
@@ -124,7 +100,7 @@ func (n *CFilter) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"gtype":      n.GetGtype(),
 		"expression": n.GetExpression(),
-		"doc_path":   n.GetDocPath(),
+		"doc_ref":    n.GetDocRef(),
 		"limit":      n.GetLimit(),
 		"sort":       n.GetSort(),
 		"reverse":    n.GetReverse(),
@@ -156,7 +132,7 @@ func (p *Edit) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"path":       p.GetPath(),
+		"ref":        p.GetRef(),
 		"attributes": p.GetAttributes(),
 	}
 }
@@ -171,7 +147,7 @@ func (n *EFilter) AsMap() map[string]interface{} {
 	}
 }
 
-func (e *PathConstructor) AsMap() map[string]interface{} {
+func (e *RefConstructor) AsMap() map[string]interface{} {
 	if e == nil {
 		return map[string]interface{}{}
 	}
@@ -186,7 +162,7 @@ func (e *ConnectionConstructor) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"path":       e.GetPath().AsMap(),
+		"ref":        e.GetRef().AsMap(),
 		"attributes": e.GetAttributes().AsMap(),
 		"directed":   e.GetDirected(),
 		"from":       e.GetFrom().AsMap(),
@@ -199,7 +175,7 @@ func (e *DocConstructor) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"path":       e.GetPath().AsMap(),
+		"ref":        e.GetRef().AsMap(),
 		"attributes": e.GetAttributes().AsMap(),
 	}
 }
@@ -241,18 +217,18 @@ func (g *Graph) AsMap() map[string]interface{} {
 	}
 }
 
-func (p *Paths) Sort(field string) {
+func (p *Refs) Sort(field string) {
 	if p == nil {
 		return
 	}
 	switch field {
 	case "gid":
-		sort.Slice(p.GetPaths(), func(i, j int) bool {
-			return p.GetPaths()[i].GetGid() < p.GetPaths()[j].GetGid()
+		sort.Slice(p.GetRefs(), func(i, j int) bool {
+			return p.GetRefs()[i].GetGid() < p.GetRefs()[j].GetGid()
 		})
 	default:
-		sort.Slice(p.GetPaths(), func(i, j int) bool {
-			return p.GetPaths()[i].GetGtype() < p.GetPaths()[j].GetGtype()
+		sort.Slice(p.GetRefs(), func(i, j int) bool {
+			return p.GetRefs()[i].GetGtype() < p.GetRefs()[j].GetGtype()
 		})
 	}
 }
@@ -262,21 +238,13 @@ func (n *Docs) Sort(field string) {
 		return
 	}
 	switch {
-	case field == "path.gid":
+	case field == "ref.gid":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
-			return n.GetDocs()[i].GetPath().GetGid() < n.GetDocs()[j].GetPath().GetGid()
+			return n.GetDocs()[i].GetRef().GetGid() < n.GetDocs()[j].GetRef().GetGid()
 		})
-	case field == "path.gtype":
+	case field == "ref.gtype":
 		sort.Slice(n.GetDocs(), func(i, j int) bool {
-			return n.GetDocs()[i].GetPath().GetGtype() < n.GetDocs()[j].GetPath().GetGtype()
-		})
-	case field == "metadata.version":
-		sort.Slice(n.GetDocs(), func(i, j int) bool {
-			return n.GetDocs()[i].GetMetadata().GetVersion() < n.GetDocs()[j].GetMetadata().GetVersion()
-		})
-	case field == "metadata.created_at":
-		sort.Slice(n.GetDocs(), func(i, j int) bool {
-			return n.GetDocs()[i].GetMetadata().GetCreatedAt().AsTime().Nanosecond() < n.GetDocs()[j].GetMetadata().GetCreatedAt().AsTime().Nanosecond()
+			return n.GetDocs()[i].GetRef().GetGtype() < n.GetDocs()[j].GetRef().GetGtype()
 		})
 	case strings.Contains(field, "attributes."):
 		split := strings.Split(field, "attributes.")
@@ -300,10 +268,6 @@ func (n *Docs) Sort(field string) {
 				}
 			})
 		}
-	default:
-		sort.Slice(n.GetDocs(), func(i, j int) bool {
-			return n.GetDocs()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < n.GetDocs()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
-		})
 	}
 }
 
@@ -312,25 +276,17 @@ func (n *Traversals) Sort(field string) {
 		return
 	}
 	switch {
-	case field == "path.gid":
+	case field == "ref.gid":
 		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return n.GetTraversals()[i].GetDoc().GetPath().GetGid() < n.GetTraversals()[j].GetDoc().GetPath().GetGid()
+			return n.GetTraversals()[i].GetDoc().GetRef().GetGid() < n.GetTraversals()[j].GetDoc().GetRef().GetGid()
 		})
-	case field == "path.gtype":
+	case field == "ref.gtype":
 		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return n.GetTraversals()[i].GetDoc().GetPath().GetGtype() < n.GetTraversals()[j].GetDoc().GetPath().GetGtype()
+			return n.GetTraversals()[i].GetDoc().GetRef().GetGtype() < n.GetTraversals()[j].GetDoc().GetRef().GetGtype()
 		})
-	case field == "metadata.version":
+	case field == "relative_ref":
 		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return n.GetTraversals()[i].GetDoc().GetMetadata().GetVersion() < n.GetTraversals()[j].GetDoc().GetMetadata().GetVersion()
-		})
-	case field == "metadata.created_at":
-		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return n.GetTraversals()[i].GetDoc().GetMetadata().GetCreatedAt().AsTime().UnixNano() < n.GetTraversals()[j].GetDoc().GetMetadata().GetCreatedAt().AsTime().UnixNano()
-		})
-	case field == "relative_path":
-		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return len(n.GetTraversals()[i].GetRelativePath().GetPaths()) < len(n.GetTraversals()[j].GetRelativePath().GetPaths())
+			return len(n.GetTraversals()[i].GetRelativeRef().GetRefs()) < len(n.GetTraversals()[j].GetRelativeRef().GetRefs())
 		})
 	case strings.Contains(field, "attributes."):
 		split := strings.Split(field, "attributes.")
@@ -354,10 +310,6 @@ func (n *Traversals) Sort(field string) {
 				}
 			})
 		}
-	default:
-		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return n.GetTraversals()[i].GetDoc().GetMetadata().GetUpdatedAt().AsTime().UnixNano() < n.GetTraversals()[j].GetDoc().GetMetadata().GetUpdatedAt().AsTime().UnixNano()
-		})
 	}
 }
 
@@ -366,25 +318,13 @@ func (e *Connections) Sort(field string) {
 		return
 	}
 	switch {
-	case field == "path.gid":
+	case field == "ref.gid":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
-			return e.GetConnections()[i].GetPath().GetGid() < e.GetConnections()[j].GetPath().GetGid()
+			return e.GetConnections()[i].GetRef().GetGid() < e.GetConnections()[j].GetRef().GetGid()
 		})
-	case field == "path.gtype":
+	case field == "ref.gtype":
 		sort.Slice(e.GetConnections(), func(i, j int) bool {
-			return e.GetConnections()[i].GetPath().GetGtype() < e.GetConnections()[j].GetPath().GetGtype()
-		})
-	case field == "metadata.version":
-		sort.Slice(e.GetConnections(), func(i, j int) bool {
-			return e.GetConnections()[i].GetMetadata().GetVersion() < e.GetConnections()[j].GetMetadata().GetVersion()
-		})
-	case field == "metadata.updated_at":
-		sort.Slice(e.GetConnections(), func(i, j int) bool {
-			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
-		})
-	case field == "metadata.created_at":
-		sort.Slice(e.GetConnections(), func(i, j int) bool {
-			return e.GetConnections()[i].GetMetadata().GetCreatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetCreatedAt().AsTime().Nanosecond()
+			return e.GetConnections()[i].GetRef().GetGtype() < e.GetConnections()[j].GetRef().GetGtype()
 		})
 	case strings.Contains(field, "attributes."):
 		split := strings.Split(field, "attributes.")
@@ -408,10 +348,6 @@ func (e *Connections) Sort(field string) {
 				}
 			})
 		}
-	default:
-		sort.Slice(e.GetConnections(), func(i, j int) bool {
-			return e.GetConnections()[i].GetMetadata().GetUpdatedAt().AsTime().Nanosecond() < e.GetConnections()[j].GetMetadata().GetUpdatedAt().AsTime().Nanosecond()
-		})
 	}
 }
 
@@ -438,12 +374,6 @@ func (d *Docs) Aggregate(aggregate string, field string) float64 {
 	var values []float64
 	d.Range(func(d *Doc) bool {
 		switch {
-		case field == "metadata.version":
-			values = append(values, float64(d.GetMetadata().GetVersion()))
-		case field == "metadata.created_at":
-			values = append(values, float64(d.GetMetadata().GetCreatedAt().GetSeconds()))
-		case field == "metadata.updated_at":
-			values = append(values, float64(d.GetMetadata().GetUpdatedAt().GetSeconds()))
 		case strings.Contains(field, "attributes."):
 			if fields := d.GetAttributes().GetFields(); fields != nil {
 				split := strings.Split(field, "attributes.")
@@ -482,12 +412,6 @@ func (c *Connections) Aggregate(aggregate string, field string) float64 {
 	var values []float64
 	c.Range(func(c *Connection) bool {
 		switch {
-		case field == "metadata.version":
-			values = append(values, float64(c.GetMetadata().GetVersion()))
-		case field == "metadata.created_at":
-			values = append(values, float64(c.GetMetadata().GetCreatedAt().GetSeconds()))
-		case field == "metadata.updated_at":
-			values = append(values, float64(c.GetMetadata().GetUpdatedAt().GetSeconds()))
 		case strings.Contains(field, "attributes."):
 			if fields := c.GetAttributes().GetFields(); fields != nil {
 				split := strings.Split(field, "attributes.")
