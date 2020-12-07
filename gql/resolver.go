@@ -133,16 +133,16 @@ func (r *Resolver) Playground() http.HandlerFunc {
 			r.redirectLogin(sess, w, req)
 			return
 		}
-		authToken, err = r.refreshToken(authToken)
-		if err != nil {
-			http.Error(w, "failed to refresh auth token", http.StatusInternalServerError)
-			return
+		rtoken, err := r.refreshToken(authToken)
+		if err == nil {
+			authToken = rtoken
+		} else {
+			if time.Unix(sess.Values["exp"].(int64), 0).Before(time.Now()) {
+				r.redirectLogin(sess, w, req)
+				return
+			}
 		}
 		if !authToken.Valid() {
-			r.redirectLogin(sess, w, req)
-			return
-		}
-		if time.Unix(sess.Values["exp"].(int64), 0).Before(time.Now()) {
 			r.redirectLogin(sess, w, req)
 			return
 		}
