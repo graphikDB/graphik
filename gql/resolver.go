@@ -91,14 +91,8 @@ func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {
 		ctx := req.Context()
 		if r.store != nil {
 			sess, _ := r.store.Get(req, r.cookieName)
-			if sess != nil && req.Header.Get("Authorization") == "" {
-				val, ok := sess.Values["token"]
-				if ok {
-					token, ok := val.(*oauth2.Token)
-					if ok && token.Expiry.After(time.Now()) {
-						req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
-					}
-				}
+			if sess != nil && req.Header.Get("Authorization") == "" && sess.Values["token"] != nil {
+				req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", sess.Values["token"].(*oauth2.Token).AccessToken))
 			}
 		}
 		for k, arr := range req.Header {
@@ -121,11 +115,6 @@ func (r *Resolver) Playground() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer func() {
-			if err := sess.Save(req, w); err != nil {
-				logger.Error("failed to save session", zap.Error(err))
-			}
-		}()
 		if sess.Values["token"] == nil {
 			r.redirectLogin(sess, w, req)
 			return
@@ -142,6 +131,11 @@ func (r *Resolver) Playground() http.HandlerFunc {
 		}
 		if authToken == nil {
 			r.redirectLogin(sess, w, req)
+			return
+		}
+		authToken, err = r.refreshToken(authToken)
+		if err != nil {
+			http.Error(w, "failed to refresh auth token", http.StatusInternalServerError)
 			return
 		}
 		if !authToken.Valid() {
@@ -209,11 +203,9 @@ func (r *Resolver) Playground() http.HandlerFunc {
 		endpoint: location.protocol + '//' + location.host,
 		subscriptionsEndpoint: wsProto + '//' + location.host,
 		shareEnabled: true,
-		headers: {
-			'Authorization': 'Bearer {{ .token }}'
-		},
 		settings: {
-			'request.credentials': 'same-origin'
+			'request.credentials': 'same-origin',
+			'prettier.useTabs': true
 		}
       })
     })</script>
@@ -222,9 +214,7 @@ func (r *Resolver) Playground() http.HandlerFunc {
 </html>
 `))
 
-		playground.Execute(w, map[string]string{
-			"token": authToken.AccessToken,
-		})
+		playground.Execute(w, map[string]string{})
 	}
 }
 
@@ -284,4 +274,8 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 		}
 		http.Redirect(w, req, playgroundRedirect, http.StatusTemporaryRedirect)
 	}
+}
+
+func (r *Resolver) refreshToken(token *oauth2.Token) (*oauth2.Token, error) {
+	return r.config.TokenSource(oauth2.NoContext, token).Token()
 }

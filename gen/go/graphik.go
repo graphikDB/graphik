@@ -118,7 +118,7 @@ func (n *Filter) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *ConnectionFilter) AsMap() map[string]interface{} {
+func (n *CFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
@@ -133,17 +133,7 @@ func (n *ConnectionFilter) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *SubGraphFilter) AsMap() map[string]interface{} {
-	if n == nil {
-		return map[string]interface{}{}
-	}
-	return map[string]interface{}{
-		"connection_filter": n.GetConnectionFilter().AsMap(),
-		"doc_filter":        n.GetDocFilter().AsMap(),
-	}
-}
-
-func (n *ChannelFilter) AsMap() map[string]interface{} {
+func (n *ChanFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
@@ -153,7 +143,7 @@ func (n *ChannelFilter) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *ExpressionFilter) AsMap() map[string]interface{} {
+func (n *ExprFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
@@ -172,7 +162,7 @@ func (p *Edit) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *EditFilter) AsMap() map[string]interface{} {
+func (n *EFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
@@ -318,7 +308,7 @@ func (n *Docs) Sort(field string) {
 	}
 }
 
-func (n *DocTraversals) Sort(field string) {
+func (n *Traversals) Sort(field string) {
 	if n == nil {
 		return
 	}

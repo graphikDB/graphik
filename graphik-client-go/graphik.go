@@ -122,7 +122,7 @@ func (c *Client) EditDoc(ctx context.Context, in *apipb.Edit, opts ...grpc.CallO
 	return c.graph.EditDoc(ctx, in, opts...)
 }
 
-func (c *Client) EditDocs(ctx context.Context, in *apipb.EditFilter, opts ...grpc.CallOption) (*apipb.Docs, error) {
+func (c *Client) EditDocs(ctx context.Context, in *apipb.EFilter, opts ...grpc.CallOption) (*apipb.Docs, error) {
 	return c.graph.EditDocs(ctx, in, opts...)
 }
 
@@ -146,15 +146,15 @@ func (c *Client) EditConnection(ctx context.Context, in *apipb.Edit, opts ...grp
 	return c.graph.EditConnection(ctx, in, opts...)
 }
 
-func (c *Client) EditConnections(ctx context.Context, in *apipb.EditFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+func (c *Client) EditConnections(ctx context.Context, in *apipb.EFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
 	return c.graph.EditConnections(ctx, in, opts...)
 }
 
-func (c *Client) ConnectionsFrom(ctx context.Context, in *apipb.ConnectionFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+func (c *Client) ConnectionsFrom(ctx context.Context, in *apipb.CFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
 	return c.graph.ConnectionsFrom(ctx, in, opts...)
 }
 
-func (c *Client) ConnectionsTo(ctx context.Context, in *apipb.ConnectionFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+func (c *Client) ConnectionsTo(ctx context.Context, in *apipb.CFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
 	return c.graph.ConnectionsTo(ctx, in, opts...)
 }
 
@@ -162,7 +162,7 @@ func (c *Client) Publish(ctx context.Context, in *apipb.OutboundMessage, opts ..
 	return c.graph.Publish(ctx, in, opts...)
 }
 
-func (c *Client) Subscribe(ctx context.Context, in *apipb.ChannelFilter, handler func(msg *apipb.Message) bool, opts ...grpc.CallOption) error {
+func (c *Client) Subscribe(ctx context.Context, in *apipb.ChanFilter, handler func(msg *apipb.Message) bool, opts ...grpc.CallOption) error {
 	stream, err := c.graph.Subscribe(ctx, in, opts...)
 	if err != nil {
 		return err
@@ -183,7 +183,7 @@ func (c *Client) Subscribe(ctx context.Context, in *apipb.ChannelFilter, handler
 	}
 }
 
-func (c *Client) SubscribeChanges(ctx context.Context, in *apipb.ExpressionFilter, handler func(change *apipb.Change) bool, opts ...grpc.CallOption) error {
+func (c *Client) SubscribeChanges(ctx context.Context, in *apipb.ExprFilter, handler func(change *apipb.Change) bool, opts ...grpc.CallOption) error {
 	stream, err := c.graph.SubscribeChanges(ctx, in, opts...)
 	if err != nil {
 		return err
@@ -236,10 +236,6 @@ func (c *Client) PushConnectionConstructors(ctx context.Context, ch <-chan *apip
 			}
 		}
 	}
-}
-
-func (c *Client) SubGraph(ctx context.Context, in *apipb.SubGraphFilter) (*apipb.Graph, error) {
-	return c.graph.SubGraph(ctx, in)
 }
 
 func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {

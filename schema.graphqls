@@ -1,7 +1,13 @@
 scalar Time
 scalar Map
-scalar Empty
 scalar Any
+scalar Empty
+
+enum Direction {
+  NONE
+  FROM
+  TO
+}
 
 # Pong returns PONG if the server is healthy
 type Pong {
@@ -51,13 +57,14 @@ type Paths {
   paths: [Path!]
 }
 
-type DocTraversal {
+type Traversal {
   doc: Doc!
   relative_path: Paths!
+  direction: Direction!
 }
 
-type DocTraversals {
-  traversals: [DocTraversal]!
+type Traversals {
+  traversals: [Traversal]!
 }
 
 type TypeValidator {
@@ -205,13 +212,13 @@ input Filter {
 }
 
 
-input AggregateFilter {
+input AggFilter {
   filter: Filter!
   aggregate: String!
   field: String!
 }
 
-input DepthFilter {
+input TFilter {
   # gtype is the doc/connection type to be filtered
   root: PathInput!
   # expression is a CEL expression used to filter connections/nodes
@@ -223,8 +230,8 @@ input DepthFilter {
   sort: String
 }
 
-# ConnectionFilter is used to fetch connections related to a single noted
-input ConnectionFilter {
+# CFilter is used to fetch connections related to a single noted
+input CFilter {
   # doc_path is the path to the target doc
   doc_path: PathInput!
   # gtype is the type of connections to return
@@ -241,8 +248,8 @@ input ConnectionFilter {
   reverse: Boolean
 }
 
-# ChannelFilter is used to filter messages in a pubsub channel
-input ChannelFilter {
+# ChanFilter is used to filter messages in a pubsub channel
+input ChanFilter {
   # channel is the target channel to listen on
   channel: String!
   # expression is a CEL expression used to filter messages
@@ -257,8 +264,8 @@ input Edit {
   attributes: Map!
 }
 
-# EditFilter is used to edit docs/connections
-input EditFilter {
+# EFilter is used to edit/patch docs/connections
+input EFilter {
   # filter is used to filter docs/connections to edit
   filter: Filter!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
@@ -273,7 +280,7 @@ input OutboundMessage {
   data: Map!
 }
 
-input ExpressionFilter {
+input ExprFilter {
   # expression is a CEL expression used to filter messages/docs/connections
   expression: String
 }
@@ -319,13 +326,13 @@ type Mutation {
   # editDoc edites a single doc in the graph
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
-  editDocs(input: EditFilter!): Docs!
+  editDocs(input: EFilter!): Docs!
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
-  editConnections(input: EditFilter!): Connections!
+  editConnections(input: EFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty
   setIndexes(input: IndexesInput!): Empty
@@ -344,23 +351,23 @@ type Query {
   getDoc(input: PathInput!): Doc!
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
-  # depthSearchDocs searches for 0-many docs using dfs search
-  depthSearchDocs(input: DepthFilter!): DocTraversals!
+  # traverse searches for 0-many docs using dfs search
+  traverse(input: TFilter!): Traversals!
   # getConnection gets a connection at the given path
   getConnection(input: PathInput!): Connection!
   # searchConnections searches for 0-many connections
-  searchConnections(input: Filter!): Connections!
+  searchConnections(input: Filter!): Connections
   # connectionsFrom returns connections from the given doc that pass the filter
-  connectionsFrom(input: ConnectionFilter!): Connections!
+  connectionsFrom(input: CFilter!): Connections!
   # connectionsTo returns connections to the given doc that pass the filter
-  connectionsTo(input: ConnectionFilter!): Connections!
-  aggregateDocs(input: AggregateFilter!): Any!
-  aggregateConnections(input: AggregateFilter!): Any!
+  connectionsTo(input: CFilter!): Connections!
+  aggregateDocs(input: AggFilter!): Any!
+  aggregateConnections(input: AggFilter!): Any!
 }
 
 type Subscription {
   # subscribe subscribes to a pubsub channel
-  subscribe(input: ChannelFilter!): Message!
+  subscribe(input: ChanFilter!): Message!
   # subscribeChanges subscribes to state changes in the graph
-  subscribeChanges(input: ExpressionFilter!): Change!
+  subscribeChanges(input: ExprFilter!): Change!
 }

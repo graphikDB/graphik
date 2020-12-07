@@ -29,12 +29,12 @@ service DatabaseService {
   rpc GetDoc(Path) returns(Doc){}
   // SearchDocs searches the graph for docs
   rpc SearchDocs(Filter) returns(Docs){}
-  // DepthSearchDocs searches the graph for docs
-  rpc DepthSearchDocs(DepthFilter) returns(DocTraversals){}
+  // Traverse executes a depth first search of the graph for docs
+  rpc Traverse(TFilter) returns(Traversals){}
   // EditDoc patches a docs attributes
   rpc EditDoc(Edit) returns(Doc){}
   // EditDocs patches a batch of docs attributes that pass the patch filter
-  rpc EditDocs(EditFilter) returns(Docs){}
+  rpc EditDocs(EFilter) returns(Docs){}
   // DelDoc deletes a doc & all of it's connected connections
   rpc DelDoc(Path) returns(google.protobuf.Empty){}
   // DelDocs deletes a batch of docs that pass the filter
@@ -50,26 +50,30 @@ service DatabaseService {
   // EditConnection patches an connections attributes
   rpc EditConnection(Edit) returns(Connection){}
   // EditConnections patches a batch of connections attributes that pass the patch filter
-  rpc EditConnections(EditFilter) returns(Connections){}
+  rpc EditConnections(EFilter) returns(Connections){}
   // DelConnection deletes an connection from the graph
   rpc DelConnection(Path) returns(google.protobuf.Empty){}
   // DelConnections deletes a batch of connections that pass the filter
   rpc DelConnections(Filter) returns(google.protobuf.Empty){}
   // ConnectionsFrom returns connections that source from the given doc path that pass the filter
-  rpc ConnectionsFrom(ConnectionFilter) returns(Connections){}
+  rpc ConnectionsFrom(CFilter) returns(Connections){}
   // ConnectionsTo returns connections that point to the given doc path that pass the filter
-  rpc ConnectionsTo(ConnectionFilter) returns(Connections){}
-  rpc AggregateDocs(AggregateFilter) returns(google.protobuf.Value){}
-  rpc AggregateConnections(AggregateFilter) returns(google.protobuf.Value){}
+  rpc ConnectionsTo(CFilter) returns(Connections){}
+  rpc AggregateDocs(AggFilter) returns(google.protobuf.Value){}
+  rpc AggregateConnections(AggFilter) returns(google.protobuf.Value){}
   // Publish publishes a message to a pubsub channel
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
-  rpc Subscribe(ChannelFilter) returns(stream Message){}
-  rpc SubscribeChanges(ExpressionFilter) returns(stream Change){}
+  rpc Subscribe(ChanFilter) returns(stream Message){}
+  rpc SubscribeChanges(ExprFilter) returns(stream Change){}
   rpc PushDocConstructors(stream DocConstructor) returns (stream Doc){}
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
-  // SubGraph returns a subgraph using the given filter
-  rpc SubGraph(SubGraphFilter) returns(Graph){}
+}
+
+enum Direction {
+  None = 0;
+  From = 1;
+  To = 2;
 }
 
 // Path describes a doc/connection type & id
@@ -138,13 +142,14 @@ message Docs {
   string seek_next =2;
 }
 
-message DocTraversal {
+message Traversal {
   Doc doc =1;
   Paths relative_path =2;
+  Direction direction =3;
 }
 
-message DocTraversals {
-  repeated DocTraversal traversals =1;
+message Traversals {
+  repeated Traversal traversals =1;
 }
 
 // Connection is a graph primitive that represents a relationship between two docs
@@ -188,8 +193,8 @@ message Connections {
   string seek_next =2;
 }
 
-// ConnectionFilter is used to fetch connections related to a single noted
-message ConnectionFilter {
+// CFilter is used to fetch connections related to a single noted
+message CFilter {
   // doc_path is the path to the target doc. (validator.field) = {msg_exists : true}]
   Path doc_path =1 [(validator.field) = {msg_exists : true}];
   // gtype is the type of connections to return. (validator.field) = {regex : "^.{1,225}$"}
@@ -224,13 +229,13 @@ message Filter {
   string index =7;
 }
 
-message AggregateFilter {
+message AggFilter {
   Filter filter =1[(validator.field) = {msg_exists : true}];
   string aggregate =2[(validator.field) = {regex : "((^|, )(sum|count|max|min|avg|prod))+$"}];
   string field =3[(validator.field) = {regex : "((^|, )(metadata.created_at|metadata.updated_at|metadata.version|^attributes.(.*)))+$"}];
 }
 
-message DepthFilter {
+message TFilter {
   Path root =1 [(validator.field) = {msg_exists : true}];
   string doc_expression =2;
   string connection_expression =3;
@@ -290,20 +295,12 @@ message Indexes {
   repeated Index indexes =1;
 }
 
-// ChannelFilter is used to filter messages in a pubsub channel
-message ChannelFilter {
+// ChanFilter is used to filter messages in a pubsub channel
+message ChanFilter {
   // channel is the target channel to filter from
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is CEL expression used to filter messages
   string expression =2;
-}
-
-// SubGraphFilter is used to filter docs/connections in the graph
-message SubGraphFilter {
-  // doc_filter is a filter used to filter docs in the graph
-  Filter doc_filter =1 [(validator.field) = {msg_exists : true}];
-  // connection_filter is a filter used to filter the connections of each doc returned by the doc_filter
-  Filter connection_filter =2 [(validator.field) = {msg_exists : true}];
 }
 
 // Graph is an array of docs and connections
@@ -344,8 +341,8 @@ message Edit {
   google.protobuf.Struct attributes =2;
 }
 
-// EditFilter is used to patch docs/connections
-message EditFilter {
+// EFilter is used to patch/edit docs/connections
+message EFilter {
   // filter is used to filter docs/connections to patch
   Filter filter =1;
   // attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter
@@ -401,7 +398,7 @@ message Change {
   Paths paths_affected =4;
 }
 
-message ExpressionFilter {
+message ExprFilter {
   // expression is a CEL expression used to filter connections/nodes
   string expression =1;
 }

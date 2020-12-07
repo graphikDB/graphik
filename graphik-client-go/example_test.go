@@ -228,7 +228,7 @@ func ExampleClient_Publish() {
 func ExampleClient_Subscribe() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
-		err := client.Subscribe(context.Background(), &apipb.ChannelFilter{
+		err := client.Subscribe(context.Background(), &apipb.ChanFilter{
 			Channel:    "testing",
 			Expression: `message.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {

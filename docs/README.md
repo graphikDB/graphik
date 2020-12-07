@@ -4,26 +4,23 @@
 ## Table of Contents
 
 - [graphik.proto](#graphik.proto)
-    - [AggregateFilter](#api.AggregateFilter)
+    - [AggFilter](#api.AggFilter)
     - [Authorizer](#api.Authorizer)
     - [Authorizers](#api.Authorizers)
+    - [CFilter](#api.CFilter)
+    - [ChanFilter](#api.ChanFilter)
     - [Change](#api.Change)
-    - [ChannelFilter](#api.ChannelFilter)
     - [Connection](#api.Connection)
     - [ConnectionConstructor](#api.ConnectionConstructor)
     - [ConnectionConstructors](#api.ConnectionConstructors)
-    - [ConnectionFilter](#api.ConnectionFilter)
     - [Connections](#api.Connections)
-    - [DepthFilter](#api.DepthFilter)
     - [Doc](#api.Doc)
     - [DocConstructor](#api.DocConstructor)
     - [DocConstructors](#api.DocConstructors)
-    - [DocTraversal](#api.DocTraversal)
-    - [DocTraversals](#api.DocTraversals)
     - [Docs](#api.Docs)
+    - [EFilter](#api.EFilter)
     - [Edit](#api.Edit)
-    - [EditFilter](#api.EditFilter)
-    - [ExpressionFilter](#api.ExpressionFilter)
+    - [ExprFilter](#api.ExprFilter)
     - [Filter](#api.Filter)
     - [Flags](#api.Flags)
     - [Graph](#api.Graph)
@@ -39,9 +36,13 @@
     - [Pong](#api.Pong)
     - [Request](#api.Request)
     - [Schema](#api.Schema)
-    - [SubGraphFilter](#api.SubGraphFilter)
+    - [TFilter](#api.TFilter)
+    - [Traversal](#api.Traversal)
+    - [Traversals](#api.Traversals)
     - [TypeValidator](#api.TypeValidator)
     - [TypeValidators](#api.TypeValidators)
+  
+    - [Direction](#api.Direction)
   
     - [DatabaseService](#api.DatabaseService)
   
@@ -56,9 +57,9 @@
 
 
 
-<a name="api.AggregateFilter"></a>
+<a name="api.AggFilter"></a>
 
-### AggregateFilter
+### AggFilter
 
 
 
@@ -104,6 +105,43 @@
 
 
 
+<a name="api.CFilter"></a>
+
+### CFilter
+CFilter is used to fetch connections related to a single noted
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| doc_path | [Path](#api.Path) |  | doc_path is the path to the target doc. (validator.field) = {msg_exists : true}] |
+| gtype | [string](#string) |  | gtype is the type of connections to return. (validator.field) = {regex : &#34;^.{1,225}$&#34;} |
+| expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
+| limit | [int32](#int32) |  | limit is the maximum number of items to return. (validator.field) = {int_gt : 0} |
+| sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))&#43;$&#34;} |
+| seek | [string](#string) |  | seek to a specific key for pagination |
+| reverse | [bool](#bool) |  | reverse the results |
+
+
+
+
+
+
+<a name="api.ChanFilter"></a>
+
+### ChanFilter
+ChanFilter is used to filter messages in a pubsub channel
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| channel | [string](#string) |  | channel is the target channel to filter from |
+| expression | [string](#string) |  | expression is CEL expression used to filter messages |
+
+
+
+
+
+
 <a name="api.Change"></a>
 
 ### Change
@@ -116,22 +154,6 @@ Change represents a set of state changes in the graph
 | identity | [Doc](#api.Doc) |  | identity is the identity invoking the change |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is when the change was made |
 | paths_affected | [Paths](#api.Paths) |  | paths_affected are paths to docs/connections that have been affected by the change |
-
-
-
-
-
-
-<a name="api.ChannelFilter"></a>
-
-### ChannelFilter
-ChannelFilter is used to filter messages in a pubsub channel
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| channel | [string](#string) |  | channel is the target channel to filter from |
-| expression | [string](#string) |  | expression is CEL expression used to filter messages |
 
 
 
@@ -192,27 +214,6 @@ ConnectionConstructors is an array of ConnectionConstructor
 
 
 
-<a name="api.ConnectionFilter"></a>
-
-### ConnectionFilter
-ConnectionFilter is used to fetch connections related to a single noted
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| doc_path | [Path](#api.Path) |  | doc_path is the path to the target doc. (validator.field) = {msg_exists : true}] |
-| gtype | [string](#string) |  | gtype is the type of connections to return. (validator.field) = {regex : &#34;^.{1,225}$&#34;} |
-| expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
-| limit | [int32](#int32) |  | limit is the maximum number of items to return. (validator.field) = {int_gt : 0} |
-| sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))&#43;$&#34;} |
-| seek | [string](#string) |  | seek to a specific key for pagination |
-| reverse | [bool](#bool) |  | reverse the results |
-
-
-
-
-
-
 <a name="api.Connections"></a>
 
 ### Connections
@@ -223,25 +224,6 @@ Connections is an array of Connection
 | ----- | ---- | ----- | ----------- |
 | connections | [Connection](#api.Connection) | repeated |  |
 | seek_next | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="api.DepthFilter"></a>
-
-### DepthFilter
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| root | [Path](#api.Path) |  |  |
-| doc_expression | [string](#string) |  |  |
-| connection_expression | [string](#string) |  |  |
-| limit | [int32](#int32) |  |  |
-| sort | [string](#string) |  | custom sorting of the results. |
 
 
 
@@ -296,37 +278,6 @@ DocConstructor is used to create a batch of docs
 
 
 
-<a name="api.DocTraversal"></a>
-
-### DocTraversal
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| doc | [Doc](#api.Doc) |  |  |
-| relative_path | [Paths](#api.Paths) |  |  |
-
-
-
-
-
-
-<a name="api.DocTraversals"></a>
-
-### DocTraversals
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| traversals | [DocTraversal](#api.DocTraversal) | repeated |  |
-
-
-
-
-
-
 <a name="api.Docs"></a>
 
 ### Docs
@@ -337,6 +288,22 @@ Docs is an array of docs
 | ----- | ---- | ----- | ----------- |
 | docs | [Doc](#api.Doc) | repeated | docs is an array of docs |
 | seek_next | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="api.EFilter"></a>
+
+### EFilter
+EFilter is used to patch/edit docs/connections
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [Filter](#api.Filter) |  | filter is used to filter docs/connections to patch |
+| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter |
 
 
 
@@ -359,25 +326,9 @@ Edit patches the attributes of a Doc or Connection
 
 
 
-<a name="api.EditFilter"></a>
+<a name="api.ExprFilter"></a>
 
-### EditFilter
-EditFilter is used to patch docs/connections
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| filter | [Filter](#api.Filter) |  | filter is used to filter docs/connections to patch |
-| attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter |
-
-
-
-
-
-
-<a name="api.ExpressionFilter"></a>
-
-### ExpressionFilter
+### ExprFilter
 
 
 
@@ -658,16 +609,51 @@ Schema returns registered connection &amp; doc types
 
 
 
-<a name="api.SubGraphFilter"></a>
+<a name="api.TFilter"></a>
 
-### SubGraphFilter
-SubGraphFilter is used to filter docs/connections in the graph
+### TFilter
+
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| doc_filter | [Filter](#api.Filter) |  | doc_filter is a filter used to filter docs in the graph |
-| connection_filter | [Filter](#api.Filter) |  | connection_filter is a filter used to filter the connections of each doc returned by the doc_filter |
+| root | [Path](#api.Path) |  |  |
+| doc_expression | [string](#string) |  |  |
+| connection_expression | [string](#string) |  |  |
+| limit | [int32](#int32) |  |  |
+| sort | [string](#string) |  | custom sorting of the results. |
+
+
+
+
+
+
+<a name="api.Traversal"></a>
+
+### Traversal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| doc | [Doc](#api.Doc) |  |  |
+| relative_path | [Paths](#api.Paths) |  |  |
+| direction | [Direction](#api.Direction) |  |  |
+
+
+
+
+
+
+<a name="api.Traversals"></a>
+
+### Traversals
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| traversals | [Traversal](#api.Traversal) | repeated |  |
 
 
 
@@ -709,6 +695,19 @@ SubGraphFilter is used to filter docs/connections in the graph
 
  
 
+
+<a name="api.Direction"></a>
+
+### Direction
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| None | 0 |  |
+| From | 1 |  |
+| To | 2 |  |
+
+
  
 
  
@@ -731,9 +730,9 @@ DatabaseService is the primary database service
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |
 | GetDoc | [Path](#api.Path) | [Doc](#api.Doc) | GetDoc gets a single doc in the graph |
 | SearchDocs | [Filter](#api.Filter) | [Docs](#api.Docs) | SearchDocs searches the graph for docs |
-| DepthSearchDocs | [DepthFilter](#api.DepthFilter) | [DocTraversals](#api.DocTraversals) | DepthSearchDocs searches the graph for docs |
+| Traverse | [TFilter](#api.TFilter) | [Traversals](#api.Traversals) | Traverse executes a depth first search of the graph for docs |
 | EditDoc | [Edit](#api.Edit) | [Doc](#api.Doc) | EditDoc patches a docs attributes |
-| EditDocs | [EditFilter](#api.EditFilter) | [Docs](#api.Docs) | EditDocs patches a batch of docs attributes that pass the patch filter |
+| EditDocs | [EFilter](#api.EFilter) | [Docs](#api.Docs) | EditDocs patches a batch of docs attributes that pass the patch filter |
 | DelDoc | [Path](#api.Path) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDoc deletes a doc &amp; all of it&#39;s connected connections |
 | DelDocs | [Filter](#api.Filter) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDocs deletes a batch of docs that pass the filter |
 | CreateConnection | [ConnectionConstructor](#api.ConnectionConstructor) | [Connection](#api.Connection) | CreateConnection creates an connection in the graph |
@@ -741,19 +740,18 @@ DatabaseService is the primary database service
 | GetConnection | [Path](#api.Path) | [Connection](#api.Connection) | GetConnection gets a single connection in the graph |
 | SearchConnections | [Filter](#api.Filter) | [Connections](#api.Connections) | SearchConnections searches the graph for connections |
 | EditConnection | [Edit](#api.Edit) | [Connection](#api.Connection) | EditConnection patches an connections attributes |
-| EditConnections | [EditFilter](#api.EditFilter) | [Connections](#api.Connections) | EditConnections patches a batch of connections attributes that pass the patch filter |
+| EditConnections | [EFilter](#api.EFilter) | [Connections](#api.Connections) | EditConnections patches a batch of connections attributes that pass the patch filter |
 | DelConnection | [Path](#api.Path) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelConnection deletes an connection from the graph |
 | DelConnections | [Filter](#api.Filter) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelConnections deletes a batch of connections that pass the filter |
-| ConnectionsFrom | [ConnectionFilter](#api.ConnectionFilter) | [Connections](#api.Connections) | ConnectionsFrom returns connections that source from the given doc path that pass the filter |
-| ConnectionsTo | [ConnectionFilter](#api.ConnectionFilter) | [Connections](#api.Connections) | ConnectionsTo returns connections that point to the given doc path that pass the filter |
-| AggregateDocs | [AggregateFilter](#api.AggregateFilter) | [.google.protobuf.Value](#google.protobuf.Value) |  |
-| AggregateConnections | [AggregateFilter](#api.AggregateFilter) | [.google.protobuf.Value](#google.protobuf.Value) |  |
+| ConnectionsFrom | [CFilter](#api.CFilter) | [Connections](#api.Connections) | ConnectionsFrom returns connections that source from the given doc path that pass the filter |
+| ConnectionsTo | [CFilter](#api.CFilter) | [Connections](#api.Connections) | ConnectionsTo returns connections that point to the given doc path that pass the filter |
+| AggregateDocs | [AggFilter](#api.AggFilter) | [.google.protobuf.Value](#google.protobuf.Value) |  |
+| AggregateConnections | [AggFilter](#api.AggFilter) | [.google.protobuf.Value](#google.protobuf.Value) |  |
 | Publish | [OutboundMessage](#api.OutboundMessage) | [.google.protobuf.Empty](#google.protobuf.Empty) | Publish publishes a message to a pubsub channel |
-| Subscribe | [ChannelFilter](#api.ChannelFilter) | [Message](#api.Message) stream | Subscribe subscribes to messages on a pubsub channel |
-| SubscribeChanges | [ExpressionFilter](#api.ExpressionFilter) | [Change](#api.Change) stream |  |
+| Subscribe | [ChanFilter](#api.ChanFilter) | [Message](#api.Message) stream | Subscribe subscribes to messages on a pubsub channel |
+| SubscribeChanges | [ExprFilter](#api.ExprFilter) | [Change](#api.Change) stream |  |
 | PushDocConstructors | [DocConstructor](#api.DocConstructor) stream | [Doc](#api.Doc) stream |  |
 | PushConnectionConstructors | [ConnectionConstructor](#api.ConnectionConstructor) stream | [Connection](#api.Connection) stream |  |
-| SubGraph | [SubGraphFilter](#api.SubGraphFilter) | [Graph](#api.Graph) | SubGraph returns a subgraph using the given filter |
 
  
 

@@ -147,7 +147,7 @@ func (this *Docs) Validate() error {
 	}
 	return nil
 }
-func (this *DocTraversal) Validate() error {
+func (this *Traversal) Validate() error {
 	if this.Doc != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Doc); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Doc", err)
@@ -160,7 +160,7 @@ func (this *DocTraversal) Validate() error {
 	}
 	return nil
 }
-func (this *DocTraversals) Validate() error {
+func (this *Traversals) Validate() error {
 	for _, item := range this.Traversals {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
@@ -263,10 +263,10 @@ func (this *Connections) Validate() error {
 	return nil
 }
 
-var _regex_ConnectionFilter_Gtype = regexp.MustCompile(`^.{1,225}$`)
-var _regex_ConnectionFilter_Sort = regexp.MustCompile(`((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$`)
+var _regex_CFilter_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_CFilter_Sort = regexp.MustCompile(`((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$`)
 
-func (this *ConnectionFilter) Validate() error {
+func (this *CFilter) Validate() error {
 	if nil == this.DocPath {
 		return github_com_mwitkow_go_proto_validators.FieldError("DocPath", fmt.Errorf("message must exist"))
 	}
@@ -275,13 +275,13 @@ func (this *ConnectionFilter) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DocPath", err)
 		}
 	}
-	if !_regex_ConnectionFilter_Gtype.MatchString(this.Gtype) {
+	if !_regex_CFilter_Gtype.MatchString(this.Gtype) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
 	}
 	if !(this.Limit > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
 	}
-	if !_regex_ConnectionFilter_Sort.MatchString(this.Sort) {
+	if !_regex_CFilter_Sort.MatchString(this.Sort) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"`, this.Sort))
 	}
 	return nil
@@ -303,10 +303,10 @@ func (this *Filter) Validate() error {
 	return nil
 }
 
-var _regex_AggregateFilter_Aggregate = regexp.MustCompile(`((^|, )(sum|count|max|min|avg|prod))+$`)
-var _regex_AggregateFilter_Field = regexp.MustCompile(`((^|, )(metadata.created_at|metadata.updated_at|metadata.version|^attributes.(.*)))+$`)
+var _regex_AggFilter_Aggregate = regexp.MustCompile(`((^|, )(sum|count|max|min|avg|prod))+$`)
+var _regex_AggFilter_Field = regexp.MustCompile(`((^|, )(metadata.created_at|metadata.updated_at|metadata.version|^attributes.(.*)))+$`)
 
-func (this *AggregateFilter) Validate() error {
+func (this *AggFilter) Validate() error {
 	if nil == this.Filter {
 		return github_com_mwitkow_go_proto_validators.FieldError("Filter", fmt.Errorf("message must exist"))
 	}
@@ -315,18 +315,18 @@ func (this *AggregateFilter) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
 		}
 	}
-	if !_regex_AggregateFilter_Aggregate.MatchString(this.Aggregate) {
+	if !_regex_AggFilter_Aggregate.MatchString(this.Aggregate) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Aggregate", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(sum|count|max|min|avg|prod))+$"`, this.Aggregate))
 	}
-	if !_regex_AggregateFilter_Field.MatchString(this.Field) {
+	if !_regex_AggFilter_Field.MatchString(this.Field) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Field", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(metadata.created_at|metadata.updated_at|metadata.version|^attributes.(.*)))+$"`, this.Field))
 	}
 	return nil
 }
 
-var _regex_DepthFilter_Sort = regexp.MustCompile(`((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$`)
+var _regex_TFilter_Sort = regexp.MustCompile(`((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$`)
 
-func (this *DepthFilter) Validate() error {
+func (this *TFilter) Validate() error {
 	if nil == this.Root {
 		return github_com_mwitkow_go_proto_validators.FieldError("Root", fmt.Errorf("message must exist"))
 	}
@@ -338,7 +338,7 @@ func (this *DepthFilter) Validate() error {
 	if !(this.Limit > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
 	}
-	if !_regex_DepthFilter_Sort.MatchString(this.Sort) {
+	if !_regex_TFilter_Sort.MatchString(this.Sort) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))+$"`, this.Sort))
 	}
 	return nil
@@ -438,30 +438,11 @@ func (this *Indexes) Validate() error {
 	return nil
 }
 
-var _regex_ChannelFilter_Channel = regexp.MustCompile(`^.{1,225}$`)
+var _regex_ChanFilter_Channel = regexp.MustCompile(`^.{1,225}$`)
 
-func (this *ChannelFilter) Validate() error {
-	if !_regex_ChannelFilter_Channel.MatchString(this.Channel) {
+func (this *ChanFilter) Validate() error {
+	if !_regex_ChanFilter_Channel.MatchString(this.Channel) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Channel", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Channel))
-	}
-	return nil
-}
-func (this *SubGraphFilter) Validate() error {
-	if nil == this.DocFilter {
-		return github_com_mwitkow_go_proto_validators.FieldError("DocFilter", fmt.Errorf("message must exist"))
-	}
-	if this.DocFilter != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.DocFilter); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("DocFilter", err)
-		}
-	}
-	if nil == this.ConnectionFilter {
-		return github_com_mwitkow_go_proto_validators.FieldError("ConnectionFilter", fmt.Errorf("message must exist"))
-	}
-	if this.ConnectionFilter != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.ConnectionFilter); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("ConnectionFilter", err)
-		}
 	}
 	return nil
 }
@@ -497,7 +478,7 @@ func (this *Edit) Validate() error {
 	}
 	return nil
 }
-func (this *EditFilter) Validate() error {
+func (this *EFilter) Validate() error {
 	if this.Filter != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
@@ -611,7 +592,7 @@ func (this *Change) Validate() error {
 	}
 	return nil
 }
-func (this *ExpressionFilter) Validate() error {
+func (this *ExprFilter) Validate() error {
 	return nil
 }
 

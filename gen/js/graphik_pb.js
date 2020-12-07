@@ -16,26 +16,24 @@ var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/time
 var google_protobuf_any_pb = require('google-protobuf/google/protobuf/any_pb.js');
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 var github_com_mwitkow_go$proto$validators_validator_pb = require('./github.com/mwitkow/go-proto-validators/validator_pb.js');
-goog.exportSymbol('proto.api.AggregateFilter', null, global);
+goog.exportSymbol('proto.api.AggFilter', null, global);
 goog.exportSymbol('proto.api.Authorizer', null, global);
 goog.exportSymbol('proto.api.Authorizers', null, global);
+goog.exportSymbol('proto.api.CFilter', null, global);
+goog.exportSymbol('proto.api.ChanFilter', null, global);
 goog.exportSymbol('proto.api.Change', null, global);
-goog.exportSymbol('proto.api.ChannelFilter', null, global);
 goog.exportSymbol('proto.api.Connection', null, global);
 goog.exportSymbol('proto.api.ConnectionConstructor', null, global);
 goog.exportSymbol('proto.api.ConnectionConstructors', null, global);
-goog.exportSymbol('proto.api.ConnectionFilter', null, global);
 goog.exportSymbol('proto.api.Connections', null, global);
-goog.exportSymbol('proto.api.DepthFilter', null, global);
+goog.exportSymbol('proto.api.Direction', null, global);
 goog.exportSymbol('proto.api.Doc', null, global);
 goog.exportSymbol('proto.api.DocConstructor', null, global);
 goog.exportSymbol('proto.api.DocConstructors', null, global);
-goog.exportSymbol('proto.api.DocTraversal', null, global);
-goog.exportSymbol('proto.api.DocTraversals', null, global);
 goog.exportSymbol('proto.api.Docs', null, global);
+goog.exportSymbol('proto.api.EFilter', null, global);
 goog.exportSymbol('proto.api.Edit', null, global);
-goog.exportSymbol('proto.api.EditFilter', null, global);
-goog.exportSymbol('proto.api.ExpressionFilter', null, global);
+goog.exportSymbol('proto.api.ExprFilter', null, global);
 goog.exportSymbol('proto.api.Filter', null, global);
 goog.exportSymbol('proto.api.Flags', null, global);
 goog.exportSymbol('proto.api.Graph', null, global);
@@ -51,7 +49,9 @@ goog.exportSymbol('proto.api.Paths', null, global);
 goog.exportSymbol('proto.api.Pong', null, global);
 goog.exportSymbol('proto.api.Request', null, global);
 goog.exportSymbol('proto.api.Schema', null, global);
-goog.exportSymbol('proto.api.SubGraphFilter', null, global);
+goog.exportSymbol('proto.api.TFilter', null, global);
+goog.exportSymbol('proto.api.Traversal', null, global);
+goog.exportSymbol('proto.api.Traversals', null, global);
 goog.exportSymbol('proto.api.TypeValidator', null, global);
 goog.exportSymbol('proto.api.TypeValidators', null, global);
 
@@ -1702,12 +1702,12 @@ proto.api.Docs.prototype.setSeekNext = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.DocTraversal = function(opt_data) {
+proto.api.Traversal = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.DocTraversal, jspb.Message);
+goog.inherits(proto.api.Traversal, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.DocTraversal.displayName = 'proto.api.DocTraversal';
+  proto.api.Traversal.displayName = 'proto.api.Traversal';
 }
 
 
@@ -1722,8 +1722,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.DocTraversal.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.DocTraversal.toObject(opt_includeInstance, this);
+proto.api.Traversal.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.Traversal.toObject(opt_includeInstance, this);
 };
 
 
@@ -1732,14 +1732,15 @@ proto.api.DocTraversal.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.DocTraversal} msg The msg instance to transform.
+ * @param {!proto.api.Traversal} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.DocTraversal.toObject = function(includeInstance, msg) {
+proto.api.Traversal.toObject = function(includeInstance, msg) {
   var f, obj = {
     doc: (f = msg.getDoc()) && proto.api.Doc.toObject(includeInstance, f),
-    relativePath: (f = msg.getRelativePath()) && proto.api.Paths.toObject(includeInstance, f)
+    relativePath: (f = msg.getRelativePath()) && proto.api.Paths.toObject(includeInstance, f),
+    direction: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -1753,23 +1754,23 @@ proto.api.DocTraversal.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.DocTraversal}
+ * @return {!proto.api.Traversal}
  */
-proto.api.DocTraversal.deserializeBinary = function(bytes) {
+proto.api.Traversal.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.DocTraversal;
-  return proto.api.DocTraversal.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.Traversal;
+  return proto.api.Traversal.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.DocTraversal} msg The message object to deserialize into.
+ * @param {!proto.api.Traversal} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.DocTraversal}
+ * @return {!proto.api.Traversal}
  */
-proto.api.DocTraversal.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.Traversal.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1786,6 +1787,10 @@ proto.api.DocTraversal.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.api.Paths.deserializeBinaryFromReader);
       msg.setRelativePath(value);
       break;
+    case 3:
+      var value = /** @type {!proto.api.Direction} */ (reader.readEnum());
+      msg.setDirection(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1799,9 +1804,9 @@ proto.api.DocTraversal.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.DocTraversal.prototype.serializeBinary = function() {
+proto.api.Traversal.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.DocTraversal.serializeBinaryToWriter(this, writer);
+  proto.api.Traversal.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1809,11 +1814,11 @@ proto.api.DocTraversal.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.DocTraversal} message
+ * @param {!proto.api.Traversal} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.DocTraversal.serializeBinaryToWriter = function(message, writer) {
+proto.api.Traversal.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getDoc();
   if (f != null) {
@@ -1831,6 +1836,13 @@ proto.api.DocTraversal.serializeBinaryToWriter = function(message, writer) {
       proto.api.Paths.serializeBinaryToWriter
     );
   }
+  f = message.getDirection();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -1838,19 +1850,19 @@ proto.api.DocTraversal.serializeBinaryToWriter = function(message, writer) {
  * optional Doc doc = 1;
  * @return {?proto.api.Doc}
  */
-proto.api.DocTraversal.prototype.getDoc = function() {
+proto.api.Traversal.prototype.getDoc = function() {
   return /** @type{?proto.api.Doc} */ (
     jspb.Message.getWrapperField(this, proto.api.Doc, 1));
 };
 
 
 /** @param {?proto.api.Doc|undefined} value */
-proto.api.DocTraversal.prototype.setDoc = function(value) {
+proto.api.Traversal.prototype.setDoc = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.api.DocTraversal.prototype.clearDoc = function() {
+proto.api.Traversal.prototype.clearDoc = function() {
   this.setDoc(undefined);
 };
 
@@ -1859,7 +1871,7 @@ proto.api.DocTraversal.prototype.clearDoc = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.DocTraversal.prototype.hasDoc = function() {
+proto.api.Traversal.prototype.hasDoc = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -1868,19 +1880,19 @@ proto.api.DocTraversal.prototype.hasDoc = function() {
  * optional Paths relative_path = 2;
  * @return {?proto.api.Paths}
  */
-proto.api.DocTraversal.prototype.getRelativePath = function() {
+proto.api.Traversal.prototype.getRelativePath = function() {
   return /** @type{?proto.api.Paths} */ (
     jspb.Message.getWrapperField(this, proto.api.Paths, 2));
 };
 
 
 /** @param {?proto.api.Paths|undefined} value */
-proto.api.DocTraversal.prototype.setRelativePath = function(value) {
+proto.api.Traversal.prototype.setRelativePath = function(value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
 
-proto.api.DocTraversal.prototype.clearRelativePath = function() {
+proto.api.Traversal.prototype.clearRelativePath = function() {
   this.setRelativePath(undefined);
 };
 
@@ -1889,8 +1901,23 @@ proto.api.DocTraversal.prototype.clearRelativePath = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.DocTraversal.prototype.hasRelativePath = function() {
+proto.api.Traversal.prototype.hasRelativePath = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional Direction direction = 3;
+ * @return {!proto.api.Direction}
+ */
+proto.api.Traversal.prototype.getDirection = function() {
+  return /** @type {!proto.api.Direction} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {!proto.api.Direction} value */
+proto.api.Traversal.prototype.setDirection = function(value) {
+  jspb.Message.setProto3EnumField(this, 3, value);
 };
 
 
@@ -1905,19 +1932,19 @@ proto.api.DocTraversal.prototype.hasRelativePath = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.DocTraversals = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.DocTraversals.repeatedFields_, null);
+proto.api.Traversals = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.Traversals.repeatedFields_, null);
 };
-goog.inherits(proto.api.DocTraversals, jspb.Message);
+goog.inherits(proto.api.Traversals, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.DocTraversals.displayName = 'proto.api.DocTraversals';
+  proto.api.Traversals.displayName = 'proto.api.Traversals';
 }
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
  * @const
  */
-proto.api.DocTraversals.repeatedFields_ = [1];
+proto.api.Traversals.repeatedFields_ = [1];
 
 
 
@@ -1932,8 +1959,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.DocTraversals.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.DocTraversals.toObject(opt_includeInstance, this);
+proto.api.Traversals.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.Traversals.toObject(opt_includeInstance, this);
 };
 
 
@@ -1942,14 +1969,14 @@ proto.api.DocTraversals.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.DocTraversals} msg The msg instance to transform.
+ * @param {!proto.api.Traversals} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.DocTraversals.toObject = function(includeInstance, msg) {
+proto.api.Traversals.toObject = function(includeInstance, msg) {
   var f, obj = {
     traversalsList: jspb.Message.toObjectList(msg.getTraversalsList(),
-    proto.api.DocTraversal.toObject, includeInstance)
+    proto.api.Traversal.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -1963,23 +1990,23 @@ proto.api.DocTraversals.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.DocTraversals}
+ * @return {!proto.api.Traversals}
  */
-proto.api.DocTraversals.deserializeBinary = function(bytes) {
+proto.api.Traversals.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.DocTraversals;
-  return proto.api.DocTraversals.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.Traversals;
+  return proto.api.Traversals.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.DocTraversals} msg The message object to deserialize into.
+ * @param {!proto.api.Traversals} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.DocTraversals}
+ * @return {!proto.api.Traversals}
  */
-proto.api.DocTraversals.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.Traversals.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1987,8 +2014,8 @@ proto.api.DocTraversals.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.api.DocTraversal;
-      reader.readMessage(value,proto.api.DocTraversal.deserializeBinaryFromReader);
+      var value = new proto.api.Traversal;
+      reader.readMessage(value,proto.api.Traversal.deserializeBinaryFromReader);
       msg.addTraversals(value);
       break;
     default:
@@ -2004,9 +2031,9 @@ proto.api.DocTraversals.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.DocTraversals.prototype.serializeBinary = function() {
+proto.api.Traversals.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.DocTraversals.serializeBinaryToWriter(this, writer);
+  proto.api.Traversals.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2014,50 +2041,50 @@ proto.api.DocTraversals.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.DocTraversals} message
+ * @param {!proto.api.Traversals} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.DocTraversals.serializeBinaryToWriter = function(message, writer) {
+proto.api.Traversals.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getTraversalsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
       1,
       f,
-      proto.api.DocTraversal.serializeBinaryToWriter
+      proto.api.Traversal.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * repeated DocTraversal traversals = 1;
- * @return {!Array<!proto.api.DocTraversal>}
+ * repeated Traversal traversals = 1;
+ * @return {!Array<!proto.api.Traversal>}
  */
-proto.api.DocTraversals.prototype.getTraversalsList = function() {
-  return /** @type{!Array<!proto.api.DocTraversal>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.api.DocTraversal, 1));
+proto.api.Traversals.prototype.getTraversalsList = function() {
+  return /** @type{!Array<!proto.api.Traversal>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.api.Traversal, 1));
 };
 
 
-/** @param {!Array<!proto.api.DocTraversal>} value */
-proto.api.DocTraversals.prototype.setTraversalsList = function(value) {
+/** @param {!Array<!proto.api.Traversal>} value */
+proto.api.Traversals.prototype.setTraversalsList = function(value) {
   jspb.Message.setRepeatedWrapperField(this, 1, value);
 };
 
 
 /**
- * @param {!proto.api.DocTraversal=} opt_value
+ * @param {!proto.api.Traversal=} opt_value
  * @param {number=} opt_index
- * @return {!proto.api.DocTraversal}
+ * @return {!proto.api.Traversal}
  */
-proto.api.DocTraversals.prototype.addTraversals = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.api.DocTraversal, opt_index);
+proto.api.Traversals.prototype.addTraversals = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.api.Traversal, opt_index);
 };
 
 
-proto.api.DocTraversals.prototype.clearTraversalsList = function() {
+proto.api.Traversals.prototype.clearTraversalsList = function() {
   this.setTraversalsList([]);
 };
 
@@ -3120,12 +3147,12 @@ proto.api.Connections.prototype.setSeekNext = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.ConnectionFilter = function(opt_data) {
+proto.api.CFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.ConnectionFilter, jspb.Message);
+goog.inherits(proto.api.CFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.ConnectionFilter.displayName = 'proto.api.ConnectionFilter';
+  proto.api.CFilter.displayName = 'proto.api.CFilter';
 }
 
 
@@ -3140,8 +3167,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.ConnectionFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.ConnectionFilter.toObject(opt_includeInstance, this);
+proto.api.CFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.CFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -3150,11 +3177,11 @@ proto.api.ConnectionFilter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.ConnectionFilter} msg The msg instance to transform.
+ * @param {!proto.api.CFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.ConnectionFilter.toObject = function(includeInstance, msg) {
+proto.api.CFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     docPath: (f = msg.getDocPath()) && proto.api.Path.toObject(includeInstance, f),
     gtype: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -3176,23 +3203,23 @@ proto.api.ConnectionFilter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.ConnectionFilter}
+ * @return {!proto.api.CFilter}
  */
-proto.api.ConnectionFilter.deserializeBinary = function(bytes) {
+proto.api.CFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.ConnectionFilter;
-  return proto.api.ConnectionFilter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.CFilter;
+  return proto.api.CFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.ConnectionFilter} msg The message object to deserialize into.
+ * @param {!proto.api.CFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.ConnectionFilter}
+ * @return {!proto.api.CFilter}
  */
-proto.api.ConnectionFilter.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.CFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3241,9 +3268,9 @@ proto.api.ConnectionFilter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.ConnectionFilter.prototype.serializeBinary = function() {
+proto.api.CFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.ConnectionFilter.serializeBinaryToWriter(this, writer);
+  proto.api.CFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3251,11 +3278,11 @@ proto.api.ConnectionFilter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.ConnectionFilter} message
+ * @param {!proto.api.CFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.ConnectionFilter.serializeBinaryToWriter = function(message, writer) {
+proto.api.CFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getDocPath();
   if (f != null) {
@@ -3314,19 +3341,19 @@ proto.api.ConnectionFilter.serializeBinaryToWriter = function(message, writer) {
  * optional Path doc_path = 1;
  * @return {?proto.api.Path}
  */
-proto.api.ConnectionFilter.prototype.getDocPath = function() {
+proto.api.CFilter.prototype.getDocPath = function() {
   return /** @type{?proto.api.Path} */ (
     jspb.Message.getWrapperField(this, proto.api.Path, 1));
 };
 
 
 /** @param {?proto.api.Path|undefined} value */
-proto.api.ConnectionFilter.prototype.setDocPath = function(value) {
+proto.api.CFilter.prototype.setDocPath = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.api.ConnectionFilter.prototype.clearDocPath = function() {
+proto.api.CFilter.prototype.clearDocPath = function() {
   this.setDocPath(undefined);
 };
 
@@ -3335,7 +3362,7 @@ proto.api.ConnectionFilter.prototype.clearDocPath = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.ConnectionFilter.prototype.hasDocPath = function() {
+proto.api.CFilter.prototype.hasDocPath = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -3344,13 +3371,13 @@ proto.api.ConnectionFilter.prototype.hasDocPath = function() {
  * optional string gtype = 2;
  * @return {string}
  */
-proto.api.ConnectionFilter.prototype.getGtype = function() {
+proto.api.CFilter.prototype.getGtype = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ConnectionFilter.prototype.setGtype = function(value) {
+proto.api.CFilter.prototype.setGtype = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -3359,13 +3386,13 @@ proto.api.ConnectionFilter.prototype.setGtype = function(value) {
  * optional string expression = 3;
  * @return {string}
  */
-proto.api.ConnectionFilter.prototype.getExpression = function() {
+proto.api.CFilter.prototype.getExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ConnectionFilter.prototype.setExpression = function(value) {
+proto.api.CFilter.prototype.setExpression = function(value) {
   jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -3374,13 +3401,13 @@ proto.api.ConnectionFilter.prototype.setExpression = function(value) {
  * optional int32 limit = 4;
  * @return {number}
  */
-proto.api.ConnectionFilter.prototype.getLimit = function() {
+proto.api.CFilter.prototype.getLimit = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /** @param {number} value */
-proto.api.ConnectionFilter.prototype.setLimit = function(value) {
+proto.api.CFilter.prototype.setLimit = function(value) {
   jspb.Message.setProto3IntField(this, 4, value);
 };
 
@@ -3389,13 +3416,13 @@ proto.api.ConnectionFilter.prototype.setLimit = function(value) {
  * optional string sort = 5;
  * @return {string}
  */
-proto.api.ConnectionFilter.prototype.getSort = function() {
+proto.api.CFilter.prototype.getSort = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ConnectionFilter.prototype.setSort = function(value) {
+proto.api.CFilter.prototype.setSort = function(value) {
   jspb.Message.setProto3StringField(this, 5, value);
 };
 
@@ -3404,13 +3431,13 @@ proto.api.ConnectionFilter.prototype.setSort = function(value) {
  * optional string seek = 6;
  * @return {string}
  */
-proto.api.ConnectionFilter.prototype.getSeek = function() {
+proto.api.CFilter.prototype.getSeek = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ConnectionFilter.prototype.setSeek = function(value) {
+proto.api.CFilter.prototype.setSeek = function(value) {
   jspb.Message.setProto3StringField(this, 6, value);
 };
 
@@ -3421,13 +3448,13 @@ proto.api.ConnectionFilter.prototype.setSeek = function(value) {
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.api.ConnectionFilter.prototype.getReverse = function() {
+proto.api.CFilter.prototype.getReverse = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 7, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.ConnectionFilter.prototype.setReverse = function(value) {
+proto.api.CFilter.prototype.setReverse = function(value) {
   jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
@@ -3749,12 +3776,12 @@ proto.api.Filter.prototype.setIndex = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.AggregateFilter = function(opt_data) {
+proto.api.AggFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.AggregateFilter, jspb.Message);
+goog.inherits(proto.api.AggFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.AggregateFilter.displayName = 'proto.api.AggregateFilter';
+  proto.api.AggFilter.displayName = 'proto.api.AggFilter';
 }
 
 
@@ -3769,8 +3796,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.AggregateFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.AggregateFilter.toObject(opt_includeInstance, this);
+proto.api.AggFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.AggFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -3779,11 +3806,11 @@ proto.api.AggregateFilter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.AggregateFilter} msg The msg instance to transform.
+ * @param {!proto.api.AggFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.AggregateFilter.toObject = function(includeInstance, msg) {
+proto.api.AggFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     filter: (f = msg.getFilter()) && proto.api.Filter.toObject(includeInstance, f),
     aggregate: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -3801,23 +3828,23 @@ proto.api.AggregateFilter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.AggregateFilter}
+ * @return {!proto.api.AggFilter}
  */
-proto.api.AggregateFilter.deserializeBinary = function(bytes) {
+proto.api.AggFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.AggregateFilter;
-  return proto.api.AggregateFilter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.AggFilter;
+  return proto.api.AggFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.AggregateFilter} msg The message object to deserialize into.
+ * @param {!proto.api.AggFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.AggregateFilter}
+ * @return {!proto.api.AggFilter}
  */
-proto.api.AggregateFilter.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.AggFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3850,9 +3877,9 @@ proto.api.AggregateFilter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.AggregateFilter.prototype.serializeBinary = function() {
+proto.api.AggFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.AggregateFilter.serializeBinaryToWriter(this, writer);
+  proto.api.AggFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3860,11 +3887,11 @@ proto.api.AggregateFilter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.AggregateFilter} message
+ * @param {!proto.api.AggFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.AggregateFilter.serializeBinaryToWriter = function(message, writer) {
+proto.api.AggFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getFilter();
   if (f != null) {
@@ -3895,19 +3922,19 @@ proto.api.AggregateFilter.serializeBinaryToWriter = function(message, writer) {
  * optional Filter filter = 1;
  * @return {?proto.api.Filter}
  */
-proto.api.AggregateFilter.prototype.getFilter = function() {
+proto.api.AggFilter.prototype.getFilter = function() {
   return /** @type{?proto.api.Filter} */ (
     jspb.Message.getWrapperField(this, proto.api.Filter, 1));
 };
 
 
 /** @param {?proto.api.Filter|undefined} value */
-proto.api.AggregateFilter.prototype.setFilter = function(value) {
+proto.api.AggFilter.prototype.setFilter = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.api.AggregateFilter.prototype.clearFilter = function() {
+proto.api.AggFilter.prototype.clearFilter = function() {
   this.setFilter(undefined);
 };
 
@@ -3916,7 +3943,7 @@ proto.api.AggregateFilter.prototype.clearFilter = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.AggregateFilter.prototype.hasFilter = function() {
+proto.api.AggFilter.prototype.hasFilter = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -3925,13 +3952,13 @@ proto.api.AggregateFilter.prototype.hasFilter = function() {
  * optional string aggregate = 2;
  * @return {string}
  */
-proto.api.AggregateFilter.prototype.getAggregate = function() {
+proto.api.AggFilter.prototype.getAggregate = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.api.AggregateFilter.prototype.setAggregate = function(value) {
+proto.api.AggFilter.prototype.setAggregate = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -3940,13 +3967,13 @@ proto.api.AggregateFilter.prototype.setAggregate = function(value) {
  * optional string field = 3;
  * @return {string}
  */
-proto.api.AggregateFilter.prototype.getField = function() {
+proto.api.AggFilter.prototype.getField = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.api.AggregateFilter.prototype.setField = function(value) {
+proto.api.AggFilter.prototype.setField = function(value) {
   jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -3962,12 +3989,12 @@ proto.api.AggregateFilter.prototype.setField = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.DepthFilter = function(opt_data) {
+proto.api.TFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.DepthFilter, jspb.Message);
+goog.inherits(proto.api.TFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.DepthFilter.displayName = 'proto.api.DepthFilter';
+  proto.api.TFilter.displayName = 'proto.api.TFilter';
 }
 
 
@@ -3982,8 +4009,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.DepthFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.DepthFilter.toObject(opt_includeInstance, this);
+proto.api.TFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.TFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -3992,11 +4019,11 @@ proto.api.DepthFilter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.DepthFilter} msg The msg instance to transform.
+ * @param {!proto.api.TFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.DepthFilter.toObject = function(includeInstance, msg) {
+proto.api.TFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     root: (f = msg.getRoot()) && proto.api.Path.toObject(includeInstance, f),
     docExpression: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -4016,23 +4043,23 @@ proto.api.DepthFilter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.DepthFilter}
+ * @return {!proto.api.TFilter}
  */
-proto.api.DepthFilter.deserializeBinary = function(bytes) {
+proto.api.TFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.DepthFilter;
-  return proto.api.DepthFilter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.TFilter;
+  return proto.api.TFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.DepthFilter} msg The message object to deserialize into.
+ * @param {!proto.api.TFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.DepthFilter}
+ * @return {!proto.api.TFilter}
  */
-proto.api.DepthFilter.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.TFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -4073,9 +4100,9 @@ proto.api.DepthFilter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.DepthFilter.prototype.serializeBinary = function() {
+proto.api.TFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.DepthFilter.serializeBinaryToWriter(this, writer);
+  proto.api.TFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -4083,11 +4110,11 @@ proto.api.DepthFilter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.DepthFilter} message
+ * @param {!proto.api.TFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.DepthFilter.serializeBinaryToWriter = function(message, writer) {
+proto.api.TFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getRoot();
   if (f != null) {
@@ -4132,19 +4159,19 @@ proto.api.DepthFilter.serializeBinaryToWriter = function(message, writer) {
  * optional Path root = 1;
  * @return {?proto.api.Path}
  */
-proto.api.DepthFilter.prototype.getRoot = function() {
+proto.api.TFilter.prototype.getRoot = function() {
   return /** @type{?proto.api.Path} */ (
     jspb.Message.getWrapperField(this, proto.api.Path, 1));
 };
 
 
 /** @param {?proto.api.Path|undefined} value */
-proto.api.DepthFilter.prototype.setRoot = function(value) {
+proto.api.TFilter.prototype.setRoot = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.api.DepthFilter.prototype.clearRoot = function() {
+proto.api.TFilter.prototype.clearRoot = function() {
   this.setRoot(undefined);
 };
 
@@ -4153,7 +4180,7 @@ proto.api.DepthFilter.prototype.clearRoot = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.DepthFilter.prototype.hasRoot = function() {
+proto.api.TFilter.prototype.hasRoot = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -4162,13 +4189,13 @@ proto.api.DepthFilter.prototype.hasRoot = function() {
  * optional string doc_expression = 2;
  * @return {string}
  */
-proto.api.DepthFilter.prototype.getDocExpression = function() {
+proto.api.TFilter.prototype.getDocExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.api.DepthFilter.prototype.setDocExpression = function(value) {
+proto.api.TFilter.prototype.setDocExpression = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -4177,13 +4204,13 @@ proto.api.DepthFilter.prototype.setDocExpression = function(value) {
  * optional string connection_expression = 3;
  * @return {string}
  */
-proto.api.DepthFilter.prototype.getConnectionExpression = function() {
+proto.api.TFilter.prototype.getConnectionExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.api.DepthFilter.prototype.setConnectionExpression = function(value) {
+proto.api.TFilter.prototype.setConnectionExpression = function(value) {
   jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -4192,13 +4219,13 @@ proto.api.DepthFilter.prototype.setConnectionExpression = function(value) {
  * optional int32 limit = 4;
  * @return {number}
  */
-proto.api.DepthFilter.prototype.getLimit = function() {
+proto.api.TFilter.prototype.getLimit = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /** @param {number} value */
-proto.api.DepthFilter.prototype.setLimit = function(value) {
+proto.api.TFilter.prototype.setLimit = function(value) {
   jspb.Message.setProto3IntField(this, 4, value);
 };
 
@@ -4207,13 +4234,13 @@ proto.api.DepthFilter.prototype.setLimit = function(value) {
  * optional string sort = 5;
  * @return {string}
  */
-proto.api.DepthFilter.prototype.getSort = function() {
+proto.api.TFilter.prototype.getSort = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /** @param {string} value */
-proto.api.DepthFilter.prototype.setSort = function(value) {
+proto.api.TFilter.prototype.setSort = function(value) {
   jspb.Message.setProto3StringField(this, 5, value);
 };
 
@@ -5664,12 +5691,12 @@ proto.api.Indexes.prototype.clearIndexesList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.ChannelFilter = function(opt_data) {
+proto.api.ChanFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.ChannelFilter, jspb.Message);
+goog.inherits(proto.api.ChanFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.ChannelFilter.displayName = 'proto.api.ChannelFilter';
+  proto.api.ChanFilter.displayName = 'proto.api.ChanFilter';
 }
 
 
@@ -5684,8 +5711,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.ChannelFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.ChannelFilter.toObject(opt_includeInstance, this);
+proto.api.ChanFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.ChanFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -5694,11 +5721,11 @@ proto.api.ChannelFilter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.ChannelFilter} msg The msg instance to transform.
+ * @param {!proto.api.ChanFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.ChannelFilter.toObject = function(includeInstance, msg) {
+proto.api.ChanFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     channel: jspb.Message.getFieldWithDefault(msg, 1, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -5715,23 +5742,23 @@ proto.api.ChannelFilter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.ChannelFilter}
+ * @return {!proto.api.ChanFilter}
  */
-proto.api.ChannelFilter.deserializeBinary = function(bytes) {
+proto.api.ChanFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.ChannelFilter;
-  return proto.api.ChannelFilter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.ChanFilter;
+  return proto.api.ChanFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.ChannelFilter} msg The message object to deserialize into.
+ * @param {!proto.api.ChanFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.ChannelFilter}
+ * @return {!proto.api.ChanFilter}
  */
-proto.api.ChannelFilter.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.ChanFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -5759,9 +5786,9 @@ proto.api.ChannelFilter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.ChannelFilter.prototype.serializeBinary = function() {
+proto.api.ChanFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.ChannelFilter.serializeBinaryToWriter(this, writer);
+  proto.api.ChanFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -5769,11 +5796,11 @@ proto.api.ChannelFilter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.ChannelFilter} message
+ * @param {!proto.api.ChanFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.ChannelFilter.serializeBinaryToWriter = function(message, writer) {
+proto.api.ChanFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getChannel();
   if (f.length > 0) {
@@ -5796,13 +5823,13 @@ proto.api.ChannelFilter.serializeBinaryToWriter = function(message, writer) {
  * optional string channel = 1;
  * @return {string}
  */
-proto.api.ChannelFilter.prototype.getChannel = function() {
+proto.api.ChanFilter.prototype.getChannel = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ChannelFilter.prototype.setChannel = function(value) {
+proto.api.ChanFilter.prototype.setChannel = function(value) {
   jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -5811,217 +5838,14 @@ proto.api.ChannelFilter.prototype.setChannel = function(value) {
  * optional string expression = 2;
  * @return {string}
  */
-proto.api.ChannelFilter.prototype.getExpression = function() {
+proto.api.ChanFilter.prototype.getExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ChannelFilter.prototype.setExpression = function(value) {
+proto.api.ChanFilter.prototype.setExpression = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.api.SubGraphFilter = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.api.SubGraphFilter, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.api.SubGraphFilter.displayName = 'proto.api.SubGraphFilter';
-}
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.api.SubGraphFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.SubGraphFilter.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.api.SubGraphFilter} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.api.SubGraphFilter.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    docFilter: (f = msg.getDocFilter()) && proto.api.Filter.toObject(includeInstance, f),
-    connectionFilter: (f = msg.getConnectionFilter()) && proto.api.Filter.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.SubGraphFilter}
- */
-proto.api.SubGraphFilter.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.SubGraphFilter;
-  return proto.api.SubGraphFilter.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.api.SubGraphFilter} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.SubGraphFilter}
- */
-proto.api.SubGraphFilter.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = new proto.api.Filter;
-      reader.readMessage(value,proto.api.Filter.deserializeBinaryFromReader);
-      msg.setDocFilter(value);
-      break;
-    case 2:
-      var value = new proto.api.Filter;
-      reader.readMessage(value,proto.api.Filter.deserializeBinaryFromReader);
-      msg.setConnectionFilter(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.api.SubGraphFilter.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.api.SubGraphFilter.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.api.SubGraphFilter} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.api.SubGraphFilter.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getDocFilter();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.api.Filter.serializeBinaryToWriter
-    );
-  }
-  f = message.getConnectionFilter();
-  if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.api.Filter.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional Filter doc_filter = 1;
- * @return {?proto.api.Filter}
- */
-proto.api.SubGraphFilter.prototype.getDocFilter = function() {
-  return /** @type{?proto.api.Filter} */ (
-    jspb.Message.getWrapperField(this, proto.api.Filter, 1));
-};
-
-
-/** @param {?proto.api.Filter|undefined} value */
-proto.api.SubGraphFilter.prototype.setDocFilter = function(value) {
-  jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-proto.api.SubGraphFilter.prototype.clearDocFilter = function() {
-  this.setDocFilter(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.SubGraphFilter.prototype.hasDocFilter = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional Filter connection_filter = 2;
- * @return {?proto.api.Filter}
- */
-proto.api.SubGraphFilter.prototype.getConnectionFilter = function() {
-  return /** @type{?proto.api.Filter} */ (
-    jspb.Message.getWrapperField(this, proto.api.Filter, 2));
-};
-
-
-/** @param {?proto.api.Filter|undefined} value */
-proto.api.SubGraphFilter.prototype.setConnectionFilter = function(value) {
-  jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-proto.api.SubGraphFilter.prototype.clearConnectionFilter = function() {
-  this.setConnectionFilter(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.SubGraphFilter.prototype.hasConnectionFilter = function() {
-  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -6946,12 +6770,12 @@ proto.api.Edit.prototype.hasAttributes = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.EditFilter = function(opt_data) {
+proto.api.EFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.EditFilter, jspb.Message);
+goog.inherits(proto.api.EFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.EditFilter.displayName = 'proto.api.EditFilter';
+  proto.api.EFilter.displayName = 'proto.api.EFilter';
 }
 
 
@@ -6966,8 +6790,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.EditFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.EditFilter.toObject(opt_includeInstance, this);
+proto.api.EFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.EFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -6976,11 +6800,11 @@ proto.api.EditFilter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.EditFilter} msg The msg instance to transform.
+ * @param {!proto.api.EFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.EditFilter.toObject = function(includeInstance, msg) {
+proto.api.EFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     filter: (f = msg.getFilter()) && proto.api.Filter.toObject(includeInstance, f),
     attributes: (f = msg.getAttributes()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
@@ -6997,23 +6821,23 @@ proto.api.EditFilter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.EditFilter}
+ * @return {!proto.api.EFilter}
  */
-proto.api.EditFilter.deserializeBinary = function(bytes) {
+proto.api.EFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.EditFilter;
-  return proto.api.EditFilter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.EFilter;
+  return proto.api.EFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.EditFilter} msg The message object to deserialize into.
+ * @param {!proto.api.EFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.EditFilter}
+ * @return {!proto.api.EFilter}
  */
-proto.api.EditFilter.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.EFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7043,9 +6867,9 @@ proto.api.EditFilter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.EditFilter.prototype.serializeBinary = function() {
+proto.api.EFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.EditFilter.serializeBinaryToWriter(this, writer);
+  proto.api.EFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7053,11 +6877,11 @@ proto.api.EditFilter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.EditFilter} message
+ * @param {!proto.api.EFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.EditFilter.serializeBinaryToWriter = function(message, writer) {
+proto.api.EFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getFilter();
   if (f != null) {
@@ -7082,19 +6906,19 @@ proto.api.EditFilter.serializeBinaryToWriter = function(message, writer) {
  * optional Filter filter = 1;
  * @return {?proto.api.Filter}
  */
-proto.api.EditFilter.prototype.getFilter = function() {
+proto.api.EFilter.prototype.getFilter = function() {
   return /** @type{?proto.api.Filter} */ (
     jspb.Message.getWrapperField(this, proto.api.Filter, 1));
 };
 
 
 /** @param {?proto.api.Filter|undefined} value */
-proto.api.EditFilter.prototype.setFilter = function(value) {
+proto.api.EFilter.prototype.setFilter = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.api.EditFilter.prototype.clearFilter = function() {
+proto.api.EFilter.prototype.clearFilter = function() {
   this.setFilter(undefined);
 };
 
@@ -7103,7 +6927,7 @@ proto.api.EditFilter.prototype.clearFilter = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.EditFilter.prototype.hasFilter = function() {
+proto.api.EFilter.prototype.hasFilter = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -7112,19 +6936,19 @@ proto.api.EditFilter.prototype.hasFilter = function() {
  * optional google.protobuf.Struct attributes = 2;
  * @return {?proto.google.protobuf.Struct}
  */
-proto.api.EditFilter.prototype.getAttributes = function() {
+proto.api.EFilter.prototype.getAttributes = function() {
   return /** @type{?proto.google.protobuf.Struct} */ (
     jspb.Message.getWrapperField(this, google_protobuf_struct_pb.Struct, 2));
 };
 
 
 /** @param {?proto.google.protobuf.Struct|undefined} value */
-proto.api.EditFilter.prototype.setAttributes = function(value) {
+proto.api.EFilter.prototype.setAttributes = function(value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
 
-proto.api.EditFilter.prototype.clearAttributes = function() {
+proto.api.EFilter.prototype.clearAttributes = function() {
   this.setAttributes(undefined);
 };
 
@@ -7133,7 +6957,7 @@ proto.api.EditFilter.prototype.clearAttributes = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.EditFilter.prototype.hasAttributes = function() {
+proto.api.EFilter.prototype.hasAttributes = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -8361,12 +8185,12 @@ proto.api.Change.prototype.hasPathsAffected = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.ExpressionFilter = function(opt_data) {
+proto.api.ExprFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.ExpressionFilter, jspb.Message);
+goog.inherits(proto.api.ExprFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.ExpressionFilter.displayName = 'proto.api.ExpressionFilter';
+  proto.api.ExprFilter.displayName = 'proto.api.ExprFilter';
 }
 
 
@@ -8381,8 +8205,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.ExpressionFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.ExpressionFilter.toObject(opt_includeInstance, this);
+proto.api.ExprFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.ExprFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -8391,11 +8215,11 @@ proto.api.ExpressionFilter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.ExpressionFilter} msg The msg instance to transform.
+ * @param {!proto.api.ExprFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.ExpressionFilter.toObject = function(includeInstance, msg) {
+proto.api.ExprFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     expression: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
@@ -8411,23 +8235,23 @@ proto.api.ExpressionFilter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.ExpressionFilter}
+ * @return {!proto.api.ExprFilter}
  */
-proto.api.ExpressionFilter.deserializeBinary = function(bytes) {
+proto.api.ExprFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.ExpressionFilter;
-  return proto.api.ExpressionFilter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.ExprFilter;
+  return proto.api.ExprFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.ExpressionFilter} msg The message object to deserialize into.
+ * @param {!proto.api.ExprFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.ExpressionFilter}
+ * @return {!proto.api.ExprFilter}
  */
-proto.api.ExpressionFilter.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.ExprFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8451,9 +8275,9 @@ proto.api.ExpressionFilter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.ExpressionFilter.prototype.serializeBinary = function() {
+proto.api.ExprFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.ExpressionFilter.serializeBinaryToWriter(this, writer);
+  proto.api.ExprFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8461,11 +8285,11 @@ proto.api.ExpressionFilter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.ExpressionFilter} message
+ * @param {!proto.api.ExprFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.ExpressionFilter.serializeBinaryToWriter = function(message, writer) {
+proto.api.ExprFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getExpression();
   if (f.length > 0) {
@@ -8481,13 +8305,13 @@ proto.api.ExpressionFilter.serializeBinaryToWriter = function(message, writer) {
  * optional string expression = 1;
  * @return {string}
  */
-proto.api.ExpressionFilter.prototype.getExpression = function() {
+proto.api.ExprFilter.prototype.getExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ExpressionFilter.prototype.setExpression = function(value) {
+proto.api.ExprFilter.prototype.setExpression = function(value) {
   jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -8765,5 +8589,14 @@ proto.api.Request.prototype.hasRequest = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
+
+/**
+ * @enum {number}
+ */
+proto.api.Direction = {
+  NONE: 0,
+  FROM: 1,
+  TO: 2
+};
 
 goog.object.extend(exports, proto.api);

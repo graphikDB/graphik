@@ -240,8 +240,8 @@ func TestGraph_SearchDocs(t *testing.T) {
 	//t.Log(res.GetDocs()[0].String())
 }
 
-func TestGraph_DepthSearchDocs(t *testing.T) {
-	res, err := graph.DepthSearchDocs(ctx, &apipb.DepthFilter{
+func TestGraph_TraverseDocs(t *testing.T) {
+	res, err := graph.Traverse(ctx, &apipb.TFilter{
 		Root: ashe.GetPath(),
 		//DocExpression:        `doc.path.gtype.contains("pokemon")`,
 		ConnectionExpression: "connection.attributes.primary",

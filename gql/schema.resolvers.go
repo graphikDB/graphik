@@ -5,6 +5,7 @@ package gql
 
 import (
 	"context"
+
 	apipb "github.com/autom8ter/graphik/gen/go"
 	generated1 "github.com/autom8ter/graphik/gen/gql/generated"
 	"github.com/autom8ter/graphik/gen/gql/model"
@@ -29,8 +30,8 @@ func (r *mutationResolver) EditDoc(ctx context.Context, input model.Edit) (*mode
 	return gqlDoc(res), nil
 }
 
-func (r *mutationResolver) EditDocs(ctx context.Context, input model.EditFilter) (*model.Docs, error) {
-	docs, err := r.client.EditDocs(ctx, protoEditFilter(&input))
+func (r *mutationResolver) EditDocs(ctx context.Context, input model.EFilter) (*model.Docs, error) {
+	docs, err := r.client.EditDocs(ctx, protoEFilter(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +54,8 @@ func (r *mutationResolver) EditConnection(ctx context.Context, input model.Edit)
 	return gqlConnection(res), nil
 }
 
-func (r *mutationResolver) EditConnections(ctx context.Context, input model.EditFilter) (*model.Connections, error) {
-	connections, err := r.client.EditConnections(ctx, protoEditFilter(&input))
+func (r *mutationResolver) EditConnections(ctx context.Context, input model.EFilter) (*model.Connections, error) {
+	connections, err := r.client.EditConnections(ctx, protoEFilter(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -138,8 +139,8 @@ func (r *queryResolver) SearchDocs(ctx context.Context, input model.Filter) (*mo
 	return gqlDocs(res), nil
 }
 
-func (r *queryResolver) DepthSearchDocs(ctx context.Context, input model.DepthFilter) (*model.DocTraversals, error) {
-	res, err := r.client.DepthSearchDocs(ctx, protoDepthFilter(&input))
+func (r *queryResolver) Traverse(ctx context.Context, input model.TFilter) (*model.Traversals, error) {
+	res, err := r.client.Traverse(ctx, protoDepthFilter(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +163,7 @@ func (r *queryResolver) SearchConnections(ctx context.Context, input model.Filte
 	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) ConnectionsFrom(ctx context.Context, input model.ConnectionFilter) (*model.Connections, error) {
+func (r *queryResolver) ConnectionsFrom(ctx context.Context, input model.CFilter) (*model.Connections, error) {
 	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(&input))
 	if err != nil {
 		return nil, err
@@ -170,7 +171,7 @@ func (r *queryResolver) ConnectionsFrom(ctx context.Context, input model.Connect
 	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) ConnectionsTo(ctx context.Context, input model.ConnectionFilter) (*model.Connections, error) {
+func (r *queryResolver) ConnectionsTo(ctx context.Context, input model.CFilter) (*model.Connections, error) {
 	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(&input))
 	if err != nil {
 		return nil, err
@@ -178,7 +179,7 @@ func (r *queryResolver) ConnectionsTo(ctx context.Context, input model.Connectio
 	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) AggregateDocs(ctx context.Context, input model.AggregateFilter) (interface{}, error) {
+func (r *queryResolver) AggregateDocs(ctx context.Context, input model.AggFilter) (interface{}, error) {
 	res, err := r.client.AggregateDocs(ctx, protoAggFilter(&input))
 	if err != nil {
 		return nil, err
@@ -186,7 +187,7 @@ func (r *queryResolver) AggregateDocs(ctx context.Context, input model.Aggregate
 	return res.GetNumberValue(), nil
 }
 
-func (r *queryResolver) AggregateConnections(ctx context.Context, input model.AggregateFilter) (interface{}, error) {
+func (r *queryResolver) AggregateConnections(ctx context.Context, input model.AggFilter) (interface{}, error) {
 	res, err := r.client.AggregateConnections(ctx, protoAggFilter(&input))
 	if err != nil {
 		return nil, err
@@ -194,9 +195,9 @@ func (r *queryResolver) AggregateConnections(ctx context.Context, input model.Ag
 	return res.GetNumberValue(), nil
 }
 
-func (r *subscriptionResolver) Subscribe(ctx context.Context, input model.ChannelFilter) (<-chan *model.Message, error) {
+func (r *subscriptionResolver) Subscribe(ctx context.Context, input model.ChanFilter) (<-chan *model.Message, error) {
 	ch := make(chan *model.Message)
-	stream, err := r.client.Subscribe(ctx, protoChannelFilter(&input))
+	stream, err := r.client.Subscribe(ctx, protoChanFilter(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +227,7 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, input model.Channe
 	return ch, nil
 }
 
-func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input model.ExpressionFilter) (<-chan *model.Change, error) {
+func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input model.ExprFilter) (<-chan *model.Change, error) {
 	ch := make(chan *model.Change)
 	stream, err := r.client.SubscribeChanges(ctx, protoExpressionFilter(&input))
 	if err != nil {

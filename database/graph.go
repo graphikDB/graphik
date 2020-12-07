@@ -447,7 +447,7 @@ func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*e
 	})
 }
 
-func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseService_SubscribeServer) error {
+func (g *Graph) Subscribe(filter *apipb.ChanFilter, server apipb.DatabaseService_SubscribeServer) error {
 	var filterFunc func(msg interface{}) bool
 	if filter.Expression == "" {
 		filterFunc = func(msg interface{}) bool {
@@ -493,7 +493,7 @@ func (g *Graph) Subscribe(filter *apipb.ChannelFilter, server apipb.DatabaseServ
 	return nil
 }
 
-func (g *Graph) SubscribeChanges(filter *apipb.ExpressionFilter, server apipb.DatabaseService_SubscribeChangesServer) error {
+func (g *Graph) SubscribeChanges(filter *apipb.ExprFilter, server apipb.DatabaseService_SubscribeChangesServer) error {
 	var (
 		program cel.Program
 		err     error
@@ -660,7 +660,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 	return doc, err
 }
 
-func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.Docs, error) {
+func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EFilter) (*apipb.Docs, error) {
 	identity := n.getIdentity(ctx)
 	var changes = &apipb.Paths{}
 	var docs []*apipb.Doc
@@ -730,7 +730,7 @@ func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 	return types, nil
 }
 
-func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
+func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.CFilter) (*apipb.Connections, error) {
 	var (
 		program cel.Program
 		err     error
@@ -825,7 +825,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	return toReturn, nil
 }
 
-func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.AggregateFilter) (*structpb.Value, error) {
+func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.AggFilter) (*structpb.Value, error) {
 	docs, err := n.SearchDocs(ctx, filter.GetFilter())
 	if err != nil {
 		return nil, err
@@ -835,7 +835,7 @@ func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.AggregateFilter
 	}, nil
 }
 
-func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.AggregateFilter) (*structpb.Value, error) {
+func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.AggFilter) (*structpb.Value, error) {
 	connections, err := n.SearchConnections(ctx, filter.GetFilter())
 	if err != nil {
 		return nil, err
@@ -845,7 +845,7 @@ func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.Aggregat
 	}, nil
 }
 
-func (n *Graph) DepthSearchDocs(ctx context.Context, filter *apipb.DepthFilter) (*apipb.DocTraversals, error) {
+func (n *Graph) Traverse(ctx context.Context, filter *apipb.TFilter) (*apipb.Traversals, error) {
 	dfs := n.newDepthFirst(filter)
 	if err := n.db.View(func(tx *bbolt.Tx) error {
 		return dfs.Walk(ctx, tx)
@@ -856,7 +856,7 @@ func (n *Graph) DepthSearchDocs(ctx context.Context, filter *apipb.DepthFilter) 
 	return dfs.docs, nil
 }
 
-func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectionFilter) (*apipb.Connections, error) {
+func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.CFilter) (*apipb.Connections, error) {
 	var (
 		program cel.Program
 		err     error
@@ -956,7 +956,7 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 	return connection, nil
 }
 
-func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*apipb.Connections, error) {
+func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EFilter) (*apipb.Connections, error) {
 	identity := n.getIdentity(ctx)
 	var changes = &apipb.Paths{}
 	var connections []*apipb.Connection
@@ -1026,36 +1026,6 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 	}
 	toReturn.Sort(filter.GetSort())
 	return toReturn, nil
-}
-
-func (g *Graph) SubGraph(ctx context.Context, filter *apipb.SubGraphFilter) (*apipb.Graph, error) {
-	graph := &apipb.Graph{
-		Docs:        &apipb.Docs{},
-		Connections: &apipb.Connections{},
-	}
-	docs, err := g.SearchDocs(ctx, filter.GetDocFilter())
-	if err != nil {
-		return nil, err
-	}
-	for _, doc := range docs.GetDocs() {
-		graph.Docs.Docs = append(graph.Docs.Docs, doc)
-		connections, err := g.ConnectionsFrom(ctx, &apipb.ConnectionFilter{
-			DocPath:    doc.Path,
-			Gtype:      filter.GetConnectionFilter().GetGtype(),
-			Expression: filter.GetConnectionFilter().GetExpression(),
-			Limit:      filter.GetConnectionFilter().GetLimit(),
-			Sort:       filter.GetConnectionFilter().GetSort(),
-			Seek:       filter.GetConnectionFilter().GetSeek(),
-			Reverse:    filter.GetConnectionFilter().GetReverse(),
-		})
-		if err != nil {
-			return nil, err
-		}
-		graph.Connections.Connections = append(graph.Connections.Connections, connections.GetConnections()...)
-	}
-	graph.Connections.Sort(filter.GetConnectionFilter().GetSort())
-	graph.Docs.Sort(filter.GetDocFilter().GetSort())
-	return graph, err
 }
 
 func (g *Graph) DelDoc(ctx context.Context, path *apipb.Path) (*empty.Empty, error) {

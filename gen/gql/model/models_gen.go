@@ -3,10 +3,13 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 )
 
-type AggregateFilter struct {
+type AggFilter struct {
 	Filter    *Filter `json:"filter"`
 	Aggregate string  `json:"aggregate"`
 	Field     string  `json:"field"`
@@ -30,16 +33,26 @@ type AuthorizersInput struct {
 	Authorizers []*AuthorizerInput `json:"authorizers"`
 }
 
+type CFilter struct {
+	DocPath    *PathInput `json:"doc_path"`
+	Gtype      string     `json:"gtype"`
+	Expression *string    `json:"expression"`
+	Limit      int        `json:"limit"`
+	Sort       *string    `json:"sort"`
+	Seek       *string    `json:"seek"`
+	Reverse    *bool      `json:"reverse"`
+}
+
+type ChanFilter struct {
+	Channel    string  `json:"channel"`
+	Expression *string `json:"expression"`
+}
+
 type Change struct {
 	Method        string    `json:"method"`
 	Identity      *Doc      `json:"identity"`
 	Timestamp     time.Time `json:"timestamp"`
 	PathsAffected *Paths    `json:"paths_affected"`
-}
-
-type ChannelFilter struct {
-	Channel    string  `json:"channel"`
-	Expression *string `json:"expression"`
 }
 
 type Connection struct {
@@ -59,27 +72,9 @@ type ConnectionConstructor struct {
 	To         *PathInput             `json:"to"`
 }
 
-type ConnectionFilter struct {
-	DocPath    *PathInput `json:"doc_path"`
-	Gtype      string     `json:"gtype"`
-	Expression *string    `json:"expression"`
-	Limit      int        `json:"limit"`
-	Sort       *string    `json:"sort"`
-	Seek       *string    `json:"seek"`
-	Reverse    *bool      `json:"reverse"`
-}
-
 type Connections struct {
 	Connections []*Connection `json:"connections"`
 	SeekNext    string        `json:"seek_next"`
-}
-
-type DepthFilter struct {
-	Root                 *PathInput `json:"root"`
-	DocExpression        *string    `json:"doc_expression"`
-	ConnectionExpression *string    `json:"connection_expression"`
-	Limit                int        `json:"limit"`
-	Sort                 *string    `json:"sort"`
 }
 
 type Doc struct {
@@ -93,18 +88,14 @@ type DocConstructor struct {
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
-type DocTraversal struct {
-	Doc          *Doc   `json:"doc"`
-	RelativePath *Paths `json:"relative_path"`
-}
-
-type DocTraversals struct {
-	Traversals []*DocTraversal `json:"traversals"`
-}
-
 type Docs struct {
 	Docs     []*Doc `json:"docs"`
 	SeekNext string `json:"seek_next"`
+}
+
+type EFilter struct {
+	Filter     *Filter                `json:"filter"`
+	Attributes map[string]interface{} `json:"attributes"`
 }
 
 type Edit struct {
@@ -112,12 +103,7 @@ type Edit struct {
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
-type EditFilter struct {
-	Filter     *Filter                `json:"filter"`
-	Attributes map[string]interface{} `json:"attributes"`
-}
-
-type ExpressionFilter struct {
+type ExprFilter struct {
 	Expression *string `json:"expression"`
 }
 
@@ -206,6 +192,24 @@ type Schema struct {
 	Indexes         *Indexes        `json:"indexes"`
 }
 
+type TFilter struct {
+	Root                 *PathInput `json:"root"`
+	DocExpression        *string    `json:"doc_expression"`
+	ConnectionExpression *string    `json:"connection_expression"`
+	Limit                int        `json:"limit"`
+	Sort                 *string    `json:"sort"`
+}
+
+type Traversal struct {
+	Doc          *Doc      `json:"doc"`
+	RelativePath *Paths    `json:"relative_path"`
+	Direction    Direction `json:"direction"`
+}
+
+type Traversals struct {
+	Traversals []*Traversal `json:"traversals"`
+}
+
 type TypeValidator struct {
 	Name        string `json:"name"`
 	Gtype       string `json:"gtype"`
@@ -228,4 +232,47 @@ type TypeValidators struct {
 
 type TypeValidatorsInput struct {
 	Validators []*TypeValidatorInput `json:"validators"`
+}
+
+type Direction string
+
+const (
+	DirectionNone Direction = "NONE"
+	DirectionFrom Direction = "FROM"
+	DirectionTo   Direction = "TO"
+)
+
+var AllDirection = []Direction{
+	DirectionNone,
+	DirectionFrom,
+	DirectionTo,
+}
+
+func (e Direction) IsValid() bool {
+	switch e {
+	case DirectionNone, DirectionFrom, DirectionTo:
+		return true
+	}
+	return false
+}
+
+func (e Direction) String() string {
+	return string(e)
+}
+
+func (e *Direction) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Direction(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Direction", str)
+	}
+	return nil
+}
+
+func (e Direction) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

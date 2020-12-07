@@ -106,8 +106,8 @@ func protoFilter(filter *model.Filter) *apipb.Filter {
 	return f
 }
 
-func protoEditFilter(filter *model.EditFilter) *apipb.EditFilter {
-	return &apipb.EditFilter{
+func protoEFilter(filter *model.EFilter) *apipb.EFilter {
+	return &apipb.EFilter{
 		Filter:     protoFilter(filter.Filter),
 		Attributes: apipb.NewStruct(filter.Attributes),
 	}
@@ -228,16 +228,16 @@ func gqlSchema(s *apipb.Schema) *model.Schema {
 	}
 }
 
-func protoAggFilter(filter *model.AggregateFilter) *apipb.AggregateFilter {
-	return &apipb.AggregateFilter{
+func protoAggFilter(filter *model.AggFilter) *apipb.AggFilter {
+	return &apipb.AggFilter{
 		Filter:    protoFilter(filter.Filter),
 		Aggregate: filter.Aggregate,
 		Field:     filter.Field,
 	}
 }
 
-func protoChannelFilter(filter *model.ChannelFilter) *apipb.ChannelFilter {
-	c := &apipb.ChannelFilter{
+func protoChanFilter(filter *model.ChanFilter) *apipb.ChanFilter {
+	c := &apipb.ChanFilter{
 		Channel: filter.Channel,
 	}
 	if filter.Expression != nil {
@@ -246,8 +246,8 @@ func protoChannelFilter(filter *model.ChannelFilter) *apipb.ChannelFilter {
 	return c
 }
 
-func protoDepthFilter(filter *model.DepthFilter) *apipb.DepthFilter {
-	c := &apipb.DepthFilter{
+func protoDepthFilter(filter *model.TFilter) *apipb.TFilter {
+	c := &apipb.TFilter{
 		Root:  protoIPath(filter.Root),
 		Limit: int32(filter.Limit),
 	}
@@ -263,8 +263,8 @@ func protoDepthFilter(filter *model.DepthFilter) *apipb.DepthFilter {
 	return c
 }
 
-func protoConnectionFilter(filter *model.ConnectionFilter) *apipb.ConnectionFilter {
-	f := &apipb.ConnectionFilter{
+func protoConnectionFilter(filter *model.CFilter) *apipb.CFilter {
+	f := &apipb.CFilter{
 		DocPath:    protoIPath(filter.DocPath),
 		Gtype:      filter.Gtype,
 		Expression: "",
@@ -288,8 +288,8 @@ func protoConnectionFilter(filter *model.ConnectionFilter) *apipb.ConnectionFilt
 	return f
 }
 
-func protoExpressionFilter(filter *model.ExpressionFilter) *apipb.ExpressionFilter {
-	exp := &apipb.ExpressionFilter{}
+func protoExpressionFilter(filter *model.ExprFilter) *apipb.ExprFilter {
+	exp := &apipb.ExprFilter{}
 	if filter.Expression != nil {
 		exp.Expression = *filter.Expression
 	}
@@ -333,17 +333,29 @@ func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidato
 	}
 }
 
-func gqlTraversal(traversal *apipb.DocTraversal) *model.DocTraversal {
-	return &model.DocTraversal{
+func gqlTraversal(traversal *apipb.Traversal) *model.Traversal {
+	return &model.Traversal{
 		Doc:          gqlDoc(traversal.GetDoc()),
 		RelativePath: gqlPaths(traversal.GetRelativePath()),
+		Direction:    gqlDirection(traversal.Direction),
 	}
 }
 
-func gqlTraversals(traversals *apipb.DocTraversals) *model.DocTraversals {
-	var paths []*model.DocTraversal
+func gqlDirection(dir apipb.Direction) model.Direction {
+	switch dir {
+	case apipb.Direction_From:
+		return model.DirectionFrom
+	case apipb.Direction_To:
+		return model.DirectionTo
+	default:
+		return model.DirectionNone
+	}
+}
+
+func gqlTraversals(traversals *apipb.Traversals) *model.Traversals {
+	var paths []*model.Traversal
 	for _, p := range traversals.GetTraversals() {
 		paths = append(paths, gqlTraversal(p))
 	}
-	return &model.DocTraversals{Traversals: paths}
+	return &model.Traversals{Traversals: paths}
 }
