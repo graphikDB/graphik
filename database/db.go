@@ -503,22 +503,17 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	return connection, nil
 }
 
-func (g *Graph) setConnections(ctx context.Context, connections ...*apipb.Connection) (*apipb.Connections, error) {
+func (g *Graph) setConnections(ctx context.Context, tx *bbolt.Tx, connections ...*apipb.Connection) (*apipb.Connections, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	var edgs = &apipb.Connections{}
-	if err := g.db.Batch(func(tx *bbolt.Tx) error {
-		for _, connection := range connections {
-			e, err := g.setConnection(ctx, tx, connection)
-			if err != nil {
-				return err
-			}
-			edgs.Connections = append(edgs.Connections, e)
+	for _, connection := range connections {
+		e, err := g.setConnection(ctx, tx, connection)
+		if err != nil {
+			return nil, err
 		}
-		return nil
-	}); err != nil {
-		return nil, err
+		edgs.Connections = append(edgs.Connections, e)
 	}
 	return edgs, nil
 }

@@ -401,8 +401,9 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 		return nil, err
 	}
 	now := timestamppb.Now()
+	var changes = &apipb.Paths{}
 	method := g.getMethod(ctx)
-	var connections = []*apipb.Connection{}
+	var connections = &apipb.Connections{}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		connectionBucket := tx.Bucket(dbConnections)
 		for _, constructor := range constructors.GetConnections() {
@@ -413,7 +414,6 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 					return err
 				}
 			}
-
 			if constructor.GetPath().Gid == "" {
 				constructor.GetPath().Gid = ksuid.New().String()
 			}
@@ -432,20 +432,18 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 				From:     constructor.GetFrom(),
 				To:       constructor.GetTo(),
 			}
-			connections = append(connections, connection)
+			connection, err = g.setConnection(ctx, tx, connection)
+			if err != nil {
+				return err
+			}
+			changes.Paths = append(changes.Paths, connection.GetPath())
+			connections.Connections = append(connections.Connections, connection)
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	connectionss, err := g.setConnections(ctx, connections...)
-	if err != nil {
-		return nil, err
-	}
-	var changes = &apipb.Paths{}
-	for _, doc := range connections {
-		changes.Paths = append(changes.Paths, doc.GetPath())
-	}
+
 	changes.Sort("")
 	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Change{
 		Method:        method,
@@ -455,8 +453,8 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 	}); err != nil {
 		return nil, err
 	}
-	connectionss.Sort("")
-	return connectionss, nil
+	connections.Sort("")
+	return connections, nil
 }
 
 func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
