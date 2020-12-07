@@ -233,11 +233,14 @@ func protoDepthFilter(filter *model.TFilter) *apipb.TFilter {
 	if filter.DocExpression != nil {
 		c.DocExpression = *filter.DocExpression
 	}
-	if filter.DocExpression != nil {
-		c.DocExpression = *filter.DocExpression
+	if filter.ConnectionExpression != nil {
+		c.ConnectionExpression = *filter.ConnectionExpression
 	}
 	if filter.Sort != nil {
 		c.Sort = *filter.Sort
+	}
+	if filter.Reverse != nil {
+		c.Reverse = *filter.Reverse
 	}
 	return c
 }
@@ -310,31 +313,4 @@ func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidato
 		Name:       validator.Name,
 		Expression: validator.Expression,
 	}
-}
-
-func gqlTraversal(traversal *apipb.Traversal) *model.Traversal {
-	return &model.Traversal{
-		Doc:         gqlDoc(traversal.GetDoc()),
-		RelativeRef: gqlRefs(traversal.GetRelativeRef()),
-		Direction:   gqlDirection(traversal.Direction),
-	}
-}
-
-func gqlDirection(dir apipb.Direction) model.Direction {
-	switch dir {
-	case apipb.Direction_From:
-		return model.DirectionFrom
-	case apipb.Direction_To:
-		return model.DirectionTo
-	default:
-		return model.DirectionNone
-	}
-}
-
-func gqlTraversals(traversals *apipb.Traversals) *model.Traversals {
-	var paths []*model.Traversal
-	for _, p := range traversals.GetTraversals() {
-		paths = append(paths, gqlTraversal(p))
-	}
-	return &model.Traversals{Traversals: paths}
 }

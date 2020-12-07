@@ -10,7 +10,7 @@ const (
 	dbFileMode                  = 0600
 	changeChannel               = "changes"
 	authCtxKey           ctxKey = "x-graphik-auth-ctx"
-	userType             ctxKey = "users"
+	userType             ctxKey = "user"
 	methodCtxKey         ctxKey = "x-graphik-full-method"
 	importOverrideCtxKey ctxKey = "x-graphik-import-override"
 )

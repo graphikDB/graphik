@@ -3,12 +3,6 @@ scalar Map
 scalar Any
 scalar Empty
 
-enum Direction {
-  NONE
-  FROM
-  TO
-}
-
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -39,16 +33,6 @@ type Docs {
 
 type Refs {
   refs: [Ref!]
-}
-
-type Traversal {
-  doc: Doc!
-  relative_ref: Refs!
-  direction: Direction!
-}
-
-type Traversals {
-  traversals: [Traversal]!
 }
 
 type TypeValidator {
@@ -205,6 +189,7 @@ input TFilter {
   limit: Int!
   # custom sorting of the results.
   sort: String
+  reverse: Boolean
 }
 
 # CFilter is used to fetch connections related to a single noted
@@ -329,7 +314,7 @@ type Query {
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
   # traverse searches for 0-many docs using dfs search
-  traverse(input: TFilter!): Traversals!
+  traverse(input: TFilter!): Docs!
   # getConnection gets a connection at the given ref
   getConnection(input: RefInput!): Connection!
   # searchConnections searches for 0-many connections

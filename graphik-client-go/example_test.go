@@ -64,7 +64,7 @@ func ExampleClient_SetAuthorizers() {
 		Authorizers: []*apipb.Authorizer{
 			{
 				Name:       "testing",
-				Expression: `request.identity.attributes.email.contains("coleman")`,
+				Expression: `this.identity.attributes.email.contains("coleman")`,
 			},
 		},
 	})

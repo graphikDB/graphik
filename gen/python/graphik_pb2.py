@@ -25,7 +25,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='api',
   syntax='proto3',
   serialized_options=_b('Z\005apipb'),
-  serialized_pb=_b('\n\rgraphik.proto\x12\x03\x61pi\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x36github.com/mwitkow/go-proto-validators/validator.proto\"E\n\x03Ref\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1d\n\x03gid\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\">\n\x0eRefConstructor\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0b\n\x03gid\x18\x02 \x01(\t\"\x1e\n\x04Refs\x12\x16\n\x04refs\x18\x01 \x03(\x0b\x32\x08.api.Ref\"Q\n\x03\x44oc\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"g\n\x0e\x44ocConstructor\x12(\n\x03ref\x18\x01 \x01(\x0b\x32\x13.api.RefConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"4\n\x0f\x44ocConstructors\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.api.DocConstructor\"1\n\x04\x44ocs\x12\x16\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x08.api.Doc\x12\x11\n\tseek_next\x18\x02 \x01(\t\"f\n\tTraversal\x12\x15\n\x03\x64oc\x18\x01 \x01(\x0b\x32\x08.api.Doc\x12\x1f\n\x0crelative_ref\x18\x02 \x01(\x0b\x32\t.api.Refs\x12!\n\tdirection\x18\x03 \x01(\x0e\x32\x0e.api.Direction\"0\n\nTraversals\x12\"\n\ntraversals\x18\x01 \x03(\x0b\x32\x0e.api.Traversal\"\xa8\x01\n\nConnection\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x03 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x04 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\xbe\x01\n\x15\x43onnectionConstructor\x12(\n\x03ref\x18\x01 \x01(\x0b\x32\x13.api.RefConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x06 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\x9b\x01\n\x0eSConnectFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12\r\n\x05gtype\x18\x02 \x01(\t\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"I\n\x16\x43onnectionConstructors\x12/\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x1a.api.ConnectionConstructor\"F\n\x0b\x43onnections\x12$\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x0f.api.Connection\x12\x11\n\tseek_next\x18\x02 \x01(\t\"\xdc\x01\n\x07\x43\x46ilter\x12!\n\x07\x64oc_ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x05 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0c\n\x04seek\x18\x06 \x01(\t\x12\x0f\n\x07reverse\x18\x07 \x01(\x08\"\xc7\x01\n\x06\x46ilter\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\x12\x15\n\x05limit\x18\x03 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x04 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0c\n\x04seek\x18\x05 \x01(\t\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\x12\r\n\x05index\x18\x07 \x01(\t\"\xa5\x01\n\tAggFilter\x12#\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.FilterB\x06\xe2\xdf\x1f\x02 \x01\x12?\n\taggregate\x18\x02 \x01(\tB,\xe2\xdf\x1f(\n&((^|, )(sum|count|max|min|avg|prod))+$\x12\x32\n\x05\x66ield\x18\x03 \x01(\tB#\xe2\xdf\x1f\x1f\n\x1d((^|, )(|^attributes.(.*)))+$\"\xbc\x01\n\x07TFilter\x12\x1e\n\x04root\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x16\n\x0e\x64oc_expression\x18\x02 \x01(\t\x12\x1d\n\x15\x63onnection_expression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x05 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\"\x9c\x01\n\x10IndexConstructor\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"R\n\nAuthorizer\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\"3\n\x0b\x41uthorizers\x12$\n\x0b\x61uthorizers\x18\x01 \x03(\x0b\x32\x0f.api.Authorizer\"\x99\x01\n\rTypeValidator\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x04 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x05 \x01(\x08\"8\n\x0eTypeValidators\x12&\n\nvalidators\x18\x01 \x03(\x0b\x32\x12.api.TypeValidator\"\x91\x01\n\x05Index\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"&\n\x07Indexes\x12\x1b\n\x07indexes\x18\x01 \x03(\x0b\x32\n.api.Index\"C\n\nChanFilter\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\"G\n\x05Graph\x12\x17\n\x04\x64ocs\x18\x01 \x01(\x0b\x32\t.api.Docs\x12%\n\x0b\x63onnections\x18\x02 \x01(\x0b\x32\x10.api.Connections\"\xa2\x02\n\x05\x46lags\x12\x19\n\x11open_id_discovery\x18\x01 \x01(\t\x12\x14\n\x0cstorage_path\x18\x02 \x01(\t\x12\x0f\n\x07metrics\x18\x03 \x01(\x08\x12\x15\n\rallow_headers\x18\x05 \x03(\t\x12\x15\n\rallow_methods\x18\x06 \x03(\t\x12\x15\n\rallow_origins\x18\x07 \x03(\t\x12\x12\n\nroot_users\x18\x08 \x03(\t\x12\x10\n\x08tls_cert\x18\t \x01(\t\x12\x0f\n\x07tls_key\x18\n \x01(\t\x12\x1c\n\x14playground_client_id\x18\x0b \x01(\t\x12 \n\x18playground_client_secret\x18\x0c \x01(\t\x12\x1b\n\x13playground_redirect\x18\r \x01(\t\"R\n\x04\x45\x64it\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"S\n\x07\x45\x46ilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"\x17\n\x04Pong\x12\x0f\n\x07message\x18\x01 \x01(\t\"c\n\x0fOutboundMessage\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\"\xb4\x01\n\x07Message\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\x12 \n\x06sender\x18\x03 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\"\xa4\x01\n\x06Schema\x12\x18\n\x10\x63onnection_types\x18\x01 \x03(\t\x12\x11\n\tdoc_types\x18\x02 \x03(\t\x12%\n\x0b\x61uthorizers\x18\x03 \x01(\x0b\x32\x10.api.Authorizers\x12\'\n\nvalidators\x18\x04 \x01(\x0b\x32\x13.api.TypeValidators\x12\x1d\n\x07indexes\x18\x05 \x01(\x0b\x32\x0c.api.Indexes\" \n\nExprFilter\x12\x12\n\nexpression\x18\x01 \x01(\t\"\xb0\x01\n\x07Request\x12 \n\x06method\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\"\n\x08identity\x18\x02 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12(\n\x07request\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct*\'\n\tDirection\x12\x08\n\x04None\x10\x00\x12\x08\n\x04\x46rom\x10\x01\x12\x06\n\x02To\x10\x02\x32\x9d\x0e\n\x0f\x44\x61tabaseService\x12+\n\x04Ping\x12\x16.google.protobuf.Empty\x1a\t.api.Pong\"\x00\x12\x32\n\tGetSchema\x12\x16.google.protobuf.Empty\x1a\x0b.api.Schema\"\x00\x12<\n\x0eSetAuthorizers\x12\x10.api.Authorizers\x1a\x16.google.protobuf.Empty\"\x00\x12\x34\n\nSetIndexes\x12\x0c.api.Indexes\x1a\x16.google.protobuf.Empty\"\x00\x12\x42\n\x11SetTypeValidators\x12\x13.api.TypeValidators\x1a\x16.google.protobuf.Empty\"\x00\x12(\n\x02Me\x12\x16.google.protobuf.Empty\x1a\x08.api.Doc\"\x00\x12,\n\tCreateDoc\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00\x12/\n\nCreateDocs\x12\x14.api.DocConstructors\x1a\t.api.Docs\"\x00\x12\x1e\n\x06GetDoc\x12\x08.api.Ref\x1a\x08.api.Doc\"\x00\x12&\n\nSearchDocs\x12\x0b.api.Filter\x1a\t.api.Docs\"\x00\x12+\n\x08Traverse\x12\x0c.api.TFilter\x1a\x0f.api.Traversals\"\x00\x12 \n\x07\x45\x64itDoc\x12\t.api.Edit\x1a\x08.api.Doc\"\x00\x12%\n\x08\x45\x64itDocs\x12\x0c.api.EFilter\x1a\t.api.Docs\"\x00\x12,\n\x06\x44\x65lDoc\x12\x08.api.Ref\x1a\x16.google.protobuf.Empty\"\x00\x12\x30\n\x07\x44\x65lDocs\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12\x41\n\x10\x43reateConnection\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00\x12\x44\n\x11\x43reateConnections\x12\x1b.api.ConnectionConstructors\x1a\x10.api.Connections\"\x00\x12;\n\x10SearchAndConnect\x12\x13.api.SConnectFilter\x1a\x10.api.Connections\"\x00\x12,\n\rGetConnection\x12\x08.api.Ref\x1a\x0f.api.Connection\"\x00\x12\x34\n\x11SearchConnections\x12\x0b.api.Filter\x1a\x10.api.Connections\"\x00\x12.\n\x0e\x45\x64itConnection\x12\t.api.Edit\x1a\x0f.api.Connection\"\x00\x12\x33\n\x0f\x45\x64itConnections\x12\x0c.api.EFilter\x1a\x10.api.Connections\"\x00\x12\x33\n\rDelConnection\x12\x08.api.Ref\x1a\x16.google.protobuf.Empty\"\x00\x12\x37\n\x0e\x44\x65lConnections\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12\x33\n\x0f\x43onnectionsFrom\x12\x0c.api.CFilter\x1a\x10.api.Connections\"\x00\x12\x31\n\rConnectionsTo\x12\x0c.api.CFilter\x1a\x10.api.Connections\"\x00\x12\x39\n\rAggregateDocs\x12\x0e.api.AggFilter\x1a\x16.google.protobuf.Value\"\x00\x12@\n\x14\x41ggregateConnections\x12\x0e.api.AggFilter\x1a\x16.google.protobuf.Value\"\x00\x12\x39\n\x07Publish\x12\x14.api.OutboundMessage\x1a\x16.google.protobuf.Empty\"\x00\x12.\n\tSubscribe\x12\x0f.api.ChanFilter\x1a\x0c.api.Message\"\x00\x30\x01\x12:\n\x13PushDocConstructors\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00(\x01\x30\x01\x12O\n\x1aPushConnectionConstructors\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00(\x01\x30\x01\x12\x30\n\x08SeedDocs\x12\x08.api.Doc\x1a\x16.google.protobuf.Empty\"\x00(\x01\x12>\n\x0fSeedConnections\x12\x0f.api.Connection\x1a\x16.google.protobuf.Empty\"\x00(\x01\x42\x07Z\x05\x61pipbb\x06proto3')
+  serialized_pb=_b('\n\rgraphik.proto\x12\x03\x61pi\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x36github.com/mwitkow/go-proto-validators/validator.proto\"E\n\x03Ref\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1d\n\x03gid\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\">\n\x0eRefConstructor\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0b\n\x03gid\x18\x02 \x01(\t\"\x1e\n\x04Refs\x12\x16\n\x04refs\x18\x01 \x03(\x0b\x32\x08.api.Ref\"Q\n\x03\x44oc\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"g\n\x0e\x44ocConstructor\x12(\n\x03ref\x18\x01 \x01(\x0b\x32\x13.api.RefConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"4\n\x0f\x44ocConstructors\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.api.DocConstructor\"1\n\x04\x44ocs\x12\x16\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x08.api.Doc\x12\x11\n\tseek_next\x18\x02 \x01(\t\"\xa8\x01\n\nConnection\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x03 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x04 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\xbe\x01\n\x15\x43onnectionConstructor\x12(\n\x03ref\x18\x01 \x01(\x0b\x32\x13.api.RefConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x06 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\x9b\x01\n\x0eSConnectFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12\r\n\x05gtype\x18\x02 \x01(\t\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"I\n\x16\x43onnectionConstructors\x12/\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x1a.api.ConnectionConstructor\"F\n\x0b\x43onnections\x12$\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x0f.api.Connection\x12\x11\n\tseek_next\x18\x02 \x01(\t\"\xdc\x01\n\x07\x43\x46ilter\x12!\n\x07\x64oc_ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x05 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0c\n\x04seek\x18\x06 \x01(\t\x12\x0f\n\x07reverse\x18\x07 \x01(\x08\"\xc7\x01\n\x06\x46ilter\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\x12\x15\n\x05limit\x18\x03 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x04 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0c\n\x04seek\x18\x05 \x01(\t\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\x12\r\n\x05index\x18\x07 \x01(\t\"\xa5\x01\n\tAggFilter\x12#\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.FilterB\x06\xe2\xdf\x1f\x02 \x01\x12?\n\taggregate\x18\x02 \x01(\tB,\xe2\xdf\x1f(\n&((^|, )(sum|count|max|min|avg|prod))+$\x12\x32\n\x05\x66ield\x18\x03 \x01(\tB#\xe2\xdf\x1f\x1f\n\x1d((^|, )(|^attributes.(.*)))+$\"\xcd\x01\n\x07TFilter\x12\x1e\n\x04root\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x16\n\x0e\x64oc_expression\x18\x02 \x01(\t\x12\x1d\n\x15\x63onnection_expression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x05\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x05 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\"\x9c\x01\n\x10IndexConstructor\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"R\n\nAuthorizer\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\"3\n\x0b\x41uthorizers\x12$\n\x0b\x61uthorizers\x18\x01 \x03(\x0b\x32\x0f.api.Authorizer\"\x99\x01\n\rTypeValidator\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x04 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x05 \x01(\x08\"8\n\x0eTypeValidators\x12&\n\nvalidators\x18\x01 \x03(\x0b\x32\x12.api.TypeValidator\"\x91\x01\n\x05Index\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"&\n\x07Indexes\x12\x1b\n\x07indexes\x18\x01 \x03(\x0b\x32\n.api.Index\"C\n\nChanFilter\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\"G\n\x05Graph\x12\x17\n\x04\x64ocs\x18\x01 \x01(\x0b\x32\t.api.Docs\x12%\n\x0b\x63onnections\x18\x02 \x01(\x0b\x32\x10.api.Connections\"\xa2\x02\n\x05\x46lags\x12\x19\n\x11open_id_discovery\x18\x01 \x01(\t\x12\x14\n\x0cstorage_path\x18\x02 \x01(\t\x12\x0f\n\x07metrics\x18\x03 \x01(\x08\x12\x15\n\rallow_headers\x18\x05 \x03(\t\x12\x15\n\rallow_methods\x18\x06 \x03(\t\x12\x15\n\rallow_origins\x18\x07 \x03(\t\x12\x12\n\nroot_users\x18\x08 \x03(\t\x12\x10\n\x08tls_cert\x18\t \x01(\t\x12\x0f\n\x07tls_key\x18\n \x01(\t\x12\x1c\n\x14playground_client_id\x18\x0b \x01(\t\x12 \n\x18playground_client_secret\x18\x0c \x01(\t\x12\x1b\n\x13playground_redirect\x18\r \x01(\t\"R\n\x04\x45\x64it\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"S\n\x07\x45\x46ilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"\x17\n\x04Pong\x12\x0f\n\x07message\x18\x01 \x01(\t\"c\n\x0fOutboundMessage\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\"\xb4\x01\n\x07Message\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\x12 \n\x06sender\x18\x03 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\"\xa4\x01\n\x06Schema\x12\x18\n\x10\x63onnection_types\x18\x01 \x03(\t\x12\x11\n\tdoc_types\x18\x02 \x03(\t\x12%\n\x0b\x61uthorizers\x18\x03 \x01(\x0b\x32\x10.api.Authorizers\x12\'\n\nvalidators\x18\x04 \x01(\x0b\x32\x13.api.TypeValidators\x12\x1d\n\x07indexes\x18\x05 \x01(\x0b\x32\x0c.api.Indexes\" \n\nExprFilter\x12\x12\n\nexpression\x18\x01 \x01(\t\"\xb0\x01\n\x07Request\x12 \n\x06method\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\"\n\x08identity\x18\x02 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12(\n\x07request\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct*\'\n\tDirection\x12\x08\n\x04None\x10\x00\x12\x08\n\x04\x46rom\x10\x01\x12\x06\n\x02To\x10\x02\x32\x97\x0e\n\x0f\x44\x61tabaseService\x12+\n\x04Ping\x12\x16.google.protobuf.Empty\x1a\t.api.Pong\"\x00\x12\x32\n\tGetSchema\x12\x16.google.protobuf.Empty\x1a\x0b.api.Schema\"\x00\x12<\n\x0eSetAuthorizers\x12\x10.api.Authorizers\x1a\x16.google.protobuf.Empty\"\x00\x12\x34\n\nSetIndexes\x12\x0c.api.Indexes\x1a\x16.google.protobuf.Empty\"\x00\x12\x42\n\x11SetTypeValidators\x12\x13.api.TypeValidators\x1a\x16.google.protobuf.Empty\"\x00\x12(\n\x02Me\x12\x16.google.protobuf.Empty\x1a\x08.api.Doc\"\x00\x12,\n\tCreateDoc\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00\x12/\n\nCreateDocs\x12\x14.api.DocConstructors\x1a\t.api.Docs\"\x00\x12\x1e\n\x06GetDoc\x12\x08.api.Ref\x1a\x08.api.Doc\"\x00\x12&\n\nSearchDocs\x12\x0b.api.Filter\x1a\t.api.Docs\"\x00\x12%\n\x08Traverse\x12\x0c.api.TFilter\x1a\t.api.Docs\"\x00\x12 \n\x07\x45\x64itDoc\x12\t.api.Edit\x1a\x08.api.Doc\"\x00\x12%\n\x08\x45\x64itDocs\x12\x0c.api.EFilter\x1a\t.api.Docs\"\x00\x12,\n\x06\x44\x65lDoc\x12\x08.api.Ref\x1a\x16.google.protobuf.Empty\"\x00\x12\x30\n\x07\x44\x65lDocs\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12\x41\n\x10\x43reateConnection\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00\x12\x44\n\x11\x43reateConnections\x12\x1b.api.ConnectionConstructors\x1a\x10.api.Connections\"\x00\x12;\n\x10SearchAndConnect\x12\x13.api.SConnectFilter\x1a\x10.api.Connections\"\x00\x12,\n\rGetConnection\x12\x08.api.Ref\x1a\x0f.api.Connection\"\x00\x12\x34\n\x11SearchConnections\x12\x0b.api.Filter\x1a\x10.api.Connections\"\x00\x12.\n\x0e\x45\x64itConnection\x12\t.api.Edit\x1a\x0f.api.Connection\"\x00\x12\x33\n\x0f\x45\x64itConnections\x12\x0c.api.EFilter\x1a\x10.api.Connections\"\x00\x12\x33\n\rDelConnection\x12\x08.api.Ref\x1a\x16.google.protobuf.Empty\"\x00\x12\x37\n\x0e\x44\x65lConnections\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12\x33\n\x0f\x43onnectionsFrom\x12\x0c.api.CFilter\x1a\x10.api.Connections\"\x00\x12\x31\n\rConnectionsTo\x12\x0c.api.CFilter\x1a\x10.api.Connections\"\x00\x12\x39\n\rAggregateDocs\x12\x0e.api.AggFilter\x1a\x16.google.protobuf.Value\"\x00\x12@\n\x14\x41ggregateConnections\x12\x0e.api.AggFilter\x1a\x16.google.protobuf.Value\"\x00\x12\x39\n\x07Publish\x12\x14.api.OutboundMessage\x1a\x16.google.protobuf.Empty\"\x00\x12.\n\tSubscribe\x12\x0f.api.ChanFilter\x1a\x0c.api.Message\"\x00\x30\x01\x12:\n\x13PushDocConstructors\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00(\x01\x30\x01\x12O\n\x1aPushConnectionConstructors\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00(\x01\x30\x01\x12\x30\n\x08SeedDocs\x12\x08.api.Doc\x1a\x16.google.protobuf.Empty\"\x00(\x01\x12>\n\x0fSeedConnections\x12\x0f.api.Connection\x1a\x16.google.protobuf.Empty\"\x00(\x01\x42\x07Z\x05\x61pipbb\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,google_dot_protobuf_dot_any__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,github_dot_com_dot_mwitkow_dot_go__proto__validators_dot_validator__pb2.DESCRIPTOR,])
 
@@ -50,8 +50,8 @@ _DIRECTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4255,
-  serialized_end=4294,
+  serialized_start=4118,
+  serialized_end=4157,
 )
 _sym_db.RegisterEnumDescriptor(_DIRECTION)
 
@@ -314,82 +314,6 @@ _DOCS = _descriptor.Descriptor(
 )
 
 
-_TRAVERSAL = _descriptor.Descriptor(
-  name='Traversal',
-  full_name='api.Traversal',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='doc', full_name='api.Traversal.doc', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='relative_ref', full_name='api.Traversal.relative_ref', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='direction', full_name='api.Traversal.direction', index=2,
-      number=3, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=657,
-  serialized_end=759,
-)
-
-
-_TRAVERSALS = _descriptor.Descriptor(
-  name='Traversals',
-  full_name='api.Traversals',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='traversals', full_name='api.Traversals.traversals', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=761,
-  serialized_end=809,
-)
-
-
 _CONNECTION = _descriptor.Descriptor(
   name='Connection',
   full_name='api.Connection',
@@ -444,8 +368,8 @@ _CONNECTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=812,
-  serialized_end=980,
+  serialized_start=658,
+  serialized_end=826,
 )
 
 
@@ -503,8 +427,8 @@ _CONNECTIONCONSTRUCTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=983,
-  serialized_end=1173,
+  serialized_start=829,
+  serialized_end=1019,
 )
 
 
@@ -562,8 +486,8 @@ _SCONNECTFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1176,
-  serialized_end=1331,
+  serialized_start=1022,
+  serialized_end=1177,
 )
 
 
@@ -593,8 +517,8 @@ _CONNECTIONCONSTRUCTORS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1333,
-  serialized_end=1406,
+  serialized_start=1179,
+  serialized_end=1252,
 )
 
 
@@ -631,8 +555,8 @@ _CONNECTIONS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1408,
-  serialized_end=1478,
+  serialized_start=1254,
+  serialized_end=1324,
 )
 
 
@@ -704,8 +628,8 @@ _CFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1481,
-  serialized_end=1701,
+  serialized_start=1327,
+  serialized_end=1547,
 )
 
 
@@ -777,8 +701,8 @@ _FILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1704,
-  serialized_end=1903,
+  serialized_start=1550,
+  serialized_end=1749,
 )
 
 
@@ -822,8 +746,8 @@ _AGGFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1906,
-  serialized_end=2071,
+  serialized_start=1752,
+  serialized_end=1917,
 )
 
 
@@ -869,6 +793,13 @@ _TFILTER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=_b('\342\337\0371\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$'), file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='reverse', full_name='api.TFilter.reverse', index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -881,8 +812,8 @@ _TFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2074,
-  serialized_end=2262,
+  serialized_start=1920,
+  serialized_end=2125,
 )
 
 
@@ -940,8 +871,8 @@ _INDEXCONSTRUCTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2265,
-  serialized_end=2421,
+  serialized_start=2128,
+  serialized_end=2284,
 )
 
 
@@ -978,8 +909,8 @@ _AUTHORIZER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2423,
-  serialized_end=2505,
+  serialized_start=2286,
+  serialized_end=2368,
 )
 
 
@@ -1009,8 +940,8 @@ _AUTHORIZERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2507,
-  serialized_end=2558,
+  serialized_start=2370,
+  serialized_end=2421,
 )
 
 
@@ -1068,8 +999,8 @@ _TYPEVALIDATOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2561,
-  serialized_end=2714,
+  serialized_start=2424,
+  serialized_end=2577,
 )
 
 
@@ -1099,8 +1030,8 @@ _TYPEVALIDATORS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2716,
-  serialized_end=2772,
+  serialized_start=2579,
+  serialized_end=2635,
 )
 
 
@@ -1158,8 +1089,8 @@ _INDEX = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2775,
-  serialized_end=2920,
+  serialized_start=2638,
+  serialized_end=2783,
 )
 
 
@@ -1189,8 +1120,8 @@ _INDEXES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2922,
-  serialized_end=2960,
+  serialized_start=2785,
+  serialized_end=2823,
 )
 
 
@@ -1227,8 +1158,8 @@ _CHANFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2962,
-  serialized_end=3029,
+  serialized_start=2825,
+  serialized_end=2892,
 )
 
 
@@ -1265,8 +1196,8 @@ _GRAPH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3031,
-  serialized_end=3102,
+  serialized_start=2894,
+  serialized_end=2965,
 )
 
 
@@ -1373,8 +1304,8 @@ _FLAGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3105,
-  serialized_end=3395,
+  serialized_start=2968,
+  serialized_end=3258,
 )
 
 
@@ -1411,8 +1342,8 @@ _EDIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3397,
-  serialized_end=3479,
+  serialized_start=3260,
+  serialized_end=3342,
 )
 
 
@@ -1449,8 +1380,8 @@ _EFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3481,
-  serialized_end=3564,
+  serialized_start=3344,
+  serialized_end=3427,
 )
 
 
@@ -1480,8 +1411,8 @@ _PONG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3566,
-  serialized_end=3589,
+  serialized_start=3429,
+  serialized_end=3452,
 )
 
 
@@ -1518,8 +1449,8 @@ _OUTBOUNDMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3591,
-  serialized_end=3690,
+  serialized_start=3454,
+  serialized_end=3553,
 )
 
 
@@ -1570,8 +1501,8 @@ _MESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3693,
-  serialized_end=3873,
+  serialized_start=3556,
+  serialized_end=3736,
 )
 
 
@@ -1629,8 +1560,8 @@ _SCHEMA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3876,
-  serialized_end=4040,
+  serialized_start=3739,
+  serialized_end=3903,
 )
 
 
@@ -1660,8 +1591,8 @@ _EXPRFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4042,
-  serialized_end=4074,
+  serialized_start=3905,
+  serialized_end=3937,
 )
 
 
@@ -1712,8 +1643,8 @@ _REQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4077,
-  serialized_end=4253,
+  serialized_start=3940,
+  serialized_end=4116,
 )
 
 _REFS.fields_by_name['refs'].message_type = _REF
@@ -1723,10 +1654,6 @@ _DOCCONSTRUCTOR.fields_by_name['ref'].message_type = _REFCONSTRUCTOR
 _DOCCONSTRUCTOR.fields_by_name['attributes'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
 _DOCCONSTRUCTORS.fields_by_name['docs'].message_type = _DOCCONSTRUCTOR
 _DOCS.fields_by_name['docs'].message_type = _DOC
-_TRAVERSAL.fields_by_name['doc'].message_type = _DOC
-_TRAVERSAL.fields_by_name['relative_ref'].message_type = _REFS
-_TRAVERSAL.fields_by_name['direction'].enum_type = _DIRECTION
-_TRAVERSALS.fields_by_name['traversals'].message_type = _TRAVERSAL
 _CONNECTION.fields_by_name['ref'].message_type = _REF
 _CONNECTION.fields_by_name['attributes'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
 _CONNECTION.fields_by_name['from'].message_type = _REF
@@ -1769,8 +1696,6 @@ DESCRIPTOR.message_types_by_name['Doc'] = _DOC
 DESCRIPTOR.message_types_by_name['DocConstructor'] = _DOCCONSTRUCTOR
 DESCRIPTOR.message_types_by_name['DocConstructors'] = _DOCCONSTRUCTORS
 DESCRIPTOR.message_types_by_name['Docs'] = _DOCS
-DESCRIPTOR.message_types_by_name['Traversal'] = _TRAVERSAL
-DESCRIPTOR.message_types_by_name['Traversals'] = _TRAVERSALS
 DESCRIPTOR.message_types_by_name['Connection'] = _CONNECTION
 DESCRIPTOR.message_types_by_name['ConnectionConstructor'] = _CONNECTIONCONSTRUCTOR
 DESCRIPTOR.message_types_by_name['SConnectFilter'] = _SCONNECTFILTER
@@ -1849,20 +1774,6 @@ Docs = _reflection.GeneratedProtocolMessageType('Docs', (_message.Message,), dic
   # @@protoc_insertion_point(class_scope:api.Docs)
   ))
 _sym_db.RegisterMessage(Docs)
-
-Traversal = _reflection.GeneratedProtocolMessageType('Traversal', (_message.Message,), dict(
-  DESCRIPTOR = _TRAVERSAL,
-  __module__ = 'graphik_pb2'
-  # @@protoc_insertion_point(class_scope:api.Traversal)
-  ))
-_sym_db.RegisterMessage(Traversal)
-
-Traversals = _reflection.GeneratedProtocolMessageType('Traversals', (_message.Message,), dict(
-  DESCRIPTOR = _TRAVERSALS,
-  __module__ = 'graphik_pb2'
-  # @@protoc_insertion_point(class_scope:api.Traversals)
-  ))
-_sym_db.RegisterMessage(Traversals)
 
 Connection = _reflection.GeneratedProtocolMessageType('Connection', (_message.Message,), dict(
   DESCRIPTOR = _CONNECTION,
@@ -2109,8 +2020,8 @@ _DATABASESERVICE = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=4297,
-  serialized_end=6118,
+  serialized_start=4160,
+  serialized_end=5975,
   methods=[
   _descriptor.MethodDescriptor(
     name='Ping',
@@ -2208,7 +2119,7 @@ _DATABASESERVICE = _descriptor.ServiceDescriptor(
     index=10,
     containing_service=None,
     input_type=_TFILTER,
-    output_type=_TRAVERSALS,
+    output_type=_DOCS,
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(

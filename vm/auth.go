@@ -15,7 +15,7 @@ type AuthVM struct {
 func NewAuthVM() (*AuthVM, error) {
 	e, err := cel.NewEnv(
 		cel.Declarations(
-			decls.NewVar("request", decls.NewMapType(decls.String, decls.Any)),
+			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {

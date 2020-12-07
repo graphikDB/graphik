@@ -271,48 +271,6 @@ func (n *Docs) Sort(field string) {
 	}
 }
 
-func (n *Traversals) Sort(field string) {
-	if n == nil {
-		return
-	}
-	switch {
-	case field == "ref.gid":
-		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return n.GetTraversals()[i].GetDoc().GetRef().GetGid() < n.GetTraversals()[j].GetDoc().GetRef().GetGid()
-		})
-	case field == "ref.gtype":
-		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return n.GetTraversals()[i].GetDoc().GetRef().GetGtype() < n.GetTraversals()[j].GetDoc().GetRef().GetGtype()
-		})
-	case field == "relative_ref":
-		sort.Slice(n.GetTraversals(), func(i, j int) bool {
-			return len(n.GetTraversals()[i].GetRelativeRef().GetRefs()) < len(n.GetTraversals()[j].GetRelativeRef().GetRefs())
-		})
-	case strings.Contains(field, "attributes."):
-		split := strings.Split(field, "attributes.")
-		if len(split) == 2 {
-			key := split[1]
-			sort.Slice(n.GetTraversals(), func(i, j int) bool {
-				fields := n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()
-				if fields == nil {
-					return true
-				}
-				if fields[key] == nil {
-					return true
-				}
-				switch n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()[key].GetKind() {
-				case &structpb.Value_NumberValue{}:
-					return n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()[key].GetNumberValue() < n.GetTraversals()[j].GetDoc().GetAttributes().GetFields()[key].GetNumberValue()
-				case &structpb.Value_StringValue{}:
-					return n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()[key].GetStringValue() < n.GetTraversals()[j].GetDoc().GetAttributes().GetFields()[key].GetStringValue()
-				default:
-					return fmt.Sprint(n.GetTraversals()[i].GetDoc().GetAttributes().GetFields()[key].AsInterface()) < fmt.Sprint(n.GetTraversals()[j].GetDoc().GetAttributes().GetFields()[key].AsInterface())
-				}
-			})
-		}
-	}
-}
-
 func (e *Connections) Sort(field string) {
 	if e == nil {
 		return

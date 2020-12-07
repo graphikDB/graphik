@@ -30,7 +30,7 @@ service DatabaseService {
   // SearchDocs searches the graph for docs
   rpc SearchDocs(Filter) returns(Docs){}
   // Traverse executes a depth first search of the graph for docs
-  rpc Traverse(TFilter) returns(Traversals){}
+  rpc Traverse(TFilter) returns(Docs){}
   // EditDoc patches/edits a docs attributes
   rpc EditDoc(Edit) returns(Doc){}
   // EditDocs patches a batch of docs attributes that pass the patch filter
@@ -70,12 +70,6 @@ service DatabaseService {
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
   rpc SeedConnections(stream Connection) returns(google.protobuf.Empty){}
-}
-
-enum Direction {
-  None = 0;
-  From = 1;
-  To = 2;
 }
 
 // Ref describes a doc/connection type & id
@@ -126,16 +120,6 @@ message Docs {
   // docs is an array of docs
   repeated Doc docs =1;
   string seek_next =2;
-}
-
-message Traversal {
-  Doc doc =1;
-  Refs relative_ref =2;
-  Direction direction =3;
-}
-
-message Traversals {
-  repeated Traversal traversals =1;
 }
 
 // Connection is a graph primitive that represents a relationship between two docs
@@ -237,6 +221,7 @@ message TFilter {
   int32 limit =4 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results.
   string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
+  bool reverse =6;
 }
 
 message IndexConstructor {

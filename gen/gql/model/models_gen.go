@@ -3,9 +3,6 @@
 package model
 
 import (
-	"fmt"
-	"io"
-	"strconv"
 	"time"
 )
 
@@ -189,16 +186,7 @@ type TFilter struct {
 	ConnectionExpression *string   `json:"connection_expression"`
 	Limit                int       `json:"limit"`
 	Sort                 *string   `json:"sort"`
-}
-
-type Traversal struct {
-	Doc         *Doc      `json:"doc"`
-	RelativeRef *Refs     `json:"relative_ref"`
-	Direction   Direction `json:"direction"`
-}
-
-type Traversals struct {
-	Traversals []*Traversal `json:"traversals"`
+	Reverse              *bool     `json:"reverse"`
 }
 
 type TypeValidator struct {
@@ -223,47 +211,4 @@ type TypeValidators struct {
 
 type TypeValidatorsInput struct {
 	Validators []*TypeValidatorInput `json:"validators"`
-}
-
-type Direction string
-
-const (
-	DirectionNone Direction = "NONE"
-	DirectionFrom Direction = "FROM"
-	DirectionTo   Direction = "TO"
-)
-
-var AllDirection = []Direction{
-	DirectionNone,
-	DirectionFrom,
-	DirectionTo,
-}
-
-func (e Direction) IsValid() bool {
-	switch e {
-	case DirectionNone, DirectionFrom, DirectionTo:
-		return true
-	}
-	return false
-}
-
-func (e Direction) String() string {
-	return string(e)
-}
-
-func (e *Direction) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = Direction(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid Direction", str)
-	}
-	return nil
-}
-
-func (e Direction) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
 }

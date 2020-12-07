@@ -104,29 +104,6 @@ func (this *Docs) Validate() error {
 	}
 	return nil
 }
-func (this *Traversal) Validate() error {
-	if this.Doc != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Doc); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Doc", err)
-		}
-	}
-	if this.RelativeRef != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.RelativeRef); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("RelativeRef", err)
-		}
-	}
-	return nil
-}
-func (this *Traversals) Validate() error {
-	for _, item := range this.Traversals {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Traversals", err)
-			}
-		}
-	}
-	return nil
-}
 func (this *Connection) Validate() error {
 	if nil == this.Ref {
 		return github_com_mwitkow_go_proto_validators.FieldError("Ref", fmt.Errorf("message must exist"))
