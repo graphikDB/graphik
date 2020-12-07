@@ -100,41 +100,6 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 					return true
 				}
 			}
-			if _, ok := d.visited[e.From.String()]; !ok {
-				from, err := d.g.getDoc(ctx, tx, e.From)
-				if err != nil {
-					if !strings.Contains(err.Error(), "no such key") {
-						logger.Error("dfs failure", zap.Error(err))
-					}
-					return true
-				}
-				if docProgram == nil {
-					traversalRef = append(traversalRef, from.GetRef())
-					d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-						Doc:         from,
-						RelativeRef: &apipb.Refs{Refs: traversalRef},
-						Direction:   apipb.Direction_From,
-					})
-				} else {
-					res, err := d.g.vm.Doc().Eval(from, *docProgram)
-					if err != nil {
-						if !strings.Contains(err.Error(), "no such key") {
-							logger.Error("dfs failure", zap.Error(err))
-						}
-						return true
-					}
-					if res {
-						traversalRef = append(traversalRef, from.GetRef())
-						d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-							Doc:         from,
-							RelativeRef: &apipb.Refs{Refs: traversalRef},
-							Direction:   apipb.Direction_From,
-						})
-					}
-				}
-				d.visited[from.Ref.String()] = struct{}{}
-				d.stack.Push(from)
-			}
 			if _, ok := d.visited[e.To.String()]; !ok {
 				to, err := d.g.getDoc(ctx, tx, e.To)
 				if err != nil {
@@ -221,41 +186,6 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 				}
 				d.visited[from.Ref.String()] = struct{}{}
 				d.stack.Push(from)
-			}
-			if _, ok := d.visited[e.To.String()]; !ok {
-				to, err := d.g.getDoc(ctx, tx, e.To)
-				if err != nil {
-					if !strings.Contains(err.Error(), "no such key") {
-						logger.Error("dfs failure", zap.Error(err))
-					}
-					return true
-				}
-				if docProgram == nil {
-					traversalRef = append(traversalRef, to.GetRef())
-					d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-						Doc:         to,
-						RelativeRef: &apipb.Refs{Refs: traversalRef},
-						Direction:   apipb.Direction_To,
-					})
-				} else {
-					res, err := d.g.vm.Doc().Eval(to, *docProgram)
-					if err != nil {
-						if !strings.Contains(err.Error(), "no such key") {
-							logger.Error("dfs failure", zap.Error(err))
-						}
-						return true
-					}
-					if res {
-						traversalRef = append(traversalRef, to.GetRef())
-						d.docs.Traversals = append(d.docs.Traversals, &apipb.Traversal{
-							Doc:         to,
-							RelativeRef: &apipb.Refs{Refs: traversalRef},
-							Direction:   apipb.Direction_To,
-						})
-					}
-				}
-				d.visited[to.Ref.String()] = struct{}{}
-				d.stack.Push(to)
 			}
 			return len(d.docs.Traversals) < int(d.filter.Limit)
 		}); err != nil {
