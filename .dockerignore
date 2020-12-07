@@ -4,3 +4,4 @@ images
 Makefile
 gen/js
 gen/python
+.env
