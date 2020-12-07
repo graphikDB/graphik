@@ -38,7 +38,6 @@ func (m *Metadata) AsMap() map[string]interface{} {
 	return map[string]interface{}{
 		"created_at": m.GetCreatedAt(),
 		"updated_at": m.GetUpdatedAt(),
-		"updated_by": m.GetUpdatedBy(),
 		"version":    m.GetVersion(),
 	}
 }

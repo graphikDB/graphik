@@ -32,22 +32,13 @@ type typeValidator struct {
 }
 
 func (g *Graph) updateMeta(ctx context.Context, meta *apipb.Metadata) {
-	identity := g.getIdentity(ctx)
 	if meta == nil {
 		meta = &apipb.Metadata{}
 	}
 	if meta.GetCreatedAt() == nil {
 		meta.CreatedAt = timestamppb.Now()
 	}
-	if meta.GetCreatedBy() == nil {
-		meta.CreatedBy = identity.GetPath()
-	}
-	if identity != nil {
-		meta.UpdatedBy = identity.GetPath()
-	}
-
 	meta.UpdatedAt = timestamppb.Now()
-
 	meta.Version += 1
 }
 
@@ -475,10 +466,10 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	if err != nil {
 		return nil, err
 	}
-	connectionBucket := tx.Bucket(dbConnections)
-	connectionBucket = connectionBucket.Bucket([]byte(connection.GetPath().GetGtype()))
+	bucket := tx.Bucket(dbConnections)
+	connectionBucket := bucket.Bucket([]byte(connection.GetPath().GetGtype()))
 	if connectionBucket == nil {
-		connectionBucket, err = connectionBucket.CreateBucketIfNotExists([]byte(connection.GetPath().GetGtype()))
+		connectionBucket, err = bucket.CreateBucketIfNotExists([]byte(connection.GetPath().GetGtype()))
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to create bucket %s", connection.GetPath().GetGtype())
 		}
@@ -536,8 +527,12 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Path) (*ap
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
+	if path == nil {
+		return nil, ErrNotFound
+	}
 	var doc apipb.Doc
-	bucket := tx.Bucket(dbDocs).Bucket([]byte(path.Gtype))
+	docsBucket := tx.Bucket(dbDocs)
+	bucket := docsBucket.Bucket([]byte(path.GetGtype()))
 	if bucket == nil {
 		return nil, ErrNotFound
 	}
@@ -681,8 +676,6 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 			Metadata: &apipb.Metadata{
 				CreatedAt: now,
 				UpdatedAt: now,
-				CreatedBy: path,
-				UpdatedBy: path,
 			},
 		}
 		newDock, err = g.setDoc(ctx, tx, newDock)

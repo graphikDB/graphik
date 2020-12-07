@@ -486,8 +486,6 @@ Metadata is general metadata collected on docs/connections
 | ----- | ---- | ----- | ----------- |
 | created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | created_at is the unix timestamp when the doc/connection was created |
 | updated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | updated_at is the unix timestamp when the doc/connection was last updated |
-| created_by | [Path](#api.Path) |  | created_by is the identity that initially created the doc/connection |
-| updated_by | [Path](#api.Path) |  | updated_by is the identity that last modified the doc/connection |
 | version | [uint64](#uint64) |  | version iterates by 1 every time the doc/connection is modified |
 
 

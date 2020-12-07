@@ -28,10 +28,6 @@ type Metadata {
   created_at: Time!
   # updated_at is the unix timestamp when the doc/connection was last updated
   updated_at: Time!
-  # created_by is the identity that initially created the doc/connection
-  createdBy: Path!
-  # updated_by is the identity that last modified the doc/connection
-  updated_by: Path!
   # version iterates by 1 every time the doc/connection is modified
   version: Int!
 }

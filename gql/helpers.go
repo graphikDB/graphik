@@ -34,8 +34,6 @@ func protoMetadata(m *model.Metadata) *apipb.Metadata {
 	return &apipb.Metadata{
 		CreatedAt: timestamppb.New(m.CreatedAt),
 		UpdatedAt: timestamppb.New(m.UpdatedAt),
-		CreatedBy: protoPath(m.CreatedBy),
-		UpdatedBy: protoPath(m.UpdatedBy),
 		Version:   uint64(m.Version),
 	}
 }
@@ -122,10 +120,9 @@ func gqlPath(p *apipb.Path) *model.Path {
 
 func gqlMetadata(m *apipb.Metadata) *model.Metadata {
 	return &model.Metadata{
-		CreatedBy: gqlPath(m.GetCreatedBy()),
-		UpdatedBy: gqlPath(m.GetUpdatedBy()),
 		CreatedAt: m.GetCreatedAt().AsTime(),
 		UpdatedAt: m.GetUpdatedAt().AsTime(),
+		Version:   int(m.GetVersion()),
 	}
 }
 

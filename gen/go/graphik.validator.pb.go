@@ -59,19 +59,6 @@ func (this *Metadata) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedAt", err)
 		}
 	}
-	if this.CreatedBy != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.CreatedBy); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("CreatedBy", err)
-		}
-	}
-	if nil == this.UpdatedBy {
-		return github_com_mwitkow_go_proto_validators.FieldError("UpdatedBy", fmt.Errorf("message must exist"))
-	}
-	if this.UpdatedBy != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.UpdatedBy); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("UpdatedBy", err)
-		}
-	}
 	if !(this.Version > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Version", fmt.Errorf(`value '%v' must be greater than '0'`, this.Version))
 	}

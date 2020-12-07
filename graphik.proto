@@ -101,12 +101,8 @@ message Metadata {
   google.protobuf.Timestamp created_at =1 [(validator.field) = {msg_exists : true}];
   // updated_at is the unix timestamp when the doc/connection was last updated
   google.protobuf.Timestamp updated_at =2 [(validator.field) = {msg_exists : true}];
-  // created_by is the identity that initially created the doc/connection
-  Path created_by =3;
-  // updated_by is the identity that last modified the doc/connection
-  Path updated_by =4 [(validator.field) = {msg_exists : true}];
   // version iterates by 1 every time the doc/connection is modified
-  uint64 version =6 [(validator.field) = {int_gt : 0}];
+  uint64 version =3 [(validator.field) = {int_gt : 0}];
 }
 
 // Paths is an array of paths

@@ -315,19 +315,46 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 				Gtype: constructor.GetPath().GetGtype(),
 				Gid:   constructor.GetPath().GetGid(),
 			}
+			if doc, err := g.getDoc(ctx, tx, path); err == nil || doc != nil {
+				return ErrAlreadyExists
+			}
 			doc := &apipb.Doc{
 				Path:       path,
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
 					CreatedAt: now,
 					UpdatedAt: now,
-					UpdatedBy: identity.GetPath(),
-					CreatedBy: identity.GetPath(),
 				},
 			}
 			doc, err = g.setDoc(ctx, tx, doc)
 			if err != nil {
 				return err
+			}
+			if doc.GetPath().GetGid() != identity.GetPath().GetGid() && doc.GetPath().GetGtype() != identity.GetPath().GetGtype() {
+				_, err := g.setConnection(ctx, tx, &apipb.Connection{
+					Path: &apipb.Path{Gtype: "created", Gid: ksuid.New().String()},
+					Attributes: apipb.NewStruct(map[string]interface{}{
+						"method": method,
+					}),
+					Directed: true,
+					From:     identity.GetPath(),
+					To:       doc.GetPath(),
+				})
+				if err != nil {
+					return err
+				}
+				_, err = g.setConnection(ctx, tx, &apipb.Connection{
+					Path: &apipb.Path{Gtype: "created_by", Gid: ksuid.New().String()},
+					Attributes: apipb.NewStruct(map[string]interface{}{
+						"method": method,
+					}),
+					Directed: true,
+					To:       identity.GetPath(),
+					From:     doc.GetPath(),
+				})
+				if err != nil {
+					return err
+				}
 			}
 			docs.Docs = append(docs.Docs, doc)
 		}
@@ -399,9 +426,7 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 				Attributes: constructor.GetAttributes(),
 				Metadata: &apipb.Metadata{
 					CreatedAt: now,
-					CreatedBy: identity.GetPath(),
 					UpdatedAt: now,
-					UpdatedBy: identity.GetPath(),
 				},
 				Directed: constructor.Directed,
 				From:     constructor.GetFrom(),
@@ -675,7 +700,6 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EFilter) (*apipb.Docs
 			doc.Attributes.GetFields()[k] = v
 		}
 		doc.GetMetadata().UpdatedAt = now
-		doc.GetMetadata().UpdatedBy = identity.GetPath()
 		docs = append(docs, doc)
 		changes.Paths = append(changes.Paths, doc.GetPath())
 	}
@@ -936,7 +960,6 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 			connection.Attributes.GetFields()[k] = v
 		}
 		connection.GetMetadata().UpdatedAt = timestamppb.Now()
-		connection.GetMetadata().UpdatedBy = identity.GetPath()
 		connection, err = n.setConnection(ctx, tx, connection)
 		if err != nil {
 			return err
@@ -971,7 +994,6 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EFilter) (*api
 			connection.Attributes.GetFields()[k] = v
 		}
 		connection.GetMetadata().UpdatedAt = now
-		connection.GetMetadata().UpdatedBy = identity.GetPath()
 		connections = append(connections, connection)
 		changes.Paths = append(changes.Paths, connection.GetPath())
 	}

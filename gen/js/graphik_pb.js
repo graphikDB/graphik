@@ -442,9 +442,7 @@ proto.api.Metadata.toObject = function(includeInstance, msg) {
   var f, obj = {
     createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     updatedAt: (f = msg.getUpdatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    createdBy: (f = msg.getCreatedBy()) && proto.api.Path.toObject(includeInstance, f),
-    updatedBy: (f = msg.getUpdatedBy()) && proto.api.Path.toObject(includeInstance, f),
-    version: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    version: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -492,16 +490,6 @@ proto.api.Metadata.deserializeBinaryFromReader = function(msg, reader) {
       msg.setUpdatedAt(value);
       break;
     case 3:
-      var value = new proto.api.Path;
-      reader.readMessage(value,proto.api.Path.deserializeBinaryFromReader);
-      msg.setCreatedBy(value);
-      break;
-    case 4:
-      var value = new proto.api.Path;
-      reader.readMessage(value,proto.api.Path.deserializeBinaryFromReader);
-      msg.setUpdatedBy(value);
-      break;
-    case 6:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setVersion(value);
       break;
@@ -550,26 +538,10 @@ proto.api.Metadata.serializeBinaryToWriter = function(message, writer) {
       google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
-  f = message.getCreatedBy();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.api.Path.serializeBinaryToWriter
-    );
-  }
-  f = message.getUpdatedBy();
-  if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      proto.api.Path.serializeBinaryToWriter
-    );
-  }
   f = message.getVersion();
   if (f !== 0) {
     writer.writeUint64(
-      6,
+      3,
       f
     );
   }
@@ -637,77 +609,17 @@ proto.api.Metadata.prototype.hasUpdatedAt = function() {
 
 
 /**
- * optional Path created_by = 3;
- * @return {?proto.api.Path}
- */
-proto.api.Metadata.prototype.getCreatedBy = function() {
-  return /** @type{?proto.api.Path} */ (
-    jspb.Message.getWrapperField(this, proto.api.Path, 3));
-};
-
-
-/** @param {?proto.api.Path|undefined} value */
-proto.api.Metadata.prototype.setCreatedBy = function(value) {
-  jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-proto.api.Metadata.prototype.clearCreatedBy = function() {
-  this.setCreatedBy(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.Metadata.prototype.hasCreatedBy = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * optional Path updated_by = 4;
- * @return {?proto.api.Path}
- */
-proto.api.Metadata.prototype.getUpdatedBy = function() {
-  return /** @type{?proto.api.Path} */ (
-    jspb.Message.getWrapperField(this, proto.api.Path, 4));
-};
-
-
-/** @param {?proto.api.Path|undefined} value */
-proto.api.Metadata.prototype.setUpdatedBy = function(value) {
-  jspb.Message.setWrapperField(this, 4, value);
-};
-
-
-proto.api.Metadata.prototype.clearUpdatedBy = function() {
-  this.setUpdatedBy(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.Metadata.prototype.hasUpdatedBy = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * optional uint64 version = 6;
+ * optional uint64 version = 3;
  * @return {number}
  */
 proto.api.Metadata.prototype.getVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /** @param {number} value */
 proto.api.Metadata.prototype.setVersion = function(value) {
-  jspb.Message.setProto3IntField(this, 6, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
