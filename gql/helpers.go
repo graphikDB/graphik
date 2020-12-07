@@ -319,19 +319,18 @@ func protoIndex(index *model.IndexInput) *apipb.Index {
 	return i
 }
 
-func protoAuthorizer(index *model.IndexInput) *apipb.Index {
-	i := &apipb.Index{
-		Name:       index.Name,
-		Gtype:      index.Gtype,
-		Expression: index.Expression,
+func protoAuthorizer(auth *model.AuthorizerInput) *apipb.Authorizer {
+	return &apipb.Authorizer{
+		Name:       auth.Name,
+		Expression: auth.Expression,
 	}
-	if index.Docs != nil {
-		i.Docs = *index.Docs
+}
+
+func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidator {
+	return &apipb.TypeValidator{
+		Name:       validator.Name,
+		Expression: validator.Expression,
 	}
-	if index.Connections != nil {
-		i.Connections = *index.Connections
-	}
-	return i
 }
 
 func gqlTraversal(traversal *apipb.DocTraversal) *model.DocTraversal {

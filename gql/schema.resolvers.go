@@ -5,7 +5,6 @@ package gql
 
 import (
 	"context"
-
 	apipb "github.com/autom8ter/graphik/gen/go"
 	generated1 "github.com/autom8ter/graphik/gen/gql/generated"
 	"github.com/autom8ter/graphik/gen/gql/model"
@@ -66,6 +65,36 @@ func (r *mutationResolver) Publish(ctx context.Context, input model.OutboundMess
 	return r.client.Publish(ctx, &apipb.OutboundMessage{
 		Channel: input.Channel,
 		Data:    apipb.NewStruct(input.Data),
+	})
+}
+
+func (r *mutationResolver) SetIndexes(ctx context.Context, input model.IndexesInput) (*emptypb.Empty, error) {
+	var indexes []*apipb.Index
+	for _, index := range input.Indexes {
+		indexes = append(indexes, protoIndex(index))
+	}
+	return r.client.SetIndexes(ctx, &apipb.Indexes{
+		Indexes: indexes,
+	})
+}
+
+func (r *mutationResolver) SetAuthorizers(ctx context.Context, input model.AuthorizersInput) (*emptypb.Empty, error) {
+	var authorizers []*apipb.Authorizer
+	for _, auth := range input.Authorizers {
+		authorizers = append(authorizers, protoAuthorizer(auth))
+	}
+	return r.client.SetAuthorizers(ctx, &apipb.Authorizers{
+		Authorizers: authorizers,
+	})
+}
+
+func (r *mutationResolver) SetTypeValidators(ctx context.Context, input model.TypeValidatorsInput) (*emptypb.Empty, error) {
+	var validators []*apipb.TypeValidator
+	for _, validator := range input.Validators {
+		validators = append(validators, protoTypeValidator(validator))
+	}
+	return r.client.SetTypeValidators(ctx, &apipb.TypeValidators{
+		Validators: validators,
 	})
 }
 

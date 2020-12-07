@@ -126,13 +126,16 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateConnection func(childComplexity int, input model.ConnectionConstructor) int
-		CreateDoc        func(childComplexity int, input model.DocConstructor) int
-		EditConnection   func(childComplexity int, input model.Edit) int
-		EditConnections  func(childComplexity int, input model.EditFilter) int
-		EditDoc          func(childComplexity int, input model.Edit) int
-		EditDocs         func(childComplexity int, input model.EditFilter) int
-		Publish          func(childComplexity int, input model.OutboundMessage) int
+		CreateConnection  func(childComplexity int, input model.ConnectionConstructor) int
+		CreateDoc         func(childComplexity int, input model.DocConstructor) int
+		EditConnection    func(childComplexity int, input model.Edit) int
+		EditConnections   func(childComplexity int, input model.EditFilter) int
+		EditDoc           func(childComplexity int, input model.Edit) int
+		EditDocs          func(childComplexity int, input model.EditFilter) int
+		Publish           func(childComplexity int, input model.OutboundMessage) int
+		SetAuthorizers    func(childComplexity int, input model.AuthorizersInput) int
+		SetIndexes        func(childComplexity int, input model.IndexesInput) int
+		SetTypeValidators func(childComplexity int, input model.TypeValidatorsInput) int
 	}
 
 	Path struct {
@@ -197,6 +200,9 @@ type MutationResolver interface {
 	EditConnection(ctx context.Context, input model.Edit) (*model.Connection, error)
 	EditConnections(ctx context.Context, input model.EditFilter) (*model.Connections, error)
 	Publish(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error)
+	SetIndexes(ctx context.Context, input model.IndexesInput) (*emptypb.Empty, error)
+	SetAuthorizers(ctx context.Context, input model.AuthorizersInput) (*emptypb.Empty, error)
+	SetTypeValidators(ctx context.Context, input model.TypeValidatorsInput) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, input *emptypb.Empty) (*model.Pong, error)
@@ -581,6 +587,42 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Publish(childComplexity, args["input"].(model.OutboundMessage)), true
+
+	case "Mutation.setAuthorizers":
+		if e.complexity.Mutation.SetAuthorizers == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setAuthorizers_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetAuthorizers(childComplexity, args["input"].(model.AuthorizersInput)), true
+
+	case "Mutation.setIndexes":
+		if e.complexity.Mutation.SetIndexes == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setIndexes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetIndexes(childComplexity, args["input"].(model.IndexesInput)), true
+
+	case "Mutation.setTypeValidators":
+		if e.complexity.Mutation.SetTypeValidators == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setTypeValidators_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetTypeValidators(childComplexity, args["input"].(model.TypeValidatorsInput)), true
 
 	case "Path.gid":
 		if e.complexity.Path.Gid == nil {
@@ -1266,9 +1308,9 @@ type Mutation {
   editConnections(input: EditFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty
-  #setIndexes(input: IndexesInput!): Empty
-  #setAuthorizers(input: AuthorizersInput!): Empty
- # setTypeValidators(input: TypeValidatorsInput!): Empty
+  setIndexes(input: IndexesInput!): Empty
+  setAuthorizers(input: AuthorizersInput!): Empty
+  setTypeValidators(input: TypeValidatorsInput!): Empty
 }
 
 type Query {
@@ -1406,6 +1448,51 @@ func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, raw
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNOutboundMessage2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐOutboundMessage(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_setAuthorizers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.AuthorizersInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNAuthorizersInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐAuthorizersInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_setIndexes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.IndexesInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNIndexesInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐIndexesInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_setTypeValidators_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.TypeValidatorsInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNTypeValidatorsInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTypeValidatorsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3261,6 +3348,123 @@ func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().Publish(rctx, args["input"].(model.OutboundMessage))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_setIndexes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_setIndexes_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SetIndexes(rctx, args["input"].(model.IndexesInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_setAuthorizers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_setAuthorizers_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SetAuthorizers(rctx, args["input"].(model.AuthorizersInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_setTypeValidators(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_setTypeValidators_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SetTypeValidators(rctx, args["input"].(model.TypeValidatorsInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6729,6 +6933,12 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "publish":
 			out.Values[i] = ec._Mutation_publish(ctx, field)
+		case "setIndexes":
+			out.Values[i] = ec._Mutation_setIndexes(ctx, field)
+		case "setAuthorizers":
+			out.Values[i] = ec._Mutation_setAuthorizers(ctx, field)
+		case "setTypeValidators":
+			out.Values[i] = ec._Mutation_setTypeValidators(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7426,6 +7636,11 @@ func (ec *executionContext) unmarshalNAuthorizerInput2ᚖgithubᚗcomᚋautom8te
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNAuthorizersInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐAuthorizersInput(ctx context.Context, v interface{}) (model.AuthorizersInput, error) {
+	res, err := ec.unmarshalInputAuthorizersInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7627,6 +7842,11 @@ func (ec *executionContext) unmarshalNIndexInput2ᚖgithubᚗcomᚋautom8terᚋg
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNIndexesInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐIndexesInput(ctx context.Context, v interface{}) (model.IndexesInput, error) {
+	res, err := ec.unmarshalInputIndexesInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7798,6 +8018,11 @@ func (ec *executionContext) marshalNTypeValidator2ᚖgithubᚗcomᚋautom8terᚋ
 func (ec *executionContext) unmarshalNTypeValidatorInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTypeValidatorInput(ctx context.Context, v interface{}) (*model.TypeValidatorInput, error) {
 	res, err := ec.unmarshalInputTypeValidatorInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNTypeValidatorsInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTypeValidatorsInput(ctx context.Context, v interface{}) (model.TypeValidatorsInput, error) {
+	res, err := ec.unmarshalInputTypeValidatorsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

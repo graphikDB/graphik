@@ -328,9 +328,9 @@ type Mutation {
   editConnections(input: EditFilter!): Connections!
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty
-  #setIndexes(input: IndexesInput!): Empty
-  #setAuthorizers(input: AuthorizersInput!): Empty
- # setTypeValidators(input: TypeValidatorsInput!): Empty
+  setIndexes(input: IndexesInput!): Empty
+  setAuthorizers(input: AuthorizersInput!): Empty
+  setTypeValidators(input: TypeValidatorsInput!): Empty
 }
 
 type Query {
