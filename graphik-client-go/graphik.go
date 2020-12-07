@@ -257,3 +257,49 @@ func (c *Client) SetAuthorizers(ctx context.Context, in *apipb.Authorizers, opts
 func (c *Client) SetTypeValidators(ctx context.Context, in *apipb.TypeValidators, opts ...grpc.CallOption) (*empty.Empty, error) {
 	return c.graph.SetTypeValidators(ctx, in, opts...)
 }
+
+func (c *Client) SeedDocs(ctx context.Context, docChan <-chan *apipb.Doc, opts ...grpc.CallOption) error {
+	stream, err := c.graph.SeedDocs(ctx, opts...)
+	if err != nil {
+		return err
+	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case msg := <-docChan:
+			if err := stream.Send(msg); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+func (c *Client) SeedConnections(ctx context.Context, connectionChan <-chan *apipb.Connection, opts ...grpc.CallOption) error {
+	stream, err := c.graph.SeedConnections(ctx, opts...)
+	if err != nil {
+		return err
+	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case msg := <-connectionChan:
+			if err := stream.Send(msg); err != nil {
+				return err
+			}
+		}
+	}
+}
+
+func (c *Client) SearchAndConnect(ctx context.Context, in *apipb.SConnectFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+	return c.graph.SearchAndConnect(ctx, in, opts...)
+}
+
+func (c *Client) Traverse(ctx context.Context, in *apipb.TFilter, opts ...grpc.CallOption) (*apipb.Traversals, error) {
+	return c.graph.Traverse(ctx, in, opts...)
+}
