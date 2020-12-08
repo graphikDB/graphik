@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/autom8ter/graphik/gen/go"
-	"github.com/autom8ter/graphik/generic/cache"
+	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/helpers"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/graphik/vm"
@@ -38,7 +38,7 @@ type Graph struct {
 	db              *bbolt.DB
 	jwksMu          sync.RWMutex
 	jwksSet         *jwk.Set
-	jwtCache        *cache.Cache
+	jwtCache        *generic.Cache
 	openID          *openIDConnect
 	path            string
 	mu              sync.RWMutex
@@ -47,9 +47,9 @@ type Graph struct {
 	machine         *machine.Machine
 	closers         []func()
 	closeOnce       sync.Once
-	indexes         *cache.Cache
-	authorizers     *cache.Cache
-	typeValidators  *cache.Cache
+	indexes         *generic.Cache
+	authorizers     *generic.Cache
+	typeValidators  *generic.Cache
 	rootUsers       []string
 }
 
@@ -79,10 +79,10 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},
-		jwtCache:        cache.New(m, 1*time.Minute),
-		indexes:         cache.New(m, 1*time.Hour),
-		authorizers:     cache.New(m, 1*time.Hour),
-		typeValidators:  cache.New(m, 1*time.Hour),
+		jwtCache:        generic.NewCache(m, 1*time.Minute),
+		indexes:         generic.NewCache(m, 1*time.Hour),
+		authorizers:     generic.NewCache(m, 1*time.Hour),
+		typeValidators:  generic.NewCache(m, 1*time.Hour),
 		rootUsers:       flgs.RootUsers,
 	}
 	if flgs.OpenIdDiscovery != "" {

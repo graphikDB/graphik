@@ -1,4 +1,4 @@
-package stack
+package generic
 
 type Stack struct {
 	top    *node
@@ -10,7 +10,7 @@ type node struct {
 	prev  *node
 }
 
-func New() *Stack {
+func NewStack() *Stack {
 	return &Stack{nil, 0}
 }
 

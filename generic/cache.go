@@ -1,4 +1,4 @@
-package cache
+package generic
 
 import (
 	"github.com/autom8ter/machine"
@@ -15,7 +15,7 @@ type item struct {
 	expires int64
 }
 
-func New(m *machine.Machine, garbageCollect time.Duration) *Cache {
+func NewCache(m *machine.Machine, garbageCollect time.Duration) *Cache {
 	cache := &Cache{
 		items: sync.Map{},
 	}

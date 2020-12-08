@@ -3,7 +3,7 @@ package database
 import (
 	"context"
 	apipb "github.com/autom8ter/graphik/gen/go"
-	"github.com/autom8ter/graphik/generic/stack"
+	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/google/cel-go/cel"
 	"go.etcd.io/bbolt"
@@ -14,7 +14,7 @@ import (
 // depthFirst implements stateful depth-first graph traversal.
 type depthFirst struct {
 	g             *Graph
-	stack         *stack.Stack
+	stack         *generic.Stack
 	visited       map[string]struct{}
 	traversals    *apipb.Traversals
 	filter        *apipb.TFilter
@@ -25,7 +25,7 @@ func (g *Graph) newDepthFirst(filter *apipb.TFilter) *depthFirst {
 	return &depthFirst{
 		g:             g,
 		filter:        filter,
-		stack:         stack.New(),
+		stack:         generic.NewStack(),
 		visited:       map[string]struct{}{},
 		traversals:    &apipb.Traversals{},
 		traversalPath: []*apipb.Ref{},

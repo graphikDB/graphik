@@ -1,12 +1,12 @@
-package stack_test
+package generic_test
 
 import (
-	stack2 "github.com/autom8ter/graphik/generic/stack"
+	"github.com/autom8ter/graphik/generic"
 	"testing"
 )
 
 func Test(t *testing.T) {
-	stck := stack2.New()
+	stck := generic.NewStack()
 	stck.Push("hello")
 	if stck.Len() != 1 {
 		t.Fatal("expected length of one")
