@@ -18,7 +18,7 @@ import (
 )
 
 func (r *mutationResolver) CreateDoc(ctx context.Context, input model.DocConstructor) (*model.Doc, error) {
-	doc, err := r.client.CreateDoc(ctx, protoDocC(&input))
+	doc, err := r.client.CreateDoc(ctx, protoDocC(input))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -31,8 +31,22 @@ func (r *mutationResolver) CreateDoc(ctx context.Context, input model.DocConstru
 	return gqlDoc(doc), nil
 }
 
+func (r *mutationResolver) CreateDocs(ctx context.Context, input model.DocConstructors) (*model.Docs, error) {
+	docs, err := r.client.CreateDocs(ctx, protoDocCs(input))
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlDocs(docs), nil
+}
+
 func (r *mutationResolver) EditDoc(ctx context.Context, input model.Edit) (*model.Doc, error) {
-	res, err := r.client.EditDoc(ctx, protoEdit(&input))
+	res, err := r.client.EditDoc(ctx, protoEdit(input))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -46,7 +60,7 @@ func (r *mutationResolver) EditDoc(ctx context.Context, input model.Edit) (*mode
 }
 
 func (r *mutationResolver) EditDocs(ctx context.Context, input model.EFilter) (*model.Docs, error) {
-	docs, err := r.client.EditDocs(ctx, protoEFilter(&input))
+	docs, err := r.client.EditDocs(ctx, protoEFilter(input))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -60,7 +74,7 @@ func (r *mutationResolver) EditDocs(ctx context.Context, input model.EFilter) (*
 }
 
 func (r *mutationResolver) DelDoc(ctx context.Context, input model.RefInput) (*emptypb.Empty, error) {
-	if e, err := r.client.DelDoc(ctx, protoIRef(&input)); err != nil {
+	if e, err := r.client.DelDoc(ctx, protoIRef(input)); err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
 			Path:    graphql.GetPath(ctx),
@@ -74,7 +88,7 @@ func (r *mutationResolver) DelDoc(ctx context.Context, input model.RefInput) (*e
 }
 
 func (r *mutationResolver) DelDocs(ctx context.Context, input model.Filter) (*emptypb.Empty, error) {
-	if e, err := r.client.DelDocs(ctx, protoFilter(&input)); err != nil {
+	if e, err := r.client.DelDocs(ctx, protoFilter(input)); err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
 			Path:    graphql.GetPath(ctx),
@@ -88,7 +102,7 @@ func (r *mutationResolver) DelDocs(ctx context.Context, input model.Filter) (*em
 }
 
 func (r *mutationResolver) CreateConnection(ctx context.Context, input model.ConnectionConstructor) (*model.Connection, error) {
-	res, err := r.client.CreateConnection(ctx, protoConnectionC(&input))
+	res, err := r.client.CreateConnection(ctx, protoConnectionC(input))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -101,8 +115,22 @@ func (r *mutationResolver) CreateConnection(ctx context.Context, input model.Con
 	return gqlConnection(res), nil
 }
 
+func (r *mutationResolver) CreateConnections(ctx context.Context, input model.ConnectionConstructors) (*model.Connections, error) {
+	connections, err := r.client.CreateConnections(ctx, protoConnectionCs(input))
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlConnections(connections), nil
+}
+
 func (r *mutationResolver) EditConnection(ctx context.Context, input model.Edit) (*model.Connection, error) {
-	res, err := r.client.EditConnection(ctx, protoEdit(&input))
+	res, err := r.client.EditConnection(ctx, protoEdit(input))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -116,7 +144,7 @@ func (r *mutationResolver) EditConnection(ctx context.Context, input model.Edit)
 }
 
 func (r *mutationResolver) EditConnections(ctx context.Context, input model.EFilter) (*model.Connections, error) {
-	connections, err := r.client.EditConnections(ctx, protoEFilter(&input))
+	connections, err := r.client.EditConnections(ctx, protoEFilter(input))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -130,7 +158,7 @@ func (r *mutationResolver) EditConnections(ctx context.Context, input model.EFil
 }
 
 func (r *mutationResolver) DelConnection(ctx context.Context, input model.RefInput) (*emptypb.Empty, error) {
-	if e, err := r.client.DelConnection(ctx, protoIRef(&input)); err != nil {
+	if e, err := r.client.DelConnection(ctx, protoIRef(input)); err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
 			Path:    graphql.GetPath(ctx),
@@ -144,7 +172,7 @@ func (r *mutationResolver) DelConnection(ctx context.Context, input model.RefInp
 }
 
 func (r *mutationResolver) DelConnections(ctx context.Context, input model.Filter) (*emptypb.Empty, error) {
-	if e, err := r.client.DelConnections(ctx, protoFilter(&input)); err != nil {
+	if e, err := r.client.DelConnections(ctx, protoFilter(input)); err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
 			Path:    graphql.GetPath(ctx),
@@ -234,7 +262,7 @@ func (r *mutationResolver) SetTypeValidators(ctx context.Context, input model.Ty
 	}
 }
 
-func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*model.Pong, error) {
+func (r *queryResolver) Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error) {
 	res, err := r.client.Ping(ctx, &emptypb.Empty{})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -248,7 +276,7 @@ func (r *queryResolver) Ping(ctx context.Context, input *emptypb.Empty) (*model.
 	return &model.Pong{Message: res.GetMessage()}, nil
 }
 
-func (r *queryResolver) GetSchema(ctx context.Context, input *emptypb.Empty) (*model.Schema, error) {
+func (r *queryResolver) GetSchema(ctx context.Context, where *emptypb.Empty) (*model.Schema, error) {
 	res, err := r.client.GetSchema(ctx, &emptypb.Empty{})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -262,7 +290,7 @@ func (r *queryResolver) GetSchema(ctx context.Context, input *emptypb.Empty) (*m
 	return gqlSchema(res), nil
 }
 
-func (r *queryResolver) Me(ctx context.Context, input *emptypb.Empty) (*model.Doc, error) {
+func (r *queryResolver) Me(ctx context.Context, where *emptypb.Empty) (*model.Doc, error) {
 	res, err := r.client.Me(ctx, &emptypb.Empty{})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -276,8 +304,8 @@ func (r *queryResolver) Me(ctx context.Context, input *emptypb.Empty) (*model.Do
 	return gqlDoc(res), nil
 }
 
-func (r *queryResolver) GetDoc(ctx context.Context, input model.RefInput) (*model.Doc, error) {
-	res, err := r.client.GetDoc(ctx, protoIRef(&input))
+func (r *queryResolver) GetDoc(ctx context.Context, where model.RefInput) (*model.Doc, error) {
+	res, err := r.client.GetDoc(ctx, protoIRef(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -290,8 +318,8 @@ func (r *queryResolver) GetDoc(ctx context.Context, input model.RefInput) (*mode
 	return gqlDoc(res), nil
 }
 
-func (r *queryResolver) SearchDocs(ctx context.Context, input model.Filter) (*model.Docs, error) {
-	res, err := r.client.SearchDocs(ctx, protoFilter(&input))
+func (r *queryResolver) SearchDocs(ctx context.Context, where model.Filter) (*model.Docs, error) {
+	res, err := r.client.SearchDocs(ctx, protoFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -304,8 +332,8 @@ func (r *queryResolver) SearchDocs(ctx context.Context, input model.Filter) (*mo
 	return gqlDocs(res), nil
 }
 
-func (r *queryResolver) Traverse(ctx context.Context, input model.TFilter) (*model.Traversals, error) {
-	res, err := r.client.Traverse(ctx, protoDepthFilter(&input))
+func (r *queryResolver) Traverse(ctx context.Context, where model.TFilter) (*model.Traversals, error) {
+	res, err := r.client.Traverse(ctx, protoDepthFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -319,8 +347,8 @@ func (r *queryResolver) Traverse(ctx context.Context, input model.TFilter) (*mod
 	return gqlTraversals(res), nil
 }
 
-func (r *queryResolver) GetConnection(ctx context.Context, input model.RefInput) (*model.Connection, error) {
-	res, err := r.client.GetConnection(ctx, protoIRef(&input))
+func (r *queryResolver) GetConnection(ctx context.Context, where model.RefInput) (*model.Connection, error) {
+	res, err := r.client.GetConnection(ctx, protoIRef(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -333,8 +361,64 @@ func (r *queryResolver) GetConnection(ctx context.Context, input model.RefInput)
 	return gqlConnection(res), nil
 }
 
-func (r *queryResolver) SearchConnections(ctx context.Context, input model.Filter) (*model.Connections, error) {
-	res, err := r.client.SearchConnections(ctx, protoFilter(&input))
+func (r *queryResolver) ExistsDoc(ctx context.Context, where model.Exists) (bool, error) {
+	res, err := r.client.ExistsDoc(ctx, protoExists(where))
+	if err != nil {
+		return false, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return res.GetValue(), nil
+}
+
+func (r *queryResolver) ExistsConnection(ctx context.Context, where model.Exists) (bool, error) {
+	res, err := r.client.ExistsConnection(ctx, protoExists(where))
+	if err != nil {
+		return false, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return res.GetValue(), nil
+}
+
+func (r *queryResolver) HasDoc(ctx context.Context, where model.RefInput) (bool, error) {
+	res, err := r.client.HasDoc(ctx, protoIRef(where))
+	if err != nil {
+		return false, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return res.GetValue(), nil
+}
+
+func (r *queryResolver) HasConnection(ctx context.Context, where model.RefInput) (bool, error) {
+	res, err := r.client.HasConnection(ctx, protoIRef(where))
+	if err != nil {
+		return false, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return res.GetValue(), nil
+}
+
+func (r *queryResolver) SearchConnections(ctx context.Context, where model.Filter) (*model.Connections, error) {
+	res, err := r.client.SearchConnections(ctx, protoFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -347,8 +431,8 @@ func (r *queryResolver) SearchConnections(ctx context.Context, input model.Filte
 	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) ConnectionsFrom(ctx context.Context, input model.CFilter) (*model.Connections, error) {
-	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(&input))
+func (r *queryResolver) ConnectionsFrom(ctx context.Context, where model.CFilter) (*model.Connections, error) {
+	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -361,8 +445,8 @@ func (r *queryResolver) ConnectionsFrom(ctx context.Context, input model.CFilter
 	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) ConnectionsTo(ctx context.Context, input model.CFilter) (*model.Connections, error) {
-	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(&input))
+func (r *queryResolver) ConnectionsTo(ctx context.Context, where model.CFilter) (*model.Connections, error) {
+	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -375,10 +459,10 @@ func (r *queryResolver) ConnectionsTo(ctx context.Context, input model.CFilter) 
 	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) AggregateDocs(ctx context.Context, input model.AggFilter) (interface{}, error) {
-	res, err := r.client.AggregateDocs(ctx, protoAggFilter(&input))
+func (r *queryResolver) AggregateDocs(ctx context.Context, where model.AggFilter) (float64, error) {
+	res, err := r.client.AggregateDocs(ctx, protoAggFilter(where))
 	if err != nil {
-		return nil, &gqlerror.Error{
+		return 0, &gqlerror.Error{
 			Message: err.Error(),
 			Path:    graphql.GetPath(ctx),
 			Extensions: map[string]interface{}{
@@ -386,13 +470,13 @@ func (r *queryResolver) AggregateDocs(ctx context.Context, input model.AggFilter
 			},
 		}
 	}
-	return res.GetNumberValue(), nil
+	return res.GetValue(), nil
 }
 
-func (r *queryResolver) AggregateConnections(ctx context.Context, input model.AggFilter) (interface{}, error) {
-	res, err := r.client.AggregateConnections(ctx, protoAggFilter(&input))
+func (r *queryResolver) AggregateConnections(ctx context.Context, where model.AggFilter) (float64, error) {
+	res, err := r.client.AggregateConnections(ctx, protoAggFilter(where))
 	if err != nil {
-		return nil, &gqlerror.Error{
+		return 0, &gqlerror.Error{
 			Message: err.Error(),
 			Path:    graphql.GetPath(ctx),
 			Extensions: map[string]interface{}{
@@ -400,16 +484,16 @@ func (r *queryResolver) AggregateConnections(ctx context.Context, input model.Ag
 			},
 		}
 	}
-	return res.GetNumberValue(), nil
+	return res.GetValue(), nil
 }
 
-func (r *queryResolver) SearchAndConnect(ctx context.Context, input model.SConnectFilter) (*model.Connections, error) {
+func (r *queryResolver) SearchAndConnect(ctx context.Context, where model.SConnectFilter) (*model.Connections, error) {
 	connections, err := r.client.SearchAndConnect(ctx, &apipb.SConnectFilter{
-		Filter:     protoFilter(input.Filter),
-		Gtype:      input.Gtype,
-		Attributes: apipb.NewStruct(input.Attributes),
-		Directed:   input.Directed,
-		From:       protoIRef(input.From),
+		Filter:     protoFilter(*where.Filter),
+		Gtype:      where.Gtype,
+		Attributes: apipb.NewStruct(where.Attributes),
+		Directed:   where.Directed,
+		From:       protoIRef(*where.From),
 	})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -423,9 +507,9 @@ func (r *queryResolver) SearchAndConnect(ctx context.Context, input model.SConne
 	return gqlConnections(connections), nil
 }
 
-func (r *subscriptionResolver) Subscribe(ctx context.Context, input model.ChanFilter) (<-chan *model.Message, error) {
+func (r *subscriptionResolver) Subscribe(ctx context.Context, where model.ChanFilter) (<-chan *model.Message, error) {
 	ch := make(chan *model.Message)
-	stream, err := r.client.Subscribe(ctx, protoChanFilter(&input))
+	stream, err := r.client.Subscribe(ctx, protoChanFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),

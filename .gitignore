@@ -2,5 +2,4 @@ vendor
 .idea
 .env
 bin
-.env
 graphik-ui/doc_modules

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>Any</title>
+    <title>Has</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -45,11 +45,6 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Scalars</h4>
     <ul>
-        <li class="slds-is-active" title="Any">
-            <a href="any.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Any
-            </a>
-        </li>
         <li  title="Boolean">
             <a href="boolean.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Boolean
@@ -58,6 +53,11 @@
         <li  title="Empty">
             <a href="empty.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Empty
+            </a>
+        </li>
+        <li  title="Float">
+            <a href="float.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Float
             </a>
         </li>
         <li  title="Int">
@@ -255,9 +255,19 @@
                 ConnectionConstructor
             </a>
         </li>
+        <li  title="ConnectionConstructors">
+            <a href="connectionconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConnectionConstructors
+            </a>
+        </li>
         <li  title="DocConstructor">
             <a href="docconstructor.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 DocConstructor
+            </a>
+        </li>
+        <li  title="DocConstructors">
+            <a href="docconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                DocConstructors
             </a>
         </li>
         <li  title="Edit">
@@ -278,6 +288,11 @@
         <li  title="Filter">
             <a href="filter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Filter
+            </a>
+        </li>
+        <li class="slds-is-active" title="Has">
+            <a href="has.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Has
             </a>
         </li>
         <li  title="IndexesInput">
@@ -360,8 +375,8 @@
         </div>
     </div>
     <div class="container">
-        <p class="slds-text-title--caps slds-text-color--weak">SCALAR</p>
-        <h1 class="slds-text-heading--large">Any</h1>
+        <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
+        <h1 class="slds-text-heading--large">Has</h1>
         <div class="slds-text-body--regular"></div>
     </div>
 </section>
@@ -373,7 +388,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">scalar</span> <span class="identifier">Any</span></li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">Has</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">seek</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">index</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">reverse</span>: <a class="support type" href="boolean.doc.html">Boolean</a></span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

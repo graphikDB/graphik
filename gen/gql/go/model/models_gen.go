@@ -64,6 +64,10 @@ type ConnectionConstructor struct {
 	To         *RefInput              `json:"to"`
 }
 
+type ConnectionConstructors struct {
+	Connections []*ConnectionConstructor `json:"connections"`
+}
+
 type Connections struct {
 	Connections []*Connection `json:"connections"`
 	SeekNext    string        `json:"seek_next"`
@@ -79,6 +83,10 @@ type DocConstructor struct {
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
+type DocConstructors struct {
+	Docs []*DocConstructor `json:"docs"`
+}
+
 type Docs struct {
 	Docs     []*Doc `json:"docs"`
 	SeekNext string `json:"seek_next"`
@@ -92,6 +100,14 @@ type EFilter struct {
 type Edit struct {
 	Ref        *RefInput              `json:"ref"`
 	Attributes map[string]interface{} `json:"attributes"`
+}
+
+type Exists struct {
+	Gtype      string  `json:"gtype"`
+	Expression string  `json:"expression"`
+	Seek       *string `json:"seek"`
+	Index      *string `json:"index"`
+	Reverse    *bool   `json:"reverse"`
 }
 
 type ExprFilter struct {

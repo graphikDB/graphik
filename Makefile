@@ -1,4 +1,4 @@
-version := "0.0.39"
+version := "0.0.40"
 
 .DEFAULT_GOAL := help
 
@@ -41,3 +41,9 @@ gql: ## regenerate graphql code
 
 gql-docs: ## generate graqhl documentation
 	@graphdoc -s ./schema.graphql -o ./docs --force
+
+release: ## build release binaries to ./bin
+	@mkdir -p bin
+	@gox -osarch="linux/amd64" -output="./bin/linux/{{.Dir}}"
+	@gox -osarch="darwin/amd64" -output="./bin/darwin/{{.Dir}}"
+	@gox -osarch="windows/amd64" -output="./bin/windows/{{.Dir}}"

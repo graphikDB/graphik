@@ -282,3 +282,43 @@ func (c *Client) SearchAndConnect(ctx context.Context, in *apipb.SConnectFilter,
 func (c *Client) Traverse(ctx context.Context, in *apipb.TFilter, opts ...grpc.CallOption) (*apipb.Traversals, error) {
 	return c.graph.Traverse(ctx, in, opts...)
 }
+
+func (c *Client) DelDoc(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*empty.Empty, error) {
+	return c.graph.DelDoc(ctx, in, opts...)
+}
+
+func (c *Client) DelDocs(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
+	return c.graph.DelDocs(ctx, in, opts...)
+}
+
+func (c *Client) ExistsDoc(ctx context.Context, in *apipb.Exists, opts ...grpc.CallOption) (*apipb.Boolean, error) {
+	return c.graph.ExistsDoc(ctx, in, opts...)
+}
+
+func (c *Client) ExistsConnection(ctx context.Context, in *apipb.Exists, opts ...grpc.CallOption) (*apipb.Boolean, error) {
+	return c.graph.ExistsConnection(ctx, in, opts...)
+}
+
+func (c *Client) HasDoc(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*apipb.Boolean, error) {
+	return c.graph.HasDoc(ctx, in, opts...)
+}
+
+func (c *Client) HasConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*apipb.Boolean, error) {
+	return c.graph.HasConnection(ctx, in, opts...)
+}
+
+func (c *Client) DelConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*empty.Empty, error) {
+	return c.graph.DelConnection(ctx, in, opts...)
+}
+
+func (c *Client) DelConnections(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
+	return c.graph.DelConnections(ctx, in, opts...)
+}
+
+func (c *Client) AggregateDocs(ctx context.Context, in *apipb.AggFilter, opts ...grpc.CallOption) (*apipb.Number, error) {
+	return c.graph.AggregateDocs(ctx, in, opts...)
+}
+
+func (c *Client) AggregateConnections(ctx context.Context, in *apipb.AggFilter, opts ...grpc.CallOption) (*apipb.Number, error) {
+	return c.graph.AggregateConnections(ctx, in, opts...)
+}

@@ -5,7 +5,24 @@ import (
 	apipb "github.com/autom8ter/graphik/gen/grpc/go"
 )
 
-func protoIRef(path *model.RefInput) *apipb.Ref {
+func protoExists(has model.Exists) *apipb.Exists {
+	h := &apipb.Exists{
+		Gtype:      has.Gtype,
+		Expression: has.Expression,
+	}
+	if has.Seek != nil {
+		h.Seek = *has.Seek
+	}
+	if has.Reverse != nil {
+		h.Reverse = *has.Reverse
+	}
+	if has.Index != nil {
+		h.Index = *has.Index
+	}
+	return h
+}
+
+func protoIRef(path model.RefInput) *apipb.Ref {
 	return &apipb.Ref{
 		Gtype: path.Gtype,
 		Gid:   path.Gid,
@@ -29,23 +46,23 @@ func protoRefC(path *model.RefConstructor) *apipb.RefConstructor {
 	return p
 }
 
-func protoDoc(d *model.Doc) *apipb.Doc {
+func protoDoc(d model.Doc) *apipb.Doc {
 	return &apipb.Doc{
 		Ref:        protoRef(d.Ref),
 		Attributes: apipb.NewStruct(d.Attributes),
 	}
 }
 
-func protoDocC(d *model.DocConstructor) *apipb.DocConstructor {
+func protoDocC(d model.DocConstructor) *apipb.DocConstructor {
 	return &apipb.DocConstructor{
 		Ref:        protoRefC(d.Ref),
 		Attributes: apipb.NewStruct(d.Attributes),
 	}
 }
 
-func protoEdit(e *model.Edit) *apipb.Edit {
+func protoEdit(e model.Edit) *apipb.Edit {
 	return &apipb.Edit{
-		Ref:        protoIRef(e.Ref),
+		Ref:        protoIRef(*e.Ref),
 		Attributes: apipb.NewStruct(e.Attributes),
 	}
 }
@@ -60,17 +77,33 @@ func protoConnection(d *model.Connection) *apipb.Connection {
 	}
 }
 
-func protoConnectionC(d *model.ConnectionConstructor) *apipb.ConnectionConstructor {
+func protoConnectionC(d model.ConnectionConstructor) *apipb.ConnectionConstructor {
 	return &apipb.ConnectionConstructor{
 		Ref:        protoRefC(d.Ref),
 		Attributes: apipb.NewStruct(d.Attributes),
-		From:       protoIRef(d.From),
-		To:         protoIRef(d.To),
+		From:       protoIRef(*d.From),
+		To:         protoIRef(*d.To),
 		Directed:   d.Directed,
 	}
 }
 
-func protoFilter(filter *model.Filter) *apipb.Filter {
+func protoConnectionCs(cs model.ConnectionConstructors) *apipb.ConnectionConstructors {
+	converted := &apipb.ConnectionConstructors{}
+	for _, c := range cs.Connections {
+		converted.Connections = append(converted.Connections, protoConnectionC(*c))
+	}
+	return converted
+}
+
+func protoDocCs(cs model.DocConstructors) *apipb.DocConstructors {
+	converted := &apipb.DocConstructors{}
+	for _, c := range cs.Docs {
+		converted.Docs = append(converted.Docs, protoDocC(*c))
+	}
+	return converted
+}
+
+func protoFilter(filter model.Filter) *apipb.Filter {
 	f := &apipb.Filter{
 		Gtype: filter.Gtype,
 		Limit: uint64(filter.Limit),
@@ -93,9 +126,9 @@ func protoFilter(filter *model.Filter) *apipb.Filter {
 	return f
 }
 
-func protoEFilter(filter *model.EFilter) *apipb.EFilter {
+func protoEFilter(filter model.EFilter) *apipb.EFilter {
 	return &apipb.EFilter{
-		Filter:     protoFilter(filter.Filter),
+		Filter:     protoFilter(*filter.Filter),
 		Attributes: apipb.NewStruct(filter.Attributes),
 	}
 }
@@ -226,9 +259,9 @@ func gqlSchema(s *apipb.Schema) *model.Schema {
 	}
 }
 
-func protoAggFilter(filter *model.AggFilter) *apipb.AggFilter {
+func protoAggFilter(filter model.AggFilter) *apipb.AggFilter {
 	f := &apipb.AggFilter{
-		Filter:    protoFilter(filter.Filter),
+		Filter:    protoFilter(*filter.Filter),
 		Aggregate: filter.Aggregate,
 	}
 	if filter.Field != nil {
@@ -237,7 +270,7 @@ func protoAggFilter(filter *model.AggFilter) *apipb.AggFilter {
 	return f
 }
 
-func protoChanFilter(filter *model.ChanFilter) *apipb.ChanFilter {
+func protoChanFilter(filter model.ChanFilter) *apipb.ChanFilter {
 	c := &apipb.ChanFilter{
 		Channel: filter.Channel,
 	}
@@ -263,9 +296,9 @@ func gqlAlgorithm(algorithm apipb.Algorithm) model.Algorithm {
 	return model.AlgorithmBfs
 }
 
-func protoDepthFilter(filter *model.TFilter) *apipb.TFilter {
+func protoDepthFilter(filter model.TFilter) *apipb.TFilter {
 	c := &apipb.TFilter{
-		Root:     protoIRef(filter.Root),
+		Root:     protoIRef(*filter.Root),
 		Limit:    uint64(filter.Limit),
 		MaxDepth: uint64(filter.MaxDepth),
 		MaxHops:  uint64(filter.MaxHops),
@@ -288,9 +321,9 @@ func protoDepthFilter(filter *model.TFilter) *apipb.TFilter {
 	return c
 }
 
-func protoConnectionFilter(filter *model.CFilter) *apipb.CFilter {
+func protoConnectionFilter(filter model.CFilter) *apipb.CFilter {
 	f := &apipb.CFilter{
-		DocRef:     protoIRef(filter.DocRef),
+		DocRef:     protoIRef(*filter.DocRef),
 		Gtype:      filter.Gtype,
 		Expression: "",
 		Limit:      uint64(filter.Limit),
@@ -313,7 +346,7 @@ func protoConnectionFilter(filter *model.CFilter) *apipb.CFilter {
 	return f
 }
 
-func protoExpressionFilter(filter *model.ExprFilter) *apipb.ExprFilter {
+func protoExpressionFilter(filter model.ExprFilter) *apipb.ExprFilter {
 	exp := &apipb.ExprFilter{}
 	if filter.Expression != nil {
 		exp.Expression = *filter.Expression

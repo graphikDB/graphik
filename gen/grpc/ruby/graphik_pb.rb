@@ -161,6 +161,19 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :playground_client_secret, :string, 12
     optional :playground_redirect, :string, 13
   end
+  add_message "api.Boolean" do
+    optional :value, :bool, 1
+  end
+  add_message "api.Number" do
+    optional :value, :double, 1
+  end
+  add_message "api.Exists" do
+    optional :gtype, :string, 1
+    optional :expression, :string, 2
+    optional :seek, :string, 3
+    optional :reverse, :bool, 4
+    optional :index, :string, 5
+  end
   add_message "api.Edit" do
     optional :ref, :message, 1, "api.Ref"
     optional :attributes, :message, 2, "google.protobuf.Struct"
@@ -233,6 +246,9 @@ module Api
   ChanFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ChanFilter").msgclass
   Graph = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Graph").msgclass
   Flags = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Flags").msgclass
+  Boolean = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Boolean").msgclass
+  Number = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Number").msgclass
+  Exists = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Exists").msgclass
   Edit = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Edit").msgclass
   EFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.EFilter").msgclass
   Pong = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Pong").msgclass

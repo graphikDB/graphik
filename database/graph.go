@@ -11,7 +11,6 @@ import (
 	"github.com/autom8ter/graphik/vm"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/cel-go/cel"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
@@ -160,6 +159,10 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
 	return g, nil
+}
+
+func (g *Graph) implements() apipb.DatabaseServiceServer {
+	return g
 }
 
 func (g *Graph) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
@@ -728,16 +731,6 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.CFilter) (*ap
 	return toReturn, err
 }
 
-func (n *Graph) HasDoc(ctx context.Context, path *apipb.Ref) bool {
-	doc, _ := n.GetDoc(ctx, path)
-	return doc != nil
-}
-
-func (n *Graph) HasConnection(ctx context.Context, path *apipb.Ref) bool {
-	connection, _ := n.GetConnection(ctx, path)
-	return connection != nil
-}
-
 func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Docs, error) {
 	var docs []*apipb.Doc
 	var program cel.Program
@@ -776,24 +769,20 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	return toReturn, nil
 }
 
-func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.AggFilter) (*structpb.Value, error) {
+func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.AggFilter) (*apipb.Number, error) {
 	docs, err := n.SearchDocs(ctx, filter.GetFilter())
 	if err != nil {
 		return nil, err
 	}
-	return &structpb.Value{
-		Kind: &structpb.Value_NumberValue{NumberValue: docs.Aggregate(filter.GetAggregate(), filter.GetField())},
-	}, nil
+	return &apipb.Number{Value: docs.Aggregate(filter.GetAggregate(), filter.GetField())}, nil
 }
 
-func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.AggFilter) (*structpb.Value, error) {
+func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.AggFilter) (*apipb.Number, error) {
 	connections, err := n.SearchConnections(ctx, filter.GetFilter())
 	if err != nil {
 		return nil, err
 	}
-	return &structpb.Value{
-		Kind: &structpb.Value_NumberValue{NumberValue: connections.Aggregate(filter.GetAggregate(), filter.GetField())},
-	}, nil
+	return &apipb.Number{Value: connections.Aggregate(filter.GetAggregate(), filter.GetField())}, nil
 }
 
 func (n *Graph) Traverse(ctx context.Context, filter *apipb.TFilter) (*apipb.Traversals, error) {
@@ -1138,4 +1127,83 @@ func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SConnectFilt
 		})
 	}
 	return g.CreateConnections(ctx, &apipb.ConnectionConstructors{Connections: connections})
+}
+
+func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.Exists) (*apipb.Boolean, error) {
+	program, err := g.vm.Doc().Program(has.GetExpression())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	var (
+		hasErr error
+		res    bool
+	)
+
+	_, err = g.rangeSeekDocs(ctx, has.GetGtype(), has.GetSeek(), has.GetIndex(), has.GetReverse(), func(n *apipb.Doc) bool {
+		res, hasErr = g.vm.Doc().Eval(n, program)
+		if hasErr != nil {
+			return false
+		}
+		if res {
+			return false
+		}
+		return true
+	})
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	if hasErr != nil {
+		return nil, status.Error(codes.InvalidArgument, hasErr.Error())
+	}
+	return &apipb.Boolean{Value: res}, nil
+}
+
+func (g *Graph) ExistsConnection(ctx context.Context, has *apipb.Exists) (*apipb.Boolean, error) {
+	program, err := g.vm.Connection().Program(has.GetExpression())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	var (
+		hasErr error
+		res    bool
+	)
+	_, err = g.rangeSeekConnections(ctx, has.GetGtype(), has.GetSeek(), has.GetIndex(), has.GetReverse(), func(n *apipb.Connection) bool {
+		res, hasErr = g.vm.Connection().Eval(n, program)
+		if hasErr != nil {
+			return false
+		}
+		if res {
+			return false
+		}
+		return true
+	})
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	if hasErr != nil {
+		return nil, status.Error(codes.InvalidArgument, hasErr.Error())
+	}
+	return &apipb.Boolean{Value: res}, nil
+}
+
+func (g *Graph) HasDoc(ctx context.Context, ref *apipb.Ref) (*apipb.Boolean, error) {
+	doc, err := g.GetDoc(ctx, ref)
+	if err != nil && err != ErrNotFound {
+		return nil, err
+	}
+	if doc != nil {
+		return &apipb.Boolean{Value: true}, nil
+	}
+	return &apipb.Boolean{Value: false}, nil
+}
+
+func (g *Graph) HasConnection(ctx context.Context, ref *apipb.Ref) (*apipb.Boolean, error) {
+	c, err := g.GetConnection(ctx, ref)
+	if err != nil && err != ErrNotFound {
+		return nil, err
+	}
+	if c != nil {
+		return &apipb.Boolean{Value: true}, nil
+	}
+	return &apipb.Boolean{Value: false}, nil
 }

@@ -7,6 +7,8 @@ excludes:
   - helpers
   - sortable
   - vm
+  - docs
+  - bin
   - graphik-client-go
 
 protoc:

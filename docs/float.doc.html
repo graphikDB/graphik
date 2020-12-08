@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>Pong</title>
+    <title>Float</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -55,7 +55,7 @@
                 Empty
             </a>
         </li>
-        <li  title="Float">
+        <li class="slds-is-active" title="Float">
             <a href="float.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Float
             </a>
@@ -150,7 +150,7 @@
                 Message
             </a>
         </li>
-        <li class="slds-is-active" title="Pong">
+        <li  title="Pong">
             <a href="pong.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Pong
             </a>
@@ -375,9 +375,9 @@
         </div>
     </div>
     <div class="container">
-        <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
-        <h1 class="slds-text-heading--large">Pong</h1>
-        <div class="slds-text-body--regular"><p>Pong returns PONG if the server is healthy</p>
+        <p class="slds-text-title--caps slds-text-color--weak">SCALAR</p>
+        <h1 class="slds-text-heading--large">Float</h1>
+        <div class="slds-text-body--regular"><p>The <code>Float</code> scalar type represents signed double-precision fractional values as specified by <a href="http://en.wikipedia.org/wiki/IEEE_floating_point">IEEE 754</a>. </p>
 </div>
     </div>
 </section>
@@ -389,7 +389,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Pong</span> {</li><li></li><li><span class="tab"><span class="meta">message</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">scalar</span> <span class="identifier">Float</span></li></ul></code>
     </div>
 </section>
 <section>

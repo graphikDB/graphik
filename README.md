@@ -1,17 +1,17 @@
-# Graphik
+# [Graphik](https://autom8ter.github.io/graphik/)
 
 ![dag](images/dag.png)
 
     git clone git@github.com:autom8ter/graphik.git
     
-    docker pull colemanword/graphik:v0.0.39
+    docker pull colemanword/graphik:v0.0.40
 
 Graphik is an identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
 
 ## Helpful Links
 
 - [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
-- [API Docs](docs/index.html)
+- [API Docs](https://autom8ter.github.io/graphik/)
 - [Protobuf API Spec](https://github.com/autom8ter/graphik/blob/master/graphik.proto)
 - [Graphql API Spec](https://github.com/autom8ter/graphik/blob/master/schema.graphql)
 - [Common Expression Language Code Lab](https://codelabs.developers.google.com/codelabs/cel-go/index.html#0)

@@ -45,11 +45,6 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Scalars</h4>
     <ul>
-        <li  title="Any">
-            <a href="any.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Any
-            </a>
-        </li>
         <li class="slds-is-active" title="Boolean">
             <a href="boolean.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Boolean
@@ -58,6 +53,11 @@
         <li  title="Empty">
             <a href="empty.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Empty
+            </a>
+        </li>
+        <li  title="Float">
+            <a href="float.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Float
             </a>
         </li>
         <li  title="Int">
@@ -255,9 +255,19 @@
                 ConnectionConstructor
             </a>
         </li>
+        <li  title="ConnectionConstructors">
+            <a href="connectionconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConnectionConstructors
+            </a>
+        </li>
         <li  title="DocConstructor">
             <a href="docconstructor.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 DocConstructor
+            </a>
+        </li>
+        <li  title="DocConstructors">
+            <a href="docconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                DocConstructors
             </a>
         </li>
         <li  title="Edit">
@@ -278,6 +288,11 @@
         <li  title="Filter">
             <a href="filter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Filter
+            </a>
+        </li>
+        <li  title="Has">
+            <a href="has.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Has
             </a>
         </li>
         <li  title="IndexesInput">
@@ -385,7 +400,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="cfilter.doc.html" title="CFilter - CFilter is used to fetch connections related to a single noted">CFilter<em>CFilter is used to fetch connections related to a single noted</em></a><li><li><a href="connection.doc.html" title="Connection - Connection is a graph primitive that represents a relationship between two docs">Connection<em>Connection is a graph primitive that represents a relationship between two docs</em></a><li><li><a href="connectionconstructor.doc.html" title="ConnectionConstructor - ConnectionConstructor is used to create an Connection">ConnectionConstructor<em>ConnectionConstructor is used to create an Connection</em></a><li><li><a href="filter.doc.html" title="Filter - Filter is a generic filter using Common Expression Language">Filter<em>Filter is a generic filter using Common Expression Language</em></a><li><li><a href="index.doc.html" title="Index - ">Index<em></em></a><li><li><a href="indexinput.doc.html" title="IndexInput - ">IndexInput<em></em></a><li><li><a href="sconnectfilter.doc.html" title="SConnectFilter - ">SConnectFilter<em></em></a><li><li><a href="tfilter.doc.html" title="TFilter - ">TFilter<em></em></a><li><li><a href="typevalidator.doc.html" title="TypeValidator - ">TypeValidator<em></em></a><li><li><a href="typevalidatorinput.doc.html" title="TypeValidatorInput - ">TypeValidatorInput<em></em></a><li><li><a href="directive.spec.html" title="__Directive - A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.
+        <ul class="require-by"><li><a href="cfilter.doc.html" title="CFilter - CFilter is used to fetch connections related to a single noted">CFilter<em>CFilter is used to fetch connections related to a single noted</em></a><li><li><a href="connection.doc.html" title="Connection - Connection is a graph primitive that represents a relationship between two docs">Connection<em>Connection is a graph primitive that represents a relationship between two docs</em></a><li><li><a href="connectionconstructor.doc.html" title="ConnectionConstructor - ConnectionConstructor is used to create an Connection">ConnectionConstructor<em>ConnectionConstructor is used to create an Connection</em></a><li><li><a href="filter.doc.html" title="Filter - Filter is a generic filter using Common Expression Language">Filter<em>Filter is a generic filter using Common Expression Language</em></a><li><li><a href="has.doc.html" title="Has - ">Has<em></em></a><li><li><a href="index.doc.html" title="Index - ">Index<em></em></a><li><li><a href="indexinput.doc.html" title="IndexInput - ">IndexInput<em></em></a><li><li><a href="query.doc.html" title="Query - ">Query<em></em></a><li><li><a href="sconnectfilter.doc.html" title="SConnectFilter - ">SConnectFilter<em></em></a><li><li><a href="tfilter.doc.html" title="TFilter - ">TFilter<em></em></a><li><li><a href="typevalidator.doc.html" title="TypeValidator - ">TypeValidator<em></em></a><li><li><a href="typevalidatorinput.doc.html" title="TypeValidatorInput - ">TypeValidatorInput<em></em></a><li><li><a href="directive.spec.html" title="__Directive - A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.
 
 In some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.">__Directive<em>A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.
 

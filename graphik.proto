@@ -39,6 +39,10 @@ service DatabaseService {
   rpc DelDoc(Ref) returns(google.protobuf.Empty){}
   // DelDocs deletes a batch of docs that pass the filter
   rpc DelDocs(Filter) returns(google.protobuf.Empty){}
+  rpc ExistsDoc(Exists) returns(Boolean){}
+  rpc ExistsConnection(Exists) returns(Boolean){}
+  rpc HasDoc(Ref) returns(Boolean){}
+  rpc HasConnection(Ref) returns(Boolean){}
   // CreateConnection creates an connection in the graph
   rpc CreateConnection(ConnectionConstructor) returns(Connection){}
   // CreateConnections creates a batch of connections in the graph
@@ -60,8 +64,8 @@ service DatabaseService {
   rpc ConnectionsFrom(CFilter) returns(Connections){}
   // ConnectionsTo returns connections that point to the given doc ref that pass the filter
   rpc ConnectionsTo(CFilter) returns(Connections){}
-  rpc AggregateDocs(AggFilter) returns(google.protobuf.Value){}
-  rpc AggregateConnections(AggFilter) returns(google.protobuf.Value){}
+  rpc AggregateDocs(AggFilter) returns(Number){}
+  rpc AggregateConnections(AggFilter) returns(Number){}
   // Publish publishes a message to a pubsub channel
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
   // Subscribe subscribes to messages on a pubsub channel
@@ -334,6 +338,28 @@ message Flags {
   string playground_client_id =11;
   string playground_client_secret =12;
   string playground_redirect =13;
+}
+
+// Boolean is a simple boolean value
+message Boolean {
+  bool value =1;
+}
+
+// Number is a simple double/float64 value
+message Number {
+  double value =1;
+}
+
+// Exists is used as input into all Exists(boolean) related queries.
+message Exists {
+  string gtype =1[(validator.field) = {regex : "^.{1,225}$"}];
+  string expression = 2[(validator.field) = {regex : "^.{1,225}$"}];
+  // seek to a specific key for pagination
+  string seek =3;
+  // reverse the results
+  bool reverse =4;
+  // search in a specific index
+  string index =5;
 }
 
 // Edit patches the attributes of a Doc or Connection

@@ -1,6 +1,5 @@
 scalar Time
 scalar Map
-scalar Any
 scalar Empty
 
 enum Algorithm {
@@ -144,6 +143,10 @@ input DocConstructor {
   attributes: Map
 }
 
+input DocConstructors {
+  docs: [DocConstructor!]!
+}
+
 # ConnectionConstructor is used to create an Connection
 input ConnectionConstructor {
   ref: RefConstructor!
@@ -155,6 +158,10 @@ input ConnectionConstructor {
   from: RefInput!
   # to is the doc ref that is the destination of the connection
   to: RefInput!
+}
+
+input ConnectionConstructors {
+  connections: [ConnectionConstructor!]!
 }
 
 # RefInput is the ref to a doc/connection
@@ -307,9 +314,18 @@ input TypeValidatorsInput {
   validators: [TypeValidatorInput!]
 }
 
+input Exists {
+  gtype: String!
+  expression: String!
+  seek: String
+  index: String
+  reverse: Boolean
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
+  createDocs(input: DocConstructors!): Docs!
   # editDoc edites a single doc in the graph
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
@@ -318,6 +334,7 @@ type Mutation {
   delDocs(input: Filter!): Empty
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
+  createConnections(input: ConnectionConstructors!): Connections!
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
@@ -333,31 +350,35 @@ type Mutation {
 
 type Query {
   # ping checks if the server is healthy
-  ping(input: Empty): Pong!
+  ping(where: Empty): Pong!
   # getSchema gets information about the graph schema
-  getSchema(input: Empty): Schema!
+  getSchema(where: Empty): Schema!
   # me returns your identity + connections
-  me(input: Empty): Doc!
+  me(where: Empty): Doc!
   # getDoc gets a doc at the given ref
-  getDoc(input: RefInput!): Doc!
+  getDoc(where: RefInput!): Doc!
   # searchDocs searches for 0-many docs
-  searchDocs(input: Filter!): Docs!
+  searchDocs(where: Filter!): Docs!
   # traverse searches for 0-many docs using dfs search
-  traverse(input: TFilter!): Traversals!
+  traverse(where: TFilter!): Traversals!
   # getConnection gets a connection at the given ref
-  getConnection(input: RefInput!): Connection!
+  getConnection(where: RefInput!): Connection!
+  existsDoc(where: Exists!): Boolean!
+  existsConnection(where: Exists!): Boolean!
+  hasDoc(where: RefInput!): Boolean!
+  hasConnection(where: RefInput!): Boolean!
   # searchConnections searches for 0-many connections
-  searchConnections(input: Filter!): Connections!
+  searchConnections(where: Filter!): Connections!
   # connectionsFrom returns connections from the given doc that pass the filter
-  connectionsFrom(input: CFilter!): Connections!
+  connectionsFrom(where: CFilter!): Connections!
   # connectionsTo returns connections to the given doc that pass the filter
-  connectionsTo(input: CFilter!): Connections!
-  aggregateDocs(input: AggFilter!): Any!
-  aggregateConnections(input: AggFilter!): Any!
-  searchAndConnect(input: SConnectFilter!): Connections!
+  connectionsTo(where: CFilter!): Connections!
+  aggregateDocs(where: AggFilter!): Float!
+  aggregateConnections(where: AggFilter!): Float!
+  searchAndConnect(where: SConnectFilter!): Connections!
 }
 
 type Subscription {
   # subscribe subscribes to a pubsub channel
-  subscribe(input: ChanFilter!): Message!
+  subscribe(where: ChanFilter!): Message!
 }

@@ -9,3 +9,4 @@ gen/grpc/java
 gen/grpc/csharp
 gen/grpc/php
 .env
+bin

@@ -814,17 +814,33 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek str
 		if reverse {
 			iter = c.Prev
 		}
-		for k, v := c.Seek([]byte(seek)); k != nil; k, v = iter() {
-			if ctx.Err() != nil {
-				return ctx.Err()
+		if seek != "" {
+			for k, v := c.Seek([]byte(seek)); k != nil; k, v = iter() {
+				if ctx.Err() != nil {
+					return ctx.Err()
+				}
+				var connection apipb.Connection
+				if err := proto.Unmarshal(v, &connection); err != nil {
+					return err
+				}
+				lastKey = k
+				if !fn(&connection) {
+					return DONE
+				}
 			}
-			var connection apipb.Connection
-			if err := proto.Unmarshal(v, &connection); err != nil {
-				return err
-			}
-			lastKey = k
-			if !fn(&connection) {
-				return DONE
+		} else {
+			for k, v := c.First(); k != nil; k, v = iter() {
+				if ctx.Err() != nil {
+					return ctx.Err()
+				}
+				var connection apipb.Connection
+				if err := proto.Unmarshal(v, &connection); err != nil {
+					return err
+				}
+				lastKey = k
+				if !fn(&connection) {
+					return DONE
+				}
 			}
 		}
 		return nil
@@ -858,17 +874,33 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, in
 		if reverse {
 			iter = c.Prev
 		}
-		for k, v := c.Seek([]byte(seek)); k != nil; k, v = iter() {
-			if ctx.Err() != nil {
-				return ctx.Err()
+		if seek != "" {
+			for k, v := c.Seek([]byte(seek)); k != nil; k, v = iter() {
+				if ctx.Err() != nil {
+					return ctx.Err()
+				}
+				var doc apipb.Doc
+				if err := proto.Unmarshal(v, &doc); err != nil {
+					return err
+				}
+				lastKey = k
+				if !fn(&doc) {
+					return DONE
+				}
 			}
-			var doc apipb.Doc
-			if err := proto.Unmarshal(v, &doc); err != nil {
-				return err
-			}
-			lastKey = k
-			if !fn(&doc) {
-				return DONE
+		} else {
+			for k, v := c.First(); k != nil; k, v = iter() {
+				if ctx.Err() != nil {
+					return ctx.Err()
+				}
+				var doc apipb.Doc
+				if err := proto.Unmarshal(v, &doc); err != nil {
+					return err
+				}
+				lastKey = k
+				if !fn(&doc) {
+					return DONE
+				}
 			}
 		}
 		return nil

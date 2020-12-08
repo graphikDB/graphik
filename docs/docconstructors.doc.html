@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>Pong</title>
+    <title>DocConstructors</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -150,7 +150,7 @@
                 Message
             </a>
         </li>
-        <li class="slds-is-active" title="Pong">
+        <li  title="Pong">
             <a href="pong.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Pong
             </a>
@@ -265,7 +265,7 @@
                 DocConstructor
             </a>
         </li>
-        <li  title="DocConstructors">
+        <li class="slds-is-active" title="DocConstructors">
             <a href="docconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 DocConstructors
             </a>
@@ -375,10 +375,9 @@
         </div>
     </div>
     <div class="container">
-        <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
-        <h1 class="slds-text-heading--large">Pong</h1>
-        <div class="slds-text-body--regular"><p>Pong returns PONG if the server is healthy</p>
-</div>
+        <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
+        <h1 class="slds-text-heading--large">DocConstructors</h1>
+        <div class="slds-text-body--regular"></div>
     </div>
 </section>
 <section>
@@ -389,7 +388,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Pong</span> {</li><li></li><li><span class="tab"><span class="meta">message</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">DocConstructors</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">docs</span>: [<a class="support type" href="docconstructor.doc.html">DocConstructor</a>!]!</span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -400,7 +399,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="query.doc.html" title="Query - ">Query<em></em></a><li></ul>
+        <ul class="require-by"><li><a href="mutation.doc.html" title="Mutation - ">Mutation<em></em></a><li></ul>
     </div>
 </section>
 <footer>

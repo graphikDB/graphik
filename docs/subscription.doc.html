@@ -45,11 +45,6 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Scalars</h4>
     <ul>
-        <li  title="Any">
-            <a href="any.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Any
-            </a>
-        </li>
         <li  title="Boolean">
             <a href="boolean.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Boolean
@@ -58,6 +53,11 @@
         <li  title="Empty">
             <a href="empty.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Empty
+            </a>
+        </li>
+        <li  title="Float">
+            <a href="float.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Float
             </a>
         </li>
         <li  title="Int">
@@ -255,9 +255,19 @@
                 ConnectionConstructor
             </a>
         </li>
+        <li  title="ConnectionConstructors">
+            <a href="connectionconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConnectionConstructors
+            </a>
+        </li>
         <li  title="DocConstructor">
             <a href="docconstructor.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 DocConstructor
+            </a>
+        </li>
+        <li  title="DocConstructors">
+            <a href="docconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                DocConstructors
             </a>
         </li>
         <li  title="Edit">
@@ -278,6 +288,11 @@
         <li  title="Filter">
             <a href="filter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Filter
+            </a>
+        </li>
+        <li  title="Has">
+            <a href="has.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Has
             </a>
         </li>
         <li  title="IndexesInput">
@@ -373,7 +388,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Subscription</span> {</li><li></li><li><span class="tab"><span class="comment line">#   subscribe subscribes to a pubsub channel</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>input</strong>: </span></span></li><li><span class="tab"><span class="meta">subscribe</span>(<span class="meta">input</span>: <a class="support type" href="chanfilter.doc.html">ChanFilter</a>!): <a class="support type" href="message.doc.html">Message</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Subscription</span> {</li><li></li><li><span class="tab"><span class="comment line">#   subscribe subscribes to a pubsub channel</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>where</strong>: </span></span></li><li><span class="tab"><span class="meta">subscribe</span>(<span class="meta">where</span>: <a class="support type" href="chanfilter.doc.html">ChanFilter</a>!): <a class="support type" href="message.doc.html">Message</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

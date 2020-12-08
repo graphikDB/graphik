@@ -440,6 +440,25 @@ func (this *Graph) Validate() error {
 func (this *Flags) Validate() error {
 	return nil
 }
+func (this *Boolean) Validate() error {
+	return nil
+}
+func (this *Number) Validate() error {
+	return nil
+}
+
+var _regex_Exists_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Exists_Expression = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *Exists) Validate() error {
+	if !_regex_Exists_Gtype.MatchString(this.Gtype) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	}
+	if !_regex_Exists_Expression.MatchString(this.Expression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	return nil
+}
 func (this *Edit) Validate() error {
 	if nil == this.Ref {
 		return github_com_mwitkow_go_proto_validators.FieldError("Ref", fmt.Errorf("message must exist"))
