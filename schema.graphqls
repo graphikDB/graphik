@@ -289,12 +289,16 @@ type Mutation {
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
   editDocs(input: EFilter!): Docs!
+  delDoc(input: RefInput!): Empty
+  delDocs(input: Filter!): Empty
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
   editConnections(input: EFilter!): Connections!
+  delConnection(input: RefInput!): Empty
+  delConnections(input: Filter!): Empty
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty
   setIndexes(input: IndexesInput!): Empty

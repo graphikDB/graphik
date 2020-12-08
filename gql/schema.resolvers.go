@@ -38,6 +38,14 @@ func (r *mutationResolver) EditDocs(ctx context.Context, input model.EFilter) (*
 	return gqlDocs(docs), nil
 }
 
+func (r *mutationResolver) DelDoc(ctx context.Context, input model.RefInput) (*emptypb.Empty, error) {
+	return r.client.DelDoc(ctx, protoIRef(&input))
+}
+
+func (r *mutationResolver) DelDocs(ctx context.Context, input model.Filter) (*emptypb.Empty, error) {
+	return r.client.DelDocs(ctx, protoFilter(&input))
+}
+
 func (r *mutationResolver) CreateConnection(ctx context.Context, input model.ConnectionConstructor) (*model.Connection, error) {
 	res, err := r.client.CreateConnection(ctx, protoConnectionC(&input))
 	if err != nil {
@@ -60,6 +68,14 @@ func (r *mutationResolver) EditConnections(ctx context.Context, input model.EFil
 		return nil, err
 	}
 	return gqlConnections(connections), nil
+}
+
+func (r *mutationResolver) DelConnection(ctx context.Context, input model.RefInput) (*emptypb.Empty, error) {
+	return r.client.DelConnection(ctx, protoIRef(&input))
+}
+
+func (r *mutationResolver) DelConnections(ctx context.Context, input model.Filter) (*emptypb.Empty, error) {
+	return r.client.DelConnections(ctx, protoFilter(&input))
 }
 
 func (r *mutationResolver) Publish(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error) {

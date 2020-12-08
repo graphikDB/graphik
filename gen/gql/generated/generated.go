@@ -102,6 +102,10 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateConnection  func(childComplexity int, input model.ConnectionConstructor) int
 		CreateDoc         func(childComplexity int, input model.DocConstructor) int
+		DelConnection     func(childComplexity int, input model.RefInput) int
+		DelConnections    func(childComplexity int, input model.Filter) int
+		DelDoc            func(childComplexity int, input model.RefInput) int
+		DelDocs           func(childComplexity int, input model.Filter) int
 		EditConnection    func(childComplexity int, input model.Edit) int
 		EditConnections   func(childComplexity int, input model.EFilter) int
 		EditDoc           func(childComplexity int, input model.Edit) int
@@ -170,9 +174,13 @@ type MutationResolver interface {
 	CreateDoc(ctx context.Context, input model.DocConstructor) (*model.Doc, error)
 	EditDoc(ctx context.Context, input model.Edit) (*model.Doc, error)
 	EditDocs(ctx context.Context, input model.EFilter) (*model.Docs, error)
+	DelDoc(ctx context.Context, input model.RefInput) (*emptypb.Empty, error)
+	DelDocs(ctx context.Context, input model.Filter) (*emptypb.Empty, error)
 	CreateConnection(ctx context.Context, input model.ConnectionConstructor) (*model.Connection, error)
 	EditConnection(ctx context.Context, input model.Edit) (*model.Connection, error)
 	EditConnections(ctx context.Context, input model.EFilter) (*model.Connections, error)
+	DelConnection(ctx context.Context, input model.RefInput) (*emptypb.Empty, error)
+	DelConnections(ctx context.Context, input model.Filter) (*emptypb.Empty, error)
 	Publish(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error)
 	SetIndexes(ctx context.Context, input model.IndexesInput) (*emptypb.Empty, error)
 	SetAuthorizers(ctx context.Context, input model.AuthorizersInput) (*emptypb.Empty, error)
@@ -403,6 +411,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateDoc(childComplexity, args["input"].(model.DocConstructor)), true
+
+	case "Mutation.delConnection":
+		if e.complexity.Mutation.DelConnection == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_delConnection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DelConnection(childComplexity, args["input"].(model.RefInput)), true
+
+	case "Mutation.delConnections":
+		if e.complexity.Mutation.DelConnections == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_delConnections_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DelConnections(childComplexity, args["input"].(model.Filter)), true
+
+	case "Mutation.delDoc":
+		if e.complexity.Mutation.DelDoc == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_delDoc_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DelDoc(childComplexity, args["input"].(model.RefInput)), true
+
+	case "Mutation.delDocs":
+		if e.complexity.Mutation.DelDocs == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_delDocs_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DelDocs(childComplexity, args["input"].(model.Filter)), true
 
 	case "Mutation.editConnection":
 		if e.complexity.Mutation.EditConnection == nil {
@@ -1145,12 +1201,16 @@ type Mutation {
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
   editDocs(input: EFilter!): Docs!
+  delDoc(input: RefInput!): Empty
+  delDocs(input: Filter!): Empty
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
   editConnections(input: EFilter!): Connections!
+  delConnection(input: RefInput!): Empty
+  delConnections(input: Filter!): Empty
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty
   setIndexes(input: IndexesInput!): Empty
@@ -1217,6 +1277,66 @@ func (ec *executionContext) field_Mutation_createDoc_args(ctx context.Context, r
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDocConstructor2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐDocConstructor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_delConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.RefInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐRefInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_delConnections_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.Filter
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_delDoc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.RefInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐRefInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_delDocs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.Filter
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2550,6 +2670,84 @@ func (ec *executionContext) _Mutation_editDocs(ctx context.Context, field graphq
 	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐDocs(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_delDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_delDoc_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DelDoc(rctx, args["input"].(model.RefInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_delDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_delDocs_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DelDocs(rctx, args["input"].(model.Filter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2674,6 +2872,84 @@ func (ec *executionContext) _Mutation_editConnections(ctx context.Context, field
 	res := resTmp.(*model.Connections)
 	fc.Result = res
 	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐConnections(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_delConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_delConnection_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DelConnection(rctx, args["input"].(model.RefInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_delConnections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_delConnections_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DelConnections(rctx, args["input"].(model.Filter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6162,6 +6438,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "delDoc":
+			out.Values[i] = ec._Mutation_delDoc(ctx, field)
+		case "delDocs":
+			out.Values[i] = ec._Mutation_delDocs(ctx, field)
 		case "createConnection":
 			out.Values[i] = ec._Mutation_createConnection(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -6177,6 +6457,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "delConnection":
+			out.Values[i] = ec._Mutation_delConnection(ctx, field)
+		case "delConnections":
+			out.Values[i] = ec._Mutation_delConnections(ctx, field)
 		case "publish":
 			out.Values[i] = ec._Mutation_publish(ctx, field)
 		case "setIndexes":
