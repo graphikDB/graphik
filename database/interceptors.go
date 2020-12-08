@@ -44,24 +44,24 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 		ctx = g.methodToContext(ctx, info.FullMethod)
 		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to get userinfo")
+			return nil, status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		userinfoReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		resp, err := http.DefaultClient.Do(userinfoReq)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to get userinfo")
+			return nil, status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
-			return nil, errors.Errorf("failed to get userinfo: status = %v", resp.StatusCode)
+			return nil, status.Errorf(codes.Unauthenticated, "failed to get userinfo: %v", resp.StatusCode)
 		}
 		bits, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to get userinfo")
+			return nil, status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		payload := map[string]interface{}{}
 		if err := json.Unmarshal(bits, &payload); err != nil {
-			return nil, errors.Wrap(err, "failed to decode userinfo")
+			return nil, status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		g.jwtCache.Set(tokenHash, payload, 1*time.Hour)
 		ctx, err = g.check(ctx, info.FullMethod, req, payload)
@@ -92,16 +92,16 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		ctx := g.methodToContext(ss.Context(), info.FullMethod)
 		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
 		if err != nil {
-			return errors.Wrap(err, "failed to get userinfo")
+			return status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		userinfoReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		resp, err := http.DefaultClient.Do(userinfoReq)
 		if err != nil {
-			return errors.Wrap(err, "failed to get userinfo")
+			return status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
-			return errors.Errorf("failed to get userinfo: status = %v", resp.StatusCode)
+			return status.Errorf(codes.Unauthenticated, "failed to get userinfo: %v", resp.StatusCode)
 		}
 		bits, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -109,7 +109,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		}
 		payload := map[string]interface{}{}
 		if err := json.Unmarshal(bits, &payload); err != nil {
-			return errors.Wrap(err, "failed to decode userinfo")
+			return status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		g.jwtCache.Set(tokenHash, payload, 1*time.Hour)
 		ctx, err = g.check(ctx, info.FullMethod, srv, payload)
@@ -237,7 +237,7 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 	ctx = g.methodToContext(ctx, method)
 	ctx, identity, err := g.identityToContext(ctx, payload)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Unauthenticated, err.Error())
 	}
 	if !g.isGraphikAdmin(identity) {
 		now := time.Now()
