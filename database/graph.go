@@ -42,8 +42,8 @@ type Graph struct {
 	openID          *openIDConnect
 	path            string
 	mu              sync.RWMutex
-	connectionsTo   map[string][]*apipb.Ref
-	connectionsFrom map[string][]*apipb.Ref
+	connectionsTo   map[string]map[string]struct{}
+	connectionsFrom map[string]map[string]struct{}
 	machine         *machine.Machine
 	closers         []func()
 	closeOnce       sync.Once
@@ -74,8 +74,8 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		jwksSet:         nil,
 		path:            path,
 		mu:              sync.RWMutex{},
-		connectionsTo:   map[string][]*apipb.Ref{},
-		connectionsFrom: map[string][]*apipb.Ref{},
+		connectionsTo:   map[string]map[string]struct{}{},
+		connectionsFrom: map[string]map[string]struct{}{},
 		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},

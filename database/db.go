@@ -44,8 +44,15 @@ func (g *Graph) cacheConnectionRefs() error {
 	return g.rangeConnections(context.Background(), apipb.Any, func(e *apipb.Connection) bool {
 		g.mu.Lock()
 		defer g.mu.Unlock()
-		g.connectionsFrom[e.From.String()] = append(g.connectionsFrom[e.From.String()], e.GetRef())
-		g.connectionsTo[e.To.String()] = append(g.connectionsTo[e.To.String()], e.GetRef())
+		if g.connectionsFrom[e.From.String()] == nil {
+			g.connectionsFrom[e.From.String()] = map[string]struct{}{}
+		}
+		if g.connectionsTo[e.To.String()] == nil {
+			g.connectionsTo[e.To.String()] = map[string]struct{}{}
+		}
+		refstr := refString(e.GetRef())
+		g.connectionsFrom[e.From.String()][refstr] = struct{}{}
+		g.connectionsTo[e.To.String()][refstr] = struct{}{}
 		return true
 	})
 }
@@ -453,16 +460,21 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	if err := connectionBucket.Put([]byte(connection.GetRef().GetGid()), bits); err != nil {
 		return nil, err
 	}
+	refstr := refString(connection.GetRef())
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	g.connectionsFrom[connection.GetFrom().String()] = append(g.connectionsFrom[connection.GetFrom().String()], connection.GetRef())
-	g.connectionsTo[connection.GetTo().String()] = append(g.connectionsTo[connection.GetTo().String()], connection.GetRef())
-	if !connection.Directed {
-		g.connectionsTo[connection.GetFrom().String()] = append(g.connectionsTo[connection.GetFrom().String()], connection.GetRef())
-		g.connectionsFrom[connection.GetTo().String()] = append(g.connectionsFrom[connection.GetTo().String()], connection.GetRef())
+	if g.connectionsFrom[connection.From.String()] == nil {
+		g.connectionsFrom[connection.From.String()] = map[string]struct{}{}
 	}
-	sortRefs(g.connectionsFrom[connection.GetFrom().String()])
-	sortRefs(g.connectionsTo[connection.GetTo().String()])
+	if g.connectionsTo[connection.To.String()] == nil {
+		g.connectionsTo[connection.To.String()] = map[string]struct{}{}
+	}
+	g.connectionsFrom[connection.GetFrom().String()][refstr] = struct{}{}
+	g.connectionsTo[connection.GetTo().String()][refstr] = struct{}{}
+	if !connection.Directed {
+		g.connectionsTo[connection.GetFrom().String()][refstr] = struct{}{}
+		g.connectionsFrom[connection.GetTo().String()][refstr] = struct{}{}
+	}
 	g.rangeIndexes(func(i *index) bool {
 		if i.index.Connections {
 			result, _ := g.vm.Connection().Eval(connection, i.program)
@@ -684,10 +696,12 @@ func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref
 		return err
 	}
 	g.mu.Lock()
-	fromRefs := removeConnection(path, g.connectionsFrom[connection.GetFrom().String()])
-	g.connectionsFrom[connection.GetFrom().String()] = fromRefs
-	toRefs := removeConnection(path, g.connectionsTo[connection.GetTo().String()])
-	g.connectionsTo[connection.GetTo().String()] = toRefs
+	if g.connectionsFrom != nil {
+		delete(g.connectionsFrom[connection.GetFrom().String()], refString(path))
+	}
+	if g.connectionsTo != nil {
+		delete(g.connectionsTo[connection.GetTo().String()], refString(path))
+	}
 	g.mu.Unlock()
 	g.rangeIndexes(func(index *index) bool {
 		if index.index.Connections && index.index.GetGtype() == path.GetGtype() {
@@ -718,16 +732,18 @@ func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn
 	g.mu.RLock()
 	paths := g.connectionsTo[docRef.String()]
 	g.mu.RUnlock()
-	for _, path := range paths {
+	for path, _ := range paths {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
-		bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
+		var ref apipb.Ref
+		proto.Unmarshal([]byte(path), &ref)
+		bucket := tx.Bucket(dbConnections).Bucket([]byte(ref.GetGtype()))
 		if bucket == nil {
 			return ErrNotFound
 		}
 		var connection apipb.Connection
-		bits := bucket.Get([]byte(path.GetGid()))
+		bits := bucket.Get([]byte(ref.GetGid()))
 		if err := proto.Unmarshal(bits, &connection); err != nil {
 			return err
 		}
@@ -742,10 +758,11 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, 
 	g.mu.RLock()
 	paths := g.connectionsFrom[docRef.String()]
 	g.mu.RUnlock()
-	for _, path := range paths {
+	for val, _ := range paths {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
+		path := fromRefString(val)
 		bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
 		if bucket == nil {
 			return ErrNotFound
@@ -854,7 +871,11 @@ func (g *Graph) hasConnectionFrom(doc, connection *apipb.Ref) bool {
 	g.mu.RLock()
 	defer g.mu.RUnlock()
 	values := g.connectionsFrom[doc.String()]
-	for _, val := range values {
+	if values == nil {
+		return false
+	}
+	for path, _ := range values {
+		val := fromRefString(path)
 		if val.Gid == connection.Gid && val.GetGtype() == connection.GetGtype() {
 			return true
 		}
@@ -866,7 +887,11 @@ func (g *Graph) hasConnectionTo(doc, connection *apipb.Ref) bool {
 	g.mu.RLock()
 	defer g.mu.RUnlock()
 	values := g.connectionsTo[doc.String()]
-	for _, val := range values {
+	if values == nil {
+		return false
+	}
+	for path, _ := range values {
+		val := fromRefString(path)
 		if val.Gid == connection.Gid && val.GetGtype() == connection.GetGtype() {
 			return true
 		}

@@ -115,7 +115,7 @@ func ExampleClient_CreateDoc() {
 func ExampleClient_SearchDocs() {
 	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
 		Gtype:      "dog",
-		Expression: `doc.attributes.name.contains("Charl")`,
+		Expression: `this.attributes.name.contains("Charl")`,
 		Limit:      1,
 		Sort:       "ref.gid",
 	})
@@ -132,7 +132,7 @@ func ExampleClient_SearchDocs() {
 func ExampleClient_CreateConnection() {
 	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
 		Gtype:      "dog",
-		Expression: `doc.attributes.name.contains("Charl")`,
+		Expression: `this.attributes.name.contains("Charl")`,
 		Limit:      1,
 	})
 	if err != nil {
@@ -170,7 +170,7 @@ func ExampleClient_CreateConnection() {
 func ExampleClient_SearchConnections() {
 	owners, err := client.SearchConnections(context.Background(), &apipb.Filter{
 		Gtype:      "owner",
-		Expression: `connection.attributes.primary_owner`,
+		Expression: `this.attributes.primary_owner`,
 		Sort:       "ref.gtype",
 		Limit:      1,
 	})
@@ -187,7 +187,7 @@ func ExampleClient_SearchConnections() {
 func ExampleClient_EditDoc() {
 	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
 		Gtype:      "dog",
-		Expression: `doc.attributes.name.contains("Charl")`,
+		Expression: `this.attributes.name.contains("Charl")`,
 		Limit:      1,
 	})
 	if err != nil {
@@ -230,7 +230,7 @@ func ExampleClient_Subscribe() {
 	m.Go(func(routine machine.Routine) {
 		err := client.Subscribe(context.Background(), &apipb.ChanFilter{
 			Channel:    "testing",
-			Expression: `message.data.text.contains("hello")`,
+			Expression: `this.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {
 			if msg.Data.GetFields()["text"] != nil && msg.Data.GetFields()["text"].GetStringValue() == "hello world" {
 				fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
