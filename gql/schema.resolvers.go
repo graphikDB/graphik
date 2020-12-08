@@ -7,9 +7,9 @@ import (
 	"context"
 
 	"github.com/99designs/gqlgen/graphql"
-	apipb "github.com/autom8ter/graphik/gen/go"
-	generated1 "github.com/autom8ter/graphik/gen/gql/generated"
-	"github.com/autom8ter/graphik/gen/gql/model"
+	generated1 "github.com/autom8ter/graphik/gen/gql/go/generated"
+	"github.com/autom8ter/graphik/gen/gql/go/model"
+	apipb "github.com/autom8ter/graphik/gen/grpc/go"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"go.uber.org/zap"

@@ -14,7 +14,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/autom8ter/graphik/gen/gql/model"
+	"github.com/autom8ter/graphik/gen/gql/go/model"
 	"github.com/autom8ter/graphik/gql/scalars"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -956,7 +956,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "schema.graphql", Input: `scalar Time
+	{Name: "schema.graphqls", Input: `scalar Time
 scalar Map
 scalar Any
 scalar Empty

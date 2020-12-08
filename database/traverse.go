@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	apipb "github.com/autom8ter/graphik/gen/go"
+	apipb "github.com/autom8ter/graphik/gen/grpc/go"
 	"github.com/autom8ter/graphik/generic"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/google/cel-go/cel"

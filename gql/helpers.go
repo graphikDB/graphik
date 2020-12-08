@@ -1,8 +1,8 @@
 package gql
 
 import (
-	apipb "github.com/autom8ter/graphik/gen/go"
-	"github.com/autom8ter/graphik/gen/gql/model"
+	"github.com/autom8ter/graphik/gen/gql/go/model"
+	apipb "github.com/autom8ter/graphik/gen/grpc/go"
 )
 
 func protoIRef(path *model.RefInput) *apipb.Ref {

@@ -3,8 +3,7 @@ package graphik_test
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/gen/go"
-	apipb2 "github.com/autom8ter/graphik/gen/go"
+	apipb2 "github.com/autom8ter/graphik/gen/grpc/go"
 	"github.com/autom8ter/graphik/graphik-client-go"
 	"github.com/autom8ter/graphik/logger"
 	"github.com/autom8ter/machine"
@@ -60,8 +59,8 @@ func ExampleNewClient() {
 }
 
 func ExampleClient_SetAuthorizers() {
-	_, err := client.SetAuthorizers(context.Background(), &apipb.Authorizers{
-		Authorizers: []*apipb.Authorizer{
+	_, err := client.SetAuthorizers(context.Background(), &apipb2.Authorizers{
+		Authorizers: []*apipb2.Authorizer{
 			{
 				Name:       "testing",
 				Expression: `this.identity.attributes.email.contains("coleman")`,
@@ -97,8 +96,8 @@ func ExampleClient_Me() {
 }
 
 func ExampleClient_CreateDoc() {
-	charlie, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
-		Ref: &apipb.RefConstructor{Gtype: "dog"},
+	charlie, err := client.CreateDoc(context.Background(), &apipb2.DocConstructor{
+		Ref: &apipb2.RefConstructor{Gtype: "dog"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Charlie",
 		}),
@@ -113,7 +112,7 @@ func ExampleClient_CreateDoc() {
 }
 
 func ExampleClient_SearchDocs() {
-	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
+	dogs, err := client.SearchDocs(context.Background(), &apipb2.Filter{
 		Gtype:      "dog",
 		Expression: `this.attributes.name.contains("Charl")`,
 		Limit:      1,
@@ -130,7 +129,7 @@ func ExampleClient_SearchDocs() {
 }
 
 func ExampleClient_CreateConnection() {
-	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
+	dogs, err := client.SearchDocs(context.Background(), &apipb2.Filter{
 		Gtype:      "dog",
 		Expression: `this.attributes.name.contains("Charl")`,
 		Limit:      1,
@@ -140,8 +139,8 @@ func ExampleClient_CreateConnection() {
 		return
 	}
 	charlie := dogs.GetDocs()[0]
-	coleman, err := client.CreateDoc(context.Background(), &apipb.DocConstructor{
-		Ref: &apipb.RefConstructor{Gtype: "human"},
+	coleman, err := client.CreateDoc(context.Background(), &apipb2.DocConstructor{
+		Ref: &apipb2.RefConstructor{Gtype: "human"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Coleman",
 		}),
@@ -150,8 +149,8 @@ func ExampleClient_CreateConnection() {
 		log.Print(err)
 		return
 	}
-	ownerConnection, err := client.CreateConnection(context.Background(), &apipb.ConnectionConstructor{
-		Ref: &apipb.RefConstructor{Gtype: "owner"},
+	ownerConnection, err := client.CreateConnection(context.Background(), &apipb2.ConnectionConstructor{
+		Ref: &apipb2.RefConstructor{Gtype: "owner"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"primary_owner": true,
 		}),
@@ -168,7 +167,7 @@ func ExampleClient_CreateConnection() {
 }
 
 func ExampleClient_SearchConnections() {
-	owners, err := client.SearchConnections(context.Background(), &apipb.Filter{
+	owners, err := client.SearchConnections(context.Background(), &apipb2.Filter{
 		Gtype:      "owner",
 		Expression: `this.attributes.primary_owner`,
 		Sort:       "ref.gtype",
@@ -185,7 +184,7 @@ func ExampleClient_SearchConnections() {
 }
 
 func ExampleClient_EditDoc() {
-	dogs, err := client.SearchDocs(context.Background(), &apipb.Filter{
+	dogs, err := client.SearchDocs(context.Background(), &apipb2.Filter{
 		Gtype:      "dog",
 		Expression: `this.attributes.name.contains("Charl")`,
 		Limit:      1,
@@ -196,7 +195,7 @@ func ExampleClient_EditDoc() {
 	}
 	charlie := dogs.GetDocs()[0]
 	log.Println(charlie.String())
-	charlie, err = client.EditDoc(context.Background(), &apipb.Edit{
+	charlie, err = client.EditDoc(context.Background(), &apipb2.Edit{
 		Ref: charlie.Ref,
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"weight": 25,
@@ -211,7 +210,7 @@ func ExampleClient_EditDoc() {
 }
 
 func ExampleClient_Publish() {
-	res, err := client.Publish(context.Background(), &apipb.OutboundMessage{
+	res, err := client.Publish(context.Background(), &apipb2.OutboundMessage{
 		Channel: "testing",
 		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -228,7 +227,7 @@ func ExampleClient_Publish() {
 func ExampleClient_Subscribe() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
-		err := client.Subscribe(context.Background(), &apipb.ChanFilter{
+		err := client.Subscribe(context.Background(), &apipb2.ChanFilter{
 			Channel:    "testing",
 			Expression: `this.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {
@@ -244,7 +243,7 @@ func ExampleClient_Subscribe() {
 		}
 	})
 	time.Sleep(1 * time.Second)
-	_, err := client.Publish(context.Background(), &apipb.OutboundMessage{
+	_, err := client.Publish(context.Background(), &apipb2.OutboundMessage{
 		Channel: "testing",
 		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",

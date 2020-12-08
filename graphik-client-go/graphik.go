@@ -3,7 +3,7 @@ package graphik
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/gen/go"
+	"github.com/autom8ter/graphik/gen/grpc/go"
 	"github.com/golang/protobuf/ptypes/empty"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
 	"golang.org/x/oauth2"

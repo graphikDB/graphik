@@ -10,17 +10,21 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 
 ## Helpful Links
 
-- [API Docs](docs/README.md)
+- [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
+- [API Docs](docs/index.html)
 - [Protobuf API Spec](https://github.com/autom8ter/graphik/blob/master/graphik.proto)
-- [Graphql API Spec](https://github.com/autom8ter/graphik/blob/master/schema.graphqls)
+- [Graphql API Spec](https://github.com/autom8ter/graphik/blob/master/schema.graphql)
 - [Common Expression Language Code Lab](https://codelabs.developers.google.com/codelabs/cel-go/index.html#0)
 - [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
-- [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
 
-## Client SDKs
-- [x] [graphik-client-go](https://github.com/autom8ter/graphik-client-go)
-- [ ] graphik-client-python
-- [ ] graphik-client-doc
+## gRPC Client SDKs
+- [x] [Go](https://github.com/autom8ter/graphik-client-go)
+- [x] [Python](gen/grpc/python)
+- [x] [PHP](gen/grpc/php)
+- [x] [Javascript](gen/grpc/js)
+- [x] [Java](gen/grpc/java)
+- [x] [C#](gen/grpc/csharp)
+- [x] [Ruby](gen/grpc/ruby)
 
 ## Features
 - [x] 100% Go
