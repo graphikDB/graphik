@@ -15,7 +15,7 @@ type ConnectionVM struct {
 func NewConnectionVM() (*ConnectionVM, error) {
 	e, err := cel.NewEnv(
 		cel.Declarations(
-			decls.NewVar("connection", decls.NewMapType(decls.String, decls.Any)),
+			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -54,7 +54,7 @@ func (n *ConnectionVM) Eval(connection *apipb.Connection, programs ...cel.Progra
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"connection": connection.AsMap(),
+			"this": connection.AsMap(),
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "no such key") {

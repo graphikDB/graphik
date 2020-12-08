@@ -10,7 +10,7 @@ const (
 	dbFileMode                  = 0600
 	changeChannel               = "changes"
 	authCtxKey           ctxKey = "x-graphik-auth-ctx"
-	userType             ctxKey = "users"
+	userType             ctxKey = "user"
 	methodCtxKey         ctxKey = "x-graphik-full-method"
 	importOverrideCtxKey ctxKey = "x-graphik-import-override"
 )
@@ -26,5 +26,6 @@ var (
 	dbIndexDocs        = []byte("indexedDocs")
 	dbIndexConnections = []byte("indexedConnections")
 	// An error indicating a given key does not exist
-	ErrNotFound = errors.New("not found")
+	ErrNotFound      = errors.New("not found")
+	ErrAlreadyExists = errors.New("already exists")
 )

@@ -3,47 +3,25 @@ scalar Map
 scalar Any
 scalar Empty
 
-enum Direction {
-  NONE
-  FROM
-  TO
-}
-
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
 }
 
-# Path describes a doc/connection type & id
-type Path {
+# Ref describes a doc/connection type & id
+type Ref {
   # gtype is the type of the doc/connection ex: pet
   gtype: String!
   # gid is the unique id of the doc/connection within the context of it's type
   gid: String!
 }
 
-# Metadata is general metadata collected about the doc
-type Metadata {
-  # created_at is the unix timestamp when the doc/connection was created
-  created_at: Time!
-  # updated_at is the unix timestamp when the doc/connection was last updated
-  updated_at: Time!
-  # created_by is the identity that initially created the doc/connection
-  createdBy: Path!
-  # updated_by is the identity that last modified the doc/connection
-  updated_by: Path!
-  # version iterates by 1 every time the doc/connection is modified
-  version: Int!
-}
-
 # Doc is a Graph primitive representing a single entity/resource. It is connected to other docs via Connections
 type Doc {
-  # path is the path to the doc
-  path: Path!
+  # ref is the ref to the doc
+  ref: Ref!
   # k/v pairs
   attributes: Map
-  # metadata is general metadata collected about the doc
-  metadata: Metadata!
 }
 
 # Docs is an array of docs
@@ -53,18 +31,8 @@ type Docs {
   seek_next: String!
 }
 
-type Paths {
-  paths: [Path!]
-}
-
-type Traversal {
-  doc: Doc!
-  relative_path: Paths!
-  direction: Direction!
-}
-
-type Traversals {
-  traversals: [Traversal]!
+type Refs {
+  refs: [Ref!]
 }
 
 type TypeValidator {
@@ -83,18 +51,16 @@ type TypeValidators {
 
 # Connection is a graph primitive that represents a relationship between two docs
 type Connection {
-  # path is the path to the connection
-  path: Path!
+  # ref is the ref to the connection
+  ref: Ref!
   # k/v pairs
   attributes: Map
   # directed is false if the connection is bi-directional
   directed: Boolean!
-  # from is the doc path that is the source of the connection
-  from: Path!
-  # to is the doc path that is the destination of the connection
-  to: Path!
-  # metadata is general metadata collected about the connection
-  metadata: Metadata!
+  # from is the doc ref that is the source of the connection
+  from: Ref!
+  # to is the doc ref that is the destination of the connection
+  to: Ref!
 }
 
 # Connections is an array of connections
@@ -142,54 +108,42 @@ type Message {
   # data is the data sent with the message
   data: Map!
   # sender is the identity that sent the message
-  sender: Path!
+  sender: Ref!
   # timestamp is when the message was sent
   timestamp: Time!
 }
 
-# PathConstructor is used to create a Path
-input PathConstructor {
+# RefConstructor is used to create a Ref
+input RefConstructor {
   gtype: String!
   gid: String
 }
 
 # DocConstructor is used to create a Doc
 input DocConstructor {
-  path: PathConstructor!
+  ref: RefConstructor!
   # attributes are k/v pairs
   attributes: Map
 }
 
 # ConnectionConstructor is used to create an Connection
 input ConnectionConstructor {
-  path: PathConstructor!
+  ref: RefConstructor!
   # directed is false if the connection is bi-directional
   directed: Boolean!
 
   attributes: Map
-  # from is the doc path that is the source of the connection
-  from: PathInput!
-  # to is the doc path that is the destination of the connection
-  to: PathInput!
+  # from is the doc ref that is the source of the connection
+  from: RefInput!
+  # to is the doc ref that is the destination of the connection
+  to: RefInput!
 }
 
-# Change represents a set of state changes in the graph
-type Change {
-  # method is the gRPC method invoked
-  method: String!
-  # identity is the identity invoking the change
-  identity: Doc!
-  # timestamp is when the change was made
-  timestamp: Time!
-  # paths_affected are paths to docs/connections that have been affected by the change
-  paths_affected: Paths!
-}
-
-# PathInput is the path to a doc/connection
-input PathInput {
-  # path is the path to the target doc/connection to edit
+# RefInput is the ref to a doc/connection
+input RefInput {
+  # ref is the ref to the target doc/connection to edit
   gtype: String!
-  # path is the path to the target doc/connection to edit
+  # ref is the ref to the target doc/connection to edit
   gid: String!
 }
 
@@ -216,18 +170,18 @@ input SConnectFilter {
   gtype: String!
   attributes: Map
   directed: Boolean!
-  from: PathInput!
+  from: RefInput!
 }
 
 input AggFilter {
   filter: Filter!
   aggregate: String!
-  field: String!
+  field: String
 }
 
 input TFilter {
   # gtype is the doc/connection type to be filtered
-  root: PathInput!
+  root: RefInput!
   # expression is a CEL expression used to filter connections/nodes
   doc_expression: String
   connection_expression: String
@@ -235,12 +189,13 @@ input TFilter {
   limit: Int!
   # custom sorting of the results.
   sort: String
+  reverse: Boolean
 }
 
 # CFilter is used to fetch connections related to a single noted
 input CFilter {
-  # doc_path is the path to the target doc
-  doc_path: PathInput!
+  # doc_ref is the ref to the target doc
+  doc_ref: RefInput!
   # gtype is the type of connections to return
   gtype: String!
   # expression is a CEL expression used to filter connections
@@ -265,8 +220,8 @@ input ChanFilter {
 
 # Edit edites the attributes of a Doc or Connection
 input Edit {
-  # path is the path to the target doc/connection to edit
-  path: PathInput!
+  # ref is the ref to the target doc/connection to edit
+  ref: RefInput!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
   attributes: Map!
 }
@@ -334,12 +289,16 @@ type Mutation {
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
   editDocs(input: EFilter!): Docs!
+  delDoc(input: RefInput!): Empty
+  delDocs(input: Filter!): Empty
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
   editConnections(input: EFilter!): Connections!
+  delConnection(input: RefInput!): Empty
+  delConnections(input: Filter!): Empty
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty
   setIndexes(input: IndexesInput!): Empty
@@ -354,14 +313,14 @@ type Query {
   getSchema(input: Empty): Schema!
   # me returns your identity + connections
   me(input: Empty): Doc!
-  # getDoc gets a doc at the given path
-  getDoc(input: PathInput!): Doc!
+  # getDoc gets a doc at the given ref
+  getDoc(input: RefInput!): Doc!
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
   # traverse searches for 0-many docs using dfs search
-  traverse(input: TFilter!): Traversals!
-  # getConnection gets a connection at the given path
-  getConnection(input: PathInput!): Connection!
+  traverse(input: TFilter!): Docs!
+  # getConnection gets a connection at the given ref
+  getConnection(input: RefInput!): Connection!
   # searchConnections searches for 0-many connections
   searchConnections(input: Filter!): Connections!
   # connectionsFrom returns connections from the given doc that pass the filter
@@ -376,6 +335,4 @@ type Query {
 type Subscription {
   # subscribe subscribes to a pubsub channel
   subscribe(input: ChanFilter!): Message!
-  # subscribeChanges subscribes to state changes in the graph
-  subscribeChanges(input: ExprFilter!): Change!
 }

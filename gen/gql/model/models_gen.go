@@ -3,16 +3,13 @@
 package model
 
 import (
-	"fmt"
-	"io"
-	"strconv"
 	"time"
 )
 
 type AggFilter struct {
 	Filter    *Filter `json:"filter"`
 	Aggregate string  `json:"aggregate"`
-	Field     string  `json:"field"`
+	Field     *string `json:"field"`
 }
 
 type Authorizer struct {
@@ -34,13 +31,13 @@ type AuthorizersInput struct {
 }
 
 type CFilter struct {
-	DocPath    *PathInput `json:"doc_path"`
-	Gtype      string     `json:"gtype"`
-	Expression *string    `json:"expression"`
-	Limit      int        `json:"limit"`
-	Sort       *string    `json:"sort"`
-	Seek       *string    `json:"seek"`
-	Reverse    *bool      `json:"reverse"`
+	DocRef     *RefInput `json:"doc_ref"`
+	Gtype      string    `json:"gtype"`
+	Expression *string   `json:"expression"`
+	Limit      int       `json:"limit"`
+	Sort       *string   `json:"sort"`
+	Seek       *string   `json:"seek"`
+	Reverse    *bool     `json:"reverse"`
 }
 
 type ChanFilter struct {
@@ -48,28 +45,20 @@ type ChanFilter struct {
 	Expression *string `json:"expression"`
 }
 
-type Change struct {
-	Method        string    `json:"method"`
-	Identity      *Doc      `json:"identity"`
-	Timestamp     time.Time `json:"timestamp"`
-	PathsAffected *Paths    `json:"paths_affected"`
-}
-
 type Connection struct {
-	Path       *Path                  `json:"path"`
+	Ref        *Ref                   `json:"ref"`
 	Attributes map[string]interface{} `json:"attributes"`
 	Directed   bool                   `json:"directed"`
-	From       *Path                  `json:"from"`
-	To         *Path                  `json:"to"`
-	Metadata   *Metadata              `json:"metadata"`
+	From       *Ref                   `json:"from"`
+	To         *Ref                   `json:"to"`
 }
 
 type ConnectionConstructor struct {
-	Path       *PathConstructor       `json:"path"`
+	Ref        *RefConstructor        `json:"ref"`
 	Directed   bool                   `json:"directed"`
 	Attributes map[string]interface{} `json:"attributes"`
-	From       *PathInput             `json:"from"`
-	To         *PathInput             `json:"to"`
+	From       *RefInput              `json:"from"`
+	To         *RefInput              `json:"to"`
 }
 
 type Connections struct {
@@ -78,13 +67,12 @@ type Connections struct {
 }
 
 type Doc struct {
-	Path       *Path                  `json:"path"`
+	Ref        *Ref                   `json:"ref"`
 	Attributes map[string]interface{} `json:"attributes"`
-	Metadata   *Metadata              `json:"metadata"`
 }
 
 type DocConstructor struct {
-	Path       *PathConstructor       `json:"path"`
+	Ref        *RefConstructor        `json:"ref"`
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
@@ -99,7 +87,7 @@ type EFilter struct {
 }
 
 type Edit struct {
-	Path       *PathInput             `json:"path"`
+	Ref        *RefInput              `json:"ref"`
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
@@ -144,16 +132,8 @@ type IndexesInput struct {
 type Message struct {
 	Channel   string                 `json:"channel"`
 	Data      map[string]interface{} `json:"data"`
-	Sender    *Path                  `json:"sender"`
+	Sender    *Ref                   `json:"sender"`
 	Timestamp time.Time              `json:"timestamp"`
-}
-
-type Metadata struct {
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedBy *Path     `json:"createdBy"`
-	UpdatedBy *Path     `json:"updated_by"`
-	Version   int       `json:"version"`
 }
 
 type OutboundMessage struct {
@@ -161,27 +141,27 @@ type OutboundMessage struct {
 	Data    map[string]interface{} `json:"data"`
 }
 
-type Path struct {
+type Pong struct {
+	Message string `json:"message"`
+}
+
+type Ref struct {
 	Gtype string `json:"gtype"`
 	Gid   string `json:"gid"`
 }
 
-type PathConstructor struct {
+type RefConstructor struct {
 	Gtype string  `json:"gtype"`
 	Gid   *string `json:"gid"`
 }
 
-type PathInput struct {
+type RefInput struct {
 	Gtype string `json:"gtype"`
 	Gid   string `json:"gid"`
 }
 
-type Paths struct {
-	Paths []*Path `json:"paths"`
-}
-
-type Pong struct {
-	Message string `json:"message"`
+type Refs struct {
+	Refs []*Ref `json:"refs"`
 }
 
 type SConnectFilter struct {
@@ -189,7 +169,7 @@ type SConnectFilter struct {
 	Gtype      string                 `json:"gtype"`
 	Attributes map[string]interface{} `json:"attributes"`
 	Directed   bool                   `json:"directed"`
-	From       *PathInput             `json:"from"`
+	From       *RefInput              `json:"from"`
 }
 
 type Schema struct {
@@ -201,21 +181,12 @@ type Schema struct {
 }
 
 type TFilter struct {
-	Root                 *PathInput `json:"root"`
-	DocExpression        *string    `json:"doc_expression"`
-	ConnectionExpression *string    `json:"connection_expression"`
-	Limit                int        `json:"limit"`
-	Sort                 *string    `json:"sort"`
-}
-
-type Traversal struct {
-	Doc          *Doc      `json:"doc"`
-	RelativePath *Paths    `json:"relative_path"`
-	Direction    Direction `json:"direction"`
-}
-
-type Traversals struct {
-	Traversals []*Traversal `json:"traversals"`
+	Root                 *RefInput `json:"root"`
+	DocExpression        *string   `json:"doc_expression"`
+	ConnectionExpression *string   `json:"connection_expression"`
+	Limit                int       `json:"limit"`
+	Sort                 *string   `json:"sort"`
+	Reverse              *bool     `json:"reverse"`
 }
 
 type TypeValidator struct {
@@ -240,47 +211,4 @@ type TypeValidators struct {
 
 type TypeValidatorsInput struct {
 	Validators []*TypeValidatorInput `json:"validators"`
-}
-
-type Direction string
-
-const (
-	DirectionNone Direction = "NONE"
-	DirectionFrom Direction = "FROM"
-	DirectionTo   Direction = "TO"
-)
-
-var AllDirection = []Direction{
-	DirectionNone,
-	DirectionFrom,
-	DirectionTo,
-}
-
-func (e Direction) IsValid() bool {
-	switch e {
-	case DirectionNone, DirectionFrom, DirectionTo:
-		return true
-	}
-	return false
-}
-
-func (e Direction) String() string {
-	return string(e)
-}
-
-func (e *Direction) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("enums must be strings")
-	}
-
-	*e = Direction(str)
-	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid Direction", str)
-	}
-	return nil
-}
-
-func (e Direction) MarshalGQL(w io.Writer) {
-	fmt.Fprint(w, strconv.Quote(e.String()))
 }

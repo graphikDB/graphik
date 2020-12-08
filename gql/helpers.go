@@ -3,25 +3,24 @@ package gql
 import (
 	apipb "github.com/autom8ter/graphik/gen/go"
 	"github.com/autom8ter/graphik/gen/gql/model"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func protoIPath(path *model.PathInput) *apipb.Path {
-	return &apipb.Path{
+func protoIRef(path *model.RefInput) *apipb.Ref {
+	return &apipb.Ref{
 		Gtype: path.Gtype,
 		Gid:   path.Gid,
 	}
 }
 
-func protoPath(path *model.Path) *apipb.Path {
-	return &apipb.Path{
+func protoRef(path *model.Ref) *apipb.Ref {
+	return &apipb.Ref{
 		Gtype: path.Gtype,
 		Gid:   path.Gid,
 	}
 }
 
-func protoPathC(path *model.PathConstructor) *apipb.PathConstructor {
-	p := &apipb.PathConstructor{
+func protoRefC(path *model.RefConstructor) *apipb.RefConstructor {
+	p := &apipb.RefConstructor{
 		Gtype: path.Gtype,
 	}
 	if path.Gid != nil {
@@ -30,55 +29,43 @@ func protoPathC(path *model.PathConstructor) *apipb.PathConstructor {
 	return p
 }
 
-func protoMetadata(m *model.Metadata) *apipb.Metadata {
-	return &apipb.Metadata{
-		CreatedAt: timestamppb.New(m.CreatedAt),
-		UpdatedAt: timestamppb.New(m.UpdatedAt),
-		CreatedBy: protoPath(m.CreatedBy),
-		UpdatedBy: protoPath(m.UpdatedBy),
-		Version:   uint64(m.Version),
-	}
-}
-
 func protoDoc(d *model.Doc) *apipb.Doc {
 	return &apipb.Doc{
-		Path:       protoPath(d.Path),
+		Ref:        protoRef(d.Ref),
 		Attributes: apipb.NewStruct(d.Attributes),
-		Metadata:   protoMetadata(d.Metadata),
 	}
 }
 
 func protoDocC(d *model.DocConstructor) *apipb.DocConstructor {
 	return &apipb.DocConstructor{
-		Path:       protoPathC(d.Path),
+		Ref:        protoRefC(d.Ref),
 		Attributes: apipb.NewStruct(d.Attributes),
 	}
 }
 
 func protoEdit(e *model.Edit) *apipb.Edit {
 	return &apipb.Edit{
-		Path:       protoIPath(e.Path),
+		Ref:        protoIRef(e.Ref),
 		Attributes: apipb.NewStruct(e.Attributes),
 	}
 }
 
 func protoConnection(d *model.Connection) *apipb.Connection {
 	return &apipb.Connection{
-		Path:       protoPath(d.Path),
+		Ref:        protoRef(d.Ref),
 		Attributes: apipb.NewStruct(d.Attributes),
-		Metadata:   protoMetadata(d.Metadata),
-		From:       protoPath(d.From),
-		To:         protoPath(d.To),
+		From:       protoRef(d.From),
+		To:         protoRef(d.To),
 		Directed:   d.Directed,
 	}
 }
 
 func protoConnectionC(d *model.ConnectionConstructor) *apipb.ConnectionConstructor {
 	return &apipb.ConnectionConstructor{
-		Path:       protoPathC(d.Path),
+		Ref:        protoRefC(d.Ref),
 		Attributes: apipb.NewStruct(d.Attributes),
-		From:       protoIPath(d.From),
-		To:         protoIPath(d.To),
+		From:       protoIRef(d.From),
+		To:         protoIRef(d.To),
 		Directed:   d.Directed,
 	}
 }
@@ -113,27 +100,17 @@ func protoEFilter(filter *model.EFilter) *apipb.EFilter {
 	}
 }
 
-func gqlPath(p *apipb.Path) *model.Path {
-	return &model.Path{
+func gqlRef(p *apipb.Ref) *model.Ref {
+	return &model.Ref{
 		Gtype: p.GetGtype(),
 		Gid:   p.GetGid(),
 	}
 }
 
-func gqlMetadata(m *apipb.Metadata) *model.Metadata {
-	return &model.Metadata{
-		CreatedBy: gqlPath(m.GetCreatedBy()),
-		UpdatedBy: gqlPath(m.GetUpdatedBy()),
-		CreatedAt: m.GetCreatedAt().AsTime(),
-		UpdatedAt: m.GetUpdatedAt().AsTime(),
-	}
-}
-
 func gqlDoc(d *apipb.Doc) *model.Doc {
 	return &model.Doc{
-		Path:       gqlPath(d.GetPath()),
+		Ref:        gqlRef(d.GetRef()),
 		Attributes: d.GetAttributes().AsMap(),
-		Metadata:   gqlMetadata(d.GetMetadata()),
 	}
 }
 
@@ -150,11 +127,10 @@ func gqlDocs(d *apipb.Docs) *model.Docs {
 
 func gqlConnection(d *apipb.Connection) *model.Connection {
 	return &model.Connection{
-		Path:       gqlPath(d.GetPath()),
+		Ref:        gqlRef(d.GetRef()),
 		Attributes: d.GetAttributes().AsMap(),
-		Metadata:   gqlMetadata(d.GetMetadata()),
-		From:       gqlPath(d.GetFrom()),
-		To:         gqlPath(d.GetTo()),
+		From:       gqlRef(d.GetFrom()),
+		To:         gqlRef(d.GetTo()),
 		Directed:   d.GetDirected(),
 	}
 }
@@ -229,11 +205,14 @@ func gqlSchema(s *apipb.Schema) *model.Schema {
 }
 
 func protoAggFilter(filter *model.AggFilter) *apipb.AggFilter {
-	return &apipb.AggFilter{
+	f := &apipb.AggFilter{
 		Filter:    protoFilter(filter.Filter),
 		Aggregate: filter.Aggregate,
-		Field:     filter.Field,
 	}
+	if filter.Field != nil {
+		f.Field = *filter.Field
+	}
+	return f
 }
 
 func protoChanFilter(filter *model.ChanFilter) *apipb.ChanFilter {
@@ -248,24 +227,27 @@ func protoChanFilter(filter *model.ChanFilter) *apipb.ChanFilter {
 
 func protoDepthFilter(filter *model.TFilter) *apipb.TFilter {
 	c := &apipb.TFilter{
-		Root:  protoIPath(filter.Root),
+		Root:  protoIRef(filter.Root),
 		Limit: int32(filter.Limit),
 	}
 	if filter.DocExpression != nil {
 		c.DocExpression = *filter.DocExpression
 	}
-	if filter.DocExpression != nil {
-		c.DocExpression = *filter.DocExpression
+	if filter.ConnectionExpression != nil {
+		c.ConnectionExpression = *filter.ConnectionExpression
 	}
 	if filter.Sort != nil {
 		c.Sort = *filter.Sort
+	}
+	if filter.Reverse != nil {
+		c.Reverse = *filter.Reverse
 	}
 	return c
 }
 
 func protoConnectionFilter(filter *model.CFilter) *apipb.CFilter {
 	f := &apipb.CFilter{
-		DocPath:    protoIPath(filter.DocPath),
+		DocRef:     protoIRef(filter.DocRef),
 		Gtype:      filter.Gtype,
 		Expression: "",
 		Limit:      int32(filter.Limit),
@@ -296,12 +278,12 @@ func protoExpressionFilter(filter *model.ExprFilter) *apipb.ExprFilter {
 	return exp
 }
 
-func gqlPaths(ps *apipb.Paths) *model.Paths {
-	var paths []*model.Path
-	for _, p := range ps.GetPaths() {
-		paths = append(paths, gqlPath(p))
+func gqlRefs(ps *apipb.Refs) *model.Refs {
+	var paths []*model.Ref
+	for _, p := range ps.GetRefs() {
+		paths = append(paths, gqlRef(p))
 	}
-	return &model.Paths{Paths: paths}
+	return &model.Refs{Refs: paths}
 }
 
 func protoIndex(index *model.IndexInput) *apipb.Index {
@@ -331,31 +313,4 @@ func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidato
 		Name:       validator.Name,
 		Expression: validator.Expression,
 	}
-}
-
-func gqlTraversal(traversal *apipb.Traversal) *model.Traversal {
-	return &model.Traversal{
-		Doc:          gqlDoc(traversal.GetDoc()),
-		RelativePath: gqlPaths(traversal.GetRelativePath()),
-		Direction:    gqlDirection(traversal.Direction),
-	}
-}
-
-func gqlDirection(dir apipb.Direction) model.Direction {
-	switch dir {
-	case apipb.Direction_From:
-		return model.DirectionFrom
-	case apipb.Direction_To:
-		return model.DirectionTo
-	default:
-		return model.DirectionNone
-	}
-}
-
-func gqlTraversals(traversals *apipb.Traversals) *model.Traversals {
-	var paths []*model.Traversal
-	for _, p := range traversals.GetTraversals() {
-		paths = append(paths, gqlTraversal(p))
-	}
-	return &model.Traversals{Traversals: paths}
 }

@@ -1,8 +1,9 @@
 package database
 
 import (
+	"fmt"
 	apipb "github.com/autom8ter/graphik/gen/go"
-	"sort"
+	"strings"
 )
 
 type openIDConnect struct {
@@ -23,19 +24,26 @@ type openIDConnect struct {
 	GrantTypesSupported               []string `json:"grant_types_supported"`
 }
 
-func removeConnection(path *apipb.Path, paths []*apipb.Path) []*apipb.Path {
-	var newPaths []*apipb.Path
-	for _, p := range paths {
-		if path.Gid == p.Gid && path.Gtype == p.Gtype {
-			newPaths = append(newPaths, p)
-		}
+func refString(ref *apipb.Ref) string {
+	if ref.GetGid() == "" {
+		return ref.GetGtype()
 	}
-	sortPaths(newPaths)
-	return newPaths
+	return fmt.Sprintf("%s////%s", ref.GetGtype(), ref.GetGid())
 }
 
-func sortPaths(paths []*apipb.Path) {
-	sort.Slice(paths, func(i, j int) bool {
-		return paths[i].String() < paths[j].String()
-	})
+func fromRefString(ref string) *apipb.Ref {
+	split := strings.Split(ref, "////")
+	if len(split) == 0 {
+		return nil
+	}
+	if len(split) == 1 {
+		return &apipb.Ref{
+			Gtype: split[0],
+			Gid:   "",
+		}
+	}
+	return &apipb.Ref{
+		Gtype: split[0],
+		Gid:   split[1],
+	}
 }

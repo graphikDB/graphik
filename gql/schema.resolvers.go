@@ -38,6 +38,14 @@ func (r *mutationResolver) EditDocs(ctx context.Context, input model.EFilter) (*
 	return gqlDocs(docs), nil
 }
 
+func (r *mutationResolver) DelDoc(ctx context.Context, input model.RefInput) (*emptypb.Empty, error) {
+	return r.client.DelDoc(ctx, protoIRef(&input))
+}
+
+func (r *mutationResolver) DelDocs(ctx context.Context, input model.Filter) (*emptypb.Empty, error) {
+	return r.client.DelDocs(ctx, protoFilter(&input))
+}
+
 func (r *mutationResolver) CreateConnection(ctx context.Context, input model.ConnectionConstructor) (*model.Connection, error) {
 	res, err := r.client.CreateConnection(ctx, protoConnectionC(&input))
 	if err != nil {
@@ -60,6 +68,14 @@ func (r *mutationResolver) EditConnections(ctx context.Context, input model.EFil
 		return nil, err
 	}
 	return gqlConnections(connections), nil
+}
+
+func (r *mutationResolver) DelConnection(ctx context.Context, input model.RefInput) (*emptypb.Empty, error) {
+	return r.client.DelConnection(ctx, protoIRef(&input))
+}
+
+func (r *mutationResolver) DelConnections(ctx context.Context, input model.Filter) (*emptypb.Empty, error) {
+	return r.client.DelConnections(ctx, protoFilter(&input))
 }
 
 func (r *mutationResolver) Publish(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error) {
@@ -123,8 +139,8 @@ func (r *queryResolver) Me(ctx context.Context, input *emptypb.Empty) (*model.Do
 	return gqlDoc(res), nil
 }
 
-func (r *queryResolver) GetDoc(ctx context.Context, input model.PathInput) (*model.Doc, error) {
-	res, err := r.client.GetDoc(ctx, protoIPath(&input))
+func (r *queryResolver) GetDoc(ctx context.Context, input model.RefInput) (*model.Doc, error) {
+	res, err := r.client.GetDoc(ctx, protoIRef(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -139,16 +155,16 @@ func (r *queryResolver) SearchDocs(ctx context.Context, input model.Filter) (*mo
 	return gqlDocs(res), nil
 }
 
-func (r *queryResolver) Traverse(ctx context.Context, input model.TFilter) (*model.Traversals, error) {
+func (r *queryResolver) Traverse(ctx context.Context, input model.TFilter) (*model.Docs, error) {
 	res, err := r.client.Traverse(ctx, protoDepthFilter(&input))
 	if err != nil {
 		return nil, err
 	}
-	return gqlTraversals(res), nil
+	return gqlDocs(res), nil
 }
 
-func (r *queryResolver) GetConnection(ctx context.Context, input model.PathInput) (*model.Connection, error) {
-	res, err := r.client.GetConnection(ctx, protoIPath(&input))
+func (r *queryResolver) GetConnection(ctx context.Context, input model.RefInput) (*model.Connection, error) {
+	res, err := r.client.GetConnection(ctx, protoIRef(&input))
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +217,7 @@ func (r *queryResolver) SearchAndConnect(ctx context.Context, input model.SConne
 		Gtype:      input.Gtype,
 		Attributes: apipb.NewStruct(input.Attributes),
 		Directed:   input.Directed,
-		From:       protoIPath(input.From),
+		From:       protoIRef(input.From),
 	})
 	if err != nil {
 		return nil, err
@@ -232,40 +248,8 @@ func (r *subscriptionResolver) Subscribe(ctx context.Context, input model.ChanFi
 				ch <- &model.Message{
 					Channel:   msg.GetChannel(),
 					Data:      msg.GetData().AsMap(),
-					Sender:    gqlPath(msg.GetSender()),
+					Sender:    gqlRef(msg.GetSender()),
 					Timestamp: msg.GetTimestamp().AsTime(),
-				}
-			}
-		}
-	}()
-	return ch, nil
-}
-
-func (r *subscriptionResolver) SubscribeChanges(ctx context.Context, input model.ExprFilter) (<-chan *model.Change, error) {
-	ch := make(chan *model.Change)
-	stream, err := r.client.SubscribeChanges(ctx, protoExpressionFilter(&input))
-	if err != nil {
-		return nil, err
-	}
-	go func() {
-		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
-		for {
-			select {
-			case <-ctx.Done():
-				close(ch)
-				return
-			default:
-				msg, err := stream.Recv()
-				if err != nil {
-					logger.Error("failed to receive change", zap.Error(err))
-					continue
-				}
-				ch <- &model.Change{
-					Method:        msg.GetMethod(),
-					Identity:      gqlDoc(msg.GetIdentity()),
-					Timestamp:     msg.GetTimestamp().AsTime(),
-					PathsAffected: gqlPaths(msg.GetPathsAffected()),
 				}
 			}
 		}

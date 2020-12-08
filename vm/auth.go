@@ -15,7 +15,7 @@ type AuthVM struct {
 func NewAuthVM() (*AuthVM, error) {
 	e, err := cel.NewEnv(
 		cel.Declarations(
-			decls.NewVar("request", decls.NewMapType(decls.String, decls.Any)),
+			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
 	)
 	if err != nil {
@@ -56,7 +56,7 @@ func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error)
 	}
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"request": map[string]interface{}{
+			"this": map[string]interface{}{
 				"method":    req.GetMethod(),
 				"request":   req.GetRequest().AsMap(),
 				"identity":  req.GetIdentity().AsMap(),

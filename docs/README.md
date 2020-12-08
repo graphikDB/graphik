@@ -9,7 +9,6 @@
     - [Authorizers](#api.Authorizers)
     - [CFilter](#api.CFilter)
     - [ChanFilter](#api.ChanFilter)
-    - [Change](#api.Change)
     - [Connection](#api.Connection)
     - [ConnectionConstructor](#api.ConnectionConstructor)
     - [ConnectionConstructors](#api.ConnectionConstructors)
@@ -28,18 +27,15 @@
     - [IndexConstructor](#api.IndexConstructor)
     - [Indexes](#api.Indexes)
     - [Message](#api.Message)
-    - [Metadata](#api.Metadata)
     - [OutboundMessage](#api.OutboundMessage)
-    - [Path](#api.Path)
-    - [PathConstructor](#api.PathConstructor)
-    - [Paths](#api.Paths)
     - [Pong](#api.Pong)
+    - [Ref](#api.Ref)
+    - [RefConstructor](#api.RefConstructor)
+    - [Refs](#api.Refs)
     - [Request](#api.Request)
     - [SConnectFilter](#api.SConnectFilter)
     - [Schema](#api.Schema)
     - [TFilter](#api.TFilter)
-    - [Traversal](#api.Traversal)
-    - [Traversals](#api.Traversals)
     - [TypeValidator](#api.TypeValidator)
     - [TypeValidators](#api.TypeValidators)
   
@@ -114,11 +110,11 @@ CFilter is used to fetch connections related to a single noted
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| doc_path | [Path](#api.Path) |  | doc_path is the path to the target doc. (validator.field) = {msg_exists : true}] |
+| doc_ref | [Ref](#api.Ref) |  | doc_ref is the ref to the target doc. (validator.field) = {msg_exists : true}] |
 | gtype | [string](#string) |  | gtype is the type of connections to return. (validator.field) = {regex : &#34;^.{1,225}$&#34;} |
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
 | limit | [int32](#int32) |  | limit is the maximum number of items to return. (validator.field) = {int_gt : 0} |
-| sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|path.gid|path.gtype|metadata.created_at|metadata.created_by|metadata.updated_at|metadata.updated_by|metadata.version|^attributes.(.*)))&#43;$&#34;} |
+| sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$&#34;} |
 | seek | [string](#string) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
 
@@ -143,24 +139,6 @@ ChanFilter is used to filter messages in a pubsub channel
 
 
 
-<a name="api.Change"></a>
-
-### Change
-Change represents a set of state changes in the graph
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| method | [string](#string) |  | method is the gRPC method invoked |
-| identity | [Doc](#api.Doc) |  | identity is the identity invoking the change |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is when the change was made |
-| paths_affected | [Paths](#api.Paths) |  | paths_affected are paths to docs/connections that have been affected by the change |
-
-
-
-
-
-
 <a name="api.Connection"></a>
 
 ### Connection
@@ -169,12 +147,11 @@ Connection is a graph primitive that represents a relationship between two docs
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the connection |
+| ref | [Ref](#api.Ref) |  | ref is the ref to the connection |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs |
 | directed | [bool](#bool) |  | directed is false if the connection is bi-directional |
-| from | [Path](#api.Path) |  | from is the doc path that is the source of the connection |
-| to | [Path](#api.Path) |  | to is the doc path that is the destination of the connection |
-| metadata | [Metadata](#api.Metadata) |  | metadata is general metadata collected about the connection |
+| from | [Ref](#api.Ref) |  | from is the doc ref that is the source of the connection |
+| to | [Ref](#api.Ref) |  | to is the doc ref that is the destination of the connection |
 
 
 
@@ -189,11 +166,11 @@ ConnectionConstructor is used to create an Connection
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| path | [PathConstructor](#api.PathConstructor) |  | path is the path to the new Connection. If an id isn&#39;t present, one will be generated. |
+| ref | [RefConstructor](#api.RefConstructor) |  | ref is the ref to the new Connection. If an id isn&#39;t present, one will be generated. |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs |
 | directed | [bool](#bool) |  | directed is false if the connection is bi-directional |
-| from | [Path](#api.Path) |  | from is the doc path that is the root of the connection |
-| to | [Path](#api.Path) |  | to is the doc path that is the destination of the connection |
+| from | [Ref](#api.Ref) |  | from is the doc ref that is the root of the connection |
+| to | [Ref](#api.Ref) |  | to is the doc ref that is the destination of the connection |
 
 
 
@@ -239,9 +216,8 @@ Doc is a Graph primitive representing a single entity/resource. It is connected 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the doc |
+| ref | [Ref](#api.Ref) |  | ref is the ref to the doc |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | k/v pairs |
-| metadata | [Metadata](#api.Metadata) |  | metadata is general metadata collected about the doc |
 
 
 
@@ -256,7 +232,7 @@ DocConstructor is used to create a doc
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| path | [PathConstructor](#api.PathConstructor) |  | path is the path to the new Doc. If an id isn&#39;t present, one will be generated. |
+| ref | [RefConstructor](#api.RefConstructor) |  | ref is the ref to the new Doc. If an id isn&#39;t present, one will be generated. |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | arbitrary k/v pairs |
 
 
@@ -319,7 +295,7 @@ Edit patches the attributes of a Doc or Connection
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| path | [Path](#api.Path) |  | path is the path to the target doc/connection to patch |
+| ref | [Ref](#api.Ref) |  | ref is the ref to the target doc/connection to patch |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs used to overwrite k/v pairs on a doc/connection |
 
 
@@ -372,7 +348,7 @@ Filter is a generic filter using Common Expression Language
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | open_id_discovery | [string](#string) |  | open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) |
-| storage_path | [string](#string) |  | persistant storage path (env: GRAPHIK_STORAGE_PATH) |
+| storage_path | [string](#string) |  | persistant storage ref (env: GRAPHIK_STORAGE_PATH) |
 | metrics | [bool](#bool) |  | enable prometheus &amp; pprof metrics (emv: GRAPHIK_METRICS = true) |
 | allow_headers | [string](#string) | repeated | cors allow headers (env: GRAPHIK_ALLOW_HEADERS) |
 | allow_methods | [string](#string) | repeated | cors allow methods (env: GRAPHIK_ALLOW_METHODS) |
@@ -468,27 +444,8 @@ Message is received on PubSub subscriptions
 | ----- | ---- | ----- | ----------- |
 | channel | [string](#string) |  | channel is the channel the message was sent to |
 | data | [google.protobuf.Struct](#google.protobuf.Struct) |  | data is the data sent with the message |
-| sender | [Path](#api.Path) |  | sender is the identity that sent the message |
+| sender | [Ref](#api.Ref) |  | sender is the identity that sent the message |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is when the message was sent |
-
-
-
-
-
-
-<a name="api.Metadata"></a>
-
-### Metadata
-Metadata is general metadata collected on docs/connections
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | created_at is the unix timestamp when the doc/connection was created |
-| updated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | updated_at is the unix timestamp when the doc/connection was last updated |
-| created_by | [Path](#api.Path) |  | created_by is the identity that initially created the doc/connection |
-| updated_by | [Path](#api.Path) |  | updated_by is the identity that last modified the doc/connection |
-| version | [uint64](#uint64) |  | version iterates by 1 every time the doc/connection is modified |
 
 
 
@@ -511,53 +468,6 @@ OutboundMessage is a message to be published to a pubsub channel
 
 
 
-<a name="api.Path"></a>
-
-### Path
-Path describes a doc/connection type &amp; id
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
-| gid | [string](#string) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
-
-
-
-
-
-
-<a name="api.PathConstructor"></a>
-
-### PathConstructor
-PathConstructor creates a new Path
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
-| gid | [string](#string) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
-
-
-
-
-
-
-<a name="api.Paths"></a>
-
-### Paths
-Paths is an array of paths
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| paths | [Path](#api.Path) | repeated |  |
-
-
-
-
-
-
 <a name="api.Pong"></a>
 
 ### Pong
@@ -567,6 +477,53 @@ Pong returns PONG if the server is healthy
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | message | [string](#string) |  | message returns PONG if healthy |
+
+
+
+
+
+
+<a name="api.Ref"></a>
+
+### Ref
+Ref describes a doc/connection type &amp; id
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
+| gid | [string](#string) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
+
+
+
+
+
+
+<a name="api.RefConstructor"></a>
+
+### RefConstructor
+RefConstructor creates a new Ref
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| gtype | [string](#string) |  | gtype is the type of the doc/connection ex: pet |
+| gid | [string](#string) |  | gid is the unique id of the doc/connection within the context of it&#39;s type |
+
+
+
+
+
+
+<a name="api.Refs"></a>
+
+### Refs
+Refs is an array of refs
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| refs | [Ref](#api.Ref) | repeated |  |
 
 
 
@@ -603,7 +560,7 @@ Pong returns PONG if the server is healthy
 | gtype | [string](#string) |  |  |
 | attributes | [google.protobuf.Struct](#google.protobuf.Struct) |  | attributes are k/v pairs |
 | directed | [bool](#bool) |  | directed is false if the connection is bi-directional |
-| from | [Path](#api.Path) |  | from is the doc path that is the root of the connection |
+| from | [Ref](#api.Ref) |  | from is the doc ref that is the root of the connection |
 
 
 
@@ -637,43 +594,12 @@ Schema returns registered connection &amp; doc types
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| root | [Path](#api.Path) |  |  |
+| root | [Ref](#api.Ref) |  |  |
 | doc_expression | [string](#string) |  |  |
 | connection_expression | [string](#string) |  |  |
 | limit | [int32](#int32) |  |  |
 | sort | [string](#string) |  | custom sorting of the results. |
-
-
-
-
-
-
-<a name="api.Traversal"></a>
-
-### Traversal
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| doc | [Doc](#api.Doc) |  |  |
-| relative_path | [Paths](#api.Paths) |  |  |
-| direction | [Direction](#api.Direction) |  |  |
-
-
-
-
-
-
-<a name="api.Traversals"></a>
-
-### Traversals
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| traversals | [Traversal](#api.Traversal) | repeated |  |
+| reverse | [bool](#bool) |  |  |
 
 
 
@@ -748,29 +674,28 @@ DatabaseService is the primary database service
 | Me | [.google.protobuf.Empty](#google.protobuf.Empty) | [Doc](#api.Doc) | Me returns a Doc of the currently logged in identity(the subject of the JWT) |
 | CreateDoc | [DocConstructor](#api.DocConstructor) | [Doc](#api.Doc) | CreateDoc creates a doc in the graph |
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |
-| GetDoc | [Path](#api.Path) | [Doc](#api.Doc) | GetDoc gets a single doc in the graph |
+| GetDoc | [Ref](#api.Ref) | [Doc](#api.Doc) | GetDoc gets a single doc in the graph |
 | SearchDocs | [Filter](#api.Filter) | [Docs](#api.Docs) | SearchDocs searches the graph for docs |
-| Traverse | [TFilter](#api.TFilter) | [Traversals](#api.Traversals) | Traverse executes a depth first search of the graph for docs |
-| EditDoc | [Edit](#api.Edit) | [Doc](#api.Doc) | EditDoc patches a docs attributes |
+| Traverse | [TFilter](#api.TFilter) | [Docs](#api.Docs) | Traverse executes a depth first search of the graph for docs |
+| EditDoc | [Edit](#api.Edit) | [Doc](#api.Doc) | EditDoc patches/edits a docs attributes |
 | EditDocs | [EFilter](#api.EFilter) | [Docs](#api.Docs) | EditDocs patches a batch of docs attributes that pass the patch filter |
-| DelDoc | [Path](#api.Path) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDoc deletes a doc &amp; all of it&#39;s connected connections |
+| DelDoc | [Ref](#api.Ref) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDoc deletes a doc &amp; all of it&#39;s connected connections |
 | DelDocs | [Filter](#api.Filter) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDocs deletes a batch of docs that pass the filter |
 | CreateConnection | [ConnectionConstructor](#api.ConnectionConstructor) | [Connection](#api.Connection) | CreateConnection creates an connection in the graph |
 | CreateConnections | [ConnectionConstructors](#api.ConnectionConstructors) | [Connections](#api.Connections) | CreateConnections creates a batch of connections in the graph |
 | SearchAndConnect | [SConnectFilter](#api.SConnectFilter) | [Connections](#api.Connections) |  |
-| GetConnection | [Path](#api.Path) | [Connection](#api.Connection) | GetConnection gets a single connection in the graph |
+| GetConnection | [Ref](#api.Ref) | [Connection](#api.Connection) | GetConnection gets a single connection in the graph |
 | SearchConnections | [Filter](#api.Filter) | [Connections](#api.Connections) | SearchConnections searches the graph for connections |
 | EditConnection | [Edit](#api.Edit) | [Connection](#api.Connection) | EditConnection patches an connections attributes |
 | EditConnections | [EFilter](#api.EFilter) | [Connections](#api.Connections) | EditConnections patches a batch of connections attributes that pass the patch filter |
-| DelConnection | [Path](#api.Path) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelConnection deletes an connection from the graph |
+| DelConnection | [Ref](#api.Ref) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelConnection deletes an connection from the graph |
 | DelConnections | [Filter](#api.Filter) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelConnections deletes a batch of connections that pass the filter |
-| ConnectionsFrom | [CFilter](#api.CFilter) | [Connections](#api.Connections) | ConnectionsFrom returns connections that source from the given doc path that pass the filter |
-| ConnectionsTo | [CFilter](#api.CFilter) | [Connections](#api.Connections) | ConnectionsTo returns connections that point to the given doc path that pass the filter |
+| ConnectionsFrom | [CFilter](#api.CFilter) | [Connections](#api.Connections) | ConnectionsFrom returns connections that source from the given doc ref that pass the filter |
+| ConnectionsTo | [CFilter](#api.CFilter) | [Connections](#api.Connections) | ConnectionsTo returns connections that point to the given doc ref that pass the filter |
 | AggregateDocs | [AggFilter](#api.AggFilter) | [.google.protobuf.Value](#google.protobuf.Value) |  |
 | AggregateConnections | [AggFilter](#api.AggFilter) | [.google.protobuf.Value](#google.protobuf.Value) |  |
 | Publish | [OutboundMessage](#api.OutboundMessage) | [.google.protobuf.Empty](#google.protobuf.Empty) | Publish publishes a message to a pubsub channel |
 | Subscribe | [ChanFilter](#api.ChanFilter) | [Message](#api.Message) stream | Subscribe subscribes to messages on a pubsub channel |
-| SubscribeChanges | [ExprFilter](#api.ExprFilter) | [Change](#api.Change) stream |  |
 | PushDocConstructors | [DocConstructor](#api.DocConstructor) stream | [Doc](#api.Doc) stream |  |
 | PushConnectionConstructors | [ConnectionConstructor](#api.ConnectionConstructor) stream | [Connection](#api.Connection) stream |  |
 | SeedDocs | [Doc](#api.Doc) stream | [.google.protobuf.Empty](#google.protobuf.Empty) |  |

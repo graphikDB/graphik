@@ -132,7 +132,7 @@ func (a *Graph) identityToContext(ctx context.Context, payload map[string]interf
 		err error
 	)
 	a.db.View(func(tx *bbolt.Tx) error {
-		doc, err = a.getDoc(ctx, tx, &apipb.Path{
+		doc, err = a.getDoc(ctx, tx, &apipb.Ref{
 			Gtype: string(userType),
 			Gid:   email,
 		})
@@ -148,7 +148,7 @@ func (a *Graph) identityToContext(ctx context.Context, payload map[string]interf
 			return nil, nil, err
 		}
 		doc, err = a.createIdentity(ctx, &apipb.DocConstructor{
-			Path: &apipb.PathConstructor{
+			Ref: &apipb.RefConstructor{
 				Gtype: string(userType),
 				Gid:   email,
 			},
