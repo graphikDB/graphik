@@ -945,6 +945,13 @@ scalar Map
 scalar Any
 scalar Empty
 
+enum Algorithm {
+  # BFS is short for the breadth-first search algorithm
+  BFS
+  # DFS is short for the depth-first search algorithm
+  DFS
+}
+
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -1143,8 +1150,8 @@ input TFilter {
   sort: String
   # reverse the direction of the connection traversal
   reverse: Boolean
-  # dfs(depth-first-search) or bfs(breadth-first-search)
-  algorithm: String!
+  # DFS(depth-first-search) or BFS(breadth-first-search). Defaults to breadth-first
+  algorithm: Algorithm
 }
 
 # CFilter is used to fetch connections related to a single noted
@@ -6174,7 +6181,7 @@ func (ec *executionContext) unmarshalInputTFilter(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("algorithm"))
-			it.Algorithm, err = ec.unmarshalNString2string(ctx, v)
+			it.Algorithm, err = ec.unmarshalOAlgorithm2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐAlgorithm(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7936,6 +7943,22 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalOAlgorithm2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐAlgorithm(ctx context.Context, v interface{}) (*model.Algorithm, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.Algorithm)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOAlgorithm2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐAlgorithm(ctx context.Context, sel ast.SelectionSet, v *model.Algorithm) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) marshalOAuthorizer2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐAuthorizerᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Authorizer) graphql.Marshaler {

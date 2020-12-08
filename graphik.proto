@@ -72,6 +72,13 @@ service DatabaseService {
   rpc SeedConnections(stream Connection) returns(google.protobuf.Empty){}
 }
 
+enum Algorithm {
+  // BFS is short for the breadth-first search algorithm
+  BFS = 0;
+  // DFS is short for the depth-first search algorithm
+  DFS = 1;
+}
+
 // Ref describes a doc/connection type & id
 message Ref {
   // gtype is the type of the doc/connection ex: pet
@@ -231,7 +238,7 @@ message TFilter {
   // custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
   string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
   bool reverse =6;
-  string algorithm = 7[(validator.field) = {regex : "((^|, )(bfs|dfs))+$"}];
+  Algorithm algorithm = 7;
 }
 
 message IndexConstructor {

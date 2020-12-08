@@ -19,6 +19,7 @@ func NewQueue() *Queue {
 
 // Enqueue adds a new node to the tail of the queue
 func (q *Queue) Enqueue(value interface{}) {
+	q.length++
 	n := &queueNode{value: value}
 	// if the queue is empty, set the head and tail as the node value
 	if q.tail == nil {
@@ -26,10 +27,8 @@ func (q *Queue) Enqueue(value interface{}) {
 		q.tail = n
 		return
 	}
-
 	q.tail.next = n
 	q.tail = n
-	q.length++
 }
 
 // Dequeue removes the head node from the queue and returns it

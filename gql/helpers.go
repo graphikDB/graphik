@@ -245,11 +245,29 @@ func protoChanFilter(filter *model.ChanFilter) *apipb.ChanFilter {
 	return c
 }
 
+func protoAlgorithm(algorithm model.Algorithm) apipb.Algorithm {
+	switch algorithm {
+	case model.AlgorithmDfs:
+		return apipb.Algorithm_DFS
+	}
+	return apipb.Algorithm_BFS
+}
+
+func gqlAlgorithm(algorithm apipb.Algorithm) model.Algorithm {
+	switch algorithm {
+	case apipb.Algorithm_DFS:
+		return model.AlgorithmDfs
+	}
+	return model.AlgorithmBfs
+}
+
 func protoDepthFilter(filter *model.TFilter) *apipb.TFilter {
 	c := &apipb.TFilter{
-		Root:      protoIRef(filter.Root),
-		Limit:     int32(filter.Limit),
-		Algorithm: filter.Algorithm,
+		Root:  protoIRef(filter.Root),
+		Limit: int32(filter.Limit),
+	}
+	if filter.Algorithm != nil {
+		c.Algorithm = protoAlgorithm(*filter.Algorithm)
 	}
 	if filter.DocExpression != nil {
 		c.DocExpression = *filter.DocExpression

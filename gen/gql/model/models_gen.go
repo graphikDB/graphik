@@ -3,6 +3,9 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 )
 
@@ -181,13 +184,13 @@ type Schema struct {
 }
 
 type TFilter struct {
-	Root                 *RefInput `json:"root"`
-	DocExpression        *string   `json:"doc_expression"`
-	ConnectionExpression *string   `json:"connection_expression"`
-	Limit                int       `json:"limit"`
-	Sort                 *string   `json:"sort"`
-	Reverse              *bool     `json:"reverse"`
-	Algorithm            string    `json:"algorithm"`
+	Root                 *RefInput  `json:"root"`
+	DocExpression        *string    `json:"doc_expression"`
+	ConnectionExpression *string    `json:"connection_expression"`
+	Limit                int        `json:"limit"`
+	Sort                 *string    `json:"sort"`
+	Reverse              *bool      `json:"reverse"`
+	Algorithm            *Algorithm `json:"algorithm"`
 }
 
 type Traversal struct {
@@ -221,4 +224,45 @@ type TypeValidators struct {
 
 type TypeValidatorsInput struct {
 	Validators []*TypeValidatorInput `json:"validators"`
+}
+
+type Algorithm string
+
+const (
+	AlgorithmBfs Algorithm = "BFS"
+	AlgorithmDfs Algorithm = "DFS"
+)
+
+var AllAlgorithm = []Algorithm{
+	AlgorithmBfs,
+	AlgorithmDfs,
+}
+
+func (e Algorithm) IsValid() bool {
+	switch e {
+	case AlgorithmBfs, AlgorithmDfs:
+		return true
+	}
+	return false
+}
+
+func (e Algorithm) String() string {
+	return string(e)
+}
+
+func (e *Algorithm) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Algorithm(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Algorithm", str)
+	}
+	return nil
+}
+
+func (e Algorithm) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

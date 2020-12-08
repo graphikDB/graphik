@@ -9,6 +9,7 @@ import (
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"strings"
+	"time"
 )
 
 // traversal implements stateful depth-first graph traversal.
@@ -52,41 +53,41 @@ func (g *Graph) newTraversal(filter *apipb.TFilter) (*traversal, error) {
 }
 
 func (d *traversal) Walk(ctx context.Context, tx *bbolt.Tx) error {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
 	switch d.filter.GetAlgorithm() {
-	case "dfs":
+	case apipb.Algorithm_DFS:
 		return d.walkDFS(ctx, tx)
-	case "bfs":
+	case apipb.Algorithm_BFS:
 		return d.walkBFS(ctx, tx)
 	}
 	return ErrUnsupportedAlgorithm
 }
 
 func (d *traversal) walkDFS(ctx context.Context, tx *bbolt.Tx) error {
-	if _, ok := d.visited[d.filter.Root.String()]; !ok {
-		doc, err := d.g.getDoc(ctx, tx, d.filter.Root)
+	doc, err := d.g.getDoc(ctx, tx, d.filter.Root)
+	if err != nil {
+		return err
+	}
+	d.stack.Push(doc)
+	if d.docProgram == nil {
+		d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+			Doc:           doc,
+			TraversalPath: d.traversalPath,
+		})
+	} else {
+		res, err := d.g.vm.Doc().Eval(doc, *d.docProgram)
 		if err != nil {
 			return err
 		}
-		d.stack.Push(doc)
-		if d.docProgram == nil {
+		if res {
 			d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 				Doc:           doc,
 				TraversalPath: d.traversalPath,
 			})
-		} else {
-			res, err := d.g.vm.Doc().Eval(doc, *d.docProgram)
-			if err != nil {
-				return err
-			}
-			if res {
-				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-					Doc:           doc,
-					TraversalPath: d.traversalPath,
-				})
-			}
 		}
-		d.visited[d.filter.Root.String()] = struct{}{}
 	}
+	d.visited[d.filter.Root.String()] = struct{}{}
 	for d.stack.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) {
 		if err := ctx.Err(); err != nil {
 			return nil
@@ -234,24 +235,23 @@ func (d *traversal) walkBFS(ctx context.Context, tx *bbolt.Tx) error {
 		}
 	}
 	d.visited[d.filter.Root.String()] = struct{}{}
-	for {
-		for d.queue.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) {
-			if err := ctx.Err(); err != nil {
-				return nil
+	for d.queue.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) {
+		if err := ctx.Err(); err != nil {
+			return nil
+		}
+		dequeued := d.queue.Dequeue().(*apipb.Doc)
+		d.traversalPath = append(d.traversalPath, dequeued.GetRef())
+		if d.filter.GetReverse() {
+			if err := d.bfsTo(ctx, tx, dequeued, d.connectionProgram, d.docProgram); err != nil {
+				return err
 			}
-			dequeued := d.queue.Dequeue().(*apipb.Doc)
-			d.traversalPath = append(d.traversalPath, dequeued.GetRef())
-			if d.filter.GetReverse() {
-				if err := d.bfsTo(ctx, tx, dequeued, d.connectionProgram, d.docProgram); err != nil {
-					return err
-				}
-			} else {
-				if err := d.bfsFrom(ctx, tx, dequeued, d.connectionProgram, d.docProgram); err != nil {
-					return err
-				}
+		} else {
+			if err := d.bfsFrom(ctx, tx, dequeued, d.connectionProgram, d.docProgram); err != nil {
+				return err
 			}
 		}
 	}
+	return nil
 }
 
 func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
@@ -308,6 +308,7 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 
 func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
 	if err := d.g.rangeFrom(ctx, tx, dequeue.GetRef(), func(e *apipb.Connection) bool {
+
 		if connectionProgram != nil {
 			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
 			if err != nil {
@@ -348,7 +349,6 @@ func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Do
 					})
 				}
 			}
-			logger.Info(to.Ref.String())
 			d.visited[to.Ref.String()] = struct{}{}
 			d.queue.Enqueue(to)
 		}

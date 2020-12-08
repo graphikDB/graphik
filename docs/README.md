@@ -41,6 +41,8 @@
     - [TypeValidator](#api.TypeValidator)
     - [TypeValidators](#api.TypeValidators)
   
+    - [Algorithm](#api.Algorithm)
+  
     - [DatabaseService](#api.DatabaseService)
   
 - [Scalar Value Types](#scalar-value-types)
@@ -600,7 +602,7 @@ Schema returns registered connection &amp; doc types
 | limit | [int32](#int32) |  |  |
 | sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$&#34;} |
 | reverse | [bool](#bool) |  |  |
-| algorithm | [string](#string) |  |  |
+| algorithm | [Algorithm](#api.Algorithm) |  |  |
 
 
 
@@ -672,6 +674,18 @@ Schema returns registered connection &amp; doc types
 
 
  
+
+
+<a name="api.Algorithm"></a>
+
+### Algorithm
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| BFS | 0 | BFS is short for the breadth-first search algorithm |
+| DFS | 1 | DFS is short for the depth-first search algorithm |
+
 
  
 

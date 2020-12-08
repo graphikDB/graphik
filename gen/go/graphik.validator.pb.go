@@ -297,7 +297,6 @@ func (this *AggFilter) Validate() error {
 }
 
 var _regex_TFilter_Sort = regexp.MustCompile(`((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$`)
-var _regex_TFilter_Algorithm = regexp.MustCompile(`((^|, )(bfs|dfs))+$`)
 
 func (this *TFilter) Validate() error {
 	if nil == this.Root {
@@ -313,9 +312,6 @@ func (this *TFilter) Validate() error {
 	}
 	if !_regex_TFilter_Sort.MatchString(this.Sort) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"`, this.Sort))
-	}
-	if !_regex_TFilter_Algorithm.MatchString(this.Algorithm) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Algorithm", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(bfs|dfs))+$"`, this.Algorithm))
 	}
 	return nil
 }

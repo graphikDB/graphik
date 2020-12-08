@@ -17,6 +17,7 @@ var google_protobuf_any_pb = require('google-protobuf/google/protobuf/any_pb.js'
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 var github_com_mwitkow_go$proto$validators_validator_pb = require('./github.com/mwitkow/go-proto-validators/validator_pb.js');
 goog.exportSymbol('proto.api.AggFilter', null, global);
+goog.exportSymbol('proto.api.Algorithm', null, global);
 goog.exportSymbol('proto.api.Authorizer', null, global);
 goog.exportSymbol('proto.api.Authorizers', null, global);
 goog.exportSymbol('proto.api.CFilter', null, global);
@@ -3908,7 +3909,7 @@ proto.api.TFilter.toObject = function(includeInstance, msg) {
     limit: jspb.Message.getFieldWithDefault(msg, 4, 0),
     sort: jspb.Message.getFieldWithDefault(msg, 5, ""),
     reverse: jspb.Message.getFieldWithDefault(msg, 6, false),
-    algorithm: jspb.Message.getFieldWithDefault(msg, 7, "")
+    algorithm: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -3971,7 +3972,7 @@ proto.api.TFilter.deserializeBinaryFromReader = function(msg, reader) {
       msg.setReverse(value);
       break;
     case 7:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {!proto.api.Algorithm} */ (reader.readEnum());
       msg.setAlgorithm(value);
       break;
     default:
@@ -4047,8 +4048,8 @@ proto.api.TFilter.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getAlgorithm();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0.0) {
+    writer.writeEnum(
       7,
       f
     );
@@ -4164,17 +4165,17 @@ proto.api.TFilter.prototype.setReverse = function(value) {
 
 
 /**
- * optional string algorithm = 7;
- * @return {string}
+ * optional Algorithm algorithm = 7;
+ * @return {!proto.api.Algorithm}
  */
 proto.api.TFilter.prototype.getAlgorithm = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+  return /** @type {!proto.api.Algorithm} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
-/** @param {string} value */
+/** @param {!proto.api.Algorithm} value */
 proto.api.TFilter.prototype.setAlgorithm = function(value) {
-  jspb.Message.setProto3StringField(this, 7, value);
+  jspb.Message.setProto3EnumField(this, 7, value);
 };
 
 
@@ -8248,5 +8249,13 @@ proto.api.Request.prototype.hasRequest = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
+
+/**
+ * @enum {number}
+ */
+proto.api.Algorithm = {
+  BFS: 0,
+  DFS: 1
+};
 
 goog.object.extend(exports, proto.api);

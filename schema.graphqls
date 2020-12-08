@@ -3,6 +3,13 @@ scalar Map
 scalar Any
 scalar Empty
 
+enum Algorithm {
+  # BFS is short for the breadth-first search algorithm
+  BFS
+  # DFS is short for the depth-first search algorithm
+  DFS
+}
+
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -201,8 +208,8 @@ input TFilter {
   sort: String
   # reverse the direction of the connection traversal
   reverse: Boolean
-  # dfs(depth-first-search) or bfs(breadth-first-search)
-  algorithm: String!
+  # DFS(depth-first-search) or BFS(breadth-first-search). Defaults to breadth-first
+  algorithm: Algorithm
 }
 
 # CFilter is used to fetch connections related to a single noted
