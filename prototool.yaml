@@ -43,9 +43,9 @@ generate:
     - name: govalidators
       type: go
       output: gen/go
-    - name: doc
-      flags: markdown,README.md
-      output: docs
+#    - name: doc
+#      flags: markdown,README.md
+#      output: docs
     - flags: binary,import_style=commonjs
       name: js
       output: gen/js

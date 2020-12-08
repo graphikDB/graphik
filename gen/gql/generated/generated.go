@@ -956,7 +956,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "schema.graphqls", Input: `scalar Time
+	{Name: "schema.graphql", Input: `scalar Time
 scalar Map
 scalar Any
 scalar Empty

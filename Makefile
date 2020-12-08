@@ -38,3 +38,6 @@ proto: ## regenerate gRPC code
 .PHONY: gql
 gql: ## regenerate graphql code
 	@gqlgen generate
+
+gql-docs: ## generate graqhl documentation
+	@graphdoc -s ./schema.graphql -o ./docs --force
