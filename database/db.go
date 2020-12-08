@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"sort"
 	"strings"
 )
 
@@ -730,9 +731,14 @@ func (n *Graph) filterDoc(ctx context.Context, docType string, filter func(doc *
 
 func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn func(e *apipb.Connection) bool) error {
 	g.mu.RLock()
-	paths := g.connectionsTo[docRef.String()]
+	pathMap := g.connectionsTo[docRef.String()]
 	g.mu.RUnlock()
-	for path, _ := range paths {
+	var paths []string
+	for path, _ := range pathMap {
+		paths = append(paths, path)
+	}
+	sort.Strings(paths)
+	for _, path := range paths {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
@@ -756,9 +762,14 @@ func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn
 
 func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn func(e *apipb.Connection) bool) error {
 	g.mu.RLock()
-	paths := g.connectionsFrom[docRef.String()]
+	pathMap := g.connectionsFrom[docRef.String()]
 	g.mu.RUnlock()
-	for val, _ := range paths {
+	var paths []string
+	for path, _ := range pathMap {
+		paths = append(paths, path)
+	}
+	sort.Strings(paths)
+	for _, val := range paths {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
