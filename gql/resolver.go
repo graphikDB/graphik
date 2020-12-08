@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/apollotracing"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
@@ -80,6 +81,7 @@ func (r *Resolver) QueryHandler() http.Handler {
 	srv.AddTransport(transport.MultipartForm{})
 	srv.SetQueryCache(lru.New(1000))
 	srv.Use(extension.Introspection{})
+	srv.Use(&apollotracing.Tracer{})
 	srv.Use(extension.AutomaticPersistedQuery{
 		Cache: lru.New(100),
 	})

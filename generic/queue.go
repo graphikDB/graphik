@@ -8,8 +8,9 @@ type queueNode struct {
 
 // create a queue data structure
 type Queue struct {
-	head *queueNode
-	tail *queueNode
+	head   *queueNode
+	tail   *queueNode
+	length int
 }
 
 func NewQueue() *Queue {
@@ -28,6 +29,7 @@ func (q *Queue) Enqueue(value interface{}) {
 
 	q.tail.next = n
 	q.tail = n
+	q.length++
 }
 
 // Dequeue removes the head node from the queue and returns it
@@ -46,5 +48,10 @@ func (q *Queue) Dequeue() interface{} {
 	if q.head == nil {
 		q.tail = nil
 	}
+	q.length--
 	return n.value
+}
+
+func (q *Queue) Len() int {
+	return q.length
 }

@@ -26,6 +26,7 @@ var (
 	dbIndexDocs        = []byte("indexedDocs")
 	dbIndexConnections = []byte("indexedConnections")
 	// An error indicating a given key does not exist
-	ErrNotFound      = errors.New("not found")
-	ErrAlreadyExists = errors.New("already exists")
+	ErrNotFound             = errors.New("not found")
+	ErrAlreadyExists        = errors.New("already exists")
+	ErrUnsupportedAlgorithm = errors.New("unsupported algorithm")
 )

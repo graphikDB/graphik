@@ -598,8 +598,9 @@ Schema returns registered connection &amp; doc types
 | doc_expression | [string](#string) |  |  |
 | connection_expression | [string](#string) |  |  |
 | limit | [int32](#int32) |  |  |
-| sort | [string](#string) |  | custom sorting of the results. |
+| sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$&#34;} |
 | reverse | [bool](#bool) |  |  |
+| algorithm | [string](#string) |  |  |
 
 
 

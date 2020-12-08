@@ -247,8 +247,9 @@ func protoChanFilter(filter *model.ChanFilter) *apipb.ChanFilter {
 
 func protoDepthFilter(filter *model.TFilter) *apipb.TFilter {
 	c := &apipb.TFilter{
-		Root:  protoIRef(filter.Root),
-		Limit: int32(filter.Limit),
+		Root:      protoIRef(filter.Root),
+		Limit:     int32(filter.Limit),
+		Algorithm: filter.Algorithm,
 	}
 	if filter.DocExpression != nil {
 		c.DocExpression = *filter.DocExpression

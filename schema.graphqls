@@ -199,7 +199,10 @@ input TFilter {
   limit: Int!
   # custom sorting of the results.
   sort: String
+  # reverse the direction of the connection traversal
   reverse: Boolean
+  # dfs(depth-first-search) or bfs(breadth-first-search)
+  algorithm: String!
 }
 
 # CFilter is used to fetch connections related to a single noted

@@ -1141,7 +1141,10 @@ input TFilter {
   limit: Int!
   # custom sorting of the results.
   sort: String
+  # reverse the direction of the connection traversal
   reverse: Boolean
+  # dfs(depth-first-search) or bfs(breadth-first-search)
+  algorithm: String!
 }
 
 # CFilter is used to fetch connections related to a single noted
@@ -6164,6 +6167,14 @@ func (ec *executionContext) unmarshalInputTFilter(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reverse"))
 			it.Reverse, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "algorithm":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("algorithm"))
+			it.Algorithm, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

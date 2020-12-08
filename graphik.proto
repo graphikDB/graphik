@@ -228,9 +228,10 @@ message TFilter {
   string doc_expression =2;
   string connection_expression =3;
   int32 limit =4 [(validator.field) = {int_gt : 0}];
-  // custom sorting of the results.
+  // custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
   string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
   bool reverse =6;
+  string algorithm = 7[(validator.field) = {regex : "((^|, )(bfs|dfs))+$"}];
 }
 
 message IndexConstructor {

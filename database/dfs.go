@@ -11,62 +11,70 @@ import (
 	"strings"
 )
 
-// depthFirst implements stateful depth-first graph traversal.
-type depthFirst struct {
-	g             *Graph
-	stack         *generic.Stack
-	visited       map[string]struct{}
-	traversals    *apipb.Traversals
-	filter        *apipb.TFilter
-	traversalPath []*apipb.Ref
+// traversal implements stateful depth-first graph traversal.
+type traversal struct {
+	g                 *Graph
+	stack             *generic.Stack
+	queue             *generic.Queue
+	visited           map[string]struct{}
+	traversals        *apipb.Traversals
+	filter            *apipb.TFilter
+	traversalPath     []*apipb.Ref
+	connectionProgram *cel.Program
+	docProgram        *cel.Program
 }
 
-func (g *Graph) newDepthFirst(filter *apipb.TFilter) *depthFirst {
-	return &depthFirst{
+func (g *Graph) newTraversal(filter *apipb.TFilter) (*traversal, error) {
+	t := &traversal{
 		g:             g,
 		filter:        filter,
 		stack:         generic.NewStack(),
+		queue:         generic.NewQueue(),
 		visited:       map[string]struct{}{},
 		traversals:    &apipb.Traversals{},
 		traversalPath: []*apipb.Ref{},
 	}
+	if filter.GetConnectionExpression() != "" {
+		program, err := g.vm.Connection().Program(filter.GetConnectionExpression())
+		if err != nil {
+			return nil, err
+		}
+		t.connectionProgram = &program
+	}
+	if filter.GetDocExpression() != "" {
+		program, err := g.vm.Doc().Program(filter.GetDocExpression())
+		if err != nil {
+			return nil, err
+		}
+		t.docProgram = &program
+	}
+	return t, nil
 }
 
-func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
-	//defer func() {
-	//	d.docs.Sort(d.filter.Sort)
-	//}()
-	var (
-		docProgram        *cel.Program
-		connectionProgram *cel.Program
-	)
-	if d.filter.GetConnectionExpression() != "" {
-		program, err := d.g.vm.Connection().Program(d.filter.GetConnectionExpression())
-		if err != nil {
-			return err
-		}
-		connectionProgram = &program
+func (d *traversal) Walk(ctx context.Context, tx *bbolt.Tx) error {
+	switch d.filter.GetAlgorithm() {
+	case "dfs":
+		return d.walkDFS(ctx, tx)
+	case "bfs":
+		return d.walkBFS(ctx, tx)
 	}
-	if d.filter.GetDocExpression() != "" {
-		program, err := d.g.vm.Doc().Program(d.filter.GetDocExpression())
-		if err != nil {
-			return err
-		}
-		docProgram = &program
-	}
+	return ErrUnsupportedAlgorithm
+}
+
+func (d *traversal) walkDFS(ctx context.Context, tx *bbolt.Tx) error {
 	if _, ok := d.visited[d.filter.Root.String()]; !ok {
 		doc, err := d.g.getDoc(ctx, tx, d.filter.Root)
 		if err != nil {
 			return err
 		}
 		d.stack.Push(doc)
-		if docProgram == nil {
+		if d.docProgram == nil {
 			d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 				Doc:           doc,
 				TraversalPath: d.traversalPath,
 			})
 		} else {
-			res, err := d.g.vm.Doc().Eval(doc, *docProgram)
+			res, err := d.g.vm.Doc().Eval(doc, *d.docProgram)
 			if err != nil {
 				return err
 			}
@@ -86,11 +94,11 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 		popped := d.stack.Pop().(*apipb.Doc)
 		d.traversalPath = append(d.traversalPath, popped.GetRef())
 		if d.filter.GetReverse() {
-			if err := d.rangeTo(ctx, tx, popped, connectionProgram, docProgram); err != nil {
+			if err := d.dfsTo(ctx, tx, popped, d.connectionProgram, d.docProgram); err != nil {
 				return err
 			}
 		} else {
-			if err := d.rangeFrom(ctx, tx, popped, connectionProgram, docProgram); err != nil {
+			if err := d.dfsFrom(ctx, tx, popped, d.connectionProgram, d.docProgram); err != nil {
 				return err
 			}
 		}
@@ -98,7 +106,7 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 	return nil
 }
 
-func (d *depthFirst) rangeFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
+func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
 	if err := d.g.rangeFrom(ctx, tx, popped.GetRef(), func(e *apipb.Connection) bool {
 		if connectionProgram != nil {
 			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
@@ -150,7 +158,7 @@ func (d *depthFirst) rangeFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.
 	return nil
 }
 
-func (d *depthFirst) rangeTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
+func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
 	if err := d.g.rangeTo(ctx, tx, popped.GetRef(), func(e *apipb.Connection) bool {
 		if connectionProgram != nil {
 			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
@@ -194,6 +202,155 @@ func (d *depthFirst) rangeTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Do
 			}
 			d.visited[from.Ref.String()] = struct{}{}
 			d.stack.Push(from)
+		}
+		return len(d.traversals.GetTraversals()) < int(d.filter.Limit)
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *traversal) walkBFS(ctx context.Context, tx *bbolt.Tx) error {
+	doc, err := d.g.getDoc(ctx, tx, d.filter.Root)
+	if err != nil {
+		return err
+	}
+	d.queue.Enqueue(doc)
+	if d.docProgram == nil {
+		d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+			Doc:           doc,
+			TraversalPath: d.traversalPath,
+		})
+	} else {
+		res, err := d.g.vm.Doc().Eval(doc, *d.docProgram)
+		if err != nil {
+			return err
+		}
+		if res {
+			d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+				Doc:           doc,
+				TraversalPath: d.traversalPath,
+			})
+		}
+	}
+	d.visited[d.filter.Root.String()] = struct{}{}
+	for {
+		for d.queue.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) {
+			if err := ctx.Err(); err != nil {
+				return nil
+			}
+			dequeued := d.queue.Dequeue().(*apipb.Doc)
+			d.traversalPath = append(d.traversalPath, dequeued.GetRef())
+			if d.filter.GetReverse() {
+				if err := d.bfsTo(ctx, tx, dequeued, d.connectionProgram, d.docProgram); err != nil {
+					return err
+				}
+			} else {
+				if err := d.bfsFrom(ctx, tx, dequeued, d.connectionProgram, d.docProgram); err != nil {
+					return err
+				}
+			}
+		}
+	}
+}
+
+func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
+	if err := d.g.rangeTo(ctx, tx, dequeued.GetRef(), func(e *apipb.Connection) bool {
+		if connectionProgram != nil {
+			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
+			if err != nil {
+				if !strings.Contains(err.Error(), "no such key") {
+					logger.Error("bfs failure", zap.Error(err))
+				}
+				return true
+			}
+			if !res {
+				return true
+			}
+		}
+		if _, ok := d.visited[e.GetFrom().String()]; !ok {
+			from, err := d.g.getDoc(ctx, tx, e.GetFrom())
+			if err != nil {
+				if !strings.Contains(err.Error(), "no such key") {
+					logger.Error("bfs failure", zap.Error(err))
+				}
+				return true
+			}
+			if docProgram == nil {
+				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+					Doc:           from,
+					TraversalPath: d.traversalPath,
+				})
+			} else {
+				res, err := d.g.vm.Doc().Eval(from, *docProgram)
+				if err != nil {
+					if !strings.Contains(err.Error(), "no such key") {
+						logger.Error("bfs failure", zap.Error(err))
+					}
+					return true
+				}
+				if res {
+					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+						Doc:           from,
+						TraversalPath: d.traversalPath,
+					})
+				}
+			}
+			d.visited[from.Ref.String()] = struct{}{}
+			d.queue.Enqueue(from)
+		}
+		return len(d.traversals.GetTraversals()) < int(d.filter.Limit)
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
+	if err := d.g.rangeFrom(ctx, tx, dequeue.GetRef(), func(e *apipb.Connection) bool {
+		if connectionProgram != nil {
+			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
+			if err != nil {
+				if !strings.Contains(err.Error(), "no such key") {
+					logger.Error("bfs failure", zap.Error(err))
+				}
+				return true
+			}
+			if !res {
+				return true
+			}
+		}
+		if _, ok := d.visited[e.To.String()]; !ok {
+			to, err := d.g.getDoc(ctx, tx, e.To)
+			if err != nil {
+				if !strings.Contains(err.Error(), "no such key") {
+					logger.Error("bfs failure", zap.Error(err))
+				}
+				return true
+			}
+			if docProgram == nil {
+				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+					Doc:           to,
+					TraversalPath: d.traversalPath,
+				})
+			} else {
+				res, err := d.g.vm.Doc().Eval(to, *docProgram)
+				if err != nil {
+					if !strings.Contains(err.Error(), "no such key") {
+						logger.Error("bfs failure", zap.Error(err))
+					}
+					return true
+				}
+				if res {
+					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+						Doc:           to,
+						TraversalPath: d.traversalPath,
+					})
+				}
+			}
+			logger.Info(to.Ref.String())
+			d.visited[to.Ref.String()] = struct{}{}
+			d.queue.Enqueue(to)
 		}
 		return len(d.traversals.GetTraversals()) < int(d.filter.Limit)
 	}); err != nil {

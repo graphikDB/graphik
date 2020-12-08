@@ -187,6 +187,7 @@ type TFilter struct {
 	Limit                int       `json:"limit"`
 	Sort                 *string   `json:"sort"`
 	Reverse              *bool     `json:"reverse"`
+	Algorithm            string    `json:"algorithm"`
 }
 
 type Traversal struct {

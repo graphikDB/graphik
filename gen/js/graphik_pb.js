@@ -3907,7 +3907,8 @@ proto.api.TFilter.toObject = function(includeInstance, msg) {
     connectionExpression: jspb.Message.getFieldWithDefault(msg, 3, ""),
     limit: jspb.Message.getFieldWithDefault(msg, 4, 0),
     sort: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    reverse: jspb.Message.getFieldWithDefault(msg, 6, false)
+    reverse: jspb.Message.getFieldWithDefault(msg, 6, false),
+    algorithm: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -3968,6 +3969,10 @@ proto.api.TFilter.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setReverse(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAlgorithm(value);
       break;
     default:
       reader.skipField();
@@ -4038,6 +4043,13 @@ proto.api.TFilter.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       6,
+      f
+    );
+  }
+  f = message.getAlgorithm();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
       f
     );
   }
@@ -4148,6 +4160,21 @@ proto.api.TFilter.prototype.getReverse = function() {
 /** @param {boolean} value */
 proto.api.TFilter.prototype.setReverse = function(value) {
   jspb.Message.setProto3BooleanField(this, 6, value);
+};
+
+
+/**
+ * optional string algorithm = 7;
+ * @return {string}
+ */
+proto.api.TFilter.prototype.getAlgorithm = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/** @param {string} value */
+proto.api.TFilter.prototype.setAlgorithm = function(value) {
+  jspb.Message.setProto3StringField(this, 7, value);
 };
 
 

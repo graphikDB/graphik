@@ -5,6 +5,7 @@ package gql
 
 import (
 	"context"
+
 	"github.com/99designs/gqlgen/graphql"
 	apipb "github.com/autom8ter/graphik/gen/go"
 	generated1 "github.com/autom8ter/graphik/gen/gql/generated"
