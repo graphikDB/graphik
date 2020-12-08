@@ -157,6 +157,15 @@ type ComplexityRoot struct {
 		Subscribe func(childComplexity int, input model.ChanFilter) int
 	}
 
+	Traversal struct {
+		Doc           func(childComplexity int) int
+		TraversalPath func(childComplexity int) int
+	}
+
+	Traversals struct {
+		Traversals func(childComplexity int) int
+	}
+
 	TypeValidator struct {
 		Connections func(childComplexity int) int
 		Docs        func(childComplexity int) int
@@ -192,7 +201,7 @@ type QueryResolver interface {
 	Me(ctx context.Context, input *emptypb.Empty) (*model.Doc, error)
 	GetDoc(ctx context.Context, input model.RefInput) (*model.Doc, error)
 	SearchDocs(ctx context.Context, input model.Filter) (*model.Docs, error)
-	Traverse(ctx context.Context, input model.TFilter) (*model.Docs, error)
+	Traverse(ctx context.Context, input model.TFilter) (*model.Traversals, error)
 	GetConnection(ctx context.Context, input model.RefInput) (*model.Connection, error)
 	SearchConnections(ctx context.Context, input model.Filter) (*model.Connections, error)
 	ConnectionsFrom(ctx context.Context, input model.CFilter) (*model.Connections, error)
@@ -787,6 +796,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.Subscribe(childComplexity, args["input"].(model.ChanFilter)), true
 
+	case "Traversal.doc":
+		if e.complexity.Traversal.Doc == nil {
+			break
+		}
+
+		return e.complexity.Traversal.Doc(childComplexity), true
+
+	case "Traversal.traversal_path":
+		if e.complexity.Traversal.TraversalPath == nil {
+			break
+		}
+
+		return e.complexity.Traversal.TraversalPath(childComplexity), true
+
+	case "Traversals.traversals":
+		if e.complexity.Traversals.Traversals == nil {
+			break
+		}
+
+		return e.complexity.Traversals.Traversals(childComplexity), true
+
 	case "TypeValidator.connections":
 		if e.complexity.TypeValidator.Connections == nil {
 			break
@@ -941,6 +971,16 @@ type Docs {
   # docs is an array of docs
   docs: [Doc!]
   seek_next: String!
+}
+
+type Traversal {
+  doc: Doc!
+  traversal_path: [Ref!]
+
+}
+
+type Traversals {
+  traversals: [Traversal!]
 }
 
 type Refs {
@@ -1230,7 +1270,7 @@ type Query {
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
   # traverse searches for 0-many docs using dfs search
-  traverse(input: TFilter!): Docs!
+  traverse(input: TFilter!): Traversals!
   # getConnection gets a connection at the given ref
   getConnection(input: RefInput!): Connection!
   # searchConnections searches for 0-many connections
@@ -3390,9 +3430,9 @@ func (ec *executionContext) _Query_traverse(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Docs)
+	res := resTmp.(*model.Traversals)
 	fc.Result = res
-	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐDocs(ctx, field.Selections, res)
+	return ec.marshalNTraversals2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTraversals(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4072,6 +4112,105 @@ func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field g
 			w.Write([]byte{'}'})
 		})
 	}
+}
+
+func (ec *executionContext) _Traversal_doc(ctx context.Context, field graphql.CollectedField, obj *model.Traversal) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Traversal",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Doc, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Doc)
+	fc.Result = res
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐDoc(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Traversal_traversal_path(ctx context.Context, field graphql.CollectedField, obj *model.Traversal) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Traversal",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TraversalPath, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Ref)
+	fc.Result = res
+	return ec.marshalORef2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐRefᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Traversals_traversals(ctx context.Context, field graphql.CollectedField, obj *model.Traversals) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Traversals",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Traversals, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Traversal)
+	fc.Result = res
+	return ec.marshalOTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTraversalᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TypeValidator_name(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
@@ -6827,6 +6966,59 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 	}
 }
 
+var traversalImplementors = []string{"Traversal"}
+
+func (ec *executionContext) _Traversal(ctx context.Context, sel ast.SelectionSet, obj *model.Traversal) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, traversalImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Traversal")
+		case "doc":
+			out.Values[i] = ec._Traversal_doc(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "traversal_path":
+			out.Values[i] = ec._Traversal_traversal_path(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var traversalsImplementors = []string{"Traversals"}
+
+func (ec *executionContext) _Traversals(ctx context.Context, sel ast.SelectionSet, obj *model.Traversals) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, traversalsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Traversals")
+		case "traversals":
+			out.Values[i] = ec._Traversals_traversals(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var typeValidatorImplementors = []string{"TypeValidator"}
 
 func (ec *executionContext) _TypeValidator(ctx context.Context, sel ast.SelectionSet, obj *model.TypeValidator) graphql.Marshaler {
@@ -7462,6 +7654,30 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
+func (ec *executionContext) marshalNTraversal2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTraversal(ctx context.Context, sel ast.SelectionSet, v *model.Traversal) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Traversal(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNTraversals2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTraversals(ctx context.Context, sel ast.SelectionSet, v model.Traversals) graphql.Marshaler {
+	return ec._Traversals(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTraversals2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTraversals(ctx context.Context, sel ast.SelectionSet, v *model.Traversals) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Traversals(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNTypeValidator2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTypeValidator(ctx context.Context, sel ast.SelectionSet, v *model.TypeValidator) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -8085,6 +8301,46 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) marshalOTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTraversalᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Traversal) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTraversal2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTraversal(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalOTypeValidator2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐTypeValidatorᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TypeValidator) graphql.Marshaler {

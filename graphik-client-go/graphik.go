@@ -279,6 +279,6 @@ func (c *Client) SearchAndConnect(ctx context.Context, in *apipb.SConnectFilter,
 	return c.graph.SearchAndConnect(ctx, in, opts...)
 }
 
-func (c *Client) Traverse(ctx context.Context, in *apipb.TFilter, opts ...grpc.CallOption) (*apipb.Docs, error) {
+func (c *Client) Traverse(ctx context.Context, in *apipb.TFilter, opts ...grpc.CallOption) (*apipb.Traversals, error) {
 	return c.graph.Traverse(ctx, in, opts...)
 }

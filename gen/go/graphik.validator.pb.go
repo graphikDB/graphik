@@ -94,6 +94,31 @@ func (this *DocConstructors) Validate() error {
 	}
 	return nil
 }
+func (this *Traversal) Validate() error {
+	if this.Doc != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Doc); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Doc", err)
+		}
+	}
+	for _, item := range this.TraversalPath {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("TraversalPath", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *Traversals) Validate() error {
+	for _, item := range this.Traversals {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Traversals", err)
+			}
+		}
+	}
+	return nil
+}
 func (this *Docs) Validate() error {
 	for _, item := range this.Docs {
 		if item != nil {

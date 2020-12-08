@@ -36,10 +36,10 @@
     - [SConnectFilter](#api.SConnectFilter)
     - [Schema](#api.Schema)
     - [TFilter](#api.TFilter)
+    - [Traversal](#api.Traversal)
+    - [Traversals](#api.Traversals)
     - [TypeValidator](#api.TypeValidator)
     - [TypeValidators](#api.TypeValidators)
-  
-    - [Direction](#api.Direction)
   
     - [DatabaseService](#api.DatabaseService)
   
@@ -606,6 +606,37 @@ Schema returns registered connection &amp; doc types
 
 
 
+<a name="api.Traversal"></a>
+
+### Traversal
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| doc | [Doc](#api.Doc) |  |  |
+| traversal_path | [Ref](#api.Ref) | repeated |  |
+
+
+
+
+
+
+<a name="api.Traversals"></a>
+
+### Traversals
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| traversals | [Traversal](#api.Traversal) | repeated |  |
+
+
+
+
+
+
 <a name="api.TypeValidator"></a>
 
 ### TypeValidator
@@ -641,19 +672,6 @@ Schema returns registered connection &amp; doc types
 
  
 
-
-<a name="api.Direction"></a>
-
-### Direction
-
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| None | 0 |  |
-| From | 1 |  |
-| To | 2 |  |
-
-
  
 
  
@@ -676,7 +694,7 @@ DatabaseService is the primary database service
 | CreateDocs | [DocConstructors](#api.DocConstructors) | [Docs](#api.Docs) | CreateDocs creates a batch of docs in the graph |
 | GetDoc | [Ref](#api.Ref) | [Doc](#api.Doc) | GetDoc gets a single doc in the graph |
 | SearchDocs | [Filter](#api.Filter) | [Docs](#api.Docs) | SearchDocs searches the graph for docs |
-| Traverse | [TFilter](#api.TFilter) | [Docs](#api.Docs) | Traverse executes a depth first search of the graph for docs |
+| Traverse | [TFilter](#api.TFilter) | [Traversals](#api.Traversals) | Traverse executes a depth first search of the graph for docs |
 | EditDoc | [Edit](#api.Edit) | [Doc](#api.Doc) | EditDoc patches/edits a docs attributes |
 | EditDocs | [EFilter](#api.EFilter) | [Docs](#api.Docs) | EditDocs patches a batch of docs attributes that pass the patch filter |
 | DelDoc | [Ref](#api.Ref) | [.google.protobuf.Empty](#google.protobuf.Empty) | DelDoc deletes a doc &amp; all of it&#39;s connected connections |

@@ -155,12 +155,12 @@ func (r *queryResolver) SearchDocs(ctx context.Context, input model.Filter) (*mo
 	return gqlDocs(res), nil
 }
 
-func (r *queryResolver) Traverse(ctx context.Context, input model.TFilter) (*model.Docs, error) {
+func (r *queryResolver) Traverse(ctx context.Context, input model.TFilter) (*model.Traversals, error) {
 	res, err := r.client.Traverse(ctx, protoDepthFilter(&input))
 	if err != nil {
 		return nil, err
 	}
-	return gqlDocs(res), nil
+	return gqlTraversals(res), nil
 }
 
 func (r *queryResolver) GetConnection(ctx context.Context, input model.RefInput) (*model.Connection, error) {

@@ -793,7 +793,7 @@ func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.AggFilte
 	}, nil
 }
 
-func (n *Graph) Traverse(ctx context.Context, filter *apipb.TFilter) (*apipb.Docs, error) {
+func (n *Graph) Traverse(ctx context.Context, filter *apipb.TFilter) (*apipb.Traversals, error) {
 	dfs := n.newDepthFirst(filter)
 	if err := n.db.View(func(tx *bbolt.Tx) error {
 		return dfs.Walk(ctx, tx)
@@ -801,7 +801,7 @@ func (n *Graph) Traverse(ctx context.Context, filter *apipb.TFilter) (*apipb.Doc
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return dfs.docs, nil
+	return dfs.traversals, nil
 }
 
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.CFilter) (*apipb.Connections, error) {

@@ -125,6 +125,26 @@ func gqlDocs(d *apipb.Docs) *model.Docs {
 	}
 }
 
+func gqlTraversal(d *apipb.Traversal) *model.Traversal {
+	t := &model.Traversal{
+		Doc: gqlDoc(d.GetDoc()),
+	}
+	for _, ref := range d.GetTraversalPath() {
+		t.TraversalPath = append(t.TraversalPath, gqlRef(ref))
+	}
+	return t
+}
+
+func gqlTraversals(d *apipb.Traversals) *model.Traversals {
+	var traversals []*model.Traversal
+	for _, t := range d.GetTraversals() {
+		traversals = append(traversals, gqlTraversal(t))
+	}
+	return &model.Traversals{
+		Traversals: traversals,
+	}
+}
+
 func gqlConnection(d *apipb.Connection) *model.Connection {
 	return &model.Connection{
 		Ref:        gqlRef(d.GetRef()),

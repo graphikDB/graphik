@@ -13,27 +13,29 @@ import (
 
 // depthFirst implements stateful depth-first graph traversal.
 type depthFirst struct {
-	g       *Graph
-	stack   *stack.Stack
-	visited map[string]struct{}
-	docs    *apipb.Docs
-	filter  *apipb.TFilter
+	g             *Graph
+	stack         *stack.Stack
+	visited       map[string]struct{}
+	traversals    *apipb.Traversals
+	filter        *apipb.TFilter
+	traversalPath []*apipb.Ref
 }
 
 func (g *Graph) newDepthFirst(filter *apipb.TFilter) *depthFirst {
 	return &depthFirst{
-		g:       g,
-		filter:  filter,
-		stack:   stack.New(),
-		visited: map[string]struct{}{},
-		docs:    &apipb.Docs{},
+		g:             g,
+		filter:        filter,
+		stack:         stack.New(),
+		visited:       map[string]struct{}{},
+		traversals:    &apipb.Traversals{},
+		traversalPath: []*apipb.Ref{},
 	}
 }
 
 func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
-	defer func() {
-		d.docs.Sort(d.filter.Sort)
-	}()
+	//defer func() {
+	//	d.docs.Sort(d.filter.Sort)
+	//}()
 	var (
 		docProgram        *cel.Program
 		connectionProgram *cel.Program
@@ -59,28 +61,30 @@ func (d *depthFirst) Walk(ctx context.Context, tx *bbolt.Tx) error {
 		}
 		d.stack.Push(doc)
 		if docProgram == nil {
-			d.docs.Docs = append(d.docs.Docs, doc)
+			d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+				Doc:           doc,
+				TraversalPath: d.traversalPath,
+			})
 		} else {
 			res, err := d.g.vm.Doc().Eval(doc, *docProgram)
 			if err != nil {
 				return err
 			}
 			if res {
-				d.docs.Docs = append(d.docs.Docs, doc)
+				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+					Doc:           doc,
+					TraversalPath: d.traversalPath,
+				})
 			}
 		}
 		d.visited[d.filter.Root.String()] = struct{}{}
 	}
-	var traversalRef []*apipb.Ref
-	for d.stack.Len() > 0 && len(d.docs.Docs) < int(d.filter.Limit) {
+	for d.stack.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) {
 		if err := ctx.Err(); err != nil {
 			return nil
 		}
 		popped := d.stack.Pop().(*apipb.Doc)
-		traversalRef = append(traversalRef, popped.GetRef())
-		if len(d.docs.Docs) >= int(d.filter.Limit) {
-			return nil
-		}
+		d.traversalPath = append(d.traversalPath, popped.GetRef())
 		if d.filter.GetReverse() {
 			if err := d.rangeTo(ctx, tx, popped, connectionProgram, docProgram); err != nil {
 				return err
@@ -117,7 +121,10 @@ func (d *depthFirst) rangeFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.
 				return true
 			}
 			if docProgram == nil {
-				d.docs.Docs = append(d.docs.Docs, to)
+				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+					Doc:           to,
+					TraversalPath: d.traversalPath,
+				})
 			} else {
 				res, err := d.g.vm.Doc().Eval(to, *docProgram)
 				if err != nil {
@@ -127,13 +134,16 @@ func (d *depthFirst) rangeFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.
 					return true
 				}
 				if res {
-					d.docs.Docs = append(d.docs.Docs, to)
+					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+						Doc:           to,
+						TraversalPath: d.traversalPath,
+					})
 				}
 			}
 			d.visited[to.Ref.String()] = struct{}{}
 			d.stack.Push(to)
 		}
-		return len(d.docs.Docs) < int(d.filter.Limit)
+		return len(d.traversals.GetTraversals()) < int(d.filter.Limit)
 	}); err != nil {
 		return err
 	}
@@ -163,7 +173,10 @@ func (d *depthFirst) rangeTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Do
 				return true
 			}
 			if docProgram == nil {
-				d.docs.Docs = append(d.docs.Docs, from)
+				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+					Doc:           from,
+					TraversalPath: d.traversalPath,
+				})
 			} else {
 				res, err := d.g.vm.Doc().Eval(from, *docProgram)
 				if err != nil {
@@ -173,13 +186,16 @@ func (d *depthFirst) rangeTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Do
 					return true
 				}
 				if res {
-					d.docs.Docs = append(d.docs.Docs, from)
+					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+						Doc:           from,
+						TraversalPath: d.traversalPath,
+					})
 				}
 			}
 			d.visited[from.Ref.String()] = struct{}{}
 			d.stack.Push(from)
 		}
-		return len(d.docs.Docs) < int(d.filter.Limit)
+		return len(d.traversals.GetTraversals()) < int(d.filter.Limit)
 	}); err != nil {
 		return err
 	}

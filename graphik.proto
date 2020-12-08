@@ -30,7 +30,7 @@ service DatabaseService {
   // SearchDocs searches the graph for docs
   rpc SearchDocs(Filter) returns(Docs){}
   // Traverse executes a depth first search of the graph for docs
-  rpc Traverse(TFilter) returns(Docs){}
+  rpc Traverse(TFilter) returns(Traversals){}
   // EditDoc patches/edits a docs attributes
   rpc EditDoc(Edit) returns(Doc){}
   // EditDocs patches a batch of docs attributes that pass the patch filter
@@ -113,6 +113,15 @@ message DocConstructor {
 message DocConstructors {
   // docs is an array of doc constructors
   repeated DocConstructor docs =1;
+}
+
+message Traversal {
+  Doc doc = 1;
+  repeated Ref traversal_path =2;
+}
+
+message Traversals {
+  repeated Traversal traversals =1;
 }
 
 // Docs is an array of docs

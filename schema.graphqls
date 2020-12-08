@@ -31,6 +31,16 @@ type Docs {
   seek_next: String!
 }
 
+type Traversal {
+  doc: Doc!
+  traversal_path: [Ref!]
+
+}
+
+type Traversals {
+  traversals: [Traversal!]
+}
+
 type Refs {
   refs: [Ref!]
 }
@@ -318,7 +328,7 @@ type Query {
   # searchDocs searches for 0-many docs
   searchDocs(input: Filter!): Docs!
   # traverse searches for 0-many docs using dfs search
-  traverse(input: TFilter!): Docs!
+  traverse(input: TFilter!): Traversals!
   # getConnection gets a connection at the given ref
   getConnection(input: RefInput!): Connection!
   # searchConnections searches for 0-many connections

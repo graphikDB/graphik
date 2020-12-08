@@ -189,6 +189,15 @@ type TFilter struct {
 	Reverse              *bool     `json:"reverse"`
 }
 
+type Traversal struct {
+	Doc           *Doc   `json:"doc"`
+	TraversalPath []*Ref `json:"traversal_path"`
+}
+
+type Traversals struct {
+	Traversals []*Traversal `json:"traversals"`
+}
+
 type TypeValidator struct {
 	Name        string `json:"name"`
 	Gtype       string `json:"gtype"`
