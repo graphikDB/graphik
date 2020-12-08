@@ -74,6 +74,8 @@ func (d *traversal) walkDFS(ctx context.Context, tx *bbolt.Tx) error {
 		d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 			Doc:           doc,
 			TraversalPath: d.traversalPath,
+			Depth:         uint64(len(d.traversalPath)),
+			Hops:          uint64(len(d.visited)),
 		})
 	} else {
 		res, err := d.g.vm.Doc().Eval(doc, *d.docProgram)
@@ -84,11 +86,13 @@ func (d *traversal) walkDFS(ctx context.Context, tx *bbolt.Tx) error {
 			d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 				Doc:           doc,
 				TraversalPath: d.traversalPath,
+				Depth:         uint64(len(d.traversalPath)),
+				Hops:          uint64(len(d.visited)),
 			})
 		}
 	}
 	d.visited[d.filter.Root.String()] = struct{}{}
-	for d.stack.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) {
+	for d.stack.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) && len(d.visited) <= int(d.filter.MaxHops) {
 		if err := ctx.Err(); err != nil {
 			return nil
 		}
@@ -130,10 +134,14 @@ func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc
 				return true
 			}
 			if docProgram == nil {
-				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-					Doc:           to,
-					TraversalPath: d.traversalPath,
-				})
+				if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+						Doc:           to,
+						TraversalPath: d.traversalPath,
+						Depth:         uint64(len(d.traversalPath)),
+						Hops:          uint64(len(d.visited)),
+					})
+				}
 			} else {
 				res, err := d.g.vm.Doc().Eval(to, *docProgram)
 				if err != nil {
@@ -143,10 +151,14 @@ func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc
 					return true
 				}
 				if res {
-					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-						Doc:           to,
-						TraversalPath: d.traversalPath,
-					})
+					if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+						d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+							Doc:           to,
+							TraversalPath: d.traversalPath,
+							Depth:         uint64(len(d.traversalPath)),
+							Hops:          uint64(len(d.visited)),
+						})
+					}
 				}
 			}
 			d.visited[to.Ref.String()] = struct{}{}
@@ -182,10 +194,14 @@ func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, 
 				return true
 			}
 			if docProgram == nil {
-				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-					Doc:           from,
-					TraversalPath: d.traversalPath,
-				})
+				if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+						Doc:           from,
+						TraversalPath: d.traversalPath,
+						Depth:         uint64(len(d.traversalPath)),
+						Hops:          uint64(len(d.visited)),
+					})
+				}
 			} else {
 				res, err := d.g.vm.Doc().Eval(from, *docProgram)
 				if err != nil {
@@ -195,10 +211,14 @@ func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, 
 					return true
 				}
 				if res {
-					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-						Doc:           from,
-						TraversalPath: d.traversalPath,
-					})
+					if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+						d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+							Doc:           from,
+							TraversalPath: d.traversalPath,
+							Depth:         uint64(len(d.traversalPath)),
+							Hops:          uint64(len(d.visited)),
+						})
+					}
 				}
 			}
 			d.visited[from.Ref.String()] = struct{}{}
@@ -218,24 +238,32 @@ func (d *traversal) walkBFS(ctx context.Context, tx *bbolt.Tx) error {
 	}
 	d.queue.Enqueue(doc)
 	if d.docProgram == nil {
-		d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-			Doc:           doc,
-			TraversalPath: d.traversalPath,
-		})
+		if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+			d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+				Doc:           doc,
+				TraversalPath: d.traversalPath,
+				Depth:         uint64(len(d.traversalPath)),
+				Hops:          uint64(len(d.visited)),
+			})
+		}
 	} else {
 		res, err := d.g.vm.Doc().Eval(doc, *d.docProgram)
 		if err != nil {
 			return err
 		}
 		if res {
-			d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-				Doc:           doc,
-				TraversalPath: d.traversalPath,
-			})
+			if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+					Doc:           doc,
+					TraversalPath: d.traversalPath,
+					Depth:         uint64(len(d.traversalPath)),
+					Hops:          uint64(len(d.visited)),
+				})
+			}
 		}
 	}
 	d.visited[d.filter.Root.String()] = struct{}{}
-	for d.queue.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) {
+	for d.queue.Len() > 0 && len(d.traversals.GetTraversals()) < int(d.filter.Limit) && len(d.visited) <= int(d.filter.MaxHops) {
 		if err := ctx.Err(); err != nil {
 			return nil
 		}
@@ -277,10 +305,14 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 				return true
 			}
 			if docProgram == nil {
-				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-					Doc:           from,
-					TraversalPath: d.traversalPath,
-				})
+				if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+						Doc:           from,
+						TraversalPath: d.traversalPath,
+						Depth:         uint64(len(d.traversalPath)),
+						Hops:          uint64(len(d.visited)),
+					})
+				}
 			} else {
 				res, err := d.g.vm.Doc().Eval(from, *docProgram)
 				if err != nil {
@@ -290,10 +322,14 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 					return true
 				}
 				if res {
-					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-						Doc:           from,
-						TraversalPath: d.traversalPath,
-					})
+					if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+						d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+							Doc:           from,
+							TraversalPath: d.traversalPath,
+							Depth:         uint64(len(d.traversalPath)),
+							Hops:          uint64(len(d.visited)),
+						})
+					}
 				}
 			}
 			d.visited[from.Ref.String()] = struct{}{}
@@ -330,10 +366,14 @@ func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Do
 				return true
 			}
 			if docProgram == nil {
-				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-					Doc:           to,
-					TraversalPath: d.traversalPath,
-				})
+				if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+						Doc:           to,
+						TraversalPath: d.traversalPath,
+						Depth:         uint64(len(d.traversalPath)),
+						Hops:          uint64(len(d.visited)),
+					})
+				}
 			} else {
 				res, err := d.g.vm.Doc().Eval(to, *docProgram)
 				if err != nil {
@@ -343,10 +383,14 @@ func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Do
 					return true
 				}
 				if res {
-					d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
-						Doc:           to,
-						TraversalPath: d.traversalPath,
-					})
+					if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
+						d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
+							Doc:           to,
+							TraversalPath: d.traversalPath,
+							Depth:         uint64(len(d.traversalPath)),
+							Hops:          uint64(len(d.visited)),
+						})
+					}
 				}
 			}
 			d.visited[to.Ref.String()] = struct{}{}

@@ -73,7 +73,7 @@ func protoConnectionC(d *model.ConnectionConstructor) *apipb.ConnectionConstruct
 func protoFilter(filter *model.Filter) *apipb.Filter {
 	f := &apipb.Filter{
 		Gtype: filter.Gtype,
-		Limit: int32(filter.Limit),
+		Limit: uint64(filter.Limit),
 	}
 	if filter.Expression != nil {
 		f.Expression = *filter.Expression
@@ -127,7 +127,9 @@ func gqlDocs(d *apipb.Docs) *model.Docs {
 
 func gqlTraversal(d *apipb.Traversal) *model.Traversal {
 	t := &model.Traversal{
-		Doc: gqlDoc(d.GetDoc()),
+		Doc:   gqlDoc(d.GetDoc()),
+		Depth: int(d.GetDepth()),
+		Hops:  int(d.GetHops()),
 	}
 	for _, ref := range d.GetTraversalPath() {
 		t.TraversalPath = append(t.TraversalPath, gqlRef(ref))
@@ -263,8 +265,10 @@ func gqlAlgorithm(algorithm apipb.Algorithm) model.Algorithm {
 
 func protoDepthFilter(filter *model.TFilter) *apipb.TFilter {
 	c := &apipb.TFilter{
-		Root:  protoIRef(filter.Root),
-		Limit: int32(filter.Limit),
+		Root:     protoIRef(filter.Root),
+		Limit:    uint64(filter.Limit),
+		MaxDepth: uint64(filter.MaxDepth),
+		MaxHops:  uint64(filter.MaxHops),
 	}
 	if filter.Algorithm != nil {
 		c.Algorithm = protoAlgorithm(*filter.Algorithm)
@@ -289,7 +293,7 @@ func protoConnectionFilter(filter *model.CFilter) *apipb.CFilter {
 		DocRef:     protoIRef(filter.DocRef),
 		Gtype:      filter.Gtype,
 		Expression: "",
-		Limit:      int32(filter.Limit),
+		Limit:      uint64(filter.Limit),
 		Sort:       "",
 		Seek:       "",
 		Reverse:    false,

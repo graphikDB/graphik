@@ -158,7 +158,9 @@ type ComplexityRoot struct {
 	}
 
 	Traversal struct {
+		Depth         func(childComplexity int) int
 		Doc           func(childComplexity int) int
+		Hops          func(childComplexity int) int
 		TraversalPath func(childComplexity int) int
 	}
 
@@ -796,12 +798,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.Subscribe(childComplexity, args["input"].(model.ChanFilter)), true
 
+	case "Traversal.depth":
+		if e.complexity.Traversal.Depth == nil {
+			break
+		}
+
+		return e.complexity.Traversal.Depth(childComplexity), true
+
 	case "Traversal.doc":
 		if e.complexity.Traversal.Doc == nil {
 			break
 		}
 
 		return e.complexity.Traversal.Doc(childComplexity), true
+
+	case "Traversal.hops":
+		if e.complexity.Traversal.Hops == nil {
+			break
+		}
+
+		return e.complexity.Traversal.Hops(childComplexity), true
 
 	case "Traversal.traversal_path":
 		if e.complexity.Traversal.TraversalPath == nil {
@@ -983,7 +999,8 @@ type Docs {
 type Traversal {
   doc: Doc!
   traversal_path: [Ref!]
-
+  depth: Int!
+  hops: Int!
 }
 
 type Traversals {
@@ -1152,6 +1169,10 @@ input TFilter {
   reverse: Boolean
   # DFS(depth-first-search) or BFS(breadth-first-search). Defaults to breadth-first
   algorithm: Algorithm
+  # maximum degree/depth of nodes to be visited during traversal
+  max_depth: Int!
+  # maximum number of nodes to be visited during traversal
+  max_hops: Int!
 }
 
 # CFilter is used to fetch connections related to a single noted
@@ -4191,6 +4212,76 @@ func (ec *executionContext) _Traversal_traversal_path(ctx context.Context, field
 	return ec.marshalORef2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋmodelᚐRefᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Traversal_depth(ctx context.Context, field graphql.CollectedField, obj *model.Traversal) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Traversal",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Depth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Traversal_hops(ctx context.Context, field graphql.CollectedField, obj *model.Traversal) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Traversal",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Hops, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Traversals_traversals(ctx context.Context, field graphql.CollectedField, obj *model.Traversals) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6185,6 +6276,22 @@ func (ec *executionContext) unmarshalInputTFilter(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
+		case "max_depth":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max_depth"))
+			it.MaxDepth, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "max_hops":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max_hops"))
+			it.MaxHops, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -7002,6 +7109,16 @@ func (ec *executionContext) _Traversal(ctx context.Context, sel ast.SelectionSet
 			}
 		case "traversal_path":
 			out.Values[i] = ec._Traversal_traversal_path(ctx, field, obj)
+		case "depth":
+			out.Values[i] = ec._Traversal_depth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hops":
+			out.Values[i] = ec._Traversal_hops(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

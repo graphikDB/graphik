@@ -115,7 +115,7 @@ CFilter is used to fetch connections related to a single noted
 | doc_ref | [Ref](#api.Ref) |  | doc_ref is the ref to the target doc. (validator.field) = {msg_exists : true}] |
 | gtype | [string](#string) |  | gtype is the type of connections to return. (validator.field) = {regex : &#34;^.{1,225}$&#34;} |
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
-| limit | [int32](#int32) |  | limit is the maximum number of items to return. (validator.field) = {int_gt : 0} |
+| limit | [uint64](#uint64) |  | limit is the maximum number of items to return. (validator.field) = {int_gt : 0} |
 | sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$&#34;} |
 | seek | [string](#string) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
@@ -330,7 +330,7 @@ Filter is a generic filter using Common Expression Language
 | ----- | ---- | ----- | ----------- |
 | gtype | [string](#string) |  | gtype is the doc/connection type to be filtered |
 | expression | [string](#string) |  | expression is a CEL expression used to filter connections/modes |
-| limit | [int32](#int32) |  | limit is the maximum number of items to return |
+| limit | [uint64](#uint64) |  | limit is the maximum number of items to return |
 | sort | [string](#string) |  | custom sorting of the results. |
 | seek | [string](#string) |  | seek to a specific key for pagination |
 | reverse | [bool](#bool) |  | reverse the results |
@@ -599,10 +599,12 @@ Schema returns registered connection &amp; doc types
 | root | [Ref](#api.Ref) |  |  |
 | doc_expression | [string](#string) |  |  |
 | connection_expression | [string](#string) |  |  |
-| limit | [int32](#int32) |  |  |
+| limit | [uint64](#uint64) |  |  |
 | sort | [string](#string) |  | custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$&#34;} |
 | reverse | [bool](#bool) |  |  |
 | algorithm | [Algorithm](#api.Algorithm) |  |  |
+| max_depth | [uint64](#uint64) |  | maximum degree/depth of nodes to be visited during traversal |
+| max_hops | [uint64](#uint64) |  | maximum number of nodes to be visited during traversal |
 
 
 
@@ -619,6 +621,8 @@ Schema returns registered connection &amp; doc types
 | ----- | ---- | ----- | ----------- |
 | doc | [Doc](#api.Doc) |  |  |
 | traversal_path | [Ref](#api.Ref) | repeated |  |
+| depth | [uint64](#uint64) |  |  |
+| hops | [uint64](#uint64) |  |  |
 
 
 

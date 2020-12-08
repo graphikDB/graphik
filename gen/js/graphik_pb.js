@@ -1189,7 +1189,9 @@ proto.api.Traversal.toObject = function(includeInstance, msg) {
   var f, obj = {
     doc: (f = msg.getDoc()) && proto.api.Doc.toObject(includeInstance, f),
     traversalPathList: jspb.Message.toObjectList(msg.getTraversalPathList(),
-    proto.api.Ref.toObject, includeInstance)
+    proto.api.Ref.toObject, includeInstance),
+    depth: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    hops: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -1236,6 +1238,14 @@ proto.api.Traversal.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.api.Ref.deserializeBinaryFromReader);
       msg.addTraversalPath(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setDepth(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setHops(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1279,6 +1289,20 @@ proto.api.Traversal.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       proto.api.Ref.serializeBinaryToWriter
+    );
+  }
+  f = message.getDepth();
+  if (f !== 0) {
+    writer.writeUint64(
+      3,
+      f
+    );
+  }
+  f = message.getHops();
+  if (f !== 0) {
+    writer.writeUint64(
+      4,
+      f
     );
   }
 };
@@ -1342,6 +1366,36 @@ proto.api.Traversal.prototype.addTraversalPath = function(opt_value, opt_index) 
 
 proto.api.Traversal.prototype.clearTraversalPathList = function() {
   this.setTraversalPathList([]);
+};
+
+
+/**
+ * optional uint64 depth = 3;
+ * @return {number}
+ */
+proto.api.Traversal.prototype.getDepth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.api.Traversal.prototype.setDepth = function(value) {
+  jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional uint64 hops = 4;
+ * @return {number}
+ */
+proto.api.Traversal.prototype.getHops = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/** @param {number} value */
+proto.api.Traversal.prototype.setHops = function(value) {
+  jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -3118,7 +3172,7 @@ proto.api.CFilter.deserializeBinaryFromReader = function(msg, reader) {
       msg.setExpression(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setLimit(value);
       break;
     case 5:
@@ -3186,7 +3240,7 @@ proto.api.CFilter.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getLimit();
   if (f !== 0) {
-    writer.writeInt32(
+    writer.writeUint64(
       4,
       f
     );
@@ -3276,7 +3330,7 @@ proto.api.CFilter.prototype.setExpression = function(value) {
 
 
 /**
- * optional int32 limit = 4;
+ * optional uint64 limit = 4;
  * @return {number}
  */
 proto.api.CFilter.prototype.getLimit = function() {
@@ -3436,7 +3490,7 @@ proto.api.Filter.deserializeBinaryFromReader = function(msg, reader) {
       msg.setExpression(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setLimit(value);
       break;
     case 4:
@@ -3500,7 +3554,7 @@ proto.api.Filter.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getLimit();
   if (f !== 0) {
-    writer.writeInt32(
+    writer.writeUint64(
       3,
       f
     );
@@ -3567,7 +3621,7 @@ proto.api.Filter.prototype.setExpression = function(value) {
 
 
 /**
- * optional int32 limit = 3;
+ * optional uint64 limit = 3;
  * @return {number}
  */
 proto.api.Filter.prototype.getLimit = function() {
@@ -3909,7 +3963,9 @@ proto.api.TFilter.toObject = function(includeInstance, msg) {
     limit: jspb.Message.getFieldWithDefault(msg, 4, 0),
     sort: jspb.Message.getFieldWithDefault(msg, 5, ""),
     reverse: jspb.Message.getFieldWithDefault(msg, 6, false),
-    algorithm: jspb.Message.getFieldWithDefault(msg, 7, 0)
+    algorithm: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    maxDepth: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    maxHops: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -3960,7 +4016,7 @@ proto.api.TFilter.deserializeBinaryFromReader = function(msg, reader) {
       msg.setConnectionExpression(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setLimit(value);
       break;
     case 5:
@@ -3974,6 +4030,14 @@ proto.api.TFilter.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {!proto.api.Algorithm} */ (reader.readEnum());
       msg.setAlgorithm(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setMaxDepth(value);
+      break;
+    case 9:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setMaxHops(value);
       break;
     default:
       reader.skipField();
@@ -4028,7 +4092,7 @@ proto.api.TFilter.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getLimit();
   if (f !== 0) {
-    writer.writeInt32(
+    writer.writeUint64(
       4,
       f
     );
@@ -4051,6 +4115,20 @@ proto.api.TFilter.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeEnum(
       7,
+      f
+    );
+  }
+  f = message.getMaxDepth();
+  if (f !== 0) {
+    writer.writeUint64(
+      8,
+      f
+    );
+  }
+  f = message.getMaxHops();
+  if (f !== 0) {
+    writer.writeUint64(
+      9,
       f
     );
   }
@@ -4118,7 +4196,7 @@ proto.api.TFilter.prototype.setConnectionExpression = function(value) {
 
 
 /**
- * optional int32 limit = 4;
+ * optional uint64 limit = 4;
  * @return {number}
  */
 proto.api.TFilter.prototype.getLimit = function() {
@@ -4176,6 +4254,36 @@ proto.api.TFilter.prototype.getAlgorithm = function() {
 /** @param {!proto.api.Algorithm} value */
 proto.api.TFilter.prototype.setAlgorithm = function(value) {
   jspb.Message.setProto3EnumField(this, 7, value);
+};
+
+
+/**
+ * optional uint64 max_depth = 8;
+ * @return {number}
+ */
+proto.api.TFilter.prototype.getMaxDepth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/** @param {number} value */
+proto.api.TFilter.prototype.setMaxDepth = function(value) {
+  jspb.Message.setProto3IntField(this, 8, value);
+};
+
+
+/**
+ * optional uint64 max_hops = 9;
+ * @return {number}
+ */
+proto.api.TFilter.prototype.getMaxHops = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+
+/** @param {number} value */
+proto.api.TFilter.prototype.setMaxHops = function(value) {
+  jspb.Message.setProto3IntField(this, 9, value);
 };
 
 

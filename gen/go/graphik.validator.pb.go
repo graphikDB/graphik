@@ -313,6 +313,12 @@ func (this *TFilter) Validate() error {
 	if !_regex_TFilter_Sort.MatchString(this.Sort) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"`, this.Sort))
 	}
+	if !(this.MaxDepth > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("MaxDepth", fmt.Errorf(`value '%v' must be greater than '0'`, this.MaxDepth))
+	}
+	if !(this.MaxHops > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("MaxHops", fmt.Errorf(`value '%v' must be greater than '0'`, this.MaxHops))
+	}
 	return nil
 }
 

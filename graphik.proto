@@ -125,6 +125,8 @@ message DocConstructors {
 message Traversal {
   Doc doc = 1;
   repeated Ref traversal_path =2;
+  uint64 depth =3;
+  uint64 hops =4;
 }
 
 message Traversals {
@@ -197,7 +199,7 @@ message CFilter {
   // expression is a CEL expression used to filter connections/modes
   string expression =3;
   // limit is the maximum number of items to return. (validator.field) = {int_gt : 0}
-  int32 limit =4 [(validator.field) = {int_gt : 0}];
+  uint64 limit =4 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
   string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
   // seek to a specific key for pagination
@@ -213,7 +215,7 @@ message Filter {
   // expression is a CEL expression used to filter connections/modes
   string expression =2;
   // limit is the maximum number of items to return
-  int32 limit =3 [(validator.field) = {int_gt : 0}];
+  uint64 limit =3 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results.
   string sort =4 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
   // seek to a specific key for pagination
@@ -234,11 +236,15 @@ message TFilter {
   Ref root =1 [(validator.field) = {msg_exists : true}];
   string doc_expression =2;
   string connection_expression =3;
-  int32 limit =4 [(validator.field) = {int_gt : 0}];
+  uint64 limit =4 [(validator.field) = {int_gt : 0}];
   // custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
   string sort =5 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
   bool reverse =6;
   Algorithm algorithm = 7;
+  // maximum degree/depth of nodes to be visited during traversal
+  uint64 max_depth = 8[(validator.field) = {int_gt : 0}];
+  // maximum number of nodes to be visited during traversal
+  uint64 max_hops =9[(validator.field) = {int_gt : 0}];
 }
 
 message IndexConstructor {

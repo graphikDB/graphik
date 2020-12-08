@@ -41,7 +41,8 @@ type Docs {
 type Traversal {
   doc: Doc!
   traversal_path: [Ref!]
-
+  depth: Int!
+  hops: Int!
 }
 
 type Traversals {
@@ -210,6 +211,10 @@ input TFilter {
   reverse: Boolean
   # DFS(depth-first-search) or BFS(breadth-first-search). Defaults to breadth-first
   algorithm: Algorithm
+  # maximum degree/depth of nodes to be visited during traversal
+  max_depth: Int!
+  # maximum number of nodes to be visited during traversal
+  max_hops: Int!
 }
 
 # CFilter is used to fetch connections related to a single noted
