@@ -65,3 +65,37 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
       --tls-cert string                   path to tls certificate (env: GRAPHIK_TLS_CERT)
       --tls-key string                    path to tls key (env: GRAPHIK_TLS_KEY)
 ```
+
+## Graphql
+
+### Node Traversal
+```graphql
+# Write your query or mutation here
+query {
+  traverse(input: {
+    root: {
+      gid: "coleman.word@graphikdb.io"
+      gtype: "user"
+    }
+    algorithm: BFS
+    limit: 6
+		max_depth: 1
+		max_hops: 10
+  }){
+    traversals {
+      doc {
+        ref {
+          gid
+          gtype
+        }
+      }
+      traversal_path {
+        gid
+        gtype
+      }
+			depth
+			hops
+    }
+  }
+}
+```
