@@ -401,6 +401,9 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 				Gtype: constructor.GetRef().GetGtype(),
 				Gid:   constructor.GetRef().GetGid(),
 			}
+			if conn, err := g.getConnection(ctx, tx, path); err == nil || conn != nil {
+				return ErrAlreadyExists
+			}
 			connection := &apipb.Connection{
 				Ref:        path,
 				Attributes: constructor.GetAttributes(),
