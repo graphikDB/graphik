@@ -86,7 +86,7 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
       --playground-client-id string       playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)
       --playground-client-secret string   playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET
       --playground-redirect string        playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT) (default "http://localhost:7820/playground/callback")
-      --root-users strings                cors allow methods (env: GRAPHIK_ROOT_USERS)
+      --root-users strings                a list of email addresses that bypass registered authorizers(env: GRAPHIK_ROOT_USERS)
       --storage string                    persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
       --tls-cert string                   path to tls certificate (env: GRAPHIK_TLS_CERT)
       --tls-key string                    path to tls key (env: GRAPHIK_TLS_KEY)
@@ -162,7 +162,7 @@ Coming Soon
 ### Secondary Indexes
 - secondary indexes are CEL expressions evaluated against a particular type of Doc or Connection
 - indexes may be used to speed up queries that iterate over a large number of elements
-- type validators are completely optional but recommended
+- secondary indexes are completely optional but recommended
 
 #### Secondary Index Examples
 Coming Soon
