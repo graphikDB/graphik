@@ -4,7 +4,7 @@
 
     git clone git@github.com:graphikDB/graphik.git
     
-    docker pull graphikdb/graphik:v0.1.0
+    docker pull graphikdb/graphik:v0.1.1
 
 Graphik is an identity-aware, permissioned, persistant document & graph database written in Go
 
