@@ -1,7 +1,8 @@
-# Graphik[![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
+# Graphik
 
 https://graphikdb.github.io/graphik/
 
+[![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
 
     git clone git@github.com:graphikDB/graphik.git
     
@@ -9,7 +10,6 @@ https://graphikdb.github.io/graphik/
 
 Graphik is an identity-aware, permissioned, persistant document & graph database written in Go
 
-- [Graphik[![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)](#graphik---godoc--https---godocorg-githubcom-graphikdb-graphik-statussvg---https---godocorg-githubcom-graphikdb-graphik-)
   * [Helpful Links](#helpful-links)
   * [Features](#features)
   * [Key Dependencies](#key-dependencies)
