@@ -31,7 +31,7 @@ lint:
 
 generate:
   go_options:
-    import_path: github.com/autom8ter/graphik
+    import_path: github.com/graphikDB/graphik
 
   plugins:
     - name: go

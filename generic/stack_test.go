@@ -1,7 +1,7 @@
 package generic_test
 
 import (
-	"github.com/autom8ter/graphik/generic"
+	"github.com/graphikDB/graphik/generic"
 	"testing"
 )
 

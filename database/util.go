@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	apipb "github.com/autom8ter/graphik/gen/grpc/go"
+	apipb "github.com/graphikDB/graphik/gen/grpc/go"
 	"strings"
 )
 

@@ -1,4 +1,4 @@
-version := "0.0.42"
+version := "0.0.43"
 
 .DEFAULT_GOAL := help
 
@@ -24,10 +24,10 @@ push:
 	git push origin v$(version)
 
 docker-build:
-	@docker build -t colemanword/graphik:v$(version) .
+	@docker build -t graphikdb/graphik:v$(version) .
 
 docker-push:
-	@docker push colemanword/graphik:v$(version)
+	@docker push graphikdb/graphik:v$(version)
 
 .PHONY: proto
 proto: ## regenerate gRPC code

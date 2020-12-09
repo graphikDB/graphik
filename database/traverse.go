@@ -2,9 +2,9 @@ package database
 
 import (
 	"context"
-	apipb "github.com/autom8ter/graphik/gen/grpc/go"
-	"github.com/autom8ter/graphik/generic"
-	"github.com/autom8ter/graphik/logger"
+	apipb "github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/generic"
+	"github.com/graphikDB/graphik/logger"
 	"github.com/google/cel-go/cel"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"

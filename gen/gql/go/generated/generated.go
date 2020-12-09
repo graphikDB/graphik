@@ -14,8 +14,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/autom8ter/graphik/gen/gql/go/model"
-	"github.com/autom8ter/graphik/gql/scalars"
+	"github.com/graphikDB/graphik/gen/gql/go/model"
+	"github.com/graphikDB/graphik/gql/scalars"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 	"google.golang.org/protobuf/types/known/emptypb"

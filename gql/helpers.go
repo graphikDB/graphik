@@ -1,8 +1,8 @@
 package gql
 
 import (
-	"github.com/autom8ter/graphik/gen/gql/go/model"
-	apipb "github.com/autom8ter/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/gen/gql/go/model"
+	apipb "github.com/graphikDB/graphik/gen/grpc/go"
 )
 
 func protoExists(has model.ExistsFilter) *apipb.ExistsFilter {

@@ -3,9 +3,9 @@ package graphik_test
 import (
 	"context"
 	"fmt"
-	apipb2 "github.com/autom8ter/graphik/gen/grpc/go"
-	"github.com/autom8ter/graphik/graphik-client-go"
-	"github.com/autom8ter/graphik/logger"
+	apipb2 "github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/graphik-client-go"
+	"github.com/graphikDB/graphik/logger"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"

@@ -2,7 +2,7 @@ package vm
 
 import (
 	"errors"
-	"github.com/autom8ter/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
 	"strings"

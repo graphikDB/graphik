@@ -1,4 +1,4 @@
-module github.com/autom8ter/graphik
+module github.com/graphikDB/graphik
 
 go 1.15
 

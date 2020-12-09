@@ -2,9 +2,9 @@
 
 ![dag](images/dag.png)
 
-    git clone git@github.com:autom8ter/graphik.git
+    git clone git@github.com:graphikDB/graphik.git
     
-    docker pull colemanword/graphik:v0.0.42
+    docker pull graphikdb/graphik:v0.0.43
 
 Graphik is an identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
 
@@ -12,13 +12,13 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 
 - [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
 - [API Docs](https://autom8ter.github.io/graphik/)
-- [Protobuf API Spec](https://github.com/autom8ter/graphik/blob/master/graphik.proto)
-- [Graphql API Spec](https://github.com/autom8ter/graphik/blob/master/schema.graphql)
+- [Protobuf API Spec](https://github.com/graphikDB/graphik/blob/master/graphik.proto)
+- [Graphql API Spec](https://github.com/graphikDB/graphik/blob/master/schema.graphql)
 - [Common Expression Language Code Lab](https://codelabs.developers.google.com/codelabs/cel-go/index.html#0)
 - [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
 
 ## gRPC Client SDKs
-- [x] [Go](https://github.com/autom8ter/graphik-client-go)
+- [x] [Go](https://github.com/graphikDB/graphik-client-go)
 - [x] [Python](gen/grpc/python)
 - [x] [PHP](gen/grpc/php)
 - [x] [Javascript](gen/grpc/js)

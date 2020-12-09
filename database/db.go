@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
-	"github.com/autom8ter/graphik/gen/grpc/go"
-	"github.com/autom8ter/graphik/logger"
+	"github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/logger"
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
