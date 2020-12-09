@@ -9,6 +9,29 @@ https://graphikdb.github.io/graphik/
 
 Graphik is an identity-aware, permissioned, persistant document & graph database written in Go
 
+- [Graphik[![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)](#graphik---godoc--https---godocorg-githubcom-graphikdb-graphik-statussvg---https---godocorg-githubcom-graphikdb-graphik-)
+  * [Helpful Links](#helpful-links)
+  * [Features](#features)
+  * [Key Dependencies](#key-dependencies)
+  * [Flags](#flags)
+  * [gRPC Client SDKs](#grpc-client-sdks)
+  * [Implemenation Details](#implemenation-details)
+    + [Primitives](#primitives)
+    + [Login/Authorization/Authorizers](#login-authorization-authorizers)
+      - [Authorizers Examples](#authorizers-examples)
+    + [Secondary Indexes](#secondary-indexes)
+      - [Secondary Index Examples](#secondary-index-examples)
+    + [Type Validators](#type-validators)
+      - [Type Validator Examples](#type-validator-examples)
+    + [Identity Graph](#identity-graph)
+    + [Additional Details](#additional-details)
+  * [Sample GraphQL Queries](#sample-graphql-queries)
+    + [Node Traversal](#node-traversal)
+  * [Deployment](#deployment)
+    + [Docker-Compose](#docker-compose)
+    + [Kubernetes](#kubernetes)
+    + [Virtual Machine](#virtual-machine)
+
 
 ## Helpful Links
 
@@ -77,7 +100,89 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
 - [x] [Java](gen/grpc/java)
 - [x] [C#](gen/grpc/csharp)
 - [x] [Ruby](gen/grpc/ruby)
-    
+
+## Implemenation Details
+
+Please see [GraphQL Documentation Site](https://graphikdb.github.io/graphik/) for additional details
+
+### Primitives
+
+- `Ref` == direct pointer to an doc or connection.
+
+```proto
+message Ref {
+  // gtype is the type of the doc/connection ex: pet
+  string gtype =1 [(validator.field) = {regex : "^.{1,225}$"}];
+  // gid is the unique id of the doc/connection within the context of it's type
+  string gid =2 [(validator.field) = {regex : "^.{1,225}$"}];
+}
+```
+
+- `Doc` == JSON document in document storage terms AND vertex/node in graph theory
+
+```proto
+message Doc {
+    // ref is the ref to the doc
+    Ref ref =1 [(validator.field) = {msg_exists : true}];
+    // k/v pairs
+    google.protobuf.Struct attributes =2;
+}
+```
+       
+- `Connection` == graph edge/relationship in graph theory. Connections relate Docs to one another.
+
+```proto
+message Connection {
+  // ref is the ref to the connection
+  Ref ref =1 [(validator.field) = {msg_exists : true}];
+  // attributes are k/v pairs
+  google.protobuf.Struct attributes =2;
+  // directed is false if the connection is bi-directional
+  bool directed =3;
+  // from is the doc ref that is the source of the connection
+  Ref from =4 [(validator.field) = {msg_exists : true}];
+  // to is the doc ref that is the destination of the connection
+  Ref to =5 [(validator.field) = {msg_exists : true}];
+}
+```
+
+### Login/Authorization/Authorizers
+- an access token `Authorization: Bearer ${token}` from the configured open-id connect identity provider is required for all database functionality
+- the access token is used to fetch the users info from the oidc userinfo endpoint fetched from the oidc metadata url
+- if a user is not present in the database, one will be automatically created under the gtype: `user` with their email address as their `gid`
+- once the user is fetched, it is evaluated(along with the request & request method) against any registered authorizers(CEL expression) in the database.
+    - if an authorizer evaluates false, the request will be denied
+    - authorizers may be used to restrict access to functionality by domain, role, email, etc
+    - registered root users(see flags) bypass these authorizers
+- authorizers are completely optional but highly recommended
+
+#### Authorizers Examples
+Coming Soon
+
+### Secondary Indexes
+- secondary indexes are CEL expressions evaluated against a particular type of Doc or Connection
+- indexes may be used to speed up queries that iterate over a large number of elements
+- type validators are completely optional but recommended
+
+#### Secondary Index Examples
+Coming Soon
+
+### Type Validators
+- type validators are CEL expressions evaluated against a particular type of Doc or Connection to enforce custom constraints
+- type validators are completely optional
+
+#### Type Validator Examples
+Coming Soon
+
+### Identity Graph
+- any time a document is created, a connection of type `created` from the origin user to the new document is also created
+- any time a document is created, a connection of type `created_by` from the new document to the origin user is also created
+- any time a document is edited, a connection of type `edited` from the origin user to the new document is also created(if none exists)
+- any time a document is edited, a connection of type `edited_by` from the new document to the origin user is also created(if none exists)
+
+### Additional Details
+- any time a Doc is deleted, so are all of its connections
+
 ## Sample GraphQL Queries
 
 ### Node Traversal
