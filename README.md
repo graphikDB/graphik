@@ -1,7 +1,5 @@
 # Graphik
 
-![dag](images/dag.png)
-
     git clone git@github.com:graphikDB/graphik.git
     
     docker pull graphikdb/graphik:v0.1.1
