@@ -10,9 +10,9 @@ import (
 )
 
 type AggFilter struct {
-	Filter    *Filter `json:"filter"`
-	Aggregate string  `json:"aggregate"`
-	Field     *string `json:"field"`
+	Filter    *Filter   `json:"filter"`
+	Aggregate Aggregate `json:"aggregate"`
+	Field     *string   `json:"field"`
 }
 
 type Authorizer struct {
@@ -244,6 +244,55 @@ type TypeValidators struct {
 
 type TypeValidatorsInput struct {
 	Validators []*TypeValidatorInput `json:"validators"`
+}
+
+type Aggregate string
+
+const (
+	AggregateCount Aggregate = "COUNT"
+	AggregateSum   Aggregate = "SUM"
+	AggregateAvg   Aggregate = "AVG"
+	AggregateMax   Aggregate = "MAX"
+	AggregateMin   Aggregate = "MIN"
+	AggregateProd  Aggregate = "PROD"
+)
+
+var AllAggregate = []Aggregate{
+	AggregateCount,
+	AggregateSum,
+	AggregateAvg,
+	AggregateMax,
+	AggregateMin,
+	AggregateProd,
+}
+
+func (e Aggregate) IsValid() bool {
+	switch e {
+	case AggregateCount, AggregateSum, AggregateAvg, AggregateMax, AggregateMin, AggregateProd:
+		return true
+	}
+	return false
+}
+
+func (e Aggregate) String() string {
+	return string(e)
+}
+
+func (e *Aggregate) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Aggregate(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Aggregate", str)
+	}
+	return nil
+}
+
+func (e Aggregate) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Algorithm string

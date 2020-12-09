@@ -91,7 +91,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   end
   add_message "api.AggFilter" do
     optional :filter, :message, 1, "api.Filter"
-    optional :aggregate, :string, 2
+    optional :aggregate, :enum, 2, "api.Aggregate"
     optional :field, :string, 3
   end
   add_message "api.TFilter" do
@@ -215,6 +215,14 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     value :BFS, 0
     value :DFS, 1
   end
+  add_enum "api.Aggregate" do
+    value :COUNT, 0
+    value :SUM, 1
+    value :AVG, 2
+    value :MAX, 3
+    value :MIN, 4
+    value :PROD, 5
+  end
 end
 
 module Api
@@ -258,4 +266,5 @@ module Api
   ExprFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ExprFilter").msgclass
   Request = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Request").msgclass
   Algorithm = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Algorithm").enummodule
+  Aggregate = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Aggregate").enummodule
 end

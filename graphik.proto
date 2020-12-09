@@ -39,9 +39,13 @@ service DatabaseService {
   rpc DelDoc(Ref) returns(google.protobuf.Empty){}
   // DelDocs deletes a batch of docs that pass the filter
   rpc DelDocs(Filter) returns(google.protobuf.Empty){}
+  // ExistsDoc searches for a Doc and returns a Boolean indicating if it exists in the graph
   rpc ExistsDoc(Exists) returns(Boolean){}
+  // ExistsConnection searches for a Connection and returns a Boolean indicating if it exists in the graph
   rpc ExistsConnection(Exists) returns(Boolean){}
+  // HasDoc searches for the Doc by Ref returns a Boolean indicating if it exists in the graph
   rpc HasDoc(Ref) returns(Boolean){}
+  // HasConnection searches for the Connection by Ref returns a Boolean indicating if it exists in the graph
   rpc HasConnection(Ref) returns(Boolean){}
   // CreateConnection creates an connection in the graph
   rpc CreateConnection(ConnectionConstructor) returns(Connection){}
@@ -64,6 +68,7 @@ service DatabaseService {
   rpc ConnectionsFrom(CFilter) returns(Connections){}
   // ConnectionsTo returns connections that point to the given doc ref that pass the filter
   rpc ConnectionsTo(CFilter) returns(Connections){}
+  // AggregateDocs executes an aggregation function against the graph
   rpc AggregateDocs(AggFilter) returns(Number){}
   rpc AggregateConnections(AggFilter) returns(Number){}
   // Publish publishes a message to a pubsub channel
@@ -83,6 +88,14 @@ enum Algorithm {
   DFS = 1;
 }
 
+enum Aggregate {
+  COUNT =0;
+  SUM =1;
+  AVG =2;
+  MAX =3;
+  MIN =4;
+  PROD =5;
+}
 // Ref describes a doc/connection type & id
 message Ref {
   // gtype is the type of the doc/connection ex: pet
@@ -232,7 +245,7 @@ message Filter {
 
 message AggFilter {
   Filter filter =1[(validator.field) = {msg_exists : true}];
-  string aggregate =2[(validator.field) = {regex : "((^|, )(sum|count|max|min|avg|prod))+$"}];
+  Aggregate aggregate =2;
   string field =3[(validator.field) = {regex : "((^|, )(|^attributes.(.*)))+$"}];
 }
 

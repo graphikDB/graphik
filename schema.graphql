@@ -8,7 +8,14 @@ enum Algorithm {
   # DFS is short for the depth-first search algorithm
   DFS
 }
-
+enum Aggregate {
+  COUNT
+  SUM
+  AVG
+  MAX
+  MIN
+  PROD
+}
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -200,7 +207,7 @@ input SConnectFilter {
 
 input AggFilter {
   filter: Filter!
-  aggregate: String!
+  aggregate: Aggregate!
   field: String
 }
 

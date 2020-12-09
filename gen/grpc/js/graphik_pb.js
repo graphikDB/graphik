@@ -17,6 +17,7 @@ var google_protobuf_any_pb = require('google-protobuf/google/protobuf/any_pb.js'
 var google_protobuf_empty_pb = require('google-protobuf/google/protobuf/empty_pb.js');
 var github_com_mwitkow_go$proto$validators_validator_pb = require('./github.com/mwitkow/go-proto-validators/validator_pb.js');
 goog.exportSymbol('proto.api.AggFilter', null, global);
+goog.exportSymbol('proto.api.Aggregate', null, global);
 goog.exportSymbol('proto.api.Algorithm', null, global);
 goog.exportSymbol('proto.api.Authorizer', null, global);
 goog.exportSymbol('proto.api.Authorizers', null, global);
@@ -3748,7 +3749,7 @@ proto.api.AggFilter.prototype.toObject = function(opt_includeInstance) {
 proto.api.AggFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     filter: (f = msg.getFilter()) && proto.api.Filter.toObject(includeInstance, f),
-    aggregate: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    aggregate: jspb.Message.getFieldWithDefault(msg, 2, 0),
     field: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
@@ -3792,7 +3793,7 @@ proto.api.AggFilter.deserializeBinaryFromReader = function(msg, reader) {
       msg.setFilter(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {!proto.api.Aggregate} */ (reader.readEnum());
       msg.setAggregate(value);
       break;
     case 3:
@@ -3837,8 +3838,8 @@ proto.api.AggFilter.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getAggregate();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0.0) {
+    writer.writeEnum(
       2,
       f
     );
@@ -3884,17 +3885,17 @@ proto.api.AggFilter.prototype.hasFilter = function() {
 
 
 /**
- * optional string aggregate = 2;
- * @return {string}
+ * optional Aggregate aggregate = 2;
+ * @return {!proto.api.Aggregate}
  */
 proto.api.AggFilter.prototype.getAggregate = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {!proto.api.Aggregate} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
-/** @param {string} value */
+/** @param {!proto.api.Aggregate} value */
 proto.api.AggFilter.prototype.setAggregate = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
+  jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
@@ -8905,6 +8906,18 @@ proto.api.Request.prototype.hasRequest = function() {
 proto.api.Algorithm = {
   BFS: 0,
   DFS: 1
+};
+
+/**
+ * @enum {number}
+ */
+proto.api.Aggregate = {
+  COUNT: 0,
+  SUM: 1,
+  AVG: 2,
+  MAX: 3,
+  MIN: 4,
+  PROD: 5
 };
 
 goog.object.extend(exports, proto.api);

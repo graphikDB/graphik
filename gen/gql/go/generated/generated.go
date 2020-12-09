@@ -1050,7 +1050,14 @@ enum Algorithm {
   # DFS is short for the depth-first search algorithm
   DFS
 }
-
+enum Aggregate {
+  COUNT
+  SUM
+  AVG
+  MAX
+  MIN
+  PROD
+}
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -1242,7 +1249,7 @@ input SConnectFilter {
 
 input AggFilter {
   filter: Filter!
-  aggregate: String!
+  aggregate: Aggregate!
   field: String
 }
 
@@ -6067,7 +6074,7 @@ func (ec *executionContext) unmarshalInputAggFilter(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("aggregate"))
-			it.Aggregate, err = ec.unmarshalNString2string(ctx, v)
+			it.Aggregate, err = ec.unmarshalNAggregate2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8072,6 +8079,16 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 func (ec *executionContext) unmarshalNAggFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggFilter(ctx context.Context, v interface{}) (model.AggFilter, error) {
 	res, err := ec.unmarshalInputAggFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNAggregate2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx context.Context, v interface{}) (model.Aggregate, error) {
+	var res model.Aggregate
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAggregate2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx context.Context, sel ast.SelectionSet, v model.Aggregate) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNAuthorizer2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizer(ctx context.Context, sel ast.SelectionSet, v *model.Authorizer) graphql.Marshaler {

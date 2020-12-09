@@ -18,9 +18,9 @@ class AggFilter extends \Google\Protobuf\Internal\Message
      */
     private $filter = null;
     /**
-     * Generated from protobuf field <code>string aggregate = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Aggregate aggregate = 2;</code>
      */
-    private $aggregate = '';
+    private $aggregate = 0;
     /**
      * Generated from protobuf field <code>string field = 3 [(.validator.field) = {</code>
      */
@@ -33,7 +33,7 @@ class AggFilter extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type \Api\Filter $filter
-     *     @type string $aggregate
+     *     @type int $aggregate
      *     @type string $field
      * }
      */
@@ -65,8 +65,8 @@ class AggFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string aggregate = 2 [(.validator.field) = {</code>
-     * @return string
+     * Generated from protobuf field <code>.api.Aggregate aggregate = 2;</code>
+     * @return int
      */
     public function getAggregate()
     {
@@ -74,13 +74,13 @@ class AggFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string aggregate = 2 [(.validator.field) = {</code>
-     * @param string $var
+     * Generated from protobuf field <code>.api.Aggregate aggregate = 2;</code>
+     * @param int $var
      * @return $this
      */
     public function setAggregate($var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkEnum($var, \Api\Aggregate::class);
         $this->aggregate = $var;
 
         return $this;

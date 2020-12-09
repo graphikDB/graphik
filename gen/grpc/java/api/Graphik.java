@@ -128,6 +128,140 @@ public final class Graphik {
     // @@protoc_insertion_point(enum_scope:api.Algorithm)
   }
 
+  /**
+   * Protobuf enum {@code api.Aggregate}
+   */
+  public enum Aggregate
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>COUNT = 0;</code>
+     */
+    COUNT(0),
+    /**
+     * <code>SUM = 1;</code>
+     */
+    SUM(1),
+    /**
+     * <code>AVG = 2;</code>
+     */
+    AVG(2),
+    /**
+     * <code>MAX = 3;</code>
+     */
+    MAX(3),
+    /**
+     * <code>MIN = 4;</code>
+     */
+    MIN(4),
+    /**
+     * <code>PROD = 5;</code>
+     */
+    PROD(5),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>COUNT = 0;</code>
+     */
+    public static final int COUNT_VALUE = 0;
+    /**
+     * <code>SUM = 1;</code>
+     */
+    public static final int SUM_VALUE = 1;
+    /**
+     * <code>AVG = 2;</code>
+     */
+    public static final int AVG_VALUE = 2;
+    /**
+     * <code>MAX = 3;</code>
+     */
+    public static final int MAX_VALUE = 3;
+    /**
+     * <code>MIN = 4;</code>
+     */
+    public static final int MIN_VALUE = 4;
+    /**
+     * <code>PROD = 5;</code>
+     */
+    public static final int PROD_VALUE = 5;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static Aggregate valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static Aggregate forNumber(int value) {
+      switch (value) {
+        case 0: return COUNT;
+        case 1: return SUM;
+        case 2: return AVG;
+        case 3: return MAX;
+        case 4: return MIN;
+        case 5: return PROD;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<Aggregate>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        Aggregate> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Aggregate>() {
+            public Aggregate findValueByNumber(int number) {
+              return Aggregate.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return api.Graphik.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final Aggregate[] VALUES = values();
+
+    public static Aggregate valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private Aggregate(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:api.Aggregate)
+  }
+
   public interface RefOrBuilder extends
       // @@protoc_insertion_point(interface_extends:api.Ref)
       com.google.protobuf.MessageOrBuilder {
@@ -17248,14 +17382,13 @@ public final class Graphik {
     api.Graphik.FilterOrBuilder getFilterOrBuilder();
 
     /**
-     * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Aggregate aggregate = 2;</code>
      */
-    java.lang.String getAggregate();
+    int getAggregateValue();
     /**
-     * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Aggregate aggregate = 2;</code>
      */
-    com.google.protobuf.ByteString
-        getAggregateBytes();
+    api.Graphik.Aggregate getAggregate();
 
     /**
      * <code>string field = 3 [(.validator.field) = { ... }</code>
@@ -17280,7 +17413,7 @@ public final class Graphik {
       super(builder);
     }
     private AggFilter() {
-      aggregate_ = "";
+      aggregate_ = 0;
       field_ = "";
     }
 
@@ -17321,10 +17454,10 @@ public final class Graphik {
 
               break;
             }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
+            case 16: {
+              int rawValue = input.readEnum();
 
-              aggregate_ = s;
+              aggregate_ = rawValue;
               break;
             }
             case 26: {
@@ -17387,37 +17520,20 @@ public final class Graphik {
     }
 
     public static final int AGGREGATE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object aggregate_;
+    private int aggregate_;
     /**
-     * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Aggregate aggregate = 2;</code>
      */
-    public java.lang.String getAggregate() {
-      java.lang.Object ref = aggregate_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        aggregate_ = s;
-        return s;
-      }
+    public int getAggregateValue() {
+      return aggregate_;
     }
     /**
-     * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Aggregate aggregate = 2;</code>
      */
-    public com.google.protobuf.ByteString
-        getAggregateBytes() {
-      java.lang.Object ref = aggregate_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        aggregate_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public api.Graphik.Aggregate getAggregate() {
+      @SuppressWarnings("deprecation")
+      api.Graphik.Aggregate result = api.Graphik.Aggregate.valueOf(aggregate_);
+      return result == null ? api.Graphik.Aggregate.UNRECOGNIZED : result;
     }
 
     public static final int FIELD_FIELD_NUMBER = 3;
@@ -17471,8 +17587,8 @@ public final class Graphik {
       if (filter_ != null) {
         output.writeMessage(1, getFilter());
       }
-      if (!getAggregateBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, aggregate_);
+      if (aggregate_ != api.Graphik.Aggregate.COUNT.getNumber()) {
+        output.writeEnum(2, aggregate_);
       }
       if (!getFieldBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, field_);
@@ -17490,8 +17606,9 @@ public final class Graphik {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getFilter());
       }
-      if (!getAggregateBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, aggregate_);
+      if (aggregate_ != api.Graphik.Aggregate.COUNT.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, aggregate_);
       }
       if (!getFieldBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, field_);
@@ -17517,8 +17634,7 @@ public final class Graphik {
         result = result && getFilter()
             .equals(other.getFilter());
       }
-      result = result && getAggregate()
-          .equals(other.getAggregate());
+      result = result && aggregate_ == other.aggregate_;
       result = result && getField()
           .equals(other.getField());
       result = result && unknownFields.equals(other.unknownFields);
@@ -17537,7 +17653,7 @@ public final class Graphik {
         hash = (53 * hash) + getFilter().hashCode();
       }
       hash = (37 * hash) + AGGREGATE_FIELD_NUMBER;
-      hash = (53 * hash) + getAggregate().hashCode();
+      hash = (53 * hash) + aggregate_;
       hash = (37 * hash) + FIELD_FIELD_NUMBER;
       hash = (53 * hash) + getField().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -17679,7 +17795,7 @@ public final class Graphik {
           filter_ = null;
           filterBuilder_ = null;
         }
-        aggregate_ = "";
+        aggregate_ = 0;
 
         field_ = "";
 
@@ -17767,9 +17883,8 @@ public final class Graphik {
         if (other.hasFilter()) {
           mergeFilter(other.getFilter());
         }
-        if (!other.getAggregate().isEmpty()) {
-          aggregate_ = other.aggregate_;
-          onChanged();
+        if (other.aggregate_ != 0) {
+          setAggregateValue(other.getAggregateValue());
         }
         if (!other.getField().isEmpty()) {
           field_ = other.field_;
@@ -17921,71 +18036,47 @@ public final class Graphik {
         return filterBuilder_;
       }
 
-      private java.lang.Object aggregate_ = "";
+      private int aggregate_ = 0;
       /**
-       * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Aggregate aggregate = 2;</code>
        */
-      public java.lang.String getAggregate() {
-        java.lang.Object ref = aggregate_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          aggregate_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      public int getAggregateValue() {
+        return aggregate_;
       }
       /**
-       * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Aggregate aggregate = 2;</code>
        */
-      public com.google.protobuf.ByteString
-          getAggregateBytes() {
-        java.lang.Object ref = aggregate_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          aggregate_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
-       */
-      public Builder setAggregate(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      public Builder setAggregateValue(int value) {
         aggregate_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Aggregate aggregate = 2;</code>
+       */
+      public api.Graphik.Aggregate getAggregate() {
+        @SuppressWarnings("deprecation")
+        api.Graphik.Aggregate result = api.Graphik.Aggregate.valueOf(aggregate_);
+        return result == null ? api.Graphik.Aggregate.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.api.Aggregate aggregate = 2;</code>
+       */
+      public Builder setAggregate(api.Graphik.Aggregate value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        aggregate_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.api.Aggregate aggregate = 2;</code>
        */
       public Builder clearAggregate() {
         
-        aggregate_ = getDefaultInstance().getAggregate();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string aggregate = 2 [(.validator.field) = { ... }</code>
-       */
-      public Builder setAggregateBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        aggregate_ = value;
+        aggregate_ = 0;
         onChanged();
         return this;
       }
@@ -40425,74 +40516,75 @@ public final class Graphik {
       "\022\025\n\005limit\030\003 \001(\004B\006\342\337\037\002\020\000\022C\n\004sort\030\004 \001(\tB5\342" +
       "\337\0371\n/((^|, )(|ref.gid|ref.gtype|^attribu" +
       "tes.(.*)))+$\022\014\n\004seek\030\005 \001(\t\022\017\n\007reverse\030\006 " +
-      "\001(\010\022\r\n\005index\030\007 \001(\t\"\245\001\n\tAggFilter\022#\n\006filt" +
-      "er\030\001 \001(\0132\013.api.FilterB\006\342\337\037\002 \001\022?\n\taggrega" +
-      "te\030\002 \001(\tB,\342\337\037(\n&((^|, )(sum|count|max|mi" +
-      "n|avg|prod))+$\0222\n\005field\030\003 \001(\tB#\342\337\037\037\n\035((^" +
-      "|, )(|^attributes.(.*)))+$\"\245\002\n\007TFilter\022\036" +
-      "\n\004root\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022\026\n\016doc_ex" +
-      "pression\030\002 \001(\t\022\035\n\025connection_expression\030" +
-      "\003 \001(\t\022\025\n\005limit\030\004 \001(\004B\006\342\337\037\002\020\000\022C\n\004sort\030\005 \001" +
-      "(\tB5\342\337\0371\n/((^|, )(|ref.gid|ref.gtype|^at" +
-      "tributes.(.*)))+$\022\017\n\007reverse\030\006 \001(\010\022!\n\tal" +
-      "gorithm\030\007 \001(\0162\016.api.Algorithm\022\031\n\tmax_dep" +
-      "th\030\010 \001(\004B\006\342\337\037\002\020\000\022\030\n\010max_hops\030\t \001(\004B\006\342\337\037\002" +
-      "\020\000\"\234\001\n\020IndexConstructor\022\036\n\004name\030\001 \001(\tB\020\342" +
-      "\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\003 \001(\tB\020\342\337\037\014\n\n^." +
-      "{1,225}$\022$\n\nexpression\030\004 \001(\tB\020\342\337\037\014\n\n^.{1" +
-      ",225}$\022\014\n\004docs\030\006 \001(\010\022\023\n\013connections\030\007 \001(" +
-      "\010\"R\n\nAuthorizer\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{" +
-      "1,225}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1," +
-      "225}$\"3\n\013Authorizers\022$\n\013authorizers\030\001 \003(" +
-      "\0132\017.api.Authorizer\"\231\001\n\rTypeValidator\022\036\n\004" +
-      "name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\002 " +
-      "\001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\003 \001(" +
-      "\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\004 \001(\010\022\023\n\013con" +
-      "nections\030\005 \001(\010\"8\n\016TypeValidators\022&\n\nvali" +
-      "dators\030\001 \003(\0132\022.api.TypeValidator\"\221\001\n\005Ind" +
-      "ex\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gt" +
-      "ype\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpressio" +
-      "n\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\006 \001(\010\022" +
-      "\023\n\013connections\030\007 \001(\010\"&\n\007Indexes\022\033\n\007index" +
-      "es\030\001 \003(\0132\n.api.Index\"C\n\nChanFilter\022!\n\007ch" +
-      "annel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\022\n\nexpress" +
-      "ion\030\002 \001(\t\"G\n\005Graph\022\027\n\004docs\030\001 \001(\0132\t.api.D" +
-      "ocs\022%\n\013connections\030\002 \001(\0132\020.api.Connectio" +
-      "ns\"\242\002\n\005Flags\022\031\n\021open_id_discovery\030\001 \001(\t\022" +
-      "\024\n\014storage_path\030\002 \001(\t\022\017\n\007metrics\030\003 \001(\010\022\025" +
-      "\n\rallow_headers\030\005 \003(\t\022\025\n\rallow_methods\030\006" +
-      " \003(\t\022\025\n\rallow_origins\030\007 \003(\t\022\022\n\nroot_user" +
-      "s\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007tls_key\030\n \001" +
-      "(\t\022\034\n\024playground_client_id\030\013 \001(\t\022 \n\030play" +
-      "ground_client_secret\030\014 \001(\t\022\033\n\023playground" +
-      "_redirect\030\r \001(\t\"\030\n\007Boolean\022\r\n\005value\030\001 \001(" +
-      "\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"}\n\006Exists\022\037\n\005" +
-      "gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpress" +
-      "ion\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030\003 \001(" +
-      "\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004Edi" +
-      "t\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\nattr" +
-      "ibutes\030\002 \001(\0132\027.google.protobuf.Struct\"S\n" +
-      "\007EFilter\022\033\n\006filter\030\001 \001(\0132\013.api.Filter\022+\n" +
-      "\nattributes\030\002 \001(\0132\027.google.protobuf.Stru" +
-      "ct\"\027\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017OutboundM" +
-      "essage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
-      "$\022-\n\004data\030\002 \001(\0132\027.google.protobuf.Struct" +
-      "B\006\342\337\037\002 \001\"\264\001\n\007Message\022!\n\007channel\030\001 \001(\tB\020\342" +
-      "\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.google.p" +
-      "rotobuf.StructB\006\342\337\037\002 \001\022 \n\006sender\030\003 \001(\0132\010" +
-      ".api.RefB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\0132\032.go" +
-      "ogle.protobuf.TimestampB\006\342\337\037\002 \001\"\244\001\n\006Sche" +
-      "ma\022\030\n\020connection_types\030\001 \003(\t\022\021\n\tdoc_type" +
-      "s\030\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020.api.Autho" +
-      "rizers\022\'\n\nvalidators\030\004 \001(\0132\023.api.TypeVal" +
-      "idators\022\035\n\007indexes\030\005 \001(\0132\014.api.Indexes\" " +
-      "\n\nExprFilter\022\022\n\nexpression\030\001 \001(\t\"\260\001\n\007Req" +
-      "uest\022 \n\006method\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\"" +
-      "\n\010identity\030\002 \001(\0132\010.api.DocB\006\342\337\037\002 \001\0225\n\tti" +
-      "mestamp\030\003 \001(\0132\032.google.protobuf.Timestam" +
-      "pB\006\342\337\037\002 \001\022(\n\007request\030\004 \001(\0132\027.google.prot" +
-      "obuf.Struct*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS" +
-      "\020\0012\261\017\n\017DatabaseService\022+\n\004Ping\022\026.google." +
+      "\001(\010\022\r\n\005index\030\007 \001(\t\"\207\001\n\tAggFilter\022#\n\006filt" +
+      "er\030\001 \001(\0132\013.api.FilterB\006\342\337\037\002 \001\022!\n\taggrega" +
+      "te\030\002 \001(\0162\016.api.Aggregate\0222\n\005field\030\003 \001(\tB" +
+      "#\342\337\037\037\n\035((^|, )(|^attributes.(.*)))+$\"\245\002\n" +
+      "\007TFilter\022\036\n\004root\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001" +
+      "\022\026\n\016doc_expression\030\002 \001(\t\022\035\n\025connection_e" +
+      "xpression\030\003 \001(\t\022\025\n\005limit\030\004 \001(\004B\006\342\337\037\002\020\000\022C" +
+      "\n\004sort\030\005 \001(\tB5\342\337\0371\n/((^|, )(|ref.gid|ref" +
+      ".gtype|^attributes.(.*)))+$\022\017\n\007reverse\030\006" +
+      " \001(\010\022!\n\talgorithm\030\007 \001(\0162\016.api.Algorithm\022" +
+      "\031\n\tmax_depth\030\010 \001(\004B\006\342\337\037\002\020\000\022\030\n\010max_hops\030\t" +
+      " \001(\004B\006\342\337\037\002\020\000\"\234\001\n\020IndexConstructor\022\036\n\004nam" +
+      "e\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\003 \001(\t" +
+      "B\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\004 \001(\tB\020" +
+      "\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\006 \001(\010\022\023\n\013connec" +
+      "tions\030\007 \001(\010\"R\n\nAuthorizer\022\036\n\004name\030\001 \001(\tB" +
+      "\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\002 \001(\tB\020\342" +
+      "\337\037\014\n\n^.{1,225}$\"3\n\013Authorizers\022$\n\013author" +
+      "izers\030\001 \003(\0132\017.api.Authorizer\"\231\001\n\rTypeVal" +
+      "idator\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037" +
+      "\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpre" +
+      "ssion\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\004 " +
+      "\001(\010\022\023\n\013connections\030\005 \001(\010\"8\n\016TypeValidato" +
+      "rs\022&\n\nvalidators\030\001 \003(\0132\022.api.TypeValidat" +
+      "or\"\221\001\n\005Index\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
+      "25}$\022\037\n\005gtype\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n" +
+      "\nexpression\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004d" +
+      "ocs\030\006 \001(\010\022\023\n\013connections\030\007 \001(\010\"&\n\007Indexe" +
+      "s\022\033\n\007indexes\030\001 \003(\0132\n.api.Index\"C\n\nChanFi" +
+      "lter\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022" +
+      "\022\n\nexpression\030\002 \001(\t\"G\n\005Graph\022\027\n\004docs\030\001 \001" +
+      "(\0132\t.api.Docs\022%\n\013connections\030\002 \001(\0132\020.api" +
+      ".Connections\"\242\002\n\005Flags\022\031\n\021open_id_discov" +
+      "ery\030\001 \001(\t\022\024\n\014storage_path\030\002 \001(\t\022\017\n\007metri" +
+      "cs\030\003 \001(\010\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\rallow" +
+      "_methods\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(\t\022\022\n" +
+      "\nroot_users\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007t" +
+      "ls_key\030\n \001(\t\022\034\n\024playground_client_id\030\013 \001" +
+      "(\t\022 \n\030playground_client_secret\030\014 \001(\t\022\033\n\023" +
+      "playground_redirect\030\r \001(\t\"\030\n\007Boolean\022\r\n\005" +
+      "value\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"}\n\006" +
+      "Exists\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022" +
+      "$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n" +
+      "\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005index\030\005 " +
+      "\001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002" +
+      " \001\022+\n\nattributes\030\002 \001(\0132\027.google.protobuf" +
+      ".Struct\"S\n\007EFilter\022\033\n\006filter\030\001 \001(\0132\013.api" +
+      ".Filter\022+\n\nattributes\030\002 \001(\0132\027.google.pro" +
+      "tobuf.Struct\"\027\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n" +
+      "\017OutboundMessage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n" +
+      "\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.google.proto" +
+      "buf.StructB\006\342\337\037\002 \001\"\264\001\n\007Message\022!\n\007channe" +
+      "l\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132" +
+      "\027.google.protobuf.StructB\006\342\337\037\002 \001\022 \n\006send" +
+      "er\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttimestamp\030" +
+      "\004 \001(\0132\032.google.protobuf.TimestampB\006\342\337\037\002 " +
+      "\001\"\244\001\n\006Schema\022\030\n\020connection_types\030\001 \003(\t\022\021" +
+      "\n\tdoc_types\030\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020" +
+      ".api.Authorizers\022\'\n\nvalidators\030\004 \001(\0132\023.a" +
+      "pi.TypeValidators\022\035\n\007indexes\030\005 \001(\0132\014.api" +
+      ".Indexes\" \n\nExprFilter\022\022\n\nexpression\030\001 \001" +
+      "(\t\"\260\001\n\007Request\022 \n\006method\030\001 \001(\tB\020\342\337\037\014\n\n^." +
+      "{1,225}$\022\"\n\010identity\030\002 \001(\0132\010.api.DocB\006\342\337" +
+      "\037\002 \001\0225\n\ttimestamp\030\003 \001(\0132\032.google.protobu" +
+      "f.TimestampB\006\342\337\037\002 \001\022(\n\007request\030\004 \001(\0132\027.g" +
+      "oogle.protobuf.Struct*\035\n\tAlgorithm\022\007\n\003BF" +
+      "S\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t\n\005COUNT\020\000\022\007\n\003" +
+      "SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD" +
+      "\020\0052\261\017\n\017DatabaseService\022+\n\004Ping\022\026.google." +
       "protobuf.Empty\032\t.api.Pong\"\000\0222\n\tGetSchema" +
       "\022\026.google.protobuf.Empty\032\013.api.Schema\"\000\022" +
       "<\n\016SetAuthorizers\022\020.api.Authorizers\032\026.go" +

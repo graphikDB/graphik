@@ -259,11 +259,29 @@ func gqlSchema(s *apipb.Schema) *model.Schema {
 	}
 }
 
+func protoAggregate(a model.Aggregate) apipb.Aggregate {
+	switch a {
+	case model.AggregateAvg:
+		return apipb.Aggregate_AVG
+	case model.AggregateMin:
+		return apipb.Aggregate_MIN
+	case model.AggregateMax:
+		return apipb.Aggregate_MAX
+	case model.AggregateProd:
+		return apipb.Aggregate_PROD
+	case model.AggregateSum:
+		return apipb.Aggregate_SUM
+	default:
+		return apipb.Aggregate_COUNT
+	}
+}
+
 func protoAggFilter(filter model.AggFilter) *apipb.AggFilter {
 	f := &apipb.AggFilter{
 		Filter:    protoFilter(*filter.Filter),
-		Aggregate: filter.Aggregate,
+		Aggregate: protoAggregate(filter.Aggregate),
 	}
+
 	if filter.Field != nil {
 		f.Field = *filter.Field
 	}

@@ -275,7 +275,6 @@ func (this *Filter) Validate() error {
 	return nil
 }
 
-var _regex_AggFilter_Aggregate = regexp.MustCompile(`((^|, )(sum|count|max|min|avg|prod))+$`)
 var _regex_AggFilter_Field = regexp.MustCompile(`((^|, )(|^attributes.(.*)))+$`)
 
 func (this *AggFilter) Validate() error {
@@ -286,9 +285,6 @@ func (this *AggFilter) Validate() error {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
 		}
-	}
-	if !_regex_AggFilter_Aggregate.MatchString(this.Aggregate) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Aggregate", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(sum|count|max|min|avg|prod))+$"`, this.Aggregate))
 	}
 	if !_regex_AggFilter_Field.MatchString(this.Field) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Field", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|^attributes.(.*)))+$"`, this.Field))

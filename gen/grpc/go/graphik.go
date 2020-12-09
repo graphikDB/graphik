@@ -325,8 +325,8 @@ func (d *Connections) Range(fn func(d *Connection) bool) {
 	}
 }
 
-func (d *Docs) Aggregate(aggregate string, field string) float64 {
-	if aggregate == "count" {
+func (d *Docs) Aggregate(aggregate Aggregate, field string) float64 {
+	if aggregate == Aggregate_COUNT {
 		return float64(len(d.GetDocs()))
 	}
 	var values []float64
@@ -349,22 +349,22 @@ func (d *Docs) Aggregate(aggregate string, field string) float64 {
 		return 0
 	}
 	switch aggregate {
-	case "sum":
+	case Aggregate_SUM:
 		return floats.Sum(values)
-	case "min":
+	case Aggregate_MIN:
 		return floats.Min(values)
-	case "max":
+	case Aggregate_MAX:
 		return floats.Max(values)
-	case "prod":
+	case Aggregate_PROD:
 		return floats.Prod(values)
-	case "avg":
+	case Aggregate_AVG:
 		return floats.Sum(values) / float64(len(values))
 	}
 	return 0
 }
 
-func (c *Connections) Aggregate(aggregate string, field string) float64 {
-	if aggregate == "count" {
+func (c *Connections) Aggregate(aggregate Aggregate, field string) float64 {
+	if aggregate == Aggregate_COUNT {
 		return float64(len(c.GetConnections()))
 	}
 	var values []float64
@@ -387,19 +387,19 @@ func (c *Connections) Aggregate(aggregate string, field string) float64 {
 		return 0
 	}
 	switch aggregate {
-	case "sum":
+	case Aggregate_SUM:
 		return floats.Sum(values)
-	case "min":
+	case Aggregate_MIN:
 		return floats.Min(values)
-	case "max":
+	case Aggregate_MAX:
 		return floats.Max(values)
-	case "count":
+	case Aggregate_COUNT:
 		return float64(floats.Count(func(f float64) bool {
 			return true
 		}, values))
-	case "prod":
+	case Aggregate_PROD:
 		return floats.Prod(values)
-	case "avg":
+	case Aggregate_AVG:
 		return floats.Sum(values) / float64(len(values))
 	}
 	return 0
