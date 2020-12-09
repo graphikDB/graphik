@@ -1,4 +1,4 @@
-version := "0.0.43"
+version := "0.1.0"
 
 .DEFAULT_GOAL := help
 
@@ -14,8 +14,11 @@ run:
 
 gen: proto gql
 
-patch: ## bump version by 1 patch
+patch: ## bump sem version by 1 patch
 	bumpversion patch --allow-dirty
+
+minor: ## bump sem version by 1 minor
+	bumpversion minor --allow-dirty
 
 tag: ## tag the repo (remember to commit changes beforehand)
 	git tag v$(version)

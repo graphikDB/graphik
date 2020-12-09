@@ -1,30 +1,23 @@
-# [Graphik](https://autom8ter.github.io/graphik/)
+# [Graphik](graphikdb.github.io/graphik/)
 
 ![dag](images/dag.png)
 
     git clone git@github.com:graphikDB/graphik.git
     
-    docker pull graphikdb/graphik:v0.0.43
+    docker pull graphikdb/graphik:v0.1.0
 
-Graphik is an identity-aware, permissioned, persistant [labelled property graph](https://en.wikipedia.org/wiki/Graph_database#Labeled-property_graph) database written in Go
+Graphik is an identity-aware, permissioned, persistant document & graph database written in Go
+
 
 ## Helpful Links
 
-- [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
-- [API Docs](https://autom8ter.github.io/graphik/)
-- [Protobuf API Spec](https://github.com/graphikDB/graphik/blob/master/graphik.proto)
+- [GraphQL Documentation](https://autom8ter.github.io/graphik/)
+- [Protobuf/gRPC API Spec](https://github.com/graphikDB/graphik/blob/master/graphik.proto)
 - [Graphql API Spec](https://github.com/graphikDB/graphik/blob/master/schema.graphql)
 - [Common Expression Language Code Lab](https://codelabs.developers.google.com/codelabs/cel-go/index.html#0)
 - [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
-
-## gRPC Client SDKs
-- [x] [Go](https://github.com/graphikDB/graphik-client-go)
-- [x] [Python](gen/grpc/python)
-- [x] [PHP](gen/grpc/php)
-- [x] [Javascript](gen/grpc/js)
-- [x] [Java](gen/grpc/java)
-- [x] [C#](gen/grpc/csharp)
-- [x] [Ruby](gen/grpc/ruby)
+- [OpenID Connect](https://openid.net/connect/)
+- [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
 
 ## Features
 - [x] 100% Go
@@ -33,15 +26,18 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
 - [x] Native Document & Graph Database
 - [x] [Index-free Adjacency](https://dzone.com/articles/the-secret-sauce-of-graph-databases)
 - [x] Native OAuth/OIDC Support & Single Sign On
-- [x] SSO protected GraphQl Playground
+- [x] Embedded SSO protected GraphQl Playground
 - [x] Persistant(bbolt LMDB)
 - [x] Channel Based PubSub
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
+- [x] [Common Expression Language](https://opensource.google/projects/cel) Type Validators
 - [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Triggers
 - [x] Loosely-Typed(mongo-esque)
 - [x] [Prometheus Metrics](https://prometheus.io/)
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
+- [x] Safe to Deploy Publicly(with authorizers)
+- [x] Read-Optimized
 
 ## Key Dependencies
 
@@ -70,7 +66,16 @@ Graphik is an identity-aware, permissioned, persistant [labelled property graph]
       --tls-key string                    path to tls key (env: GRAPHIK_TLS_KEY)
 ```
 
-## Graphql
+## gRPC Client SDKs
+- [x] [Go](https://github.com/graphikDB/graphik-client-go)
+- [x] [Python](gen/grpc/python)
+- [x] [PHP](gen/grpc/php)
+- [x] [Javascript](gen/grpc/js)
+- [x] [Java](gen/grpc/java)
+- [x] [C#](gen/grpc/csharp)
+- [x] [Ruby](gen/grpc/ruby)
+
+## Sample GraphQL Queries
 
 ### Node Traversal
 ```graphql
