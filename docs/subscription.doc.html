@@ -85,6 +85,11 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
         <li  title="Algorithm">
             <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Algorithm
@@ -280,9 +285,9 @@
                 EFilter
             </a>
         </li>
-        <li  title="Exists">
-            <a href="exists.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Exists
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
             </a>
         </li>
         <li  title="ExprFilter">
@@ -388,7 +393,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Subscription</span> {</li><li></li><li><span class="tab"><span class="comment line">#   subscribe subscribes to a pubsub channel</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>where</strong>: </span></span></li><li><span class="tab"><span class="meta">subscribe</span>(<span class="meta">where</span>: <a class="support type" href="chanfilter.doc.html">ChanFilter</a>!): <a class="support type" href="message.doc.html">Message</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Subscription</span> {</li><li></li><li><span class="tab"><span class="comment line">#   subscribe opens a stream of messages that pass a filter on a pubsub channel</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>where</strong>: </span></span></li><li><span class="tab"><span class="meta">subscribe</span>(<span class="meta">where</span>: <a class="support type" href="chanfilter.doc.html">ChanFilter</a>!): <a class="support type" href="message.doc.html">Message</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

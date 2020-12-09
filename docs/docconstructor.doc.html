@@ -85,6 +85,11 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
         <li  title="Algorithm">
             <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Algorithm
@@ -280,9 +285,9 @@
                 EFilter
             </a>
         </li>
-        <li  title="Exists">
-            <a href="exists.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Exists
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
             </a>
         </li>
         <li  title="ExprFilter">
@@ -389,7 +394,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">DocConstructor</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">ref</span>: <a class="support type" href="refconstructor.doc.html">RefConstructor</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   attributes are k/v pairs</span></span></li><li><span class="tab"><span class="meta">attributes</span>: <a class="support type" href="map.doc.html">Map</a></span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">DocConstructor</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   ref is the gtype/gid of the doc to create. If no gid is provided, a k-sortable </span></span></li><li><span class="tab"><span class="comment line">#   uuid will be assigned</span></span></li><li><span class="tab"><span class="meta">ref</span>: <a class="support type" href="refconstructor.doc.html">RefConstructor</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   attributes are k/v pairs</span></span></li><li><span class="tab"><span class="meta">attributes</span>: <a class="support type" href="map.doc.html">Map</a></span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -400,7 +405,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="docconstructors.doc.html" title="DocConstructors - ">DocConstructors<em></em></a><li><li><a href="mutation.doc.html" title="Mutation - ">Mutation<em></em></a><li></ul>
+        <ul class="require-by"><li><a href="docconstructors.doc.html" title="DocConstructors - DocConstructors is an array of DocConstructor">DocConstructors<em>DocConstructors is an array of DocConstructor</em></a><li><li><a href="mutation.doc.html" title="Mutation - ">Mutation<em></em></a><li></ul>
     </div>
 </section>
 <footer>

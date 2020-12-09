@@ -167,7 +167,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.Number" do
     optional :value, :double, 1
   end
-  add_message "api.Exists" do
+  add_message "api.ExistsFilter" do
     optional :gtype, :string, 1
     optional :expression, :string, 2
     optional :seek, :string, 3
@@ -256,7 +256,7 @@ module Api
   Flags = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Flags").msgclass
   Boolean = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Boolean").msgclass
   Number = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Number").msgclass
-  Exists = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Exists").msgclass
+  ExistsFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ExistsFilter").msgclass
   Edit = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Edit").msgclass
   EFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.EFilter").msgclass
   Pong = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Pong").msgclass

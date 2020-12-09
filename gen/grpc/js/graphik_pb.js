@@ -34,7 +34,7 @@ goog.exportSymbol('proto.api.DocConstructors', null, global);
 goog.exportSymbol('proto.api.Docs', null, global);
 goog.exportSymbol('proto.api.EFilter', null, global);
 goog.exportSymbol('proto.api.Edit', null, global);
-goog.exportSymbol('proto.api.Exists', null, global);
+goog.exportSymbol('proto.api.ExistsFilter', null, global);
 goog.exportSymbol('proto.api.ExprFilter', null, global);
 goog.exportSymbol('proto.api.Filter', null, global);
 goog.exportSymbol('proto.api.Flags', null, global);
@@ -6899,12 +6899,12 @@ proto.api.Number.prototype.setValue = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.Exists = function(opt_data) {
+proto.api.ExistsFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.Exists, jspb.Message);
+goog.inherits(proto.api.ExistsFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.Exists.displayName = 'proto.api.Exists';
+  proto.api.ExistsFilter.displayName = 'proto.api.ExistsFilter';
 }
 
 
@@ -6919,8 +6919,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.Exists.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.Exists.toObject(opt_includeInstance, this);
+proto.api.ExistsFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.ExistsFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -6929,11 +6929,11 @@ proto.api.Exists.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.Exists} msg The msg instance to transform.
+ * @param {!proto.api.ExistsFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.Exists.toObject = function(includeInstance, msg) {
+proto.api.ExistsFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     gtype: jspb.Message.getFieldWithDefault(msg, 1, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -6953,23 +6953,23 @@ proto.api.Exists.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.Exists}
+ * @return {!proto.api.ExistsFilter}
  */
-proto.api.Exists.deserializeBinary = function(bytes) {
+proto.api.ExistsFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.Exists;
-  return proto.api.Exists.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.ExistsFilter;
+  return proto.api.ExistsFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.Exists} msg The message object to deserialize into.
+ * @param {!proto.api.ExistsFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.Exists}
+ * @return {!proto.api.ExistsFilter}
  */
-proto.api.Exists.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.ExistsFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7009,9 +7009,9 @@ proto.api.Exists.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.Exists.prototype.serializeBinary = function() {
+proto.api.ExistsFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.Exists.serializeBinaryToWriter(this, writer);
+  proto.api.ExistsFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7019,11 +7019,11 @@ proto.api.Exists.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.Exists} message
+ * @param {!proto.api.ExistsFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.Exists.serializeBinaryToWriter = function(message, writer) {
+proto.api.ExistsFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getGtype();
   if (f.length > 0) {
@@ -7067,13 +7067,13 @@ proto.api.Exists.serializeBinaryToWriter = function(message, writer) {
  * optional string gtype = 1;
  * @return {string}
  */
-proto.api.Exists.prototype.getGtype = function() {
+proto.api.ExistsFilter.prototype.getGtype = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.api.Exists.prototype.setGtype = function(value) {
+proto.api.ExistsFilter.prototype.setGtype = function(value) {
   jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -7082,13 +7082,13 @@ proto.api.Exists.prototype.setGtype = function(value) {
  * optional string expression = 2;
  * @return {string}
  */
-proto.api.Exists.prototype.getExpression = function() {
+proto.api.ExistsFilter.prototype.getExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.api.Exists.prototype.setExpression = function(value) {
+proto.api.ExistsFilter.prototype.setExpression = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -7097,13 +7097,13 @@ proto.api.Exists.prototype.setExpression = function(value) {
  * optional string seek = 3;
  * @return {string}
  */
-proto.api.Exists.prototype.getSeek = function() {
+proto.api.ExistsFilter.prototype.getSeek = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.api.Exists.prototype.setSeek = function(value) {
+proto.api.ExistsFilter.prototype.setSeek = function(value) {
   jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -7114,13 +7114,13 @@ proto.api.Exists.prototype.setSeek = function(value) {
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.api.Exists.prototype.getReverse = function() {
+proto.api.ExistsFilter.prototype.getReverse = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 4, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.Exists.prototype.setReverse = function(value) {
+proto.api.ExistsFilter.prototype.setReverse = function(value) {
   jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
@@ -7129,13 +7129,13 @@ proto.api.Exists.prototype.setReverse = function(value) {
  * optional string index = 5;
  * @return {string}
  */
-proto.api.Exists.prototype.getIndex = function() {
+proto.api.ExistsFilter.prototype.getIndex = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /** @param {string} value */
-proto.api.Exists.prototype.setIndex = function(value) {
+proto.api.ExistsFilter.prototype.setIndex = function(value) {
   jspb.Message.setProto3StringField(this, 5, value);
 };
 

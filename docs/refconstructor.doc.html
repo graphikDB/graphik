@@ -85,6 +85,11 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
         <li  title="Algorithm">
             <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Algorithm
@@ -280,9 +285,9 @@
                 EFilter
             </a>
         </li>
-        <li  title="Exists">
-            <a href="exists.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Exists
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
             </a>
         </li>
         <li  title="ExprFilter">
@@ -389,7 +394,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">RefConstructor</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">gid</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">RefConstructor</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   gtype is the type of the doc/connection ex: pet</span></span></li><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   gid is the unique id of the doc/connection within the context of it's type. If </span></span></li><li><span class="tab"><span class="comment line">#   none is provided, a k-sortable uuid will be assigned</span></span></li><li><span class="tab"><span class="meta">gid</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

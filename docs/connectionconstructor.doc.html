@@ -85,6 +85,11 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
         <li  title="Algorithm">
             <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Algorithm
@@ -280,9 +285,9 @@
                 EFilter
             </a>
         </li>
-        <li  title="Exists">
-            <a href="exists.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Exists
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
             </a>
         </li>
         <li  title="ExprFilter">
@@ -389,7 +394,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">ConnectionConstructor</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">ref</span>: <a class="support type" href="refconstructor.doc.html">RefConstructor</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   directed is false if the connection is bi-directional</span></span></li><li><span class="tab"><span class="meta">directed</span>: <a class="support type" href="boolean.doc.html">Boolean</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">attributes</span>: <a class="support type" href="map.doc.html">Map</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   from is the doc ref that is the source of the connection</span></span></li><li><span class="tab"><span class="meta">from</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   to is the doc ref that is the destination of the connection</span></span></li><li><span class="tab"><span class="meta">to</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">ConnectionConstructor</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   ref is the gtype/gid of the connection to create. If no gid is provided, a </span></span></li><li><span class="tab"><span class="comment line">#   k-sortable uuid will be assigned</span></span></li><li><span class="tab"><span class="meta">ref</span>: <a class="support type" href="refconstructor.doc.html">RefConstructor</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   directed is false if the connection is bi-directional</span></span></li><li><span class="tab"><span class="meta">directed</span>: <a class="support type" href="boolean.doc.html">Boolean</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   attributes are k/v paris associated with the Connection to create</span></span></li><li><span class="tab"><span class="meta">attributes</span>: <a class="support type" href="map.doc.html">Map</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   from is the doc ref that is the source of the connection</span></span></li><li><span class="tab"><span class="meta">from</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   to is the doc ref that is the destination of the connection</span></span></li><li><span class="tab"><span class="meta">to</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -400,7 +405,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="connectionconstructors.doc.html" title="ConnectionConstructors - ">ConnectionConstructors<em></em></a><li><li><a href="mutation.doc.html" title="Mutation - ">Mutation<em></em></a><li></ul>
+        <ul class="require-by"><li><a href="connectionconstructors.doc.html" title="ConnectionConstructors - ConnectionConstructors is an array of ConnectionConstructor">ConnectionConstructors<em>ConnectionConstructors is an array of ConnectionConstructor</em></a><li><li><a href="mutation.doc.html" title="Mutation - ">Mutation<em></em></a><li></ul>
     </div>
 </section>
 <footer>

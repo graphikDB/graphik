@@ -1129,7 +1129,7 @@ func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SConnectFilt
 	return g.CreateConnections(ctx, &apipb.ConnectionConstructors{Connections: connections})
 }
 
-func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.Exists) (*apipb.Boolean, error) {
+func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.ExistsFilter) (*apipb.Boolean, error) {
 	program, err := g.vm.Doc().Program(has.GetExpression())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -1158,7 +1158,7 @@ func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.Exists) (*apipb.Boolea
 	return &apipb.Boolean{Value: res}, nil
 }
 
-func (g *Graph) ExistsConnection(ctx context.Context, has *apipb.Exists) (*apipb.Boolean, error) {
+func (g *Graph) ExistsConnection(ctx context.Context, has *apipb.ExistsFilter) (*apipb.Boolean, error) {
 	program, err := g.vm.Connection().Program(has.GetExpression())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())

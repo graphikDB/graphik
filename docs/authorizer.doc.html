@@ -85,6 +85,11 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
         <li  title="Algorithm">
             <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Algorithm
@@ -280,9 +285,9 @@
                 EFilter
             </a>
         </li>
-        <li  title="Exists">
-            <a href="exists.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Exists
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
             </a>
         </li>
         <li  title="ExprFilter">
@@ -377,7 +382,8 @@
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
         <h1 class="slds-text-heading--large">Authorizer</h1>
-        <div class="slds-text-body--regular"></div>
+        <div class="slds-text-body--regular"><p>Authorizer is a graph primitive used for authorizing inbound requests</p>
+</div>
     </div>
 </section>
 <section>
@@ -388,7 +394,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Authorizer</span> {</li><li></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Authorizer</span> {</li><li></li><li><span class="tab"><span class="comment line">#   name is the unique name of the authorizer in the graph</span></span></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   expression is a boolean CEL expression used to evaluate the inbound request</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -399,7 +405,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="authorizers.doc.html" title="Authorizers - ">Authorizers<em></em></a><li></ul>
+        <ul class="require-by"><li><a href="authorizers.doc.html" title="Authorizers - Authorizers is an array of Authorizer">Authorizers<em>Authorizers is an array of Authorizer</em></a><li></ul>
     </div>
 </section>
 <footer>

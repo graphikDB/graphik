@@ -1,4 +1,4 @@
-version := "0.0.40"
+version := "0.0.41"
 
 .DEFAULT_GOAL := help
 
@@ -38,8 +38,6 @@ proto: ## regenerate gRPC code
 .PHONY: gql
 gql: ## regenerate graphql code
 	@gqlgen generate
-
-gql-docs: ## generate graqhl documentation
 	@graphdoc -s ./schema.graphql -o ./docs --force
 
 release: ## build release binaries to ./bin

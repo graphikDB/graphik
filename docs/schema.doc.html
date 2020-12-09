@@ -85,6 +85,11 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
         <li  title="Algorithm">
             <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Algorithm
@@ -280,9 +285,9 @@
                 EFilter
             </a>
         </li>
-        <li  title="Exists">
-            <a href="exists.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Exists
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
             </a>
         </li>
         <li  title="ExprFilter">
@@ -377,7 +382,7 @@
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
         <h1 class="slds-text-heading--large">Schema</h1>
-        <div class="slds-text-body--regular"><p>Schema returns registered connection &amp; doc types</p>
+        <div class="slds-text-body--regular"><p>Schema returns registered connection &amp; doc types &amp; other graph primitives</p>
 </div>
     </div>
 </section>
@@ -389,7 +394,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">Schema</span> {</li><li></li><li><span class="tab"><span class="comment line">#   connection_types are the types of connections in the graph</span></span></li><li><span class="tab"><span class="meta">connection_types</span>: [<a class="support type" href="string.doc.html">String</a>!] </span></li><li></li><li><span class="tab"><span class="comment line">#   doc_types are the types of docs in the graph</span></span></li><li><span class="tab"><span class="meta">doc_types</span>: [<a class="support type" href="string.doc.html">String</a>!] </span></li><li></li><li><span class="tab"><span class="meta">authorizers</span>: <a class="support type" href="authorizers.doc.html">Authorizers</a> </span></li><li></li><li><span class="tab"><span class="meta">validators</span>: <a class="support type" href="typevalidators.doc.html">TypeValidators</a> </span></li><li></li><li><span class="tab"><span class="meta">indexes</span>: <a class="support type" href="indexes.doc.html">Indexes</a> </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">Schema</span> {</li><li></li><li><span class="tab"><span class="comment line">#   connection_types are the types of connections in the graph</span></span></li><li><span class="tab"><span class="meta">connection_types</span>: [<a class="support type" href="string.doc.html">String</a>!] </span></li><li></li><li><span class="tab"><span class="comment line">#   doc_types are the types of docs in the graph</span></span></li><li><span class="tab"><span class="meta">doc_types</span>: [<a class="support type" href="string.doc.html">String</a>!] </span></li><li></li><li><span class="tab"><span class="comment line">#   authorizers are all of registered authorizers in the graph</span></span></li><li><span class="tab"><span class="meta">authorizers</span>: <a class="support type" href="authorizers.doc.html">Authorizers</a> </span></li><li></li><li><span class="tab"><span class="comment line">#   validators are all of registered validators in the graph</span></span></li><li><span class="tab"><span class="meta">validators</span>: <a class="support type" href="typevalidators.doc.html">TypeValidators</a> </span></li><li></li><li><span class="tab"><span class="comment line">#   indexes are all of the registered indexes in the graph</span></span></li><li><span class="tab"><span class="meta">indexes</span>: <a class="support type" href="indexes.doc.html">Indexes</a> </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

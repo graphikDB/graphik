@@ -361,7 +361,7 @@ func (r *queryResolver) GetConnection(ctx context.Context, where model.RefInput)
 	return gqlConnection(res), nil
 }
 
-func (r *queryResolver) ExistsDoc(ctx context.Context, where model.Exists) (bool, error) {
+func (r *queryResolver) ExistsDoc(ctx context.Context, where model.ExistsFilter) (bool, error) {
 	res, err := r.client.ExistsDoc(ctx, protoExists(where))
 	if err != nil {
 		return false, &gqlerror.Error{
@@ -375,7 +375,7 @@ func (r *queryResolver) ExistsDoc(ctx context.Context, where model.Exists) (bool
 	return res.GetValue(), nil
 }
 
-func (r *queryResolver) ExistsConnection(ctx context.Context, where model.Exists) (bool, error) {
+func (r *queryResolver) ExistsConnection(ctx context.Context, where model.ExistsFilter) (bool, error) {
 	res, err := r.client.ExistsConnection(ctx, protoExists(where))
 	if err != nil {
 		return false, &gqlerror.Error{

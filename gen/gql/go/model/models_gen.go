@@ -70,7 +70,7 @@ type ConnectionConstructors struct {
 
 type Connections struct {
 	Connections []*Connection `json:"connections"`
-	SeekNext    string        `json:"seek_next"`
+	SeekNext    *string       `json:"seek_next"`
 }
 
 type Doc struct {
@@ -88,8 +88,8 @@ type DocConstructors struct {
 }
 
 type Docs struct {
-	Docs     []*Doc `json:"docs"`
-	SeekNext string `json:"seek_next"`
+	Docs     []*Doc  `json:"docs"`
+	SeekNext *string `json:"seek_next"`
 }
 
 type EFilter struct {
@@ -102,12 +102,12 @@ type Edit struct {
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
-type Exists struct {
+type ExistsFilter struct {
 	Gtype      string  `json:"gtype"`
 	Expression string  `json:"expression"`
 	Seek       *string `json:"seek"`
-	Index      *string `json:"index"`
 	Reverse    *bool   `json:"reverse"`
+	Index      *string `json:"index"`
 }
 
 type ExprFilter struct {
@@ -128,16 +128,16 @@ type Index struct {
 	Name        string `json:"name"`
 	Gtype       string `json:"gtype"`
 	Expression  string `json:"expression"`
-	Docs        *bool  `json:"docs"`
-	Connections *bool  `json:"connections"`
+	Docs        bool   `json:"docs"`
+	Connections bool   `json:"connections"`
 }
 
 type IndexInput struct {
 	Name        string `json:"name"`
 	Gtype       string `json:"gtype"`
 	Expression  string `json:"expression"`
-	Docs        *bool  `json:"docs"`
-	Connections *bool  `json:"connections"`
+	Docs        bool   `json:"docs"`
+	Connections bool   `json:"connections"`
 }
 
 type Indexes struct {
@@ -226,16 +226,16 @@ type TypeValidator struct {
 	Name        string `json:"name"`
 	Gtype       string `json:"gtype"`
 	Expression  string `json:"expression"`
-	Docs        *bool  `json:"docs"`
-	Connections *bool  `json:"connections"`
+	Docs        bool   `json:"docs"`
+	Connections bool   `json:"connections"`
 }
 
 type TypeValidatorInput struct {
 	Name        string `json:"name"`
 	Gtype       string `json:"gtype"`
 	Expression  string `json:"expression"`
-	Docs        *bool  `json:"docs"`
-	Connections *bool  `json:"connections"`
+	Docs        bool   `json:"docs"`
+	Connections bool   `json:"connections"`
 }
 
 type TypeValidators struct {

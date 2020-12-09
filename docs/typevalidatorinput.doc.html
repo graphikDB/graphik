@@ -85,6 +85,11 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
         <li  title="Algorithm">
             <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Algorithm
@@ -280,9 +285,9 @@
                 EFilter
             </a>
         </li>
-        <li  title="Exists">
-            <a href="exists.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Exists
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
             </a>
         </li>
         <li  title="ExprFilter">
@@ -377,7 +382,8 @@
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
         <h1 class="slds-text-heading--large">TypeValidatorInput</h1>
-        <div class="slds-text-body--regular"></div>
+        <div class="slds-text-body--regular"><p>TypeValidatorInput is used to construct a new type validator</p>
+</div>
     </div>
 </section>
 <section>
@@ -388,7 +394,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">TypeValidatorInput</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   if docs is true, this validator will be applied to documents. Either docs or </span></span></li><li><span class="tab"><span class="comment line">#   connections may be true, but not both.</span></span></li><li><span class="tab"><span class="meta">docs</span>: <a class="support type" href="boolean.doc.html">Boolean</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   if docs is true, this validator will be applied to connections. Either docs or </span></span></li><li><span class="tab"><span class="comment line">#   connections may be true, but not both.</span></span></li><li><span class="tab"><span class="meta">connections</span>: <a class="support type" href="boolean.doc.html">Boolean</a></span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">TypeValidatorInput</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   name is the unique name of the type validator</span></span></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   gtype is the type of object the validator will be applied to (ex: user)</span></span></li><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   expression is a boolean CEL expression used to evaluate the doc/connection</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   if docs is true, this validator will be applied to documents.</span></span></li><li><span class="tab"><span class="meta">docs</span>: <a class="support type" href="boolean.doc.html">Boolean</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   if connections is true, this validator will be applied to connections.</span></span></li><li><span class="tab"><span class="meta">connections</span>: <a class="support type" href="boolean.doc.html">Boolean</a>!</span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -399,7 +405,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="typevalidatorsinput.doc.html" title="TypeValidatorsInput - ">TypeValidatorsInput<em></em></a><li></ul>
+        <ul class="require-by"><li><a href="typevalidatorsinput.doc.html" title="TypeValidatorsInput - TypeValidatorsInput is an array of TypeValidatorInput">TypeValidatorsInput<em>TypeValidatorsInput is an array of TypeValidatorInput</em></a><li></ul>
     </div>
 </section>
 <footer>

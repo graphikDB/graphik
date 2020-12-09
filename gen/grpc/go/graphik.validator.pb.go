@@ -443,14 +443,14 @@ func (this *Number) Validate() error {
 	return nil
 }
 
-var _regex_Exists_Gtype = regexp.MustCompile(`^.{1,225}$`)
-var _regex_Exists_Expression = regexp.MustCompile(`^.{1,225}$`)
+var _regex_ExistsFilter_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_ExistsFilter_Expression = regexp.MustCompile(`^.{1,225}$`)
 
-func (this *Exists) Validate() error {
-	if !_regex_Exists_Gtype.MatchString(this.Gtype) {
+func (this *ExistsFilter) Validate() error {
+	if !_regex_ExistsFilter_Gtype.MatchString(this.Gtype) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
 	}
-	if !_regex_Exists_Expression.MatchString(this.Expression) {
+	if !_regex_ExistsFilter_Expression.MatchString(this.Expression) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
 	}
 	return nil

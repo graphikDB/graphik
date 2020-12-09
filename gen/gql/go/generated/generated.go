@@ -127,8 +127,8 @@ type ComplexityRoot struct {
 		AggregateDocs        func(childComplexity int, where model.AggFilter) int
 		ConnectionsFrom      func(childComplexity int, where model.CFilter) int
 		ConnectionsTo        func(childComplexity int, where model.CFilter) int
-		ExistsConnection     func(childComplexity int, where model.Exists) int
-		ExistsDoc            func(childComplexity int, where model.Exists) int
+		ExistsConnection     func(childComplexity int, where model.ExistsFilter) int
+		ExistsDoc            func(childComplexity int, where model.ExistsFilter) int
 		GetConnection        func(childComplexity int, where model.RefInput) int
 		GetDoc               func(childComplexity int, where model.RefInput) int
 		GetSchema            func(childComplexity int, where *emptypb.Empty) int
@@ -213,8 +213,8 @@ type QueryResolver interface {
 	SearchDocs(ctx context.Context, where model.Filter) (*model.Docs, error)
 	Traverse(ctx context.Context, where model.TFilter) (*model.Traversals, error)
 	GetConnection(ctx context.Context, where model.RefInput) (*model.Connection, error)
-	ExistsDoc(ctx context.Context, where model.Exists) (bool, error)
-	ExistsConnection(ctx context.Context, where model.Exists) (bool, error)
+	ExistsDoc(ctx context.Context, where model.ExistsFilter) (bool, error)
+	ExistsConnection(ctx context.Context, where model.ExistsFilter) (bool, error)
 	HasDoc(ctx context.Context, where model.RefInput) (bool, error)
 	HasConnection(ctx context.Context, where model.RefInput) (bool, error)
 	SearchConnections(ctx context.Context, where model.Filter) (*model.Connections, error)
@@ -668,7 +668,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ExistsConnection(childComplexity, args["where"].(model.Exists)), true
+		return e.complexity.Query.ExistsConnection(childComplexity, args["where"].(model.ExistsFilter)), true
 
 	case "Query.existsDoc":
 		if e.complexity.Query.ExistsDoc == nil {
@@ -680,7 +680,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ExistsDoc(childComplexity, args["where"].(model.Exists)), true
+		return e.complexity.Query.ExistsDoc(childComplexity, args["where"].(model.ExistsFilter)), true
 
 	case "Query.getConnection":
 		if e.complexity.Query.GetConnection == nil {
@@ -1040,24 +1040,36 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "schema.graphql", Input: `scalar Time
+	{Name: "schema.graphql", Input: `# time is an rfc 3339 timestamp
+scalar Time
+# Map is a k/v map where the key is a string and the value is any value
 scalar Map
+# Empty is a container to represent no values
 scalar Empty
 
+# Algorithm is a Graph Traversal algorithm
 enum Algorithm {
   # BFS is short for the breadth-first search algorithm
   BFS
   # DFS is short for the depth-first search algorithm
   DFS
 }
+
 enum Aggregate {
+  # Count counts the number of elements in the group defined
   COUNT
+  # SUM calculates the sum of the given attribute/expression in the group defined
   SUM
+  # AVG calculates the average value of the given attribute/expression in the group defined
   AVG
+  # MAX finds the maximum in the group defined
   MAX
+  # MIN finds the minimum in the group defined
   MIN
+  # PROD finds the product of all of the values in the group defined
   PROD
 }
+
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -1083,9 +1095,11 @@ type Doc {
 type Docs {
   # docs is an array of docs
   docs: [Doc!]
-  seek_next: String!
+  # seek_next is the next value in the sequence (used for pagination)
+  seek_next: String
 }
 
+# Traversal is a document found during a traversal & its relative path to the root node that searched for it
 type Traversal {
   doc: Doc!
   traversal_path: [Ref!]
@@ -1093,24 +1107,32 @@ type Traversal {
   hops: Int!
 }
 
+# Traversals is an array of Traversal that is returned from Graph traversal algorithms
 type Traversals {
+  # traversals is an array of Traversal
   traversals: [Traversal!]
 }
 
+# Refs is an array of Ref
 type Refs {
   refs: [Ref!]
 }
 
+# TypeValidator a graph primitive used to validate custom doc/connection constraints
 type TypeValidator {
+  # name is the unique name of the type validator
   name: String!
+  # gtype is the type of object the validator will be applied to (ex: user)
   gtype: String!
+  # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
-  docs: Boolean
-  # if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
-  connections: Boolean
+  # if docs is true, this validator will be applied to documents.
+  docs: Boolean!
+  # if docs is true, this validator will be applied to connections.
+  connections: Boolean!
 }
 
+# TypeValidators is an array of TypeValidator
 type TypeValidators {
   validators: [TypeValidator!]
 }
@@ -1131,39 +1153,55 @@ type Connection {
 
 # Connections is an array of connections
 type Connections {
+  # connections is an array of connections
   connections: [Connection!]
-  seek_next: String!
+  # seek_next is the next value in the sequence (used for pagination)
+  seek_next: String
 }
 
+# Index is a graph primitive used for fast lookups of docs/connections that pass a boolean CEL expression
 type Index {
+  # name is the unique name of the index in the graph
   name: String!
+  # gtype is the type of object the validator will be applied to (ex: user)
   gtype: String!
+  # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  docs: Boolean
-  connections: Boolean
+  # if docs is true, this validator will be applied to documents.
+  docs: Boolean!
+  # if docs is true, this validator will be applied to connections.
+  connections: Boolean!
 }
 
+# Indexes is an array of Index
 type Indexes {
   indexes: [Index!]
 }
 
+# Authorizer is a graph primitive used for authorizing inbound requests
 type Authorizer {
+  # name is the unique name of the authorizer in the graph
   name: String!
+  # expression is a boolean CEL expression used to evaluate the inbound request
   expression: String!
 }
 
+# Authorizers is an array of Authorizer
 type Authorizers {
   authorizers: [Authorizer!]
 }
 
-# Schema returns registered connection & doc types
+# Schema returns registered connection & doc types & other graph primitives
 type Schema {
   # connection_types are the types of connections in the graph
   connection_types: [String!]
   # doc_types are the types of docs in the graph
   doc_types: [String!]
+  # authorizers are all of registered authorizers in the graph
   authorizers: Authorizers
+  # validators are all of registered validators in the graph
   validators: TypeValidators
+  # indexes are all of the registered indexes in the graph
   indexes: Indexes
 }
 
@@ -1181,27 +1219,32 @@ type Message {
 
 # RefConstructor is used to create a Ref
 input RefConstructor {
+  # gtype is the type of the doc/connection ex: pet
   gtype: String!
+  # gid is the unique id of the doc/connection within the context of it's type. If none is provided, a k-sortable uuid will be assigned
   gid: String
 }
 
 # DocConstructor is used to create a Doc
 input DocConstructor {
+  # ref is the gtype/gid of the doc to create. If no gid is provided, a k-sortable uuid will be assigned
   ref: RefConstructor!
   # attributes are k/v pairs
   attributes: Map
 }
 
+# DocConstructors is an array of DocConstructor
 input DocConstructors {
   docs: [DocConstructor!]!
 }
 
 # ConnectionConstructor is used to create an Connection
 input ConnectionConstructor {
+  # ref is the gtype/gid of the connection to create. If no gid is provided, a k-sortable uuid will be assigned
   ref: RefConstructor!
   # directed is false if the connection is bi-directional
   directed: Boolean!
-
+  # attributes are k/v paris associated with the Connection to create
   attributes: Map
   # from is the doc ref that is the source of the connection
   from: RefInput!
@@ -1209,6 +1252,7 @@ input ConnectionConstructor {
   to: RefInput!
 }
 
+# ConnectionConstructors is an array of ConnectionConstructor
 input ConnectionConstructors {
   connections: [ConnectionConstructor!]!
 }
@@ -1239,25 +1283,37 @@ input Filter {
   index: String
 }
 
+# SConnectFilter is used for searching for documents and adding connections based on whether they pass a Filter
 input SConnectFilter {
+  # filter is the filter to apply against the graph.
   filter: Filter!
+  # gtype is the type of the connection to create
   gtype: String!
+  # attributes are k/v pairs to associate with the new connection
   attributes: Map
+  # directed indicates whether the connection is uni-directional(instagram) or bi-directional(facebook)
   directed: Boolean!
+  # from indicates the root document of the connection to create
   from: RefInput!
 }
 
+# AggFilter is a filter used for aggragation queries
 input AggFilter {
+  # filter is the filter to apply against the graph.
   filter: Filter!
+  # aggregate is the aggregation function to apply against the graph
   aggregate: Aggregate!
+  # field is the field to aggregate(ex: attributes.age). The field must be a float/number value
   field: String
 }
 
+# AggFilter is a filter used for graph traversals
 input TFilter {
   # gtype is the doc/connection type to be filtered
   root: RefInput!
-  # expression is a CEL expression used to filter connections/nodes
+  # doc_expression is a boolean CEL expression used to determine which docs to traverse
   doc_expression: String
+  # connection_expression is a boolean CEL expression used to determine which connections to traverse
   connection_expression: String
   # limit is the maximum number of items to return
   limit: Int!
@@ -1323,77 +1379,109 @@ input OutboundMessage {
   data: Map!
 }
 
+# ExprFilter is a generic filter that uses a boolean CEL expression
 input ExprFilter {
   # expression is a CEL expression used to filter messages/docs/connections
   expression: String
 }
 
+# IndexInput is used to construct Indexes
 input IndexInput {
+  # name is the unique name of the index in the graph
   name: String!
+  # gtype is the type of object the validator will be applied to (ex: user)
   gtype: String!
+  # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  docs: Boolean
-  connections: Boolean
+  # if docs is true, this validator will be applied to documents.
+  docs: Boolean!
+  # if connections is true, this validator will be applied to connections.
+  connections: Boolean!
 }
 
+# IndexesInput is an array IndexInput
 input IndexesInput {
   indexes: [IndexInput!]
 }
 
+# AuthorizerInput is used to create a new Authorizer
 input AuthorizerInput {
+  # name is the unique name of the authorizer in the graph
   name: String!
+  # expression is a boolean CEL expression used to evaluate the inbound request
   expression: String!
 }
 
+# AuthorizersInput is an array of authorizers
 input AuthorizersInput {
   authorizers: [AuthorizerInput!]
 }
 
+# TypeValidatorInput is used to construct a new type validator
 input TypeValidatorInput {
+  # name is the unique name of the type validator
   name: String!
+  # gtype is the type of object the validator will be applied to (ex: user)
   gtype: String!
+  # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
-  docs: Boolean
-  # if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
-  connections: Boolean
+  # if docs is true, this validator will be applied to documents.
+  docs: Boolean!
+  # if connections is true, this validator will be applied to connections.
+  connections: Boolean!
 }
 
+# TypeValidatorsInput is an array of TypeValidatorInput
 input TypeValidatorsInput {
   validators: [TypeValidatorInput!]
 }
 
-input Exists {
+# Exists is a filter used to determine whether a doc/connection exists in the graph
+input ExistsFilter {
+  # gtype is the doc/connection type to be filtered
   gtype: String!
+  # expression is a CEL expression used to filter connections/nodes
   expression: String!
+  # seek to a specific key for pagination
   seek: String
-  index: String
+  # reverse the results
   reverse: Boolean
+  # search in a specific index
+  index: String
 }
 
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
+  # createDocs creates 1-many documents in the graph
   createDocs(input: DocConstructors!): Docs!
   # editDoc edites a single doc in the graph
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
   editDocs(input: EFilter!): Docs!
+  # delDoc deletes a doc by reference
   delDoc(input: RefInput!): Empty
+  # delDocs deletes 0-many docs that pass a Filter
   delDocs(input: Filter!): Empty
   # createConnection creates a single connection in the graph
   createConnection(input: ConnectionConstructor!): Connection!
+  # createConnections creates 1-many connections in the graph
   createConnections(input: ConnectionConstructors!): Connections!
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
   editConnections(input: EFilter!): Connections!
+  # delConnection deletes a connection by reference
   delConnection(input: RefInput!): Empty
+  # delConnections deletes 0-many connections that pass a Filter
   delConnections(input: Filter!): Empty
   # publish publishes a mesage to a pubsub channel
   publish(input: OutboundMessage!): Empty
+  # setIndexes sets all of the indexes in the graph
   setIndexes(input: IndexesInput!): Empty
+  # setAuthorizers sets all of the authorizers in the graph
   setAuthorizers(input: AuthorizersInput!): Empty
+  # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
 }
 
@@ -1412,9 +1500,13 @@ type Query {
   traverse(where: TFilter!): Traversals!
   # getConnection gets a connection at the given ref
   getConnection(where: RefInput!): Connection!
-  existsDoc(where: Exists!): Boolean!
-  existsConnection(where: Exists!): Boolean!
+  # existsDoc checks if a document exists in the graph
+  existsDoc(where: ExistsFilter!): Boolean!
+  # existsConnection checks if a connection exists in the graph
+  existsConnection(where: ExistsFilter!): Boolean!
+  # hasDoc checks if a document exists in the graph by reference
   hasDoc(where: RefInput!): Boolean!
+  # hasConnection checks if a connection exists in the graph by reference
   hasConnection(where: RefInput!): Boolean!
   # searchConnections searches for 0-many connections
   searchConnections(where: Filter!): Connections!
@@ -1422,13 +1514,16 @@ type Query {
   connectionsFrom(where: CFilter!): Connections!
   # connectionsTo returns connections to the given doc that pass the filter
   connectionsTo(where: CFilter!): Connections!
+  # aggregateDocs executes an aggregation function against a set of documents
   aggregateDocs(where: AggFilter!): Float!
+  # aggregateConnections executes an aggregation function against a set of connections
   aggregateConnections(where: AggFilter!): Float!
+  # searchAndConnect searches for documents and forms connections based on whether they pass a filter
   searchAndConnect(where: SConnectFilter!): Connections!
 }
 
 type Subscription {
-  # subscribe subscribes to a pubsub channel
+  # subscribe opens a stream of messages that pass a filter on a pubsub channel
   subscribe(where: ChanFilter!): Message!
 }`, BuiltIn: false},
 }
@@ -1756,10 +1851,10 @@ func (ec *executionContext) field_Query_connectionsTo_args(ctx context.Context, 
 func (ec *executionContext) field_Query_existsConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.Exists
+	var arg0 model.ExistsFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNExists2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExists(ctx, tmp)
+		arg0, err = ec.unmarshalNExistsFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1771,10 +1866,10 @@ func (ec *executionContext) field_Query_existsConnection_args(ctx context.Contex
 func (ec *executionContext) field_Query_existsDoc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.Exists
+	var arg0 model.ExistsFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNExists2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExists(ctx, tmp)
+		arg0, err = ec.unmarshalNExistsFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2332,14 +2427,11 @@ func (ec *executionContext) _Connections_seek_next(ctx context.Context, field gr
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Doc_ref(ctx context.Context, field graphql.CollectedField, obj *model.Doc) (ret graphql.Marshaler) {
@@ -2466,14 +2558,11 @@ func (ec *executionContext) _Docs_seek_next(ctx context.Context, field graphql.C
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Index_name(ctx context.Context, field graphql.CollectedField, obj *model.Index) (ret graphql.Marshaler) {
@@ -2606,11 +2695,14 @@ func (ec *executionContext) _Index_docs(ctx context.Context, field graphql.Colle
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*bool)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Index_connections(ctx context.Context, field graphql.CollectedField, obj *model.Index) (ret graphql.Marshaler) {
@@ -2638,11 +2730,14 @@ func (ec *executionContext) _Index_connections(ctx context.Context, field graphq
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*bool)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Indexes_indexes(ctx context.Context, field graphql.CollectedField, obj *model.Indexes) (ret graphql.Marshaler) {
@@ -3819,7 +3914,7 @@ func (ec *executionContext) _Query_existsDoc(ctx context.Context, field graphql.
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ExistsDoc(rctx, args["where"].(model.Exists))
+		return ec.resolvers.Query().ExistsDoc(rctx, args["where"].(model.ExistsFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3861,7 +3956,7 @@ func (ec *executionContext) _Query_existsConnection(ctx context.Context, field g
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ExistsConnection(rctx, args["where"].(model.Exists))
+		return ec.resolvers.Query().ExistsConnection(rctx, args["where"].(model.ExistsFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4898,11 +4993,14 @@ func (ec *executionContext) _TypeValidator_docs(ctx context.Context, field graph
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*bool)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TypeValidator_connections(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
@@ -4930,11 +5028,14 @@ func (ec *executionContext) _TypeValidator_connections(ctx context.Context, fiel
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*bool)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TypeValidators_validators(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidators) (ret graphql.Marshaler) {
@@ -6412,8 +6513,8 @@ func (ec *executionContext) unmarshalInputEdit(ctx context.Context, obj interfac
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputExists(ctx context.Context, obj interface{}) (model.Exists, error) {
-	var it model.Exists
+func (ec *executionContext) unmarshalInputExistsFilter(ctx context.Context, obj interface{}) (model.ExistsFilter, error) {
+	var it model.ExistsFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6442,19 +6543,19 @@ func (ec *executionContext) unmarshalInputExists(ctx context.Context, obj interf
 			if err != nil {
 				return it, err
 			}
-		case "index":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("index"))
-			it.Index, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "reverse":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reverse"))
 			it.Reverse, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "index":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("index"))
+			it.Index, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6586,7 +6687,7 @@ func (ec *executionContext) unmarshalInputIndexInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("docs"))
-			it.Docs, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			it.Docs, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6594,7 +6695,7 @@ func (ec *executionContext) unmarshalInputIndexInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections"))
-			it.Connections, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			it.Connections, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6878,7 +6979,7 @@ func (ec *executionContext) unmarshalInputTypeValidatorInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("docs"))
-			it.Docs, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			it.Docs, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6886,7 +6987,7 @@ func (ec *executionContext) unmarshalInputTypeValidatorInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections"))
-			it.Connections, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			it.Connections, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7039,9 +7140,6 @@ func (ec *executionContext) _Connections(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = ec._Connections_connections(ctx, field, obj)
 		case "seek_next":
 			out.Values[i] = ec._Connections_seek_next(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7097,9 +7195,6 @@ func (ec *executionContext) _Docs(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = ec._Docs_docs(ctx, field, obj)
 		case "seek_next":
 			out.Values[i] = ec._Docs_seek_next(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7139,8 +7234,14 @@ func (ec *executionContext) _Index(ctx context.Context, sel ast.SelectionSet, ob
 			}
 		case "docs":
 			out.Values[i] = ec._Index_docs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "connections":
 			out.Values[i] = ec._Index_connections(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7794,8 +7895,14 @@ func (ec *executionContext) _TypeValidator(ctx context.Context, sel ast.Selectio
 			}
 		case "docs":
 			out.Values[i] = ec._TypeValidator_docs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "connections":
 			out.Values[i] = ec._TypeValidator_connections(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8274,8 +8381,8 @@ func (ec *executionContext) unmarshalNEdit2githubᚗcomᚋautom8terᚋgraphikᚋ
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNExists2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExists(ctx context.Context, v interface{}) (model.Exists, error) {
-	res, err := ec.unmarshalInputExists(ctx, v)
+func (ec *executionContext) unmarshalNExistsFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx context.Context, v interface{}) (model.ExistsFilter, error) {
+	res, err := ec.unmarshalInputExistsFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

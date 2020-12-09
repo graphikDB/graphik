@@ -291,11 +291,11 @@ func (c *Client) DelDocs(ctx context.Context, in *apipb.Filter, opts ...grpc.Cal
 	return c.graph.DelDocs(ctx, in, opts...)
 }
 
-func (c *Client) ExistsDoc(ctx context.Context, in *apipb.Exists, opts ...grpc.CallOption) (*apipb.Boolean, error) {
+func (c *Client) ExistsDoc(ctx context.Context, in *apipb.ExistsFilter, opts ...grpc.CallOption) (*apipb.Boolean, error) {
 	return c.graph.ExistsDoc(ctx, in, opts...)
 }
 
-func (c *Client) ExistsConnection(ctx context.Context, in *apipb.Exists, opts ...grpc.CallOption) (*apipb.Boolean, error) {
+func (c *Client) ExistsConnection(ctx context.Context, in *apipb.ExistsFilter, opts ...grpc.CallOption) (*apipb.Boolean, error) {
 	return c.graph.ExistsConnection(ctx, in, opts...)
 }
 

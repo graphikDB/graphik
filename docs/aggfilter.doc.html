@@ -85,6 +85,11 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="Aggregate">
+            <a href="aggregate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Aggregate
+            </a>
+        </li>
         <li  title="Algorithm">
             <a href="algorithm.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Algorithm
@@ -280,9 +285,9 @@
                 EFilter
             </a>
         </li>
-        <li  title="Exists">
-            <a href="exists.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Exists
+        <li  title="ExistsFilter">
+            <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ExistsFilter
             </a>
         </li>
         <li  title="ExprFilter">
@@ -377,7 +382,8 @@
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
         <h1 class="slds-text-heading--large">AggFilter</h1>
-        <div class="slds-text-body--regular"></div>
+        <div class="slds-text-body--regular"><p>AggFilter is a filter used for aggragation queries</p>
+</div>
     </div>
 </section>
 <section>
@@ -388,7 +394,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">AggFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">filter</span>: <a class="support type" href="filter.doc.html">Filter</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">aggregate</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">field</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">AggFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   filter is the filter to apply against the graph.</span></span></li><li><span class="tab"><span class="meta">filter</span>: <a class="support type" href="filter.doc.html">Filter</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   aggregate is the aggregation function to apply against the graph</span></span></li><li><span class="tab"><span class="meta">aggregate</span>: <a class="support type" href="aggregate.doc.html">Aggregate</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   field is the field to aggregate(ex: attributes.age). The field must be a </span></span></li><li><span class="tab"><span class="comment line">#   float/number value</span></span></li><li><span class="tab"><span class="meta">field</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
