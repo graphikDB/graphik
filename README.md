@@ -1,4 +1,4 @@
-# Graphik
+# Graphik[![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
 
 https://graphikdb.github.io/graphik/
 
@@ -68,7 +68,7 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
 ```
 
 ## gRPC Client SDKs
-- [x] [Go](https://github.com/graphikDB/graphik-client-go)
+- [x] [Go](https://godoc.org/github.com/graphikDB/graphik/graphik-client-go)
 - [x] [Python](gen/grpc/python)
 - [x] [PHP](gen/grpc/php)
 - [x] [Javascript](gen/grpc/js)
