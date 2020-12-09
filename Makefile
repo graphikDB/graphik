@@ -1,4 +1,4 @@
-version := "0.1.1"
+version := "0.1.2"
 
 .DEFAULT_GOAL := help
 
@@ -48,3 +48,12 @@ release: ## build release binaries to ./bin
 	@gox -osarch="linux/amd64" -output="./bin/linux/{{.Dir}}"
 	@gox -osarch="darwin/amd64" -output="./bin/darwin/{{.Dir}}"
 	@gox -osarch="windows/amd64" -output="./bin/windows/{{.Dir}}"
+
+.PHONY: up
+up: ## start local containers
+	@docker-compose -f docker-compose.yml pull
+	@docker-compose -f docker-compose.yml up -d
+
+.PHONY: down
+down: ## shuts down local docker containers
+	docker-compose -f docker-compose.yml down --remove-orphans

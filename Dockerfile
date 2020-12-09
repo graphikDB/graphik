@@ -14,4 +14,4 @@ FROM alpine
 RUN apk add ca-certificates
 COPY --from=build-env /graphik/bin/graphik /usr/local/bin/graphik
 WORKDIR /workspace
-ENTRYPOINT ["./usr/local/bin/graphik"]
+ENTRYPOINT ["/usr/local/bin/graphik"]
