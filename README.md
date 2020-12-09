@@ -1,4 +1,4 @@
-# [Graphik](graphikdb.github.io/graphik/)
+# Graphik
 
 ![dag](images/dag.png)
 
