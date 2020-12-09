@@ -2,10 +2,9 @@
 
     git clone git@github.com:graphikDB/graphik.git
     
-    docker pull graphikdb/graphik:v0.1.2
+`    docker pull graphikdb/graphik:v0.1.2`
 
 Graphik is an identity-aware, permissioned, persistant document & graph database written in Go
-
 
 ## Helpful Links
 
@@ -72,7 +71,7 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
 - [x] [Java](gen/grpc/java)
 - [x] [C#](gen/grpc/csharp)
 - [x] [Ruby](gen/grpc/ruby)
-
+    
 ## Sample GraphQL Queries
 
 ### Node Traversal
@@ -106,3 +105,61 @@ query {
   }
 }
 ```
+
+
+## Deployment
+
+### Docker-Compose
+
+add this docker-compose.yml to ${pwd}:
+
+    version: '3.7'
+    services:
+      graphik:
+        image: graphikdb/graphik:v0.1.2
+        env_file:
+          - .env
+        ports:
+          - "7820:7820"
+          - "7821:7821"
+        volumes:
+          - default:/tmp/graphik
+        networks:
+          default:
+            aliases:
+              - graphikdb
+    networks:
+      default:
+    
+    volumes:
+      default:
+
+add a .env file to ${pwd}
+    
+    GRAPHIK_PLAYGROUND_CLIENT_ID=${client_id}
+    GRAPHIK_PLAYGROUND_CLIENT_SECRET=${client_secret}
+    GRAPHIK_PLAYGROUND_REDIRECT=http://localhost:7820/playground/callback
+    GRAPHIK_OPEN_ID=${open_id_connect_metadata_url}
+    #GRAPHIK_ALLOW_HEADERS=${cors_headers}
+    #GRAPHIK_ALLOW_METHOD=${cors_methos}
+    #GRAPHIK_ALLOW_ORIGINS=${cors_origins}
+    #GRAPHIK_ROOT_USERS=${root_users}
+    #GRAPHIK_TLS_CERT=${tls_cert_path}
+    #GRAPHIK_TLS_KEY=${tls_key_path}
+    
+then run:
+
+    docker-compose -f docker-compose.yml pull
+    docker-compose -f docker-compose.yml up -d
+    
+to shutdown:
+    
+    docker-compose -f docker-compose.yml down --remove-orphans
+    
+ ### Kubernetes
+ 
+ Coming Soon
+ 
+ ### Virtual Machine
+ 
+ Coming Soon

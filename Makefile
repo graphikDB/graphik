@@ -56,4 +56,4 @@ up: ## start local containers
 
 .PHONY: down
 down: ## shuts down local docker containers
-	docker-compose -f docker-compose.yml down --remove-orphans
+	@docker-compose -f docker-compose.yml down --remove-orphans
