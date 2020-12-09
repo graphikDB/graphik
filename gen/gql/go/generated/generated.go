@@ -1586,7 +1586,7 @@ func (ec *executionContext) field_Mutation_createConnection_args(ctx context.Con
 	var arg0 model.ConnectionConstructor
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNConnectionConstructor2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructor(ctx, tmp)
+		arg0, err = ec.unmarshalNConnectionConstructor2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructor(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1601,7 +1601,7 @@ func (ec *executionContext) field_Mutation_createConnections_args(ctx context.Co
 	var arg0 model.ConnectionConstructors
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNConnectionConstructors2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructors(ctx, tmp)
+		arg0, err = ec.unmarshalNConnectionConstructors2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructors(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1616,7 +1616,7 @@ func (ec *executionContext) field_Mutation_createDoc_args(ctx context.Context, r
 	var arg0 model.DocConstructor
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDocConstructor2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructor(ctx, tmp)
+		arg0, err = ec.unmarshalNDocConstructor2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructor(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1631,7 +1631,7 @@ func (ec *executionContext) field_Mutation_createDocs_args(ctx context.Context, 
 	var arg0 model.DocConstructors
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDocConstructors2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructors(ctx, tmp)
+		arg0, err = ec.unmarshalNDocConstructors2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructors(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1646,7 +1646,7 @@ func (ec *executionContext) field_Mutation_delConnection_args(ctx context.Contex
 	var arg0 model.RefInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1661,7 +1661,7 @@ func (ec *executionContext) field_Mutation_delConnections_args(ctx context.Conte
 	var arg0 model.Filter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1676,7 +1676,7 @@ func (ec *executionContext) field_Mutation_delDoc_args(ctx context.Context, rawA
 	var arg0 model.RefInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1691,7 +1691,7 @@ func (ec *executionContext) field_Mutation_delDocs_args(ctx context.Context, raw
 	var arg0 model.Filter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1706,7 +1706,7 @@ func (ec *executionContext) field_Mutation_editConnection_args(ctx context.Conte
 	var arg0 model.Edit
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEdit2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEdit(ctx, tmp)
+		arg0, err = ec.unmarshalNEdit2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEdit(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1721,7 +1721,7 @@ func (ec *executionContext) field_Mutation_editConnections_args(ctx context.Cont
 	var arg0 model.EFilter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNEFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1736,7 +1736,7 @@ func (ec *executionContext) field_Mutation_editDoc_args(ctx context.Context, raw
 	var arg0 model.Edit
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEdit2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEdit(ctx, tmp)
+		arg0, err = ec.unmarshalNEdit2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEdit(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1751,7 +1751,7 @@ func (ec *executionContext) field_Mutation_editDocs_args(ctx context.Context, ra
 	var arg0 model.EFilter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNEFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1766,7 +1766,7 @@ func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, raw
 	var arg0 model.OutboundMessage
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNOutboundMessage2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐOutboundMessage(ctx, tmp)
+		arg0, err = ec.unmarshalNOutboundMessage2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐOutboundMessage(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1781,7 +1781,7 @@ func (ec *executionContext) field_Mutation_setAuthorizers_args(ctx context.Conte
 	var arg0 model.AuthorizersInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNAuthorizersInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizersInput(ctx, tmp)
+		arg0, err = ec.unmarshalNAuthorizersInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizersInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1796,7 +1796,7 @@ func (ec *executionContext) field_Mutation_setIndexes_args(ctx context.Context, 
 	var arg0 model.IndexesInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNIndexesInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexesInput(ctx, tmp)
+		arg0, err = ec.unmarshalNIndexesInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexesInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1811,7 +1811,7 @@ func (ec *executionContext) field_Mutation_setTypeValidators_args(ctx context.Co
 	var arg0 model.TypeValidatorsInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNTypeValidatorsInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorsInput(ctx, tmp)
+		arg0, err = ec.unmarshalNTypeValidatorsInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1841,7 +1841,7 @@ func (ec *executionContext) field_Query_aggregateConnections_args(ctx context.Co
 	var arg0 model.AggFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNAggFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNAggFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1856,7 +1856,7 @@ func (ec *executionContext) field_Query_aggregateDocs_args(ctx context.Context, 
 	var arg0 model.AggFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNAggFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNAggFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1871,7 +1871,7 @@ func (ec *executionContext) field_Query_connectionsFrom_args(ctx context.Context
 	var arg0 model.CFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNCFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNCFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1886,7 +1886,7 @@ func (ec *executionContext) field_Query_connectionsTo_args(ctx context.Context, 
 	var arg0 model.CFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNCFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNCFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1901,7 +1901,7 @@ func (ec *executionContext) field_Query_existsConnection_args(ctx context.Contex
 	var arg0 model.ExistsFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNExistsFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNExistsFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1916,7 +1916,7 @@ func (ec *executionContext) field_Query_existsDoc_args(ctx context.Context, rawA
 	var arg0 model.ExistsFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNExistsFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNExistsFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1931,7 +1931,7 @@ func (ec *executionContext) field_Query_getConnection_args(ctx context.Context, 
 	var arg0 model.RefInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1946,7 +1946,7 @@ func (ec *executionContext) field_Query_getDoc_args(ctx context.Context, rawArgs
 	var arg0 model.RefInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1976,7 +1976,7 @@ func (ec *executionContext) field_Query_hasConnection_args(ctx context.Context, 
 	var arg0 model.RefInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1991,7 +1991,7 @@ func (ec *executionContext) field_Query_hasDoc_args(ctx context.Context, rawArgs
 	var arg0 model.RefInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRefInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2036,7 +2036,7 @@ func (ec *executionContext) field_Query_searchAndConnect_args(ctx context.Contex
 	var arg0 model.SConnectFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNSConnectFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSConnectFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNSConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSConnectFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2051,7 +2051,7 @@ func (ec *executionContext) field_Query_searchConnections_args(ctx context.Conte
 	var arg0 model.Filter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2066,7 +2066,7 @@ func (ec *executionContext) field_Query_searchDocs_args(ctx context.Context, raw
 	var arg0 model.Filter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2081,7 +2081,7 @@ func (ec *executionContext) field_Query_traverse_args(ctx context.Context, rawAr
 	var arg0 model.TFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNTFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNTFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2096,7 +2096,7 @@ func (ec *executionContext) field_Subscription_subscribe_args(ctx context.Contex
 	var arg0 model.ChanFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNChanFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐChanFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNChanFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐChanFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2242,7 +2242,7 @@ func (ec *executionContext) _Authorizers_authorizers(ctx context.Context, field 
 	}
 	res := resTmp.([]*model.Authorizer)
 	fc.Result = res
-	return ec.marshalOAuthorizer2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerᚄ(ctx, field.Selections, res)
+	return ec.marshalOAuthorizer2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Connection_ref(ctx context.Context, field graphql.CollectedField, obj *model.Connection) (ret graphql.Marshaler) {
@@ -2277,7 +2277,7 @@ func (ec *executionContext) _Connection_ref(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Ref)
 	fc.Result = res
-	return ec.marshalNRef2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
+	return ec.marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Connection_attributes(ctx context.Context, field graphql.CollectedField, obj *model.Connection) (ret graphql.Marshaler) {
@@ -2379,7 +2379,7 @@ func (ec *executionContext) _Connection_from(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*model.Ref)
 	fc.Result = res
-	return ec.marshalNRef2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
+	return ec.marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Connection_to(ctx context.Context, field graphql.CollectedField, obj *model.Connection) (ret graphql.Marshaler) {
@@ -2414,7 +2414,7 @@ func (ec *executionContext) _Connection_to(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.Ref)
 	fc.Result = res
-	return ec.marshalNRef2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
+	return ec.marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Connections_connections(ctx context.Context, field graphql.CollectedField, obj *model.Connections) (ret graphql.Marshaler) {
@@ -2446,7 +2446,7 @@ func (ec *executionContext) _Connections_connections(ctx context.Context, field 
 	}
 	res := resTmp.([]*model.Connection)
 	fc.Result = res
-	return ec.marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionᚄ(ctx, field.Selections, res)
+	return ec.marshalOConnection2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Connections_seek_next(ctx context.Context, field graphql.CollectedField, obj *model.Connections) (ret graphql.Marshaler) {
@@ -2513,7 +2513,7 @@ func (ec *executionContext) _Doc_ref(ctx context.Context, field graphql.Collecte
 	}
 	res := resTmp.(*model.Ref)
 	fc.Result = res
-	return ec.marshalNRef2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
+	return ec.marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Doc_attributes(ctx context.Context, field graphql.CollectedField, obj *model.Doc) (ret graphql.Marshaler) {
@@ -2577,7 +2577,7 @@ func (ec *executionContext) _Docs_docs(ctx context.Context, field graphql.Collec
 	}
 	res := resTmp.([]*model.Doc)
 	fc.Result = res
-	return ec.marshalODoc2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocᚄ(ctx, field.Selections, res)
+	return ec.marshalODoc2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Docs_seek_next(ctx context.Context, field graphql.CollectedField, obj *model.Docs) (ret graphql.Marshaler) {
@@ -2816,7 +2816,7 @@ func (ec *executionContext) _Indexes_indexes(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*model.Index)
 	fc.Result = res
-	return ec.marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexᚄ(ctx, field.Selections, res)
+	return ec.marshalOIndex2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Message_channel(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
@@ -2921,7 +2921,7 @@ func (ec *executionContext) _Message_sender(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Ref)
 	fc.Result = res
-	return ec.marshalNRef2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
+	return ec.marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Message_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
@@ -2998,7 +2998,7 @@ func (ec *executionContext) _Mutation_createDoc(ctx context.Context, field graph
 	}
 	res := resTmp.(*model.Doc)
 	fc.Result = res
-	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3040,7 +3040,7 @@ func (ec *executionContext) _Mutation_createDocs(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Docs)
 	fc.Result = res
-	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx, field.Selections, res)
+	return ec.marshalNDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_editDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3082,7 +3082,7 @@ func (ec *executionContext) _Mutation_editDoc(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.Doc)
 	fc.Result = res
-	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_editDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3124,7 +3124,7 @@ func (ec *executionContext) _Mutation_editDocs(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.Docs)
 	fc.Result = res
-	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx, field.Selections, res)
+	return ec.marshalNDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_delDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3244,7 +3244,7 @@ func (ec *executionContext) _Mutation_createConnection(ctx context.Context, fiel
 	}
 	res := resTmp.(*model.Connection)
 	fc.Result = res
-	return ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, field.Selections, res)
+	return ec.marshalNConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createConnections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3286,7 +3286,7 @@ func (ec *executionContext) _Mutation_createConnections(ctx context.Context, fie
 	}
 	res := resTmp.(*model.Connections)
 	fc.Result = res
-	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_editConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3328,7 +3328,7 @@ func (ec *executionContext) _Mutation_editConnection(ctx context.Context, field 
 	}
 	res := resTmp.(*model.Connection)
 	fc.Result = res
-	return ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, field.Selections, res)
+	return ec.marshalNConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_editConnections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3370,7 +3370,7 @@ func (ec *executionContext) _Mutation_editConnections(ctx context.Context, field
 	}
 	res := resTmp.(*model.Connections)
 	fc.Result = res
-	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_delConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3681,7 +3681,7 @@ func (ec *executionContext) _Query_ping(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*model.Pong)
 	fc.Result = res
-	return ec.marshalNPong2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx, field.Selections, res)
+	return ec.marshalNPong2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getSchema(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3723,7 +3723,7 @@ func (ec *executionContext) _Query_getSchema(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*model.Schema)
 	fc.Result = res
-	return ec.marshalNSchema2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSchema(ctx, field.Selections, res)
+	return ec.marshalNSchema2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSchema(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_me(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3765,7 +3765,7 @@ func (ec *executionContext) _Query_me(ctx context.Context, field graphql.Collect
 	}
 	res := resTmp.(*model.Doc)
 	fc.Result = res
-	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3807,7 +3807,7 @@ func (ec *executionContext) _Query_getDoc(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*model.Doc)
 	fc.Result = res
-	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_searchDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3849,7 +3849,7 @@ func (ec *executionContext) _Query_searchDocs(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.Docs)
 	fc.Result = res
-	return ec.marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx, field.Selections, res)
+	return ec.marshalNDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_traverse(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3891,7 +3891,7 @@ func (ec *executionContext) _Query_traverse(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Traversals)
 	fc.Result = res
-	return ec.marshalNTraversals2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversals(ctx, field.Selections, res)
+	return ec.marshalNTraversals2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversals(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_getConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3933,7 +3933,7 @@ func (ec *executionContext) _Query_getConnection(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Connection)
 	fc.Result = res
-	return ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, field.Selections, res)
+	return ec.marshalNConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_existsDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4143,7 +4143,7 @@ func (ec *executionContext) _Query_searchConnections(ctx context.Context, field 
 	}
 	res := resTmp.(*model.Connections)
 	fc.Result = res
-	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_connectionsFrom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4185,7 +4185,7 @@ func (ec *executionContext) _Query_connectionsFrom(ctx context.Context, field gr
 	}
 	res := resTmp.(*model.Connections)
 	fc.Result = res
-	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_connectionsTo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4227,7 +4227,7 @@ func (ec *executionContext) _Query_connectionsTo(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.Connections)
 	fc.Result = res
-	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_aggregateDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4353,7 +4353,7 @@ func (ec *executionContext) _Query_searchAndConnect(ctx context.Context, field g
 	}
 	res := resTmp.(*model.Connections)
 	fc.Result = res
-	return ec.marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4526,7 +4526,7 @@ func (ec *executionContext) _Refs_refs(ctx context.Context, field graphql.Collec
 	}
 	res := resTmp.([]*model.Ref)
 	fc.Result = res
-	return ec.marshalORef2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefᚄ(ctx, field.Selections, res)
+	return ec.marshalORef2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Request_method(ctx context.Context, field graphql.CollectedField, obj *model.Request) (ret graphql.Marshaler) {
@@ -4596,7 +4596,7 @@ func (ec *executionContext) _Request_user(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*model.Doc)
 	fc.Result = res
-	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Request_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.Request) (ret graphql.Marshaler) {
@@ -4762,7 +4762,7 @@ func (ec *executionContext) _Schema_authorizers(ctx context.Context, field graph
 	}
 	res := resTmp.(*model.Authorizers)
 	fc.Result = res
-	return ec.marshalOAuthorizers2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizers(ctx, field.Selections, res)
+	return ec.marshalOAuthorizers2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizers(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Schema_validators(ctx context.Context, field graphql.CollectedField, obj *model.Schema) (ret graphql.Marshaler) {
@@ -4794,7 +4794,7 @@ func (ec *executionContext) _Schema_validators(ctx context.Context, field graphq
 	}
 	res := resTmp.(*model.TypeValidators)
 	fc.Result = res
-	return ec.marshalOTypeValidators2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidators(ctx, field.Selections, res)
+	return ec.marshalOTypeValidators2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidators(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Schema_indexes(ctx context.Context, field graphql.CollectedField, obj *model.Schema) (ret graphql.Marshaler) {
@@ -4826,7 +4826,7 @@ func (ec *executionContext) _Schema_indexes(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*model.Indexes)
 	fc.Result = res
-	return ec.marshalOIndexes2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexes(ctx, field.Selections, res)
+	return ec.marshalOIndexes2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexes(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
@@ -4875,7 +4875,7 @@ func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field g
 			w.Write([]byte{'{'})
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
-			ec.marshalNMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMessage(ctx, field.Selections, res).MarshalGQL(w)
+			ec.marshalNMessage2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMessage(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -4913,7 +4913,7 @@ func (ec *executionContext) _Traversal_doc(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.Doc)
 	fc.Result = res
-	return ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Traversal_traversal_path(ctx context.Context, field graphql.CollectedField, obj *model.Traversal) (ret graphql.Marshaler) {
@@ -4945,7 +4945,7 @@ func (ec *executionContext) _Traversal_traversal_path(ctx context.Context, field
 	}
 	res := resTmp.([]*model.Ref)
 	fc.Result = res
-	return ec.marshalORef2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefᚄ(ctx, field.Selections, res)
+	return ec.marshalORef2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Traversal_depth(ctx context.Context, field graphql.CollectedField, obj *model.Traversal) (ret graphql.Marshaler) {
@@ -5047,7 +5047,7 @@ func (ec *executionContext) _Traversals_traversals(ctx context.Context, field gr
 	}
 	res := resTmp.([]*model.Traversal)
 	fc.Result = res
-	return ec.marshalOTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversalᚄ(ctx, field.Selections, res)
+	return ec.marshalOTraversal2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversalᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TypeValidator_name(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
@@ -5254,7 +5254,7 @@ func (ec *executionContext) _TypeValidators_validators(ctx context.Context, fiel
 	}
 	res := resTmp.([]*model.TypeValidator)
 	fc.Result = res
-	return ec.marshalOTypeValidator2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorᚄ(ctx, field.Selections, res)
+	return ec.marshalOTypeValidator2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -6354,7 +6354,7 @@ func (ec *executionContext) unmarshalInputAggFilter(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
+			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6362,7 +6362,7 @@ func (ec *executionContext) unmarshalInputAggFilter(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("aggregate"))
-			it.Aggregate, err = ec.unmarshalNAggregate2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx, v)
+			it.Aggregate, err = ec.unmarshalNAggregate2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6418,7 +6418,7 @@ func (ec *executionContext) unmarshalInputAuthorizersInput(ctx context.Context, 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authorizers"))
-			it.Authorizers, err = ec.unmarshalOAuthorizerInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerInputᚄ(ctx, v)
+			it.Authorizers, err = ec.unmarshalOAuthorizerInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6438,7 +6438,7 @@ func (ec *executionContext) unmarshalInputCFilter(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("doc_ref"))
-			it.DocRef, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			it.DocRef, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6534,7 +6534,7 @@ func (ec *executionContext) unmarshalInputConnectionConstructor(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
-			it.Ref, err = ec.unmarshalNRefConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefConstructor(ctx, v)
+			it.Ref, err = ec.unmarshalNRefConstructor2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefConstructor(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6558,7 +6558,7 @@ func (ec *executionContext) unmarshalInputConnectionConstructor(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
-			it.From, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			it.From, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6566,7 +6566,7 @@ func (ec *executionContext) unmarshalInputConnectionConstructor(ctx context.Cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
-			it.To, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			it.To, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6586,7 +6586,7 @@ func (ec *executionContext) unmarshalInputConnectionConstructors(ctx context.Con
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections"))
-			it.Connections, err = ec.unmarshalNConnectionConstructor2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructorᚄ(ctx, v)
+			it.Connections, err = ec.unmarshalNConnectionConstructor2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructorᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6606,7 +6606,7 @@ func (ec *executionContext) unmarshalInputDocConstructor(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
-			it.Ref, err = ec.unmarshalNRefConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefConstructor(ctx, v)
+			it.Ref, err = ec.unmarshalNRefConstructor2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefConstructor(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6634,7 +6634,7 @@ func (ec *executionContext) unmarshalInputDocConstructors(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("docs"))
-			it.Docs, err = ec.unmarshalNDocConstructor2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructorᚄ(ctx, v)
+			it.Docs, err = ec.unmarshalNDocConstructor2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructorᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6654,7 +6654,7 @@ func (ec *executionContext) unmarshalInputEFilter(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
+			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6682,7 +6682,7 @@ func (ec *executionContext) unmarshalInputEdit(ctx context.Context, obj interfac
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
-			it.Ref, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			it.Ref, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6902,7 +6902,7 @@ func (ec *executionContext) unmarshalInputIndexesInput(ctx context.Context, obj 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("indexes"))
-			it.Indexes, err = ec.unmarshalOIndexInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexInputᚄ(ctx, v)
+			it.Indexes, err = ec.unmarshalOIndexInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7006,7 +7006,7 @@ func (ec *executionContext) unmarshalInputSConnectFilter(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
+			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7038,7 +7038,7 @@ func (ec *executionContext) unmarshalInputSConnectFilter(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
-			it.From, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			it.From, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7058,7 +7058,7 @@ func (ec *executionContext) unmarshalInputTFilter(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("root"))
-			it.Root, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			it.Root, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7106,7 +7106,7 @@ func (ec *executionContext) unmarshalInputTFilter(ctx context.Context, obj inter
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("algorithm"))
-			it.Algorithm, err = ec.unmarshalOAlgorithm2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAlgorithm(ctx, v)
+			it.Algorithm, err = ec.unmarshalOAlgorithm2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAlgorithm(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7194,7 +7194,7 @@ func (ec *executionContext) unmarshalInputTypeValidatorsInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("validators"))
-			it.Validators, err = ec.unmarshalOTypeValidatorInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInputᚄ(ctx, v)
+			it.Validators, err = ec.unmarshalOTypeValidatorInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8412,22 +8412,22 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNAggFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggFilter(ctx context.Context, v interface{}) (model.AggFilter, error) {
+func (ec *executionContext) unmarshalNAggFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggFilter(ctx context.Context, v interface{}) (model.AggFilter, error) {
 	res, err := ec.unmarshalInputAggFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNAggregate2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx context.Context, v interface{}) (model.Aggregate, error) {
+func (ec *executionContext) unmarshalNAggregate2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx context.Context, v interface{}) (model.Aggregate, error) {
 	var res model.Aggregate
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNAggregate2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx context.Context, sel ast.SelectionSet, v model.Aggregate) graphql.Marshaler {
+func (ec *executionContext) marshalNAggregate2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx context.Context, sel ast.SelectionSet, v model.Aggregate) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) marshalNAuthorizer2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizer(ctx context.Context, sel ast.SelectionSet, v *model.Authorizer) graphql.Marshaler {
+func (ec *executionContext) marshalNAuthorizer2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizer(ctx context.Context, sel ast.SelectionSet, v *model.Authorizer) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8437,12 +8437,12 @@ func (ec *executionContext) marshalNAuthorizer2ᚖgithubᚗcomᚋautom8terᚋgra
 	return ec._Authorizer(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNAuthorizerInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerInput(ctx context.Context, v interface{}) (*model.AuthorizerInput, error) {
+func (ec *executionContext) unmarshalNAuthorizerInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerInput(ctx context.Context, v interface{}) (*model.AuthorizerInput, error) {
 	res, err := ec.unmarshalInputAuthorizerInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNAuthorizersInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizersInput(ctx context.Context, v interface{}) (model.AuthorizersInput, error) {
+func (ec *executionContext) unmarshalNAuthorizersInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizersInput(ctx context.Context, v interface{}) (model.AuthorizersInput, error) {
 	res, err := ec.unmarshalInputAuthorizersInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8462,21 +8462,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx context.Context, v interface{}) (model.CFilter, error) {
+func (ec *executionContext) unmarshalNCFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx context.Context, v interface{}) (model.CFilter, error) {
 	res, err := ec.unmarshalInputCFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNChanFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐChanFilter(ctx context.Context, v interface{}) (model.ChanFilter, error) {
+func (ec *executionContext) unmarshalNChanFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐChanFilter(ctx context.Context, v interface{}) (model.ChanFilter, error) {
 	res, err := ec.unmarshalInputChanFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNConnection2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx context.Context, sel ast.SelectionSet, v model.Connection) graphql.Marshaler {
+func (ec *executionContext) marshalNConnection2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx context.Context, sel ast.SelectionSet, v model.Connection) graphql.Marshaler {
 	return ec._Connection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx context.Context, sel ast.SelectionSet, v *model.Connection) graphql.Marshaler {
+func (ec *executionContext) marshalNConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx context.Context, sel ast.SelectionSet, v *model.Connection) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8486,12 +8486,12 @@ func (ec *executionContext) marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgra
 	return ec._Connection(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNConnectionConstructor2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructor(ctx context.Context, v interface{}) (model.ConnectionConstructor, error) {
+func (ec *executionContext) unmarshalNConnectionConstructor2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructor(ctx context.Context, v interface{}) (model.ConnectionConstructor, error) {
 	res, err := ec.unmarshalInputConnectionConstructor(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNConnectionConstructor2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructorᚄ(ctx context.Context, v interface{}) ([]*model.ConnectionConstructor, error) {
+func (ec *executionContext) unmarshalNConnectionConstructor2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructorᚄ(ctx context.Context, v interface{}) ([]*model.ConnectionConstructor, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -8504,7 +8504,7 @@ func (ec *executionContext) unmarshalNConnectionConstructor2ᚕᚖgithubᚗcom�
 	res := make([]*model.ConnectionConstructor, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNConnectionConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructor(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNConnectionConstructor2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructor(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -8512,21 +8512,21 @@ func (ec *executionContext) unmarshalNConnectionConstructor2ᚕᚖgithubᚗcom�
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNConnectionConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructor(ctx context.Context, v interface{}) (*model.ConnectionConstructor, error) {
+func (ec *executionContext) unmarshalNConnectionConstructor2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructor(ctx context.Context, v interface{}) (*model.ConnectionConstructor, error) {
 	res, err := ec.unmarshalInputConnectionConstructor(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNConnectionConstructors2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructors(ctx context.Context, v interface{}) (model.ConnectionConstructors, error) {
+func (ec *executionContext) unmarshalNConnectionConstructors2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionConstructors(ctx context.Context, v interface{}) (model.ConnectionConstructors, error) {
 	res, err := ec.unmarshalInputConnectionConstructors(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNConnections2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx context.Context, sel ast.SelectionSet, v model.Connections) graphql.Marshaler {
+func (ec *executionContext) marshalNConnections2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx context.Context, sel ast.SelectionSet, v model.Connections) graphql.Marshaler {
 	return ec._Connections(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx context.Context, sel ast.SelectionSet, v *model.Connections) graphql.Marshaler {
+func (ec *executionContext) marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx context.Context, sel ast.SelectionSet, v *model.Connections) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8536,11 +8536,11 @@ func (ec *executionContext) marshalNConnections2ᚖgithubᚗcomᚋautom8terᚋgr
 	return ec._Connections(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNDoc2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx context.Context, sel ast.SelectionSet, v model.Doc) graphql.Marshaler {
+func (ec *executionContext) marshalNDoc2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx context.Context, sel ast.SelectionSet, v model.Doc) graphql.Marshaler {
 	return ec._Doc(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx context.Context, sel ast.SelectionSet, v *model.Doc) graphql.Marshaler {
+func (ec *executionContext) marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx context.Context, sel ast.SelectionSet, v *model.Doc) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8550,12 +8550,12 @@ func (ec *executionContext) marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋ
 	return ec._Doc(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNDocConstructor2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructor(ctx context.Context, v interface{}) (model.DocConstructor, error) {
+func (ec *executionContext) unmarshalNDocConstructor2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructor(ctx context.Context, v interface{}) (model.DocConstructor, error) {
 	res, err := ec.unmarshalInputDocConstructor(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNDocConstructor2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructorᚄ(ctx context.Context, v interface{}) ([]*model.DocConstructor, error) {
+func (ec *executionContext) unmarshalNDocConstructor2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructorᚄ(ctx context.Context, v interface{}) ([]*model.DocConstructor, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -8568,7 +8568,7 @@ func (ec *executionContext) unmarshalNDocConstructor2ᚕᚖgithubᚗcomᚋautom8
 	res := make([]*model.DocConstructor, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNDocConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructor(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNDocConstructor2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructor(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -8576,21 +8576,21 @@ func (ec *executionContext) unmarshalNDocConstructor2ᚕᚖgithubᚗcomᚋautom8
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNDocConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructor(ctx context.Context, v interface{}) (*model.DocConstructor, error) {
+func (ec *executionContext) unmarshalNDocConstructor2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructor(ctx context.Context, v interface{}) (*model.DocConstructor, error) {
 	res, err := ec.unmarshalInputDocConstructor(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNDocConstructors2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructors(ctx context.Context, v interface{}) (model.DocConstructors, error) {
+func (ec *executionContext) unmarshalNDocConstructors2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocConstructors(ctx context.Context, v interface{}) (model.DocConstructors, error) {
 	res, err := ec.unmarshalInputDocConstructors(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNDocs2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx context.Context, sel ast.SelectionSet, v model.Docs) graphql.Marshaler {
+func (ec *executionContext) marshalNDocs2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx context.Context, sel ast.SelectionSet, v model.Docs) graphql.Marshaler {
 	return ec._Docs(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx context.Context, sel ast.SelectionSet, v *model.Docs) graphql.Marshaler {
+func (ec *executionContext) marshalNDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx context.Context, sel ast.SelectionSet, v *model.Docs) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8600,27 +8600,27 @@ func (ec *executionContext) marshalNDocs2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 	return ec._Docs(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNEFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx context.Context, v interface{}) (model.EFilter, error) {
+func (ec *executionContext) unmarshalNEFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx context.Context, v interface{}) (model.EFilter, error) {
 	res, err := ec.unmarshalInputEFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNEdit2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEdit(ctx context.Context, v interface{}) (model.Edit, error) {
+func (ec *executionContext) unmarshalNEdit2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEdit(ctx context.Context, v interface{}) (model.Edit, error) {
 	res, err := ec.unmarshalInputEdit(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNExistsFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx context.Context, v interface{}) (model.ExistsFilter, error) {
+func (ec *executionContext) unmarshalNExistsFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐExistsFilter(ctx context.Context, v interface{}) (model.ExistsFilter, error) {
 	res, err := ec.unmarshalInputExistsFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx context.Context, v interface{}) (model.Filter, error) {
+func (ec *executionContext) unmarshalNFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx context.Context, v interface{}) (model.Filter, error) {
 	res, err := ec.unmarshalInputFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNFilter2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx context.Context, v interface{}) (*model.Filter, error) {
+func (ec *executionContext) unmarshalNFilter2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx context.Context, v interface{}) (*model.Filter, error) {
 	res, err := ec.unmarshalInputFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8640,7 +8640,7 @@ func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNIndex2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndex(ctx context.Context, sel ast.SelectionSet, v *model.Index) graphql.Marshaler {
+func (ec *executionContext) marshalNIndex2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndex(ctx context.Context, sel ast.SelectionSet, v *model.Index) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8650,12 +8650,12 @@ func (ec *executionContext) marshalNIndex2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 	return ec._Index(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNIndexInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexInput(ctx context.Context, v interface{}) (*model.IndexInput, error) {
+func (ec *executionContext) unmarshalNIndexInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexInput(ctx context.Context, v interface{}) (*model.IndexInput, error) {
 	res, err := ec.unmarshalInputIndexInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNIndexesInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexesInput(ctx context.Context, v interface{}) (model.IndexesInput, error) {
+func (ec *executionContext) unmarshalNIndexesInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexesInput(ctx context.Context, v interface{}) (model.IndexesInput, error) {
 	res, err := ec.unmarshalInputIndexesInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8696,11 +8696,11 @@ func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNMessage2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMessage(ctx context.Context, sel ast.SelectionSet, v model.Message) graphql.Marshaler {
+func (ec *executionContext) marshalNMessage2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMessage(ctx context.Context, sel ast.SelectionSet, v model.Message) graphql.Marshaler {
 	return ec._Message(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNMessage2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMessage(ctx context.Context, sel ast.SelectionSet, v *model.Message) graphql.Marshaler {
+func (ec *executionContext) marshalNMessage2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMessage(ctx context.Context, sel ast.SelectionSet, v *model.Message) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8710,16 +8710,16 @@ func (ec *executionContext) marshalNMessage2ᚖgithubᚗcomᚋautom8terᚋgraphi
 	return ec._Message(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNOutboundMessage2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐOutboundMessage(ctx context.Context, v interface{}) (model.OutboundMessage, error) {
+func (ec *executionContext) unmarshalNOutboundMessage2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐOutboundMessage(ctx context.Context, v interface{}) (model.OutboundMessage, error) {
 	res, err := ec.unmarshalInputOutboundMessage(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPong2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx context.Context, sel ast.SelectionSet, v model.Pong) graphql.Marshaler {
+func (ec *executionContext) marshalNPong2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx context.Context, sel ast.SelectionSet, v model.Pong) graphql.Marshaler {
 	return ec._Pong(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPong2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx context.Context, sel ast.SelectionSet, v *model.Pong) graphql.Marshaler {
+func (ec *executionContext) marshalNPong2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx context.Context, sel ast.SelectionSet, v *model.Pong) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8729,7 +8729,7 @@ func (ec *executionContext) marshalNPong2ᚖgithubᚗcomᚋautom8terᚋgraphik�
 	return ec._Pong(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNRef2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx context.Context, sel ast.SelectionSet, v *model.Ref) graphql.Marshaler {
+func (ec *executionContext) marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx context.Context, sel ast.SelectionSet, v *model.Ref) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8739,31 +8739,31 @@ func (ec *executionContext) marshalNRef2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋ
 	return ec._Ref(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNRefConstructor2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefConstructor(ctx context.Context, v interface{}) (*model.RefConstructor, error) {
+func (ec *executionContext) unmarshalNRefConstructor2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefConstructor(ctx context.Context, v interface{}) (*model.RefConstructor, error) {
 	res, err := ec.unmarshalInputRefConstructor(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNRefInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx context.Context, v interface{}) (model.RefInput, error) {
+func (ec *executionContext) unmarshalNRefInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx context.Context, v interface{}) (model.RefInput, error) {
 	res, err := ec.unmarshalInputRefInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNRefInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx context.Context, v interface{}) (*model.RefInput, error) {
+func (ec *executionContext) unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx context.Context, v interface{}) (*model.RefInput, error) {
 	res, err := ec.unmarshalInputRefInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSConnectFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSConnectFilter(ctx context.Context, v interface{}) (model.SConnectFilter, error) {
+func (ec *executionContext) unmarshalNSConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSConnectFilter(ctx context.Context, v interface{}) (model.SConnectFilter, error) {
 	res, err := ec.unmarshalInputSConnectFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNSchema2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSchema(ctx context.Context, sel ast.SelectionSet, v model.Schema) graphql.Marshaler {
+func (ec *executionContext) marshalNSchema2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSchema(ctx context.Context, sel ast.SelectionSet, v model.Schema) graphql.Marshaler {
 	return ec._Schema(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNSchema2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSchema(ctx context.Context, sel ast.SelectionSet, v *model.Schema) graphql.Marshaler {
+func (ec *executionContext) marshalNSchema2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSchema(ctx context.Context, sel ast.SelectionSet, v *model.Schema) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8788,7 +8788,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNTFilter2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTFilter(ctx context.Context, v interface{}) (model.TFilter, error) {
+func (ec *executionContext) unmarshalNTFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTFilter(ctx context.Context, v interface{}) (model.TFilter, error) {
 	res, err := ec.unmarshalInputTFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8808,7 +8808,7 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) marshalNTraversal2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversal(ctx context.Context, sel ast.SelectionSet, v *model.Traversal) graphql.Marshaler {
+func (ec *executionContext) marshalNTraversal2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversal(ctx context.Context, sel ast.SelectionSet, v *model.Traversal) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8818,11 +8818,11 @@ func (ec *executionContext) marshalNTraversal2ᚖgithubᚗcomᚋautom8terᚋgrap
 	return ec._Traversal(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTraversals2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversals(ctx context.Context, sel ast.SelectionSet, v model.Traversals) graphql.Marshaler {
+func (ec *executionContext) marshalNTraversals2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversals(ctx context.Context, sel ast.SelectionSet, v model.Traversals) graphql.Marshaler {
 	return ec._Traversals(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTraversals2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversals(ctx context.Context, sel ast.SelectionSet, v *model.Traversals) graphql.Marshaler {
+func (ec *executionContext) marshalNTraversals2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversals(ctx context.Context, sel ast.SelectionSet, v *model.Traversals) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8832,7 +8832,7 @@ func (ec *executionContext) marshalNTraversals2ᚖgithubᚗcomᚋautom8terᚋgra
 	return ec._Traversals(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTypeValidator2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidator(ctx context.Context, sel ast.SelectionSet, v *model.TypeValidator) graphql.Marshaler {
+func (ec *executionContext) marshalNTypeValidator2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidator(ctx context.Context, sel ast.SelectionSet, v *model.TypeValidator) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -8842,12 +8842,12 @@ func (ec *executionContext) marshalNTypeValidator2ᚖgithubᚗcomᚋautom8terᚋ
 	return ec._TypeValidator(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNTypeValidatorInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInput(ctx context.Context, v interface{}) (*model.TypeValidatorInput, error) {
+func (ec *executionContext) unmarshalNTypeValidatorInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInput(ctx context.Context, v interface{}) (*model.TypeValidatorInput, error) {
 	res, err := ec.unmarshalInputTypeValidatorInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNTypeValidatorsInput2githubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorsInput(ctx context.Context, v interface{}) (model.TypeValidatorsInput, error) {
+func (ec *executionContext) unmarshalNTypeValidatorsInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorsInput(ctx context.Context, v interface{}) (model.TypeValidatorsInput, error) {
 	res, err := ec.unmarshalInputTypeValidatorsInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -9081,7 +9081,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) unmarshalOAlgorithm2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAlgorithm(ctx context.Context, v interface{}) (*model.Algorithm, error) {
+func (ec *executionContext) unmarshalOAlgorithm2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAlgorithm(ctx context.Context, v interface{}) (*model.Algorithm, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -9090,14 +9090,14 @@ func (ec *executionContext) unmarshalOAlgorithm2ᚖgithubᚗcomᚋautom8terᚋgr
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOAlgorithm2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAlgorithm(ctx context.Context, sel ast.SelectionSet, v *model.Algorithm) graphql.Marshaler {
+func (ec *executionContext) marshalOAlgorithm2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAlgorithm(ctx context.Context, sel ast.SelectionSet, v *model.Algorithm) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return v
 }
 
-func (ec *executionContext) marshalOAuthorizer2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Authorizer) graphql.Marshaler {
+func (ec *executionContext) marshalOAuthorizer2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Authorizer) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9124,7 +9124,7 @@ func (ec *executionContext) marshalOAuthorizer2ᚕᚖgithubᚗcomᚋautom8terᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNAuthorizer2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizer(ctx, sel, v[i])
+			ret[i] = ec.marshalNAuthorizer2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizer(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9137,7 +9137,7 @@ func (ec *executionContext) marshalOAuthorizer2ᚕᚖgithubᚗcomᚋautom8terᚋ
 	return ret
 }
 
-func (ec *executionContext) unmarshalOAuthorizerInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerInputᚄ(ctx context.Context, v interface{}) ([]*model.AuthorizerInput, error) {
+func (ec *executionContext) unmarshalOAuthorizerInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerInputᚄ(ctx context.Context, v interface{}) ([]*model.AuthorizerInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -9153,7 +9153,7 @@ func (ec *executionContext) unmarshalOAuthorizerInput2ᚕᚖgithubᚗcomᚋautom
 	res := make([]*model.AuthorizerInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNAuthorizerInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNAuthorizerInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizerInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -9161,7 +9161,7 @@ func (ec *executionContext) unmarshalOAuthorizerInput2ᚕᚖgithubᚗcomᚋautom
 	return res, nil
 }
 
-func (ec *executionContext) marshalOAuthorizers2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizers(ctx context.Context, sel ast.SelectionSet, v *model.Authorizers) graphql.Marshaler {
+func (ec *executionContext) marshalOAuthorizers2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizers(ctx context.Context, sel ast.SelectionSet, v *model.Authorizers) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9192,7 +9192,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
-func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Connection) graphql.Marshaler {
+func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Connection) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9219,7 +9219,7 @@ func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNConnection2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, sel, v[i])
+			ret[i] = ec.marshalNConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9232,7 +9232,7 @@ func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋautom8terᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalODoc2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Doc) graphql.Marshaler {
+func (ec *executionContext) marshalODoc2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Doc) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9259,7 +9259,7 @@ func (ec *executionContext) marshalODoc2ᚕᚖgithubᚗcomᚋautom8terᚋgraphik
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNDoc2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, sel, v[i])
+			ret[i] = ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9287,7 +9287,7 @@ func (ec *executionContext) marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋ
 	return scalars.MarshalEmptyScalar(v)
 }
 
-func (ec *executionContext) marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Index) graphql.Marshaler {
+func (ec *executionContext) marshalOIndex2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Index) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9314,7 +9314,7 @@ func (ec *executionContext) marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraph
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNIndex2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndex(ctx, sel, v[i])
+			ret[i] = ec.marshalNIndex2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndex(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9327,7 +9327,7 @@ func (ec *executionContext) marshalOIndex2ᚕᚖgithubᚗcomᚋautom8terᚋgraph
 	return ret
 }
 
-func (ec *executionContext) unmarshalOIndexInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexInputᚄ(ctx context.Context, v interface{}) ([]*model.IndexInput, error) {
+func (ec *executionContext) unmarshalOIndexInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexInputᚄ(ctx context.Context, v interface{}) ([]*model.IndexInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -9343,7 +9343,7 @@ func (ec *executionContext) unmarshalOIndexInput2ᚕᚖgithubᚗcomᚋautom8ter�
 	res := make([]*model.IndexInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNIndexInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNIndexInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -9351,7 +9351,7 @@ func (ec *executionContext) unmarshalOIndexInput2ᚕᚖgithubᚗcomᚋautom8ter�
 	return res, nil
 }
 
-func (ec *executionContext) marshalOIndexes2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexes(ctx context.Context, sel ast.SelectionSet, v *model.Indexes) graphql.Marshaler {
+func (ec *executionContext) marshalOIndexes2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexes(ctx context.Context, sel ast.SelectionSet, v *model.Indexes) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9373,7 +9373,7 @@ func (ec *executionContext) marshalOMap2map(ctx context.Context, sel ast.Selecti
 	return graphql.MarshalMap(v)
 }
 
-func (ec *executionContext) marshalORef2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Ref) graphql.Marshaler {
+func (ec *executionContext) marshalORef2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Ref) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9400,7 +9400,7 @@ func (ec *executionContext) marshalORef2ᚕᚖgithubᚗcomᚋautom8terᚋgraphik
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNRef2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, sel, v[i])
+			ret[i] = ec.marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9473,7 +9473,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return graphql.MarshalString(*v)
 }
 
-func (ec *executionContext) marshalOTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversalᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Traversal) graphql.Marshaler {
+func (ec *executionContext) marshalOTraversal2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversalᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Traversal) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9500,7 +9500,7 @@ func (ec *executionContext) marshalOTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋg
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTraversal2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversal(ctx, sel, v[i])
+			ret[i] = ec.marshalNTraversal2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversal(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9513,7 +9513,7 @@ func (ec *executionContext) marshalOTraversal2ᚕᚖgithubᚗcomᚋautom8terᚋg
 	return ret
 }
 
-func (ec *executionContext) marshalOTypeValidator2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TypeValidator) graphql.Marshaler {
+func (ec *executionContext) marshalOTypeValidator2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TypeValidator) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9540,7 +9540,7 @@ func (ec *executionContext) marshalOTypeValidator2ᚕᚖgithubᚗcomᚋautom8ter
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTypeValidator2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidator(ctx, sel, v[i])
+			ret[i] = ec.marshalNTypeValidator2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidator(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -9553,7 +9553,7 @@ func (ec *executionContext) marshalOTypeValidator2ᚕᚖgithubᚗcomᚋautom8ter
 	return ret
 }
 
-func (ec *executionContext) unmarshalOTypeValidatorInput2ᚕᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInputᚄ(ctx context.Context, v interface{}) ([]*model.TypeValidatorInput, error) {
+func (ec *executionContext) unmarshalOTypeValidatorInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInputᚄ(ctx context.Context, v interface{}) ([]*model.TypeValidatorInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -9569,7 +9569,7 @@ func (ec *executionContext) unmarshalOTypeValidatorInput2ᚕᚖgithubᚗcomᚋau
 	res := make([]*model.TypeValidatorInput, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNTypeValidatorInput2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInput(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNTypeValidatorInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInput(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -9577,7 +9577,7 @@ func (ec *executionContext) unmarshalOTypeValidatorInput2ᚕᚖgithubᚗcomᚋau
 	return res, nil
 }
 
-func (ec *executionContext) marshalOTypeValidators2ᚖgithubᚗcomᚋautom8terᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidators(ctx context.Context, sel ast.SelectionSet, v *model.TypeValidators) graphql.Marshaler {
+func (ec *executionContext) marshalOTypeValidators2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidators(ctx context.Context, sel ast.SelectionSet, v *model.TypeValidators) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
