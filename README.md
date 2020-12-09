@@ -179,6 +179,7 @@ Coming Soon
 - any time a document is created, a connection of type `created_by` from the new document to the origin user is also created
 - any time a document is edited, a connection of type `edited` from the origin user to the new document is also created(if none exists)
 - any time a document is edited, a connection of type `edited_by` from the new document to the origin user is also created(if none exists)
+- every document a user has ever interacted with may be queried via the Traverse method with the user as the root document of the traversal
 
 ### Additional Details
 - any time a Doc is deleted, so are all of its connections
