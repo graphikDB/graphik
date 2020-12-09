@@ -183,6 +183,13 @@ type Refs struct {
 	Refs []*Ref `json:"refs"`
 }
 
+type Request struct {
+	Method    string                 `json:"method"`
+	User      *Doc                   `json:"user"`
+	Timestamp time.Time              `json:"timestamp"`
+	Request   map[string]interface{} `json:"request"`
+}
+
 type SConnectFilter struct {
 	Filter     *Filter                `json:"filter"`
 	Gtype      string                 `json:"gtype"`

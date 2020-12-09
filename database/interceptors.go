@@ -243,7 +243,7 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 		now := time.Now()
 		request := &apipb.Request{
 			Method:    method,
-			Identity:  identity,
+			User:      identity,
 			Timestamp: timestamppb.New(now),
 		}
 		if val, ok := req.(proto.Message); ok {

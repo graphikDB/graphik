@@ -8674,7 +8674,7 @@ proto.api.Request.prototype.toObject = function(opt_includeInstance) {
 proto.api.Request.toObject = function(includeInstance, msg) {
   var f, obj = {
     method: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    identity: (f = msg.getIdentity()) && proto.api.Doc.toObject(includeInstance, f),
+    user: (f = msg.getUser()) && proto.api.Doc.toObject(includeInstance, f),
     timestamp: (f = msg.getTimestamp()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     request: (f = msg.getRequest()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
   };
@@ -8720,7 +8720,7 @@ proto.api.Request.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = new proto.api.Doc;
       reader.readMessage(value,proto.api.Doc.deserializeBinaryFromReader);
-      msg.setIdentity(value);
+      msg.setUser(value);
       break;
     case 3:
       var value = new google_protobuf_timestamp_pb.Timestamp;
@@ -8768,7 +8768,7 @@ proto.api.Request.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getIdentity();
+  f = message.getUser();
   if (f != null) {
     writer.writeMessage(
       2,
@@ -8811,23 +8811,23 @@ proto.api.Request.prototype.setMethod = function(value) {
 
 
 /**
- * optional Doc identity = 2;
+ * optional Doc user = 2;
  * @return {?proto.api.Doc}
  */
-proto.api.Request.prototype.getIdentity = function() {
+proto.api.Request.prototype.getUser = function() {
   return /** @type{?proto.api.Doc} */ (
     jspb.Message.getWrapperField(this, proto.api.Doc, 2));
 };
 
 
 /** @param {?proto.api.Doc|undefined} value */
-proto.api.Request.prototype.setIdentity = function(value) {
+proto.api.Request.prototype.setUser = function(value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
 
-proto.api.Request.prototype.clearIdentity = function() {
-  this.setIdentity(undefined);
+proto.api.Request.prototype.clearUser = function() {
+  this.setUser(undefined);
 };
 
 
@@ -8835,7 +8835,7 @@ proto.api.Request.prototype.clearIdentity = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.Request.prototype.hasIdentity = function() {
+proto.api.Request.prototype.hasUser = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 

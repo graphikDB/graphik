@@ -28,7 +28,7 @@ class Message extends \Google\Protobuf\Internal\Message
      */
     private $data = null;
     /**
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      *
      * Generated from protobuf field <code>.api.Ref sender = 3 [(.validator.field) = {</code>
      */
@@ -51,7 +51,7 @@ class Message extends \Google\Protobuf\Internal\Message
      *     @type \Google\Protobuf\Struct $data
      *           data is the data sent with the message
      *     @type \Api\Ref $sender
-     *           sender is the identity that sent the message
+     *           sender is the user that sent the message
      *     @type \Google\Protobuf\Timestamp $timestamp
      *           timestamp is when the message was sent
      * }
@@ -114,7 +114,7 @@ class Message extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      *
      * Generated from protobuf field <code>.api.Ref sender = 3 [(.validator.field) = {</code>
      * @return \Api\Ref
@@ -125,7 +125,7 @@ class Message extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      *
      * Generated from protobuf field <code>.api.Ref sender = 3 [(.validator.field) = {</code>
      * @param \Api\Ref $var

@@ -20,11 +20,11 @@ class Request extends \Google\Protobuf\Internal\Message
      */
     private $method = '';
     /**
-     * identity is the identity making the request
+     * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc identity = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 2 [(.validator.field) = {</code>
      */
-    private $identity = null;
+    private $user = null;
     /**
      * timestamp is when the intercept was received
      *
@@ -46,8 +46,8 @@ class Request extends \Google\Protobuf\Internal\Message
      *
      *     @type string $method
      *           method is the rpc method
-     *     @type \Api\Doc $identity
-     *           identity is the identity making the request
+     *     @type \Api\Doc $user
+     *           user is the user making the request
      *     @type \Google\Protobuf\Timestamp $timestamp
      *           timestamp is when the intercept was received
      *     @type \Google\Protobuf\Struct $request
@@ -86,27 +86,27 @@ class Request extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * identity is the identity making the request
+     * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc identity = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 2 [(.validator.field) = {</code>
      * @return \Api\Doc
      */
-    public function getIdentity()
+    public function getUser()
     {
-        return $this->identity;
+        return $this->user;
     }
 
     /**
-     * identity is the identity making the request
+     * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc identity = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 2 [(.validator.field) = {</code>
      * @param \Api\Doc $var
      * @return $this
      */
-    public function setIdentity($var)
+    public function setUser($var)
     {
         GPBUtil::checkMessage($var, \Api\Doc::class);
-        $this->identity = $var;
+        $this->user = $var;
 
         return $this;
     }

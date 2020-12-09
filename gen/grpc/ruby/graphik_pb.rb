@@ -207,7 +207,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   end
   add_message "api.Request" do
     optional :method, :string, 1
-    optional :identity, :message, 2, "api.Doc"
+    optional :user, :message, 2, "api.Doc"
     optional :timestamp, :message, 3, "google.protobuf.Timestamp"
     optional :request, :message, 4, "google.protobuf.Struct"
   end

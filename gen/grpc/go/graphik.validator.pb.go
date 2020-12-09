@@ -565,12 +565,12 @@ func (this *Request) Validate() error {
 	if !_regex_Request_Method.MatchString(this.Method) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
 	}
-	if nil == this.Identity {
-		return github_com_mwitkow_go_proto_validators.FieldError("Identity", fmt.Errorf("message must exist"))
+	if nil == this.User {
+		return github_com_mwitkow_go_proto_validators.FieldError("User", fmt.Errorf("message must exist"))
 	}
-	if this.Identity != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Identity); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Identity", err)
+	if this.User != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
 		}
 	}
 	if nil == this.Timestamp {

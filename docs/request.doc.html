@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>CFilter</title>
+    <title>Request</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -170,7 +170,7 @@
                 Refs
             </a>
         </li>
-        <li  title="Request">
+        <li class="slds-is-active" title="Request">
             <a href="request.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Request
             </a>
@@ -250,7 +250,7 @@
                 AuthorizersInput
             </a>
         </li>
-        <li class="slds-is-active" title="CFilter">
+        <li  title="CFilter">
             <a href="cfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 CFilter
             </a>
@@ -385,9 +385,9 @@
         </div>
     </div>
     <div class="container">
-        <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
-        <h1 class="slds-text-heading--large">CFilter</h1>
-        <div class="slds-text-body--regular"><p>CFilter is used to fetch connections related to a single noted</p>
+        <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
+        <h1 class="slds-text-heading--large">Request</h1>
+        <div class="slds-text-body--regular"><p>Request is an inbound gRPC request that authorizers execute against</p>
 </div>
     </div>
 </section>
@@ -399,7 +399,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">CFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   doc_ref is the ref to the target doc</span></span></li><li><span class="tab"><span class="meta">doc_ref</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   gtype is the type of connections to return</span></span></li><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   expression is a CEL expression used to filter connections</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   limit is the maximum number of connections to return</span></span></li><li><span class="tab"><span class="meta">limit</span>: <a class="support type" href="int.doc.html">Int</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   custom sorting of the results.</span></span></li><li><span class="tab"><span class="meta">sort</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   seek to a specific key for pagination</span></span></li><li><span class="tab"><span class="meta">seek</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   reverse the results</span></span></li><li><span class="tab"><span class="meta">reverse</span>: <a class="support type" href="boolean.doc.html">Boolean</a></span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">Request</span> {</li><li></li><li><span class="tab"><span class="comment line">#   method is the gRPC method invoked</span></span></li><li><span class="tab"><span class="meta">method</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   user is the user making the request</span></span></li><li><span class="tab"><span class="meta">user</span>: <a class="support type" href="doc.doc.html">Doc</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   timestamp is the time of the request</span></span></li><li><span class="tab"><span class="meta">timestamp</span>: <a class="support type" href="time.doc.html">Time</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   request is the request represented as k/v pairs</span></span></li><li><span class="tab"><span class="meta">request</span>: <a class="support type" href="map.doc.html">Map</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -410,7 +410,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="query.doc.html" title="Query - ">Query<em></em></a><li></ul>
+        <div class="require-by anyone">This element is not required by anyone</div>
     </div>
 </section>
 <footer>

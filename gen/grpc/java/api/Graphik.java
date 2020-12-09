@@ -35502,7 +35502,7 @@ public final class Graphik {
 
     /**
      * <pre>
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      * </pre>
      *
      * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -35510,7 +35510,7 @@ public final class Graphik {
     boolean hasSender();
     /**
      * <pre>
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      * </pre>
      *
      * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -35518,7 +35518,7 @@ public final class Graphik {
     api.Graphik.Ref getSender();
     /**
      * <pre>
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      * </pre>
      *
      * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -35750,7 +35750,7 @@ public final class Graphik {
     private api.Graphik.Ref sender_;
     /**
      * <pre>
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      * </pre>
      *
      * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -35760,7 +35760,7 @@ public final class Graphik {
     }
     /**
      * <pre>
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      * </pre>
      *
      * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -35770,7 +35770,7 @@ public final class Graphik {
     }
     /**
      * <pre>
-     * sender is the identity that sent the message
+     * sender is the user that sent the message
      * </pre>
      *
      * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36456,7 +36456,7 @@ public final class Graphik {
           api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder> senderBuilder_;
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36466,7 +36466,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36480,7 +36480,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36500,7 +36500,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36518,7 +36518,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36540,7 +36540,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36558,7 +36558,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36570,7 +36570,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -36585,7 +36585,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * sender is the identity that sent the message
+       * sender is the user that sent the message
        * </pre>
        *
        * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
@@ -38941,28 +38941,28 @@ public final class Graphik {
 
     /**
      * <pre>
-     * identity is the identity making the request
+     * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
      */
-    boolean hasIdentity();
+    boolean hasUser();
     /**
      * <pre>
-     * identity is the identity making the request
+     * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
      */
-    api.Graphik.Doc getIdentity();
+    api.Graphik.Doc getUser();
     /**
      * <pre>
-     * identity is the identity making the request
+     * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
      */
-    api.Graphik.DocOrBuilder getIdentityOrBuilder();
+    api.Graphik.DocOrBuilder getUserOrBuilder();
 
     /**
      * <pre>
@@ -39062,13 +39062,13 @@ public final class Graphik {
             }
             case 18: {
               api.Graphik.Doc.Builder subBuilder = null;
-              if (identity_ != null) {
-                subBuilder = identity_.toBuilder();
+              if (user_ != null) {
+                subBuilder = user_.toBuilder();
               }
-              identity_ = input.readMessage(api.Graphik.Doc.parser(), extensionRegistry);
+              user_ = input.readMessage(api.Graphik.Doc.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(identity_);
-                identity_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(user_);
+                user_ = subBuilder.buildPartial();
               }
 
               break;
@@ -39173,37 +39173,37 @@ public final class Graphik {
       }
     }
 
-    public static final int IDENTITY_FIELD_NUMBER = 2;
-    private api.Graphik.Doc identity_;
+    public static final int USER_FIELD_NUMBER = 2;
+    private api.Graphik.Doc user_;
     /**
      * <pre>
-     * identity is the identity making the request
+     * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
      */
-    public boolean hasIdentity() {
-      return identity_ != null;
+    public boolean hasUser() {
+      return user_ != null;
     }
     /**
      * <pre>
-     * identity is the identity making the request
+     * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
      */
-    public api.Graphik.Doc getIdentity() {
-      return identity_ == null ? api.Graphik.Doc.getDefaultInstance() : identity_;
+    public api.Graphik.Doc getUser() {
+      return user_ == null ? api.Graphik.Doc.getDefaultInstance() : user_;
     }
     /**
      * <pre>
-     * identity is the identity making the request
+     * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
      */
-    public api.Graphik.DocOrBuilder getIdentityOrBuilder() {
-      return getIdentity();
+    public api.Graphik.DocOrBuilder getUserOrBuilder() {
+      return getUser();
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 3;
@@ -39289,8 +39289,8 @@ public final class Graphik {
       if (!getMethodBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, method_);
       }
-      if (identity_ != null) {
-        output.writeMessage(2, getIdentity());
+      if (user_ != null) {
+        output.writeMessage(2, getUser());
       }
       if (timestamp_ != null) {
         output.writeMessage(3, getTimestamp());
@@ -39310,9 +39310,9 @@ public final class Graphik {
       if (!getMethodBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, method_);
       }
-      if (identity_ != null) {
+      if (user_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getIdentity());
+          .computeMessageSize(2, getUser());
       }
       if (timestamp_ != null) {
         size += com.google.protobuf.CodedOutputStream
@@ -39340,10 +39340,10 @@ public final class Graphik {
       boolean result = true;
       result = result && getMethod()
           .equals(other.getMethod());
-      result = result && (hasIdentity() == other.hasIdentity());
-      if (hasIdentity()) {
-        result = result && getIdentity()
-            .equals(other.getIdentity());
+      result = result && (hasUser() == other.hasUser());
+      if (hasUser()) {
+        result = result && getUser()
+            .equals(other.getUser());
       }
       result = result && (hasTimestamp() == other.hasTimestamp());
       if (hasTimestamp()) {
@@ -39368,9 +39368,9 @@ public final class Graphik {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + METHOD_FIELD_NUMBER;
       hash = (53 * hash) + getMethod().hashCode();
-      if (hasIdentity()) {
-        hash = (37 * hash) + IDENTITY_FIELD_NUMBER;
-        hash = (53 * hash) + getIdentity().hashCode();
+      if (hasUser()) {
+        hash = (37 * hash) + USER_FIELD_NUMBER;
+        hash = (53 * hash) + getUser().hashCode();
       }
       if (hasTimestamp()) {
         hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
@@ -39515,11 +39515,11 @@ public final class Graphik {
         super.clear();
         method_ = "";
 
-        if (identityBuilder_ == null) {
-          identity_ = null;
+        if (userBuilder_ == null) {
+          user_ = null;
         } else {
-          identity_ = null;
-          identityBuilder_ = null;
+          user_ = null;
+          userBuilder_ = null;
         }
         if (timestampBuilder_ == null) {
           timestamp_ = null;
@@ -39560,10 +39560,10 @@ public final class Graphik {
       public api.Graphik.Request buildPartial() {
         api.Graphik.Request result = new api.Graphik.Request(this);
         result.method_ = method_;
-        if (identityBuilder_ == null) {
-          result.identity_ = identity_;
+        if (userBuilder_ == null) {
+          result.user_ = user_;
         } else {
-          result.identity_ = identityBuilder_.build();
+          result.user_ = userBuilder_.build();
         }
         if (timestampBuilder_ == null) {
           result.timestamp_ = timestamp_;
@@ -39627,8 +39627,8 @@ public final class Graphik {
           method_ = other.method_;
           onChanged();
         }
-        if (other.hasIdentity()) {
-          mergeIdentity(other.getIdentity());
+        if (other.hasUser()) {
+          mergeUser(other.getUser());
         }
         if (other.hasTimestamp()) {
           mergeTimestamp(other.getTimestamp());
@@ -39754,157 +39754,157 @@ public final class Graphik {
         return this;
       }
 
-      private api.Graphik.Doc identity_ = null;
+      private api.Graphik.Doc user_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder> identityBuilder_;
+          api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder> userBuilder_;
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
-      public boolean hasIdentity() {
-        return identityBuilder_ != null || identity_ != null;
+      public boolean hasUser() {
+        return userBuilder_ != null || user_ != null;
       }
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
-      public api.Graphik.Doc getIdentity() {
-        if (identityBuilder_ == null) {
-          return identity_ == null ? api.Graphik.Doc.getDefaultInstance() : identity_;
+      public api.Graphik.Doc getUser() {
+        if (userBuilder_ == null) {
+          return user_ == null ? api.Graphik.Doc.getDefaultInstance() : user_;
         } else {
-          return identityBuilder_.getMessage();
+          return userBuilder_.getMessage();
         }
       }
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
-      public Builder setIdentity(api.Graphik.Doc value) {
-        if (identityBuilder_ == null) {
+      public Builder setUser(api.Graphik.Doc value) {
+        if (userBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          identity_ = value;
+          user_ = value;
           onChanged();
         } else {
-          identityBuilder_.setMessage(value);
+          userBuilder_.setMessage(value);
         }
 
         return this;
       }
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
-      public Builder setIdentity(
+      public Builder setUser(
           api.Graphik.Doc.Builder builderForValue) {
-        if (identityBuilder_ == null) {
-          identity_ = builderForValue.build();
+        if (userBuilder_ == null) {
+          user_ = builderForValue.build();
           onChanged();
         } else {
-          identityBuilder_.setMessage(builderForValue.build());
+          userBuilder_.setMessage(builderForValue.build());
         }
 
         return this;
       }
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
-      public Builder mergeIdentity(api.Graphik.Doc value) {
-        if (identityBuilder_ == null) {
-          if (identity_ != null) {
-            identity_ =
-              api.Graphik.Doc.newBuilder(identity_).mergeFrom(value).buildPartial();
+      public Builder mergeUser(api.Graphik.Doc value) {
+        if (userBuilder_ == null) {
+          if (user_ != null) {
+            user_ =
+              api.Graphik.Doc.newBuilder(user_).mergeFrom(value).buildPartial();
           } else {
-            identity_ = value;
+            user_ = value;
           }
           onChanged();
         } else {
-          identityBuilder_.mergeFrom(value);
+          userBuilder_.mergeFrom(value);
         }
 
         return this;
       }
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
-      public Builder clearIdentity() {
-        if (identityBuilder_ == null) {
-          identity_ = null;
+      public Builder clearUser() {
+        if (userBuilder_ == null) {
+          user_ = null;
           onChanged();
         } else {
-          identity_ = null;
-          identityBuilder_ = null;
+          user_ = null;
+          userBuilder_ = null;
         }
 
         return this;
       }
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
-      public api.Graphik.Doc.Builder getIdentityBuilder() {
+      public api.Graphik.Doc.Builder getUserBuilder() {
         
         onChanged();
-        return getIdentityFieldBuilder().getBuilder();
+        return getUserFieldBuilder().getBuilder();
       }
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
-      public api.Graphik.DocOrBuilder getIdentityOrBuilder() {
-        if (identityBuilder_ != null) {
-          return identityBuilder_.getMessageOrBuilder();
+      public api.Graphik.DocOrBuilder getUserOrBuilder() {
+        if (userBuilder_ != null) {
+          return userBuilder_.getMessageOrBuilder();
         } else {
-          return identity_ == null ?
-              api.Graphik.Doc.getDefaultInstance() : identity_;
+          return user_ == null ?
+              api.Graphik.Doc.getDefaultInstance() : user_;
         }
       }
       /**
        * <pre>
-       * identity is the identity making the request
+       * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc identity = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder> 
-          getIdentityFieldBuilder() {
-        if (identityBuilder_ == null) {
-          identityBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          getUserFieldBuilder() {
+        if (userBuilder_ == null) {
+          userBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder>(
-                  getIdentity(),
+                  getUser(),
                   getParentForChildren(),
                   isClean());
-          identity_ = null;
+          user_ = null;
         }
-        return identityBuilder_;
+        return userBuilder_;
       }
 
       private com.google.protobuf.Timestamp timestamp_ = null;
@@ -40577,64 +40577,64 @@ public final class Graphik {
       "\003 \001(\0132\020.api.Authorizers\022\'\n\nvalidators\030\004 " +
       "\001(\0132\023.api.TypeValidators\022\035\n\007indexes\030\005 \001(" +
       "\0132\014.api.Indexes\" \n\nExprFilter\022\022\n\nexpress" +
-      "ion\030\001 \001(\t\"\260\001\n\007Request\022 \n\006method\030\001 \001(\tB\020\342" +
-      "\337\037\014\n\n^.{1,225}$\022\"\n\010identity\030\002 \001(\0132\010.api." +
-      "DocB\006\342\337\037\002 \001\0225\n\ttimestamp\030\003 \001(\0132\032.google." +
-      "protobuf.TimestampB\006\342\337\037\002 \001\022(\n\007request\030\004 " +
-      "\001(\0132\027.google.protobuf.Struct*\035\n\tAlgorith" +
-      "m\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t\n\005COUN" +
-      "T\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022" +
-      "\010\n\004PROD\020\0052\275\017\n\017DatabaseService\022+\n\004Ping\022\026." +
-      "google.protobuf.Empty\032\t.api.Pong\"\000\0222\n\tGe" +
-      "tSchema\022\026.google.protobuf.Empty\032\013.api.Sc" +
-      "hema\"\000\022<\n\016SetAuthorizers\022\020.api.Authorize" +
-      "rs\032\026.google.protobuf.Empty\"\000\0224\n\nSetIndex" +
-      "es\022\014.api.Indexes\032\026.google.protobuf.Empty" +
-      "\"\000\022B\n\021SetTypeValidators\022\023.api.TypeValida" +
-      "tors\032\026.google.protobuf.Empty\"\000\022(\n\002Me\022\026.g" +
-      "oogle.protobuf.Empty\032\010.api.Doc\"\000\022,\n\tCrea" +
-      "teDoc\022\023.api.DocConstructor\032\010.api.Doc\"\000\022/" +
-      "\n\nCreateDocs\022\024.api.DocConstructors\032\t.api" +
-      ".Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.api.Doc\"\000\022" +
-      "&\n\nSearchDocs\022\013.api.Filter\032\t.api.Docs\"\000\022" +
-      "+\n\010Traverse\022\014.api.TFilter\032\017.api.Traversa" +
-      "ls\"\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022%" +
-      "\n\010EditDocs\022\014.api.EFilter\032\t.api.Docs\"\000\022,\n" +
-      "\006DelDoc\022\010.api.Ref\032\026.google.protobuf.Empt" +
-      "y\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google.pro" +
-      "tobuf.Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsF" +
-      "ilter\032\014.api.Boolean\"\000\0225\n\020ExistsConnectio" +
-      "n\022\021.api.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006" +
-      "HasDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasC" +
-      "onnection\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020C" +
-      "reateConnection\022\032.api.ConnectionConstruc" +
-      "tor\032\017.api.Connection\"\000\022D\n\021CreateConnecti" +
-      "ons\022\033.api.ConnectionConstructors\032\020.api.C" +
-      "onnections\"\000\022;\n\020SearchAndConnect\022\023.api.S" +
-      "ConnectFilter\032\020.api.Connections\"\000\022,\n\rGet" +
-      "Connection\022\010.api.Ref\032\017.api.Connection\"\000\022" +
-      "4\n\021SearchConnections\022\013.api.Filter\032\020.api." +
-      "Connections\"\000\022.\n\016EditConnection\022\t.api.Ed" +
-      "it\032\017.api.Connection\"\000\0223\n\017EditConnections" +
-      "\022\014.api.EFilter\032\020.api.Connections\"\000\0223\n\rDe" +
-      "lConnection\022\010.api.Ref\032\026.google.protobuf." +
-      "Empty\"\000\0227\n\016DelConnections\022\013.api.Filter\032\026" +
-      ".google.protobuf.Empty\"\000\0223\n\017ConnectionsF" +
-      "rom\022\014.api.CFilter\032\020.api.Connections\"\000\0221\n" +
-      "\rConnectionsTo\022\014.api.CFilter\032\020.api.Conne" +
-      "ctions\"\000\022.\n\rAggregateDocs\022\016.api.AggFilte" +
-      "r\032\013.api.Number\"\000\0225\n\024AggregateConnections" +
-      "\022\016.api.AggFilter\032\013.api.Number\"\000\0229\n\007Publi" +
-      "sh\022\024.api.OutboundMessage\032\026.google.protob" +
-      "uf.Empty\"\000\022.\n\tSubscribe\022\017.api.ChanFilter" +
-      "\032\014.api.Message\"\0000\001\022:\n\023PushDocConstructor" +
-      "s\022\023.api.DocConstructor\032\010.api.Doc\"\000(\0010\001\022O" +
-      "\n\032PushConnectionConstructors\022\032.api.Conne" +
-      "ctionConstructor\032\017.api.Connection\"\000(\0010\001\022" +
-      "0\n\010SeedDocs\022\010.api.Doc\032\026.google.protobuf." +
-      "Empty\"\000(\001\022>\n\017SeedConnections\022\017.api.Conne" +
-      "ction\032\026.google.protobuf.Empty\"\000(\001B\007Z\005api" +
-      "pbb\006proto3"
+      "ion\030\001 \001(\t\"\254\001\n\007Request\022 \n\006method\030\001 \001(\tB\020\342" +
+      "\337\037\014\n\n^.{1,225}$\022\036\n\004user\030\002 \001(\0132\010.api.DocB" +
+      "\006\342\337\037\002 \001\0225\n\ttimestamp\030\003 \001(\0132\032.google.prot" +
+      "obuf.TimestampB\006\342\337\037\002 \001\022(\n\007request\030\004 \001(\0132" +
+      "\027.google.protobuf.Struct*\035\n\tAlgorithm\022\007\n" +
+      "\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t\n\005COUNT\020\000\022" +
+      "\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004P" +
+      "ROD\020\0052\275\017\n\017DatabaseService\022+\n\004Ping\022\026.goog" +
+      "le.protobuf.Empty\032\t.api.Pong\"\000\0222\n\tGetSch" +
+      "ema\022\026.google.protobuf.Empty\032\013.api.Schema" +
+      "\"\000\022<\n\016SetAuthorizers\022\020.api.Authorizers\032\026" +
+      ".google.protobuf.Empty\"\000\0224\n\nSetIndexes\022\014" +
+      ".api.Indexes\032\026.google.protobuf.Empty\"\000\022B" +
+      "\n\021SetTypeValidators\022\023.api.TypeValidators" +
+      "\032\026.google.protobuf.Empty\"\000\022(\n\002Me\022\026.googl" +
+      "e.protobuf.Empty\032\010.api.Doc\"\000\022,\n\tCreateDo" +
+      "c\022\023.api.DocConstructor\032\010.api.Doc\"\000\022/\n\nCr" +
+      "eateDocs\022\024.api.DocConstructors\032\t.api.Doc" +
+      "s\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.api.Doc\"\000\022&\n\nS" +
+      "earchDocs\022\013.api.Filter\032\t.api.Docs\"\000\022+\n\010T" +
+      "raverse\022\014.api.TFilter\032\017.api.Traversals\"\000" +
+      "\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022%\n\010Ed" +
+      "itDocs\022\014.api.EFilter\032\t.api.Docs\"\000\022,\n\006Del" +
+      "Doc\022\010.api.Ref\032\026.google.protobuf.Empty\"\000\022" +
+      "0\n\007DelDocs\022\013.api.Filter\032\026.google.protobu" +
+      "f.Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsFilte" +
+      "r\032\014.api.Boolean\"\000\0225\n\020ExistsConnection\022\021." +
+      "api.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006HasD" +
+      "oc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasConne" +
+      "ction\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020Creat" +
+      "eConnection\022\032.api.ConnectionConstructor\032" +
+      "\017.api.Connection\"\000\022D\n\021CreateConnections\022" +
+      "\033.api.ConnectionConstructors\032\020.api.Conne" +
+      "ctions\"\000\022;\n\020SearchAndConnect\022\023.api.SConn" +
+      "ectFilter\032\020.api.Connections\"\000\022,\n\rGetConn" +
+      "ection\022\010.api.Ref\032\017.api.Connection\"\000\0224\n\021S" +
+      "earchConnections\022\013.api.Filter\032\020.api.Conn" +
+      "ections\"\000\022.\n\016EditConnection\022\t.api.Edit\032\017" +
+      ".api.Connection\"\000\0223\n\017EditConnections\022\014.a" +
+      "pi.EFilter\032\020.api.Connections\"\000\0223\n\rDelCon" +
+      "nection\022\010.api.Ref\032\026.google.protobuf.Empt" +
+      "y\"\000\0227\n\016DelConnections\022\013.api.Filter\032\026.goo" +
+      "gle.protobuf.Empty\"\000\0223\n\017ConnectionsFrom\022" +
+      "\014.api.CFilter\032\020.api.Connections\"\000\0221\n\rCon" +
+      "nectionsTo\022\014.api.CFilter\032\020.api.Connectio" +
+      "ns\"\000\022.\n\rAggregateDocs\022\016.api.AggFilter\032\013." +
+      "api.Number\"\000\0225\n\024AggregateConnections\022\016.a" +
+      "pi.AggFilter\032\013.api.Number\"\000\0229\n\007Publish\022\024" +
+      ".api.OutboundMessage\032\026.google.protobuf.E" +
+      "mpty\"\000\022.\n\tSubscribe\022\017.api.ChanFilter\032\014.a" +
+      "pi.Message\"\0000\001\022:\n\023PushDocConstructors\022\023." +
+      "api.DocConstructor\032\010.api.Doc\"\000(\0010\001\022O\n\032Pu" +
+      "shConnectionConstructors\022\032.api.Connectio" +
+      "nConstructor\032\017.api.Connection\"\000(\0010\001\0220\n\010S" +
+      "eedDocs\022\010.api.Doc\032\026.google.protobuf.Empt" +
+      "y\"\000(\001\022>\n\017SeedConnections\022\017.api.Connectio" +
+      "n\032\026.google.protobuf.Empty\"\000(\001B\007Z\005apipbb\006" +
+      "proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -40886,7 +40886,7 @@ public final class Graphik {
     internal_static_api_Request_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Request_descriptor,
-        new java.lang.String[] { "Method", "Identity", "Timestamp", "Request", });
+        new java.lang.String[] { "Method", "User", "Timestamp", "Request", });
     com.google.protobuf.ExtensionRegistry registry =
         com.google.protobuf.ExtensionRegistry.newInstance();
     registry.add(validator.Validator.field);

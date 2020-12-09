@@ -65,6 +65,18 @@ type Traversal {
   hops: Int!
 }
 
+# Request is an inbound gRPC request that authorizers execute against
+type Request {
+  # method is the gRPC method invoked
+  method: String!
+  # user is the user making the request
+  user: Doc!
+  # timestamp is the time of the request
+  timestamp: Time!
+  # request is the request represented as k/v pairs
+  request: Map!
+}
+
 # Traversals is an array of Traversal that is returned from Graph traversal algorithms
 type Traversals {
   # traversals is an array of Traversal
@@ -136,7 +148,7 @@ type Indexes {
   indexes: [Index!]
 }
 
-# Authorizer is a graph primitive used for authorizing inbound requests
+# Authorizer is a graph primitive used for authorizing inbound requests(see Request)
 type Authorizer {
   # name is the unique name of the authorizer in the graph
   name: String!
@@ -444,17 +456,17 @@ type Mutation {
 }
 
 type Query {
-  # ping checks if the server is healthy
+  # ping checks if the server is healthy.
   ping(where: Empty): Pong!
-  # getSchema gets information about the graph schema
+  # getSchema gets information about node/connection types, type-validators, indexes, and authorizers
   getSchema(where: Empty): Schema!
-  # me returns your identity + connections
+  # me returns a Doc of the currently logged in user
   me(where: Empty): Doc!
   # getDoc gets a doc at the given ref
   getDoc(where: RefInput!): Doc!
   # searchDocs searches for 0-many docs
   searchDocs(where: Filter!): Docs!
-  # traverse searches for 0-many docs using dfs search
+  # traverse searches for 0-many docs using a graph traversal algorithm
   traverse(where: TFilter!): Traversals!
   # getConnection gets a connection at the given ref
   getConnection(where: RefInput!): Connection!

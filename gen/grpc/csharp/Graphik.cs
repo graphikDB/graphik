@@ -120,57 +120,57 @@ namespace Api {
             "JQoLYXV0aG9yaXplcnMYAyABKAsyEC5hcGkuQXV0aG9yaXplcnMSJwoKdmFs",
             "aWRhdG9ycxgEIAEoCzITLmFwaS5UeXBlVmFsaWRhdG9ycxIdCgdpbmRleGVz",
             "GAUgASgLMgwuYXBpLkluZGV4ZXMiIAoKRXhwckZpbHRlchISCgpleHByZXNz",
-            "aW9uGAEgASgJIrABCgdSZXF1ZXN0EiAKBm1ldGhvZBgBIAEoCUIQ4t8fDAoK",
-            "Xi57MSwyMjV9JBIiCghpZGVudGl0eRgCIAEoCzIILmFwaS5Eb2NCBuLfHwIg",
-            "ARI1Cgl0aW1lc3RhbXAYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0",
-            "YW1wQgbi3x8CIAESKAoHcmVxdWVzdBgEIAEoCzIXLmdvb2dsZS5wcm90b2J1",
-            "Zi5TdHJ1Y3QqHQoJQWxnb3JpdGhtEgcKA0JGUxAAEgcKA0RGUxABKkQKCUFn",
-            "Z3JlZ2F0ZRIJCgVDT1VOVBAAEgcKA1NVTRABEgcKA0FWRxACEgcKA01BWBAD",
-            "EgcKA01JThAEEggKBFBST0QQBTK9DwoPRGF0YWJhc2VTZXJ2aWNlEisKBFBp",
-            "bmcSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaCS5hcGkuUG9uZyIAEjIKCUdl",
-            "dFNjaGVtYRIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoLLmFwaS5TY2hlbWEi",
-            "ABI8Cg5TZXRBdXRob3JpemVycxIQLmFwaS5BdXRob3JpemVycxoWLmdvb2ds",
-            "ZS5wcm90b2J1Zi5FbXB0eSIAEjQKClNldEluZGV4ZXMSDC5hcGkuSW5kZXhl",
-            "cxoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEkIKEVNldFR5cGVWYWxpZGF0",
-            "b3JzEhMuYXBpLlR5cGVWYWxpZGF0b3JzGhYuZ29vZ2xlLnByb3RvYnVmLkVt",
-            "cHR5IgASKAoCTWUSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaCC5hcGkuRG9j",
-            "IgASLAoJQ3JlYXRlRG9jEhMuYXBpLkRvY0NvbnN0cnVjdG9yGgguYXBpLkRv",
-            "YyIAEi8KCkNyZWF0ZURvY3MSFC5hcGkuRG9jQ29uc3RydWN0b3JzGgkuYXBp",
-            "LkRvY3MiABIeCgZHZXREb2MSCC5hcGkuUmVmGgguYXBpLkRvYyIAEiYKClNl",
-            "YXJjaERvY3MSCy5hcGkuRmlsdGVyGgkuYXBpLkRvY3MiABIrCghUcmF2ZXJz",
-            "ZRIMLmFwaS5URmlsdGVyGg8uYXBpLlRyYXZlcnNhbHMiABIgCgdFZGl0RG9j",
-            "EgkuYXBpLkVkaXQaCC5hcGkuRG9jIgASJQoIRWRpdERvY3MSDC5hcGkuRUZp",
-            "bHRlchoJLmFwaS5Eb2NzIgASLAoGRGVsRG9jEgguYXBpLlJlZhoWLmdvb2ds",
-            "ZS5wcm90b2J1Zi5FbXB0eSIAEjAKB0RlbERvY3MSCy5hcGkuRmlsdGVyGhYu",
-            "Z29vZ2xlLnByb3RvYnVmLkVtcHR5IgASLgoJRXhpc3RzRG9jEhEuYXBpLkV4",
-            "aXN0c0ZpbHRlchoMLmFwaS5Cb29sZWFuIgASNQoQRXhpc3RzQ29ubmVjdGlv",
-            "bhIRLmFwaS5FeGlzdHNGaWx0ZXIaDC5hcGkuQm9vbGVhbiIAEiIKBkhhc0Rv",
-            "YxIILmFwaS5SZWYaDC5hcGkuQm9vbGVhbiIAEikKDUhhc0Nvbm5lY3Rpb24S",
-            "CC5hcGkuUmVmGgwuYXBpLkJvb2xlYW4iABJBChBDcmVhdGVDb25uZWN0aW9u",
-            "EhouYXBpLkNvbm5lY3Rpb25Db25zdHJ1Y3RvchoPLmFwaS5Db25uZWN0aW9u",
-            "IgASRAoRQ3JlYXRlQ29ubmVjdGlvbnMSGy5hcGkuQ29ubmVjdGlvbkNvbnN0",
-            "cnVjdG9ycxoQLmFwaS5Db25uZWN0aW9ucyIAEjsKEFNlYXJjaEFuZENvbm5l",
-            "Y3QSEy5hcGkuU0Nvbm5lY3RGaWx0ZXIaEC5hcGkuQ29ubmVjdGlvbnMiABIs",
-            "Cg1HZXRDb25uZWN0aW9uEgguYXBpLlJlZhoPLmFwaS5Db25uZWN0aW9uIgAS",
-            "NAoRU2VhcmNoQ29ubmVjdGlvbnMSCy5hcGkuRmlsdGVyGhAuYXBpLkNvbm5l",
-            "Y3Rpb25zIgASLgoORWRpdENvbm5lY3Rpb24SCS5hcGkuRWRpdBoPLmFwaS5D",
-            "b25uZWN0aW9uIgASMwoPRWRpdENvbm5lY3Rpb25zEgwuYXBpLkVGaWx0ZXIa",
-            "EC5hcGkuQ29ubmVjdGlvbnMiABIzCg1EZWxDb25uZWN0aW9uEgguYXBpLlJl",
-            "ZhoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEjcKDkRlbENvbm5lY3Rpb25z",
-            "EgsuYXBpLkZpbHRlchoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEjMKD0Nv",
-            "bm5lY3Rpb25zRnJvbRIMLmFwaS5DRmlsdGVyGhAuYXBpLkNvbm5lY3Rpb25z",
-            "IgASMQoNQ29ubmVjdGlvbnNUbxIMLmFwaS5DRmlsdGVyGhAuYXBpLkNvbm5l",
-            "Y3Rpb25zIgASLgoNQWdncmVnYXRlRG9jcxIOLmFwaS5BZ2dGaWx0ZXIaCy5h",
-            "cGkuTnVtYmVyIgASNQoUQWdncmVnYXRlQ29ubmVjdGlvbnMSDi5hcGkuQWdn",
-            "RmlsdGVyGgsuYXBpLk51bWJlciIAEjkKB1B1Ymxpc2gSFC5hcGkuT3V0Ym91",
-            "bmRNZXNzYWdlGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASLgoJU3Vic2Ny",
-            "aWJlEg8uYXBpLkNoYW5GaWx0ZXIaDC5hcGkuTWVzc2FnZSIAMAESOgoTUHVz",
-            "aERvY0NvbnN0cnVjdG9ycxITLmFwaS5Eb2NDb25zdHJ1Y3RvchoILmFwaS5E",
-            "b2MiACgBMAESTwoaUHVzaENvbm5lY3Rpb25Db25zdHJ1Y3RvcnMSGi5hcGku",
-            "Q29ubmVjdGlvbkNvbnN0cnVjdG9yGg8uYXBpLkNvbm5lY3Rpb24iACgBMAES",
-            "MAoIU2VlZERvY3MSCC5hcGkuRG9jGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5",
-            "IgAoARI+Cg9TZWVkQ29ubmVjdGlvbnMSDy5hcGkuQ29ubmVjdGlvbhoWLmdv",
-            "b2dsZS5wcm90b2J1Zi5FbXB0eSIAKAFCB1oFYXBpcGJiBnByb3RvMw=="));
+            "aW9uGAEgASgJIqwBCgdSZXF1ZXN0EiAKBm1ldGhvZBgBIAEoCUIQ4t8fDAoK",
+            "Xi57MSwyMjV9JBIeCgR1c2VyGAIgASgLMgguYXBpLkRvY0IG4t8fAiABEjUK",
+            "CXRpbWVzdGFtcBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBC",
+            "BuLfHwIgARIoCgdyZXF1ZXN0GAQgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0",
+            "cnVjdCodCglBbGdvcml0aG0SBwoDQkZTEAASBwoDREZTEAEqRAoJQWdncmVn",
+            "YXRlEgkKBUNPVU5UEAASBwoDU1VNEAESBwoDQVZHEAISBwoDTUFYEAMSBwoD",
+            "TUlOEAQSCAoEUFJPRBAFMr0PCg9EYXRhYmFzZVNlcnZpY2USKwoEUGluZxIW",
+            "Lmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoJLmFwaS5Qb25nIgASMgoJR2V0U2No",
+            "ZW1hEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GgsuYXBpLlNjaGVtYSIAEjwK",
+            "DlNldEF1dGhvcml6ZXJzEhAuYXBpLkF1dGhvcml6ZXJzGhYuZ29vZ2xlLnBy",
+            "b3RvYnVmLkVtcHR5IgASNAoKU2V0SW5kZXhlcxIMLmFwaS5JbmRleGVzGhYu",
+            "Z29vZ2xlLnByb3RvYnVmLkVtcHR5IgASQgoRU2V0VHlwZVZhbGlkYXRvcnMS",
+            "Ey5hcGkuVHlwZVZhbGlkYXRvcnMaFi5nb29nbGUucHJvdG9idWYuRW1wdHki",
+            "ABIoCgJNZRIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoILmFwaS5Eb2MiABIs",
+            "CglDcmVhdGVEb2MSEy5hcGkuRG9jQ29uc3RydWN0b3IaCC5hcGkuRG9jIgAS",
+            "LwoKQ3JlYXRlRG9jcxIULmFwaS5Eb2NDb25zdHJ1Y3RvcnMaCS5hcGkuRG9j",
+            "cyIAEh4KBkdldERvYxIILmFwaS5SZWYaCC5hcGkuRG9jIgASJgoKU2VhcmNo",
+            "RG9jcxILLmFwaS5GaWx0ZXIaCS5hcGkuRG9jcyIAEisKCFRyYXZlcnNlEgwu",
+            "YXBpLlRGaWx0ZXIaDy5hcGkuVHJhdmVyc2FscyIAEiAKB0VkaXREb2MSCS5h",
+            "cGkuRWRpdBoILmFwaS5Eb2MiABIlCghFZGl0RG9jcxIMLmFwaS5FRmlsdGVy",
+            "GgkuYXBpLkRvY3MiABIsCgZEZWxEb2MSCC5hcGkuUmVmGhYuZ29vZ2xlLnBy",
+            "b3RvYnVmLkVtcHR5IgASMAoHRGVsRG9jcxILLmFwaS5GaWx0ZXIaFi5nb29n",
+            "bGUucHJvdG9idWYuRW1wdHkiABIuCglFeGlzdHNEb2MSES5hcGkuRXhpc3Rz",
+            "RmlsdGVyGgwuYXBpLkJvb2xlYW4iABI1ChBFeGlzdHNDb25uZWN0aW9uEhEu",
+            "YXBpLkV4aXN0c0ZpbHRlchoMLmFwaS5Cb29sZWFuIgASIgoGSGFzRG9jEggu",
+            "YXBpLlJlZhoMLmFwaS5Cb29sZWFuIgASKQoNSGFzQ29ubmVjdGlvbhIILmFw",
+            "aS5SZWYaDC5hcGkuQm9vbGVhbiIAEkEKEENyZWF0ZUNvbm5lY3Rpb24SGi5h",
+            "cGkuQ29ubmVjdGlvbkNvbnN0cnVjdG9yGg8uYXBpLkNvbm5lY3Rpb24iABJE",
+            "ChFDcmVhdGVDb25uZWN0aW9ucxIbLmFwaS5Db25uZWN0aW9uQ29uc3RydWN0",
+            "b3JzGhAuYXBpLkNvbm5lY3Rpb25zIgASOwoQU2VhcmNoQW5kQ29ubmVjdBIT",
+            "LmFwaS5TQ29ubmVjdEZpbHRlchoQLmFwaS5Db25uZWN0aW9ucyIAEiwKDUdl",
+            "dENvbm5lY3Rpb24SCC5hcGkuUmVmGg8uYXBpLkNvbm5lY3Rpb24iABI0ChFT",
+            "ZWFyY2hDb25uZWN0aW9ucxILLmFwaS5GaWx0ZXIaEC5hcGkuQ29ubmVjdGlv",
+            "bnMiABIuCg5FZGl0Q29ubmVjdGlvbhIJLmFwaS5FZGl0Gg8uYXBpLkNvbm5l",
+            "Y3Rpb24iABIzCg9FZGl0Q29ubmVjdGlvbnMSDC5hcGkuRUZpbHRlchoQLmFw",
+            "aS5Db25uZWN0aW9ucyIAEjMKDURlbENvbm5lY3Rpb24SCC5hcGkuUmVmGhYu",
+            "Z29vZ2xlLnByb3RvYnVmLkVtcHR5IgASNwoORGVsQ29ubmVjdGlvbnMSCy5h",
+            "cGkuRmlsdGVyGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASMwoPQ29ubmVj",
+            "dGlvbnNGcm9tEgwuYXBpLkNGaWx0ZXIaEC5hcGkuQ29ubmVjdGlvbnMiABIx",
+            "Cg1Db25uZWN0aW9uc1RvEgwuYXBpLkNGaWx0ZXIaEC5hcGkuQ29ubmVjdGlv",
+            "bnMiABIuCg1BZ2dyZWdhdGVEb2NzEg4uYXBpLkFnZ0ZpbHRlchoLLmFwaS5O",
+            "dW1iZXIiABI1ChRBZ2dyZWdhdGVDb25uZWN0aW9ucxIOLmFwaS5BZ2dGaWx0",
+            "ZXIaCy5hcGkuTnVtYmVyIgASOQoHUHVibGlzaBIULmFwaS5PdXRib3VuZE1l",
+            "c3NhZ2UaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABIuCglTdWJzY3JpYmUS",
+            "Dy5hcGkuQ2hhbkZpbHRlchoMLmFwaS5NZXNzYWdlIgAwARI6ChNQdXNoRG9j",
+            "Q29uc3RydWN0b3JzEhMuYXBpLkRvY0NvbnN0cnVjdG9yGgguYXBpLkRvYyIA",
+            "KAEwARJPChpQdXNoQ29ubmVjdGlvbkNvbnN0cnVjdG9ycxIaLmFwaS5Db25u",
+            "ZWN0aW9uQ29uc3RydWN0b3IaDy5hcGkuQ29ubmVjdGlvbiIAKAEwARIwCghT",
+            "ZWVkRG9jcxIILmFwaS5Eb2MaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiACgB",
+            "Ej4KD1NlZWRDb25uZWN0aW9ucxIPLmFwaS5Db25uZWN0aW9uGhYuZ29vZ2xl",
+            "LnByb3RvYnVmLkVtcHR5IgAoAUIHWgVhcGlwYmIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.StructReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.AnyReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, global::Validator.ValidatorReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Api.Algorithm), typeof(global::Api.Aggregate), }, new pbr::GeneratedClrTypeInfo[] {
@@ -212,7 +212,7 @@ namespace Api {
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.Message), global::Api.Message.Parser, new[]{ "Channel", "Data", "Sender", "Timestamp" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.Schema), global::Api.Schema.Parser, new[]{ "ConnectionTypes", "DocTypes", "Authorizers", "Validators", "Indexes" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.ExprFilter), global::Api.ExprFilter.Parser, new[]{ "Expression" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Api.Request), global::Api.Request.Parser, new[]{ "Method", "Identity", "Timestamp", "Request_" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Api.Request), global::Api.Request.Parser, new[]{ "Method", "User", "Timestamp", "Request_" }, null, null, null)
           }));
     }
     #endregion
@@ -7280,7 +7280,7 @@ namespace Api {
     public const int SenderFieldNumber = 3;
     private global::Api.Ref sender_;
     /// <summary>
-    /// sender is the identity that sent the message
+    /// sender is the user that sent the message
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Api.Ref Sender {
@@ -7864,7 +7864,7 @@ namespace Api {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Request(Request other) : this() {
       method_ = other.method_;
-      identity_ = other.identity_ != null ? other.identity_.Clone() : null;
+      user_ = other.user_ != null ? other.user_.Clone() : null;
       timestamp_ = other.timestamp_ != null ? other.timestamp_.Clone() : null;
       request_ = other.request_ != null ? other.request_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -7889,17 +7889,17 @@ namespace Api {
       }
     }
 
-    /// <summary>Field number for the "identity" field.</summary>
-    public const int IdentityFieldNumber = 2;
-    private global::Api.Doc identity_;
+    /// <summary>Field number for the "user" field.</summary>
+    public const int UserFieldNumber = 2;
+    private global::Api.Doc user_;
     /// <summary>
-    /// identity is the identity making the request
+    /// user is the user making the request
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Api.Doc Identity {
-      get { return identity_; }
+    public global::Api.Doc User {
+      get { return user_; }
       set {
-        identity_ = value;
+        user_ = value;
       }
     }
 
@@ -7945,7 +7945,7 @@ namespace Api {
         return true;
       }
       if (Method != other.Method) return false;
-      if (!object.Equals(Identity, other.Identity)) return false;
+      if (!object.Equals(User, other.User)) return false;
       if (!object.Equals(Timestamp, other.Timestamp)) return false;
       if (!object.Equals(Request_, other.Request_)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -7955,7 +7955,7 @@ namespace Api {
     public override int GetHashCode() {
       int hash = 1;
       if (Method.Length != 0) hash ^= Method.GetHashCode();
-      if (identity_ != null) hash ^= Identity.GetHashCode();
+      if (user_ != null) hash ^= User.GetHashCode();
       if (timestamp_ != null) hash ^= Timestamp.GetHashCode();
       if (request_ != null) hash ^= Request_.GetHashCode();
       if (_unknownFields != null) {
@@ -7975,9 +7975,9 @@ namespace Api {
         output.WriteRawTag(10);
         output.WriteString(Method);
       }
-      if (identity_ != null) {
+      if (user_ != null) {
         output.WriteRawTag(18);
-        output.WriteMessage(Identity);
+        output.WriteMessage(User);
       }
       if (timestamp_ != null) {
         output.WriteRawTag(26);
@@ -7998,8 +7998,8 @@ namespace Api {
       if (Method.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Method);
       }
-      if (identity_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Identity);
+      if (user_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(User);
       }
       if (timestamp_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Timestamp);
@@ -8021,11 +8021,11 @@ namespace Api {
       if (other.Method.Length != 0) {
         Method = other.Method;
       }
-      if (other.identity_ != null) {
-        if (identity_ == null) {
-          identity_ = new global::Api.Doc();
+      if (other.user_ != null) {
+        if (user_ == null) {
+          user_ = new global::Api.Doc();
         }
-        Identity.MergeFrom(other.Identity);
+        User.MergeFrom(other.User);
       }
       if (other.timestamp_ != null) {
         if (timestamp_ == null) {
@@ -8055,10 +8055,10 @@ namespace Api {
             break;
           }
           case 18: {
-            if (identity_ == null) {
-              identity_ = new global::Api.Doc();
+            if (user_ == null) {
+              user_ = new global::Api.Doc();
             }
-            input.ReadMessage(identity_);
+            input.ReadMessage(user_);
             break;
           }
           case 26: {

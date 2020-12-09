@@ -59,7 +59,7 @@ func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error)
 			"this": map[string]interface{}{
 				"method":    req.GetMethod(),
 				"request":   req.GetRequest().AsMap(),
-				"identity":  req.GetIdentity().AsMap(),
+				"user":      req.GetUser().AsMap(),
 				"timestamp": req.GetTimestamp().Seconds,
 			},
 		})
