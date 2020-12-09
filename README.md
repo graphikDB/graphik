@@ -29,16 +29,18 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
 - [x] Native OAuth/OIDC Support & Single Sign On
 - [x] Embedded SSO protected GraphQl Playground
 - [x] Persistant(bbolt LMDB)
-- [x] Channel Based PubSub
+- [x] Identity-Aware PubSub with Channels & Message Filtering(gRPC & graphQL)
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Type Validators
-- [ ] [Common Expression Language](https://opensource.google/projects/cel) Based Triggers
 - [x] Loosely-Typed(mongo-esque)
 - [x] [Prometheus Metrics](https://prometheus.io/)
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
 - [x] Safe to Deploy Publicly(with authorizers)
 - [x] Read-Optimized
+- [x] Full Text Search(CEL)
+- [x] Regular Expressions(CEL)
+- [x] Client to Server streaming(gRPC only)
 
 ## Key Dependencies
 
