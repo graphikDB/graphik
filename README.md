@@ -1,14 +1,18 @@
 # Graphik
 
+https://graphikdb.github.io/graphik/
+
+
     git clone git@github.com:graphikDB/graphik.git
     
 `    docker pull graphikdb/graphik:v0.1.2`
 
 Graphik is an identity-aware, permissioned, persistant document & graph database written in Go
 
+
 ## Helpful Links
 
-- [GraphQL Documentation](https://autom8ter.github.io/graphik/)
+- [GraphQL Documentation Site](https://graphikdb.github.io/graphik/)
 - [Protobuf/gRPC API Spec](https://github.com/graphikDB/graphik/blob/master/graphik.proto)
 - [Graphql API Spec](https://github.com/graphikDB/graphik/blob/master/schema.graphql)
 - [Common Expression Language Code Lab](https://codelabs.developers.google.com/codelabs/cel-go/index.html#0)
