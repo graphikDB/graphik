@@ -223,6 +223,21 @@ query {
 
 ## Deployment
 
+Regardless of deployment methodology, please set the following environmental variables or include them in a ${pwd}/.env file
+
+```
+GRAPHIK_PLAYGROUND_CLIENT_ID=${client_id}
+GRAPHIK_PLAYGROUND_CLIENT_SECRET=${client_secret}
+GRAPHIK_PLAYGROUND_REDIRECT=http://localhost:7820/playground/callback
+GRAPHIK_OPEN_ID=${open_id_connect_metadata_url}
+#GRAPHIK_ALLOW_HEADERS=${cors_headers}
+#GRAPHIK_ALLOW_METHOD=${cors_methos}
+#GRAPHIK_ALLOW_ORIGINS=${cors_origins}
+#GRAPHIK_ROOT_USERS=${root_users}
+#GRAPHIK_TLS_CERT=${tls_cert_path}
+#GRAPHIK_TLS_KEY=${tls_key_path}
+```
+
 ### Docker-Compose
 
 add this docker-compose.yml to ${pwd}:
@@ -248,18 +263,6 @@ add this docker-compose.yml to ${pwd}:
     volumes:
       default:
 
-add a .env file to ${pwd}
-    
-    GRAPHIK_PLAYGROUND_CLIENT_ID=${client_id}
-    GRAPHIK_PLAYGROUND_CLIENT_SECRET=${client_secret}
-    GRAPHIK_PLAYGROUND_REDIRECT=http://localhost:7820/playground/callback
-    GRAPHIK_OPEN_ID=${open_id_connect_metadata_url}
-    #GRAPHIK_ALLOW_HEADERS=${cors_headers}
-    #GRAPHIK_ALLOW_METHOD=${cors_methos}
-    #GRAPHIK_ALLOW_ORIGINS=${cors_origins}
-    #GRAPHIK_ROOT_USERS=${root_users}
-    #GRAPHIK_TLS_CERT=${tls_cert_path}
-    #GRAPHIK_TLS_KEY=${tls_key_path}
     
 then run:
 
@@ -288,4 +291,4 @@ to shutdown:
 
 ### Windows
 
-    Nope
+    Nope - use docker
