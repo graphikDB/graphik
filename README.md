@@ -6,7 +6,7 @@ https://graphikdb.github.io/graphik/
 
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.2.1`
+`    docker pull graphikdb/graphik:v0.2.2`
 
 Graphik is an identity-aware, permissioned, persistant document & graph database written in Go
 
@@ -228,7 +228,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.2.1
+        image: graphikdb/graphik:v0.2.2
         env_file:
           - .env
         ports:

@@ -10,7 +10,6 @@ import (
 	"github.com/graphikDB/graphik/logger"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
-	"log"
 	"strings"
 	"time"
 )
@@ -21,13 +20,13 @@ func init() {
 	// ensure graphik server is started with --auth.jwks=https://www.googleapis.com/oauth2/v3/certs
 	tokenSource, err := google.DefaultTokenSource(context.Background(), "https://www.googleapis.com/auth/devstorage.full_control")
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 
 	client, err = graphik.NewClient(ctx, "localhost:7820", graphik.WithTokenSource(tokenSource))
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 }
@@ -40,12 +39,12 @@ func ExampleNewClient() {
 	// ensure graphik server is started with --auth.jwks=https://www.googleapis.com/oauth2/v3/certs
 	source, err := google.DefaultTokenSource(context.Background(), "https://www.googleapis.com/auth/devstorage.full_control")
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	cli, err := graphik.NewClient(ctx, "localhost:7820", graphik.WithTokenSource(source))
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	pong, err := cli.Ping(ctx, &empty.Empty{})
@@ -67,12 +66,12 @@ func ExampleClient_SetAuthorizers() {
 		},
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	schema, err := client.GetSchema(context.Background(), &empty.Empty{})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	var authorizers []string
@@ -83,10 +82,66 @@ func ExampleClient_SetAuthorizers() {
 	// Output: testing
 }
 
+func ExampleClient_SetTypeValidators() {
+	_, err := client.SetTypeValidators(context.Background(), &apipb2.TypeValidators{
+		Validators: []*apipb2.TypeValidator{
+			{
+				Name:       "testing",
+				Gtype:      "user",
+				Expression: `this.user.attributes.email.contains("coleman")`,
+			},
+		},
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	schema, err := client.GetSchema(context.Background(), &empty.Empty{})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	var validators []string
+	for _, a := range schema.GetValidators().GetValidators() {
+		validators = append(validators, a.Name)
+	}
+	fmt.Printf("%s", strings.Join(validators, ","))
+	// Output: testing
+}
+
+func ExampleClient_SetIndexes() {
+	_, err := client.SetIndexes(context.Background(), &apipb2.Indexes{
+		Indexes: []*apipb2.Index{
+			{
+				Name:        "testing",
+				Gtype:       "owner",
+				Expression:  `this.attributes.primary_owner`,
+				Docs:        false,
+				Connections: true,
+			},
+		},
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	schema, err := client.GetSchema(context.Background(), &empty.Empty{})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	var indexes []string
+	for _, a := range schema.GetIndexes().GetIndexes() {
+		indexes = append(indexes, a.Name)
+	}
+	fmt.Printf("%s", strings.Join(indexes, ","))
+	// Output: testing
+}
+
 func ExampleClient_Me() {
 	me, err := client.Me(context.Background(), &empty.Empty{})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	issuer := me.GetAttributes().GetFields()["sub"].GetStringValue() // token issuer
@@ -111,14 +166,36 @@ func ExampleClient_HasDoc() {
 }
 
 func ExampleClient_CreateDoc() {
-	charlie, err := client.CreateDoc(context.Background(), &apipb2.DocConstructor{
+	ctx := context.Background()
+	charlie, err := client.CreateDoc(ctx, &apipb2.DocConstructor{
 		Ref: &apipb2.RefConstructor{Gtype: "dog"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
 			"name": "Charlie",
 		}),
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
+		return
+	}
+	has, err := client.HasDoc(ctx, charlie.GetRef())
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	if !has.GetValue() {
+		fmt.Print("failed to find charlie")
+		return
+	}
+	exists, err := client.ExistsDoc(ctx, &apipb2.ExistsFilter{
+		Gtype:      "dog",
+		Expression: "this.attributes.name.contains('Charlie')",
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	if !exists.GetValue() {
+		fmt.Print("failed to find charlie")
 		return
 	}
 	name := charlie.Attributes.Fields["name"].GetStringValue()
@@ -134,7 +211,7 @@ func ExampleClient_SearchDocs() {
 		Sort:       "ref.gid",
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	dog := dogs.GetDocs()[0]
@@ -150,7 +227,7 @@ func ExampleClient_CreateConnection() {
 		Limit:      1,
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	charlie := dogs.GetDocs()[0]
@@ -161,7 +238,7 @@ func ExampleClient_CreateConnection() {
 		}),
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	ownerConnection, err := client.CreateConnection(context.Background(), &apipb2.ConnectionConstructor{
@@ -173,7 +250,28 @@ func ExampleClient_CreateConnection() {
 		To:   coleman.Ref,
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
+		return
+	}
+	has, err := client.HasConnection(context.Background(), ownerConnection.Ref)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	if !has.GetValue() {
+		fmt.Print("failed to find owner connection")
+		return
+	}
+	exists, err := client.ExistsConnection(context.Background(), &apipb2.ExistsFilter{
+		Gtype:      "owner",
+		Expression: "this.attributes.primary_owner",
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	if !exists.GetValue() {
+		fmt.Print("failed to find owner connection")
 		return
 	}
 	primary := ownerConnection.Attributes.Fields["primary_owner"].GetBoolValue()
@@ -187,9 +285,10 @@ func ExampleClient_SearchConnections() {
 		Expression: `this.attributes.primary_owner`,
 		Sort:       "ref.gtype",
 		Limit:      1,
+		Index:      "testing",
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	coleman := owners.GetConnections()[0]
@@ -205,11 +304,10 @@ func ExampleClient_EditDoc() {
 		Limit:      1,
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	charlie := dogs.GetDocs()[0]
-	log.Println(charlie.String())
 	charlie, err = client.EditDoc(context.Background(), &apipb2.Edit{
 		Ref: charlie.Ref,
 		Attributes: apipb2.NewStruct(map[string]interface{}{
@@ -217,7 +315,7 @@ func ExampleClient_EditDoc() {
 		}),
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	fmt.Println(charlie.GetAttributes().GetFields()["weight"].GetNumberValue())
@@ -232,7 +330,7 @@ func ExampleClient_Publish() {
 		}),
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	fmt.Println(res.String())
@@ -253,7 +351,7 @@ func ExampleClient_Subscribe() {
 			return true
 		})
 		if err != nil {
-			log.Print("failed to subscribe", err)
+			fmt.Print("failed to subscribe", err)
 			return
 		}
 	})
@@ -265,7 +363,7 @@ func ExampleClient_Subscribe() {
 		}),
 	})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	m.Wait()
@@ -275,7 +373,7 @@ func ExampleClient_Subscribe() {
 func ExampleClient_GetSchema() {
 	schema, err := client.GetSchema(context.Background(), &empty.Empty{})
 	if err != nil {
-		log.Print(err)
+		fmt.Print(err)
 		return
 	}
 	fmt.Printf("doc types: %s\n", strings.Join(schema.DocTypes, ","))

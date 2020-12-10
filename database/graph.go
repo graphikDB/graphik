@@ -124,6 +124,10 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		if err != nil {
 			return errors.Wrap(err, "failed to create authorizers bucket")
 		}
+		_, err = tx.CreateBucketIfNotExists(dbTypeValidators)
+		if err != nil {
+			return errors.Wrap(err, "failed to create type validators bucket")
+		}
 		_, err = tx.CreateBucketIfNotExists(dbIndexDocs)
 		if err != nil {
 			return errors.Wrap(err, "failed to create doc/index bucket")
@@ -1150,9 +1154,15 @@ func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.ExistsFilter) (*apipb.
 		return true
 	})
 	if err != nil {
+		if err ==ErrNotFound {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	if hasErr != nil {
+		if err == ErrNotFound {
+			return &apipb.Boolean{Value: false}, nil
+		}
 		return nil, status.Error(codes.InvalidArgument, hasErr.Error())
 	}
 	return &apipb.Boolean{Value: res}, nil
@@ -1178,9 +1188,15 @@ func (g *Graph) ExistsConnection(ctx context.Context, has *apipb.ExistsFilter) (
 		return true
 	})
 	if err != nil {
+		if err == ErrNotFound {
+			return &apipb.Boolean{Value: false}, nil
+		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 	if hasErr != nil {
+		if err == ErrNotFound {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
 		return nil, status.Error(codes.InvalidArgument, hasErr.Error())
 	}
 	return &apipb.Boolean{Value: res}, nil
