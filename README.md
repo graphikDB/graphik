@@ -24,6 +24,7 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
     + [Type Validators](#type-validators)
       - [Type Validator Examples](#type-validator-examples)
     + [Identity Graph](#identity-graph)
+    + [GraphQL vs gRPC API](#graphql-vs-grpc-api)
     + [Additional Details](#additional-details)
   * [Sample GraphQL Queries](#sample-graphql-queries)
     + [Node Traversal](#node-traversal)
@@ -39,7 +40,7 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
 
 - [GraphQL Documentation Site](https://graphikdb.github.io/graphik/)
 - [Protobuf/gRPC API Spec](https://github.com/graphikDB/graphik/blob/master/graphik.proto)
-- [Graphql API Spec](https://github.com/graphikDB/graphik/blob/master/schema.graphql)
+- [Graphql API Spec](https://github.com/graphikDB/graphik/blob/master/schema.graphQL)
 - [Common Expression Language Code Lab](https://codelabs.developers.google.com/codelabs/cel-go/index.html#0)
 - [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
 - [OpenID Connect](https://openid.net/connect/)
@@ -61,7 +62,7 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
 - [x] Loosely-Typed(mongo-esque)
 - [x] [Prometheus Metrics](https://prometheus.io/)
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
-- [x] Safe to Deploy Publicly(with authorizers)
+- [x] Safe to Deploy Publicly(with authorizers/tls/validators/cors)
 - [x] Read-Optimized
 - [x] Full Text Search(CEL)
 - [x] Regular Expressions(CEL)
@@ -183,13 +184,24 @@ Coming Soon
 - any time a document is edited, a connection of type `edited_by` from the new document to the origin user is also created(if none exists)
 - every document a user has ever interacted with may be queried via the Traverse method with the user as the root document of the traversal
 
+### GraphQL vs gRPC API
+
+In my opinion, gRPC is king for svc-svc communication & graphQL is king for developing user interfaces & exploring data.
+
+In graphik the graphQL & gRPC are nearly identical, but every request flows through the gRPC server natively - 
+the graphQL api is technically a wrapper that may be used for developing user interfaces & querying the database from the graphQL playground.
+
+The gRPC server is more performant so it is advised that you import one of the gRPC client libraries as opposed to utilizing the graphQL endpoint when developing backend APIs.
+
+The graphQL endpoint is particularly useful for developing public user interfaces against since it can be locked down to nearly any extent via authorizers, cors, validators, & tls.
+ 
 ### Additional Details
 - any time a Doc is deleted, so are all of its connections
 
 ## Sample GraphQL Queries
 
 ### Node Traversal
-```graphql
+```graphQL
 # Write your query or mutation here
 query {
   traverse(input: {
