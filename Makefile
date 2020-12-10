@@ -57,3 +57,9 @@ up: ## start local containers
 .PHONY: down
 down: ## shuts down local docker containers
 	@docker-compose -f docker-compose.yml down --remove-orphans
+
+build: ## build the server to ./bin
+	@mkdir -p bin
+	@gox -osarch="linux/amd64" -output="./bin/linux/{{.Dir}}_linux_amd64"
+	@gox -osarch="darwin/amd64" -output="./bin/darwin/{{.Dir}}_darwin_amd64"
+	@gox -osarch="windows/amd64" -output="./bin/windows/{{.Dir}}_windows_amd64"

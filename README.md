@@ -30,7 +30,9 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
   * [Deployment](#deployment)
     + [Docker-Compose](#docker-compose)
     + [Kubernetes](#kubernetes)
-    + [Virtual Machine](#virtual-machine)
+    + [Linux](#linux)
+    + [Mac/Darwin](#mac-darwin)
+    + [Windows](#windows)
 
 
 ## Helpful Links
@@ -272,6 +274,18 @@ to shutdown:
  
  Coming Soon
  
- ### Virtual Machine
+ ### Linux
  
- Coming Soon
+    curl -L https://github.com/graphikDB/graphik/releases/download/v0.2.3/graphik_linux_amd64 \
+    --output /usr/local/bin/graphik && \
+    chmod +x /usr/local/bin/graphik 
+    
+ ### Mac/Darwin
+ 
+    curl -L https://github.com/graphikDB/graphik/releases/download/v0.2.3/graphik_darwin_amd64 \
+    --output /usr/local/bin/graphik && \
+    chmod +x /usr/local/bin/graphik
+
+### Windows
+
+    Nope
