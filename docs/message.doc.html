@@ -250,9 +250,9 @@
                 AuthorizersInput
             </a>
         </li>
-        <li  title="CFilter">
-            <a href="cfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                CFilter
+        <li  title="ConnectFilter">
+            <a href="connectfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConnectFilter
             </a>
         </li>
         <li  title="ConnectionConstructor">
@@ -280,9 +280,9 @@
                 Edit
             </a>
         </li>
-        <li  title="EFilter">
-            <a href="efilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                EFilter
+        <li  title="EditFilter">
+            <a href="editfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                EditFilter
             </a>
         </li>
         <li  title="ExistsFilter">
@@ -325,9 +325,19 @@
                 RefInput
             </a>
         </li>
-        <li  title="SConnectFilter">
-            <a href="sconnectfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                SConnectFilter
+        <li  title="RefPair">
+            <a href="refpair.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RefPair
+            </a>
+        </li>
+        <li  title="SearchConnectFilter">
+            <a href="searchconnectfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SearchConnectFilter
+            </a>
+        </li>
+        <li  title="SearchConnectMeFilter">
+            <a href="searchconnectmefilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SearchConnectMeFilter
             </a>
         </li>
         <li  title="StreamFilter">
@@ -404,7 +414,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">Message</span> {</li><li></li><li><span class="tab"><span class="comment line">#   channel is the channel the message was sent to</span></span></li><li><span class="tab"><span class="meta">channel</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   data is the data sent with the message</span></span></li><li><span class="tab"><span class="meta">data</span>: <a class="support type" href="map.doc.html">Map</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   sender is the user that sent the message</span></span></li><li><span class="tab"><span class="meta">sender</span>: <a class="support type" href="ref.doc.html">Ref</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   timestamp is when the message was sent</span></span></li><li><span class="tab"><span class="meta">timestamp</span>: <a class="support type" href="time.doc.html">Time</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">Message</span> {</li><li></li><li><span class="tab"><span class="comment line">#   channel is the channel the message was sent to</span></span></li><li><span class="tab"><span class="meta">channel</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   data is the data sent with the message</span></span></li><li><span class="tab"><span class="meta">data</span>: <a class="support type" href="map.doc.html">Map</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   user is the user that sent/triggered the message</span></span></li><li><span class="tab"><span class="meta">user</span>: <a class="support type" href="ref.doc.html">Ref</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   timestamp is when the message was sent</span></span></li><li><span class="tab"><span class="meta">timestamp</span>: <a class="support type" href="time.doc.html">Time</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   method is the gRPC method that invoked the message delivery</span></span></li><li><span class="tab"><span class="meta">method</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

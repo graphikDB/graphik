@@ -131,8 +131,8 @@ func protoFilter(filter model.Filter) *apipb.Filter {
 	return f
 }
 
-func protoEFilter(filter model.EFilter) *apipb.EFilter {
-	return &apipb.EFilter{
+func protoEditFilter(filter model.EditFilter) *apipb.EditFilter {
+	return &apipb.EditFilter{
 		Filter:     protoFilter(*filter.Filter),
 		Attributes: apipb.NewStruct(filter.Attributes),
 	}
@@ -373,8 +373,8 @@ func protoTraverseMeFilter(filter model.TraverseMeFilter) *apipb.TraverseMeFilte
 	return c
 }
 
-func protoConnectionFilter(filter model.CFilter) *apipb.CFilter {
-	f := &apipb.CFilter{
+func protoConnectionFilter(filter model.ConnectFilter) *apipb.ConnectFilter {
+	f := &apipb.ConnectFilter{
 		DocRef:     protoIRef(*filter.DocRef),
 		Gtype:      filter.Gtype,
 		Expression: "",

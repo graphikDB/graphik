@@ -11319,8 +11319,8 @@ public final class Graphik {
 
   }
 
-  public interface SConnectFilterOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:api.SConnectFilter)
+  public interface SearchConnectFilterOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.SearchConnectFilter)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -11406,18 +11406,18 @@ public final class Graphik {
     api.Graphik.RefOrBuilder getFromOrBuilder();
   }
   /**
-   * Protobuf type {@code api.SConnectFilter}
+   * Protobuf type {@code api.SearchConnectFilter}
    */
-  public  static final class SConnectFilter extends
+  public  static final class SearchConnectFilter extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:api.SConnectFilter)
-      SConnectFilterOrBuilder {
+      // @@protoc_insertion_point(message_implements:api.SearchConnectFilter)
+      SearchConnectFilterOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use SConnectFilter.newBuilder() to construct.
-    private SConnectFilter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use SearchConnectFilter.newBuilder() to construct.
+    private SearchConnectFilter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private SConnectFilter() {
+    private SearchConnectFilter() {
       gtype_ = "";
       directed_ = false;
     }
@@ -11427,7 +11427,7 @@ public final class Graphik {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private SConnectFilter(
+    private SearchConnectFilter(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -11517,15 +11517,15 @@ public final class Graphik {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return api.Graphik.internal_static_api_SConnectFilter_descriptor;
+      return api.Graphik.internal_static_api_SearchConnectFilter_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return api.Graphik.internal_static_api_SConnectFilter_fieldAccessorTable
+      return api.Graphik.internal_static_api_SearchConnectFilter_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              api.Graphik.SConnectFilter.class, api.Graphik.SConnectFilter.Builder.class);
+              api.Graphik.SearchConnectFilter.class, api.Graphik.SearchConnectFilter.Builder.class);
     }
 
     public static final int FILTER_FIELD_NUMBER = 1;
@@ -11729,10 +11729,10 @@ public final class Graphik {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof api.Graphik.SConnectFilter)) {
+      if (!(obj instanceof api.Graphik.SearchConnectFilter)) {
         return super.equals(obj);
       }
-      api.Graphik.SConnectFilter other = (api.Graphik.SConnectFilter) obj;
+      api.Graphik.SearchConnectFilter other = (api.Graphik.SearchConnectFilter) obj;
 
       boolean result = true;
       result = result && (hasFilter() == other.hasFilter());
@@ -11787,69 +11787,69 @@ public final class Graphik {
       return hash;
     }
 
-    public static api.Graphik.SConnectFilter parseFrom(
+    public static api.Graphik.SearchConnectFilter parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.SConnectFilter parseFrom(
+    public static api.Graphik.SearchConnectFilter parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.SConnectFilter parseFrom(
+    public static api.Graphik.SearchConnectFilter parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.SConnectFilter parseFrom(
+    public static api.Graphik.SearchConnectFilter parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.SConnectFilter parseFrom(byte[] data)
+    public static api.Graphik.SearchConnectFilter parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.SConnectFilter parseFrom(
+    public static api.Graphik.SearchConnectFilter parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.SConnectFilter parseFrom(java.io.InputStream input)
+    public static api.Graphik.SearchConnectFilter parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.SConnectFilter parseFrom(
+    public static api.Graphik.SearchConnectFilter parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.SConnectFilter parseDelimitedFrom(java.io.InputStream input)
+    public static api.Graphik.SearchConnectFilter parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static api.Graphik.SConnectFilter parseDelimitedFrom(
+    public static api.Graphik.SearchConnectFilter parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.SConnectFilter parseFrom(
+    public static api.Graphik.SearchConnectFilter parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.SConnectFilter parseFrom(
+    public static api.Graphik.SearchConnectFilter parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -11862,7 +11862,7 @@ public final class Graphik {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(api.Graphik.SConnectFilter prototype) {
+    public static Builder newBuilder(api.Graphik.SearchConnectFilter prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -11878,26 +11878,26 @@ public final class Graphik {
       return builder;
     }
     /**
-     * Protobuf type {@code api.SConnectFilter}
+     * Protobuf type {@code api.SearchConnectFilter}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:api.SConnectFilter)
-        api.Graphik.SConnectFilterOrBuilder {
+        // @@protoc_insertion_point(builder_implements:api.SearchConnectFilter)
+        api.Graphik.SearchConnectFilterOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return api.Graphik.internal_static_api_SConnectFilter_descriptor;
+        return api.Graphik.internal_static_api_SearchConnectFilter_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return api.Graphik.internal_static_api_SConnectFilter_fieldAccessorTable
+        return api.Graphik.internal_static_api_SearchConnectFilter_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                api.Graphik.SConnectFilter.class, api.Graphik.SConnectFilter.Builder.class);
+                api.Graphik.SearchConnectFilter.class, api.Graphik.SearchConnectFilter.Builder.class);
       }
 
-      // Construct using api.Graphik.SConnectFilter.newBuilder()
+      // Construct using api.Graphik.SearchConnectFilter.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -11943,17 +11943,17 @@ public final class Graphik {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return api.Graphik.internal_static_api_SConnectFilter_descriptor;
+        return api.Graphik.internal_static_api_SearchConnectFilter_descriptor;
       }
 
       @java.lang.Override
-      public api.Graphik.SConnectFilter getDefaultInstanceForType() {
-        return api.Graphik.SConnectFilter.getDefaultInstance();
+      public api.Graphik.SearchConnectFilter getDefaultInstanceForType() {
+        return api.Graphik.SearchConnectFilter.getDefaultInstance();
       }
 
       @java.lang.Override
-      public api.Graphik.SConnectFilter build() {
-        api.Graphik.SConnectFilter result = buildPartial();
+      public api.Graphik.SearchConnectFilter build() {
+        api.Graphik.SearchConnectFilter result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -11961,8 +11961,8 @@ public final class Graphik {
       }
 
       @java.lang.Override
-      public api.Graphik.SConnectFilter buildPartial() {
-        api.Graphik.SConnectFilter result = new api.Graphik.SConnectFilter(this);
+      public api.Graphik.SearchConnectFilter buildPartial() {
+        api.Graphik.SearchConnectFilter result = new api.Graphik.SearchConnectFilter(this);
         if (filterBuilder_ == null) {
           result.filter_ = filter_;
         } else {
@@ -12018,16 +12018,16 @@ public final class Graphik {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof api.Graphik.SConnectFilter) {
-          return mergeFrom((api.Graphik.SConnectFilter)other);
+        if (other instanceof api.Graphik.SearchConnectFilter) {
+          return mergeFrom((api.Graphik.SearchConnectFilter)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(api.Graphik.SConnectFilter other) {
-        if (other == api.Graphik.SConnectFilter.getDefaultInstance()) return this;
+      public Builder mergeFrom(api.Graphik.SearchConnectFilter other) {
+        if (other == api.Graphik.SearchConnectFilter.getDefaultInstance()) return this;
         if (other.hasFilter()) {
           mergeFilter(other.getFilter());
         }
@@ -12059,11 +12059,11 @@ public final class Graphik {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        api.Graphik.SConnectFilter parsedMessage = null;
+        api.Graphik.SearchConnectFilter parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (api.Graphik.SConnectFilter) e.getUnfinishedMessage();
+          parsedMessage = (api.Graphik.SearchConnectFilter) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -12615,41 +12615,1123 @@ public final class Graphik {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:api.SConnectFilter)
+      // @@protoc_insertion_point(builder_scope:api.SearchConnectFilter)
     }
 
-    // @@protoc_insertion_point(class_scope:api.SConnectFilter)
-    private static final api.Graphik.SConnectFilter DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:api.SearchConnectFilter)
+    private static final api.Graphik.SearchConnectFilter DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new api.Graphik.SConnectFilter();
+      DEFAULT_INSTANCE = new api.Graphik.SearchConnectFilter();
     }
 
-    public static api.Graphik.SConnectFilter getDefaultInstance() {
+    public static api.Graphik.SearchConnectFilter getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<SConnectFilter>
-        PARSER = new com.google.protobuf.AbstractParser<SConnectFilter>() {
+    private static final com.google.protobuf.Parser<SearchConnectFilter>
+        PARSER = new com.google.protobuf.AbstractParser<SearchConnectFilter>() {
       @java.lang.Override
-      public SConnectFilter parsePartialFrom(
+      public SearchConnectFilter parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SConnectFilter(input, extensionRegistry);
+        return new SearchConnectFilter(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<SConnectFilter> parser() {
+    public static com.google.protobuf.Parser<SearchConnectFilter> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<SConnectFilter> getParserForType() {
+    public com.google.protobuf.Parser<SearchConnectFilter> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public api.Graphik.SConnectFilter getDefaultInstanceForType() {
+    public api.Graphik.SearchConnectFilter getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SearchConnectMeFilterOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.SearchConnectMeFilter)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.api.Filter filter = 1;</code>
+     */
+    boolean hasFilter();
+    /**
+     * <code>.api.Filter filter = 1;</code>
+     */
+    api.Graphik.Filter getFilter();
+    /**
+     * <code>.api.Filter filter = 1;</code>
+     */
+    api.Graphik.FilterOrBuilder getFilterOrBuilder();
+
+    /**
+     * <code>string gtype = 2;</code>
+     */
+    java.lang.String getGtype();
+    /**
+     * <code>string gtype = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getGtypeBytes();
+
+    /**
+     * <pre>
+     * attributes are k/v pairs
+     * </pre>
+     *
+     * <code>.google.protobuf.Struct attributes = 3;</code>
+     */
+    boolean hasAttributes();
+    /**
+     * <pre>
+     * attributes are k/v pairs
+     * </pre>
+     *
+     * <code>.google.protobuf.Struct attributes = 3;</code>
+     */
+    com.google.protobuf.Struct getAttributes();
+    /**
+     * <pre>
+     * attributes are k/v pairs
+     * </pre>
+     *
+     * <code>.google.protobuf.Struct attributes = 3;</code>
+     */
+    com.google.protobuf.StructOrBuilder getAttributesOrBuilder();
+
+    /**
+     * <pre>
+     * directed is false if the connection is bi-directional
+     * </pre>
+     *
+     * <code>bool directed = 4;</code>
+     */
+    boolean getDirected();
+  }
+  /**
+   * Protobuf type {@code api.SearchConnectMeFilter}
+   */
+  public  static final class SearchConnectMeFilter extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:api.SearchConnectMeFilter)
+      SearchConnectMeFilterOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SearchConnectMeFilter.newBuilder() to construct.
+    private SearchConnectMeFilter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SearchConnectMeFilter() {
+      gtype_ = "";
+      directed_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SearchConnectMeFilter(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              api.Graphik.Filter.Builder subBuilder = null;
+              if (filter_ != null) {
+                subBuilder = filter_.toBuilder();
+              }
+              filter_ = input.readMessage(api.Graphik.Filter.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(filter_);
+                filter_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              gtype_ = s;
+              break;
+            }
+            case 26: {
+              com.google.protobuf.Struct.Builder subBuilder = null;
+              if (attributes_ != null) {
+                subBuilder = attributes_.toBuilder();
+              }
+              attributes_ = input.readMessage(com.google.protobuf.Struct.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(attributes_);
+                attributes_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 32: {
+
+              directed_ = input.readBool();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return api.Graphik.internal_static_api_SearchConnectMeFilter_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return api.Graphik.internal_static_api_SearchConnectMeFilter_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              api.Graphik.SearchConnectMeFilter.class, api.Graphik.SearchConnectMeFilter.Builder.class);
+    }
+
+    public static final int FILTER_FIELD_NUMBER = 1;
+    private api.Graphik.Filter filter_;
+    /**
+     * <code>.api.Filter filter = 1;</code>
+     */
+    public boolean hasFilter() {
+      return filter_ != null;
+    }
+    /**
+     * <code>.api.Filter filter = 1;</code>
+     */
+    public api.Graphik.Filter getFilter() {
+      return filter_ == null ? api.Graphik.Filter.getDefaultInstance() : filter_;
+    }
+    /**
+     * <code>.api.Filter filter = 1;</code>
+     */
+    public api.Graphik.FilterOrBuilder getFilterOrBuilder() {
+      return getFilter();
+    }
+
+    public static final int GTYPE_FIELD_NUMBER = 2;
+    private volatile java.lang.Object gtype_;
+    /**
+     * <code>string gtype = 2;</code>
+     */
+    public java.lang.String getGtype() {
+      java.lang.Object ref = gtype_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        gtype_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string gtype = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getGtypeBytes() {
+      java.lang.Object ref = gtype_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        gtype_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ATTRIBUTES_FIELD_NUMBER = 3;
+    private com.google.protobuf.Struct attributes_;
+    /**
+     * <pre>
+     * attributes are k/v pairs
+     * </pre>
+     *
+     * <code>.google.protobuf.Struct attributes = 3;</code>
+     */
+    public boolean hasAttributes() {
+      return attributes_ != null;
+    }
+    /**
+     * <pre>
+     * attributes are k/v pairs
+     * </pre>
+     *
+     * <code>.google.protobuf.Struct attributes = 3;</code>
+     */
+    public com.google.protobuf.Struct getAttributes() {
+      return attributes_ == null ? com.google.protobuf.Struct.getDefaultInstance() : attributes_;
+    }
+    /**
+     * <pre>
+     * attributes are k/v pairs
+     * </pre>
+     *
+     * <code>.google.protobuf.Struct attributes = 3;</code>
+     */
+    public com.google.protobuf.StructOrBuilder getAttributesOrBuilder() {
+      return getAttributes();
+    }
+
+    public static final int DIRECTED_FIELD_NUMBER = 4;
+    private boolean directed_;
+    /**
+     * <pre>
+     * directed is false if the connection is bi-directional
+     * </pre>
+     *
+     * <code>bool directed = 4;</code>
+     */
+    public boolean getDirected() {
+      return directed_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (filter_ != null) {
+        output.writeMessage(1, getFilter());
+      }
+      if (!getGtypeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, gtype_);
+      }
+      if (attributes_ != null) {
+        output.writeMessage(3, getAttributes());
+      }
+      if (directed_ != false) {
+        output.writeBool(4, directed_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (filter_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getFilter());
+      }
+      if (!getGtypeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, gtype_);
+      }
+      if (attributes_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getAttributes());
+      }
+      if (directed_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, directed_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof api.Graphik.SearchConnectMeFilter)) {
+        return super.equals(obj);
+      }
+      api.Graphik.SearchConnectMeFilter other = (api.Graphik.SearchConnectMeFilter) obj;
+
+      boolean result = true;
+      result = result && (hasFilter() == other.hasFilter());
+      if (hasFilter()) {
+        result = result && getFilter()
+            .equals(other.getFilter());
+      }
+      result = result && getGtype()
+          .equals(other.getGtype());
+      result = result && (hasAttributes() == other.hasAttributes());
+      if (hasAttributes()) {
+        result = result && getAttributes()
+            .equals(other.getAttributes());
+      }
+      result = result && (getDirected()
+          == other.getDirected());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasFilter()) {
+        hash = (37 * hash) + FILTER_FIELD_NUMBER;
+        hash = (53 * hash) + getFilter().hashCode();
+      }
+      hash = (37 * hash) + GTYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getGtype().hashCode();
+      if (hasAttributes()) {
+        hash = (37 * hash) + ATTRIBUTES_FIELD_NUMBER;
+        hash = (53 * hash) + getAttributes().hashCode();
+      }
+      hash = (37 * hash) + DIRECTED_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getDirected());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static api.Graphik.SearchConnectMeFilter parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.SearchConnectMeFilter parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(api.Graphik.SearchConnectMeFilter prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code api.SearchConnectMeFilter}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:api.SearchConnectMeFilter)
+        api.Graphik.SearchConnectMeFilterOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return api.Graphik.internal_static_api_SearchConnectMeFilter_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return api.Graphik.internal_static_api_SearchConnectMeFilter_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                api.Graphik.SearchConnectMeFilter.class, api.Graphik.SearchConnectMeFilter.Builder.class);
+      }
+
+      // Construct using api.Graphik.SearchConnectMeFilter.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (filterBuilder_ == null) {
+          filter_ = null;
+        } else {
+          filter_ = null;
+          filterBuilder_ = null;
+        }
+        gtype_ = "";
+
+        if (attributesBuilder_ == null) {
+          attributes_ = null;
+        } else {
+          attributes_ = null;
+          attributesBuilder_ = null;
+        }
+        directed_ = false;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return api.Graphik.internal_static_api_SearchConnectMeFilter_descriptor;
+      }
+
+      @java.lang.Override
+      public api.Graphik.SearchConnectMeFilter getDefaultInstanceForType() {
+        return api.Graphik.SearchConnectMeFilter.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public api.Graphik.SearchConnectMeFilter build() {
+        api.Graphik.SearchConnectMeFilter result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public api.Graphik.SearchConnectMeFilter buildPartial() {
+        api.Graphik.SearchConnectMeFilter result = new api.Graphik.SearchConnectMeFilter(this);
+        if (filterBuilder_ == null) {
+          result.filter_ = filter_;
+        } else {
+          result.filter_ = filterBuilder_.build();
+        }
+        result.gtype_ = gtype_;
+        if (attributesBuilder_ == null) {
+          result.attributes_ = attributes_;
+        } else {
+          result.attributes_ = attributesBuilder_.build();
+        }
+        result.directed_ = directed_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof api.Graphik.SearchConnectMeFilter) {
+          return mergeFrom((api.Graphik.SearchConnectMeFilter)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(api.Graphik.SearchConnectMeFilter other) {
+        if (other == api.Graphik.SearchConnectMeFilter.getDefaultInstance()) return this;
+        if (other.hasFilter()) {
+          mergeFilter(other.getFilter());
+        }
+        if (!other.getGtype().isEmpty()) {
+          gtype_ = other.gtype_;
+          onChanged();
+        }
+        if (other.hasAttributes()) {
+          mergeAttributes(other.getAttributes());
+        }
+        if (other.getDirected() != false) {
+          setDirected(other.getDirected());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        api.Graphik.SearchConnectMeFilter parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (api.Graphik.SearchConnectMeFilter) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private api.Graphik.Filter filter_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Filter, api.Graphik.Filter.Builder, api.Graphik.FilterOrBuilder> filterBuilder_;
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      public boolean hasFilter() {
+        return filterBuilder_ != null || filter_ != null;
+      }
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      public api.Graphik.Filter getFilter() {
+        if (filterBuilder_ == null) {
+          return filter_ == null ? api.Graphik.Filter.getDefaultInstance() : filter_;
+        } else {
+          return filterBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      public Builder setFilter(api.Graphik.Filter value) {
+        if (filterBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          filter_ = value;
+          onChanged();
+        } else {
+          filterBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      public Builder setFilter(
+          api.Graphik.Filter.Builder builderForValue) {
+        if (filterBuilder_ == null) {
+          filter_ = builderForValue.build();
+          onChanged();
+        } else {
+          filterBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      public Builder mergeFilter(api.Graphik.Filter value) {
+        if (filterBuilder_ == null) {
+          if (filter_ != null) {
+            filter_ =
+              api.Graphik.Filter.newBuilder(filter_).mergeFrom(value).buildPartial();
+          } else {
+            filter_ = value;
+          }
+          onChanged();
+        } else {
+          filterBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      public Builder clearFilter() {
+        if (filterBuilder_ == null) {
+          filter_ = null;
+          onChanged();
+        } else {
+          filter_ = null;
+          filterBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      public api.Graphik.Filter.Builder getFilterBuilder() {
+        
+        onChanged();
+        return getFilterFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      public api.Graphik.FilterOrBuilder getFilterOrBuilder() {
+        if (filterBuilder_ != null) {
+          return filterBuilder_.getMessageOrBuilder();
+        } else {
+          return filter_ == null ?
+              api.Graphik.Filter.getDefaultInstance() : filter_;
+        }
+      }
+      /**
+       * <code>.api.Filter filter = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Filter, api.Graphik.Filter.Builder, api.Graphik.FilterOrBuilder> 
+          getFilterFieldBuilder() {
+        if (filterBuilder_ == null) {
+          filterBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Filter, api.Graphik.Filter.Builder, api.Graphik.FilterOrBuilder>(
+                  getFilter(),
+                  getParentForChildren(),
+                  isClean());
+          filter_ = null;
+        }
+        return filterBuilder_;
+      }
+
+      private java.lang.Object gtype_ = "";
+      /**
+       * <code>string gtype = 2;</code>
+       */
+      public java.lang.String getGtype() {
+        java.lang.Object ref = gtype_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          gtype_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string gtype = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getGtypeBytes() {
+        java.lang.Object ref = gtype_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          gtype_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string gtype = 2;</code>
+       */
+      public Builder setGtype(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        gtype_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string gtype = 2;</code>
+       */
+      public Builder clearGtype() {
+        
+        gtype_ = getDefaultInstance().getGtype();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string gtype = 2;</code>
+       */
+      public Builder setGtypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        gtype_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.Struct attributes_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder> attributesBuilder_;
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      public boolean hasAttributes() {
+        return attributesBuilder_ != null || attributes_ != null;
+      }
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      public com.google.protobuf.Struct getAttributes() {
+        if (attributesBuilder_ == null) {
+          return attributes_ == null ? com.google.protobuf.Struct.getDefaultInstance() : attributes_;
+        } else {
+          return attributesBuilder_.getMessage();
+        }
+      }
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      public Builder setAttributes(com.google.protobuf.Struct value) {
+        if (attributesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          attributes_ = value;
+          onChanged();
+        } else {
+          attributesBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      public Builder setAttributes(
+          com.google.protobuf.Struct.Builder builderForValue) {
+        if (attributesBuilder_ == null) {
+          attributes_ = builderForValue.build();
+          onChanged();
+        } else {
+          attributesBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      public Builder mergeAttributes(com.google.protobuf.Struct value) {
+        if (attributesBuilder_ == null) {
+          if (attributes_ != null) {
+            attributes_ =
+              com.google.protobuf.Struct.newBuilder(attributes_).mergeFrom(value).buildPartial();
+          } else {
+            attributes_ = value;
+          }
+          onChanged();
+        } else {
+          attributesBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      public Builder clearAttributes() {
+        if (attributesBuilder_ == null) {
+          attributes_ = null;
+          onChanged();
+        } else {
+          attributes_ = null;
+          attributesBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      public com.google.protobuf.Struct.Builder getAttributesBuilder() {
+        
+        onChanged();
+        return getAttributesFieldBuilder().getBuilder();
+      }
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      public com.google.protobuf.StructOrBuilder getAttributesOrBuilder() {
+        if (attributesBuilder_ != null) {
+          return attributesBuilder_.getMessageOrBuilder();
+        } else {
+          return attributes_ == null ?
+              com.google.protobuf.Struct.getDefaultInstance() : attributes_;
+        }
+      }
+      /**
+       * <pre>
+       * attributes are k/v pairs
+       * </pre>
+       *
+       * <code>.google.protobuf.Struct attributes = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder> 
+          getAttributesFieldBuilder() {
+        if (attributesBuilder_ == null) {
+          attributesBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder>(
+                  getAttributes(),
+                  getParentForChildren(),
+                  isClean());
+          attributes_ = null;
+        }
+        return attributesBuilder_;
+      }
+
+      private boolean directed_ ;
+      /**
+       * <pre>
+       * directed is false if the connection is bi-directional
+       * </pre>
+       *
+       * <code>bool directed = 4;</code>
+       */
+      public boolean getDirected() {
+        return directed_;
+      }
+      /**
+       * <pre>
+       * directed is false if the connection is bi-directional
+       * </pre>
+       *
+       * <code>bool directed = 4;</code>
+       */
+      public Builder setDirected(boolean value) {
+        
+        directed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * directed is false if the connection is bi-directional
+       * </pre>
+       *
+       * <code>bool directed = 4;</code>
+       */
+      public Builder clearDirected() {
+        
+        directed_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:api.SearchConnectMeFilter)
+    }
+
+    // @@protoc_insertion_point(class_scope:api.SearchConnectMeFilter)
+    private static final api.Graphik.SearchConnectMeFilter DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new api.Graphik.SearchConnectMeFilter();
+    }
+
+    public static api.Graphik.SearchConnectMeFilter getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SearchConnectMeFilter>
+        PARSER = new com.google.protobuf.AbstractParser<SearchConnectMeFilter>() {
+      @java.lang.Override
+      public SearchConnectMeFilter parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SearchConnectMeFilter(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SearchConnectMeFilter> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SearchConnectMeFilter> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public api.Graphik.SearchConnectMeFilter getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -14375,8 +15457,8 @@ public final class Graphik {
 
   }
 
-  public interface CFilterOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:api.CFilter)
+  public interface ConnectFilterOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.ConnectFilter)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -14496,21 +15578,21 @@ public final class Graphik {
   }
   /**
    * <pre>
-   * CFilter is used to fetch connections related to a single noted
+   * ConnectFilter is used to fetch connections related to a single noted
    * </pre>
    *
-   * Protobuf type {@code api.CFilter}
+   * Protobuf type {@code api.ConnectFilter}
    */
-  public  static final class CFilter extends
+  public  static final class ConnectFilter extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:api.CFilter)
-      CFilterOrBuilder {
+      // @@protoc_insertion_point(message_implements:api.ConnectFilter)
+      ConnectFilterOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use CFilter.newBuilder() to construct.
-    private CFilter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use ConnectFilter.newBuilder() to construct.
+    private ConnectFilter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private CFilter() {
+    private ConnectFilter() {
       gtype_ = "";
       expression_ = "";
       limit_ = 0L;
@@ -14524,7 +15606,7 @@ public final class Graphik {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private CFilter(
+    private ConnectFilter(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -14611,15 +15693,15 @@ public final class Graphik {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return api.Graphik.internal_static_api_CFilter_descriptor;
+      return api.Graphik.internal_static_api_ConnectFilter_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return api.Graphik.internal_static_api_CFilter_fieldAccessorTable
+      return api.Graphik.internal_static_api_ConnectFilter_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              api.Graphik.CFilter.class, api.Graphik.CFilter.Builder.class);
+              api.Graphik.ConnectFilter.class, api.Graphik.ConnectFilter.Builder.class);
     }
 
     public static final int DOC_REF_FIELD_NUMBER = 1;
@@ -14927,10 +16009,10 @@ public final class Graphik {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof api.Graphik.CFilter)) {
+      if (!(obj instanceof api.Graphik.ConnectFilter)) {
         return super.equals(obj);
       }
-      api.Graphik.CFilter other = (api.Graphik.CFilter) obj;
+      api.Graphik.ConnectFilter other = (api.Graphik.ConnectFilter) obj;
 
       boolean result = true;
       result = result && (hasDocRef() == other.hasDocRef());
@@ -14984,69 +16066,69 @@ public final class Graphik {
       return hash;
     }
 
-    public static api.Graphik.CFilter parseFrom(
+    public static api.Graphik.ConnectFilter parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.CFilter parseFrom(
+    public static api.Graphik.ConnectFilter parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.CFilter parseFrom(
+    public static api.Graphik.ConnectFilter parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.CFilter parseFrom(
+    public static api.Graphik.ConnectFilter parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.CFilter parseFrom(byte[] data)
+    public static api.Graphik.ConnectFilter parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.CFilter parseFrom(
+    public static api.Graphik.ConnectFilter parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.CFilter parseFrom(java.io.InputStream input)
+    public static api.Graphik.ConnectFilter parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.CFilter parseFrom(
+    public static api.Graphik.ConnectFilter parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.CFilter parseDelimitedFrom(java.io.InputStream input)
+    public static api.Graphik.ConnectFilter parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static api.Graphik.CFilter parseDelimitedFrom(
+    public static api.Graphik.ConnectFilter parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.CFilter parseFrom(
+    public static api.Graphik.ConnectFilter parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.CFilter parseFrom(
+    public static api.Graphik.ConnectFilter parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -15059,7 +16141,7 @@ public final class Graphik {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(api.Graphik.CFilter prototype) {
+    public static Builder newBuilder(api.Graphik.ConnectFilter prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -15076,29 +16158,29 @@ public final class Graphik {
     }
     /**
      * <pre>
-     * CFilter is used to fetch connections related to a single noted
+     * ConnectFilter is used to fetch connections related to a single noted
      * </pre>
      *
-     * Protobuf type {@code api.CFilter}
+     * Protobuf type {@code api.ConnectFilter}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:api.CFilter)
-        api.Graphik.CFilterOrBuilder {
+        // @@protoc_insertion_point(builder_implements:api.ConnectFilter)
+        api.Graphik.ConnectFilterOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return api.Graphik.internal_static_api_CFilter_descriptor;
+        return api.Graphik.internal_static_api_ConnectFilter_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return api.Graphik.internal_static_api_CFilter_fieldAccessorTable
+        return api.Graphik.internal_static_api_ConnectFilter_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                api.Graphik.CFilter.class, api.Graphik.CFilter.Builder.class);
+                api.Graphik.ConnectFilter.class, api.Graphik.ConnectFilter.Builder.class);
       }
 
-      // Construct using api.Graphik.CFilter.newBuilder()
+      // Construct using api.Graphik.ConnectFilter.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -15140,17 +16222,17 @@ public final class Graphik {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return api.Graphik.internal_static_api_CFilter_descriptor;
+        return api.Graphik.internal_static_api_ConnectFilter_descriptor;
       }
 
       @java.lang.Override
-      public api.Graphik.CFilter getDefaultInstanceForType() {
-        return api.Graphik.CFilter.getDefaultInstance();
+      public api.Graphik.ConnectFilter getDefaultInstanceForType() {
+        return api.Graphik.ConnectFilter.getDefaultInstance();
       }
 
       @java.lang.Override
-      public api.Graphik.CFilter build() {
-        api.Graphik.CFilter result = buildPartial();
+      public api.Graphik.ConnectFilter build() {
+        api.Graphik.ConnectFilter result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -15158,8 +16240,8 @@ public final class Graphik {
       }
 
       @java.lang.Override
-      public api.Graphik.CFilter buildPartial() {
-        api.Graphik.CFilter result = new api.Graphik.CFilter(this);
+      public api.Graphik.ConnectFilter buildPartial() {
+        api.Graphik.ConnectFilter result = new api.Graphik.ConnectFilter(this);
         if (docRefBuilder_ == null) {
           result.docRef_ = docRef_;
         } else {
@@ -15209,16 +16291,16 @@ public final class Graphik {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof api.Graphik.CFilter) {
-          return mergeFrom((api.Graphik.CFilter)other);
+        if (other instanceof api.Graphik.ConnectFilter) {
+          return mergeFrom((api.Graphik.ConnectFilter)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(api.Graphik.CFilter other) {
-        if (other == api.Graphik.CFilter.getDefaultInstance()) return this;
+      public Builder mergeFrom(api.Graphik.ConnectFilter other) {
+        if (other == api.Graphik.ConnectFilter.getDefaultInstance()) return this;
         if (other.hasDocRef()) {
           mergeDocRef(other.getDocRef());
         }
@@ -15259,11 +16341,11 @@ public final class Graphik {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        api.Graphik.CFilter parsedMessage = null;
+        api.Graphik.ConnectFilter parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (api.Graphik.CFilter) e.getUnfinishedMessage();
+          parsedMessage = (api.Graphik.ConnectFilter) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -15870,41 +16952,41 @@ public final class Graphik {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:api.CFilter)
+      // @@protoc_insertion_point(builder_scope:api.ConnectFilter)
     }
 
-    // @@protoc_insertion_point(class_scope:api.CFilter)
-    private static final api.Graphik.CFilter DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:api.ConnectFilter)
+    private static final api.Graphik.ConnectFilter DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new api.Graphik.CFilter();
+      DEFAULT_INSTANCE = new api.Graphik.ConnectFilter();
     }
 
-    public static api.Graphik.CFilter getDefaultInstance() {
+    public static api.Graphik.ConnectFilter getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<CFilter>
-        PARSER = new com.google.protobuf.AbstractParser<CFilter>() {
+    private static final com.google.protobuf.Parser<ConnectFilter>
+        PARSER = new com.google.protobuf.AbstractParser<ConnectFilter>() {
       @java.lang.Override
-      public CFilter parsePartialFrom(
+      public ConnectFilter parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CFilter(input, extensionRegistry);
+        return new ConnectFilter(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<CFilter> parser() {
+    public static com.google.protobuf.Parser<ConnectFilter> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<CFilter> getParserForType() {
+    public com.google.protobuf.Parser<ConnectFilter> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public api.Graphik.CFilter getDefaultInstanceForType() {
+    public api.Graphik.ConnectFilter getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -34332,8 +35414,8 @@ public final class Graphik {
 
   }
 
-  public interface EFilterOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:api.EFilter)
+  public interface EditFilterOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.EditFilter)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -34388,21 +35470,21 @@ public final class Graphik {
   }
   /**
    * <pre>
-   * EFilter is used to patch/edit docs/connections
+   * EditFilter is used to patch/edit docs/connections
    * </pre>
    *
-   * Protobuf type {@code api.EFilter}
+   * Protobuf type {@code api.EditFilter}
    */
-  public  static final class EFilter extends
+  public  static final class EditFilter extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:api.EFilter)
-      EFilterOrBuilder {
+      // @@protoc_insertion_point(message_implements:api.EditFilter)
+      EditFilterOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use EFilter.newBuilder() to construct.
-    private EFilter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use EditFilter.newBuilder() to construct.
+    private EditFilter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private EFilter() {
+    private EditFilter() {
     }
 
     @java.lang.Override
@@ -34410,7 +35492,7 @@ public final class Graphik {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private EFilter(
+    private EditFilter(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -34476,15 +35558,15 @@ public final class Graphik {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return api.Graphik.internal_static_api_EFilter_descriptor;
+      return api.Graphik.internal_static_api_EditFilter_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return api.Graphik.internal_static_api_EFilter_fieldAccessorTable
+      return api.Graphik.internal_static_api_EditFilter_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              api.Graphik.EFilter.class, api.Graphik.EFilter.Builder.class);
+              api.Graphik.EditFilter.class, api.Graphik.EditFilter.Builder.class);
     }
 
     public static final int FILTER_FIELD_NUMBER = 1;
@@ -34600,10 +35682,10 @@ public final class Graphik {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof api.Graphik.EFilter)) {
+      if (!(obj instanceof api.Graphik.EditFilter)) {
         return super.equals(obj);
       }
-      api.Graphik.EFilter other = (api.Graphik.EFilter) obj;
+      api.Graphik.EditFilter other = (api.Graphik.EditFilter) obj;
 
       boolean result = true;
       result = result && (hasFilter() == other.hasFilter());
@@ -34640,69 +35722,69 @@ public final class Graphik {
       return hash;
     }
 
-    public static api.Graphik.EFilter parseFrom(
+    public static api.Graphik.EditFilter parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.EFilter parseFrom(
+    public static api.Graphik.EditFilter parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.EFilter parseFrom(
+    public static api.Graphik.EditFilter parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.EFilter parseFrom(
+    public static api.Graphik.EditFilter parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.EFilter parseFrom(byte[] data)
+    public static api.Graphik.EditFilter parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.EFilter parseFrom(
+    public static api.Graphik.EditFilter parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.EFilter parseFrom(java.io.InputStream input)
+    public static api.Graphik.EditFilter parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.EFilter parseFrom(
+    public static api.Graphik.EditFilter parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.EFilter parseDelimitedFrom(java.io.InputStream input)
+    public static api.Graphik.EditFilter parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static api.Graphik.EFilter parseDelimitedFrom(
+    public static api.Graphik.EditFilter parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.EFilter parseFrom(
+    public static api.Graphik.EditFilter parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.EFilter parseFrom(
+    public static api.Graphik.EditFilter parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -34715,7 +35797,7 @@ public final class Graphik {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(api.Graphik.EFilter prototype) {
+    public static Builder newBuilder(api.Graphik.EditFilter prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -34732,29 +35814,29 @@ public final class Graphik {
     }
     /**
      * <pre>
-     * EFilter is used to patch/edit docs/connections
+     * EditFilter is used to patch/edit docs/connections
      * </pre>
      *
-     * Protobuf type {@code api.EFilter}
+     * Protobuf type {@code api.EditFilter}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:api.EFilter)
-        api.Graphik.EFilterOrBuilder {
+        // @@protoc_insertion_point(builder_implements:api.EditFilter)
+        api.Graphik.EditFilterOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return api.Graphik.internal_static_api_EFilter_descriptor;
+        return api.Graphik.internal_static_api_EditFilter_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return api.Graphik.internal_static_api_EFilter_fieldAccessorTable
+        return api.Graphik.internal_static_api_EditFilter_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                api.Graphik.EFilter.class, api.Graphik.EFilter.Builder.class);
+                api.Graphik.EditFilter.class, api.Graphik.EditFilter.Builder.class);
       }
 
-      // Construct using api.Graphik.EFilter.newBuilder()
+      // Construct using api.Graphik.EditFilter.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -34790,17 +35872,17 @@ public final class Graphik {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return api.Graphik.internal_static_api_EFilter_descriptor;
+        return api.Graphik.internal_static_api_EditFilter_descriptor;
       }
 
       @java.lang.Override
-      public api.Graphik.EFilter getDefaultInstanceForType() {
-        return api.Graphik.EFilter.getDefaultInstance();
+      public api.Graphik.EditFilter getDefaultInstanceForType() {
+        return api.Graphik.EditFilter.getDefaultInstance();
       }
 
       @java.lang.Override
-      public api.Graphik.EFilter build() {
-        api.Graphik.EFilter result = buildPartial();
+      public api.Graphik.EditFilter build() {
+        api.Graphik.EditFilter result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -34808,8 +35890,8 @@ public final class Graphik {
       }
 
       @java.lang.Override
-      public api.Graphik.EFilter buildPartial() {
-        api.Graphik.EFilter result = new api.Graphik.EFilter(this);
+      public api.Graphik.EditFilter buildPartial() {
+        api.Graphik.EditFilter result = new api.Graphik.EditFilter(this);
         if (filterBuilder_ == null) {
           result.filter_ = filter_;
         } else {
@@ -34858,16 +35940,16 @@ public final class Graphik {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof api.Graphik.EFilter) {
-          return mergeFrom((api.Graphik.EFilter)other);
+        if (other instanceof api.Graphik.EditFilter) {
+          return mergeFrom((api.Graphik.EditFilter)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(api.Graphik.EFilter other) {
-        if (other == api.Graphik.EFilter.getDefaultInstance()) return this;
+      public Builder mergeFrom(api.Graphik.EditFilter other) {
+        if (other == api.Graphik.EditFilter.getDefaultInstance()) return this;
         if (other.hasFilter()) {
           mergeFilter(other.getFilter());
         }
@@ -34889,11 +35971,11 @@ public final class Graphik {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        api.Graphik.EFilter parsedMessage = null;
+        api.Graphik.EditFilter parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (api.Graphik.EFilter) e.getUnfinishedMessage();
+          parsedMessage = (api.Graphik.EditFilter) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -35221,41 +36303,41 @@ public final class Graphik {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:api.EFilter)
+      // @@protoc_insertion_point(builder_scope:api.EditFilter)
     }
 
-    // @@protoc_insertion_point(class_scope:api.EFilter)
-    private static final api.Graphik.EFilter DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:api.EditFilter)
+    private static final api.Graphik.EditFilter DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new api.Graphik.EFilter();
+      DEFAULT_INSTANCE = new api.Graphik.EditFilter();
     }
 
-    public static api.Graphik.EFilter getDefaultInstance() {
+    public static api.Graphik.EditFilter getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<EFilter>
-        PARSER = new com.google.protobuf.AbstractParser<EFilter>() {
+    private static final com.google.protobuf.Parser<EditFilter>
+        PARSER = new com.google.protobuf.AbstractParser<EditFilter>() {
       @java.lang.Override
-      public EFilter parsePartialFrom(
+      public EditFilter parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EFilter(input, extensionRegistry);
+        return new EditFilter(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<EFilter> parser() {
+    public static com.google.protobuf.Parser<EditFilter> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<EFilter> getParserForType() {
+    public com.google.protobuf.Parser<EditFilter> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public api.Graphik.EFilter getDefaultInstanceForType() {
+    public api.Graphik.EditFilter getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -36752,28 +37834,28 @@ public final class Graphik {
 
     /**
      * <pre>
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      * </pre>
      *
-     * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+     * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
      */
-    boolean hasSender();
+    boolean hasUser();
     /**
      * <pre>
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      * </pre>
      *
-     * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+     * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
      */
-    api.Graphik.Ref getSender();
+    api.Graphik.Ref getUser();
     /**
      * <pre>
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      * </pre>
      *
-     * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+     * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
      */
-    api.Graphik.RefOrBuilder getSenderOrBuilder();
+    api.Graphik.RefOrBuilder getUserOrBuilder();
 
     /**
      * <pre>
@@ -36799,6 +37881,16 @@ public final class Graphik {
      * <code>.google.protobuf.Timestamp timestamp = 4 [(.validator.field) = { ... }</code>
      */
     com.google.protobuf.TimestampOrBuilder getTimestampOrBuilder();
+
+    /**
+     * <code>string method = 5 [(.validator.field) = { ... }</code>
+     */
+    java.lang.String getMethod();
+    /**
+     * <code>string method = 5 [(.validator.field) = { ... }</code>
+     */
+    com.google.protobuf.ByteString
+        getMethodBytes();
   }
   /**
    * <pre>
@@ -36818,6 +37910,7 @@ public final class Graphik {
     }
     private Message() {
       channel_ = "";
+      method_ = "";
     }
 
     @java.lang.Override
@@ -36865,13 +37958,13 @@ public final class Graphik {
             }
             case 26: {
               api.Graphik.Ref.Builder subBuilder = null;
-              if (sender_ != null) {
-                subBuilder = sender_.toBuilder();
+              if (user_ != null) {
+                subBuilder = user_.toBuilder();
               }
-              sender_ = input.readMessage(api.Graphik.Ref.parser(), extensionRegistry);
+              user_ = input.readMessage(api.Graphik.Ref.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(sender_);
-                sender_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(user_);
+                user_ = subBuilder.buildPartial();
               }
 
               break;
@@ -36887,6 +37980,12 @@ public final class Graphik {
                 timestamp_ = subBuilder.buildPartial();
               }
 
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              method_ = s;
               break;
             }
             default: {
@@ -36996,37 +38095,37 @@ public final class Graphik {
       return getData();
     }
 
-    public static final int SENDER_FIELD_NUMBER = 3;
-    private api.Graphik.Ref sender_;
+    public static final int USER_FIELD_NUMBER = 3;
+    private api.Graphik.Ref user_;
     /**
      * <pre>
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      * </pre>
      *
-     * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+     * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
      */
-    public boolean hasSender() {
-      return sender_ != null;
+    public boolean hasUser() {
+      return user_ != null;
     }
     /**
      * <pre>
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      * </pre>
      *
-     * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+     * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
      */
-    public api.Graphik.Ref getSender() {
-      return sender_ == null ? api.Graphik.Ref.getDefaultInstance() : sender_;
+    public api.Graphik.Ref getUser() {
+      return user_ == null ? api.Graphik.Ref.getDefaultInstance() : user_;
     }
     /**
      * <pre>
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      * </pre>
      *
-     * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+     * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
      */
-    public api.Graphik.RefOrBuilder getSenderOrBuilder() {
-      return getSender();
+    public api.Graphik.RefOrBuilder getUserOrBuilder() {
+      return getUser();
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 4;
@@ -37062,6 +38161,40 @@ public final class Graphik {
       return getTimestamp();
     }
 
+    public static final int METHOD_FIELD_NUMBER = 5;
+    private volatile java.lang.Object method_;
+    /**
+     * <code>string method = 5 [(.validator.field) = { ... }</code>
+     */
+    public java.lang.String getMethod() {
+      java.lang.Object ref = method_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        method_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string method = 5 [(.validator.field) = { ... }</code>
+     */
+    public com.google.protobuf.ByteString
+        getMethodBytes() {
+      java.lang.Object ref = method_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        method_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -37082,11 +38215,14 @@ public final class Graphik {
       if (data_ != null) {
         output.writeMessage(2, getData());
       }
-      if (sender_ != null) {
-        output.writeMessage(3, getSender());
+      if (user_ != null) {
+        output.writeMessage(3, getUser());
       }
       if (timestamp_ != null) {
         output.writeMessage(4, getTimestamp());
+      }
+      if (!getMethodBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, method_);
       }
       unknownFields.writeTo(output);
     }
@@ -37104,13 +38240,16 @@ public final class Graphik {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getData());
       }
-      if (sender_ != null) {
+      if (user_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getSender());
+          .computeMessageSize(3, getUser());
       }
       if (timestamp_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, getTimestamp());
+      }
+      if (!getMethodBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, method_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -37135,16 +38274,18 @@ public final class Graphik {
         result = result && getData()
             .equals(other.getData());
       }
-      result = result && (hasSender() == other.hasSender());
-      if (hasSender()) {
-        result = result && getSender()
-            .equals(other.getSender());
+      result = result && (hasUser() == other.hasUser());
+      if (hasUser()) {
+        result = result && getUser()
+            .equals(other.getUser());
       }
       result = result && (hasTimestamp() == other.hasTimestamp());
       if (hasTimestamp()) {
         result = result && getTimestamp()
             .equals(other.getTimestamp());
       }
+      result = result && getMethod()
+          .equals(other.getMethod());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -37162,14 +38303,16 @@ public final class Graphik {
         hash = (37 * hash) + DATA_FIELD_NUMBER;
         hash = (53 * hash) + getData().hashCode();
       }
-      if (hasSender()) {
-        hash = (37 * hash) + SENDER_FIELD_NUMBER;
-        hash = (53 * hash) + getSender().hashCode();
+      if (hasUser()) {
+        hash = (37 * hash) + USER_FIELD_NUMBER;
+        hash = (53 * hash) + getUser().hashCode();
       }
       if (hasTimestamp()) {
         hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
         hash = (53 * hash) + getTimestamp().hashCode();
       }
+      hash = (37 * hash) + METHOD_FIELD_NUMBER;
+      hash = (53 * hash) + getMethod().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -37315,11 +38458,11 @@ public final class Graphik {
           data_ = null;
           dataBuilder_ = null;
         }
-        if (senderBuilder_ == null) {
-          sender_ = null;
+        if (userBuilder_ == null) {
+          user_ = null;
         } else {
-          sender_ = null;
-          senderBuilder_ = null;
+          user_ = null;
+          userBuilder_ = null;
         }
         if (timestampBuilder_ == null) {
           timestamp_ = null;
@@ -37327,6 +38470,8 @@ public final class Graphik {
           timestamp_ = null;
           timestampBuilder_ = null;
         }
+        method_ = "";
+
         return this;
       }
 
@@ -37359,16 +38504,17 @@ public final class Graphik {
         } else {
           result.data_ = dataBuilder_.build();
         }
-        if (senderBuilder_ == null) {
-          result.sender_ = sender_;
+        if (userBuilder_ == null) {
+          result.user_ = user_;
         } else {
-          result.sender_ = senderBuilder_.build();
+          result.user_ = userBuilder_.build();
         }
         if (timestampBuilder_ == null) {
           result.timestamp_ = timestamp_;
         } else {
           result.timestamp_ = timestampBuilder_.build();
         }
+        result.method_ = method_;
         onBuilt();
         return result;
       }
@@ -37424,11 +38570,15 @@ public final class Graphik {
         if (other.hasData()) {
           mergeData(other.getData());
         }
-        if (other.hasSender()) {
-          mergeSender(other.getSender());
+        if (other.hasUser()) {
+          mergeUser(other.getUser());
         }
         if (other.hasTimestamp()) {
           mergeTimestamp(other.getTimestamp());
+        }
+        if (!other.getMethod().isEmpty()) {
+          method_ = other.method_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -37701,157 +38851,157 @@ public final class Graphik {
         return dataBuilder_;
       }
 
-      private api.Graphik.Ref sender_ = null;
+      private api.Graphik.Ref user_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder> senderBuilder_;
+          api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder> userBuilder_;
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
-      public boolean hasSender() {
-        return senderBuilder_ != null || sender_ != null;
+      public boolean hasUser() {
+        return userBuilder_ != null || user_ != null;
       }
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
-      public api.Graphik.Ref getSender() {
-        if (senderBuilder_ == null) {
-          return sender_ == null ? api.Graphik.Ref.getDefaultInstance() : sender_;
+      public api.Graphik.Ref getUser() {
+        if (userBuilder_ == null) {
+          return user_ == null ? api.Graphik.Ref.getDefaultInstance() : user_;
         } else {
-          return senderBuilder_.getMessage();
+          return userBuilder_.getMessage();
         }
       }
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
-      public Builder setSender(api.Graphik.Ref value) {
-        if (senderBuilder_ == null) {
+      public Builder setUser(api.Graphik.Ref value) {
+        if (userBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          sender_ = value;
+          user_ = value;
           onChanged();
         } else {
-          senderBuilder_.setMessage(value);
+          userBuilder_.setMessage(value);
         }
 
         return this;
       }
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
-      public Builder setSender(
+      public Builder setUser(
           api.Graphik.Ref.Builder builderForValue) {
-        if (senderBuilder_ == null) {
-          sender_ = builderForValue.build();
+        if (userBuilder_ == null) {
+          user_ = builderForValue.build();
           onChanged();
         } else {
-          senderBuilder_.setMessage(builderForValue.build());
+          userBuilder_.setMessage(builderForValue.build());
         }
 
         return this;
       }
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
-      public Builder mergeSender(api.Graphik.Ref value) {
-        if (senderBuilder_ == null) {
-          if (sender_ != null) {
-            sender_ =
-              api.Graphik.Ref.newBuilder(sender_).mergeFrom(value).buildPartial();
+      public Builder mergeUser(api.Graphik.Ref value) {
+        if (userBuilder_ == null) {
+          if (user_ != null) {
+            user_ =
+              api.Graphik.Ref.newBuilder(user_).mergeFrom(value).buildPartial();
           } else {
-            sender_ = value;
+            user_ = value;
           }
           onChanged();
         } else {
-          senderBuilder_.mergeFrom(value);
+          userBuilder_.mergeFrom(value);
         }
 
         return this;
       }
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
-      public Builder clearSender() {
-        if (senderBuilder_ == null) {
-          sender_ = null;
+      public Builder clearUser() {
+        if (userBuilder_ == null) {
+          user_ = null;
           onChanged();
         } else {
-          sender_ = null;
-          senderBuilder_ = null;
+          user_ = null;
+          userBuilder_ = null;
         }
 
         return this;
       }
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
-      public api.Graphik.Ref.Builder getSenderBuilder() {
+      public api.Graphik.Ref.Builder getUserBuilder() {
         
         onChanged();
-        return getSenderFieldBuilder().getBuilder();
+        return getUserFieldBuilder().getBuilder();
       }
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
-      public api.Graphik.RefOrBuilder getSenderOrBuilder() {
-        if (senderBuilder_ != null) {
-          return senderBuilder_.getMessageOrBuilder();
+      public api.Graphik.RefOrBuilder getUserOrBuilder() {
+        if (userBuilder_ != null) {
+          return userBuilder_.getMessageOrBuilder();
         } else {
-          return sender_ == null ?
-              api.Graphik.Ref.getDefaultInstance() : sender_;
+          return user_ == null ?
+              api.Graphik.Ref.getDefaultInstance() : user_;
         }
       }
       /**
        * <pre>
-       * sender is the user that sent the message
+       * user is the sender that triggered/sent the message
        * </pre>
        *
-       * <code>.api.Ref sender = 3 [(.validator.field) = { ... }</code>
+       * <code>.api.Ref user = 3 [(.validator.field) = { ... }</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder> 
-          getSenderFieldBuilder() {
-        if (senderBuilder_ == null) {
-          senderBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          getUserFieldBuilder() {
+        if (userBuilder_ == null) {
+          userBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder>(
-                  getSender(),
+                  getUser(),
                   getParentForChildren(),
                   isClean());
-          sender_ = null;
+          user_ = null;
         }
-        return senderBuilder_;
+        return userBuilder_;
       }
 
       private com.google.protobuf.Timestamp timestamp_ = null;
@@ -38005,6 +39155,75 @@ public final class Graphik {
           timestamp_ = null;
         }
         return timestampBuilder_;
+      }
+
+      private java.lang.Object method_ = "";
+      /**
+       * <code>string method = 5 [(.validator.field) = { ... }</code>
+       */
+      public java.lang.String getMethod() {
+        java.lang.Object ref = method_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          method_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string method = 5 [(.validator.field) = { ... }</code>
+       */
+      public com.google.protobuf.ByteString
+          getMethodBytes() {
+        java.lang.Object ref = method_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          method_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string method = 5 [(.validator.field) = { ... }</code>
+       */
+      public Builder setMethod(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        method_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string method = 5 [(.validator.field) = { ... }</code>
+       */
+      public Builder clearMethod() {
+        
+        method_ = getDefaultInstance().getMethod();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string method = 5 [(.validator.field) = { ... }</code>
+       */
+      public Builder setMethodBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        method_ = value;
+        onChanged();
+        return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -41571,10 +42790,15 @@ public final class Graphik {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_api_ConnectionConstructor_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_api_SConnectFilter_descriptor;
+    internal_static_api_SearchConnectFilter_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_api_SConnectFilter_fieldAccessorTable;
+      internal_static_api_SearchConnectFilter_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_api_SearchConnectMeFilter_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_api_SearchConnectMeFilter_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_api_ConnectionConstructors_descriptor;
   private static final 
@@ -41586,10 +42810,10 @@ public final class Graphik {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_api_Connections_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_api_CFilter_descriptor;
+    internal_static_api_ConnectFilter_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_api_CFilter_fieldAccessorTable;
+      internal_static_api_ConnectFilter_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_api_Filter_descriptor;
   private static final 
@@ -41681,10 +42905,10 @@ public final class Graphik {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_api_Edit_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_api_EFilter_descriptor;
+    internal_static_api_EditFilter_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_api_EFilter_fieldAccessorTable;
+      internal_static_api_EditFilter_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_api_Pong_descriptor;
   private static final 
@@ -41753,151 +42977,158 @@ public final class Graphik {
       "\002 \001\022+\n\nattributes\030\003 \001(\0132\027.google.protobu" +
       "f.Struct\022\020\n\010directed\030\004 \001(\010\022\036\n\004from\030\005 \001(\013" +
       "2\010.api.RefB\006\342\337\037\002 \001\022\034\n\002to\030\006 \001(\0132\010.api.Ref" +
-      "B\006\342\337\037\002 \001\"\233\001\n\016SConnectFilter\022\033\n\006filter\030\001 " +
-      "\001(\0132\013.api.Filter\022\r\n\005gtype\030\002 \001(\t\022+\n\nattri" +
-      "butes\030\003 \001(\0132\027.google.protobuf.Struct\022\020\n\010" +
-      "directed\030\004 \001(\010\022\036\n\004from\030\005 \001(\0132\010.api.RefB\006" +
-      "\342\337\037\002 \001\"I\n\026ConnectionConstructors\022/\n\013conn" +
-      "ections\030\001 \003(\0132\032.api.ConnectionConstructo" +
-      "r\"F\n\013Connections\022$\n\013connections\030\001 \003(\0132\017." +
-      "api.Connection\022\021\n\tseek_next\030\002 \001(\t\"\334\001\n\007CF" +
-      "ilter\022!\n\007doc_ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001" +
-      "\022\037\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\022\n\nexp" +
-      "ression\030\003 \001(\t\022\025\n\005limit\030\004 \001(\004B\006\342\337\037\002\020\000\022C\n\004" +
-      "sort\030\005 \001(\tB5\342\337\0371\n/((^|, )(|ref.gid|ref.g" +
-      "type|^attributes.(.*)))+$\022\014\n\004seek\030\006 \001(\t\022" +
-      "\017\n\007reverse\030\007 \001(\010\"\307\001\n\006Filter\022\037\n\005gtype\030\001 \001" +
-      "(\tB\020\342\337\037\014\n\n^.{1,225}$\022\022\n\nexpression\030\002 \001(\t" +
-      "\022\025\n\005limit\030\003 \001(\004B\006\342\337\037\002\020\000\022C\n\004sort\030\004 \001(\tB5\342" +
-      "\337\0371\n/((^|, )(|ref.gid|ref.gtype|^attribu" +
-      "tes.(.*)))+$\022\014\n\004seek\030\005 \001(\t\022\017\n\007reverse\030\006 " +
-      "\001(\010\022\r\n\005index\030\007 \001(\t\"\207\001\n\tAggFilter\022#\n\006filt" +
-      "er\030\001 \001(\0132\013.api.FilterB\006\342\337\037\002 \001\022!\n\taggrega" +
-      "te\030\002 \001(\0162\016.api.Aggregate\0222\n\005field\030\003 \001(\tB" +
-      "#\342\337\037\037\n\035((^|, )(|^attributes.(.*)))+$\"\254\002\n" +
-      "\016TraverseFilter\022\036\n\004root\030\001 \001(\0132\010.api.RefB" +
-      "\006\342\337\037\002 \001\022\026\n\016doc_expression\030\002 \001(\t\022\035\n\025conne" +
-      "ction_expression\030\003 \001(\t\022\025\n\005limit\030\004 \001(\004B\006\342" +
-      "\337\037\002\020\000\022C\n\004sort\030\005 \001(\tB5\342\337\0371\n/((^|, )(|ref." +
-      "gid|ref.gtype|^attributes.(.*)))+$\022\017\n\007re" +
-      "verse\030\006 \001(\010\022!\n\talgorithm\030\007 \001(\0162\016.api.Alg" +
-      "orithm\022\031\n\tmax_depth\030\010 \001(\004B\006\342\337\037\002\020\000\022\030\n\010max" +
-      "_hops\030\t \001(\004B\006\342\337\037\002\020\000\"\216\002\n\020TraverseMeFilter" +
-      "\022\026\n\016doc_expression\030\001 \001(\t\022\035\n\025connection_e" +
-      "xpression\030\002 \001(\t\022\025\n\005limit\030\003 \001(\004B\006\342\337\037\002\020\000\022C" +
-      "\n\004sort\030\004 \001(\tB5\342\337\0371\n/((^|, )(|ref.gid|ref" +
-      ".gtype|^attributes.(.*)))+$\022\017\n\007reverse\030\005" +
-      " \001(\010\022!\n\talgorithm\030\006 \001(\0162\016.api.Algorithm\022" +
-      "\031\n\tmax_depth\030\007 \001(\004B\006\342\337\037\002\020\000\022\030\n\010max_hops\030\010" +
-      " \001(\004B\006\342\337\037\002\020\000\"\234\001\n\020IndexConstructor\022\036\n\004nam" +
-      "e\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\003 \001(\t" +
-      "B\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\004 \001(\tB\020" +
-      "\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\006 \001(\010\022\023\n\013connec" +
-      "tions\030\007 \001(\010\"R\n\nAuthorizer\022\036\n\004name\030\001 \001(\tB" +
-      "\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\002 \001(\tB\020\342" +
-      "\337\037\014\n\n^.{1,225}$\"3\n\013Authorizers\022$\n\013author" +
-      "izers\030\001 \003(\0132\017.api.Authorizer\"\231\001\n\rTypeVal" +
-      "idator\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037" +
-      "\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpre" +
-      "ssion\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\004 " +
-      "\001(\010\022\023\n\013connections\030\005 \001(\010\"8\n\016TypeValidato" +
-      "rs\022&\n\nvalidators\030\001 \003(\0132\022.api.TypeValidat" +
-      "or\"\221\001\n\005Index\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
-      "25}$\022\037\n\005gtype\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n" +
-      "\nexpression\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004d" +
-      "ocs\030\006 \001(\010\022\023\n\013connections\030\007 \001(\010\"&\n\007Indexe" +
-      "s\022\033\n\007indexes\030\001 \003(\0132\n.api.Index\"E\n\014Stream" +
-      "Filter\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
-      "$\022\022\n\nexpression\030\002 \001(\t\"G\n\005Graph\022\027\n\004docs\030\001" +
-      " \001(\0132\t.api.Docs\022%\n\013connections\030\002 \001(\0132\020.a" +
-      "pi.Connections\"\242\002\n\005Flags\022\031\n\021open_id_disc" +
-      "overy\030\001 \001(\t\022\024\n\014storage_path\030\002 \001(\t\022\017\n\007met" +
-      "rics\030\003 \001(\010\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\rall" +
-      "ow_methods\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(\t\022" +
-      "\022\n\nroot_users\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n" +
-      "\007tls_key\030\n \001(\t\022\034\n\024playground_client_id\030\013" +
-      " \001(\t\022 \n\030playground_client_secret\030\014 \001(\t\022\033" +
-      "\n\023playground_redirect\030\r \001(\t\"\030\n\007Boolean\022\r" +
-      "\n\005value\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"\203" +
-      "\001\n\014ExistsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^." +
-      "{1,225}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1" +
-      ",225}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n" +
-      "\005index\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api." +
-      "RefB\006\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.google" +
-      ".protobuf.Struct\"S\n\007EFilter\022\033\n\006filter\030\001 " +
-      "\001(\0132\013.api.Filter\022+\n\nattributes\030\002 \001(\0132\027.g" +
-      "oogle.protobuf.Struct\"\027\n\004Pong\022\017\n\007message" +
-      "\030\001 \001(\t\"c\n\017OutboundMessage\022!\n\007channel\030\001 \001" +
-      "(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.goo" +
-      "gle.protobuf.StructB\006\342\337\037\002 \001\"\264\001\n\007Message\022" +
-      "!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004da" +
-      "ta\030\002 \001(\0132\027.google.protobuf.StructB\006\342\337\037\002 " +
-      "\001\022 \n\006sender\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\tt" +
-      "imestamp\030\004 \001(\0132\032.google.protobuf.Timesta" +
-      "mpB\006\342\337\037\002 \001\"\244\001\n\006Schema\022\030\n\020connection_type" +
-      "s\030\001 \003(\t\022\021\n\tdoc_types\030\002 \003(\t\022%\n\013authorizer" +
-      "s\030\003 \001(\0132\020.api.Authorizers\022\'\n\nvalidators\030" +
-      "\004 \001(\0132\023.api.TypeValidators\022\035\n\007indexes\030\005 " +
-      "\001(\0132\014.api.Indexes\" \n\nExprFilter\022\022\n\nexpre" +
-      "ssion\030\001 \001(\t\"\254\001\n\007Request\022 \n\006method\030\001 \001(\tB" +
-      "\020\342\337\037\014\n\n^.{1,225}$\022\036\n\004user\030\002 \001(\0132\010.api.Do" +
-      "cB\006\342\337\037\002 \001\0225\n\ttimestamp\030\003 \001(\0132\032.google.pr" +
-      "otobuf.TimestampB\006\342\337\037\002 \001\022(\n\007request\030\004 \001(" +
-      "\0132\027.google.protobuf.Struct*\035\n\tAlgorithm\022" +
-      "\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t\n\005COUNT\020" +
-      "\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n" +
-      "\004PROD\020\0052\373\017\n\017DatabaseService\022+\n\004Ping\022\026.go" +
-      "ogle.protobuf.Empty\032\t.api.Pong\"\000\0222\n\tGetS" +
-      "chema\022\026.google.protobuf.Empty\032\013.api.Sche" +
-      "ma\"\000\022<\n\016SetAuthorizers\022\020.api.Authorizers" +
-      "\032\026.google.protobuf.Empty\"\000\0224\n\nSetIndexes" +
-      "\022\014.api.Indexes\032\026.google.protobuf.Empty\"\000" +
-      "\022B\n\021SetTypeValidators\022\023.api.TypeValidato" +
-      "rs\032\026.google.protobuf.Empty\"\000\022(\n\002Me\022\026.goo" +
-      "gle.protobuf.Empty\032\010.api.Doc\"\000\022,\n\tCreate" +
-      "Doc\022\023.api.DocConstructor\032\010.api.Doc\"\000\022/\n\n" +
-      "CreateDocs\022\024.api.DocConstructors\032\t.api.D" +
-      "ocs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.api.Doc\"\000\022&\n" +
-      "\nSearchDocs\022\013.api.Filter\032\t.api.Docs\"\000\0222\n" +
-      "\010Traverse\022\023.api.TraverseFilter\032\017.api.Tra" +
-      "versals\"\000\0226\n\nTraverseMe\022\025.api.TraverseMe" +
-      "Filter\032\017.api.Traversals\"\000\022 \n\007EditDoc\022\t.a" +
-      "pi.Edit\032\010.api.Doc\"\000\022%\n\010EditDocs\022\014.api.EF" +
-      "ilter\032\t.api.Docs\"\000\022,\n\006DelDoc\022\010.api.Ref\032\026" +
-      ".google.protobuf.Empty\"\000\0220\n\007DelDocs\022\013.ap" +
-      "i.Filter\032\026.google.protobuf.Empty\"\000\022.\n\tEx" +
-      "istsDoc\022\021.api.ExistsFilter\032\014.api.Boolean" +
-      "\"\000\0225\n\020ExistsConnection\022\021.api.ExistsFilte" +
-      "r\032\014.api.Boolean\"\000\022\"\n\006HasDoc\022\010.api.Ref\032\014." +
-      "api.Boolean\"\000\022)\n\rHasConnection\022\010.api.Ref" +
-      "\032\014.api.Boolean\"\000\022A\n\020CreateConnection\022\032.a" +
-      "pi.ConnectionConstructor\032\017.api.Connectio" +
-      "n\"\000\022D\n\021CreateConnections\022\033.api.Connectio" +
-      "nConstructors\032\020.api.Connections\"\000\022;\n\020Sea" +
-      "rchAndConnect\022\023.api.SConnectFilter\032\020.api" +
-      ".Connections\"\000\022,\n\rGetConnection\022\010.api.Re" +
-      "f\032\017.api.Connection\"\000\0224\n\021SearchConnection" +
-      "s\022\013.api.Filter\032\020.api.Connections\"\000\022.\n\016Ed" +
-      "itConnection\022\t.api.Edit\032\017.api.Connection" +
-      "\"\000\0223\n\017EditConnections\022\014.api.EFilter\032\020.ap" +
-      "i.Connections\"\000\0223\n\rDelConnection\022\010.api.R" +
-      "ef\032\026.google.protobuf.Empty\"\000\0227\n\016DelConne" +
-      "ctions\022\013.api.Filter\032\026.google.protobuf.Em" +
-      "pty\"\000\0223\n\017ConnectionsFrom\022\014.api.CFilter\032\020" +
-      ".api.Connections\"\000\0221\n\rConnectionsTo\022\014.ap" +
-      "i.CFilter\032\020.api.Connections\"\000\022.\n\rAggrega" +
-      "teDocs\022\016.api.AggFilter\032\013.api.Number\"\000\0225\n" +
-      "\024AggregateConnections\022\016.api.AggFilter\032\013." +
-      "api.Number\"\000\0229\n\007Publish\022\024.api.OutboundMe" +
-      "ssage\032\026.google.protobuf.Empty\"\000\022-\n\006Strea" +
-      "m\022\021.api.StreamFilter\032\014.api.Message\"\0000\001\022:" +
-      "\n\023PushDocConstructors\022\023.api.DocConstruct" +
-      "or\032\010.api.Doc\"\000(\0010\001\022O\n\032PushConnectionCons" +
-      "tructors\022\032.api.ConnectionConstructor\032\017.a" +
-      "pi.Connection\"\000(\0010\001\0220\n\010SeedDocs\022\010.api.Do" +
-      "c\032\026.google.protobuf.Empty\"\000(\001\022>\n\017SeedCon" +
-      "nections\022\017.api.Connection\032\026.google.proto" +
-      "buf.Empty\"\000(\001B\007Z\005apipbb\006proto3"
+      "B\006\342\337\037\002 \001\"\240\001\n\023SearchConnectFilter\022\033\n\006filt" +
+      "er\030\001 \001(\0132\013.api.Filter\022\r\n\005gtype\030\002 \001(\t\022+\n\n" +
+      "attributes\030\003 \001(\0132\027.google.protobuf.Struc" +
+      "t\022\020\n\010directed\030\004 \001(\010\022\036\n\004from\030\005 \001(\0132\010.api." +
+      "RefB\006\342\337\037\002 \001\"\202\001\n\025SearchConnectMeFilter\022\033\n" +
+      "\006filter\030\001 \001(\0132\013.api.Filter\022\r\n\005gtype\030\002 \001(" +
+      "\t\022+\n\nattributes\030\003 \001(\0132\027.google.protobuf." +
+      "Struct\022\020\n\010directed\030\004 \001(\010\"I\n\026ConnectionCo" +
+      "nstructors\022/\n\013connections\030\001 \003(\0132\032.api.Co" +
+      "nnectionConstructor\"F\n\013Connections\022$\n\013co" +
+      "nnections\030\001 \003(\0132\017.api.Connection\022\021\n\tseek" +
+      "_next\030\002 \001(\t\"\342\001\n\rConnectFilter\022!\n\007doc_ref" +
+      "\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022\037\n\005gtype\030\002 \001(\tB" +
+      "\020\342\337\037\014\n\n^.{1,225}$\022\022\n\nexpression\030\003 \001(\t\022\025\n" +
+      "\005limit\030\004 \001(\004B\006\342\337\037\002\020\000\022C\n\004sort\030\005 \001(\tB5\342\337\0371" +
+      "\n/((^|, )(|ref.gid|ref.gtype|^attributes" +
+      ".(.*)))+$\022\014\n\004seek\030\006 \001(\t\022\017\n\007reverse\030\007 \001(\010" +
+      "\"\307\001\n\006Filter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
+      "25}$\022\022\n\nexpression\030\002 \001(\t\022\025\n\005limit\030\003 \001(\004B" +
+      "\006\342\337\037\002\020\000\022C\n\004sort\030\004 \001(\tB5\342\337\0371\n/((^|, )(|re" +
+      "f.gid|ref.gtype|^attributes.(.*)))+$\022\014\n\004" +
+      "seek\030\005 \001(\t\022\017\n\007reverse\030\006 \001(\010\022\r\n\005index\030\007 \001" +
+      "(\t\"\207\001\n\tAggFilter\022#\n\006filter\030\001 \001(\0132\013.api.F" +
+      "ilterB\006\342\337\037\002 \001\022!\n\taggregate\030\002 \001(\0162\016.api.A" +
+      "ggregate\0222\n\005field\030\003 \001(\tB#\342\337\037\037\n\035((^|, )(|" +
+      "^attributes.(.*)))+$\"\254\002\n\016TraverseFilter\022" +
+      "\036\n\004root\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022\026\n\016doc_e" +
+      "xpression\030\002 \001(\t\022\035\n\025connection_expression" +
+      "\030\003 \001(\t\022\025\n\005limit\030\004 \001(\004B\006\342\337\037\002\020\000\022C\n\004sort\030\005 " +
+      "\001(\tB5\342\337\0371\n/((^|, )(|ref.gid|ref.gtype|^a" +
+      "ttributes.(.*)))+$\022\017\n\007reverse\030\006 \001(\010\022!\n\ta" +
+      "lgorithm\030\007 \001(\0162\016.api.Algorithm\022\031\n\tmax_de" +
+      "pth\030\010 \001(\004B\006\342\337\037\002\020\000\022\030\n\010max_hops\030\t \001(\004B\006\342\337\037" +
+      "\002\020\000\"\216\002\n\020TraverseMeFilter\022\026\n\016doc_expressi" +
+      "on\030\001 \001(\t\022\035\n\025connection_expression\030\002 \001(\t\022" +
+      "\025\n\005limit\030\003 \001(\004B\006\342\337\037\002\020\000\022C\n\004sort\030\004 \001(\tB5\342\337" +
+      "\0371\n/((^|, )(|ref.gid|ref.gtype|^attribut" +
+      "es.(.*)))+$\022\017\n\007reverse\030\005 \001(\010\022!\n\talgorith" +
+      "m\030\006 \001(\0162\016.api.Algorithm\022\031\n\tmax_depth\030\007 \001" +
+      "(\004B\006\342\337\037\002\020\000\022\030\n\010max_hops\030\010 \001(\004B\006\342\337\037\002\020\000\"\234\001\n" +
+      "\020IndexConstructor\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^" +
+      ".{1,225}$\022\037\n\005gtype\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
+      "}$\022$\n\nexpression\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$" +
+      "\022\014\n\004docs\030\006 \001(\010\022\023\n\013connections\030\007 \001(\010\"R\n\nA" +
+      "uthorizer\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
+      "$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"" +
+      "3\n\013Authorizers\022$\n\013authorizers\030\001 \003(\0132\017.ap" +
+      "i.Authorizer\"\231\001\n\rTypeValidator\022\036\n\004name\030\001" +
+      " \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\002 \001(\tB\020\342" +
+      "\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\003 \001(\tB\020\342\337\037" +
+      "\014\n\n^.{1,225}$\022\014\n\004docs\030\004 \001(\010\022\023\n\013connectio" +
+      "ns\030\005 \001(\010\"8\n\016TypeValidators\022&\n\nvalidators" +
+      "\030\001 \003(\0132\022.api.TypeValidator\"\221\001\n\005Index\022\036\n\004" +
+      "name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\003 " +
+      "\001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\004 \001(" +
+      "\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\006 \001(\010\022\023\n\013con" +
+      "nections\030\007 \001(\010\"&\n\007Indexes\022\033\n\007indexes\030\001 \003" +
+      "(\0132\n.api.Index\"E\n\014StreamFilter\022!\n\007channe" +
+      "l\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\022\n\nexpression\030" +
+      "\002 \001(\t\"G\n\005Graph\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022" +
+      "%\n\013connections\030\002 \001(\0132\020.api.Connections\"\242" +
+      "\002\n\005Flags\022\031\n\021open_id_discovery\030\001 \001(\t\022\024\n\014s" +
+      "torage_path\030\002 \001(\t\022\017\n\007metrics\030\003 \001(\010\022\025\n\ral" +
+      "low_headers\030\005 \003(\t\022\025\n\rallow_methods\030\006 \003(\t" +
+      "\022\025\n\rallow_origins\030\007 \003(\t\022\022\n\nroot_users\030\010 " +
+      "\003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007tls_key\030\n \001(\t\022\034" +
+      "\n\024playground_client_id\030\013 \001(\t\022 \n\030playgrou" +
+      "nd_client_secret\030\014 \001(\t\022\033\n\023playground_red" +
+      "irect\030\r \001(\t\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"\027\n" +
+      "\006Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014ExistsFilter\022" +
+      "\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpr" +
+      "ession\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030\003" +
+      " \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004" +
+      "Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\na" +
+      "ttributes\030\002 \001(\0132\027.google.protobuf.Struct" +
+      "\"V\n\nEditFilter\022\033\n\006filter\030\001 \001(\0132\013.api.Fil" +
+      "ter\022+\n\nattributes\030\002 \001(\0132\027.google.protobu" +
+      "f.Struct\"\027\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017Out" +
+      "boundMessage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{" +
+      "1,225}$\022-\n\004data\030\002 \001(\0132\027.google.protobuf." +
+      "StructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!\n\007channel\030\001 " +
+      "\001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.go" +
+      "ogle.protobuf.StructB\006\342\337\037\002 \001\022\036\n\004user\030\003 \001" +
+      "(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\0132" +
+      "\032.google.protobuf.TimestampB\006\342\337\037\002 \001\022 \n\006m" +
+      "ethod\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"\244\001\n\006Schema" +
+      "\022\030\n\020connection_types\030\001 \003(\t\022\021\n\tdoc_types\030" +
+      "\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020.api.Authori" +
+      "zers\022\'\n\nvalidators\030\004 \001(\0132\023.api.TypeValid" +
+      "ators\022\035\n\007indexes\030\005 \001(\0132\014.api.Indexes\" \n\n" +
+      "ExprFilter\022\022\n\nexpression\030\001 \001(\t\"\254\001\n\007Reque" +
+      "st\022 \n\006method\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\036\n\004" +
+      "user\030\002 \001(\0132\010.api.DocB\006\342\337\037\002 \001\0225\n\ttimestam" +
+      "p\030\003 \001(\0132\032.google.protobuf.TimestampB\006\342\337\037" +
+      "\002 \001\022(\n\007request\030\004 \001(\0132\027.google.protobuf.S" +
+      "truct*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\t" +
+      "Aggregate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007" +
+      "\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\0052\332\020\n\017DatabaseS" +
+      "ervice\022+\n\004Ping\022\026.google.protobuf.Empty\032\t" +
+      ".api.Pong\"\000\0222\n\tGetSchema\022\026.google.protob" +
+      "uf.Empty\032\013.api.Schema\"\000\022<\n\016SetAuthorizer" +
+      "s\022\020.api.Authorizers\032\026.google.protobuf.Em" +
+      "pty\"\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.goog" +
+      "le.protobuf.Empty\"\000\022B\n\021SetTypeValidators" +
+      "\022\023.api.TypeValidators\032\026.google.protobuf." +
+      "Empty\"\000\022(\n\002Me\022\026.google.protobuf.Empty\032\010." +
+      "api.Doc\"\000\022,\n\tCreateDoc\022\023.api.DocConstruc" +
+      "tor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.api.DocC" +
+      "onstructors\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api" +
+      ".Ref\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Fil" +
+      "ter\032\t.api.Docs\"\000\0222\n\010Traverse\022\023.api.Trave" +
+      "rseFilter\032\017.api.Traversals\"\000\0226\n\nTraverse" +
+      "Me\022\025.api.TraverseMeFilter\032\017.api.Traversa" +
+      "ls\"\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(" +
+      "\n\010EditDocs\022\017.api.EditFilter\032\t.api.Docs\"\000" +
+      "\022,\n\006DelDoc\022\010.api.Ref\032\026.google.protobuf.E" +
+      "mpty\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google." +
+      "protobuf.Empty\"\000\022.\n\tExistsDoc\022\021.api.Exis" +
+      "tsFilter\032\014.api.Boolean\"\000\0225\n\020ExistsConnec" +
+      "tion\022\021.api.ExistsFilter\032\014.api.Boolean\"\000\022" +
+      "\"\n\006HasDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rH" +
+      "asConnection\022\010.api.Ref\032\014.api.Boolean\"\000\022A" +
+      "\n\020CreateConnection\022\032.api.ConnectionConst" +
+      "ructor\032\017.api.Connection\"\000\022D\n\021CreateConne" +
+      "ctions\022\033.api.ConnectionConstructors\032\020.ap" +
+      "i.Connections\"\000\022@\n\020SearchAndConnect\022\030.ap" +
+      "i.SearchConnectFilter\032\020.api.Connections\"" +
+      "\000\022D\n\022SearchAndConnectMe\022\032.api.SearchConn" +
+      "ectMeFilter\032\020.api.Connections\"\000\022,\n\rGetCo" +
+      "nnection\022\010.api.Ref\032\017.api.Connection\"\000\0224\n" +
+      "\021SearchConnections\022\013.api.Filter\032\020.api.Co" +
+      "nnections\"\000\022.\n\016EditConnection\022\t.api.Edit" +
+      "\032\017.api.Connection\"\000\0226\n\017EditConnections\022\017" +
+      ".api.EditFilter\032\020.api.Connections\"\000\0223\n\rD" +
+      "elConnection\022\010.api.Ref\032\026.google.protobuf" +
+      ".Empty\"\000\0227\n\016DelConnections\022\013.api.Filter\032" +
+      "\026.google.protobuf.Empty\"\000\0229\n\017Connections" +
+      "From\022\022.api.ConnectFilter\032\020.api.Connectio" +
+      "ns\"\000\0227\n\rConnectionsTo\022\022.api.ConnectFilte" +
+      "r\032\020.api.Connections\"\000\022.\n\rAggregateDocs\022\016" +
+      ".api.AggFilter\032\013.api.Number\"\000\0225\n\024Aggrega" +
+      "teConnections\022\016.api.AggFilter\032\013.api.Numb" +
+      "er\"\000\022;\n\tBroadcast\022\024.api.OutboundMessage\032" +
+      "\026.google.protobuf.Empty\"\000\022-\n\006Stream\022\021.ap" +
+      "i.StreamFilter\032\014.api.Message\"\0000\001\022:\n\023Push" +
+      "DocConstructors\022\023.api.DocConstructor\032\010.a" +
+      "pi.Doc\"\000(\0010\001\022O\n\032PushConnectionConstructo" +
+      "rs\022\032.api.ConnectionConstructor\032\017.api.Con" +
+      "nection\"\000(\0010\001\0220\n\010SeedDocs\022\010.api.Doc\032\026.go" +
+      "ogle.protobuf.Empty\"\000(\001\022>\n\017SeedConnectio" +
+      "ns\022\017.api.Connection\032\026.google.protobuf.Em" +
+      "pty\"\000(\001B\007Z\005apipbb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -41982,176 +43213,182 @@ public final class Graphik {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ConnectionConstructor_descriptor,
         new java.lang.String[] { "Ref", "Attributes", "Directed", "From", "To", });
-    internal_static_api_SConnectFilter_descriptor =
+    internal_static_api_SearchConnectFilter_descriptor =
       getDescriptor().getMessageTypes().get(11);
-    internal_static_api_SConnectFilter_fieldAccessorTable = new
+    internal_static_api_SearchConnectFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_api_SConnectFilter_descriptor,
+        internal_static_api_SearchConnectFilter_descriptor,
         new java.lang.String[] { "Filter", "Gtype", "Attributes", "Directed", "From", });
-    internal_static_api_ConnectionConstructors_descriptor =
+    internal_static_api_SearchConnectMeFilter_descriptor =
       getDescriptor().getMessageTypes().get(12);
+    internal_static_api_SearchConnectMeFilter_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_api_SearchConnectMeFilter_descriptor,
+        new java.lang.String[] { "Filter", "Gtype", "Attributes", "Directed", });
+    internal_static_api_ConnectionConstructors_descriptor =
+      getDescriptor().getMessageTypes().get(13);
     internal_static_api_ConnectionConstructors_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ConnectionConstructors_descriptor,
         new java.lang.String[] { "Connections", });
     internal_static_api_Connections_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_api_Connections_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Connections_descriptor,
         new java.lang.String[] { "Connections", "SeekNext", });
-    internal_static_api_CFilter_descriptor =
-      getDescriptor().getMessageTypes().get(14);
-    internal_static_api_CFilter_fieldAccessorTable = new
+    internal_static_api_ConnectFilter_descriptor =
+      getDescriptor().getMessageTypes().get(15);
+    internal_static_api_ConnectFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_api_CFilter_descriptor,
+        internal_static_api_ConnectFilter_descriptor,
         new java.lang.String[] { "DocRef", "Gtype", "Expression", "Limit", "Sort", "Seek", "Reverse", });
     internal_static_api_Filter_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_api_Filter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Filter_descriptor,
         new java.lang.String[] { "Gtype", "Expression", "Limit", "Sort", "Seek", "Reverse", "Index", });
     internal_static_api_AggFilter_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_api_AggFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_AggFilter_descriptor,
         new java.lang.String[] { "Filter", "Aggregate", "Field", });
     internal_static_api_TraverseFilter_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_api_TraverseFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_TraverseFilter_descriptor,
         new java.lang.String[] { "Root", "DocExpression", "ConnectionExpression", "Limit", "Sort", "Reverse", "Algorithm", "MaxDepth", "MaxHops", });
     internal_static_api_TraverseMeFilter_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_api_TraverseMeFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_TraverseMeFilter_descriptor,
         new java.lang.String[] { "DocExpression", "ConnectionExpression", "Limit", "Sort", "Reverse", "Algorithm", "MaxDepth", "MaxHops", });
     internal_static_api_IndexConstructor_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_api_IndexConstructor_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_IndexConstructor_descriptor,
         new java.lang.String[] { "Name", "Gtype", "Expression", "Docs", "Connections", });
     internal_static_api_Authorizer_descriptor =
-      getDescriptor().getMessageTypes().get(20);
+      getDescriptor().getMessageTypes().get(21);
     internal_static_api_Authorizer_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Authorizer_descriptor,
         new java.lang.String[] { "Name", "Expression", });
     internal_static_api_Authorizers_descriptor =
-      getDescriptor().getMessageTypes().get(21);
+      getDescriptor().getMessageTypes().get(22);
     internal_static_api_Authorizers_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Authorizers_descriptor,
         new java.lang.String[] { "Authorizers", });
     internal_static_api_TypeValidator_descriptor =
-      getDescriptor().getMessageTypes().get(22);
+      getDescriptor().getMessageTypes().get(23);
     internal_static_api_TypeValidator_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_TypeValidator_descriptor,
         new java.lang.String[] { "Name", "Gtype", "Expression", "Docs", "Connections", });
     internal_static_api_TypeValidators_descriptor =
-      getDescriptor().getMessageTypes().get(23);
+      getDescriptor().getMessageTypes().get(24);
     internal_static_api_TypeValidators_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_TypeValidators_descriptor,
         new java.lang.String[] { "Validators", });
     internal_static_api_Index_descriptor =
-      getDescriptor().getMessageTypes().get(24);
+      getDescriptor().getMessageTypes().get(25);
     internal_static_api_Index_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Index_descriptor,
         new java.lang.String[] { "Name", "Gtype", "Expression", "Docs", "Connections", });
     internal_static_api_Indexes_descriptor =
-      getDescriptor().getMessageTypes().get(25);
+      getDescriptor().getMessageTypes().get(26);
     internal_static_api_Indexes_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Indexes_descriptor,
         new java.lang.String[] { "Indexes", });
     internal_static_api_StreamFilter_descriptor =
-      getDescriptor().getMessageTypes().get(26);
+      getDescriptor().getMessageTypes().get(27);
     internal_static_api_StreamFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_StreamFilter_descriptor,
         new java.lang.String[] { "Channel", "Expression", });
     internal_static_api_Graph_descriptor =
-      getDescriptor().getMessageTypes().get(27);
+      getDescriptor().getMessageTypes().get(28);
     internal_static_api_Graph_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Graph_descriptor,
         new java.lang.String[] { "Docs", "Connections", });
     internal_static_api_Flags_descriptor =
-      getDescriptor().getMessageTypes().get(28);
+      getDescriptor().getMessageTypes().get(29);
     internal_static_api_Flags_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Flags_descriptor,
         new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "Metrics", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "PlaygroundClientId", "PlaygroundClientSecret", "PlaygroundRedirect", });
     internal_static_api_Boolean_descriptor =
-      getDescriptor().getMessageTypes().get(29);
+      getDescriptor().getMessageTypes().get(30);
     internal_static_api_Boolean_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Boolean_descriptor,
         new java.lang.String[] { "Value", });
     internal_static_api_Number_descriptor =
-      getDescriptor().getMessageTypes().get(30);
+      getDescriptor().getMessageTypes().get(31);
     internal_static_api_Number_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Number_descriptor,
         new java.lang.String[] { "Value", });
     internal_static_api_ExistsFilter_descriptor =
-      getDescriptor().getMessageTypes().get(31);
+      getDescriptor().getMessageTypes().get(32);
     internal_static_api_ExistsFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ExistsFilter_descriptor,
         new java.lang.String[] { "Gtype", "Expression", "Seek", "Reverse", "Index", });
     internal_static_api_Edit_descriptor =
-      getDescriptor().getMessageTypes().get(32);
+      getDescriptor().getMessageTypes().get(33);
     internal_static_api_Edit_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Edit_descriptor,
         new java.lang.String[] { "Ref", "Attributes", });
-    internal_static_api_EFilter_descriptor =
-      getDescriptor().getMessageTypes().get(33);
-    internal_static_api_EFilter_fieldAccessorTable = new
+    internal_static_api_EditFilter_descriptor =
+      getDescriptor().getMessageTypes().get(34);
+    internal_static_api_EditFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_api_EFilter_descriptor,
+        internal_static_api_EditFilter_descriptor,
         new java.lang.String[] { "Filter", "Attributes", });
     internal_static_api_Pong_descriptor =
-      getDescriptor().getMessageTypes().get(34);
+      getDescriptor().getMessageTypes().get(35);
     internal_static_api_Pong_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Pong_descriptor,
         new java.lang.String[] { "Message", });
     internal_static_api_OutboundMessage_descriptor =
-      getDescriptor().getMessageTypes().get(35);
+      getDescriptor().getMessageTypes().get(36);
     internal_static_api_OutboundMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_OutboundMessage_descriptor,
         new java.lang.String[] { "Channel", "Data", });
     internal_static_api_Message_descriptor =
-      getDescriptor().getMessageTypes().get(36);
+      getDescriptor().getMessageTypes().get(37);
     internal_static_api_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Message_descriptor,
-        new java.lang.String[] { "Channel", "Data", "Sender", "Timestamp", });
+        new java.lang.String[] { "Channel", "Data", "User", "Timestamp", "Method", });
     internal_static_api_Schema_descriptor =
-      getDescriptor().getMessageTypes().get(37);
+      getDescriptor().getMessageTypes().get(38);
     internal_static_api_Schema_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Schema_descriptor,
         new java.lang.String[] { "ConnectionTypes", "DocTypes", "Authorizers", "Validators", "Indexes", });
     internal_static_api_ExprFilter_descriptor =
-      getDescriptor().getMessageTypes().get(38);
+      getDescriptor().getMessageTypes().get(39);
     internal_static_api_ExprFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ExprFilter_descriptor,
         new java.lang.String[] { "Expression", });
     internal_static_api_Request_descriptor =
-      getDescriptor().getMessageTypes().get(39);
+      getDescriptor().getMessageTypes().get(40);
     internal_static_api_Request_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Request_descriptor,

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>SConnectFilter</title>
+    <title>EditFilter</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -250,9 +250,9 @@
                 AuthorizersInput
             </a>
         </li>
-        <li  title="CFilter">
-            <a href="cfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                CFilter
+        <li  title="ConnectFilter">
+            <a href="connectfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConnectFilter
             </a>
         </li>
         <li  title="ConnectionConstructor">
@@ -280,9 +280,9 @@
                 Edit
             </a>
         </li>
-        <li  title="EFilter">
-            <a href="efilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                EFilter
+        <li class="slds-is-active" title="EditFilter">
+            <a href="editfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                EditFilter
             </a>
         </li>
         <li  title="ExistsFilter">
@@ -325,9 +325,19 @@
                 RefInput
             </a>
         </li>
-        <li class="slds-is-active" title="SConnectFilter">
-            <a href="sconnectfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                SConnectFilter
+        <li  title="RefPair">
+            <a href="refpair.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RefPair
+            </a>
+        </li>
+        <li  title="SearchConnectFilter">
+            <a href="searchconnectfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SearchConnectFilter
+            </a>
+        </li>
+        <li  title="SearchConnectMeFilter">
+            <a href="searchconnectmefilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SearchConnectMeFilter
             </a>
         </li>
         <li  title="StreamFilter">
@@ -391,8 +401,8 @@
     </div>
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
-        <h1 class="slds-text-heading--large">SConnectFilter</h1>
-        <div class="slds-text-body--regular"><p>SConnectFilter is used for searching for documents and adding connections based on whether they pass a Filter</p>
+        <h1 class="slds-text-heading--large">EditFilter</h1>
+        <div class="slds-text-body--regular"><p>EditFilter is used to edit/patch docs/connections</p>
 </div>
     </div>
 </section>
@@ -404,7 +414,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">SConnectFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   filter is the filter to apply against the graph.</span></span></li><li><span class="tab"><span class="meta">filter</span>: <a class="support type" href="filter.doc.html">Filter</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   gtype is the type of the connection to create</span></span></li><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   attributes are k/v pairs to associate with the new connection</span></span></li><li><span class="tab"><span class="meta">attributes</span>: <a class="support type" href="map.doc.html">Map</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   directed indicates whether the connection is uni-directional(instagram) or </span></span></li><li><span class="tab"><span class="comment line">#   bi-directional(facebook)</span></span></li><li><span class="tab"><span class="meta">directed</span>: <a class="support type" href="boolean.doc.html">Boolean</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   from indicates the root document of the connection to create</span></span></li><li><span class="tab"><span class="meta">from</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">EditFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   filter is used to filter docs/connections to edit</span></span></li><li><span class="tab"><span class="meta">filter</span>: <a class="support type" href="filter.doc.html">Filter</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   attributes are k/v pairs used to overwrite k/v pairs on a doc/connection</span></span></li><li><span class="tab"><span class="meta">attributes</span>: <a class="support type" href="map.doc.html">Map</a>!</span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

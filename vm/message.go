@@ -14,6 +14,7 @@ type MessageVM struct {
 
 func NewMessageVM() (*MessageVM, error) {
 	e, err := cel.NewEnv(
+		cel.Types(&apipb.Ref{}, &apipb.Message{}),
 		cel.Declarations(
 			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
@@ -54,7 +55,7 @@ func (n *MessageVM) Eval(message *apipb.Message, programs ...cel.Program) (bool,
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"this": message.AsMap(),
+			"this": message,
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "no such key") {

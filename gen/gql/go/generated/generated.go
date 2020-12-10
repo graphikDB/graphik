@@ -95,28 +95,30 @@ type ComplexityRoot struct {
 	Message struct {
 		Channel   func(childComplexity int) int
 		Data      func(childComplexity int) int
-		Sender    func(childComplexity int) int
+		Method    func(childComplexity int) int
 		Timestamp func(childComplexity int) int
+		User      func(childComplexity int) int
 	}
 
 	Mutation struct {
-		CreateConnection  func(childComplexity int, input model.ConnectionConstructor) int
-		CreateConnections func(childComplexity int, input model.ConnectionConstructors) int
-		CreateDoc         func(childComplexity int, input model.DocConstructor) int
-		CreateDocs        func(childComplexity int, input model.DocConstructors) int
-		DelConnection     func(childComplexity int, input model.RefInput) int
-		DelConnections    func(childComplexity int, input model.Filter) int
-		DelDoc            func(childComplexity int, input model.RefInput) int
-		DelDocs           func(childComplexity int, input model.Filter) int
-		EditConnection    func(childComplexity int, input model.Edit) int
-		EditConnections   func(childComplexity int, input model.EFilter) int
-		EditDoc           func(childComplexity int, input model.Edit) int
-		EditDocs          func(childComplexity int, input model.EFilter) int
-		Publish           func(childComplexity int, input model.OutboundMessage) int
-		SearchAndConnect  func(childComplexity int, where model.SConnectFilter) int
-		SetAuthorizers    func(childComplexity int, input model.AuthorizersInput) int
-		SetIndexes        func(childComplexity int, input model.IndexesInput) int
-		SetTypeValidators func(childComplexity int, input model.TypeValidatorsInput) int
+		Broadcast          func(childComplexity int, input model.OutboundMessage) int
+		CreateConnection   func(childComplexity int, input model.ConnectionConstructor) int
+		CreateConnections  func(childComplexity int, input model.ConnectionConstructors) int
+		CreateDoc          func(childComplexity int, input model.DocConstructor) int
+		CreateDocs         func(childComplexity int, input model.DocConstructors) int
+		DelConnection      func(childComplexity int, input model.RefInput) int
+		DelConnections     func(childComplexity int, input model.Filter) int
+		DelDoc             func(childComplexity int, input model.RefInput) int
+		DelDocs            func(childComplexity int, input model.Filter) int
+		EditConnection     func(childComplexity int, input model.Edit) int
+		EditConnections    func(childComplexity int, input model.EditFilter) int
+		EditDoc            func(childComplexity int, input model.Edit) int
+		EditDocs           func(childComplexity int, input model.EditFilter) int
+		SearchAndConnect   func(childComplexity int, where model.SearchConnectFilter) int
+		SearchAndConnectMe func(childComplexity int, where model.SearchConnectMeFilter) int
+		SetAuthorizers     func(childComplexity int, input model.AuthorizersInput) int
+		SetIndexes         func(childComplexity int, input model.IndexesInput) int
+		SetTypeValidators  func(childComplexity int, input model.TypeValidatorsInput) int
 	}
 
 	Pong struct {
@@ -126,8 +128,8 @@ type ComplexityRoot struct {
 	Query struct {
 		AggregateConnections func(childComplexity int, where model.AggFilter) int
 		AggregateDocs        func(childComplexity int, where model.AggFilter) int
-		ConnectionsFrom      func(childComplexity int, where model.CFilter) int
-		ConnectionsTo        func(childComplexity int, where model.CFilter) int
+		ConnectionsFrom      func(childComplexity int, where model.ConnectFilter) int
+		ConnectionsTo        func(childComplexity int, where model.ConnectFilter) int
 		ExistsConnection     func(childComplexity int, where model.ExistsFilter) int
 		ExistsDoc            func(childComplexity int, where model.ExistsFilter) int
 		GetConnection        func(childComplexity int, where model.RefInput) int
@@ -199,20 +201,21 @@ type MutationResolver interface {
 	CreateDoc(ctx context.Context, input model.DocConstructor) (*model.Doc, error)
 	CreateDocs(ctx context.Context, input model.DocConstructors) (*model.Docs, error)
 	EditDoc(ctx context.Context, input model.Edit) (*model.Doc, error)
-	EditDocs(ctx context.Context, input model.EFilter) (*model.Docs, error)
+	EditDocs(ctx context.Context, input model.EditFilter) (*model.Docs, error)
 	DelDoc(ctx context.Context, input model.RefInput) (*emptypb.Empty, error)
 	DelDocs(ctx context.Context, input model.Filter) (*emptypb.Empty, error)
 	CreateConnection(ctx context.Context, input model.ConnectionConstructor) (*model.Connection, error)
 	CreateConnections(ctx context.Context, input model.ConnectionConstructors) (*model.Connections, error)
 	EditConnection(ctx context.Context, input model.Edit) (*model.Connection, error)
-	EditConnections(ctx context.Context, input model.EFilter) (*model.Connections, error)
+	EditConnections(ctx context.Context, input model.EditFilter) (*model.Connections, error)
 	DelConnection(ctx context.Context, input model.RefInput) (*emptypb.Empty, error)
 	DelConnections(ctx context.Context, input model.Filter) (*emptypb.Empty, error)
-	Publish(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error)
+	Broadcast(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error)
 	SetIndexes(ctx context.Context, input model.IndexesInput) (*emptypb.Empty, error)
 	SetAuthorizers(ctx context.Context, input model.AuthorizersInput) (*emptypb.Empty, error)
 	SetTypeValidators(ctx context.Context, input model.TypeValidatorsInput) (*emptypb.Empty, error)
-	SearchAndConnect(ctx context.Context, where model.SConnectFilter) (*model.Connections, error)
+	SearchAndConnect(ctx context.Context, where model.SearchConnectFilter) (*model.Connections, error)
+	SearchAndConnectMe(ctx context.Context, where model.SearchConnectMeFilter) (*model.Connections, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error)
@@ -228,8 +231,8 @@ type QueryResolver interface {
 	HasDoc(ctx context.Context, where model.RefInput) (bool, error)
 	HasConnection(ctx context.Context, where model.RefInput) (bool, error)
 	SearchConnections(ctx context.Context, where model.Filter) (*model.Connections, error)
-	ConnectionsFrom(ctx context.Context, where model.CFilter) (*model.Connections, error)
-	ConnectionsTo(ctx context.Context, where model.CFilter) (*model.Connections, error)
+	ConnectionsFrom(ctx context.Context, where model.ConnectFilter) (*model.Connections, error)
+	ConnectionsTo(ctx context.Context, where model.ConnectFilter) (*model.Connections, error)
 	AggregateDocs(ctx context.Context, where model.AggFilter) (float64, error)
 	AggregateConnections(ctx context.Context, where model.AggFilter) (float64, error)
 }
@@ -406,12 +409,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Message.Data(childComplexity), true
 
-	case "Message.sender":
-		if e.complexity.Message.Sender == nil {
+	case "Message.method":
+		if e.complexity.Message.Method == nil {
 			break
 		}
 
-		return e.complexity.Message.Sender(childComplexity), true
+		return e.complexity.Message.Method(childComplexity), true
 
 	case "Message.timestamp":
 		if e.complexity.Message.Timestamp == nil {
@@ -419,6 +422,25 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Message.Timestamp(childComplexity), true
+
+	case "Message.user":
+		if e.complexity.Message.User == nil {
+			break
+		}
+
+		return e.complexity.Message.User(childComplexity), true
+
+	case "Mutation.broadcast":
+		if e.complexity.Mutation.Broadcast == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_broadcast_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Broadcast(childComplexity, args["input"].(model.OutboundMessage)), true
 
 	case "Mutation.createConnection":
 		if e.complexity.Mutation.CreateConnection == nil {
@@ -538,7 +560,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.EditConnections(childComplexity, args["input"].(model.EFilter)), true
+		return e.complexity.Mutation.EditConnections(childComplexity, args["input"].(model.EditFilter)), true
 
 	case "Mutation.editDoc":
 		if e.complexity.Mutation.EditDoc == nil {
@@ -562,19 +584,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.EditDocs(childComplexity, args["input"].(model.EFilter)), true
-
-	case "Mutation.publish":
-		if e.complexity.Mutation.Publish == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_publish_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.Publish(childComplexity, args["input"].(model.OutboundMessage)), true
+		return e.complexity.Mutation.EditDocs(childComplexity, args["input"].(model.EditFilter)), true
 
 	case "Mutation.searchAndConnect":
 		if e.complexity.Mutation.SearchAndConnect == nil {
@@ -586,7 +596,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SearchAndConnect(childComplexity, args["where"].(model.SConnectFilter)), true
+		return e.complexity.Mutation.SearchAndConnect(childComplexity, args["where"].(model.SearchConnectFilter)), true
+
+	case "Mutation.searchAndConnectMe":
+		if e.complexity.Mutation.SearchAndConnectMe == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_searchAndConnectMe_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SearchAndConnectMe(childComplexity, args["where"].(model.SearchConnectMeFilter)), true
 
 	case "Mutation.setAuthorizers":
 		if e.complexity.Mutation.SetAuthorizers == nil {
@@ -665,7 +687,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ConnectionsFrom(childComplexity, args["where"].(model.CFilter)), true
+		return e.complexity.Query.ConnectionsFrom(childComplexity, args["where"].(model.ConnectFilter)), true
 
 	case "Query.connectionsTo":
 		if e.complexity.Query.ConnectionsTo == nil {
@@ -677,7 +699,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.ConnectionsTo(childComplexity, args["where"].(model.CFilter)), true
+		return e.complexity.Query.ConnectionsTo(childComplexity, args["where"].(model.ConnectFilter)), true
 
 	case "Query.existsConnection":
 		if e.complexity.Query.ExistsConnection == nil {
@@ -1272,10 +1294,12 @@ type Message {
   channel: String!
   # data is the data sent with the message
   data: Map!
-  # sender is the user that sent the message
-  sender: Ref!
+  # user is the user that sent/triggered the message
+  user: Ref!
   # timestamp is when the message was sent
   timestamp: Time!
+  # method is the gRPC method that invoked the message delivery
+  method: String!
 }
 
 # RefConstructor is used to create a Ref
@@ -1326,6 +1350,12 @@ input RefInput {
   gid: String!
 }
 
+# RefPair is a pair of Refs
+input RefPair {
+  ref1: RefInput!
+  ref2: RefInput!
+}
+
 # Filter is a generic filter using Common Expression Language
 input Filter {
   # gtype is the doc/connection type to be filtered
@@ -1344,8 +1374,8 @@ input Filter {
   index: String
 }
 
-# SConnectFilter is used for searching for documents and adding connections based on whether they pass a Filter
-input SConnectFilter {
+# SearchConnectFilter is used for searching for documents and adding connections based on whether they pass a Filter
+input SearchConnectFilter {
   # filter is the filter to apply against the graph.
   filter: Filter!
   # gtype is the type of the connection to create
@@ -1356,6 +1386,18 @@ input SConnectFilter {
   directed: Boolean!
   # from indicates the root document of the connection to create
   from: RefInput!
+}
+
+# SearchConnectMeFilter is used for searching for documents and adding connections from the origin user to the document based on whether they pass a Filter
+input SearchConnectMeFilter {
+  # filter is the filter to apply against the graph.
+  filter: Filter!
+  # gtype is the type of the connection to create
+  gtype: String!
+  # attributes are k/v pairs to associate with the new connection
+  attributes: Map
+  # directed indicates whether the connection is uni-directional(instagram) or bi-directional(facebook)
+  directed: Boolean!
 }
 
 # AggFilter is a filter used for aggragation queries
@@ -1410,8 +1452,8 @@ input TraverseMeFilter {
   max_hops: Int!
 }
 
-# CFilter is used to fetch connections related to a single noted
-input CFilter {
+# ConnectFilter is used to fetch connections related to a single noted
+input ConnectFilter {
   # doc_ref is the ref to the target doc
   doc_ref: RefInput!
   # gtype is the type of connections to return
@@ -1444,8 +1486,8 @@ input Edit {
   attributes: Map!
 }
 
-# EFilter is used to edit/patch docs/connections
-input EFilter {
+# EditFilter is used to edit/patch docs/connections
+input EditFilter {
   # filter is used to filter docs/connections to edit
   filter: Filter!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
@@ -1539,7 +1581,7 @@ type Mutation {
   # editDoc edites a single doc in the graph
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
-  editDocs(input: EFilter!): Docs!
+  editDocs(input: EditFilter!): Docs!
   # delDoc deletes a doc by reference
   delDoc(input: RefInput!): Empty
   # delDocs deletes 0-many docs that pass a Filter
@@ -1551,13 +1593,13 @@ type Mutation {
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
-  editConnections(input: EFilter!): Connections!
+  editConnections(input: EditFilter!): Connections!
   # delConnection deletes a connection by reference
   delConnection(input: RefInput!): Empty
   # delConnections deletes 0-many connections that pass a Filter
   delConnections(input: Filter!): Empty
-  # publish publishes a mesage to a pubsub channel
-  publish(input: OutboundMessage!): Empty
+  # broadcast broadcasts a mesage to a pubsub/stream channel
+  broadcast(input: OutboundMessage!): Empty
   # setIndexes sets all of the indexes in the graph
   setIndexes(input: IndexesInput!): Empty
   # setAuthorizers sets all of the authorizers in the graph
@@ -1565,7 +1607,9 @@ type Mutation {
   # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
   # searchAndConnect searches for documents and forms connections based on whether they pass a filter
-  searchAndConnect(where: SConnectFilter!): Connections!
+  searchAndConnect(where: SearchConnectFilter!): Connections!
+  # searchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
+  searchAndConnectMe(where: SearchConnectMeFilter!): Connections!
 }
 
 type Query {
@@ -1596,9 +1640,9 @@ type Query {
   # searchConnections searches for 0-many connections
   searchConnections(where: Filter!): Connections!
   # connectionsFrom returns connections from the given doc that pass the filter
-  connectionsFrom(where: CFilter!): Connections!
+  connectionsFrom(where: ConnectFilter!): Connections!
   # connectionsTo returns connections to the given doc that pass the filter
-  connectionsTo(where: CFilter!): Connections!
+  connectionsTo(where: ConnectFilter!): Connections!
   # aggregateDocs executes an aggregation function against a set of documents
   aggregateDocs(where: AggFilter!): Float!
   # aggregateConnections executes an aggregation function against a set of connections
@@ -1615,6 +1659,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_broadcast_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.OutboundMessage
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNOutboundMessage2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐOutboundMessage(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -1754,10 +1813,10 @@ func (ec *executionContext) field_Mutation_editConnection_args(ctx context.Conte
 func (ec *executionContext) field_Mutation_editConnections_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.EFilter
+	var arg0 model.EditFilter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNEditFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEditFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1784,10 +1843,10 @@ func (ec *executionContext) field_Mutation_editDoc_args(ctx context.Context, raw
 func (ec *executionContext) field_Mutation_editDocs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.EFilter
+	var arg0 model.EditFilter
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNEFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNEditFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEditFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1796,28 +1855,28 @@ func (ec *executionContext) field_Mutation_editDocs_args(ctx context.Context, ra
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_searchAndConnectMe_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.OutboundMessage
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNOutboundMessage2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐOutboundMessage(ctx, tmp)
+	var arg0 model.SearchConnectMeFilter
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalNSearchConnectMeFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSearchConnectMeFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["where"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_searchAndConnect_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.SConnectFilter
+	var arg0 model.SearchConnectFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNSConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSConnectFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNSearchConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSearchConnectFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1919,10 +1978,10 @@ func (ec *executionContext) field_Query_aggregateDocs_args(ctx context.Context, 
 func (ec *executionContext) field_Query_connectionsFrom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.CFilter
+	var arg0 model.ConnectFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNCFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1934,10 +1993,10 @@ func (ec *executionContext) field_Query_connectionsFrom_args(ctx context.Context
 func (ec *executionContext) field_Query_connectionsTo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.CFilter
+	var arg0 model.ConnectFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNCFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2940,7 +2999,7 @@ func (ec *executionContext) _Message_data(ctx context.Context, field graphql.Col
 	return ec.marshalNMap2map(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Message_sender(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
+func (ec *executionContext) _Message_user(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2958,7 +3017,7 @@ func (ec *executionContext) _Message_sender(ctx context.Context, field graphql.C
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Sender, nil
+		return obj.User, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3008,6 +3067,41 @@ func (ec *executionContext) _Message_timestamp(ctx context.Context, field graphq
 	res := resTmp.(time.Time)
 	fc.Result = res
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Message_method(ctx context.Context, field graphql.CollectedField, obj *model.Message) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Message",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Method, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3161,7 +3255,7 @@ func (ec *executionContext) _Mutation_editDocs(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().EditDocs(rctx, args["input"].(model.EFilter))
+		return ec.resolvers.Mutation().EditDocs(rctx, args["input"].(model.EditFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3407,7 +3501,7 @@ func (ec *executionContext) _Mutation_editConnections(ctx context.Context, field
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().EditConnections(rctx, args["input"].(model.EFilter))
+		return ec.resolvers.Mutation().EditConnections(rctx, args["input"].(model.EditFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3502,7 +3596,7 @@ func (ec *executionContext) _Mutation_delConnections(ctx context.Context, field 
 	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_broadcast(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3519,7 +3613,7 @@ func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_publish_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_broadcast_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -3527,7 +3621,7 @@ func (ec *executionContext) _Mutation_publish(ctx context.Context, field graphql
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Publish(rctx, args["input"].(model.OutboundMessage))
+		return ec.resolvers.Mutation().Broadcast(rctx, args["input"].(model.OutboundMessage))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3683,7 +3777,49 @@ func (ec *executionContext) _Mutation_searchAndConnect(ctx context.Context, fiel
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SearchAndConnect(rctx, args["where"].(model.SConnectFilter))
+		return ec.resolvers.Mutation().SearchAndConnect(rctx, args["where"].(model.SearchConnectFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Connections)
+	fc.Result = res
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_searchAndConnectMe(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_searchAndConnectMe_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SearchAndConnectMe(rctx, args["where"].(model.SearchConnectMeFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4306,7 +4442,7 @@ func (ec *executionContext) _Query_connectionsFrom(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ConnectionsFrom(rctx, args["where"].(model.CFilter))
+		return ec.resolvers.Query().ConnectionsFrom(rctx, args["where"].(model.ConnectFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4348,7 +4484,7 @@ func (ec *executionContext) _Query_connectionsTo(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ConnectionsTo(rctx, args["where"].(model.CFilter))
+		return ec.resolvers.Query().ConnectionsTo(rctx, args["where"].(model.ConnectFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6521,8 +6657,8 @@ func (ec *executionContext) unmarshalInputAuthorizersInput(ctx context.Context, 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCFilter(ctx context.Context, obj interface{}) (model.CFilter, error) {
-	var it model.CFilter
+func (ec *executionContext) unmarshalInputConnectFilter(ctx context.Context, obj interface{}) (model.ConnectFilter, error) {
+	var it model.ConnectFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -6709,17 +6845,17 @@ func (ec *executionContext) unmarshalInputDocConstructors(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputEFilter(ctx context.Context, obj interface{}) (model.EFilter, error) {
-	var it model.EFilter
+func (ec *executionContext) unmarshalInputEdit(ctx context.Context, obj interface{}) (model.Edit, error) {
+	var it model.Edit
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "filter":
+		case "ref":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
+			it.Ref, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6737,17 +6873,17 @@ func (ec *executionContext) unmarshalInputEFilter(ctx context.Context, obj inter
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputEdit(ctx context.Context, obj interface{}) (model.Edit, error) {
-	var it model.Edit
+func (ec *executionContext) unmarshalInputEditFilter(ctx context.Context, obj interface{}) (model.EditFilter, error) {
+	var it model.EditFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "ref":
+		case "filter":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
-			it.Ref, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7061,8 +7197,36 @@ func (ec *executionContext) unmarshalInputRefInput(ctx context.Context, obj inte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputSConnectFilter(ctx context.Context, obj interface{}) (model.SConnectFilter, error) {
-	var it model.SConnectFilter
+func (ec *executionContext) unmarshalInputRefPair(ctx context.Context, obj interface{}) (model.RefPair, error) {
+	var it model.RefPair
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "ref1":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref1"))
+			it.Ref1, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "ref2":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref2"))
+			it.Ref2, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSearchConnectFilter(ctx context.Context, obj interface{}) (model.SearchConnectFilter, error) {
+	var it model.SearchConnectFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7104,6 +7268,50 @@ func (ec *executionContext) unmarshalInputSConnectFilter(ctx context.Context, ob
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
 			it.From, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSearchConnectMeFilter(ctx context.Context, obj interface{}) (model.SearchConnectMeFilter, error) {
+	var it model.SearchConnectMeFilter
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "filter":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+			it.Filter, err = ec.unmarshalNFilter2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐFilter(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gtype":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
+			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "attributes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+			it.Attributes, err = ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "directed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directed"))
+			it.Directed, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7654,13 +7862,18 @@ func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "sender":
-			out.Values[i] = ec._Message_sender(ctx, field, obj)
+		case "user":
+			out.Values[i] = ec._Message_user(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "timestamp":
 			out.Values[i] = ec._Message_timestamp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "method":
+			out.Values[i] = ec._Message_method(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -7738,8 +7951,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_delConnection(ctx, field)
 		case "delConnections":
 			out.Values[i] = ec._Mutation_delConnections(ctx, field)
-		case "publish":
-			out.Values[i] = ec._Mutation_publish(ctx, field)
+		case "broadcast":
+			out.Values[i] = ec._Mutation_broadcast(ctx, field)
 		case "setIndexes":
 			out.Values[i] = ec._Mutation_setIndexes(ctx, field)
 		case "setAuthorizers":
@@ -7748,6 +7961,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_setTypeValidators(ctx, field)
 		case "searchAndConnect":
 			out.Values[i] = ec._Mutation_searchAndConnect(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "searchAndConnectMe":
+			out.Values[i] = ec._Mutation_searchAndConnectMe(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -8636,8 +8854,8 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐCFilter(ctx context.Context, v interface{}) (model.CFilter, error) {
-	res, err := ec.unmarshalInputCFilter(ctx, v)
+func (ec *executionContext) unmarshalNConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnectFilter(ctx context.Context, v interface{}) (model.ConnectFilter, error) {
+	res, err := ec.unmarshalInputConnectFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -8769,13 +8987,13 @@ func (ec *executionContext) marshalNDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphik�
 	return ec._Docs(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNEFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEFilter(ctx context.Context, v interface{}) (model.EFilter, error) {
-	res, err := ec.unmarshalInputEFilter(ctx, v)
+func (ec *executionContext) unmarshalNEdit2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEdit(ctx context.Context, v interface{}) (model.Edit, error) {
+	res, err := ec.unmarshalInputEdit(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNEdit2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEdit(ctx context.Context, v interface{}) (model.Edit, error) {
-	res, err := ec.unmarshalInputEdit(ctx, v)
+func (ec *executionContext) unmarshalNEditFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEditFilter(ctx context.Context, v interface{}) (model.EditFilter, error) {
+	res, err := ec.unmarshalInputEditFilter(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -8923,11 +9141,6 @@ func (ec *executionContext) unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgra
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNSConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSConnectFilter(ctx context.Context, v interface{}) (model.SConnectFilter, error) {
-	res, err := ec.unmarshalInputSConnectFilter(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) marshalNSchema2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSchema(ctx context.Context, sel ast.SelectionSet, v model.Schema) graphql.Marshaler {
 	return ec._Schema(ctx, sel, &v)
 }
@@ -8940,6 +9153,16 @@ func (ec *executionContext) marshalNSchema2ᚖgithubᚗcomᚋgraphikDBᚋgraphik
 		return graphql.Null
 	}
 	return ec._Schema(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSearchConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSearchConnectFilter(ctx context.Context, v interface{}) (model.SearchConnectFilter, error) {
+	res, err := ec.unmarshalInputSearchConnectFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSearchConnectMeFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSearchConnectMeFilter(ctx context.Context, v interface{}) (model.SearchConnectMeFilter, error) {
+	res, err := ec.unmarshalInputSearchConnectMeFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNStreamFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐStreamFilter(ctx context.Context, v interface{}) (model.StreamFilter, error) {

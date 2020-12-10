@@ -14,6 +14,7 @@ type DocVM struct {
 
 func NewDocVM() (*DocVM, error) {
 	e, err := cel.NewEnv(
+		cel.Types(&apipb.Doc{}, &apipb.Ref{}),
 		cel.Declarations(
 			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
@@ -57,7 +58,7 @@ func (n *DocVM) Eval(doc *apipb.Doc, programs ...cel.Program) (bool, error) {
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"this": doc.AsMap(),
+			"this": doc,
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "no such key") {

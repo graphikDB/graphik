@@ -9,9 +9,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>api.SearchConnectFilter</code>
+ * Generated from protobuf message <code>api.SearchConnectMeFilter</code>
  */
-class SearchConnectFilter extends \Google\Protobuf\Internal\Message
+class SearchConnectMeFilter extends \Google\Protobuf\Internal\Message
 {
     /**
      * Generated from protobuf field <code>.api.Filter filter = 1;</code>
@@ -33,12 +33,6 @@ class SearchConnectFilter extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>bool directed = 4;</code>
      */
     private $directed = false;
-    /**
-     * from is the doc ref that is the root of the connection
-     *
-     * Generated from protobuf field <code>.api.Ref from = 5 [(.validator.field) = {</code>
-     */
-    private $from = null;
 
     /**
      * Constructor.
@@ -52,8 +46,6 @@ class SearchConnectFilter extends \Google\Protobuf\Internal\Message
      *           attributes are k/v pairs
      *     @type bool $directed
      *           directed is false if the connection is bi-directional
-     *     @type \Api\Ref $from
-     *           from is the doc ref that is the root of the connection
      * }
      */
     public function __construct($data = NULL) {
@@ -153,32 +145,6 @@ class SearchConnectFilter extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkBool($var);
         $this->directed = $var;
-
-        return $this;
-    }
-
-    /**
-     * from is the doc ref that is the root of the connection
-     *
-     * Generated from protobuf field <code>.api.Ref from = 5 [(.validator.field) = {</code>
-     * @return \Api\Ref
-     */
-    public function getFrom()
-    {
-        return $this->from;
-    }
-
-    /**
-     * from is the doc ref that is the root of the connection
-     *
-     * Generated from protobuf field <code>.api.Ref from = 5 [(.validator.field) = {</code>
-     * @param \Api\Ref $var
-     * @return $this
-     */
-    public function setFrom($var)
-    {
-        GPBUtil::checkMessage($var, \Api\Ref::class);
-        $this->from = $var;
 
         return $this;
     }

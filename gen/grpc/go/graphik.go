@@ -46,11 +46,11 @@ func (n *Connection) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"ref":        n.GetRef().AsMap(),
-		"attributes": n.GetAttributes().AsMap(),
+		"ref":        n.GetRef(),
+		"attributes": n.GetAttributes(),
 		"directed":   n.GetDirected(),
-		"from":       n.GetFrom().AsMap(),
-		"to":         n.GetTo().AsMap(),
+		"from":       n.GetFrom(),
+		"to":         n.GetTo(),
 	}
 }
 
@@ -60,9 +60,10 @@ func (n *Message) AsMap() map[string]interface{} {
 	}
 	return map[string]interface{}{
 		"channel":   n.GetChannel(),
-		"sender":    n.GetSender().AsMap(),
-		"data":      n.GetData().AsMap(),
+		"user":      n.GetUser(),
+		"data":      n.GetData(),
 		"timestamp": n.GetTimestamp(),
+		"method":    n.GetMethod(),
 	}
 }
 
@@ -72,7 +73,7 @@ func (p *Refs) AsMap() map[string]interface{} {
 	}
 	var refs []interface{}
 	for _, ref := range p.GetRefs() {
-		refs = append(refs, ref.AsMap())
+		refs = append(refs, ref)
 	}
 	return map[string]interface{}{
 		"refs": refs,
@@ -93,7 +94,7 @@ func (n *Filter) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *CFilter) AsMap() map[string]interface{} {
+func (n *ConnectFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
@@ -137,13 +138,13 @@ func (p *Edit) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *EFilter) AsMap() map[string]interface{} {
+func (n *EditFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"patch":  n.GetAttributes().AsMap(),
-		"filter": n.GetFilter().AsMap(),
+		"patch":  n.GetAttributes(),
+		"filter": n.GetFilter(),
 	}
 }
 
@@ -162,11 +163,11 @@ func (e *ConnectionConstructor) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"ref":        e.GetRef().AsMap(),
-		"attributes": e.GetAttributes().AsMap(),
+		"ref":        e.GetRef(),
+		"attributes": e.GetAttributes(),
 		"directed":   e.GetDirected(),
-		"from":       e.GetFrom().AsMap(),
-		"to":         e.GetTo().AsMap(),
+		"from":       e.GetFrom(),
+		"to":         e.GetTo(),
 	}
 }
 
@@ -175,8 +176,8 @@ func (e *DocConstructor) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"ref":        e.GetRef().AsMap(),
-		"attributes": e.GetAttributes().AsMap(),
+		"ref":        e.GetRef(),
+		"attributes": e.GetAttributes(),
 	}
 }
 
@@ -186,14 +187,14 @@ func (o *OutboundMessage) AsMap() map[string]interface{} {
 	}
 	return map[string]interface{}{
 		"channel": o.GetChannel(),
-		"data":    o.GetData().AsMap(),
+		"data":    o.GetData(),
 	}
 }
 
 func (e *Connections) AsMap() map[string]interface{} {
 	var connections []interface{}
 	for _, connection := range e.GetConnections() {
-		connections = append(connections, connection.AsMap())
+		connections = append(connections, connection)
 	}
 	return map[string]interface{}{
 		"connections": connections,
@@ -203,7 +204,7 @@ func (e *Connections) AsMap() map[string]interface{} {
 func (e *Docs) AsMap() map[string]interface{} {
 	var docs []interface{}
 	for _, connection := range e.GetDocs() {
-		docs = append(docs, connection.AsMap())
+		docs = append(docs, connection)
 	}
 	return map[string]interface{}{
 		"docs": docs,
@@ -212,8 +213,8 @@ func (e *Docs) AsMap() map[string]interface{} {
 
 func (g *Graph) AsMap() map[string]interface{} {
 	return map[string]interface{}{
-		"connections": g.GetConnections().AsMap(),
-		"docs":        g.GetDocs().AsMap(),
+		"connections": g.GetConnections(),
+		"docs":        g.GetDocs(),
 	}
 }
 

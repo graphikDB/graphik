@@ -125,12 +125,14 @@ func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc
 				return true
 			}
 		}
-		if _, ok := d.visited[e.To.String()]; !ok {
-			to, err := d.g.getDoc(ctx, tx, e.To)
+		if _, ok := d.visited[e.GetTo().String()]; !ok {
+			to, err := d.g.getDoc(ctx, tx, e.GetTo())
 			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					logger.Error("dfs failure", zap.Error(err))
+				if err == ErrNotFound {
+					logger.Error("dfs getDoc failure(to)", zap.Error(err), zap.String("path", refString(e.GetTo())))
+					return true
 				}
+				logger.Error("dfs getDoc failure(to)", zap.Error(err))
 				return true
 			}
 			if docProgram == nil {
@@ -188,9 +190,11 @@ func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, 
 		if _, ok := d.visited[e.GetFrom().String()]; !ok {
 			from, err := d.g.getDoc(ctx, tx, e.GetFrom())
 			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					logger.Error("dfs failure", zap.Error(err))
+				if err == ErrNotFound {
+					logger.Error("dfs getDoc failure(from)", zap.Error(err), zap.String("path", refString(e.GetFrom())))
+					return true
 				}
+				logger.Error("dfs getDoc failure(from)", zap.Error(err))
 				return true
 			}
 			if docProgram == nil {
@@ -288,7 +292,7 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
 			if err != nil {
 				if !strings.Contains(err.Error(), "no such key") {
-					logger.Error("bfs failure", zap.Error(err))
+					logger.Error("bfs connection failure(to)", zap.Error(err))
 				}
 				return true
 			}
@@ -299,9 +303,11 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 		if _, ok := d.visited[e.GetFrom().String()]; !ok {
 			from, err := d.g.getDoc(ctx, tx, e.GetFrom())
 			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					logger.Error("bfs failure", zap.Error(err))
+				if err == ErrNotFound {
+					logger.Error("bfs getDoc failure(from)", zap.Error(err), zap.String("path", refString(e.GetFrom())))
+					return true
 				}
+				logger.Error("bfs getDoc failure(from)", zap.Error(err))
 				return true
 			}
 			if docProgram == nil {
@@ -358,11 +364,13 @@ func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Do
 			}
 		}
 		if _, ok := d.visited[e.To.String()]; !ok {
-			to, err := d.g.getDoc(ctx, tx, e.To)
+			to, err := d.g.getDoc(ctx, tx, e.GetTo())
 			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					logger.Error("bfs failure", zap.Error(err))
+				if err == ErrNotFound {
+					logger.Error("bfs getDoc failure(to)", zap.Error(err), zap.String("path", refString(e.GetTo())))
+					return true
 				}
+				logger.Error("bfs getDoc failure(to)", zap.Error(err))
 				return true
 			}
 			if docProgram == nil {

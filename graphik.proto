@@ -36,7 +36,7 @@ service DatabaseService {
   // EditDoc patches/edits a docs attributes
   rpc EditDoc(Edit) returns(Doc){}
   // EditDocs patches a batch of docs attributes that pass the patch filter
-  rpc EditDocs(EFilter) returns(Docs){}
+  rpc EditDocs(EditFilter) returns(Docs){}
   // DelDoc deletes a doc & all of it's connected connections
   rpc DelDoc(Ref) returns(google.protobuf.Empty){}
   // DelDocs deletes a batch of docs that pass the filter
@@ -53,7 +53,8 @@ service DatabaseService {
   rpc CreateConnection(ConnectionConstructor) returns(Connection){}
   // CreateConnections creates a batch of connections in the graph
   rpc CreateConnections(ConnectionConstructors) returns(Connections){}
-  rpc SearchAndConnect(SConnectFilter) returns(Connections){}
+  rpc SearchAndConnect(SearchConnectFilter) returns(Connections){}
+  rpc SearchAndConnectMe(SearchConnectMeFilter) returns(Connections){}
   // GetConnection gets a single connection in the graph
   rpc GetConnection(Ref) returns(Connection){}
   // SearchConnections searches the graph for connections
@@ -61,20 +62,20 @@ service DatabaseService {
   // EditConnection patches an connections attributes
   rpc EditConnection(Edit) returns(Connection){}
   // EditConnections patches a batch of connections attributes that pass the patch filter
-  rpc EditConnections(EFilter) returns(Connections){}
+  rpc EditConnections(EditFilter) returns(Connections){}
   // DelConnection deletes an connection from the graph
   rpc DelConnection(Ref) returns(google.protobuf.Empty){}
   // DelConnections deletes a batch of connections that pass the filter
   rpc DelConnections(Filter) returns(google.protobuf.Empty){}
   // ConnectionsFrom returns connections that source from the given doc ref that pass the filter
-  rpc ConnectionsFrom(CFilter) returns(Connections){}
+  rpc ConnectionsFrom(ConnectFilter) returns(Connections){}
   // ConnectionsTo returns connections that point to the given doc ref that pass the filter
-  rpc ConnectionsTo(CFilter) returns(Connections){}
+  rpc ConnectionsTo(ConnectFilter) returns(Connections){}
   // AggregateDocs executes an aggregation function against the graph
   rpc AggregateDocs(AggFilter) returns(Number){}
   rpc AggregateConnections(AggFilter) returns(Number){}
-  // Publish publishes a message to a pubsub channel
-  rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
+  // Broadcast broadcasts a message to a pubsub channel
+  rpc Broadcast(OutboundMessage) returns(google.protobuf.Empty){}
   // Stream subscribes to messages on a pubsub channel
   rpc Stream(StreamFilter) returns(stream Message){}
   rpc PushDocConstructors(stream DocConstructor) returns (stream Doc){}
@@ -187,7 +188,7 @@ message ConnectionConstructor {
   Ref to =6 [(validator.field) = {msg_exists : true}];
 }
 
-message SConnectFilter {
+message SearchConnectFilter {
   Filter filter =1;
   string gtype =2;
   // attributes are k/v pairs
@@ -196,6 +197,16 @@ message SConnectFilter {
   bool directed =4;
   // from is the doc ref that is the root of the connection
   Ref from =5 [(validator.field) = {msg_exists : true}];
+}
+
+
+message SearchConnectMeFilter {
+  Filter filter =1;
+  string gtype =2;
+  // attributes are k/v pairs
+  google.protobuf.Struct attributes =3;
+  // directed is false if the connection is bi-directional
+  bool directed =4;
 }
 
 // ConnectionConstructors is an array of ConnectionConstructor
@@ -209,8 +220,8 @@ message Connections {
   string seek_next =2;
 }
 
-// CFilter is used to fetch connections related to a single noted
-message CFilter {
+// ConnectFilter is used to fetch connections related to a single noted
+message ConnectFilter {
   // doc_ref is the ref to the target doc. (validator.field) = {msg_exists : true}]
   Ref doc_ref =1 [(validator.field) = {msg_exists : true}];
   // gtype is the type of connections to return. (validator.field) = {regex : "^.{1,225}$"}
@@ -399,8 +410,8 @@ message Edit {
   google.protobuf.Struct attributes =2;
 }
 
-// EFilter is used to patch/edit docs/connections
-message EFilter {
+// EditFilter is used to patch/edit docs/connections
+message EditFilter {
   // filter is used to filter docs/connections to patch
   Filter filter =1;
   // attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter
@@ -427,10 +438,11 @@ message Message {
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // data is the data sent with the message
   google.protobuf.Struct data =2 [(validator.field) = {msg_exists : true}];
-  // sender is the user that sent the message
-  Ref sender =3 [(validator.field) = {msg_exists : true}];
+  // user is the sender that triggered/sent the message
+  Ref user =3 [(validator.field) = {msg_exists : true}];
   // timestamp is when the message was sent
   google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
+  string method = 5[(validator.field) = {regex : "^.{1,225}$"}];
 }
 
 // Schema returns registered connection & doc types

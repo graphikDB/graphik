@@ -130,7 +130,7 @@ func (c *Client) EditDoc(ctx context.Context, in *apipb.Edit, opts ...grpc.CallO
 }
 
 // EditDocs edites 0-many docs in the graph
-func (c *Client) EditDocs(ctx context.Context, in *apipb.EFilter, opts ...grpc.CallOption) (*apipb.Docs, error) {
+func (c *Client) EditDocs(ctx context.Context, in *apipb.EditFilter, opts ...grpc.CallOption) (*apipb.Docs, error) {
 	return c.graph.EditDocs(ctx, in, opts...)
 }
 
@@ -160,23 +160,23 @@ func (c *Client) EditConnection(ctx context.Context, in *apipb.Edit, opts ...grp
 }
 
 // EditConnections edites 0-many connections in the graph
-func (c *Client) EditConnections(ctx context.Context, in *apipb.EFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+func (c *Client) EditConnections(ctx context.Context, in *apipb.EditFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
 	return c.graph.EditConnections(ctx, in, opts...)
 }
 
 // ConnectionsFrom returns connections from the given doc that pass the filter
-func (c *Client) ConnectionsFrom(ctx context.Context, in *apipb.CFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+func (c *Client) ConnectionsFrom(ctx context.Context, in *apipb.ConnectFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
 	return c.graph.ConnectionsFrom(ctx, in, opts...)
 }
 
 // ConnectionsTo returns connections to the given doc that pass the filter
-func (c *Client) ConnectionsTo(ctx context.Context, in *apipb.CFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+func (c *Client) ConnectionsTo(ctx context.Context, in *apipb.ConnectFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
 	return c.graph.ConnectionsTo(ctx, in, opts...)
 }
 
-// Publish publishes a mesage to a pubsub channel
-func (c *Client) Publish(ctx context.Context, in *apipb.OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.Publish(ctx, in, opts...)
+// Broadcast broadcasts a message to a pubsub channel
+func (c *Client) Broadcast(ctx context.Context, in *apipb.OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
+	return c.graph.Broadcast(ctx, in, opts...)
 }
 
 // Stream opens a stream of messages that pass a filter on a pubsub channel
@@ -303,8 +303,13 @@ func (c *Client) SeedConnections(ctx context.Context, connectionChan <-chan *api
 }
 
 // SearchAndConnect searches for documents and forms connections based on whether they pass a filter
-func (c *Client) SearchAndConnect(ctx context.Context, in *apipb.SConnectFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+func (c *Client) SearchAndConnect(ctx context.Context, in *apipb.SearchConnectFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
 	return c.graph.SearchAndConnect(ctx, in, opts...)
+}
+
+// SearchAndConnectMe searches for documents and forms connections between the origin user & the document based on whether they pass a filter
+func (c *Client) SearchAndConnectMe(ctx context.Context, in *apipb.SearchConnectMeFilter, opts ...grpc.CallOption) (*apipb.Connections, error) {
+	return c.graph.SearchAndConnectMe(ctx, in, opts...)
 }
 
 // Traverse searches for 0-many docs using a graph traversal algorithm

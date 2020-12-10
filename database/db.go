@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
 	"strings"
 )
@@ -382,6 +383,15 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 		}
 		return true
 	})
+	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Message{
+		Channel:   changeChannel,
+		Data:      apipb.NewStruct(doc.AsMap()),
+		User:      g.getIdentity(ctx).GetRef(),
+		Timestamp: timestamppb.Now(),
+		Method:    g.getMethod(ctx),
+	}); err != nil {
+		return nil, err
+	}
 	return doc, nil
 }
 
@@ -413,7 +423,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			return nil, errors.Errorf("from doc %s does not exist", connection.GetFrom().String())
 		}
 		val := fromBucket.Get([]byte(connection.GetFrom().GetGid()))
-		if val == nil {
+		if val == nil || len(val) == 0 {
 			return nil, errors.Errorf("from doc %s does not exist", connection.GetFrom().String())
 		}
 	}
@@ -423,7 +433,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			return nil, errors.Errorf("to doc %s does not exist", connection.GetTo().String())
 		}
 		val := toBucket.Get([]byte(connection.GetTo().GetGid()))
-		if val == nil {
+		if val == nil || len(val) == 0 {
 			return nil, errors.Errorf("to doc %s does not exist", connection.GetTo().String())
 		}
 	}
@@ -464,11 +474,11 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	refstr := refString(connection.GetRef())
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	if g.connectionsFrom[connection.From.String()] == nil {
-		g.connectionsFrom[connection.From.String()] = map[string]struct{}{}
+	if g.connectionsFrom[connection.GetFrom().String()] == nil {
+		g.connectionsFrom[connection.GetFrom().String()] = map[string]struct{}{}
 	}
-	if g.connectionsTo[connection.To.String()] == nil {
-		g.connectionsTo[connection.To.String()] = map[string]struct{}{}
+	if g.connectionsTo[connection.GetTo().String()] == nil {
+		g.connectionsTo[connection.GetTo().String()] = map[string]struct{}{}
 	}
 	g.connectionsFrom[connection.GetFrom().String()][refstr] = struct{}{}
 	g.connectionsTo[connection.GetTo().String()][refstr] = struct{}{}
@@ -489,6 +499,15 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 		}
 		return true
 	})
+	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Message{
+		Channel:   changeChannel,
+		Data:      apipb.NewStruct(connection.AsMap()),
+		User:      g.getIdentity(ctx).GetRef(),
+		Timestamp: timestamppb.Now(),
+		Method:    g.getMethod(ctx),
+	}); err != nil {
+		return nil, err
+	}
 	return connection, nil
 }
 
@@ -688,7 +707,19 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) error
 		}
 		return true
 	})
-	return bucket.Delete([]byte(path.GetGid()))
+	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Message{
+		Channel:   changeChannel,
+		Data:      apipb.NewStruct(path.AsMap()),
+		User:      g.getIdentity(ctx).GetRef(),
+		Timestamp: timestamppb.Now(),
+		Method:    g.getMethod(ctx),
+	}); err != nil {
+		return err
+	}
+	if err := bucket.Delete([]byte(path.GetGid())); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) error {
@@ -710,7 +741,19 @@ func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref
 		}
 		return true
 	})
-	return tx.Bucket(dbConnections).Bucket([]byte(connection.GetRef().GetGtype())).Delete([]byte(connection.GetRef().GetGid()))
+	if err := tx.Bucket(dbConnections).Bucket([]byte(connection.GetRef().GetGtype())).Delete([]byte(connection.GetRef().GetGid())); err != nil {
+		return err
+	}
+	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Message{
+		Channel:   changeChannel,
+		Data:      apipb.NewStruct(path.AsMap()),
+		User:      g.getIdentity(ctx).GetRef(),
+		Timestamp: timestamppb.Now(),
+		Method:    g.getMethod(ctx),
+	}); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (n *Graph) filterDoc(ctx context.Context, docType string, filter func(doc *apipb.Doc) bool) (*apipb.Docs, error) {

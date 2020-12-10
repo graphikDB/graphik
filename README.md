@@ -6,9 +6,9 @@ https://graphikdb.github.io/graphik/
 
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.3.0`
+`    docker pull graphikdb/graphik:v0.4.0`
 
-Graphik is an identity-aware, permissioned, persistant document & graph database written in Go
+Graphik is an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go
 
   * [Helpful Links](#helpful-links)
   * [Features](#features)
@@ -56,6 +56,7 @@ Graphik is an identity-aware, permissioned, persistant document & graph database
 - [x] Embedded SSO protected GraphQl Playground
 - [x] Persistant(bbolt LMDB)
 - [x] Identity-Aware PubSub with Channels & Message Filtering(gRPC & graphQL)
+- [x] Change Streams
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Type Validators
@@ -194,13 +195,189 @@ the graphQL api is technically a wrapper that may be used for developing user in
 The gRPC server is more performant so it is advised that you import one of the gRPC client libraries as opposed to utilizing the graphQL endpoint when developing backend APIs.
 
 The graphQL endpoint is particularly useful for developing public user interfaces against since it can be locked down to nearly any extent via authorizers, cors, validators, & tls.
- 
+
+### Streaming/PubSub
+
+Graphik supports channel based pubsub as well as change-based streaming. 
+
+All server -> client stream/subscriptions are started via the Stream() endpoint in gRPC or graphQL.
+All messages received on this channel include the user that triggered/sent the message.
+Messages on channels may be filtered via CEL expressions so that only messages are pushed to clients that they want to receive.
+Messages may be sent directly to channels via the Broadcast() method in gRPC & graphQL.
+All state changes in the graph are sent by graphik to the `state` channel which may be subscribed to just like any other channel.
+
+### Graphik Playground
+
+If the following environmental variables/flags are set, an SSO protected graphQL playground will be served on /playground
+```..env
+GRAPHIK_PLAYGROUND_CLIENT_ID=${client_id} # the oauth2 application/client id
+GRAPHIK_PLAYGROUND_CLIENT_SECRET=${client_secret} # the oauth2 application/client secret
+GRAPHIK_PLAYGROUND_REDIRECT=${playground_redirect} # the oauth2 authorization code redirect: the playground exposes an endpoint to handle this redirect /playground/callback
+```
+![Graphik Playground](assets/graphik-playground.png)
+
+
 ### Additional Details
 - any time a Doc is deleted, so are all of its connections
 
 ## Sample GraphQL Queries
 
-### Node Traversal
+### Get Currently Logged In User(me)
+
+```graphql
+query {
+  me(where: {}) {
+    ref {
+      gid
+      gtype
+    }
+		attributes
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "me": {
+      "ref": {
+        "gid": "coleman.word@graphikdb.io",
+        "gtype": "user"
+      },
+      "attributes": {
+        "email": "coleman.word@graphikdb.io",
+        "email_verified": true,
+        "family_name": "Word",
+        "given_name": "Coleman",
+        "hd": "graphikdb.io",
+        "locale": "en",
+        "name": "Coleman Word",
+        "picture": "https://lh3.googleusercontent.com/--LNU8XICB1A/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuckp6gwH9JVkhlRkk-PTZdyDFctArg/s96-c/photo.jpg",
+        "sub": "105138978122958973720"
+      }
+    }
+  },
+  "extensions": {}
+}
+```
+
+
+### Get the Graph Schema
+
+```graphql
+query {
+  getSchema(where: {}) {
+    doc_types
+		connection_types
+    authorizers {
+      authorizers {
+        name
+        expression
+      }
+    }
+		validators {
+			validators {
+				name
+				expression
+			}
+		}
+		indexes {
+			indexes {
+				name
+				expression
+			}
+		}
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "getSchema": {
+      "doc_types": [
+        "dog",
+        "human",
+        "note",
+        "user"
+      ],
+      "connection_types": [
+        "created",
+        "created_by",
+        "edited",
+        "edited_by",
+        "owner"
+      ],
+      "authorizers": {
+        "authorizers": [
+          {
+            "name": "testing",
+            "expression": "this.user.attributes.email.contains(\"coleman\")"
+          }
+        ]
+      },
+      "validators": {
+        "validators": [
+          {
+            "name": "testing",
+            "expression": "this.user.attributes.email.contains(\"coleman\")"
+          }
+        ]
+      },
+      "indexes": {
+        "indexes": [
+          {
+            "name": "testing",
+            "expression": "this.attributes.primary_owner"
+          }
+        ]
+      }
+    }
+  },
+  "extensions": {}
+}
+```
+
+### Create a Document
+
+```graphql
+mutation {
+  createDoc(input: {
+    ref: {
+  		gtype: "note"
+    }
+    attributes: {
+      title: "do the dishes"
+    }
+  }){
+    ref {
+      gid
+      gtype
+    }
+    attributes
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "createDoc": {
+      "ref": {
+        "gid": "1lU0w0QjiI0jnNL8XMzWJHqQmTd",
+        "gtype": "note"
+      },
+      "attributes": {
+        "title": "do the dishes"
+      }
+    }
+  },
+  "extensions": {}
+}
+```
+
+### Traverse Documents
+
 ```graphQL
 # Write your query or mutation here
 query {
@@ -232,6 +409,110 @@ query {
 }
 ```
 
+### Traverse Documents Related to Logged In User
+
+```graphql
+query {
+	traverseMe(where: {
+		max_hops: 100
+		max_depth:1
+		limit: 5
+	}){
+		traversals {
+			traversal_path {
+				gtype
+				gid
+			}
+			depth
+			hops
+			doc {
+				ref {
+					gid
+					gtype
+				}
+			}
+		}
+	}
+}
+```
+
+```json
+{
+  "data": {
+    "traverseMe": {
+      "traversals": [
+        {
+          "traversal_path": null,
+          "depth": 0,
+          "hops": 0,
+          "doc": {
+            "ref": {
+              "gid": "coleman.word@graphikdb.io",
+              "gtype": "user"
+            }
+          }
+        },
+        {
+          "traversal_path": [
+            {
+              "gtype": "user",
+              "gid": "coleman.word@graphikdb.io"
+            }
+          ],
+          "depth": 1,
+          "hops": 1,
+          "doc": {
+            "ref": {
+              "gid": "1lU0w0QjiI0jnNL8XMzWJHqQmTd",
+              "gtype": "note"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "extensions": {}
+}
+```
+
+### Change Streaming
+
+```graphql
+subscription {
+	stream(where: {
+		channel: "state"
+	}){
+		data
+		user {
+			gid
+			gtype
+		}
+	}
+}
+```
+
+```json
+{
+  "data": {
+    "stream": {
+      "data": {
+        "attributes": {
+          "title": "do the dishes"
+        },
+        "ref": {
+          "gid": "1lUAK3uwwmhQ503ByzC9nCvdH6W",
+          "gtype": "note"
+        }
+      },
+      "user": {
+        "gid": "coleman.word@graphikdb.io",
+        "gtype": "user"
+      }
+    }
+  },
+  "extensions": {}
+}
+```
 
 ## Deployment
 
@@ -257,7 +538,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.3.0
+        image: graphikdb/graphik:v0.4.0
         env_file:
           - .env
         ports:
@@ -291,13 +572,13 @@ to shutdown:
  
  ### Linux
  
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.3.0/graphik_linux_amd64 \
+    curl -L https://github.com/graphikDB/graphik/releases/download/v0.4.0/graphik_linux_amd64 \
     --output /usr/local/bin/graphik && \
     chmod +x /usr/local/bin/graphik 
     
  ### Mac/Darwin
  
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.3.0/graphik_darwin_amd64 \
+    curl -L https://github.com/graphikDB/graphik/releases/download/v0.4.0/graphik_darwin_amd64 \
     --output /usr/local/bin/graphik && \
     chmod +x /usr/local/bin/graphik
 

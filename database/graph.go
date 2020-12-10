@@ -432,16 +432,20 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 	return connections, nil
 }
 
-func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
+func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
 	user := g.getIdentity(ctx)
 	if user == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
+	if message.GetChannel() == changeChannel {
+		return nil, status.Error(codes.PermissionDenied, "forbidden from publishing to the changes channel")
+	}
 	return &empty.Empty{}, g.machine.PubSub().Publish(message.Channel, &apipb.Message{
 		Channel:   message.Channel,
 		Data:      message.Data,
-		Sender:    user.GetRef(),
+		User:      user.GetRef(),
 		Timestamp: timestamppb.Now(),
+		Method:    g.getMethod(ctx),
 	})
 }
 
@@ -449,8 +453,11 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 	var filterFunc func(msg interface{}) bool
 	if filter.Expression == "" {
 		filterFunc = func(msg interface{}) bool {
-			_, ok := msg.(*apipb.Message)
+			m, ok := msg.(*apipb.Message)
 			if !ok {
+				return false
+			}
+			if err := m.Validate(); err != nil {
 				return false
 			}
 			return true
@@ -634,7 +641,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 	return doc, err
 }
 
-func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EFilter) (*apipb.Docs, error) {
+func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.Docs, error) {
 	var docs []*apipb.Doc
 	before, err := n.SearchDocs(ctx, patch.GetFilter())
 	if err != nil {
@@ -688,7 +695,7 @@ func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 	return types, nil
 }
 
-func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.CFilter) (*apipb.Connections, error) {
+func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectFilter) (*apipb.Connections, error) {
 	var (
 		program cel.Program
 		err     error
@@ -763,6 +770,9 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 		return len(docs) < int(filter.Limit)
 	})
 	if err != nil {
+		if err == ErrNotFound {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
 		return nil, err
 	}
 	toReturn := &apipb.Docs{
@@ -827,7 +837,7 @@ func (n *Graph) TraverseMe(ctx context.Context, filter *apipb.TraverseMeFilter) 
 	return dfs.traversals, nil
 }
 
-func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.CFilter) (*apipb.Connections, error) {
+func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectFilter) (*apipb.Connections, error) {
 	var (
 		program cel.Program
 		err     error
@@ -916,7 +926,7 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 	return connection, nil
 }
 
-func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EFilter) (*apipb.Connections, error) {
+func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*apipb.Connections, error) {
 	var connections = &apipb.Connections{}
 	before, err := n.SearchConnections(ctx, patch.GetFilter())
 	if err != nil {
@@ -967,6 +977,9 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 		return len(connections) < int(filter.Limit)
 	})
 	if err != nil {
+		if err == ErrNotFound {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	toReturn := &apipb.Connections{
@@ -1149,7 +1162,7 @@ func (g *Graph) SeedConnections(server apipb.DatabaseService_SeedConnectionsServ
 	}
 }
 
-func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SConnectFilter) (*apipb.Connections, error) {
+func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SearchConnectFilter) (*apipb.Connections, error) {
 	docs, err := g.SearchDocs(ctx, filter.GetFilter())
 	if err != nil {
 		return nil, err
@@ -1163,6 +1176,27 @@ func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SConnectFilt
 			Attributes: filter.GetAttributes(),
 			Directed:   filter.GetDirected(),
 			From:       filter.GetFrom(),
+			To:         doc.GetRef(),
+		})
+	}
+	return g.CreateConnections(ctx, &apipb.ConnectionConstructors{Connections: connections})
+}
+
+func (g *Graph) SearchAndConnectMe(ctx context.Context, filter *apipb.SearchConnectMeFilter) (*apipb.Connections, error) {
+	user := g.getIdentity(ctx)
+	docs, err := g.SearchDocs(ctx, filter.GetFilter())
+	if err != nil {
+		return nil, err
+	}
+	var connections []*apipb.ConnectionConstructor
+	for _, doc := range docs.GetDocs() {
+		connections = append(connections, &apipb.ConnectionConstructor{
+			Ref: &apipb.RefConstructor{
+				Gtype: filter.GetGtype(),
+			},
+			Attributes: filter.GetAttributes(),
+			Directed:   filter.GetDirected(),
+			From:       user.GetRef(),
 			To:         doc.GetRef(),
 		})
 	}

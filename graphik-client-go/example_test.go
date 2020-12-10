@@ -95,9 +95,11 @@ func ExampleClient_SetTypeValidators() {
 	_, err := client.SetTypeValidators(context.Background(), &apipb2.TypeValidators{
 		Validators: []*apipb2.TypeValidator{
 			{
-				Name:       "testing",
-				Gtype:      "user",
-				Expression: `this.user.attributes.email.contains("coleman")`,
+				Name:        "testing",
+				Gtype:       "dog",
+				Expression:  `int(this.attributes.weight) > 0`,
+				Docs:        true,
+				Connections: false,
 			},
 		},
 	})
@@ -179,7 +181,8 @@ func ExampleClient_CreateDoc() {
 	charlie, err := client.CreateDoc(ctx, &apipb2.DocConstructor{
 		Ref: &apipb2.RefConstructor{Gtype: "dog"},
 		Attributes: apipb2.NewStruct(map[string]interface{}{
-			"name": "Charlie",
+			"name":   "Charlie",
+			"weight": 18,
 		}),
 	})
 	if err != nil {
@@ -291,7 +294,7 @@ func ExampleClient_CreateConnection() {
 func ExampleClient_SearchConnections() {
 	owners, err := client.SearchConnections(context.Background(), &apipb2.Filter{
 		Gtype:      "owner",
-		Expression: `this.attributes.primary_owner`,
+		Expression: `this.attributes.primary_owner == true`,
 		Sort:       "ref.gtype",
 		Limit:      1,
 		Index:      "testing",
@@ -331,8 +334,8 @@ func ExampleClient_EditDoc() {
 	// Output: 25
 }
 
-func ExampleClient_Publish() {
-	res, err := client.Publish(context.Background(), &apipb2.OutboundMessage{
+func ExampleClient_Broadcast() {
+	res, err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
 		Channel: "testing",
 		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -365,7 +368,7 @@ func ExampleClient_Stream() {
 		}
 	})
 	time.Sleep(1 * time.Second)
-	_, err := client.Publish(context.Background(), &apipb2.OutboundMessage{
+	_, err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
 		Channel: "testing",
 		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -440,11 +443,11 @@ func ExampleClient_Traverse() {
 	//3
 }
 
-func ExampleClient_DelDocs() {
+func ExampleClient_DelConnections() {
 	ctx := context.Background()
-	_, err := client.DelDocs(ctx, &apipb2.Filter{
-		Gtype:      "dog",
-		Expression: "this.attributes.name == 'Charlie'",
+	_, err := client.DelConnections(ctx, &apipb2.Filter{
+		Gtype:      "owner",
+		Expression: "this.attributes.primary_owner",
 		Limit:      10,
 	})
 	if err != nil {
@@ -455,11 +458,11 @@ func ExampleClient_DelDocs() {
 	//Output: Success!
 }
 
-func ExampleClient_DelConnections() {
+func ExampleClient_DelDocs() {
 	ctx := context.Background()
-	_, err := client.DelConnections(ctx, &apipb2.Filter{
-		Gtype:      "owner",
-		Expression: "this.attributes.primary_owner",
+	_, err := client.DelDocs(ctx, &apipb2.Filter{
+		Gtype:      "dog",
+		Expression: "this.attributes.name == 'Charlie'",
 		Limit:      10,
 	})
 	if err != nil {

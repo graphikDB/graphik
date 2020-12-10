@@ -181,10 +181,12 @@ type Message {
   channel: String!
   # data is the data sent with the message
   data: Map!
-  # sender is the user that sent the message
-  sender: Ref!
+  # user is the user that sent/triggered the message
+  user: Ref!
   # timestamp is when the message was sent
   timestamp: Time!
+  # method is the gRPC method that invoked the message delivery
+  method: String!
 }
 
 # RefConstructor is used to create a Ref
@@ -235,6 +237,12 @@ input RefInput {
   gid: String!
 }
 
+# RefPair is a pair of Refs
+input RefPair {
+  ref1: RefInput!
+  ref2: RefInput!
+}
+
 # Filter is a generic filter using Common Expression Language
 input Filter {
   # gtype is the doc/connection type to be filtered
@@ -253,8 +261,8 @@ input Filter {
   index: String
 }
 
-# SConnectFilter is used for searching for documents and adding connections based on whether they pass a Filter
-input SConnectFilter {
+# SearchConnectFilter is used for searching for documents and adding connections based on whether they pass a Filter
+input SearchConnectFilter {
   # filter is the filter to apply against the graph.
   filter: Filter!
   # gtype is the type of the connection to create
@@ -265,6 +273,18 @@ input SConnectFilter {
   directed: Boolean!
   # from indicates the root document of the connection to create
   from: RefInput!
+}
+
+# SearchConnectMeFilter is used for searching for documents and adding connections from the origin user to the document based on whether they pass a Filter
+input SearchConnectMeFilter {
+  # filter is the filter to apply against the graph.
+  filter: Filter!
+  # gtype is the type of the connection to create
+  gtype: String!
+  # attributes are k/v pairs to associate with the new connection
+  attributes: Map
+  # directed indicates whether the connection is uni-directional(instagram) or bi-directional(facebook)
+  directed: Boolean!
 }
 
 # AggFilter is a filter used for aggragation queries
@@ -319,8 +339,8 @@ input TraverseMeFilter {
   max_hops: Int!
 }
 
-# CFilter is used to fetch connections related to a single noted
-input CFilter {
+# ConnectFilter is used to fetch connections related to a single noted
+input ConnectFilter {
   # doc_ref is the ref to the target doc
   doc_ref: RefInput!
   # gtype is the type of connections to return
@@ -353,8 +373,8 @@ input Edit {
   attributes: Map!
 }
 
-# EFilter is used to edit/patch docs/connections
-input EFilter {
+# EditFilter is used to edit/patch docs/connections
+input EditFilter {
   # filter is used to filter docs/connections to edit
   filter: Filter!
   # attributes are k/v pairs used to overwrite k/v pairs on a doc/connection
@@ -448,7 +468,7 @@ type Mutation {
   # editDoc edites a single doc in the graph
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
-  editDocs(input: EFilter!): Docs!
+  editDocs(input: EditFilter!): Docs!
   # delDoc deletes a doc by reference
   delDoc(input: RefInput!): Empty
   # delDocs deletes 0-many docs that pass a Filter
@@ -460,13 +480,13 @@ type Mutation {
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
-  editConnections(input: EFilter!): Connections!
+  editConnections(input: EditFilter!): Connections!
   # delConnection deletes a connection by reference
   delConnection(input: RefInput!): Empty
   # delConnections deletes 0-many connections that pass a Filter
   delConnections(input: Filter!): Empty
-  # publish publishes a mesage to a pubsub channel
-  publish(input: OutboundMessage!): Empty
+  # broadcast broadcasts a mesage to a pubsub/stream channel
+  broadcast(input: OutboundMessage!): Empty
   # setIndexes sets all of the indexes in the graph
   setIndexes(input: IndexesInput!): Empty
   # setAuthorizers sets all of the authorizers in the graph
@@ -474,7 +494,9 @@ type Mutation {
   # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
   # searchAndConnect searches for documents and forms connections based on whether they pass a filter
-  searchAndConnect(where: SConnectFilter!): Connections!
+  searchAndConnect(where: SearchConnectFilter!): Connections!
+  # searchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
+  searchAndConnectMe(where: SearchConnectMeFilter!): Connections!
 }
 
 type Query {
@@ -505,9 +527,9 @@ type Query {
   # searchConnections searches for 0-many connections
   searchConnections(where: Filter!): Connections!
   # connectionsFrom returns connections from the given doc that pass the filter
-  connectionsFrom(where: CFilter!): Connections!
+  connectionsFrom(where: ConnectFilter!): Connections!
   # connectionsTo returns connections to the given doc that pass the filter
-  connectionsTo(where: CFilter!): Connections!
+  connectionsTo(where: ConnectFilter!): Connections!
   # aggregateDocs executes an aggregation function against a set of documents
   aggregateDocs(where: AggFilter!): Float!
   # aggregateConnections executes an aggregation function against a set of connections
@@ -515,6 +537,6 @@ type Query {
 }
 
 type Subscription {
-  # subscribe opens a stream of messages that pass a filter on a pubsub channel
+  # stream opens a stream of messages that pass a filter on a pubsub channel. state changes are sent to the 'state' channel.
   stream(where: StreamFilter!): Message!
 }

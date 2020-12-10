@@ -28,17 +28,21 @@ class Message extends \Google\Protobuf\Internal\Message
      */
     private $data = null;
     /**
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      *
-     * Generated from protobuf field <code>.api.Ref sender = 3 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Ref user = 3 [(.validator.field) = {</code>
      */
-    private $sender = null;
+    private $user = null;
     /**
      * timestamp is when the message was sent
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp timestamp = 4 [(.validator.field) = {</code>
      */
     private $timestamp = null;
+    /**
+     * Generated from protobuf field <code>string method = 5 [(.validator.field) = {</code>
+     */
+    private $method = '';
 
     /**
      * Constructor.
@@ -50,10 +54,11 @@ class Message extends \Google\Protobuf\Internal\Message
      *           channel is the channel the message was sent to
      *     @type \Google\Protobuf\Struct $data
      *           data is the data sent with the message
-     *     @type \Api\Ref $sender
-     *           sender is the user that sent the message
+     *     @type \Api\Ref $user
+     *           user is the sender that triggered/sent the message
      *     @type \Google\Protobuf\Timestamp $timestamp
      *           timestamp is when the message was sent
+     *     @type string $method
      * }
      */
     public function __construct($data = NULL) {
@@ -114,27 +119,27 @@ class Message extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      *
-     * Generated from protobuf field <code>.api.Ref sender = 3 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Ref user = 3 [(.validator.field) = {</code>
      * @return \Api\Ref
      */
-    public function getSender()
+    public function getUser()
     {
-        return $this->sender;
+        return $this->user;
     }
 
     /**
-     * sender is the user that sent the message
+     * user is the sender that triggered/sent the message
      *
-     * Generated from protobuf field <code>.api.Ref sender = 3 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Ref user = 3 [(.validator.field) = {</code>
      * @param \Api\Ref $var
      * @return $this
      */
-    public function setSender($var)
+    public function setUser($var)
     {
         GPBUtil::checkMessage($var, \Api\Ref::class);
-        $this->sender = $var;
+        $this->user = $var;
 
         return $this;
     }
@@ -161,6 +166,28 @@ class Message extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Timestamp::class);
         $this->timestamp = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string method = 5 [(.validator.field) = {</code>
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
+     * Generated from protobuf field <code>string method = 5 [(.validator.field) = {</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setMethod($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->method = $var;
 
         return $this;
     }

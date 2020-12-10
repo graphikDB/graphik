@@ -57,12 +57,18 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :from, :message, 5, "api.Ref"
     optional :to, :message, 6, "api.Ref"
   end
-  add_message "api.SConnectFilter" do
+  add_message "api.SearchConnectFilter" do
     optional :filter, :message, 1, "api.Filter"
     optional :gtype, :string, 2
     optional :attributes, :message, 3, "google.protobuf.Struct"
     optional :directed, :bool, 4
     optional :from, :message, 5, "api.Ref"
+  end
+  add_message "api.SearchConnectMeFilter" do
+    optional :filter, :message, 1, "api.Filter"
+    optional :gtype, :string, 2
+    optional :attributes, :message, 3, "google.protobuf.Struct"
+    optional :directed, :bool, 4
   end
   add_message "api.ConnectionConstructors" do
     repeated :connections, :message, 1, "api.ConnectionConstructor"
@@ -71,7 +77,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     repeated :connections, :message, 1, "api.Connection"
     optional :seek_next, :string, 2
   end
-  add_message "api.CFilter" do
+  add_message "api.ConnectFilter" do
     optional :doc_ref, :message, 1, "api.Ref"
     optional :gtype, :string, 2
     optional :expression, :string, 3
@@ -188,7 +194,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :ref, :message, 1, "api.Ref"
     optional :attributes, :message, 2, "google.protobuf.Struct"
   end
-  add_message "api.EFilter" do
+  add_message "api.EditFilter" do
     optional :filter, :message, 1, "api.Filter"
     optional :attributes, :message, 2, "google.protobuf.Struct"
   end
@@ -202,8 +208,9 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.Message" do
     optional :channel, :string, 1
     optional :data, :message, 2, "google.protobuf.Struct"
-    optional :sender, :message, 3, "api.Ref"
+    optional :user, :message, 3, "api.Ref"
     optional :timestamp, :message, 4, "google.protobuf.Timestamp"
+    optional :method, :string, 5
   end
   add_message "api.Schema" do
     repeated :connection_types, :string, 1
@@ -247,10 +254,11 @@ module Api
   Docs = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Docs").msgclass
   Connection = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Connection").msgclass
   ConnectionConstructor = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ConnectionConstructor").msgclass
-  SConnectFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.SConnectFilter").msgclass
+  SearchConnectFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.SearchConnectFilter").msgclass
+  SearchConnectMeFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.SearchConnectMeFilter").msgclass
   ConnectionConstructors = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ConnectionConstructors").msgclass
   Connections = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Connections").msgclass
-  CFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.CFilter").msgclass
+  ConnectFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ConnectFilter").msgclass
   Filter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Filter").msgclass
   AggFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AggFilter").msgclass
   TraverseFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TraverseFilter").msgclass
@@ -269,7 +277,7 @@ module Api
   Number = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Number").msgclass
   ExistsFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ExistsFilter").msgclass
   Edit = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Edit").msgclass
-  EFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.EFilter").msgclass
+  EditFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.EditFilter").msgclass
   Pong = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Pong").msgclass
   OutboundMessage = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.OutboundMessage").msgclass
   Message = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Message").msgclass

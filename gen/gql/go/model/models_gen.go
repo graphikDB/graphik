@@ -33,7 +33,7 @@ type AuthorizersInput struct {
 	Authorizers []*AuthorizerInput `json:"authorizers"`
 }
 
-type CFilter struct {
+type ConnectFilter struct {
 	DocRef     *RefInput `json:"doc_ref"`
 	Gtype      string    `json:"gtype"`
 	Expression *string   `json:"expression"`
@@ -87,13 +87,13 @@ type Docs struct {
 	SeekNext *string `json:"seek_next"`
 }
 
-type EFilter struct {
-	Filter     *Filter                `json:"filter"`
+type Edit struct {
+	Ref        *RefInput              `json:"ref"`
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
-type Edit struct {
-	Ref        *RefInput              `json:"ref"`
+type EditFilter struct {
+	Filter     *Filter                `json:"filter"`
 	Attributes map[string]interface{} `json:"attributes"`
 }
 
@@ -146,8 +146,9 @@ type IndexesInput struct {
 type Message struct {
 	Channel   string                 `json:"channel"`
 	Data      map[string]interface{} `json:"data"`
-	Sender    *Ref                   `json:"sender"`
+	User      *Ref                   `json:"user"`
 	Timestamp time.Time              `json:"timestamp"`
+	Method    string                 `json:"method"`
 }
 
 type OutboundMessage struct {
@@ -174,6 +175,11 @@ type RefInput struct {
 	Gid   string `json:"gid"`
 }
 
+type RefPair struct {
+	Ref1 *RefInput `json:"ref1"`
+	Ref2 *RefInput `json:"ref2"`
+}
+
 type Refs struct {
 	Refs []*Ref `json:"refs"`
 }
@@ -185,7 +191,15 @@ type Request struct {
 	Request   map[string]interface{} `json:"request"`
 }
 
-type SConnectFilter struct {
+type Schema struct {
+	ConnectionTypes []string        `json:"connection_types"`
+	DocTypes        []string        `json:"doc_types"`
+	Authorizers     *Authorizers    `json:"authorizers"`
+	Validators      *TypeValidators `json:"validators"`
+	Indexes         *Indexes        `json:"indexes"`
+}
+
+type SearchConnectFilter struct {
 	Filter     *Filter                `json:"filter"`
 	Gtype      string                 `json:"gtype"`
 	Attributes map[string]interface{} `json:"attributes"`
@@ -193,12 +207,11 @@ type SConnectFilter struct {
 	From       *RefInput              `json:"from"`
 }
 
-type Schema struct {
-	ConnectionTypes []string        `json:"connection_types"`
-	DocTypes        []string        `json:"doc_types"`
-	Authorizers     *Authorizers    `json:"authorizers"`
-	Validators      *TypeValidators `json:"validators"`
-	Indexes         *Indexes        `json:"indexes"`
+type SearchConnectMeFilter struct {
+	Filter     *Filter                `json:"filter"`
+	Gtype      string                 `json:"gtype"`
+	Attributes map[string]interface{} `json:"attributes"`
+	Directed   bool                   `json:"directed"`
 }
 
 type StreamFilter struct {

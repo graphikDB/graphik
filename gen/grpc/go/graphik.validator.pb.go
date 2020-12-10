@@ -193,7 +193,7 @@ func (this *ConnectionConstructor) Validate() error {
 	}
 	return nil
 }
-func (this *SConnectFilter) Validate() error {
+func (this *SearchConnectFilter) Validate() error {
 	if this.Filter != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
@@ -210,6 +210,19 @@ func (this *SConnectFilter) Validate() error {
 	if this.From != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.From); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("From", err)
+		}
+	}
+	return nil
+}
+func (this *SearchConnectMeFilter) Validate() error {
+	if this.Filter != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
+		}
+	}
+	if this.Attributes != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Attributes); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Attributes", err)
 		}
 	}
 	return nil
@@ -235,10 +248,10 @@ func (this *Connections) Validate() error {
 	return nil
 }
 
-var _regex_CFilter_Gtype = regexp.MustCompile(`^.{1,225}$`)
-var _regex_CFilter_Sort = regexp.MustCompile(`((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$`)
+var _regex_ConnectFilter_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_ConnectFilter_Sort = regexp.MustCompile(`((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$`)
 
-func (this *CFilter) Validate() error {
+func (this *ConnectFilter) Validate() error {
 	if nil == this.DocRef {
 		return github_com_mwitkow_go_proto_validators.FieldError("DocRef", fmt.Errorf("message must exist"))
 	}
@@ -247,13 +260,13 @@ func (this *CFilter) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("DocRef", err)
 		}
 	}
-	if !_regex_CFilter_Gtype.MatchString(this.Gtype) {
+	if !_regex_ConnectFilter_Gtype.MatchString(this.Gtype) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
 	}
 	if !(this.Limit > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
 	}
-	if !_regex_CFilter_Sort.MatchString(this.Sort) {
+	if !_regex_ConnectFilter_Sort.MatchString(this.Sort) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"`, this.Sort))
 	}
 	return nil
@@ -489,7 +502,7 @@ func (this *Edit) Validate() error {
 	}
 	return nil
 }
-func (this *EFilter) Validate() error {
+func (this *EditFilter) Validate() error {
 	if this.Filter != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Filter); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Filter", err)
@@ -524,6 +537,7 @@ func (this *OutboundMessage) Validate() error {
 }
 
 var _regex_Message_Channel = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Message_Method = regexp.MustCompile(`^.{1,225}$`)
 
 func (this *Message) Validate() error {
 	if !_regex_Message_Channel.MatchString(this.Channel) {
@@ -537,12 +551,12 @@ func (this *Message) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
 		}
 	}
-	if nil == this.Sender {
-		return github_com_mwitkow_go_proto_validators.FieldError("Sender", fmt.Errorf("message must exist"))
+	if nil == this.User {
+		return github_com_mwitkow_go_proto_validators.FieldError("User", fmt.Errorf("message must exist"))
 	}
-	if this.Sender != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Sender); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Sender", err)
+	if this.User != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
 		}
 	}
 	if nil == this.Timestamp {
@@ -552,6 +566,9 @@ func (this *Message) Validate() error {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Timestamp); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Timestamp", err)
 		}
+	}
+	if !_regex_Message_Method.MatchString(this.Method) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
 	}
 	return nil
 }

@@ -59,8 +59,8 @@ func (r *mutationResolver) EditDoc(ctx context.Context, input model.Edit) (*mode
 	return gqlDoc(res), nil
 }
 
-func (r *mutationResolver) EditDocs(ctx context.Context, input model.EFilter) (*model.Docs, error) {
-	docs, err := r.client.EditDocs(ctx, protoEFilter(input))
+func (r *mutationResolver) EditDocs(ctx context.Context, input model.EditFilter) (*model.Docs, error) {
+	docs, err := r.client.EditDocs(ctx, protoEditFilter(input))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -143,8 +143,8 @@ func (r *mutationResolver) EditConnection(ctx context.Context, input model.Edit)
 	return gqlConnection(res), nil
 }
 
-func (r *mutationResolver) EditConnections(ctx context.Context, input model.EFilter) (*model.Connections, error) {
-	connections, err := r.client.EditConnections(ctx, protoEFilter(input))
+func (r *mutationResolver) EditConnections(ctx context.Context, input model.EditFilter) (*model.Connections, error) {
+	connections, err := r.client.EditConnections(ctx, protoEditFilter(input))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -185,8 +185,8 @@ func (r *mutationResolver) DelConnections(ctx context.Context, input model.Filte
 	}
 }
 
-func (r *mutationResolver) Publish(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error) {
-	if e, err := r.client.Publish(ctx, &apipb.OutboundMessage{
+func (r *mutationResolver) Broadcast(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error) {
+	if e, err := r.client.Broadcast(ctx, &apipb.OutboundMessage{
 		Channel: input.Channel,
 		Data:    apipb.NewStruct(input.Data),
 	}); err != nil {
@@ -262,13 +262,32 @@ func (r *mutationResolver) SetTypeValidators(ctx context.Context, input model.Ty
 	}
 }
 
-func (r *mutationResolver) SearchAndConnect(ctx context.Context, where model.SConnectFilter) (*model.Connections, error) {
-	connections, err := r.client.SearchAndConnect(ctx, &apipb.SConnectFilter{
+func (r *mutationResolver) SearchAndConnect(ctx context.Context, where model.SearchConnectFilter) (*model.Connections, error) {
+	connections, err := r.client.SearchAndConnect(ctx, &apipb.SearchConnectFilter{
 		Filter:     protoFilter(*where.Filter),
 		Gtype:      where.Gtype,
 		Attributes: apipb.NewStruct(where.Attributes),
 		Directed:   where.Directed,
 		From:       protoIRef(*where.From),
+	})
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlConnections(connections), nil
+}
+
+func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, where model.SearchConnectMeFilter) (*model.Connections, error) {
+	connections, err := r.client.SearchAndConnectMe(ctx, &apipb.SearchConnectMeFilter{
+		Filter:     protoFilter(*where.Filter),
+		Gtype:      where.Gtype,
+		Attributes: apipb.NewStruct(where.Attributes),
+		Directed:   where.Directed,
 	})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -465,7 +484,7 @@ func (r *queryResolver) SearchConnections(ctx context.Context, where model.Filte
 	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) ConnectionsFrom(ctx context.Context, where model.CFilter) (*model.Connections, error) {
+func (r *queryResolver) ConnectionsFrom(ctx context.Context, where model.ConnectFilter) (*model.Connections, error) {
 	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -479,7 +498,7 @@ func (r *queryResolver) ConnectionsFrom(ctx context.Context, where model.CFilter
 	return gqlConnections(res), nil
 }
 
-func (r *queryResolver) ConnectionsTo(ctx context.Context, where model.CFilter) (*model.Connections, error) {
+func (r *queryResolver) ConnectionsTo(ctx context.Context, where model.ConnectFilter) (*model.Connections, error) {
 	res, err := r.client.ConnectionsFrom(ctx, protoConnectionFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -550,7 +569,7 @@ func (r *subscriptionResolver) Stream(ctx context.Context, where model.StreamFil
 				ch <- &model.Message{
 					Channel:   msg.GetChannel(),
 					Data:      msg.GetData().AsMap(),
-					Sender:    gqlRef(msg.GetSender()),
+					User:      gqlRef(msg.GetUser()),
 					Timestamp: msg.GetTimestamp().AsTime(),
 				}
 			}
