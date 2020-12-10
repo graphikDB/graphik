@@ -139,7 +139,8 @@ type ComplexityRoot struct {
 		Ping                 func(childComplexity int, where *emptypb.Empty) int
 		SearchConnections    func(childComplexity int, where model.Filter) int
 		SearchDocs           func(childComplexity int, where model.Filter) int
-		Traverse             func(childComplexity int, where model.TFilter) int
+		Traverse             func(childComplexity int, where model.TraverseFilter) int
+		TraverseMe           func(childComplexity int, where model.TraverseMeFilter) int
 	}
 
 	Ref struct {
@@ -219,7 +220,8 @@ type QueryResolver interface {
 	Me(ctx context.Context, where *emptypb.Empty) (*model.Doc, error)
 	GetDoc(ctx context.Context, where model.RefInput) (*model.Doc, error)
 	SearchDocs(ctx context.Context, where model.Filter) (*model.Docs, error)
-	Traverse(ctx context.Context, where model.TFilter) (*model.Traversals, error)
+	Traverse(ctx context.Context, where model.TraverseFilter) (*model.Traversals, error)
+	TraverseMe(ctx context.Context, where model.TraverseMeFilter) (*model.Traversals, error)
 	GetConnection(ctx context.Context, where model.RefInput) (*model.Connection, error)
 	ExistsDoc(ctx context.Context, where model.ExistsFilter) (bool, error)
 	ExistsConnection(ctx context.Context, where model.ExistsFilter) (bool, error)
@@ -819,7 +821,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Traverse(childComplexity, args["where"].(model.TFilter)), true
+		return e.complexity.Query.Traverse(childComplexity, args["where"].(model.TraverseFilter)), true
+
+	case "Query.traverseMe":
+		if e.complexity.Query.TraverseMe == nil {
+			break
+		}
+
+		args, err := ec.field_Query_traverseMe_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TraverseMe(childComplexity, args["where"].(model.TraverseMeFilter)), true
 
 	case "Ref.gid":
 		if e.complexity.Ref.Gid == nil {
@@ -1354,10 +1368,30 @@ input AggFilter {
   field: String
 }
 
-# AggFilter is a filter used for graph traversals
-input TFilter {
+# TraverseFilter is a filter used for graph traversals
+input TraverseFilter {
   # gtype is the doc/connection type to be filtered
   root: RefInput!
+  # doc_expression is a boolean CEL expression used to determine which docs to traverse
+  doc_expression: String
+  # connection_expression is a boolean CEL expression used to determine which connections to traverse
+  connection_expression: String
+  # limit is the maximum number of items to return
+  limit: Int!
+  # custom sorting of the results.
+  sort: String
+  # reverse the direction of the connection traversal
+  reverse: Boolean
+  # DFS(depth-first-search) or BFS(breadth-first-search). Defaults to breadth-first
+  algorithm: Algorithm
+  # maximum degree/depth of nodes to be visited during traversal
+  max_depth: Int!
+  # maximum number of nodes to be visited during traversal
+  max_hops: Int!
+}
+
+# TraverseMeFilter is a filter used for graph traversals of the origin user
+input TraverseMeFilter {
   # doc_expression is a boolean CEL expression used to determine which docs to traverse
   doc_expression: String
   # connection_expression is a boolean CEL expression used to determine which connections to traverse
@@ -1546,7 +1580,9 @@ type Query {
   # searchDocs searches for 0-many docs
   searchDocs(where: Filter!): Docs!
   # traverse searches for 0-many docs using a graph traversal algorithm
-  traverse(where: TFilter!): Traversals!
+  traverse(where: TraverseFilter!): Traversals!
+  # traverseMe searches for 0-many docs related to the origin user using a graph traversal algorithm
+  traverseMe(where: TraverseMeFilter!): Traversals!
   # getConnection gets a connection at the given ref
   getConnection(where: RefInput!): Connection!
   # existsDoc checks if a document exists in the graph
@@ -2075,13 +2111,28 @@ func (ec *executionContext) field_Query_searchDocs_args(ctx context.Context, raw
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_traverseMe_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.TraverseMeFilter
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalNTraverseMeFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraverseMeFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_traverse_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.TFilter
+	var arg0 model.TraverseFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNTFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNTraverseFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraverseFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3919,7 +3970,49 @@ func (ec *executionContext) _Query_traverse(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Traverse(rctx, args["where"].(model.TFilter))
+		return ec.resolvers.Query().Traverse(rctx, args["where"].(model.TraverseFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Traversals)
+	fc.Result = res
+	return ec.marshalNTraversals2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversals(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_traverseMe(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_traverseMe_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TraverseMe(rctx, args["where"].(model.TraverseMeFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7048,8 +7141,8 @@ func (ec *executionContext) unmarshalInputSConnectFilter(ctx context.Context, ob
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputTFilter(ctx context.Context, obj interface{}) (model.TFilter, error) {
-	var it model.TFilter
+func (ec *executionContext) unmarshalInputTraverseFilter(ctx context.Context, obj interface{}) (model.TraverseFilter, error) {
+	var it model.TraverseFilter
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -7062,6 +7155,82 @@ func (ec *executionContext) unmarshalInputTFilter(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
+		case "doc_expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("doc_expression"))
+			it.DocExpression, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "connection_expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connection_expression"))
+			it.ConnectionExpression, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "limit":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			it.Limit, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sort":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sort"))
+			it.Sort, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "reverse":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reverse"))
+			it.Reverse, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "algorithm":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("algorithm"))
+			it.Algorithm, err = ec.unmarshalOAlgorithm2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAlgorithm(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "max_depth":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max_depth"))
+			it.MaxDepth, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "max_hops":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max_hops"))
+			it.MaxHops, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTraverseMeFilter(ctx context.Context, obj interface{}) (model.TraverseMeFilter, error) {
+	var it model.TraverseMeFilter
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
 		case "doc_expression":
 			var err error
 
@@ -7714,6 +7883,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_traverse(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "traverseMe":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_traverseMe(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -8779,11 +8962,6 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNTFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTFilter(ctx context.Context, v interface{}) (model.TFilter, error) {
-	res, err := ec.unmarshalInputTFilter(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
 	res, err := graphql.UnmarshalTime(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -8821,6 +8999,16 @@ func (ec *executionContext) marshalNTraversals2ᚖgithubᚗcomᚋgraphikDBᚋgra
 		return graphql.Null
 	}
 	return ec._Traversals(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTraverseFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraverseFilter(ctx context.Context, v interface{}) (model.TraverseFilter, error) {
+	res, err := ec.unmarshalInputTraverseFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNTraverseMeFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraverseMeFilter(ctx context.Context, v interface{}) (model.TraverseMeFilter, error) {
+	res, err := ec.unmarshalInputTraverseMeFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNTypeValidator2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidator(ctx context.Context, sel ast.SelectionSet, v *model.TypeValidator) graphql.Marshaler {

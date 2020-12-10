@@ -30,7 +30,9 @@ service DatabaseService {
   // SearchDocs searches the graph for docs
   rpc SearchDocs(Filter) returns(Docs){}
   // Traverse executes a depth first search of the graph for docs
-  rpc Traverse(TFilter) returns(Traversals){}
+  rpc Traverse(TraverseFilter) returns(Traversals){}
+  // TraverseMe executes a graph traversal searching for docs related to the currently logged in user
+  rpc TraverseMe(TraverseMeFilter) returns(Traversals){}
   // EditDoc patches/edits a docs attributes
   rpc EditDoc(Edit) returns(Doc){}
   // EditDocs patches a batch of docs attributes that pass the patch filter
@@ -249,7 +251,7 @@ message AggFilter {
   string field =3[(validator.field) = {regex : "((^|, )(|^attributes.(.*)))+$"}];
 }
 
-message TFilter {
+message TraverseFilter {
   Ref root =1 [(validator.field) = {msg_exists : true}];
   string doc_expression =2;
   string connection_expression =3;
@@ -262,6 +264,20 @@ message TFilter {
   uint64 max_depth = 8[(validator.field) = {int_gt : 0}];
   // maximum number of nodes to be visited during traversal
   uint64 max_hops =9[(validator.field) = {int_gt : 0}];
+}
+
+message TraverseMeFilter {
+  string doc_expression =1;
+  string connection_expression =2;
+  uint64 limit =3 [(validator.field) = {int_gt : 0}];
+  // custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
+  string sort =4 [(validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}];
+  bool reverse =5;
+  Algorithm algorithm = 6;
+  // maximum degree/depth of nodes to be visited during traversal
+  uint64 max_depth = 7[(validator.field) = {int_gt : 0}];
+  // maximum number of nodes to be visited during traversal
+  uint64 max_hops =8[(validator.field) = {int_gt : 0}];
 }
 
 message IndexConstructor {

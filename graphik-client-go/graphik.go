@@ -308,7 +308,7 @@ func (c *Client) SearchAndConnect(ctx context.Context, in *apipb.SConnectFilter,
 }
 
 // Traverse searches for 0-many docs using a graph traversal algorithm
-func (c *Client) Traverse(ctx context.Context, in *apipb.TFilter, opts ...grpc.CallOption) (*apipb.Traversals, error) {
+func (c *Client) Traverse(ctx context.Context, in *apipb.TraverseFilter, opts ...grpc.CallOption) (*apipb.Traversals, error) {
 	return c.graph.Traverse(ctx, in, opts...)
 }
 

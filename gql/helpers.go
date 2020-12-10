@@ -319,12 +319,41 @@ func gqlAlgorithm(algorithm apipb.Algorithm) model.Algorithm {
 	return model.AlgorithmBfs
 }
 
-func protoDepthFilter(filter model.TFilter) *apipb.TFilter {
-	c := &apipb.TFilter{
+func protoTraverseFilter(filter model.TraverseFilter) *apipb.TraverseFilter {
+	c := &apipb.TraverseFilter{
 		Root:     protoIRef(*filter.Root),
 		Limit:    uint64(filter.Limit),
 		MaxDepth: uint64(filter.MaxDepth),
 		MaxHops:  uint64(filter.MaxHops),
+	}
+	if filter.Algorithm != nil {
+		c.Algorithm = protoAlgorithm(*filter.Algorithm)
+	}
+	if filter.DocExpression != nil {
+		c.DocExpression = *filter.DocExpression
+	}
+	if filter.ConnectionExpression != nil {
+		c.ConnectionExpression = *filter.ConnectionExpression
+	}
+	if filter.Sort != nil {
+		c.Sort = *filter.Sort
+	}
+	if filter.Reverse != nil {
+		c.Reverse = *filter.Reverse
+	}
+	return c
+}
+
+func protoTraverseMeFilter(filter model.TraverseMeFilter) *apipb.TraverseMeFilter {
+	c := &apipb.TraverseMeFilter{
+		DocExpression:        "",
+		ConnectionExpression: "",
+		Limit:                uint64(filter.Limit),
+		Sort:                 "",
+		Reverse:              false,
+		Algorithm:            0,
+		MaxDepth:             uint64(filter.MaxDepth),
+		MaxHops:              uint64(filter.MaxHops),
 	}
 	if filter.Algorithm != nil {
 		c.Algorithm = protoAlgorithm(*filter.Algorithm)

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>TFilter</title>
+    <title>TraverseFilter</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -335,9 +335,14 @@
                 SConnectFilter
             </a>
         </li>
-        <li class="slds-is-active" title="TFilter">
-            <a href="tfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TFilter
+        <li class="slds-is-active" title="TraverseFilter">
+            <a href="traversefilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TraverseFilter
+            </a>
+        </li>
+        <li  title="TraverseMeFilter">
+            <a href="traversemefilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TraverseMeFilter
             </a>
         </li>
         <li  title="TypeValidatorInput">
@@ -386,8 +391,8 @@
     </div>
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
-        <h1 class="slds-text-heading--large">TFilter</h1>
-        <div class="slds-text-body--regular"><p>AggFilter is a filter used for graph traversals</p>
+        <h1 class="slds-text-heading--large">TraverseFilter</h1>
+        <div class="slds-text-body--regular"><p>TraverseFilter is a filter used for graph traversals</p>
 </div>
     </div>
 </section>
@@ -399,7 +404,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">TFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   gtype is the doc/connection type to be filtered</span></span></li><li><span class="tab"><span class="meta">root</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   doc_expression is a boolean CEL expression used to determine which docs to </span></span></li><li><span class="tab"><span class="comment line">#   traverse</span></span></li><li><span class="tab"><span class="meta">doc_expression</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   connection_expression is a boolean CEL expression used to determine which </span></span></li><li><span class="tab"><span class="comment line">#   connections to traverse</span></span></li><li><span class="tab"><span class="meta">connection_expression</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   limit is the maximum number of items to return</span></span></li><li><span class="tab"><span class="meta">limit</span>: <a class="support type" href="int.doc.html">Int</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   custom sorting of the results.</span></span></li><li><span class="tab"><span class="meta">sort</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   reverse the direction of the connection traversal</span></span></li><li><span class="tab"><span class="meta">reverse</span>: <a class="support type" href="boolean.doc.html">Boolean</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   DFS(depth-first-search) or BFS(breadth-first-search). Defaults to breadth-first</span></span></li><li><span class="tab"><span class="meta">algorithm</span>: <a class="support type" href="algorithm.doc.html">Algorithm</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   maximum degree/depth of nodes to be visited during traversal</span></span></li><li><span class="tab"><span class="meta">max_depth</span>: <a class="support type" href="int.doc.html">Int</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   maximum number of nodes to be visited during traversal</span></span></li><li><span class="tab"><span class="meta">max_hops</span>: <a class="support type" href="int.doc.html">Int</a>!</span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">TraverseFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   gtype is the doc/connection type to be filtered</span></span></li><li><span class="tab"><span class="meta">root</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   doc_expression is a boolean CEL expression used to determine which docs to </span></span></li><li><span class="tab"><span class="comment line">#   traverse</span></span></li><li><span class="tab"><span class="meta">doc_expression</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   connection_expression is a boolean CEL expression used to determine which </span></span></li><li><span class="tab"><span class="comment line">#   connections to traverse</span></span></li><li><span class="tab"><span class="meta">connection_expression</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   limit is the maximum number of items to return</span></span></li><li><span class="tab"><span class="meta">limit</span>: <a class="support type" href="int.doc.html">Int</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   custom sorting of the results.</span></span></li><li><span class="tab"><span class="meta">sort</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   reverse the direction of the connection traversal</span></span></li><li><span class="tab"><span class="meta">reverse</span>: <a class="support type" href="boolean.doc.html">Boolean</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   DFS(depth-first-search) or BFS(breadth-first-search). Defaults to breadth-first</span></span></li><li><span class="tab"><span class="meta">algorithm</span>: <a class="support type" href="algorithm.doc.html">Algorithm</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   maximum degree/depth of nodes to be visited during traversal</span></span></li><li><span class="tab"><span class="meta">max_depth</span>: <a class="support type" href="int.doc.html">Int</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   maximum number of nodes to be visited during traversal</span></span></li><li><span class="tab"><span class="meta">max_hops</span>: <a class="support type" href="int.doc.html">Int</a>!</span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

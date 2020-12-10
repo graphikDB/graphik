@@ -9,50 +9,46 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Generated from protobuf message <code>api.TraverseFilter</code>
+ * Generated from protobuf message <code>api.TraverseMeFilter</code>
  */
-class TraverseFilter extends \Google\Protobuf\Internal\Message
+class TraverseMeFilter extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Generated from protobuf field <code>.api.Ref root = 1 [(.validator.field) = {</code>
-     */
-    private $root = null;
-    /**
-     * Generated from protobuf field <code>string doc_expression = 2;</code>
+     * Generated from protobuf field <code>string doc_expression = 1;</code>
      */
     private $doc_expression = '';
     /**
-     * Generated from protobuf field <code>string connection_expression = 3;</code>
+     * Generated from protobuf field <code>string connection_expression = 2;</code>
      */
     private $connection_expression = '';
     /**
-     * Generated from protobuf field <code>uint64 limit = 4 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 limit = 3 [(.validator.field) = {</code>
      */
     private $limit = 0;
     /**
      * custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
      *
-     * Generated from protobuf field <code>string sort = 5 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string sort = 4 [(.validator.field) = {</code>
      */
     private $sort = '';
     /**
-     * Generated from protobuf field <code>bool reverse = 6;</code>
+     * Generated from protobuf field <code>bool reverse = 5;</code>
      */
     private $reverse = false;
     /**
-     * Generated from protobuf field <code>.api.Algorithm algorithm = 7;</code>
+     * Generated from protobuf field <code>.api.Algorithm algorithm = 6;</code>
      */
     private $algorithm = 0;
     /**
      * maximum degree/depth of nodes to be visited during traversal
      *
-     * Generated from protobuf field <code>uint64 max_depth = 8 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 max_depth = 7 [(.validator.field) = {</code>
      */
     private $max_depth = 0;
     /**
      * maximum number of nodes to be visited during traversal
      *
-     * Generated from protobuf field <code>uint64 max_hops = 9 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 max_hops = 8 [(.validator.field) = {</code>
      */
     private $max_hops = 0;
 
@@ -62,7 +58,6 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type \Api\Ref $root
      *     @type string $doc_expression
      *     @type string $connection_expression
      *     @type int|string $limit
@@ -82,29 +77,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.api.Ref root = 1 [(.validator.field) = {</code>
-     * @return \Api\Ref
-     */
-    public function getRoot()
-    {
-        return $this->root;
-    }
-
-    /**
-     * Generated from protobuf field <code>.api.Ref root = 1 [(.validator.field) = {</code>
-     * @param \Api\Ref $var
-     * @return $this
-     */
-    public function setRoot($var)
-    {
-        GPBUtil::checkMessage($var, \Api\Ref::class);
-        $this->root = $var;
-
-        return $this;
-    }
-
-    /**
-     * Generated from protobuf field <code>string doc_expression = 2;</code>
+     * Generated from protobuf field <code>string doc_expression = 1;</code>
      * @return string
      */
     public function getDocExpression()
@@ -113,7 +86,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string doc_expression = 2;</code>
+     * Generated from protobuf field <code>string doc_expression = 1;</code>
      * @param string $var
      * @return $this
      */
@@ -126,7 +99,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string connection_expression = 3;</code>
+     * Generated from protobuf field <code>string connection_expression = 2;</code>
      * @return string
      */
     public function getConnectionExpression()
@@ -135,7 +108,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string connection_expression = 3;</code>
+     * Generated from protobuf field <code>string connection_expression = 2;</code>
      * @param string $var
      * @return $this
      */
@@ -148,7 +121,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>uint64 limit = 4 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 limit = 3 [(.validator.field) = {</code>
      * @return int|string
      */
     public function getLimit()
@@ -157,7 +130,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>uint64 limit = 4 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 limit = 3 [(.validator.field) = {</code>
      * @param int|string $var
      * @return $this
      */
@@ -172,7 +145,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     /**
      * custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
      *
-     * Generated from protobuf field <code>string sort = 5 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string sort = 4 [(.validator.field) = {</code>
      * @return string
      */
     public function getSort()
@@ -183,7 +156,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     /**
      * custom sorting of the results. (validator.field) = {regex : "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"}
      *
-     * Generated from protobuf field <code>string sort = 5 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string sort = 4 [(.validator.field) = {</code>
      * @param string $var
      * @return $this
      */
@@ -196,7 +169,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>bool reverse = 6;</code>
+     * Generated from protobuf field <code>bool reverse = 5;</code>
      * @return bool
      */
     public function getReverse()
@@ -205,7 +178,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>bool reverse = 6;</code>
+     * Generated from protobuf field <code>bool reverse = 5;</code>
      * @param bool $var
      * @return $this
      */
@@ -218,7 +191,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.api.Algorithm algorithm = 7;</code>
+     * Generated from protobuf field <code>.api.Algorithm algorithm = 6;</code>
      * @return int
      */
     public function getAlgorithm()
@@ -227,7 +200,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.api.Algorithm algorithm = 7;</code>
+     * Generated from protobuf field <code>.api.Algorithm algorithm = 6;</code>
      * @param int $var
      * @return $this
      */
@@ -242,7 +215,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     /**
      * maximum degree/depth of nodes to be visited during traversal
      *
-     * Generated from protobuf field <code>uint64 max_depth = 8 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 max_depth = 7 [(.validator.field) = {</code>
      * @return int|string
      */
     public function getMaxDepth()
@@ -253,7 +226,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     /**
      * maximum degree/depth of nodes to be visited during traversal
      *
-     * Generated from protobuf field <code>uint64 max_depth = 8 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 max_depth = 7 [(.validator.field) = {</code>
      * @param int|string $var
      * @return $this
      */
@@ -268,7 +241,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     /**
      * maximum number of nodes to be visited during traversal
      *
-     * Generated from protobuf field <code>uint64 max_hops = 9 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 max_hops = 8 [(.validator.field) = {</code>
      * @return int|string
      */
     public function getMaxHops()
@@ -279,7 +252,7 @@ class TraverseFilter extends \Google\Protobuf\Internal\Message
     /**
      * maximum number of nodes to be visited during traversal
      *
-     * Generated from protobuf field <code>uint64 max_hops = 9 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>uint64 max_hops = 8 [(.validator.field) = {</code>
      * @param int|string $var
      * @return $this
      */

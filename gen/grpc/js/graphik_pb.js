@@ -52,9 +52,10 @@ goog.exportSymbol('proto.api.Refs', null, global);
 goog.exportSymbol('proto.api.Request', null, global);
 goog.exportSymbol('proto.api.SConnectFilter', null, global);
 goog.exportSymbol('proto.api.Schema', null, global);
-goog.exportSymbol('proto.api.TFilter', null, global);
 goog.exportSymbol('proto.api.Traversal', null, global);
 goog.exportSymbol('proto.api.Traversals', null, global);
+goog.exportSymbol('proto.api.TraverseFilter', null, global);
+goog.exportSymbol('proto.api.TraverseMeFilter', null, global);
 goog.exportSymbol('proto.api.TypeValidator', null, global);
 goog.exportSymbol('proto.api.TypeValidators', null, global);
 
@@ -3925,12 +3926,12 @@ proto.api.AggFilter.prototype.setField = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.TFilter = function(opt_data) {
+proto.api.TraverseFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.TFilter, jspb.Message);
+goog.inherits(proto.api.TraverseFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.TFilter.displayName = 'proto.api.TFilter';
+  proto.api.TraverseFilter.displayName = 'proto.api.TraverseFilter';
 }
 
 
@@ -3945,8 +3946,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.TFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.TFilter.toObject(opt_includeInstance, this);
+proto.api.TraverseFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.TraverseFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -3955,11 +3956,11 @@ proto.api.TFilter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.TFilter} msg The msg instance to transform.
+ * @param {!proto.api.TraverseFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.TFilter.toObject = function(includeInstance, msg) {
+proto.api.TraverseFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     root: (f = msg.getRoot()) && proto.api.Ref.toObject(includeInstance, f),
     docExpression: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -3983,23 +3984,23 @@ proto.api.TFilter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.TFilter}
+ * @return {!proto.api.TraverseFilter}
  */
-proto.api.TFilter.deserializeBinary = function(bytes) {
+proto.api.TraverseFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.TFilter;
-  return proto.api.TFilter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.TraverseFilter;
+  return proto.api.TraverseFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.TFilter} msg The message object to deserialize into.
+ * @param {!proto.api.TraverseFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.TFilter}
+ * @return {!proto.api.TraverseFilter}
  */
-proto.api.TFilter.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.TraverseFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -4056,9 +4057,9 @@ proto.api.TFilter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.TFilter.prototype.serializeBinary = function() {
+proto.api.TraverseFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.TFilter.serializeBinaryToWriter(this, writer);
+  proto.api.TraverseFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -4066,11 +4067,11 @@ proto.api.TFilter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.TFilter} message
+ * @param {!proto.api.TraverseFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.TFilter.serializeBinaryToWriter = function(message, writer) {
+proto.api.TraverseFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getRoot();
   if (f != null) {
@@ -4143,19 +4144,19 @@ proto.api.TFilter.serializeBinaryToWriter = function(message, writer) {
  * optional Ref root = 1;
  * @return {?proto.api.Ref}
  */
-proto.api.TFilter.prototype.getRoot = function() {
+proto.api.TraverseFilter.prototype.getRoot = function() {
   return /** @type{?proto.api.Ref} */ (
     jspb.Message.getWrapperField(this, proto.api.Ref, 1));
 };
 
 
 /** @param {?proto.api.Ref|undefined} value */
-proto.api.TFilter.prototype.setRoot = function(value) {
+proto.api.TraverseFilter.prototype.setRoot = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.api.TFilter.prototype.clearRoot = function() {
+proto.api.TraverseFilter.prototype.clearRoot = function() {
   this.setRoot(undefined);
 };
 
@@ -4164,7 +4165,7 @@ proto.api.TFilter.prototype.clearRoot = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.TFilter.prototype.hasRoot = function() {
+proto.api.TraverseFilter.prototype.hasRoot = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -4173,13 +4174,13 @@ proto.api.TFilter.prototype.hasRoot = function() {
  * optional string doc_expression = 2;
  * @return {string}
  */
-proto.api.TFilter.prototype.getDocExpression = function() {
+proto.api.TraverseFilter.prototype.getDocExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.api.TFilter.prototype.setDocExpression = function(value) {
+proto.api.TraverseFilter.prototype.setDocExpression = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -4188,13 +4189,13 @@ proto.api.TFilter.prototype.setDocExpression = function(value) {
  * optional string connection_expression = 3;
  * @return {string}
  */
-proto.api.TFilter.prototype.getConnectionExpression = function() {
+proto.api.TraverseFilter.prototype.getConnectionExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.api.TFilter.prototype.setConnectionExpression = function(value) {
+proto.api.TraverseFilter.prototype.setConnectionExpression = function(value) {
   jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -4203,13 +4204,13 @@ proto.api.TFilter.prototype.setConnectionExpression = function(value) {
  * optional uint64 limit = 4;
  * @return {number}
  */
-proto.api.TFilter.prototype.getLimit = function() {
+proto.api.TraverseFilter.prototype.getLimit = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /** @param {number} value */
-proto.api.TFilter.prototype.setLimit = function(value) {
+proto.api.TraverseFilter.prototype.setLimit = function(value) {
   jspb.Message.setProto3IntField(this, 4, value);
 };
 
@@ -4218,13 +4219,13 @@ proto.api.TFilter.prototype.setLimit = function(value) {
  * optional string sort = 5;
  * @return {string}
  */
-proto.api.TFilter.prototype.getSort = function() {
+proto.api.TraverseFilter.prototype.getSort = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /** @param {string} value */
-proto.api.TFilter.prototype.setSort = function(value) {
+proto.api.TraverseFilter.prototype.setSort = function(value) {
   jspb.Message.setProto3StringField(this, 5, value);
 };
 
@@ -4235,13 +4236,13 @@ proto.api.TFilter.prototype.setSort = function(value) {
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.api.TFilter.prototype.getReverse = function() {
+proto.api.TraverseFilter.prototype.getReverse = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 6, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.TFilter.prototype.setReverse = function(value) {
+proto.api.TraverseFilter.prototype.setReverse = function(value) {
   jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
@@ -4250,13 +4251,13 @@ proto.api.TFilter.prototype.setReverse = function(value) {
  * optional Algorithm algorithm = 7;
  * @return {!proto.api.Algorithm}
  */
-proto.api.TFilter.prototype.getAlgorithm = function() {
+proto.api.TraverseFilter.prototype.getAlgorithm = function() {
   return /** @type {!proto.api.Algorithm} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
 /** @param {!proto.api.Algorithm} value */
-proto.api.TFilter.prototype.setAlgorithm = function(value) {
+proto.api.TraverseFilter.prototype.setAlgorithm = function(value) {
   jspb.Message.setProto3EnumField(this, 7, value);
 };
 
@@ -4265,13 +4266,13 @@ proto.api.TFilter.prototype.setAlgorithm = function(value) {
  * optional uint64 max_depth = 8;
  * @return {number}
  */
-proto.api.TFilter.prototype.getMaxDepth = function() {
+proto.api.TraverseFilter.prototype.getMaxDepth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
 };
 
 
 /** @param {number} value */
-proto.api.TFilter.prototype.setMaxDepth = function(value) {
+proto.api.TraverseFilter.prototype.setMaxDepth = function(value) {
   jspb.Message.setProto3IntField(this, 8, value);
 };
 
@@ -4280,14 +4281,347 @@ proto.api.TFilter.prototype.setMaxDepth = function(value) {
  * optional uint64 max_hops = 9;
  * @return {number}
  */
-proto.api.TFilter.prototype.getMaxHops = function() {
+proto.api.TraverseFilter.prototype.getMaxHops = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
 
 /** @param {number} value */
-proto.api.TFilter.prototype.setMaxHops = function(value) {
+proto.api.TraverseFilter.prototype.setMaxHops = function(value) {
   jspb.Message.setProto3IntField(this, 9, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.api.TraverseMeFilter = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.api.TraverseMeFilter, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.api.TraverseMeFilter.displayName = 'proto.api.TraverseMeFilter';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.api.TraverseMeFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.TraverseMeFilter.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.api.TraverseMeFilter} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.TraverseMeFilter.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    docExpression: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    connectionExpression: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    limit: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    sort: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    reverse: jspb.Message.getFieldWithDefault(msg, 5, false),
+    algorithm: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    maxDepth: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    maxHops: jspb.Message.getFieldWithDefault(msg, 8, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.api.TraverseMeFilter}
+ */
+proto.api.TraverseMeFilter.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.api.TraverseMeFilter;
+  return proto.api.TraverseMeFilter.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.api.TraverseMeFilter} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.api.TraverseMeFilter}
+ */
+proto.api.TraverseMeFilter.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDocExpression(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setConnectionExpression(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setLimit(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSort(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setReverse(value);
+      break;
+    case 6:
+      var value = /** @type {!proto.api.Algorithm} */ (reader.readEnum());
+      msg.setAlgorithm(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setMaxDepth(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setMaxHops(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.api.TraverseMeFilter.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.api.TraverseMeFilter.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.api.TraverseMeFilter} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.TraverseMeFilter.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getDocExpression();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getConnectionExpression();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getLimit();
+  if (f !== 0) {
+    writer.writeUint64(
+      3,
+      f
+    );
+  }
+  f = message.getSort();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getReverse();
+  if (f) {
+    writer.writeBool(
+      5,
+      f
+    );
+  }
+  f = message.getAlgorithm();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      6,
+      f
+    );
+  }
+  f = message.getMaxDepth();
+  if (f !== 0) {
+    writer.writeUint64(
+      7,
+      f
+    );
+  }
+  f = message.getMaxHops();
+  if (f !== 0) {
+    writer.writeUint64(
+      8,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string doc_expression = 1;
+ * @return {string}
+ */
+proto.api.TraverseMeFilter.prototype.getDocExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.api.TraverseMeFilter.prototype.setDocExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string connection_expression = 2;
+ * @return {string}
+ */
+proto.api.TraverseMeFilter.prototype.getConnectionExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.TraverseMeFilter.prototype.setConnectionExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional uint64 limit = 3;
+ * @return {number}
+ */
+proto.api.TraverseMeFilter.prototype.getLimit = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {number} value */
+proto.api.TraverseMeFilter.prototype.setLimit = function(value) {
+  jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional string sort = 4;
+ * @return {string}
+ */
+proto.api.TraverseMeFilter.prototype.getSort = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.api.TraverseMeFilter.prototype.setSort = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional bool reverse = 5;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.TraverseMeFilter.prototype.getReverse = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.TraverseMeFilter.prototype.setReverse = function(value) {
+  jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+
+/**
+ * optional Algorithm algorithm = 6;
+ * @return {!proto.api.Algorithm}
+ */
+proto.api.TraverseMeFilter.prototype.getAlgorithm = function() {
+  return /** @type {!proto.api.Algorithm} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/** @param {!proto.api.Algorithm} value */
+proto.api.TraverseMeFilter.prototype.setAlgorithm = function(value) {
+  jspb.Message.setProto3EnumField(this, 6, value);
+};
+
+
+/**
+ * optional uint64 max_depth = 7;
+ * @return {number}
+ */
+proto.api.TraverseMeFilter.prototype.getMaxDepth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/** @param {number} value */
+proto.api.TraverseMeFilter.prototype.setMaxDepth = function(value) {
+  jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional uint64 max_hops = 8;
+ * @return {number}
+ */
+proto.api.TraverseMeFilter.prototype.getMaxHops = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/** @param {number} value */
+proto.api.TraverseMeFilter.prototype.setMaxHops = function(value) {
+  jspb.Message.setProto3IntField(this, 8, value);
 };
 
 

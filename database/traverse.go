@@ -19,13 +19,13 @@ type traversal struct {
 	queue             *generic.Queue
 	visited           map[string]struct{}
 	traversals        *apipb.Traversals
-	filter            *apipb.TFilter
+	filter            *apipb.TraverseFilter
 	traversalPath     []*apipb.Ref
 	connectionProgram *cel.Program
 	docProgram        *cel.Program
 }
 
-func (g *Graph) newTraversal(filter *apipb.TFilter) (*traversal, error) {
+func (g *Graph) newTraversal(filter *apipb.TraverseFilter) (*traversal, error) {
 	t := &traversal{
 		g:             g,
 		filter:        filter,

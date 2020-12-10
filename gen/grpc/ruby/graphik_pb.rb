@@ -94,7 +94,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :aggregate, :enum, 2, "api.Aggregate"
     optional :field, :string, 3
   end
-  add_message "api.TFilter" do
+  add_message "api.TraverseFilter" do
     optional :root, :message, 1, "api.Ref"
     optional :doc_expression, :string, 2
     optional :connection_expression, :string, 3
@@ -104,6 +104,16 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :algorithm, :enum, 7, "api.Algorithm"
     optional :max_depth, :uint64, 8
     optional :max_hops, :uint64, 9
+  end
+  add_message "api.TraverseMeFilter" do
+    optional :doc_expression, :string, 1
+    optional :connection_expression, :string, 2
+    optional :limit, :uint64, 3
+    optional :sort, :string, 4
+    optional :reverse, :bool, 5
+    optional :algorithm, :enum, 6, "api.Algorithm"
+    optional :max_depth, :uint64, 7
+    optional :max_hops, :uint64, 8
   end
   add_message "api.IndexConstructor" do
     optional :name, :string, 1
@@ -243,7 +253,8 @@ module Api
   CFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.CFilter").msgclass
   Filter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Filter").msgclass
   AggFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AggFilter").msgclass
-  TFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TFilter").msgclass
+  TraverseFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TraverseFilter").msgclass
+  TraverseMeFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TraverseMeFilter").msgclass
   IndexConstructor = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.IndexConstructor").msgclass
   Authorizer = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Authorizer").msgclass
   Authorizers = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Authorizers").msgclass

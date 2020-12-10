@@ -206,7 +206,18 @@ type Schema struct {
 	Indexes         *Indexes        `json:"indexes"`
 }
 
-type TFilter struct {
+type Traversal struct {
+	Doc           *Doc   `json:"doc"`
+	TraversalPath []*Ref `json:"traversal_path"`
+	Depth         int    `json:"depth"`
+	Hops          int    `json:"hops"`
+}
+
+type Traversals struct {
+	Traversals []*Traversal `json:"traversals"`
+}
+
+type TraverseFilter struct {
 	Root                 *RefInput  `json:"root"`
 	DocExpression        *string    `json:"doc_expression"`
 	ConnectionExpression *string    `json:"connection_expression"`
@@ -218,15 +229,15 @@ type TFilter struct {
 	MaxHops              int        `json:"max_hops"`
 }
 
-type Traversal struct {
-	Doc           *Doc   `json:"doc"`
-	TraversalPath []*Ref `json:"traversal_path"`
-	Depth         int    `json:"depth"`
-	Hops          int    `json:"hops"`
-}
-
-type Traversals struct {
-	Traversals []*Traversal `json:"traversals"`
+type TraverseMeFilter struct {
+	DocExpression        *string    `json:"doc_expression"`
+	ConnectionExpression *string    `json:"connection_expression"`
+	Limit                int        `json:"limit"`
+	Sort                 *string    `json:"sort"`
+	Reverse              *bool      `json:"reverse"`
+	Algorithm            *Algorithm `json:"algorithm"`
+	MaxDepth             int        `json:"max_depth"`
+	MaxHops              int        `json:"max_hops"`
 }
 
 type TypeValidator struct {

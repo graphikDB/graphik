@@ -5,6 +5,7 @@ package gql
 
 import (
 	"context"
+
 	"github.com/99designs/gqlgen/graphql"
 	generated1 "github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/gql/go/model"
@@ -351,8 +352,8 @@ func (r *queryResolver) SearchDocs(ctx context.Context, where model.Filter) (*mo
 	return gqlDocs(res), nil
 }
 
-func (r *queryResolver) Traverse(ctx context.Context, where model.TFilter) (*model.Traversals, error) {
-	res, err := r.client.Traverse(ctx, protoDepthFilter(where))
+func (r *queryResolver) Traverse(ctx context.Context, where model.TraverseFilter) (*model.Traversals, error) {
+	res, err := r.client.Traverse(ctx, protoTraverseFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),
@@ -363,6 +364,20 @@ func (r *queryResolver) Traverse(ctx context.Context, where model.TFilter) (*mod
 		}
 	}
 
+	return gqlTraversals(res), nil
+}
+
+func (r *queryResolver) TraverseMe(ctx context.Context, where model.TraverseMeFilter) (*model.Traversals, error) {
+	res, err := r.client.TraverseMe(ctx, protoTraverseMeFilter(where))
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
 	return gqlTraversals(res), nil
 }
 

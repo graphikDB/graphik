@@ -404,7 +404,7 @@ func ExampleClient_Traverse() {
 		return
 	}
 	ctx := context.Background()
-	bfsTraversals, err := client.Traverse(ctx, &apipb2.TFilter{
+	bfsTraversals, err := client.Traverse(ctx, &apipb2.TraverseFilter{
 		Root:                 me.GetRef(),
 		DocExpression:        "this.attributes.name == 'Charlie'",
 		ConnectionExpression: "",
@@ -420,7 +420,7 @@ func ExampleClient_Traverse() {
 		return
 	}
 	fmt.Println(len(bfsTraversals.GetTraversals()))
-	dfsTraversals, err := client.Traverse(ctx, &apipb2.TFilter{
+	dfsTraversals, err := client.Traverse(ctx, &apipb2.TraverseFilter{
 		Root:                 me.GetRef(),
 		DocExpression:        "",
 		ConnectionExpression: "",

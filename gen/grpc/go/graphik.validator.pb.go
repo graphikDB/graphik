@@ -5,15 +5,15 @@ package apipb
 
 import (
 	fmt "fmt"
+	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/any"
-	_ "github.com/golang/protobuf/ptypes/empty"
 	_ "github.com/golang/protobuf/ptypes/struct"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
+	_ "github.com/golang/protobuf/ptypes/any"
+	_ "github.com/golang/protobuf/ptypes/empty"
 	_ "github.com/mwitkow/go-proto-validators"
-	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
-	math "math"
 	regexp "regexp"
+	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -292,9 +292,9 @@ func (this *AggFilter) Validate() error {
 	return nil
 }
 
-var _regex_TFilter_Sort = regexp.MustCompile(`((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$`)
+var _regex_TraverseFilter_Sort = regexp.MustCompile(`((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$`)
 
-func (this *TFilter) Validate() error {
+func (this *TraverseFilter) Validate() error {
 	if nil == this.Root {
 		return github_com_mwitkow_go_proto_validators.FieldError("Root", fmt.Errorf("message must exist"))
 	}
@@ -306,7 +306,25 @@ func (this *TFilter) Validate() error {
 	if !(this.Limit > 0) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
 	}
-	if !_regex_TFilter_Sort.MatchString(this.Sort) {
+	if !_regex_TraverseFilter_Sort.MatchString(this.Sort) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"`, this.Sort))
+	}
+	if !(this.MaxDepth > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("MaxDepth", fmt.Errorf(`value '%v' must be greater than '0'`, this.MaxDepth))
+	}
+	if !(this.MaxHops > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("MaxHops", fmt.Errorf(`value '%v' must be greater than '0'`, this.MaxHops))
+	}
+	return nil
+}
+
+var _regex_TraverseMeFilter_Sort = regexp.MustCompile(`((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$`)
+
+func (this *TraverseMeFilter) Validate() error {
+	if !(this.Limit > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Limit", fmt.Errorf(`value '%v' must be greater than '0'`, this.Limit))
+	}
+	if !_regex_TraverseMeFilter_Sort.MatchString(this.Sort) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Sort", fmt.Errorf(`value '%v' must be a string conforming to regex "((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$"`, this.Sort))
 	}
 	if !(this.MaxDepth > 0) {

@@ -789,8 +789,32 @@ func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.AggFilte
 	return &apipb.Number{Value: connections.Aggregate(filter.GetAggregate(), filter.GetField())}, nil
 }
 
-func (n *Graph) Traverse(ctx context.Context, filter *apipb.TFilter) (*apipb.Traversals, error) {
+func (n *Graph) Traverse(ctx context.Context, filter *apipb.TraverseFilter) (*apipb.Traversals, error) {
 	dfs, err := n.newTraversal(filter)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	if err := n.db.View(func(tx *bbolt.Tx) error {
+		return dfs.Walk(ctx, tx)
+	}); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return dfs.traversals, nil
+}
+
+func (n *Graph) TraverseMe(ctx context.Context, filter *apipb.TraverseMeFilter) (*apipb.Traversals, error) {
+	dfs, err := n.newTraversal(&apipb.TraverseFilter{
+		Root:                 n.getIdentity(ctx).GetRef(),
+		DocExpression:        filter.GetDocExpression(),
+		ConnectionExpression: filter.GetConnectionExpression(),
+		Limit:                filter.GetLimit(),
+		Sort:                 filter.GetSort(),
+		Reverse:              filter.GetReverse(),
+		Algorithm:            filter.GetAlgorithm(),
+		MaxDepth:             filter.GetMaxDepth(),
+		MaxHops:              filter.GetMaxHops(),
+	})
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
