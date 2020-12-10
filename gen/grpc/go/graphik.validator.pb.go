@@ -5,15 +5,15 @@ package apipb
 
 import (
 	fmt "fmt"
-	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/struct"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
 	_ "github.com/golang/protobuf/ptypes/any"
 	_ "github.com/golang/protobuf/ptypes/empty"
+	_ "github.com/golang/protobuf/ptypes/struct"
+	_ "github.com/golang/protobuf/ptypes/timestamp"
 	_ "github.com/mwitkow/go-proto-validators"
-	regexp "regexp"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
+	math "math"
+	regexp "regexp"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -430,10 +430,10 @@ func (this *Indexes) Validate() error {
 	return nil
 }
 
-var _regex_ChanFilter_Channel = regexp.MustCompile(`^.{1,225}$`)
+var _regex_StreamFilter_Channel = regexp.MustCompile(`^.{1,225}$`)
 
-func (this *ChanFilter) Validate() error {
-	if !_regex_ChanFilter_Channel.MatchString(this.Channel) {
+func (this *StreamFilter) Validate() error {
+	if !_regex_StreamFilter_Channel.MatchString(this.Channel) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Channel", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Channel))
 	}
 	return nil

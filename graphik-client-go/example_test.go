@@ -346,10 +346,10 @@ func ExampleClient_Publish() {
 	// Output:
 }
 
-func ExampleClient_Subscribe() {
+func ExampleClient_Stream() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
-		err := client.Subscribe(context.Background(), &apipb2.ChanFilter{
+		err := client.Stream(context.Background(), &apipb2.StreamFilter{
 			Channel:    "testing",
 			Expression: `this.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>ChanFilter</title>
+    <title>StreamFilter</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -255,11 +255,6 @@
                 CFilter
             </a>
         </li>
-        <li class="slds-is-active" title="ChanFilter">
-            <a href="chanfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                ChanFilter
-            </a>
-        </li>
         <li  title="ConnectionConstructor">
             <a href="connectionconstructor.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 ConnectionConstructor
@@ -335,6 +330,11 @@
                 SConnectFilter
             </a>
         </li>
+        <li class="slds-is-active" title="StreamFilter">
+            <a href="streamfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                StreamFilter
+            </a>
+        </li>
         <li  title="TraverseFilter">
             <a href="traversefilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 TraverseFilter
@@ -391,8 +391,8 @@
     </div>
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
-        <h1 class="slds-text-heading--large">ChanFilter</h1>
-        <div class="slds-text-body--regular"><p>ChanFilter is used to filter messages in a pubsub channel</p>
+        <h1 class="slds-text-heading--large">StreamFilter</h1>
+        <div class="slds-text-body--regular"><p>StreamFilter is used to filter messages in a pubsub channel</p>
 </div>
     </div>
 </section>
@@ -404,7 +404,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">ChanFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   channel is the target channel to listen on</span></span></li><li><span class="tab"><span class="meta">channel</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   expression is a CEL expression used to filter messages</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">StreamFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   channel is the target channel to listen on</span></span></li><li><span class="tab"><span class="meta">channel</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   expression is a CEL expression used to filter messages</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

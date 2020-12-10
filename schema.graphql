@@ -337,8 +337,8 @@ input CFilter {
   reverse: Boolean
 }
 
-# ChanFilter is used to filter messages in a pubsub channel
-input ChanFilter {
+# StreamFilter is used to filter messages in a pubsub channel
+input StreamFilter {
   # channel is the target channel to listen on
   channel: String!
   # expression is a CEL expression used to filter messages
@@ -516,5 +516,5 @@ type Query {
 
 type Subscription {
   # subscribe opens a stream of messages that pass a filter on a pubsub channel
-  subscribe(where: ChanFilter!): Message!
+  stream(where: StreamFilter!): Message!
 }

@@ -43,11 +43,6 @@ type CFilter struct {
 	Reverse    *bool     `json:"reverse"`
 }
 
-type ChanFilter struct {
-	Channel    string  `json:"channel"`
-	Expression *string `json:"expression"`
-}
-
 type Connection struct {
 	Ref        *Ref                   `json:"ref"`
 	Attributes map[string]interface{} `json:"attributes"`
@@ -204,6 +199,11 @@ type Schema struct {
 	Authorizers     *Authorizers    `json:"authorizers"`
 	Validators      *TypeValidators `json:"validators"`
 	Indexes         *Indexes        `json:"indexes"`
+}
+
+type StreamFilter struct {
+	Channel    string  `json:"channel"`
+	Expression *string `json:"expression"`
 }
 
 type Traversal struct {

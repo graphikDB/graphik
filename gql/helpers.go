@@ -293,8 +293,8 @@ func protoAggFilter(filter model.AggFilter) *apipb.AggFilter {
 	return f
 }
 
-func protoChanFilter(filter model.ChanFilter) *apipb.ChanFilter {
-	c := &apipb.ChanFilter{
+func protoStreamFilter(filter model.StreamFilter) *apipb.StreamFilter {
+	c := &apipb.StreamFilter{
 		Channel: filter.Channel,
 	}
 	if filter.Expression != nil {

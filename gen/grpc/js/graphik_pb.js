@@ -23,7 +23,6 @@ goog.exportSymbol('proto.api.Authorizer', null, global);
 goog.exportSymbol('proto.api.Authorizers', null, global);
 goog.exportSymbol('proto.api.Boolean', null, global);
 goog.exportSymbol('proto.api.CFilter', null, global);
-goog.exportSymbol('proto.api.ChanFilter', null, global);
 goog.exportSymbol('proto.api.Connection', null, global);
 goog.exportSymbol('proto.api.ConnectionConstructor', null, global);
 goog.exportSymbol('proto.api.ConnectionConstructors', null, global);
@@ -52,6 +51,7 @@ goog.exportSymbol('proto.api.Refs', null, global);
 goog.exportSymbol('proto.api.Request', null, global);
 goog.exportSymbol('proto.api.SConnectFilter', null, global);
 goog.exportSymbol('proto.api.Schema', null, global);
+goog.exportSymbol('proto.api.StreamFilter', null, global);
 goog.exportSymbol('proto.api.Traversal', null, global);
 goog.exportSymbol('proto.api.Traversals', null, global);
 goog.exportSymbol('proto.api.TraverseFilter', null, global);
@@ -6071,12 +6071,12 @@ proto.api.Indexes.prototype.clearIndexesList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.ChanFilter = function(opt_data) {
+proto.api.StreamFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.ChanFilter, jspb.Message);
+goog.inherits(proto.api.StreamFilter, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.ChanFilter.displayName = 'proto.api.ChanFilter';
+  proto.api.StreamFilter.displayName = 'proto.api.StreamFilter';
 }
 
 
@@ -6091,8 +6091,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.ChanFilter.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.ChanFilter.toObject(opt_includeInstance, this);
+proto.api.StreamFilter.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.StreamFilter.toObject(opt_includeInstance, this);
 };
 
 
@@ -6101,11 +6101,11 @@ proto.api.ChanFilter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.ChanFilter} msg The msg instance to transform.
+ * @param {!proto.api.StreamFilter} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.ChanFilter.toObject = function(includeInstance, msg) {
+proto.api.StreamFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     channel: jspb.Message.getFieldWithDefault(msg, 1, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 2, "")
@@ -6122,23 +6122,23 @@ proto.api.ChanFilter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.ChanFilter}
+ * @return {!proto.api.StreamFilter}
  */
-proto.api.ChanFilter.deserializeBinary = function(bytes) {
+proto.api.StreamFilter.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.ChanFilter;
-  return proto.api.ChanFilter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.StreamFilter;
+  return proto.api.StreamFilter.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.ChanFilter} msg The message object to deserialize into.
+ * @param {!proto.api.StreamFilter} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.ChanFilter}
+ * @return {!proto.api.StreamFilter}
  */
-proto.api.ChanFilter.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.StreamFilter.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6166,9 +6166,9 @@ proto.api.ChanFilter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.ChanFilter.prototype.serializeBinary = function() {
+proto.api.StreamFilter.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.ChanFilter.serializeBinaryToWriter(this, writer);
+  proto.api.StreamFilter.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6176,11 +6176,11 @@ proto.api.ChanFilter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.ChanFilter} message
+ * @param {!proto.api.StreamFilter} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.ChanFilter.serializeBinaryToWriter = function(message, writer) {
+proto.api.StreamFilter.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getChannel();
   if (f.length > 0) {
@@ -6203,13 +6203,13 @@ proto.api.ChanFilter.serializeBinaryToWriter = function(message, writer) {
  * optional string channel = 1;
  * @return {string}
  */
-proto.api.ChanFilter.prototype.getChannel = function() {
+proto.api.StreamFilter.prototype.getChannel = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ChanFilter.prototype.setChannel = function(value) {
+proto.api.StreamFilter.prototype.setChannel = function(value) {
   jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -6218,13 +6218,13 @@ proto.api.ChanFilter.prototype.setChannel = function(value) {
  * optional string expression = 2;
  * @return {string}
  */
-proto.api.ChanFilter.prototype.getExpression = function() {
+proto.api.StreamFilter.prototype.getExpression = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.api.ChanFilter.prototype.setExpression = function(value) {
+proto.api.StreamFilter.prototype.setExpression = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
 };
 

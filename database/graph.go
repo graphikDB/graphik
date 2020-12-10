@@ -445,7 +445,7 @@ func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*e
 	})
 }
 
-func (g *Graph) Subscribe(filter *apipb.ChanFilter, server apipb.DatabaseService_SubscribeServer) error {
+func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_StreamServer) error {
 	var filterFunc func(msg interface{}) bool
 	if filter.Expression == "" {
 		filterFunc = func(msg interface{}) bool {

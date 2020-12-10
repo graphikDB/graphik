@@ -179,9 +179,9 @@ func (c *Client) Publish(ctx context.Context, in *apipb.OutboundMessage, opts ..
 	return c.graph.Publish(ctx, in, opts...)
 }
 
-// Subscribe opens a stream of messages that pass a filter on a pubsub channel
-func (c *Client) Subscribe(ctx context.Context, in *apipb.ChanFilter, handler func(msg *apipb.Message) bool, opts ...grpc.CallOption) error {
-	stream, err := c.graph.Subscribe(ctx, in, opts...)
+// Stream opens a stream of messages that pass a filter on a pubsub channel
+func (c *Client) Stream(ctx context.Context, in *apipb.StreamFilter, handler func(msg *apipb.Message) bool, opts ...grpc.CallOption) error {
+	stream, err := c.graph.Stream(ctx, in, opts...)
 	if err != nil {
 		return err
 	}

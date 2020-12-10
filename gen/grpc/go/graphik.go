@@ -108,7 +108,7 @@ func (n *CFilter) AsMap() map[string]interface{} {
 	}
 }
 
-func (n *ChanFilter) AsMap() map[string]interface{} {
+func (n *StreamFilter) AsMap() map[string]interface{} {
 	if n == nil {
 		return map[string]interface{}{}
 	}

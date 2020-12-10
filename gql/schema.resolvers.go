@@ -521,9 +521,9 @@ func (r *queryResolver) AggregateConnections(ctx context.Context, where model.Ag
 	return res.GetValue(), nil
 }
 
-func (r *subscriptionResolver) Subscribe(ctx context.Context, where model.ChanFilter) (<-chan *model.Message, error) {
+func (r *subscriptionResolver) Stream(ctx context.Context, where model.StreamFilter) (<-chan *model.Message, error) {
 	ch := make(chan *model.Message)
-	stream, err := r.client.Subscribe(ctx, protoChanFilter(where))
+	stream, err := r.client.Stream(ctx, protoStreamFilter(where))
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),

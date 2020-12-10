@@ -149,7 +149,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.Indexes" do
     repeated :indexes, :message, 1, "api.Index"
   end
-  add_message "api.ChanFilter" do
+  add_message "api.StreamFilter" do
     optional :channel, :string, 1
     optional :expression, :string, 2
   end
@@ -262,7 +262,7 @@ module Api
   TypeValidators = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TypeValidators").msgclass
   Index = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Index").msgclass
   Indexes = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Indexes").msgclass
-  ChanFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ChanFilter").msgclass
+  StreamFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.StreamFilter").msgclass
   Graph = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Graph").msgclass
   Flags = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Flags").msgclass
   Boolean = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Boolean").msgclass

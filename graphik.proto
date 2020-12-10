@@ -75,8 +75,8 @@ service DatabaseService {
   rpc AggregateConnections(AggFilter) returns(Number){}
   // Publish publishes a message to a pubsub channel
   rpc Publish(OutboundMessage) returns(google.protobuf.Empty){}
-  // Subscribe subscribes to messages on a pubsub channel
-  rpc Subscribe(ChanFilter) returns(stream Message){}
+  // Stream subscribes to messages on a pubsub channel
+  rpc Stream(StreamFilter) returns(stream Message){}
   rpc PushDocConstructors(stream DocConstructor) returns (stream Doc){}
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
@@ -331,8 +331,8 @@ message Indexes {
   repeated Index indexes =1;
 }
 
-// ChanFilter is used to filter messages in a pubsub channel
-message ChanFilter {
+// StreamFilter is used to filter messages in a pubsub channel
+message StreamFilter {
   // channel is the target channel to filter from
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is CEL expression used to filter messages

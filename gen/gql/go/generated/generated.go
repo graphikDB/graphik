@@ -168,7 +168,7 @@ type ComplexityRoot struct {
 	}
 
 	Subscription struct {
-		Subscribe func(childComplexity int, where model.ChanFilter) int
+		Stream func(childComplexity int, where model.StreamFilter) int
 	}
 
 	Traversal struct {
@@ -234,7 +234,7 @@ type QueryResolver interface {
 	AggregateConnections(ctx context.Context, where model.AggFilter) (float64, error)
 }
 type SubscriptionResolver interface {
-	Subscribe(ctx context.Context, where model.ChanFilter) (<-chan *model.Message, error)
+	Stream(ctx context.Context, where model.StreamFilter) (<-chan *model.Message, error)
 }
 
 type executableSchema struct {
@@ -919,17 +919,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Schema.Validators(childComplexity), true
 
-	case "Subscription.subscribe":
-		if e.complexity.Subscription.Subscribe == nil {
+	case "Subscription.stream":
+		if e.complexity.Subscription.Stream == nil {
 			break
 		}
 
-		args, err := ec.field_Subscription_subscribe_args(context.TODO(), rawArgs)
+		args, err := ec.field_Subscription_stream_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Subscription.Subscribe(childComplexity, args["where"].(model.ChanFilter)), true
+		return e.complexity.Subscription.Stream(childComplexity, args["where"].(model.StreamFilter)), true
 
 	case "Traversal.depth":
 		if e.complexity.Traversal.Depth == nil {
@@ -1428,8 +1428,8 @@ input CFilter {
   reverse: Boolean
 }
 
-# ChanFilter is used to filter messages in a pubsub channel
-input ChanFilter {
+# StreamFilter is used to filter messages in a pubsub channel
+input StreamFilter {
   # channel is the target channel to listen on
   channel: String!
   # expression is a CEL expression used to filter messages
@@ -1607,7 +1607,7 @@ type Query {
 
 type Subscription {
   # subscribe opens a stream of messages that pass a filter on a pubsub channel
-  subscribe(where: ChanFilter!): Message!
+  stream(where: StreamFilter!): Message!
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -2141,13 +2141,13 @@ func (ec *executionContext) field_Query_traverse_args(ctx context.Context, rawAr
 	return args, nil
 }
 
-func (ec *executionContext) field_Subscription_subscribe_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Subscription_stream_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.ChanFilter
+	var arg0 model.StreamFilter
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNChanFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐChanFilter(ctx, tmp)
+		arg0, err = ec.unmarshalNStreamFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐStreamFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -4922,7 +4922,7 @@ func (ec *executionContext) _Schema_indexes(ctx context.Context, field graphql.C
 	return ec.marshalOIndexes2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐIndexes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+func (ec *executionContext) _Subscription_stream(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4939,7 +4939,7 @@ func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Subscription_subscribe_args(ctx, rawArgs)
+	args, err := ec.field_Subscription_stream_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return nil
@@ -4947,7 +4947,7 @@ func (ec *executionContext) _Subscription_subscribe(ctx context.Context, field g
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().Subscribe(rctx, args["where"].(model.ChanFilter))
+		return ec.resolvers.Subscription().Stream(rctx, args["where"].(model.StreamFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6589,34 +6589,6 @@ func (ec *executionContext) unmarshalInputCFilter(ctx context.Context, obj inter
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputChanFilter(ctx context.Context, obj interface{}) (model.ChanFilter, error) {
-	var it model.ChanFilter
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "channel":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
-			it.Channel, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "expression":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
-			it.Expression, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputConnectionConstructor(ctx context.Context, obj interface{}) (model.ConnectionConstructor, error) {
 	var it model.ConnectionConstructor
 	var asMap = obj.(map[string]interface{})
@@ -7132,6 +7104,34 @@ func (ec *executionContext) unmarshalInputSConnectFilter(ctx context.Context, ob
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
 			it.From, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputStreamFilter(ctx context.Context, obj interface{}) (model.StreamFilter, error) {
+	var it model.StreamFilter
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "channel":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("channel"))
+			it.Channel, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8200,8 +8200,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 	}
 
 	switch fields[0].Name {
-	case "subscribe":
-		return ec._Subscription_subscribe(ctx, fields[0])
+	case "stream":
+		return ec._Subscription_stream(ctx, fields[0])
 	default:
 		panic("unknown field " + strconv.Quote(fields[0].Name))
 	}
@@ -8641,11 +8641,6 @@ func (ec *executionContext) unmarshalNCFilter2githubᚗcomᚋgraphikDBᚋgraphik
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNChanFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐChanFilter(ctx context.Context, v interface{}) (model.ChanFilter, error) {
-	res, err := ec.unmarshalInputChanFilter(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) marshalNConnection2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx context.Context, sel ast.SelectionSet, v model.Connection) graphql.Marshaler {
 	return ec._Connection(ctx, sel, &v)
 }
@@ -8945,6 +8940,11 @@ func (ec *executionContext) marshalNSchema2ᚖgithubᚗcomᚋgraphikDBᚋgraphik
 		return graphql.Null
 	}
 	return ec._Schema(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNStreamFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐStreamFilter(ctx context.Context, v interface{}) (model.StreamFilter, error) {
+	res, err := ec.unmarshalInputStreamFilter(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
