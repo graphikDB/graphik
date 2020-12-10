@@ -3,9 +3,9 @@ package database
 import (
 	"context"
 	"fmt"
+	"github.com/google/cel-go/cel"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"

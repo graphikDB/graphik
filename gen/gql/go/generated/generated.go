@@ -113,6 +113,7 @@ type ComplexityRoot struct {
 		EditDoc           func(childComplexity int, input model.Edit) int
 		EditDocs          func(childComplexity int, input model.EFilter) int
 		Publish           func(childComplexity int, input model.OutboundMessage) int
+		SearchAndConnect  func(childComplexity int, where model.SConnectFilter) int
 		SetAuthorizers    func(childComplexity int, input model.AuthorizersInput) int
 		SetIndexes        func(childComplexity int, input model.IndexesInput) int
 		SetTypeValidators func(childComplexity int, input model.TypeValidatorsInput) int
@@ -136,7 +137,6 @@ type ComplexityRoot struct {
 		HasDoc               func(childComplexity int, where model.RefInput) int
 		Me                   func(childComplexity int, where *emptypb.Empty) int
 		Ping                 func(childComplexity int, where *emptypb.Empty) int
-		SearchAndConnect     func(childComplexity int, where model.SConnectFilter) int
 		SearchConnections    func(childComplexity int, where model.Filter) int
 		SearchDocs           func(childComplexity int, where model.Filter) int
 		Traverse             func(childComplexity int, where model.TFilter) int
@@ -211,6 +211,7 @@ type MutationResolver interface {
 	SetIndexes(ctx context.Context, input model.IndexesInput) (*emptypb.Empty, error)
 	SetAuthorizers(ctx context.Context, input model.AuthorizersInput) (*emptypb.Empty, error)
 	SetTypeValidators(ctx context.Context, input model.TypeValidatorsInput) (*emptypb.Empty, error)
+	SearchAndConnect(ctx context.Context, where model.SConnectFilter) (*model.Connections, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error)
@@ -229,7 +230,6 @@ type QueryResolver interface {
 	ConnectionsTo(ctx context.Context, where model.CFilter) (*model.Connections, error)
 	AggregateDocs(ctx context.Context, where model.AggFilter) (float64, error)
 	AggregateConnections(ctx context.Context, where model.AggFilter) (float64, error)
-	SearchAndConnect(ctx context.Context, where model.SConnectFilter) (*model.Connections, error)
 }
 type SubscriptionResolver interface {
 	Subscribe(ctx context.Context, where model.ChanFilter) (<-chan *model.Message, error)
@@ -574,6 +574,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Publish(childComplexity, args["input"].(model.OutboundMessage)), true
 
+	case "Mutation.searchAndConnect":
+		if e.complexity.Mutation.SearchAndConnect == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_searchAndConnect_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SearchAndConnect(childComplexity, args["where"].(model.SConnectFilter)), true
+
 	case "Mutation.setAuthorizers":
 		if e.complexity.Mutation.SetAuthorizers == nil {
 			break
@@ -772,18 +784,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Ping(childComplexity, args["where"].(*emptypb.Empty)), true
-
-	case "Query.searchAndConnect":
-		if e.complexity.Query.SearchAndConnect == nil {
-			break
-		}
-
-		args, err := ec.field_Query_searchAndConnect_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.SearchAndConnect(childComplexity, args["where"].(model.SConnectFilter)), true
 
 	case "Query.searchConnections":
 		if e.complexity.Query.SearchConnections == nil {
@@ -1258,7 +1258,7 @@ type Message {
   channel: String!
   # data is the data sent with the message
   data: Map!
-  # sender is the identity that sent the message
+  # sender is the user that sent the message
   sender: Ref!
   # timestamp is when the message was sent
   timestamp: Time!
@@ -1530,6 +1530,8 @@ type Mutation {
   setAuthorizers(input: AuthorizersInput!): Empty
   # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
+  # searchAndConnect searches for documents and forms connections based on whether they pass a filter
+  searchAndConnect(where: SConnectFilter!): Connections!
 }
 
 type Query {
@@ -1565,8 +1567,6 @@ type Query {
   aggregateDocs(where: AggFilter!): Float!
   # aggregateConnections executes an aggregation function against a set of connections
   aggregateConnections(where: AggFilter!): Float!
-  # searchAndConnect searches for documents and forms connections based on whether they pass a filter
-  searchAndConnect(where: SConnectFilter!): Connections!
 }
 
 type Subscription {
@@ -1772,6 +1772,21 @@ func (ec *executionContext) field_Mutation_publish_args(ctx context.Context, raw
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_searchAndConnect_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.SConnectFilter
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalNSConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSConnectFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
 	return args, nil
 }
 
@@ -2022,21 +2037,6 @@ func (ec *executionContext) field_Query_ping_args(ctx context.Context, rawArgs m
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg0, err = ec.unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_searchAndConnect_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.SConnectFilter
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNSConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSConnectFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3607,6 +3607,48 @@ func (ec *executionContext) _Mutation_setTypeValidators(ctx context.Context, fie
 	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_searchAndConnect(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_searchAndConnect_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SearchAndConnect(rctx, args["where"].(model.SConnectFilter))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Connections)
+	fc.Result = res
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Pong_message(ctx context.Context, field graphql.CollectedField, obj *model.Pong) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4312,48 +4354,6 @@ func (ec *executionContext) _Query_aggregateConnections(ctx context.Context, fie
 	res := resTmp.(float64)
 	fc.Result = res
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_searchAndConnect(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_searchAndConnect_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().SearchAndConnect(rctx, args["where"].(model.SConnectFilter))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Connections)
-	fc.Result = res
-	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7577,6 +7577,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_setAuthorizers(ctx, field)
 		case "setTypeValidators":
 			out.Values[i] = ec._Mutation_setTypeValidators(ctx, field)
+		case "searchAndConnect":
+			out.Values[i] = ec._Mutation_searchAndConnect(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7849,20 +7854,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_aggregateConnections(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "searchAndConnect":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_searchAndConnect(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

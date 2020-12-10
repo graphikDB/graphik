@@ -181,7 +181,7 @@ type Message {
   channel: String!
   # data is the data sent with the message
   data: Map!
-  # sender is the identity that sent the message
+  # sender is the user that sent the message
   sender: Ref!
   # timestamp is when the message was sent
   timestamp: Time!
@@ -453,6 +453,8 @@ type Mutation {
   setAuthorizers(input: AuthorizersInput!): Empty
   # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
+  # searchAndConnect searches for documents and forms connections based on whether they pass a filter
+  searchAndConnect(where: SConnectFilter!): Connections!
 }
 
 type Query {
@@ -488,8 +490,6 @@ type Query {
   aggregateDocs(where: AggFilter!): Float!
   # aggregateConnections executes an aggregation function against a set of connections
   aggregateConnections(where: AggFilter!): Float!
-  # searchAndConnect searches for documents and forms connections based on whether they pass a filter
-  searchAndConnect(where: SConnectFilter!): Connections!
 }
 
 type Subscription {

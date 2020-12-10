@@ -2,8 +2,8 @@ package generic_test
 
 import (
 	"context"
-	"github.com/graphikDB/graphik/generic"
 	"github.com/autom8ter/machine"
+	"github.com/graphikDB/graphik/generic"
 	"testing"
 	"time"
 )

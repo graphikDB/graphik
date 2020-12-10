@@ -3,11 +3,11 @@ package graphik_test
 import (
 	"context"
 	"fmt"
+	"github.com/autom8ter/machine"
+	"github.com/golang/protobuf/ptypes/empty"
 	apipb2 "github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/graphik-client-go"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/autom8ter/machine"
-	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
 	"log"
@@ -43,7 +43,6 @@ func ExampleNewClient() {
 		log.Print(err)
 		return
 	}
-
 	cli, err := graphik.NewClient(ctx, "localhost:7820", graphik.WithTokenSource(source))
 	if err != nil {
 		log.Print(err)
@@ -63,7 +62,7 @@ func ExampleClient_SetAuthorizers() {
 		Authorizers: []*apipb2.Authorizer{
 			{
 				Name:       "testing",
-				Expression: `this.identity.attributes.email.contains("coleman")`,
+				Expression: `this.user.attributes.email.contains("coleman")`,
 			},
 		},
 	})
@@ -93,6 +92,22 @@ func ExampleClient_Me() {
 	issuer := me.GetAttributes().GetFields()["sub"].GetStringValue() // token issuer
 	fmt.Println(issuer)
 	// Output: 107146673535247272789
+}
+
+func ExampleClient_HasDoc() {
+	ctx := context.Background()
+	me, err := client.Me(ctx, &empty.Empty{})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	has, err := client.HasDoc(ctx, me.GetRef())
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println(has.GetValue())
+	// Output: true
 }
 
 func ExampleClient_CreateDoc() {
@@ -270,7 +285,7 @@ func ExampleClient_GetSchema() {
 		authorizers = append(authorizers, a.Name)
 	}
 	fmt.Printf("authorizers: %s", strings.Join(authorizers, ","))
-	// Output: doc types: dog,human,users
+	// Output: doc types: dog,human,user
 	//connection types: created,created_by,edited,edited_by,owner
 	//authorizers: testing
 }

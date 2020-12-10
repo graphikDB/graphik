@@ -5,7 +5,6 @@ package gql
 
 import (
 	"context"
-
 	"github.com/99designs/gqlgen/graphql"
 	generated1 "github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/gql/go/model"
@@ -262,6 +261,26 @@ func (r *mutationResolver) SetTypeValidators(ctx context.Context, input model.Ty
 	}
 }
 
+func (r *mutationResolver) SearchAndConnect(ctx context.Context, where model.SConnectFilter) (*model.Connections, error) {
+	connections, err := r.client.SearchAndConnect(ctx, &apipb.SConnectFilter{
+		Filter:     protoFilter(*where.Filter),
+		Gtype:      where.Gtype,
+		Attributes: apipb.NewStruct(where.Attributes),
+		Directed:   where.Directed,
+		From:       protoIRef(*where.From),
+	})
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlConnections(connections), nil
+}
+
 func (r *queryResolver) Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error) {
 	res, err := r.client.Ping(ctx, &emptypb.Empty{})
 	if err != nil {
@@ -485,26 +504,6 @@ func (r *queryResolver) AggregateConnections(ctx context.Context, where model.Ag
 		}
 	}
 	return res.GetValue(), nil
-}
-
-func (r *queryResolver) SearchAndConnect(ctx context.Context, where model.SConnectFilter) (*model.Connections, error) {
-	connections, err := r.client.SearchAndConnect(ctx, &apipb.SConnectFilter{
-		Filter:     protoFilter(*where.Filter),
-		Gtype:      where.Gtype,
-		Attributes: apipb.NewStruct(where.Attributes),
-		Directed:   where.Directed,
-		From:       protoIRef(*where.From),
-	})
-	if err != nil {
-		return nil, &gqlerror.Error{
-			Message: err.Error(),
-			Path:    graphql.GetPath(ctx),
-			Extensions: map[string]interface{}{
-				"code": status.Code(err).String(),
-			},
-		}
-	}
-	return gqlConnections(connections), nil
 }
 
 func (r *subscriptionResolver) Subscribe(ctx context.Context, where model.ChanFilter) (<-chan *model.Message, error) {

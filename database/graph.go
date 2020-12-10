@@ -4,14 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/autom8ter/machine"
+	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/google/cel-go/cel"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/generic"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
 	"github.com/graphikDB/graphik/vm"
-	"github.com/autom8ter/machine"
-	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/google/cel-go/cel"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
 	"github.com/segmentio/ksuid"
@@ -166,9 +166,9 @@ func (g *Graph) implements() apipb.DatabaseServiceServer {
 }
 
 func (g *Graph) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	return &apipb.Pong{
 		Message: "PONG",
@@ -176,9 +176,9 @@ func (g *Graph) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
 }
 
 func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	e, err := g.ConnectionTypes(ctx)
 	if err != nil {
@@ -224,9 +224,9 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 }
 
 func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.Empty, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	var indexes []*apipb.Index
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
@@ -245,9 +245,9 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.E
 }
 
 func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*empty.Empty, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		for _, a := range as.GetAuthorizers() {
@@ -264,9 +264,9 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 }
 
 func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators) (*empty.Empty, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	if err := g.db.Update(func(tx *bbolt.Tx) error {
 		for _, v := range as.GetValidators() {
@@ -283,17 +283,17 @@ func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators)
 }
 
 func (g *Graph) Me(ctx context.Context, _ *empty.Empty) (*apipb.Doc, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
-	return g.GetDoc(ctx, identity.GetRef())
+	return g.GetDoc(ctx, user.GetRef())
 }
 
 func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstructors) (*apipb.Docs, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	var err error
 	if err := ctx.Err(); err != nil {
@@ -329,14 +329,14 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 			if err != nil {
 				return err
 			}
-			if doc.GetRef().GetGid() != identity.GetRef().GetGid() && doc.GetRef().GetGtype() != identity.GetRef().GetGtype() {
+			if doc.GetRef().GetGid() != user.GetRef().GetGid() && doc.GetRef().GetGtype() != user.GetRef().GetGtype() {
 				_, err := g.setConnection(ctx, tx, &apipb.Connection{
 					Ref: &apipb.Ref{Gtype: "created", Gid: ksuid.New().String()},
 					Attributes: apipb.NewStruct(map[string]interface{}{
 						"method": method,
 					}),
 					Directed: true,
-					From:     identity.GetRef(),
+					From:     user.GetRef(),
 					To:       doc.GetRef(),
 				})
 				if err != nil {
@@ -348,7 +348,7 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 						"method": method,
 					}),
 					Directed: true,
-					To:       identity.GetRef(),
+					To:       user.GetRef(),
 					From:     doc.GetRef(),
 				})
 				if err != nil {
@@ -366,9 +366,9 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 }
 
 func (g *Graph) CreateConnection(ctx context.Context, constructor *apipb.ConnectionConstructor) (*apipb.Connection, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	connections, err := g.CreateConnections(ctx, &apipb.ConnectionConstructors{Connections: []*apipb.ConnectionConstructor{constructor}})
 	if err != nil {
@@ -378,9 +378,9 @@ func (g *Graph) CreateConnection(ctx context.Context, constructor *apipb.Connect
 }
 
 func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.ConnectionConstructors) (*apipb.Connections, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	var err error
 	if err := ctx.Err(); err != nil {
@@ -429,14 +429,14 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 }
 
 func (g *Graph) Publish(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	return &empty.Empty{}, g.machine.PubSub().Publish(message.Channel, &apipb.Message{
 		Channel:   message.Channel,
 		Data:      message.Data,
-		Sender:    identity.GetRef(),
+		Sender:    user.GetRef(),
 		Timestamp: timestamppb.Now(),
 	})
 }
@@ -505,9 +505,9 @@ func (g *Graph) GetConnection(ctx context.Context, path *apipb.Ref) (*apipb.Conn
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	var (
 		connection *apipb.Connection
@@ -526,9 +526,9 @@ func (g *Graph) GetConnection(ctx context.Context, path *apipb.Ref) (*apipb.Conn
 }
 
 func (n *Graph) AllDocs(ctx context.Context) (*apipb.Docs, error) {
-	identity := n.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := n.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	var docs []*apipb.Doc
 	if err := n.rangeDocs(ctx, apipb.Any, func(doc *apipb.Doc) bool {
@@ -548,9 +548,9 @@ func (g *Graph) GetDoc(ctx context.Context, path *apipb.Ref) (*apipb.Doc, error)
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
-	identity := g.getIdentity(ctx)
-	if identity == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get identity")
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	var (
 		doc *apipb.Doc
@@ -577,7 +577,7 @@ func (g *Graph) CreateDoc(ctx context.Context, constructor *apipb.DocConstructor
 }
 
 func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, error) {
-	identity := n.getIdentity(ctx)
+	user := n.getIdentity(ctx)
 	var doc *apipb.Doc
 	var err error
 	if err = n.db.Update(func(tx *bbolt.Tx) error {
@@ -592,15 +592,15 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 		if err != nil {
 			return err
 		}
-		if doc.GetRef().GetGid() != identity.GetRef().GetGid() && doc.GetRef().GetGtype() != identity.GetRef().GetGtype() {
-			id := helpers.Hash([]byte(fmt.Sprintf("%s-%s", identity.GetRef().String(), doc.GetRef().String())))
+		if doc.GetRef().GetGid() != user.GetRef().GetGid() && doc.GetRef().GetGtype() != user.GetRef().GetGtype() {
+			id := helpers.Hash([]byte(fmt.Sprintf("%s-%s", user.GetRef().String(), doc.GetRef().String())))
 			editedRef := &apipb.Ref{Gid: id, Gtype: "edited"}
-			if !n.hasConnectionFrom(identity.GetRef(), editedRef) {
+			if !n.hasConnectionFrom(user.GetRef(), editedRef) {
 				_, err := n.setConnection(ctx, tx, &apipb.Connection{
 					Ref:        editedRef,
 					Attributes: apipb.NewStruct(map[string]interface{}{}),
 					Directed:   true,
-					From:       identity.GetRef(),
+					From:       user.GetRef(),
 					To:         doc.GetRef(),
 				})
 				if err != nil {
@@ -613,7 +613,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 					Ref:        editedByRef,
 					Attributes: apipb.NewStruct(map[string]interface{}{}),
 					Directed:   true,
-					To:         identity.GetRef(),
+					To:         user.GetRef(),
 					From:       doc.GetRef(),
 				})
 				if err != nil {

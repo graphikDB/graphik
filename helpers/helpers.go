@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"crypto/sha1"
-	"encoding/binary"
 	"encoding/hex"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -57,19 +56,6 @@ func Hash(val []byte) string {
 	h.Write(val)
 	bs := h.Sum(nil)
 	return hex.EncodeToString(bs)
-}
-
-func Uint64ToBytes(i uint64) []byte {
-	buf := make([]byte, binary.MaxVarintLen64)
-	binary.PutUvarint(buf, i)
-	return buf
-}
-
-func BytesToUint64(data []byte) uint64 {
-	if len(data) == 0 {
-		return 0
-	}
-	return binary.BigEndian.Uint64(data)
 }
 
 func ContainsString(this string, arr []string) bool {

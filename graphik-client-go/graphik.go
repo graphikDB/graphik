@@ -3,9 +3,10 @@ package graphik
 import (
 	"context"
 	"fmt"
-	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/graphikDB/graphik/gen/grpc/go"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
+	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -90,7 +91,7 @@ type Client struct {
 func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Context, error) {
 	token, err := tokenSource.Token()
 	if err != nil {
-		return ctx, err
+		return ctx, errors.Wrap(err, "failed to get token")
 	}
 	return metadata.AppendToOutgoingContext(
 		ctx,

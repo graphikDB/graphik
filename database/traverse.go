@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
+	"github.com/google/cel-go/cel"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/generic"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/google/cel-go/cel"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"strings"

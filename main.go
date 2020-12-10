@@ -5,12 +5,12 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/autom8ter/machine"
 	"github.com/graphikDB/graphik/database"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/gql"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/autom8ter/machine"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
@@ -63,6 +63,10 @@ const bind = ":7820"
 const metricsBind = ":7821"
 
 func run(ctx context.Context, cfg *apipb.Flags) {
+	if cfg.OpenIdDiscovery == "" {
+		logger.Error("empty open-id connect discovery --open-id")
+		return
+	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	interrupt := make(chan os.Signal, 1)

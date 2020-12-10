@@ -1,9 +1,9 @@
 package vm
 
 import (
-	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/checker/decls"
+	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/pkg/errors"
 	"strings"
 )

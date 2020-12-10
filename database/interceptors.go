@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/google/cel-go/cel"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/google/cel-go/cel"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/lestrrat-go/jwx/jwa"
@@ -122,7 +122,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	}
 }
 
-func (a *Graph) identityToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Doc, error) {
+func (a *Graph) userToContext(ctx context.Context, payload map[string]interface{}) (context.Context, *apipb.Doc, error) {
 	email, ok := payload["email"].(string)
 	if !ok {
 		return nil, nil, errors.New("email not present in userinfo")
@@ -142,7 +142,7 @@ func (a *Graph) identityToContext(ctx context.Context, payload map[string]interf
 		return nil
 	})
 	if doc == nil {
-		logger.Info("creating identity", zap.String("email", email))
+		logger.Info("creating user", zap.String("email", email))
 		strct, err := structpb.NewStruct(payload)
 		if err != nil {
 			return nil, nil, err
@@ -235,15 +235,15 @@ func (g *Graph) verifyJWT(token string) (map[string]interface{}, error) {
 
 func (g *Graph) check(ctx context.Context, method string, req interface{}, payload map[string]interface{}) (context.Context, error) {
 	ctx = g.methodToContext(ctx, method)
-	ctx, identity, err := g.identityToContext(ctx, payload)
+	ctx, user, err := g.userToContext(ctx, payload)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, err.Error())
 	}
-	if !g.isGraphikAdmin(identity) {
+	if !g.isGraphikAdmin(user) {
 		now := time.Now()
 		request := &apipb.Request{
 			Method:    method,
-			User:      identity,
+			User:      user,
 			Timestamp: timestamppb.New(now),
 		}
 		if val, ok := req.(proto.Message); ok {
@@ -264,15 +264,15 @@ func (g *Graph) check(ctx context.Context, method string, req interface{}, paylo
 			return nil, err
 		}
 		if !result {
-			return nil, status.Error(codes.PermissionDenied, "request authorization = denied")
+			return nil, status.Errorf(codes.PermissionDenied, "request from %s.%s  authorization = denied", user.GetRef().GetGtype(), user.GetRef().GetGid())
 		}
 	}
 	return ctx, nil
 }
 
-func (g *Graph) isGraphikAdmin(identity *apipb.Doc) bool {
-	if identity.GetAttributes().GetFields() == nil {
+func (g *Graph) isGraphikAdmin(user *apipb.Doc) bool {
+	if user.GetAttributes().GetFields() == nil {
 		return false
 	}
-	return helpers.ContainsString(identity.GetAttributes().GetFields()["email"].GetStringValue(), g.rootUsers)
+	return helpers.ContainsString(user.GetAttributes().GetFields()["email"].GetStringValue(), g.rootUsers)
 }
