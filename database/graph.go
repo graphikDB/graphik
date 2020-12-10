@@ -911,7 +911,7 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EFilter) (*api
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	return connections, nil
 }
@@ -924,7 +924,7 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 	if filter.Expression != "" {
 		program, err = e.vm.Connection().Program(filter.Expression)
 		if err != nil {
-			return nil, err
+			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 	}
 	var connections []*apipb.Connection
@@ -943,7 +943,7 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 		return len(connections) < int(filter.Limit)
 	})
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	toReturn := &apipb.Connections{
 		Connections: connections,
@@ -964,7 +964,10 @@ func (g *Graph) DelDoc(ctx context.Context, path *apipb.Ref) (*empty.Empty, erro
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		if err == ErrNotFound {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &empty.Empty{}, nil
 }
@@ -985,7 +988,10 @@ func (g *Graph) DelDocs(ctx context.Context, filter *apipb.Filter) (*empty.Empty
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		if err == ErrNotFound {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &empty.Empty{}, nil
 }
@@ -997,7 +1003,10 @@ func (g *Graph) DelConnection(ctx context.Context, path *apipb.Ref) (*empty.Empt
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		if err == ErrNotFound {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &empty.Empty{}, nil
 }
@@ -1018,7 +1027,10 @@ func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empt
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		if err == ErrNotFound {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return &empty.Empty{}, nil
 }
@@ -1037,7 +1049,7 @@ func (g *Graph) PushDocConstructors(server apipb.DatabaseService_PushDocConstruc
 			}
 			resp, err := g.CreateDoc(ctx, val)
 			if err != nil {
-				return status.Error(codes.InvalidArgument, err.Error())
+				return err
 			}
 			if err := server.Send(resp); err != nil {
 				return status.Error(codes.Internal, err.Error())
@@ -1060,7 +1072,7 @@ func (g *Graph) PushConnectionConstructors(server apipb.DatabaseService_PushConn
 			}
 			resp, err := g.CreateConnection(ctx, val)
 			if err != nil {
-				return status.Error(codes.InvalidArgument, err.Error())
+				return err
 			}
 			if err := server.Send(resp); err != nil {
 				return status.Error(codes.Internal, err.Error())
@@ -1085,7 +1097,7 @@ func (g *Graph) SeedDocs(server apipb.DatabaseService_SeedDocsServer) error {
 				_, err := g.setDoc(ctx, tx, msg)
 				return err
 			}); err != nil {
-				return err
+				return status.Error(codes.Internal, err.Error())
 			}
 		}
 	}
@@ -1107,7 +1119,7 @@ func (g *Graph) SeedConnections(server apipb.DatabaseService_SeedConnectionsServ
 				_, err := g.setConnection(ctx, tx, msg)
 				return err
 			}); err != nil {
-				return err
+				return status.Error(codes.Internal, err.Error())
 			}
 		}
 	}
@@ -1154,7 +1166,7 @@ func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.ExistsFilter) (*apipb.
 		return true
 	})
 	if err != nil {
-		if err ==ErrNotFound {
+		if err == ErrNotFound {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		return nil, status.Error(codes.Internal, err.Error())

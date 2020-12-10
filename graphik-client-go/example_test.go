@@ -7,8 +7,6 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	apipb2 "github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/graphik-client-go"
-	"github.com/graphikDB/graphik/logger"
-	"go.uber.org/zap"
 	"golang.org/x/oauth2/google"
 	"strings"
 	"time"
@@ -49,10 +47,21 @@ func ExampleNewClient() {
 	}
 	pong, err := cli.Ping(ctx, &empty.Empty{})
 	if err != nil {
-		logger.Error("failed to ping server", zap.Error(err))
+		fmt.Println(err.Error())
 		return
 	}
 	fmt.Println(pong.Message)
+	// Output: PONG
+}
+
+func ExampleClient_Ping() {
+	ctx := context.Background()
+	msg, err := client.Ping(ctx, &empty.Empty{})
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(msg.Message)
 	// Output: PONG
 }
 
@@ -386,4 +395,77 @@ func ExampleClient_GetSchema() {
 	// Output: doc types: dog,human,user
 	//connection types: created,created_by,edited,edited_by,owner
 	//authorizers: testing
+}
+
+func ExampleClient_Traverse() {
+	me, err := client.Me(context.Background(), &empty.Empty{})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	ctx := context.Background()
+	bfsTraversals, err := client.Traverse(ctx, &apipb2.TFilter{
+		Root:                 me.GetRef(),
+		DocExpression:        "this.attributes.name == 'Charlie'",
+		ConnectionExpression: "",
+		Limit:                1,
+		Sort:                 "",
+		Reverse:              false,
+		Algorithm:            apipb2.Algorithm_BFS,
+		MaxDepth:             1,
+		MaxHops:              50,
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println(len(bfsTraversals.GetTraversals()))
+	dfsTraversals, err := client.Traverse(ctx, &apipb2.TFilter{
+		Root:                 me.GetRef(),
+		DocExpression:        "",
+		ConnectionExpression: "",
+		Limit:                3,
+		Sort:                 "",
+		Reverse:              false,
+		Algorithm:            apipb2.Algorithm_DFS,
+		MaxDepth:             1,
+		MaxHops:              50,
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println(len(dfsTraversals.GetTraversals()))
+	//Output: 1
+	//3
+}
+
+func ExampleClient_DelDocs() {
+	ctx := context.Background()
+	_, err := client.DelDocs(ctx, &apipb2.Filter{
+		Gtype:      "dog",
+		Expression: "this.attributes.name == 'Charlie'",
+		Limit:      10,
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println("Success!")
+	//Output: Success!
+}
+
+func ExampleClient_DelConnections() {
+	ctx := context.Background()
+	_, err := client.DelConnections(ctx, &apipb2.Filter{
+		Gtype:      "owner",
+		Expression: "this.attributes.primary_owner",
+		Limit:      10,
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println("Success!")
+	//Output: Success!
 }
