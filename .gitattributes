@@ -1,1 +1,5 @@
-/gen/grpc linguist-vendored
+/gen/grpc/csharp/* linguist-vendored
+/gen/grpc/js/* linguist-vendored
+/gen/grpc/java/* linguist-vendored
+/gen/grpc/python/* linguist-vendored
+/gen/grpc/php/* linguist-vendored
