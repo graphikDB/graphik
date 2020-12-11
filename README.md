@@ -25,15 +25,23 @@ Graphik is an identity-aware, permissioned, persistant document/graph database &
       - [Type Validator Examples](#type-validator-examples)
     + [Identity Graph](#identity-graph)
     + [GraphQL vs gRPC API](#graphql-vs-grpc-api)
+    + [Streaming/PubSub](#streaming-pubsub)
+    + [Graphik Playground](#graphik-playground)
     + [Additional Details](#additional-details)
   * [Sample GraphQL Queries](#sample-graphql-queries)
-    + [Node Traversal](#node-traversal)
+    + [Get Currently Logged In User(me)](#get-currently-logged-in-user-me-)
+    + [Get the Graph Schema](#get-the-graph-schema)
+    + [Create a Document](#create-a-document)
+    + [Traverse Documents](#traverse-documents)
+    + [Traverse Documents Related to Logged In User](#traverse-documents-related-to-logged-in-user)
+    + [Change Streaming](#change-streaming)
   * [Deployment](#deployment)
     + [Docker-Compose](#docker-compose)
     + [Kubernetes](#kubernetes)
     + [Linux](#linux)
     + [Mac/Darwin](#mac-darwin)
     + [Windows](#windows)
+  * [OIDC Metadata Urls](#oidc-metadata-urls)
 
 
 ## Helpful Links
@@ -585,3 +593,11 @@ to shutdown:
 ### Windows
 
     Nope - use docker
+    
+    
+## OIDC Metadata Urls
+
+- Google: https://accounts.google.com/.well-known/openid-configuration
+- Microsoft: [See More](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc)
+- Auth0: https://${YOUR_DOMAIN}/.well-known/openid-configuration [See More](https://auth0.com/docs/protocols/configure-applications-with-oidc-discovery)
+- Okta: https://${yourOktaOrg}/.well-known/openid-configuration [See More](https://developer.okta.com/docs/concepts/auth-servers/)
