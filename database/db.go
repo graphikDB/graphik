@@ -531,12 +531,15 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) (*api
 		return nil, ctx.Err()
 	}
 	var authorizers []cel.Program
-	g.rangeAuthorizers(func(a *authorizer) bool {
-		if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
-			authorizers = append(authorizers, a.program)
-		}
-		return true
-	})
+	if ctx.Value(bypassAuthorizersCtxKey) == nil {
+		g.rangeAuthorizers(func(a *authorizer) bool {
+			if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
+				authorizers = append(authorizers, a.program)
+			}
+			return true
+		})
+	}
+
 	if path == nil {
 		return nil, ErrNotFound
 	}
@@ -1093,12 +1096,14 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, in
 		return seek, ctx.Err()
 	}
 	var authorizers []cel.Program
-	g.rangeAuthorizers(func(a *authorizer) bool {
-		if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
-			authorizers = append(authorizers, a.program)
-		}
-		return true
-	})
+	if ctx.Value(bypassAuthorizersCtxKey) == nil {
+		g.rangeAuthorizers(func(a *authorizer) bool {
+			if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
+				authorizers = append(authorizers, a.program)
+			}
+			return true
+		})
+	}
 	var lastKey []byte
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		var c *bbolt.Cursor
