@@ -88,53 +88,53 @@ namespace Api {
             "ASgEQgbi3x8CEAAinAEKEEluZGV4Q29uc3RydWN0b3ISHgoEbmFtZRgBIAEo",
             "CUIQ4t8fDAoKXi57MSwyMjV9JBIfCgVndHlwZRgDIAEoCUIQ4t8fDAoKXi57",
             "MSwyMjV9JBIkCgpleHByZXNzaW9uGAQgASgJQhDi3x8MCgpeLnsxLDIyNX0k",
-            "EgwKBGRvY3MYBiABKAgSEwoLY29ubmVjdGlvbnMYByABKAgibwoKQXV0aG9y",
-            "aXplchIeCgRuYW1lGAEgASgJQhDi3x8MCgpeLnsxLDIyNX0kEiQKCmV4cHJl",
-            "c3Npb24YAiABKAlCEOLfHwwKCl4uezEsMjI1fSQSGwoEdHlwZRgDIAEoDjIN",
-            "LmFwaS5BdXRoVHlwZSIzCgtBdXRob3JpemVycxIkCgthdXRob3JpemVycxgB",
-            "IAMoCzIPLmFwaS5BdXRob3JpemVyIpkBCg1UeXBlVmFsaWRhdG9yEh4KBG5h",
-            "bWUYASABKAlCEOLfHwwKCl4uezEsMjI1fSQSHwoFZ3R5cGUYAiABKAlCEOLf",
-            "HwwKCl4uezEsMjI1fSQSJAoKZXhwcmVzc2lvbhgDIAEoCUIQ4t8fDAoKXi57",
-            "MSwyMjV9JBIMCgRkb2NzGAQgASgIEhMKC2Nvbm5lY3Rpb25zGAUgASgIIjgK",
-            "DlR5cGVWYWxpZGF0b3JzEiYKCnZhbGlkYXRvcnMYASADKAsyEi5hcGkuVHlw",
-            "ZVZhbGlkYXRvciKRAQoFSW5kZXgSHgoEbmFtZRgBIAEoCUIQ4t8fDAoKXi57",
-            "MSwyMjV9JBIfCgVndHlwZRgDIAEoCUIQ4t8fDAoKXi57MSwyMjV9JBIkCgpl",
-            "eHByZXNzaW9uGAQgASgJQhDi3x8MCgpeLnsxLDIyNX0kEgwKBGRvY3MYBiAB",
-            "KAgSEwoLY29ubmVjdGlvbnMYByABKAgiJgoHSW5kZXhlcxIbCgdpbmRleGVz",
-            "GAEgAygLMgouYXBpLkluZGV4IkUKDFN0cmVhbUZpbHRlchIhCgdjaGFubmVs",
-            "GAEgASgJQhDi3x8MCgpeLnsxLDIyNX0kEhIKCmV4cHJlc3Npb24YAiABKAki",
-            "RwoFR3JhcGgSFwoEZG9jcxgBIAEoCzIJLmFwaS5Eb2NzEiUKC2Nvbm5lY3Rp",
-            "b25zGAIgASgLMhAuYXBpLkNvbm5lY3Rpb25zIqICCgVGbGFncxIZChFvcGVu",
-            "X2lkX2Rpc2NvdmVyeRgBIAEoCRIUCgxzdG9yYWdlX3BhdGgYAiABKAkSDwoH",
-            "bWV0cmljcxgDIAEoCBIVCg1hbGxvd19oZWFkZXJzGAUgAygJEhUKDWFsbG93",
-            "X21ldGhvZHMYBiADKAkSFQoNYWxsb3dfb3JpZ2lucxgHIAMoCRISCgpyb290",
-            "X3VzZXJzGAggAygJEhAKCHRsc19jZXJ0GAkgASgJEg8KB3Rsc19rZXkYCiAB",
-            "KAkSHAoUcGxheWdyb3VuZF9jbGllbnRfaWQYCyABKAkSIAoYcGxheWdyb3Vu",
-            "ZF9jbGllbnRfc2VjcmV0GAwgASgJEhsKE3BsYXlncm91bmRfcmVkaXJlY3QY",
-            "DSABKAkiGAoHQm9vbGVhbhINCgV2YWx1ZRgBIAEoCCIXCgZOdW1iZXISDQoF",
-            "dmFsdWUYASABKAEigwEKDEV4aXN0c0ZpbHRlchIfCgVndHlwZRgBIAEoCUIQ",
-            "4t8fDAoKXi57MSwyMjV9JBIkCgpleHByZXNzaW9uGAIgASgJQhDi3x8MCgpe",
-            "LnsxLDIyNX0kEgwKBHNlZWsYAyABKAkSDwoHcmV2ZXJzZRgEIAEoCBINCgVp",
-            "bmRleBgFIAEoCSJSCgRFZGl0Eh0KA3JlZhgBIAEoCzIILmFwaS5SZWZCBuLf",
-            "HwIgARIrCgphdHRyaWJ1dGVzGAIgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0",
-            "cnVjdCJWCgpFZGl0RmlsdGVyEhsKBmZpbHRlchgBIAEoCzILLmFwaS5GaWx0",
-            "ZXISKwoKYXR0cmlidXRlcxgCIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1",
-            "Y3QiFwoEUG9uZxIPCgdtZXNzYWdlGAEgASgJImMKD091dGJvdW5kTWVzc2Fn",
-            "ZRIhCgdjaGFubmVsGAEgASgJQhDi3x8MCgpeLnsxLDIyNX0kEi0KBGRhdGEY",
-            "AiABKAsyFy5nb29nbGUucHJvdG9idWYuU3RydWN0Qgbi3x8CIAEi1AEKB01l",
-            "c3NhZ2USIQoHY2hhbm5lbBgBIAEoCUIQ4t8fDAoKXi57MSwyMjV9JBItCgRk",
-            "YXRhGAIgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0cnVjdEIG4t8fAiABEh4K",
-            "BHVzZXIYAyABKAsyCC5hcGkuUmVmQgbi3x8CIAESNQoJdGltZXN0YW1wGAQg",
-            "ASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIG4t8fAiABEiAKBm1l",
-            "dGhvZBgFIAEoCUIQ4t8fDAoKXi57MSwyMjV9JCKkAQoGU2NoZW1hEhgKEGNv",
-            "bm5lY3Rpb25fdHlwZXMYASADKAkSEQoJZG9jX3R5cGVzGAIgAygJEiUKC2F1",
-            "dGhvcml6ZXJzGAMgASgLMhAuYXBpLkF1dGhvcml6ZXJzEicKCnZhbGlkYXRv",
-            "cnMYBCABKAsyEy5hcGkuVHlwZVZhbGlkYXRvcnMSHQoHaW5kZXhlcxgFIAEo",
-            "CzIMLmFwaS5JbmRleGVzIiAKCkV4cHJGaWx0ZXISEgoKZXhwcmVzc2lvbhgB",
-            "IAEoCSKSAQoKQXV0aFRhcmdldBIbCgR0eXBlGAEgASgOMg0uYXBpLkF1dGhU",
-            "eXBlEiAKBm1ldGhvZBgCIAEoCUIQ4t8fDAoKXi57MSwyMjV9JBIeCgR1c2Vy",
-            "GAMgASgLMgguYXBpLkRvY0IG4t8fAiABEiUKBGRhdGEYBCABKAsyFy5nb29n",
-            "bGUucHJvdG9idWYuU3RydWN0Kh0KCUFsZ29yaXRobRIHCgNCRlMQABIHCgNE",
+            "EgwKBGRvY3MYBiABKAgSEwoLY29ubmVjdGlvbnMYByABKAgikgEKCkF1dGhU",
+            "YXJnZXQSGwoEdHlwZRgBIAEoDjINLmFwaS5BdXRoVHlwZRIgCgZtZXRob2QY",
+            "AiABKAlCEOLfHwwKCl4uezEsMjI1fSQSHgoEdXNlchgDIAEoCzIILmFwaS5E",
+            "b2NCBuLfHwIgARIlCgRkYXRhGAQgASgLMhcuZ29vZ2xlLnByb3RvYnVmLlN0",
+            "cnVjdCJvCgpBdXRob3JpemVyEh4KBG5hbWUYASABKAlCEOLfHwwKCl4uezEs",
+            "MjI1fSQSJAoKZXhwcmVzc2lvbhgCIAEoCUIQ4t8fDAoKXi57MSwyMjV9JBIb",
+            "CgR0eXBlGAMgASgOMg0uYXBpLkF1dGhUeXBlIjMKC0F1dGhvcml6ZXJzEiQK",
+            "C2F1dGhvcml6ZXJzGAEgAygLMg8uYXBpLkF1dGhvcml6ZXIimQEKDVR5cGVW",
+            "YWxpZGF0b3ISHgoEbmFtZRgBIAEoCUIQ4t8fDAoKXi57MSwyMjV9JBIfCgVn",
+            "dHlwZRgCIAEoCUIQ4t8fDAoKXi57MSwyMjV9JBIkCgpleHByZXNzaW9uGAMg",
+            "ASgJQhDi3x8MCgpeLnsxLDIyNX0kEgwKBGRvY3MYBCABKAgSEwoLY29ubmVj",
+            "dGlvbnMYBSABKAgiOAoOVHlwZVZhbGlkYXRvcnMSJgoKdmFsaWRhdG9ycxgB",
+            "IAMoCzISLmFwaS5UeXBlVmFsaWRhdG9yIpEBCgVJbmRleBIeCgRuYW1lGAEg",
+            "ASgJQhDi3x8MCgpeLnsxLDIyNX0kEh8KBWd0eXBlGAMgASgJQhDi3x8MCgpe",
+            "LnsxLDIyNX0kEiQKCmV4cHJlc3Npb24YBCABKAlCEOLfHwwKCl4uezEsMjI1",
+            "fSQSDAoEZG9jcxgGIAEoCBITCgtjb25uZWN0aW9ucxgHIAEoCCImCgdJbmRl",
+            "eGVzEhsKB2luZGV4ZXMYASADKAsyCi5hcGkuSW5kZXgiRQoMU3RyZWFtRmls",
+            "dGVyEiEKB2NoYW5uZWwYASABKAlCEOLfHwwKCl4uezEsMjI1fSQSEgoKZXhw",
+            "cmVzc2lvbhgCIAEoCSJHCgVHcmFwaBIXCgRkb2NzGAEgASgLMgkuYXBpLkRv",
+            "Y3MSJQoLY29ubmVjdGlvbnMYAiABKAsyEC5hcGkuQ29ubmVjdGlvbnMiogIK",
+            "BUZsYWdzEhkKEW9wZW5faWRfZGlzY292ZXJ5GAEgASgJEhQKDHN0b3JhZ2Vf",
+            "cGF0aBgCIAEoCRIPCgdtZXRyaWNzGAMgASgIEhUKDWFsbG93X2hlYWRlcnMY",
+            "BSADKAkSFQoNYWxsb3dfbWV0aG9kcxgGIAMoCRIVCg1hbGxvd19vcmlnaW5z",
+            "GAcgAygJEhIKCnJvb3RfdXNlcnMYCCADKAkSEAoIdGxzX2NlcnQYCSABKAkS",
+            "DwoHdGxzX2tleRgKIAEoCRIcChRwbGF5Z3JvdW5kX2NsaWVudF9pZBgLIAEo",
+            "CRIgChhwbGF5Z3JvdW5kX2NsaWVudF9zZWNyZXQYDCABKAkSGwoTcGxheWdy",
+            "b3VuZF9yZWRpcmVjdBgNIAEoCSIYCgdCb29sZWFuEg0KBXZhbHVlGAEgASgI",
+            "IhcKBk51bWJlchINCgV2YWx1ZRgBIAEoASKDAQoMRXhpc3RzRmlsdGVyEh8K",
+            "BWd0eXBlGAEgASgJQhDi3x8MCgpeLnsxLDIyNX0kEiQKCmV4cHJlc3Npb24Y",
+            "AiABKAlCEOLfHwwKCl4uezEsMjI1fSQSDAoEc2VlaxgDIAEoCRIPCgdyZXZl",
+            "cnNlGAQgASgIEg0KBWluZGV4GAUgASgJIlIKBEVkaXQSHQoDcmVmGAEgASgL",
+            "MgguYXBpLlJlZkIG4t8fAiABEisKCmF0dHJpYnV0ZXMYAiABKAsyFy5nb29n",
+            "bGUucHJvdG9idWYuU3RydWN0IlYKCkVkaXRGaWx0ZXISGwoGZmlsdGVyGAEg",
+            "ASgLMgsuYXBpLkZpbHRlchIrCgphdHRyaWJ1dGVzGAIgASgLMhcuZ29vZ2xl",
+            "LnByb3RvYnVmLlN0cnVjdCIXCgRQb25nEg8KB21lc3NhZ2UYASABKAkiYwoP",
+            "T3V0Ym91bmRNZXNzYWdlEiEKB2NoYW5uZWwYASABKAlCEOLfHwwKCl4uezEs",
+            "MjI1fSQSLQoEZGF0YRgCIAEoCzIXLmdvb2dsZS5wcm90b2J1Zi5TdHJ1Y3RC",
+            "BuLfHwIgASLUAQoHTWVzc2FnZRIhCgdjaGFubmVsGAEgASgJQhDi3x8MCgpe",
+            "LnsxLDIyNX0kEi0KBGRhdGEYAiABKAsyFy5nb29nbGUucHJvdG9idWYuU3Ry",
+            "dWN0Qgbi3x8CIAESHgoEdXNlchgDIAEoCzIILmFwaS5SZWZCBuLfHwIgARI1",
+            "Cgl0aW1lc3RhbXAYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1w",
+            "Qgbi3x8CIAESIAoGbWV0aG9kGAUgASgJQhDi3x8MCgpeLnsxLDIyNX0kIqQB",
+            "CgZTY2hlbWESGAoQY29ubmVjdGlvbl90eXBlcxgBIAMoCRIRCglkb2NfdHlw",
+            "ZXMYAiADKAkSJQoLYXV0aG9yaXplcnMYAyABKAsyEC5hcGkuQXV0aG9yaXpl",
+            "cnMSJwoKdmFsaWRhdG9ycxgEIAEoCzITLmFwaS5UeXBlVmFsaWRhdG9ycxId",
+            "CgdpbmRleGVzGAUgASgLMgwuYXBpLkluZGV4ZXMiIAoKRXhwckZpbHRlchIS",
+            "CgpleHByZXNzaW9uGAEgASgJKh0KCUFsZ29yaXRobRIHCgNCRlMQABIHCgNE",
             "RlMQASpECglBZ2dyZWdhdGUSCQoFQ09VTlQQABIHCgNTVU0QARIHCgNBVkcQ",
             "AhIHCgNNQVgQAxIHCgNNSU4QBBIICgRQUk9EEAUqOgoIQXV0aFR5cGUSCwoH",
             "UkVRVUVTVBAAEgwKCFZJRVdfRE9DEAESEwoPVklFV19DT05ORUNUSU9OEAIy",
@@ -210,6 +210,7 @@ namespace Api {
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.TraverseFilter), global::Api.TraverseFilter.Parser, new[]{ "Root", "DocExpression", "ConnectionExpression", "Limit", "Sort", "Reverse", "Algorithm", "MaxDepth", "MaxHops" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.TraverseMeFilter), global::Api.TraverseMeFilter.Parser, new[]{ "DocExpression", "ConnectionExpression", "Limit", "Sort", "Reverse", "Algorithm", "MaxDepth", "MaxHops" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.IndexConstructor), global::Api.IndexConstructor.Parser, new[]{ "Name", "Gtype", "Expression", "Docs", "Connections" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Api.AuthTarget), global::Api.AuthTarget.Parser, new[]{ "Type", "Method", "User", "Data" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.Authorizer), global::Api.Authorizer.Parser, new[]{ "Name", "Expression", "Type" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.Authorizers), global::Api.Authorizers.Parser, new[]{ "Authorizers_" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.TypeValidator), global::Api.TypeValidator.Parser, new[]{ "Name", "Gtype", "Expression", "Docs", "Connections" }, null, null, null),
@@ -228,8 +229,7 @@ namespace Api {
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.OutboundMessage), global::Api.OutboundMessage.Parser, new[]{ "Channel", "Data" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.Message), global::Api.Message.Parser, new[]{ "Channel", "Data", "User", "Timestamp", "Method" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Api.Schema), global::Api.Schema.Parser, new[]{ "ConnectionTypes", "DocTypes", "Authorizers", "Validators", "Indexes" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Api.ExprFilter), global::Api.ExprFilter.Parser, new[]{ "Expression" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Api.AuthTarget), global::Api.AuthTarget.Parser, new[]{ "Type", "Method", "User", "Data" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Api.ExprFilter), global::Api.ExprFilter.Parser, new[]{ "Expression" }, null, null, null)
           }));
     }
     #endregion
@@ -4826,6 +4826,240 @@ namespace Api {
 
   }
 
+  public sealed partial class AuthTarget : pb::IMessage<AuthTarget> {
+    private static readonly pb::MessageParser<AuthTarget> _parser = new pb::MessageParser<AuthTarget>(() => new AuthTarget());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<AuthTarget> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[21]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public AuthTarget() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public AuthTarget(AuthTarget other) : this() {
+      type_ = other.type_;
+      method_ = other.method_;
+      user_ = other.user_ != null ? other.user_.Clone() : null;
+      data_ = other.data_ != null ? other.data_.Clone() : null;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public AuthTarget Clone() {
+      return new AuthTarget(this);
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 1;
+    private global::Api.AuthType type_ = 0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Api.AuthType Type {
+      get { return type_; }
+      set {
+        type_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "method" field.</summary>
+    public const int MethodFieldNumber = 2;
+    private string method_ = "";
+    /// <summary>
+    /// method is the rpc method
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Method {
+      get { return method_; }
+      set {
+        method_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "user" field.</summary>
+    public const int UserFieldNumber = 3;
+    private global::Api.Doc user_;
+    /// <summary>
+    /// user is the user making the request
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Api.Doc User {
+      get { return user_; }
+      set {
+        user_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "data" field.</summary>
+    public const int DataFieldNumber = 4;
+    private global::Google.Protobuf.WellKnownTypes.Struct data_;
+    /// <summary>
+    /// request is the intercepted request
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Google.Protobuf.WellKnownTypes.Struct Data {
+      get { return data_; }
+      set {
+        data_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as AuthTarget);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(AuthTarget other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Type != other.Type) return false;
+      if (Method != other.Method) return false;
+      if (!object.Equals(User, other.User)) return false;
+      if (!object.Equals(Data, other.Data)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Type != 0) hash ^= Type.GetHashCode();
+      if (Method.Length != 0) hash ^= Method.GetHashCode();
+      if (user_ != null) hash ^= User.GetHashCode();
+      if (data_ != null) hash ^= Data.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Type != 0) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Type);
+      }
+      if (Method.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Method);
+      }
+      if (user_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(User);
+      }
+      if (data_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(Data);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Type != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
+      }
+      if (Method.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Method);
+      }
+      if (user_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(User);
+      }
+      if (data_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Data);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(AuthTarget other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Type != 0) {
+        Type = other.Type;
+      }
+      if (other.Method.Length != 0) {
+        Method = other.Method;
+      }
+      if (other.user_ != null) {
+        if (user_ == null) {
+          user_ = new global::Api.Doc();
+        }
+        User.MergeFrom(other.User);
+      }
+      if (other.data_ != null) {
+        if (data_ == null) {
+          data_ = new global::Google.Protobuf.WellKnownTypes.Struct();
+        }
+        Data.MergeFrom(other.Data);
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            type_ = (global::Api.AuthType) input.ReadEnum();
+            break;
+          }
+          case 18: {
+            Method = input.ReadString();
+            break;
+          }
+          case 26: {
+            if (user_ == null) {
+              user_ = new global::Api.Doc();
+            }
+            input.ReadMessage(user_);
+            break;
+          }
+          case 34: {
+            if (data_ == null) {
+              data_ = new global::Google.Protobuf.WellKnownTypes.Struct();
+            }
+            input.ReadMessage(data_);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
   public sealed partial class Authorizer : pb::IMessage<Authorizer> {
     private static readonly pb::MessageParser<Authorizer> _parser = new pb::MessageParser<Authorizer>(() => new Authorizer());
     private pb::UnknownFieldSet _unknownFields;
@@ -4834,7 +5068,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[21]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[22]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5019,7 +5253,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[22]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[23]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5140,7 +5374,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[23]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[24]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5387,7 +5621,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[24]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[25]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5508,7 +5742,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[25]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[26]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5761,7 +5995,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[26]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[27]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -5885,7 +6119,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[27]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[28]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6051,7 +6285,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[28]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[29]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6226,7 +6460,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[29]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[30]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6655,7 +6889,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[30]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[31]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6787,7 +7021,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[31]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[32]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6919,7 +7153,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[32]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[33]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7172,7 +7406,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[33]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[34]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7350,7 +7584,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[34]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[35]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7528,7 +7762,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[35]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[36]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7663,7 +7897,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[36]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[37]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -7835,7 +8069,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[37]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[38]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8109,7 +8343,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[38]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[39]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8358,7 +8592,7 @@ namespace Api {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[39]; }
+      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[40]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -8474,240 +8708,6 @@ namespace Api {
             break;
           case 10: {
             Expression = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-
-  }
-
-  public sealed partial class AuthTarget : pb::IMessage<AuthTarget> {
-    private static readonly pb::MessageParser<AuthTarget> _parser = new pb::MessageParser<AuthTarget>(() => new AuthTarget());
-    private pb::UnknownFieldSet _unknownFields;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<AuthTarget> Parser { get { return _parser; } }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pbr::MessageDescriptor Descriptor {
-      get { return global::Api.GraphikReflection.Descriptor.MessageTypes[40]; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    pbr::MessageDescriptor pb::IMessage.Descriptor {
-      get { return Descriptor; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public AuthTarget() {
-      OnConstruction();
-    }
-
-    partial void OnConstruction();
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public AuthTarget(AuthTarget other) : this() {
-      type_ = other.type_;
-      method_ = other.method_;
-      user_ = other.user_ != null ? other.user_.Clone() : null;
-      data_ = other.data_ != null ? other.data_.Clone() : null;
-      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public AuthTarget Clone() {
-      return new AuthTarget(this);
-    }
-
-    /// <summary>Field number for the "type" field.</summary>
-    public const int TypeFieldNumber = 1;
-    private global::Api.AuthType type_ = 0;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Api.AuthType Type {
-      get { return type_; }
-      set {
-        type_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "method" field.</summary>
-    public const int MethodFieldNumber = 2;
-    private string method_ = "";
-    /// <summary>
-    /// method is the rpc method
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Method {
-      get { return method_; }
-      set {
-        method_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "user" field.</summary>
-    public const int UserFieldNumber = 3;
-    private global::Api.Doc user_;
-    /// <summary>
-    /// user is the user making the request
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Api.Doc User {
-      get { return user_; }
-      set {
-        user_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "data" field.</summary>
-    public const int DataFieldNumber = 4;
-    private global::Google.Protobuf.WellKnownTypes.Struct data_;
-    /// <summary>
-    /// request is the intercepted request
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Google.Protobuf.WellKnownTypes.Struct Data {
-      get { return data_; }
-      set {
-        data_ = value;
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override bool Equals(object other) {
-      return Equals(other as AuthTarget);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(AuthTarget other) {
-      if (ReferenceEquals(other, null)) {
-        return false;
-      }
-      if (ReferenceEquals(other, this)) {
-        return true;
-      }
-      if (Type != other.Type) return false;
-      if (Method != other.Method) return false;
-      if (!object.Equals(User, other.User)) return false;
-      if (!object.Equals(Data, other.Data)) return false;
-      return Equals(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override int GetHashCode() {
-      int hash = 1;
-      if (Type != 0) hash ^= Type.GetHashCode();
-      if (Method.Length != 0) hash ^= Method.GetHashCode();
-      if (user_ != null) hash ^= User.GetHashCode();
-      if (data_ != null) hash ^= Data.GetHashCode();
-      if (_unknownFields != null) {
-        hash ^= _unknownFields.GetHashCode();
-      }
-      return hash;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public override string ToString() {
-      return pb::JsonFormatter.ToDiagnosticString(this);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-      if (Type != 0) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Type);
-      }
-      if (Method.Length != 0) {
-        output.WriteRawTag(18);
-        output.WriteString(Method);
-      }
-      if (user_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(User);
-      }
-      if (data_ != null) {
-        output.WriteRawTag(34);
-        output.WriteMessage(Data);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(output);
-      }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
-      int size = 0;
-      if (Type != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Type);
-      }
-      if (Method.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Method);
-      }
-      if (user_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(User);
-      }
-      if (data_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Data);
-      }
-      if (_unknownFields != null) {
-        size += _unknownFields.CalculateSize();
-      }
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(AuthTarget other) {
-      if (other == null) {
-        return;
-      }
-      if (other.Type != 0) {
-        Type = other.Type;
-      }
-      if (other.Method.Length != 0) {
-        Method = other.Method;
-      }
-      if (other.user_ != null) {
-        if (user_ == null) {
-          user_ = new global::Api.Doc();
-        }
-        User.MergeFrom(other.User);
-      }
-      if (other.data_ != null) {
-        if (data_ == null) {
-          data_ = new global::Google.Protobuf.WellKnownTypes.Struct();
-        }
-        Data.MergeFrom(other.Data);
-      }
-      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
-            break;
-          case 8: {
-            type_ = (global::Api.AuthType) input.ReadEnum();
-            break;
-          }
-          case 18: {
-            Method = input.ReadString();
-            break;
-          }
-          case 26: {
-            if (user_ == null) {
-              user_ = new global::Api.Doc();
-            }
-            input.ReadMessage(user_);
-            break;
-          }
-          case 34: {
-            if (data_ == null) {
-              data_ = new global::Google.Protobuf.WellKnownTypes.Struct();
-            }
-            input.ReadMessage(data_);
             break;
           }
         }

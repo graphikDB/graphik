@@ -424,16 +424,31 @@ func protoIndex(index *model.IndexInput) *apipb.Index {
 	}
 }
 
+func protoAuthType(t model.AuthType) apipb.AuthType {
+	switch t {
+	case model.AuthTypeViewConnection:
+		return apipb.AuthType_VIEW_CONNECTION
+	case model.AuthTypeViewDoc:
+		return apipb.AuthType_VIEW_DOC
+	default:
+		return apipb.AuthType_REQUEST
+	}
+}
+
 func protoAuthorizer(auth *model.AuthorizerInput) *apipb.Authorizer {
 	return &apipb.Authorizer{
 		Name:       auth.Name,
 		Expression: auth.Expression,
+		Type:       protoAuthType(auth.Type),
 	}
 }
 
 func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidator {
 	return &apipb.TypeValidator{
-		Name:       validator.Name,
-		Expression: validator.Expression,
+		Name:        validator.Name,
+		Gtype:       validator.Gtype,
+		Expression:  validator.Expression,
+		Docs:        validator.Docs,
+		Connections: validator.Connections,
 	}
 }

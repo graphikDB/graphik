@@ -95,6 +95,11 @@
                 Algorithm
             </a>
         </li>
+        <li  title="AuthType">
+            <a href="authtype.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                AuthType
+            </a>
+        </li>
         <li  title="__DirectiveLocation">
             <a href="directivelocation.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 __DirectiveLocation
@@ -118,6 +123,11 @@
         <li  title="Authorizers">
             <a href="authorizers.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Authorizers
+            </a>
+        </li>
+        <li  title="AuthTarget">
+            <a href="authtarget.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                AuthTarget
             </a>
         </li>
         <li  title="Connection">
@@ -168,11 +178,6 @@
         <li  title="Refs">
             <a href="refs.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Refs
-            </a>
-        </li>
-        <li  title="Request">
-            <a href="request.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Request
             </a>
         </li>
         <li  title="Schema">
@@ -413,7 +418,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Subscription</span> {</li><li></li><li><span class="tab"><span class="comment line">#   subscribe opens a stream of messages that pass a filter on a pubsub channel</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>where</strong>: </span></span></li><li><span class="tab"><span class="meta">stream</span>(<span class="meta">where</span>: <a class="support type" href="streamfilter.doc.html">StreamFilter</a>!): <a class="support type" href="message.doc.html">Message</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Subscription</span> {</li><li></li><li><span class="tab"><span class="comment line">#   stream opens a stream of messages that pass a filter on a pubsub channel. state </span></span></li><li><span class="tab"><span class="comment line">#   changes are sent to the 'state' channel.</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>where</strong>: </span></span></li><li><span class="tab"><span class="meta">stream</span>(<span class="meta">where</span>: <a class="support type" href="streamfilter.doc.html">StreamFilter</a>!): <a class="support type" href="message.doc.html">Message</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

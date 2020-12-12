@@ -15,14 +15,23 @@ type AggFilter struct {
 	Field     *string   `json:"field"`
 }
 
+type AuthTarget struct {
+	Type   AuthType               `json:"type"`
+	Method string                 `json:"method"`
+	User   *Doc                   `json:"user"`
+	Data   map[string]interface{} `json:"data"`
+}
+
 type Authorizer struct {
-	Name       string `json:"name"`
-	Expression string `json:"expression"`
+	Name       string   `json:"name"`
+	Expression string   `json:"expression"`
+	Type       AuthType `json:"type"`
 }
 
 type AuthorizerInput struct {
-	Name       string `json:"name"`
-	Expression string `json:"expression"`
+	Name       string   `json:"name"`
+	Expression string   `json:"expression"`
+	Type       AuthType `json:"type"`
 }
 
 type Authorizers struct {
@@ -182,13 +191,6 @@ type RefPair struct {
 
 type Refs struct {
 	Refs []*Ref `json:"refs"`
-}
-
-type Request struct {
-	Method    string                 `json:"method"`
-	User      *Doc                   `json:"user"`
-	Timestamp time.Time              `json:"timestamp"`
-	Request   map[string]interface{} `json:"request"`
 }
 
 type Schema struct {
@@ -364,5 +366,48 @@ func (e *Algorithm) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Algorithm) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type AuthType string
+
+const (
+	AuthTypeRequest        AuthType = "REQUEST"
+	AuthTypeViewDoc        AuthType = "VIEW_DOC"
+	AuthTypeViewConnection AuthType = "VIEW_CONNECTION"
+)
+
+var AllAuthType = []AuthType{
+	AuthTypeRequest,
+	AuthTypeViewDoc,
+	AuthTypeViewConnection,
+}
+
+func (e AuthType) IsValid() bool {
+	switch e {
+	case AuthTypeRequest, AuthTypeViewDoc, AuthTypeViewConnection:
+		return true
+	}
+	return false
+}
+
+func (e AuthType) String() string {
+	return string(e)
+}
+
+func (e *AuthType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AuthType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AuthType", str)
+	}
+	return nil
+}
+
+func (e AuthType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

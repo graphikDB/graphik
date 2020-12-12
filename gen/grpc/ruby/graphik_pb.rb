@@ -128,6 +128,12 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :docs, :bool, 6
     optional :connections, :bool, 7
   end
+  add_message "api.AuthTarget" do
+    optional :type, :enum, 1, "api.AuthType"
+    optional :method, :string, 2
+    optional :user, :message, 3, "api.Doc"
+    optional :data, :message, 4, "google.protobuf.Struct"
+  end
   add_message "api.Authorizer" do
     optional :name, :string, 1
     optional :expression, :string, 2
@@ -223,12 +229,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.ExprFilter" do
     optional :expression, :string, 1
   end
-  add_message "api.AuthTarget" do
-    optional :type, :enum, 1, "api.AuthType"
-    optional :method, :string, 2
-    optional :user, :message, 3, "api.Doc"
-    optional :data, :message, 4, "google.protobuf.Struct"
-  end
   add_enum "api.Algorithm" do
     value :BFS, 0
     value :DFS, 1
@@ -270,6 +270,7 @@ module Api
   TraverseFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TraverseFilter").msgclass
   TraverseMeFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TraverseMeFilter").msgclass
   IndexConstructor = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.IndexConstructor").msgclass
+  AuthTarget = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AuthTarget").msgclass
   Authorizer = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Authorizer").msgclass
   Authorizers = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Authorizers").msgclass
   TypeValidator = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TypeValidator").msgclass
@@ -289,7 +290,6 @@ module Api
   Message = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Message").msgclass
   Schema = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Schema").msgclass
   ExprFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ExprFilter").msgclass
-  AuthTarget = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AuthTarget").msgclass
   Algorithm = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Algorithm").enummodule
   Aggregate = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Aggregate").enummodule
   AuthType = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AuthType").enummodule

@@ -150,6 +150,9 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 	if err := g.cacheAuthorizers(); err != nil {
 		return nil, err
 	}
+	if err := g.cacheTypeValidators(); err != nil {
+		return nil, err
+	}
 	g.machine.Go(func(routine machine.Routine) {
 		if g.openID != nil {
 			set, err := jwk.Fetch(g.openID.JwksURI)
@@ -1096,7 +1099,7 @@ func (g *Graph) PushDocConstructors(server apipb.DatabaseService_PushDocConstruc
 }
 
 func (g *Graph) PushConnectionConstructors(server apipb.DatabaseService_PushConnectionConstructorsServer) error {
-	ctx, cancel := context.WithCancel(context.WithValue(server.Context(), importOverrideCtxKey, true))
+	ctx, cancel := context.WithCancel(context.WithValue(server.Context(), bypassAuthorizersCtxKey, true))
 	defer cancel()
 	for {
 		select {
@@ -1119,7 +1122,7 @@ func (g *Graph) PushConnectionConstructors(server apipb.DatabaseService_PushConn
 }
 
 func (g *Graph) SeedDocs(server apipb.DatabaseService_SeedDocsServer) error {
-	ctx, cancel := context.WithCancel(context.WithValue(server.Context(), importOverrideCtxKey, true))
+	ctx, cancel := context.WithCancel(context.WithValue(server.Context(), bypassAuthorizersCtxKey, true))
 	defer cancel()
 	for {
 		select {

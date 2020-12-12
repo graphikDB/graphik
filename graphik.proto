@@ -310,6 +310,16 @@ message IndexConstructor {
   bool connections =7;
 }
 
+message AuthTarget {
+  AuthType type =1;
+  // method is the rpc method
+  string method =2 [(validator.field) = {regex : "^.{1,225}$"}];
+  // user is the user making the request
+  Doc user =3 [(validator.field) = {msg_exists : true}];
+  // request is the intercepted request
+  google.protobuf.Struct data = 4;
+}
+
 message Authorizer {
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   string expression =2[(validator.field) = {regex : "^.{1,225}$"}];
@@ -469,13 +479,4 @@ message ExprFilter {
   string expression =1;
 }
 
-message AuthTarget {
-  AuthType type =1;
-  // method is the rpc method
-  string method =2 [(validator.field) = {regex : "^.{1,225}$"}];
-  // user is the user making the request
-  Doc user =3 [(validator.field) = {msg_exists : true}];
-  // request is the intercepted request
-  google.protobuf.Struct data = 4;
-}
 

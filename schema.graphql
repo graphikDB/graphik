@@ -28,6 +28,12 @@ enum Aggregate {
   PROD
 }
 
+enum AuthType {
+  REQUEST
+  VIEW_DOC
+  VIEW_CONNECTION
+}
+
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -65,16 +71,15 @@ type Traversal {
   hops: Int!
 }
 
-# Request is an inbound gRPC request that authorizers execute against
-type Request {
+# AuthTarget
+type AuthTarget {
+  type: AuthType!
   # method is the gRPC method invoked
   method: String!
   # user is the user making the request
   user: Doc!
-  # timestamp is the time of the request
-  timestamp: Time!
-  # request is the request represented as k/v pairs
-  request: Map!
+  # data is the payload gived to the authorizer(request, doc, connection)
+  data: Map!
 }
 
 # Traversals is an array of Traversal that is returned from Graph traversal algorithms
@@ -154,6 +159,7 @@ type Authorizer {
   name: String!
   # expression is a boolean CEL expression used to evaluate the inbound request
   expression: String!
+  type:   AuthType!
 }
 
 # Authorizers is an array of Authorizer
@@ -420,6 +426,7 @@ input AuthorizerInput {
   name: String!
   # expression is a boolean CEL expression used to evaluate the inbound request
   expression: String!
+  type:   AuthType!
 }
 
 # AuthorizersInput is an array of authorizers

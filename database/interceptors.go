@@ -239,6 +239,7 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 		return nil, status.Errorf(codes.Unauthenticated, err.Error())
 	}
 	if !g.isGraphikAdmin(user) {
+		ctx = context.WithValue(ctx, bypassAuthorizersCtxKey, true)
 		var programs []cel.Program
 		g.rangeAuthorizers(func(a *authorizer) bool {
 			if a.authorizer.GetType() == apipb.AuthType_REQUEST {
@@ -250,8 +251,8 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 			return ctx, nil
 		}
 		request := &apipb.AuthTarget{
-			Method:    method,
-			User:      user,
+			Method: method,
+			User:   user,
 		}
 		if val, ok := req.(apipb.Mapper); ok {
 			request.Data = apipb.NewStruct(val.AsMap())

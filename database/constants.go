@@ -12,7 +12,7 @@ const (
 	authCtxKey           ctxKey = "x-graphik-auth-ctx"
 	userType             ctxKey = "user"
 	methodCtxKey         ctxKey = "x-graphik-full-method"
-	importOverrideCtxKey ctxKey = "x-graphik-import-override"
+	bypassAuthorizersCtxKey ctxKey = "x-graphik-authorzer-override"
 )
 
 var (

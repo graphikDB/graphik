@@ -95,6 +95,11 @@
                 Algorithm
             </a>
         </li>
+        <li  title="AuthType">
+            <a href="authtype.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                AuthType
+            </a>
+        </li>
         <li  title="__DirectiveLocation">
             <a href="directivelocation.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 __DirectiveLocation
@@ -118,6 +123,11 @@
         <li  title="Authorizers">
             <a href="authorizers.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Authorizers
+            </a>
+        </li>
+        <li  title="AuthTarget">
+            <a href="authtarget.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                AuthTarget
             </a>
         </li>
         <li  title="Connection">
@@ -168,11 +178,6 @@
         <li  title="Refs">
             <a href="refs.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Refs
-            </a>
-        </li>
-        <li  title="Request">
-            <a href="request.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                Request
             </a>
         </li>
         <li  title="Schema">
@@ -414,7 +419,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Authorizer</span> {</li><li></li><li><span class="tab"><span class="comment line">#   name is the unique name of the authorizer in the graph</span></span></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   expression is a boolean CEL expression used to evaluate the inbound request</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">Authorizer</span> {</li><li></li><li><span class="tab"><span class="comment line">#   name is the unique name of the authorizer in the graph</span></span></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   expression is a boolean CEL expression used to evaluate the inbound request</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="meta">type</span>: <a class="support type" href="authtype.doc.html">AuthType</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
