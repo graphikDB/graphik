@@ -21,6 +21,10 @@ class Authorizer extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string expression = 2 [(.validator.field) = {</code>
      */
     private $expression = '';
+    /**
+     * Generated from protobuf field <code>.api.AuthType type = 3;</code>
+     */
+    private $type = 0;
 
     /**
      * Constructor.
@@ -30,6 +34,7 @@ class Authorizer extends \Google\Protobuf\Internal\Message
      *
      *     @type string $name
      *     @type string $expression
+     *     @type int $type
      * }
      */
     public function __construct($data = NULL) {
@@ -77,6 +82,28 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->expression = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.api.AuthType type = 3;</code>
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Generated from protobuf field <code>.api.AuthType type = 3;</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setType($var)
+    {
+        GPBUtil::checkEnum($var, \Api\AuthType::class);
+        $this->type = $var;
 
         return $this;
     }

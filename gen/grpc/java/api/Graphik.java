@@ -262,6 +262,113 @@ public final class Graphik {
     // @@protoc_insertion_point(enum_scope:api.Aggregate)
   }
 
+  /**
+   * Protobuf enum {@code api.AuthType}
+   */
+  public enum AuthType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>REQUEST = 0;</code>
+     */
+    REQUEST(0),
+    /**
+     * <code>VIEW_DOC = 1;</code>
+     */
+    VIEW_DOC(1),
+    /**
+     * <code>VIEW_CONNECTION = 2;</code>
+     */
+    VIEW_CONNECTION(2),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>REQUEST = 0;</code>
+     */
+    public static final int REQUEST_VALUE = 0;
+    /**
+     * <code>VIEW_DOC = 1;</code>
+     */
+    public static final int VIEW_DOC_VALUE = 1;
+    /**
+     * <code>VIEW_CONNECTION = 2;</code>
+     */
+    public static final int VIEW_CONNECTION_VALUE = 2;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static AuthType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static AuthType forNumber(int value) {
+      switch (value) {
+        case 0: return REQUEST;
+        case 1: return VIEW_DOC;
+        case 2: return VIEW_CONNECTION;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<AuthType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        AuthType> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<AuthType>() {
+            public AuthType findValueByNumber(int number) {
+              return AuthType.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return api.Graphik.getDescriptor().getEnumTypes().get(2);
+    }
+
+    private static final AuthType[] VALUES = values();
+
+    public static AuthType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private AuthType(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:api.AuthType)
+  }
+
   public interface RefOrBuilder extends
       // @@protoc_insertion_point(interface_extends:api.Ref)
       com.google.protobuf.MessageOrBuilder {
@@ -23065,6 +23172,15 @@ public final class Graphik {
      */
     com.google.protobuf.ByteString
         getExpressionBytes();
+
+    /**
+     * <code>.api.AuthType type = 3;</code>
+     */
+    int getTypeValue();
+    /**
+     * <code>.api.AuthType type = 3;</code>
+     */
+    api.Graphik.AuthType getType();
   }
   /**
    * Protobuf type {@code api.Authorizer}
@@ -23081,6 +23197,7 @@ public final class Graphik {
     private Authorizer() {
       name_ = "";
       expression_ = "";
+      type_ = 0;
     }
 
     @java.lang.Override
@@ -23117,6 +23234,12 @@ public final class Graphik {
               java.lang.String s = input.readStringRequireUtf8();
 
               expression_ = s;
+              break;
+            }
+            case 24: {
+              int rawValue = input.readEnum();
+
+              type_ = rawValue;
               break;
             }
             default: {
@@ -23219,6 +23342,23 @@ public final class Graphik {
       }
     }
 
+    public static final int TYPE_FIELD_NUMBER = 3;
+    private int type_;
+    /**
+     * <code>.api.AuthType type = 3;</code>
+     */
+    public int getTypeValue() {
+      return type_;
+    }
+    /**
+     * <code>.api.AuthType type = 3;</code>
+     */
+    public api.Graphik.AuthType getType() {
+      @SuppressWarnings("deprecation")
+      api.Graphik.AuthType result = api.Graphik.AuthType.valueOf(type_);
+      return result == null ? api.Graphik.AuthType.UNRECOGNIZED : result;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -23239,6 +23379,9 @@ public final class Graphik {
       if (!getExpressionBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, expression_);
       }
+      if (type_ != api.Graphik.AuthType.REQUEST.getNumber()) {
+        output.writeEnum(3, type_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -23253,6 +23396,10 @@ public final class Graphik {
       }
       if (!getExpressionBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, expression_);
+      }
+      if (type_ != api.Graphik.AuthType.REQUEST.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(3, type_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -23274,6 +23421,7 @@ public final class Graphik {
           .equals(other.getName());
       result = result && getExpression()
           .equals(other.getExpression());
+      result = result && type_ == other.type_;
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -23289,6 +23437,8 @@ public final class Graphik {
       hash = (53 * hash) + getName().hashCode();
       hash = (37 * hash) + EXPRESSION_FIELD_NUMBER;
       hash = (53 * hash) + getExpression().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + type_;
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -23426,6 +23576,8 @@ public final class Graphik {
 
         expression_ = "";
 
+        type_ = 0;
+
         return this;
       }
 
@@ -23454,6 +23606,7 @@ public final class Graphik {
         api.Graphik.Authorizer result = new api.Graphik.Authorizer(this);
         result.name_ = name_;
         result.expression_ = expression_;
+        result.type_ = type_;
         onBuilt();
         return result;
       }
@@ -23509,6 +23662,9 @@ public final class Graphik {
         if (!other.getExpression().isEmpty()) {
           expression_ = other.expression_;
           onChanged();
+        }
+        if (other.type_ != 0) {
+          setTypeValue(other.getTypeValue());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -23673,6 +23829,51 @@ public final class Graphik {
   checkByteStringIsUtf8(value);
         
         expression_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int type_ = 0;
+      /**
+       * <code>.api.AuthType type = 3;</code>
+       */
+      public int getTypeValue() {
+        return type_;
+      }
+      /**
+       * <code>.api.AuthType type = 3;</code>
+       */
+      public Builder setTypeValue(int value) {
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.api.AuthType type = 3;</code>
+       */
+      public api.Graphik.AuthType getType() {
+        @SuppressWarnings("deprecation")
+        api.Graphik.AuthType result = api.Graphik.AuthType.valueOf(type_);
+        return result == null ? api.Graphik.AuthType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.api.AuthType type = 3;</code>
+       */
+      public Builder setType(api.Graphik.AuthType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        type_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.api.AuthType type = 3;</code>
+       */
+      public Builder clearType() {
+        
+        type_ = 0;
         onChanged();
         return this;
       }
@@ -41386,16 +41587,25 @@ public final class Graphik {
 
   }
 
-  public interface RequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:api.Request)
+  public interface AuthTargetOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.AuthTarget)
       com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.api.AuthType type = 1;</code>
+     */
+    int getTypeValue();
+    /**
+     * <code>.api.AuthType type = 1;</code>
+     */
+    api.Graphik.AuthType getType();
 
     /**
      * <pre>
      * method is the rpc method
      * </pre>
      *
-     * <code>string method = 1 [(.validator.field) = { ... }</code>
+     * <code>string method = 2 [(.validator.field) = { ... }</code>
      */
     java.lang.String getMethod();
     /**
@@ -41403,7 +41613,7 @@ public final class Graphik {
      * method is the rpc method
      * </pre>
      *
-     * <code>string method = 1 [(.validator.field) = { ... }</code>
+     * <code>string method = 2 [(.validator.field) = { ... }</code>
      */
     com.google.protobuf.ByteString
         getMethodBytes();
@@ -41413,7 +41623,7 @@ public final class Graphik {
      * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
      */
     boolean hasUser();
     /**
@@ -41421,7 +41631,7 @@ public final class Graphik {
      * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
      */
     api.Graphik.Doc getUser();
     /**
@@ -41429,73 +41639,49 @@ public final class Graphik {
      * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
      */
     api.Graphik.DocOrBuilder getUserOrBuilder();
 
     /**
      * <pre>
-     * timestamp is when the intercept was received
+     * request is the intercepted request
      * </pre>
      *
-     * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
+     * <code>.google.protobuf.Struct data = 4;</code>
      */
-    boolean hasTimestamp();
-    /**
-     * <pre>
-     * timestamp is when the intercept was received
-     * </pre>
-     *
-     * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-     */
-    com.google.protobuf.Timestamp getTimestamp();
-    /**
-     * <pre>
-     * timestamp is when the intercept was received
-     * </pre>
-     *
-     * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-     */
-    com.google.protobuf.TimestampOrBuilder getTimestampOrBuilder();
-
+    boolean hasData();
     /**
      * <pre>
      * request is the intercepted request
      * </pre>
      *
-     * <code>.google.protobuf.Struct request = 4;</code>
+     * <code>.google.protobuf.Struct data = 4;</code>
      */
-    boolean hasRequest();
+    com.google.protobuf.Struct getData();
     /**
      * <pre>
      * request is the intercepted request
      * </pre>
      *
-     * <code>.google.protobuf.Struct request = 4;</code>
+     * <code>.google.protobuf.Struct data = 4;</code>
      */
-    com.google.protobuf.Struct getRequest();
-    /**
-     * <pre>
-     * request is the intercepted request
-     * </pre>
-     *
-     * <code>.google.protobuf.Struct request = 4;</code>
-     */
-    com.google.protobuf.StructOrBuilder getRequestOrBuilder();
+    com.google.protobuf.StructOrBuilder getDataOrBuilder();
   }
   /**
-   * Protobuf type {@code api.Request}
+   * Protobuf type {@code api.AuthTarget}
    */
-  public  static final class Request extends
+  public  static final class AuthTarget extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:api.Request)
-      RequestOrBuilder {
+      // @@protoc_insertion_point(message_implements:api.AuthTarget)
+      AuthTargetOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use Request.newBuilder() to construct.
-    private Request(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use AuthTarget.newBuilder() to construct.
+    private AuthTarget(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private Request() {
+    private AuthTarget() {
+      type_ = 0;
       method_ = "";
     }
 
@@ -41504,7 +41690,7 @@ public final class Graphik {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private Request(
+    private AuthTarget(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -41523,13 +41709,19 @@ public final class Graphik {
             case 0:
               done = true;
               break;
-            case 10: {
+            case 8: {
+              int rawValue = input.readEnum();
+
+              type_ = rawValue;
+              break;
+            }
+            case 18: {
               java.lang.String s = input.readStringRequireUtf8();
 
               method_ = s;
               break;
             }
-            case 18: {
+            case 26: {
               api.Graphik.Doc.Builder subBuilder = null;
               if (user_ != null) {
                 subBuilder = user_.toBuilder();
@@ -41542,28 +41734,15 @@ public final class Graphik {
 
               break;
             }
-            case 26: {
-              com.google.protobuf.Timestamp.Builder subBuilder = null;
-              if (timestamp_ != null) {
-                subBuilder = timestamp_.toBuilder();
-              }
-              timestamp_ = input.readMessage(com.google.protobuf.Timestamp.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(timestamp_);
-                timestamp_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
             case 34: {
               com.google.protobuf.Struct.Builder subBuilder = null;
-              if (request_ != null) {
-                subBuilder = request_.toBuilder();
+              if (data_ != null) {
+                subBuilder = data_.toBuilder();
               }
-              request_ = input.readMessage(com.google.protobuf.Struct.parser(), extensionRegistry);
+              data_ = input.readMessage(com.google.protobuf.Struct.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(request_);
-                request_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(data_);
+                data_ = subBuilder.buildPartial();
               }
 
               break;
@@ -41589,25 +41768,42 @@ public final class Graphik {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return api.Graphik.internal_static_api_Request_descriptor;
+      return api.Graphik.internal_static_api_AuthTarget_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return api.Graphik.internal_static_api_Request_fieldAccessorTable
+      return api.Graphik.internal_static_api_AuthTarget_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              api.Graphik.Request.class, api.Graphik.Request.Builder.class);
+              api.Graphik.AuthTarget.class, api.Graphik.AuthTarget.Builder.class);
     }
 
-    public static final int METHOD_FIELD_NUMBER = 1;
+    public static final int TYPE_FIELD_NUMBER = 1;
+    private int type_;
+    /**
+     * <code>.api.AuthType type = 1;</code>
+     */
+    public int getTypeValue() {
+      return type_;
+    }
+    /**
+     * <code>.api.AuthType type = 1;</code>
+     */
+    public api.Graphik.AuthType getType() {
+      @SuppressWarnings("deprecation")
+      api.Graphik.AuthType result = api.Graphik.AuthType.valueOf(type_);
+      return result == null ? api.Graphik.AuthType.UNRECOGNIZED : result;
+    }
+
+    public static final int METHOD_FIELD_NUMBER = 2;
     private volatile java.lang.Object method_;
     /**
      * <pre>
      * method is the rpc method
      * </pre>
      *
-     * <code>string method = 1 [(.validator.field) = { ... }</code>
+     * <code>string method = 2 [(.validator.field) = { ... }</code>
      */
     public java.lang.String getMethod() {
       java.lang.Object ref = method_;
@@ -41626,7 +41822,7 @@ public final class Graphik {
      * method is the rpc method
      * </pre>
      *
-     * <code>string method = 1 [(.validator.field) = { ... }</code>
+     * <code>string method = 2 [(.validator.field) = { ... }</code>
      */
     public com.google.protobuf.ByteString
         getMethodBytes() {
@@ -41642,14 +41838,14 @@ public final class Graphik {
       }
     }
 
-    public static final int USER_FIELD_NUMBER = 2;
+    public static final int USER_FIELD_NUMBER = 3;
     private api.Graphik.Doc user_;
     /**
      * <pre>
      * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
      */
     public boolean hasUser() {
       return user_ != null;
@@ -41659,7 +41855,7 @@ public final class Graphik {
      * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
      */
     public api.Graphik.Doc getUser() {
       return user_ == null ? api.Graphik.Doc.getDefaultInstance() : user_;
@@ -41669,76 +41865,43 @@ public final class Graphik {
      * user is the user making the request
      * </pre>
      *
-     * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+     * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
      */
     public api.Graphik.DocOrBuilder getUserOrBuilder() {
       return getUser();
     }
 
-    public static final int TIMESTAMP_FIELD_NUMBER = 3;
-    private com.google.protobuf.Timestamp timestamp_;
-    /**
-     * <pre>
-     * timestamp is when the intercept was received
-     * </pre>
-     *
-     * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-     */
-    public boolean hasTimestamp() {
-      return timestamp_ != null;
-    }
-    /**
-     * <pre>
-     * timestamp is when the intercept was received
-     * </pre>
-     *
-     * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-     */
-    public com.google.protobuf.Timestamp getTimestamp() {
-      return timestamp_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : timestamp_;
-    }
-    /**
-     * <pre>
-     * timestamp is when the intercept was received
-     * </pre>
-     *
-     * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-     */
-    public com.google.protobuf.TimestampOrBuilder getTimestampOrBuilder() {
-      return getTimestamp();
-    }
-
-    public static final int REQUEST_FIELD_NUMBER = 4;
-    private com.google.protobuf.Struct request_;
+    public static final int DATA_FIELD_NUMBER = 4;
+    private com.google.protobuf.Struct data_;
     /**
      * <pre>
      * request is the intercepted request
      * </pre>
      *
-     * <code>.google.protobuf.Struct request = 4;</code>
+     * <code>.google.protobuf.Struct data = 4;</code>
      */
-    public boolean hasRequest() {
-      return request_ != null;
+    public boolean hasData() {
+      return data_ != null;
     }
     /**
      * <pre>
      * request is the intercepted request
      * </pre>
      *
-     * <code>.google.protobuf.Struct request = 4;</code>
+     * <code>.google.protobuf.Struct data = 4;</code>
      */
-    public com.google.protobuf.Struct getRequest() {
-      return request_ == null ? com.google.protobuf.Struct.getDefaultInstance() : request_;
+    public com.google.protobuf.Struct getData() {
+      return data_ == null ? com.google.protobuf.Struct.getDefaultInstance() : data_;
     }
     /**
      * <pre>
      * request is the intercepted request
      * </pre>
      *
-     * <code>.google.protobuf.Struct request = 4;</code>
+     * <code>.google.protobuf.Struct data = 4;</code>
      */
-    public com.google.protobuf.StructOrBuilder getRequestOrBuilder() {
-      return getRequest();
+    public com.google.protobuf.StructOrBuilder getDataOrBuilder() {
+      return getData();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -41755,17 +41918,17 @@ public final class Graphik {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      if (type_ != api.Graphik.AuthType.REQUEST.getNumber()) {
+        output.writeEnum(1, type_);
+      }
       if (!getMethodBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, method_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, method_);
       }
       if (user_ != null) {
-        output.writeMessage(2, getUser());
+        output.writeMessage(3, getUser());
       }
-      if (timestamp_ != null) {
-        output.writeMessage(3, getTimestamp());
-      }
-      if (request_ != null) {
-        output.writeMessage(4, getRequest());
+      if (data_ != null) {
+        output.writeMessage(4, getData());
       }
       unknownFields.writeTo(output);
     }
@@ -41776,20 +41939,20 @@ public final class Graphik {
       if (size != -1) return size;
 
       size = 0;
+      if (type_ != api.Graphik.AuthType.REQUEST.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, type_);
+      }
       if (!getMethodBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, method_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, method_);
       }
       if (user_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getUser());
+          .computeMessageSize(3, getUser());
       }
-      if (timestamp_ != null) {
+      if (data_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getTimestamp());
-      }
-      if (request_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getRequest());
+          .computeMessageSize(4, getData());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -41801,12 +41964,13 @@ public final class Graphik {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof api.Graphik.Request)) {
+      if (!(obj instanceof api.Graphik.AuthTarget)) {
         return super.equals(obj);
       }
-      api.Graphik.Request other = (api.Graphik.Request) obj;
+      api.Graphik.AuthTarget other = (api.Graphik.AuthTarget) obj;
 
       boolean result = true;
+      result = result && type_ == other.type_;
       result = result && getMethod()
           .equals(other.getMethod());
       result = result && (hasUser() == other.hasUser());
@@ -41814,15 +41978,10 @@ public final class Graphik {
         result = result && getUser()
             .equals(other.getUser());
       }
-      result = result && (hasTimestamp() == other.hasTimestamp());
-      if (hasTimestamp()) {
-        result = result && getTimestamp()
-            .equals(other.getTimestamp());
-      }
-      result = result && (hasRequest() == other.hasRequest());
-      if (hasRequest()) {
-        result = result && getRequest()
-            .equals(other.getRequest());
+      result = result && (hasData() == other.hasData());
+      if (hasData()) {
+        result = result && getData()
+            .equals(other.getData());
       }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
@@ -41835,88 +41994,86 @@ public final class Graphik {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + type_;
       hash = (37 * hash) + METHOD_FIELD_NUMBER;
       hash = (53 * hash) + getMethod().hashCode();
       if (hasUser()) {
         hash = (37 * hash) + USER_FIELD_NUMBER;
         hash = (53 * hash) + getUser().hashCode();
       }
-      if (hasTimestamp()) {
-        hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
-        hash = (53 * hash) + getTimestamp().hashCode();
-      }
-      if (hasRequest()) {
-        hash = (37 * hash) + REQUEST_FIELD_NUMBER;
-        hash = (53 * hash) + getRequest().hashCode();
+      if (hasData()) {
+        hash = (37 * hash) + DATA_FIELD_NUMBER;
+        hash = (53 * hash) + getData().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static api.Graphik.Request parseFrom(
+    public static api.Graphik.AuthTarget parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.Request parseFrom(
+    public static api.Graphik.AuthTarget parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.Request parseFrom(
+    public static api.Graphik.AuthTarget parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.Request parseFrom(
+    public static api.Graphik.AuthTarget parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.Request parseFrom(byte[] data)
+    public static api.Graphik.AuthTarget parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.Request parseFrom(
+    public static api.Graphik.AuthTarget parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.Request parseFrom(java.io.InputStream input)
+    public static api.Graphik.AuthTarget parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.Request parseFrom(
+    public static api.Graphik.AuthTarget parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.Request parseDelimitedFrom(java.io.InputStream input)
+    public static api.Graphik.AuthTarget parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static api.Graphik.Request parseDelimitedFrom(
+    public static api.Graphik.AuthTarget parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.Request parseFrom(
+    public static api.Graphik.AuthTarget parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.Request parseFrom(
+    public static api.Graphik.AuthTarget parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -41929,7 +42086,7 @@ public final class Graphik {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(api.Graphik.Request prototype) {
+    public static Builder newBuilder(api.Graphik.AuthTarget prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -41945,26 +42102,26 @@ public final class Graphik {
       return builder;
     }
     /**
-     * Protobuf type {@code api.Request}
+     * Protobuf type {@code api.AuthTarget}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:api.Request)
-        api.Graphik.RequestOrBuilder {
+        // @@protoc_insertion_point(builder_implements:api.AuthTarget)
+        api.Graphik.AuthTargetOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return api.Graphik.internal_static_api_Request_descriptor;
+        return api.Graphik.internal_static_api_AuthTarget_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return api.Graphik.internal_static_api_Request_fieldAccessorTable
+        return api.Graphik.internal_static_api_AuthTarget_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                api.Graphik.Request.class, api.Graphik.Request.Builder.class);
+                api.Graphik.AuthTarget.class, api.Graphik.AuthTarget.Builder.class);
       }
 
-      // Construct using api.Graphik.Request.newBuilder()
+      // Construct using api.Graphik.AuthTarget.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -41982,6 +42139,8 @@ public final class Graphik {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        type_ = 0;
+
         method_ = "";
 
         if (userBuilder_ == null) {
@@ -41990,17 +42149,11 @@ public final class Graphik {
           user_ = null;
           userBuilder_ = null;
         }
-        if (timestampBuilder_ == null) {
-          timestamp_ = null;
+        if (dataBuilder_ == null) {
+          data_ = null;
         } else {
-          timestamp_ = null;
-          timestampBuilder_ = null;
-        }
-        if (requestBuilder_ == null) {
-          request_ = null;
-        } else {
-          request_ = null;
-          requestBuilder_ = null;
+          data_ = null;
+          dataBuilder_ = null;
         }
         return this;
       }
@@ -42008,17 +42161,17 @@ public final class Graphik {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return api.Graphik.internal_static_api_Request_descriptor;
+        return api.Graphik.internal_static_api_AuthTarget_descriptor;
       }
 
       @java.lang.Override
-      public api.Graphik.Request getDefaultInstanceForType() {
-        return api.Graphik.Request.getDefaultInstance();
+      public api.Graphik.AuthTarget getDefaultInstanceForType() {
+        return api.Graphik.AuthTarget.getDefaultInstance();
       }
 
       @java.lang.Override
-      public api.Graphik.Request build() {
-        api.Graphik.Request result = buildPartial();
+      public api.Graphik.AuthTarget build() {
+        api.Graphik.AuthTarget result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -42026,23 +42179,19 @@ public final class Graphik {
       }
 
       @java.lang.Override
-      public api.Graphik.Request buildPartial() {
-        api.Graphik.Request result = new api.Graphik.Request(this);
+      public api.Graphik.AuthTarget buildPartial() {
+        api.Graphik.AuthTarget result = new api.Graphik.AuthTarget(this);
+        result.type_ = type_;
         result.method_ = method_;
         if (userBuilder_ == null) {
           result.user_ = user_;
         } else {
           result.user_ = userBuilder_.build();
         }
-        if (timestampBuilder_ == null) {
-          result.timestamp_ = timestamp_;
+        if (dataBuilder_ == null) {
+          result.data_ = data_;
         } else {
-          result.timestamp_ = timestampBuilder_.build();
-        }
-        if (requestBuilder_ == null) {
-          result.request_ = request_;
-        } else {
-          result.request_ = requestBuilder_.build();
+          result.data_ = dataBuilder_.build();
         }
         onBuilt();
         return result;
@@ -42082,16 +42231,19 @@ public final class Graphik {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof api.Graphik.Request) {
-          return mergeFrom((api.Graphik.Request)other);
+        if (other instanceof api.Graphik.AuthTarget) {
+          return mergeFrom((api.Graphik.AuthTarget)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(api.Graphik.Request other) {
-        if (other == api.Graphik.Request.getDefaultInstance()) return this;
+      public Builder mergeFrom(api.Graphik.AuthTarget other) {
+        if (other == api.Graphik.AuthTarget.getDefaultInstance()) return this;
+        if (other.type_ != 0) {
+          setTypeValue(other.getTypeValue());
+        }
         if (!other.getMethod().isEmpty()) {
           method_ = other.method_;
           onChanged();
@@ -42099,11 +42251,8 @@ public final class Graphik {
         if (other.hasUser()) {
           mergeUser(other.getUser());
         }
-        if (other.hasTimestamp()) {
-          mergeTimestamp(other.getTimestamp());
-        }
-        if (other.hasRequest()) {
-          mergeRequest(other.getRequest());
+        if (other.hasData()) {
+          mergeData(other.getData());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -42120,11 +42269,11 @@ public final class Graphik {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        api.Graphik.Request parsedMessage = null;
+        api.Graphik.AuthTarget parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (api.Graphik.Request) e.getUnfinishedMessage();
+          parsedMessage = (api.Graphik.AuthTarget) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -42134,13 +42283,58 @@ public final class Graphik {
         return this;
       }
 
+      private int type_ = 0;
+      /**
+       * <code>.api.AuthType type = 1;</code>
+       */
+      public int getTypeValue() {
+        return type_;
+      }
+      /**
+       * <code>.api.AuthType type = 1;</code>
+       */
+      public Builder setTypeValue(int value) {
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.api.AuthType type = 1;</code>
+       */
+      public api.Graphik.AuthType getType() {
+        @SuppressWarnings("deprecation")
+        api.Graphik.AuthType result = api.Graphik.AuthType.valueOf(type_);
+        return result == null ? api.Graphik.AuthType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.api.AuthType type = 1;</code>
+       */
+      public Builder setType(api.Graphik.AuthType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        type_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.api.AuthType type = 1;</code>
+       */
+      public Builder clearType() {
+        
+        type_ = 0;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object method_ = "";
       /**
        * <pre>
        * method is the rpc method
        * </pre>
        *
-       * <code>string method = 1 [(.validator.field) = { ... }</code>
+       * <code>string method = 2 [(.validator.field) = { ... }</code>
        */
       public java.lang.String getMethod() {
         java.lang.Object ref = method_;
@@ -42159,7 +42353,7 @@ public final class Graphik {
        * method is the rpc method
        * </pre>
        *
-       * <code>string method = 1 [(.validator.field) = { ... }</code>
+       * <code>string method = 2 [(.validator.field) = { ... }</code>
        */
       public com.google.protobuf.ByteString
           getMethodBytes() {
@@ -42179,7 +42373,7 @@ public final class Graphik {
        * method is the rpc method
        * </pre>
        *
-       * <code>string method = 1 [(.validator.field) = { ... }</code>
+       * <code>string method = 2 [(.validator.field) = { ... }</code>
        */
       public Builder setMethod(
           java.lang.String value) {
@@ -42196,7 +42390,7 @@ public final class Graphik {
        * method is the rpc method
        * </pre>
        *
-       * <code>string method = 1 [(.validator.field) = { ... }</code>
+       * <code>string method = 2 [(.validator.field) = { ... }</code>
        */
       public Builder clearMethod() {
         
@@ -42209,7 +42403,7 @@ public final class Graphik {
        * method is the rpc method
        * </pre>
        *
-       * <code>string method = 1 [(.validator.field) = { ... }</code>
+       * <code>string method = 2 [(.validator.field) = { ... }</code>
        */
       public Builder setMethodBytes(
           com.google.protobuf.ByteString value) {
@@ -42231,7 +42425,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       public boolean hasUser() {
         return userBuilder_ != null || user_ != null;
@@ -42241,7 +42435,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       public api.Graphik.Doc getUser() {
         if (userBuilder_ == null) {
@@ -42255,7 +42449,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       public Builder setUser(api.Graphik.Doc value) {
         if (userBuilder_ == null) {
@@ -42275,7 +42469,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       public Builder setUser(
           api.Graphik.Doc.Builder builderForValue) {
@@ -42293,7 +42487,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       public Builder mergeUser(api.Graphik.Doc value) {
         if (userBuilder_ == null) {
@@ -42315,7 +42509,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       public Builder clearUser() {
         if (userBuilder_ == null) {
@@ -42333,7 +42527,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       public api.Graphik.Doc.Builder getUserBuilder() {
         
@@ -42345,7 +42539,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       public api.Graphik.DocOrBuilder getUserOrBuilder() {
         if (userBuilder_ != null) {
@@ -42360,7 +42554,7 @@ public final class Graphik {
        * user is the user making the request
        * </pre>
        *
-       * <code>.api.Doc user = 2 [(.validator.field) = { ... }</code>
+       * <code>.api.Doc user = 3 [(.validator.field) = { ... }</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder> 
@@ -42376,202 +42570,49 @@ public final class Graphik {
         return userBuilder_;
       }
 
-      private com.google.protobuf.Timestamp timestamp_ = null;
+      private com.google.protobuf.Struct data_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> timestampBuilder_;
+          com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder> dataBuilder_;
       /**
        * <pre>
-       * timestamp is when the intercept was received
+       * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
-      public boolean hasTimestamp() {
-        return timestampBuilder_ != null || timestamp_ != null;
+      public boolean hasData() {
+        return dataBuilder_ != null || data_ != null;
       }
       /**
        * <pre>
-       * timestamp is when the intercept was received
+       * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
-      public com.google.protobuf.Timestamp getTimestamp() {
-        if (timestampBuilder_ == null) {
-          return timestamp_ == null ? com.google.protobuf.Timestamp.getDefaultInstance() : timestamp_;
+      public com.google.protobuf.Struct getData() {
+        if (dataBuilder_ == null) {
+          return data_ == null ? com.google.protobuf.Struct.getDefaultInstance() : data_;
         } else {
-          return timestampBuilder_.getMessage();
+          return dataBuilder_.getMessage();
         }
       }
       /**
        * <pre>
-       * timestamp is when the intercept was received
+       * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
-      public Builder setTimestamp(com.google.protobuf.Timestamp value) {
-        if (timestampBuilder_ == null) {
+      public Builder setData(com.google.protobuf.Struct value) {
+        if (dataBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          timestamp_ = value;
+          data_ = value;
           onChanged();
         } else {
-          timestampBuilder_.setMessage(value);
-        }
-
-        return this;
-      }
-      /**
-       * <pre>
-       * timestamp is when the intercept was received
-       * </pre>
-       *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-       */
-      public Builder setTimestamp(
-          com.google.protobuf.Timestamp.Builder builderForValue) {
-        if (timestampBuilder_ == null) {
-          timestamp_ = builderForValue.build();
-          onChanged();
-        } else {
-          timestampBuilder_.setMessage(builderForValue.build());
-        }
-
-        return this;
-      }
-      /**
-       * <pre>
-       * timestamp is when the intercept was received
-       * </pre>
-       *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-       */
-      public Builder mergeTimestamp(com.google.protobuf.Timestamp value) {
-        if (timestampBuilder_ == null) {
-          if (timestamp_ != null) {
-            timestamp_ =
-              com.google.protobuf.Timestamp.newBuilder(timestamp_).mergeFrom(value).buildPartial();
-          } else {
-            timestamp_ = value;
-          }
-          onChanged();
-        } else {
-          timestampBuilder_.mergeFrom(value);
-        }
-
-        return this;
-      }
-      /**
-       * <pre>
-       * timestamp is when the intercept was received
-       * </pre>
-       *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-       */
-      public Builder clearTimestamp() {
-        if (timestampBuilder_ == null) {
-          timestamp_ = null;
-          onChanged();
-        } else {
-          timestamp_ = null;
-          timestampBuilder_ = null;
-        }
-
-        return this;
-      }
-      /**
-       * <pre>
-       * timestamp is when the intercept was received
-       * </pre>
-       *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-       */
-      public com.google.protobuf.Timestamp.Builder getTimestampBuilder() {
-        
-        onChanged();
-        return getTimestampFieldBuilder().getBuilder();
-      }
-      /**
-       * <pre>
-       * timestamp is when the intercept was received
-       * </pre>
-       *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-       */
-      public com.google.protobuf.TimestampOrBuilder getTimestampOrBuilder() {
-        if (timestampBuilder_ != null) {
-          return timestampBuilder_.getMessageOrBuilder();
-        } else {
-          return timestamp_ == null ?
-              com.google.protobuf.Timestamp.getDefaultInstance() : timestamp_;
-        }
-      }
-      /**
-       * <pre>
-       * timestamp is when the intercept was received
-       * </pre>
-       *
-       * <code>.google.protobuf.Timestamp timestamp = 3 [(.validator.field) = { ... }</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder> 
-          getTimestampFieldBuilder() {
-        if (timestampBuilder_ == null) {
-          timestampBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              com.google.protobuf.Timestamp, com.google.protobuf.Timestamp.Builder, com.google.protobuf.TimestampOrBuilder>(
-                  getTimestamp(),
-                  getParentForChildren(),
-                  isClean());
-          timestamp_ = null;
-        }
-        return timestampBuilder_;
-      }
-
-      private com.google.protobuf.Struct request_ = null;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder> requestBuilder_;
-      /**
-       * <pre>
-       * request is the intercepted request
-       * </pre>
-       *
-       * <code>.google.protobuf.Struct request = 4;</code>
-       */
-      public boolean hasRequest() {
-        return requestBuilder_ != null || request_ != null;
-      }
-      /**
-       * <pre>
-       * request is the intercepted request
-       * </pre>
-       *
-       * <code>.google.protobuf.Struct request = 4;</code>
-       */
-      public com.google.protobuf.Struct getRequest() {
-        if (requestBuilder_ == null) {
-          return request_ == null ? com.google.protobuf.Struct.getDefaultInstance() : request_;
-        } else {
-          return requestBuilder_.getMessage();
-        }
-      }
-      /**
-       * <pre>
-       * request is the intercepted request
-       * </pre>
-       *
-       * <code>.google.protobuf.Struct request = 4;</code>
-       */
-      public Builder setRequest(com.google.protobuf.Struct value) {
-        if (requestBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          request_ = value;
-          onChanged();
-        } else {
-          requestBuilder_.setMessage(value);
+          dataBuilder_.setMessage(value);
         }
 
         return this;
@@ -42581,15 +42622,15 @@ public final class Graphik {
        * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Struct request = 4;</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
-      public Builder setRequest(
+      public Builder setData(
           com.google.protobuf.Struct.Builder builderForValue) {
-        if (requestBuilder_ == null) {
-          request_ = builderForValue.build();
+        if (dataBuilder_ == null) {
+          data_ = builderForValue.build();
           onChanged();
         } else {
-          requestBuilder_.setMessage(builderForValue.build());
+          dataBuilder_.setMessage(builderForValue.build());
         }
 
         return this;
@@ -42599,19 +42640,19 @@ public final class Graphik {
        * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Struct request = 4;</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
-      public Builder mergeRequest(com.google.protobuf.Struct value) {
-        if (requestBuilder_ == null) {
-          if (request_ != null) {
-            request_ =
-              com.google.protobuf.Struct.newBuilder(request_).mergeFrom(value).buildPartial();
+      public Builder mergeData(com.google.protobuf.Struct value) {
+        if (dataBuilder_ == null) {
+          if (data_ != null) {
+            data_ =
+              com.google.protobuf.Struct.newBuilder(data_).mergeFrom(value).buildPartial();
           } else {
-            request_ = value;
+            data_ = value;
           }
           onChanged();
         } else {
-          requestBuilder_.mergeFrom(value);
+          dataBuilder_.mergeFrom(value);
         }
 
         return this;
@@ -42621,15 +42662,15 @@ public final class Graphik {
        * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Struct request = 4;</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
-      public Builder clearRequest() {
-        if (requestBuilder_ == null) {
-          request_ = null;
+      public Builder clearData() {
+        if (dataBuilder_ == null) {
+          data_ = null;
           onChanged();
         } else {
-          request_ = null;
-          requestBuilder_ = null;
+          data_ = null;
+          dataBuilder_ = null;
         }
 
         return this;
@@ -42639,26 +42680,26 @@ public final class Graphik {
        * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Struct request = 4;</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
-      public com.google.protobuf.Struct.Builder getRequestBuilder() {
+      public com.google.protobuf.Struct.Builder getDataBuilder() {
         
         onChanged();
-        return getRequestFieldBuilder().getBuilder();
+        return getDataFieldBuilder().getBuilder();
       }
       /**
        * <pre>
        * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Struct request = 4;</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
-      public com.google.protobuf.StructOrBuilder getRequestOrBuilder() {
-        if (requestBuilder_ != null) {
-          return requestBuilder_.getMessageOrBuilder();
+      public com.google.protobuf.StructOrBuilder getDataOrBuilder() {
+        if (dataBuilder_ != null) {
+          return dataBuilder_.getMessageOrBuilder();
         } else {
-          return request_ == null ?
-              com.google.protobuf.Struct.getDefaultInstance() : request_;
+          return data_ == null ?
+              com.google.protobuf.Struct.getDefaultInstance() : data_;
         }
       }
       /**
@@ -42666,20 +42707,20 @@ public final class Graphik {
        * request is the intercepted request
        * </pre>
        *
-       * <code>.google.protobuf.Struct request = 4;</code>
+       * <code>.google.protobuf.Struct data = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder> 
-          getRequestFieldBuilder() {
-        if (requestBuilder_ == null) {
-          requestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+          getDataFieldBuilder() {
+        if (dataBuilder_ == null) {
+          dataBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
               com.google.protobuf.Struct, com.google.protobuf.Struct.Builder, com.google.protobuf.StructOrBuilder>(
-                  getRequest(),
+                  getData(),
                   getParentForChildren(),
                   isClean());
-          request_ = null;
+          data_ = null;
         }
-        return requestBuilder_;
+        return dataBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -42694,41 +42735,41 @@ public final class Graphik {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:api.Request)
+      // @@protoc_insertion_point(builder_scope:api.AuthTarget)
     }
 
-    // @@protoc_insertion_point(class_scope:api.Request)
-    private static final api.Graphik.Request DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:api.AuthTarget)
+    private static final api.Graphik.AuthTarget DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new api.Graphik.Request();
+      DEFAULT_INSTANCE = new api.Graphik.AuthTarget();
     }
 
-    public static api.Graphik.Request getDefaultInstance() {
+    public static api.Graphik.AuthTarget getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<Request>
-        PARSER = new com.google.protobuf.AbstractParser<Request>() {
+    private static final com.google.protobuf.Parser<AuthTarget>
+        PARSER = new com.google.protobuf.AbstractParser<AuthTarget>() {
       @java.lang.Override
-      public Request parsePartialFrom(
+      public AuthTarget parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Request(input, extensionRegistry);
+        return new AuthTarget(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<Request> parser() {
+    public static com.google.protobuf.Parser<AuthTarget> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<Request> getParserForType() {
+    public com.google.protobuf.Parser<AuthTarget> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public api.Graphik.Request getDefaultInstanceForType() {
+    public api.Graphik.AuthTarget getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -42935,10 +42976,10 @@ public final class Graphik {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_api_ExprFilter_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_api_Request_descriptor;
+    internal_static_api_AuthTarget_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_api_Request_fieldAccessorTable;
+      internal_static_api_AuthTarget_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -43020,115 +43061,117 @@ public final class Graphik {
       "\020IndexConstructor\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^" +
       ".{1,225}$\022\037\n\005gtype\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
       "}$\022$\n\nexpression\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$" +
-      "\022\014\n\004docs\030\006 \001(\010\022\023\n\013connections\030\007 \001(\010\"R\n\nA" +
+      "\022\014\n\004docs\030\006 \001(\010\022\023\n\013connections\030\007 \001(\010\"o\n\nA" +
       "uthorizer\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
-      "$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"" +
-      "3\n\013Authorizers\022$\n\013authorizers\030\001 \003(\0132\017.ap" +
-      "i.Authorizer\"\231\001\n\rTypeValidator\022\036\n\004name\030\001" +
-      " \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\002 \001(\tB\020\342" +
-      "\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\003 \001(\tB\020\342\337\037" +
-      "\014\n\n^.{1,225}$\022\014\n\004docs\030\004 \001(\010\022\023\n\013connectio" +
-      "ns\030\005 \001(\010\"8\n\016TypeValidators\022&\n\nvalidators" +
-      "\030\001 \003(\0132\022.api.TypeValidator\"\221\001\n\005Index\022\036\n\004" +
-      "name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\003 " +
-      "\001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\004 \001(" +
-      "\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\006 \001(\010\022\023\n\013con" +
-      "nections\030\007 \001(\010\"&\n\007Indexes\022\033\n\007indexes\030\001 \003" +
-      "(\0132\n.api.Index\"E\n\014StreamFilter\022!\n\007channe" +
-      "l\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\022\n\nexpression\030" +
-      "\002 \001(\t\"G\n\005Graph\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022" +
-      "%\n\013connections\030\002 \001(\0132\020.api.Connections\"\242" +
-      "\002\n\005Flags\022\031\n\021open_id_discovery\030\001 \001(\t\022\024\n\014s" +
-      "torage_path\030\002 \001(\t\022\017\n\007metrics\030\003 \001(\010\022\025\n\ral" +
-      "low_headers\030\005 \003(\t\022\025\n\rallow_methods\030\006 \003(\t" +
-      "\022\025\n\rallow_origins\030\007 \003(\t\022\022\n\nroot_users\030\010 " +
-      "\003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007tls_key\030\n \001(\t\022\034" +
-      "\n\024playground_client_id\030\013 \001(\t\022 \n\030playgrou" +
-      "nd_client_secret\030\014 \001(\t\022\033\n\023playground_red" +
-      "irect\030\r \001(\t\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"\027\n" +
-      "\006Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014ExistsFilter\022" +
-      "\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpr" +
-      "ession\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030\003" +
-      " \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004" +
-      "Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\na" +
-      "ttributes\030\002 \001(\0132\027.google.protobuf.Struct" +
-      "\"V\n\nEditFilter\022\033\n\006filter\030\001 \001(\0132\013.api.Fil" +
-      "ter\022+\n\nattributes\030\002 \001(\0132\027.google.protobu" +
-      "f.Struct\"\027\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017Out" +
-      "boundMessage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{" +
-      "1,225}$\022-\n\004data\030\002 \001(\0132\027.google.protobuf." +
-      "StructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!\n\007channel\030\001 " +
-      "\001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.go" +
-      "ogle.protobuf.StructB\006\342\337\037\002 \001\022\036\n\004user\030\003 \001" +
-      "(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\0132" +
-      "\032.google.protobuf.TimestampB\006\342\337\037\002 \001\022 \n\006m" +
-      "ethod\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"\244\001\n\006Schema" +
-      "\022\030\n\020connection_types\030\001 \003(\t\022\021\n\tdoc_types\030" +
-      "\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020.api.Authori" +
-      "zers\022\'\n\nvalidators\030\004 \001(\0132\023.api.TypeValid" +
-      "ators\022\035\n\007indexes\030\005 \001(\0132\014.api.Indexes\" \n\n" +
-      "ExprFilter\022\022\n\nexpression\030\001 \001(\t\"\254\001\n\007Reque" +
-      "st\022 \n\006method\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\036\n\004" +
-      "user\030\002 \001(\0132\010.api.DocB\006\342\337\037\002 \001\0225\n\ttimestam" +
-      "p\030\003 \001(\0132\032.google.protobuf.TimestampB\006\342\337\037" +
-      "\002 \001\022(\n\007request\030\004 \001(\0132\027.google.protobuf.S" +
-      "truct*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\t" +
-      "Aggregate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007" +
-      "\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\0052\332\020\n\017DatabaseS" +
-      "ervice\022+\n\004Ping\022\026.google.protobuf.Empty\032\t" +
-      ".api.Pong\"\000\0222\n\tGetSchema\022\026.google.protob" +
-      "uf.Empty\032\013.api.Schema\"\000\022<\n\016SetAuthorizer" +
-      "s\022\020.api.Authorizers\032\026.google.protobuf.Em" +
-      "pty\"\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.goog" +
-      "le.protobuf.Empty\"\000\022B\n\021SetTypeValidators" +
-      "\022\023.api.TypeValidators\032\026.google.protobuf." +
-      "Empty\"\000\022(\n\002Me\022\026.google.protobuf.Empty\032\010." +
-      "api.Doc\"\000\022,\n\tCreateDoc\022\023.api.DocConstruc" +
-      "tor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.api.DocC" +
-      "onstructors\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api" +
-      ".Ref\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Fil" +
-      "ter\032\t.api.Docs\"\000\0222\n\010Traverse\022\023.api.Trave" +
-      "rseFilter\032\017.api.Traversals\"\000\0226\n\nTraverse" +
-      "Me\022\025.api.TraverseMeFilter\032\017.api.Traversa" +
-      "ls\"\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(" +
-      "\n\010EditDocs\022\017.api.EditFilter\032\t.api.Docs\"\000" +
-      "\022,\n\006DelDoc\022\010.api.Ref\032\026.google.protobuf.E" +
-      "mpty\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google." +
-      "protobuf.Empty\"\000\022.\n\tExistsDoc\022\021.api.Exis" +
-      "tsFilter\032\014.api.Boolean\"\000\0225\n\020ExistsConnec" +
-      "tion\022\021.api.ExistsFilter\032\014.api.Boolean\"\000\022" +
-      "\"\n\006HasDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rH" +
-      "asConnection\022\010.api.Ref\032\014.api.Boolean\"\000\022A" +
-      "\n\020CreateConnection\022\032.api.ConnectionConst" +
-      "ructor\032\017.api.Connection\"\000\022D\n\021CreateConne" +
-      "ctions\022\033.api.ConnectionConstructors\032\020.ap" +
-      "i.Connections\"\000\022@\n\020SearchAndConnect\022\030.ap" +
-      "i.SearchConnectFilter\032\020.api.Connections\"" +
-      "\000\022D\n\022SearchAndConnectMe\022\032.api.SearchConn" +
-      "ectMeFilter\032\020.api.Connections\"\000\022,\n\rGetCo" +
-      "nnection\022\010.api.Ref\032\017.api.Connection\"\000\0224\n" +
-      "\021SearchConnections\022\013.api.Filter\032\020.api.Co" +
-      "nnections\"\000\022.\n\016EditConnection\022\t.api.Edit" +
-      "\032\017.api.Connection\"\000\0226\n\017EditConnections\022\017" +
-      ".api.EditFilter\032\020.api.Connections\"\000\0223\n\rD" +
-      "elConnection\022\010.api.Ref\032\026.google.protobuf" +
-      ".Empty\"\000\0227\n\016DelConnections\022\013.api.Filter\032" +
-      "\026.google.protobuf.Empty\"\000\0229\n\017Connections" +
-      "From\022\022.api.ConnectFilter\032\020.api.Connectio" +
-      "ns\"\000\0227\n\rConnectionsTo\022\022.api.ConnectFilte" +
-      "r\032\020.api.Connections\"\000\022.\n\rAggregateDocs\022\016" +
-      ".api.AggFilter\032\013.api.Number\"\000\0225\n\024Aggrega" +
-      "teConnections\022\016.api.AggFilter\032\013.api.Numb" +
-      "er\"\000\022;\n\tBroadcast\022\024.api.OutboundMessage\032" +
-      "\026.google.protobuf.Empty\"\000\022-\n\006Stream\022\021.ap" +
-      "i.StreamFilter\032\014.api.Message\"\0000\001\022:\n\023Push" +
-      "DocConstructors\022\023.api.DocConstructor\032\010.a" +
-      "pi.Doc\"\000(\0010\001\022O\n\032PushConnectionConstructo" +
-      "rs\022\032.api.ConnectionConstructor\032\017.api.Con" +
-      "nection\"\000(\0010\001\0220\n\010SeedDocs\022\010.api.Doc\032\026.go" +
-      "ogle.protobuf.Empty\"\000(\001\022>\n\017SeedConnectio" +
-      "ns\022\017.api.Connection\032\026.google.protobuf.Em" +
-      "pty\"\000(\001B\007Z\005apipbb\006proto3"
+      "$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022" +
+      "\033\n\004type\030\003 \001(\0162\r.api.AuthType\"3\n\013Authoriz" +
+      "ers\022$\n\013authorizers\030\001 \003(\0132\017.api.Authorize" +
+      "r\"\231\001\n\rTypeValidator\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n" +
+      "\n^.{1,225}$\022\037\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
+      "25}$\022$\n\nexpression\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
+      "}$\022\014\n\004docs\030\004 \001(\010\022\023\n\013connections\030\005 \001(\010\"8\n" +
+      "\016TypeValidators\022&\n\nvalidators\030\001 \003(\0132\022.ap" +
+      "i.TypeValidator\"\221\001\n\005Index\022\036\n\004name\030\001 \001(\tB" +
+      "\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\003 \001(\tB\020\342\337\037\014\n\n" +
+      "^.{1,225}$\022$\n\nexpression\030\004 \001(\tB\020\342\337\037\014\n\n^." +
+      "{1,225}$\022\014\n\004docs\030\006 \001(\010\022\023\n\013connections\030\007 " +
+      "\001(\010\"&\n\007Indexes\022\033\n\007indexes\030\001 \003(\0132\n.api.In" +
+      "dex\"E\n\014StreamFilter\022!\n\007channel\030\001 \001(\tB\020\342\337" +
+      "\037\014\n\n^.{1,225}$\022\022\n\nexpression\030\002 \001(\t\"G\n\005Gr" +
+      "aph\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022%\n\013connecti" +
+      "ons\030\002 \001(\0132\020.api.Connections\"\242\002\n\005Flags\022\031\n" +
+      "\021open_id_discovery\030\001 \001(\t\022\024\n\014storage_path" +
+      "\030\002 \001(\t\022\017\n\007metrics\030\003 \001(\010\022\025\n\rallow_headers" +
+      "\030\005 \003(\t\022\025\n\rallow_methods\030\006 \003(\t\022\025\n\rallow_o" +
+      "rigins\030\007 \003(\t\022\022\n\nroot_users\030\010 \003(\t\022\020\n\010tls_" +
+      "cert\030\t \001(\t\022\017\n\007tls_key\030\n \001(\t\022\034\n\024playgroun" +
+      "d_client_id\030\013 \001(\t\022 \n\030playground_client_s" +
+      "ecret\030\014 \001(\t\022\033\n\023playground_redirect\030\r \001(\t" +
+      "\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"\027\n\006Number\022\r\n\005" +
+      "value\030\001 \001(\001\"\203\001\n\014ExistsFilter\022\037\n\005gtype\030\001 " +
+      "\001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\002 \001(" +
+      "\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007rev" +
+      "erse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref" +
+      "\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\nattributes\030\002" +
+      " \001(\0132\027.google.protobuf.Struct\"V\n\nEditFil" +
+      "ter\022\033\n\006filter\030\001 \001(\0132\013.api.Filter\022+\n\nattr" +
+      "ibutes\030\002 \001(\0132\027.google.protobuf.Struct\"\027\n" +
+      "\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017OutboundMessag" +
+      "e\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004" +
+      "data\030\002 \001(\0132\027.google.protobuf.StructB\006\342\337\037" +
+      "\002 \001\"\324\001\n\007Message\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n" +
+      "^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.google.protob" +
+      "uf.StructB\006\342\337\037\002 \001\022\036\n\004user\030\003 \001(\0132\010.api.Re" +
+      "fB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\0132\032.google.pr" +
+      "otobuf.TimestampB\006\342\337\037\002 \001\022 \n\006method\030\005 \001(\t" +
+      "B\020\342\337\037\014\n\n^.{1,225}$\"\244\001\n\006Schema\022\030\n\020connect" +
+      "ion_types\030\001 \003(\t\022\021\n\tdoc_types\030\002 \003(\t\022%\n\013au" +
+      "thorizers\030\003 \001(\0132\020.api.Authorizers\022\'\n\nval" +
+      "idators\030\004 \001(\0132\023.api.TypeValidators\022\035\n\007in" +
+      "dexes\030\005 \001(\0132\014.api.Indexes\" \n\nExprFilter\022" +
+      "\022\n\nexpression\030\001 \001(\t\"\222\001\n\nAuthTarget\022\033\n\004ty" +
+      "pe\030\001 \001(\0162\r.api.AuthType\022 \n\006method\030\002 \001(\tB" +
+      "\020\342\337\037\014\n\n^.{1,225}$\022\036\n\004user\030\003 \001(\0132\010.api.Do" +
+      "cB\006\342\337\037\002 \001\022%\n\004data\030\004 \001(\0132\027.google.protobu" +
+      "f.Struct*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*" +
+      "D\n\tAggregate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020" +
+      "\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\005*:\n\010AuthTyp" +
+      "e\022\013\n\007REQUEST\020\000\022\014\n\010VIEW_DOC\020\001\022\023\n\017VIEW_CON" +
+      "NECTION\020\0022\332\020\n\017DatabaseService\022+\n\004Ping\022\026." +
+      "google.protobuf.Empty\032\t.api.Pong\"\000\0222\n\tGe" +
+      "tSchema\022\026.google.protobuf.Empty\032\013.api.Sc" +
+      "hema\"\000\022<\n\016SetAuthorizers\022\020.api.Authorize" +
+      "rs\032\026.google.protobuf.Empty\"\000\0224\n\nSetIndex" +
+      "es\022\014.api.Indexes\032\026.google.protobuf.Empty" +
+      "\"\000\022B\n\021SetTypeValidators\022\023.api.TypeValida" +
+      "tors\032\026.google.protobuf.Empty\"\000\022(\n\002Me\022\026.g" +
+      "oogle.protobuf.Empty\032\010.api.Doc\"\000\022,\n\tCrea" +
+      "teDoc\022\023.api.DocConstructor\032\010.api.Doc\"\000\022/" +
+      "\n\nCreateDocs\022\024.api.DocConstructors\032\t.api" +
+      ".Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.api.Doc\"\000\022" +
+      "&\n\nSearchDocs\022\013.api.Filter\032\t.api.Docs\"\000\022" +
+      "2\n\010Traverse\022\023.api.TraverseFilter\032\017.api.T" +
+      "raversals\"\000\0226\n\nTraverseMe\022\025.api.Traverse" +
+      "MeFilter\032\017.api.Traversals\"\000\022 \n\007EditDoc\022\t" +
+      ".api.Edit\032\010.api.Doc\"\000\022(\n\010EditDocs\022\017.api." +
+      "EditFilter\032\t.api.Docs\"\000\022,\n\006DelDoc\022\010.api." +
+      "Ref\032\026.google.protobuf.Empty\"\000\0220\n\007DelDocs" +
+      "\022\013.api.Filter\032\026.google.protobuf.Empty\"\000\022" +
+      ".\n\tExistsDoc\022\021.api.ExistsFilter\032\014.api.Bo" +
+      "olean\"\000\0225\n\020ExistsConnection\022\021.api.Exists" +
+      "Filter\032\014.api.Boolean\"\000\022\"\n\006HasDoc\022\010.api.R" +
+      "ef\032\014.api.Boolean\"\000\022)\n\rHasConnection\022\010.ap" +
+      "i.Ref\032\014.api.Boolean\"\000\022A\n\020CreateConnectio" +
+      "n\022\032.api.ConnectionConstructor\032\017.api.Conn" +
+      "ection\"\000\022D\n\021CreateConnections\022\033.api.Conn" +
+      "ectionConstructors\032\020.api.Connections\"\000\022@" +
+      "\n\020SearchAndConnect\022\030.api.SearchConnectFi" +
+      "lter\032\020.api.Connections\"\000\022D\n\022SearchAndCon" +
+      "nectMe\022\032.api.SearchConnectMeFilter\032\020.api" +
+      ".Connections\"\000\022,\n\rGetConnection\022\010.api.Re" +
+      "f\032\017.api.Connection\"\000\0224\n\021SearchConnection" +
+      "s\022\013.api.Filter\032\020.api.Connections\"\000\022.\n\016Ed" +
+      "itConnection\022\t.api.Edit\032\017.api.Connection" +
+      "\"\000\0226\n\017EditConnections\022\017.api.EditFilter\032\020" +
+      ".api.Connections\"\000\0223\n\rDelConnection\022\010.ap" +
+      "i.Ref\032\026.google.protobuf.Empty\"\000\0227\n\016DelCo" +
+      "nnections\022\013.api.Filter\032\026.google.protobuf" +
+      ".Empty\"\000\0229\n\017ConnectionsFrom\022\022.api.Connec" +
+      "tFilter\032\020.api.Connections\"\000\0227\n\rConnectio" +
+      "nsTo\022\022.api.ConnectFilter\032\020.api.Connectio" +
+      "ns\"\000\022.\n\rAggregateDocs\022\016.api.AggFilter\032\013." +
+      "api.Number\"\000\0225\n\024AggregateConnections\022\016.a" +
+      "pi.AggFilter\032\013.api.Number\"\000\022;\n\tBroadcast" +
+      "\022\024.api.OutboundMessage\032\026.google.protobuf" +
+      ".Empty\"\000\022-\n\006Stream\022\021.api.StreamFilter\032\014." +
+      "api.Message\"\0000\001\022:\n\023PushDocConstructors\022\023" +
+      ".api.DocConstructor\032\010.api.Doc\"\000(\0010\001\022O\n\032P" +
+      "ushConnectionConstructors\022\032.api.Connecti" +
+      "onConstructor\032\017.api.Connection\"\000(\0010\001\0220\n\010" +
+      "SeedDocs\022\010.api.Doc\032\026.google.protobuf.Emp" +
+      "ty\"\000(\001\022>\n\017SeedConnections\022\017.api.Connecti" +
+      "on\032\026.google.protobuf.Empty\"\000(\001B\007Z\005apipbb" +
+      "\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -43278,7 +43321,7 @@ public final class Graphik {
     internal_static_api_Authorizer_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Authorizer_descriptor,
-        new java.lang.String[] { "Name", "Expression", });
+        new java.lang.String[] { "Name", "Expression", "Type", });
     internal_static_api_Authorizers_descriptor =
       getDescriptor().getMessageTypes().get(22);
     internal_static_api_Authorizers_fieldAccessorTable = new
@@ -43387,12 +43430,12 @@ public final class Graphik {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ExprFilter_descriptor,
         new java.lang.String[] { "Expression", });
-    internal_static_api_Request_descriptor =
+    internal_static_api_AuthTarget_descriptor =
       getDescriptor().getMessageTypes().get(40);
-    internal_static_api_Request_fieldAccessorTable = new
+    internal_static_api_AuthTarget_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_api_Request_descriptor,
-        new java.lang.String[] { "Method", "User", "Timestamp", "Request", });
+        internal_static_api_AuthTarget_descriptor,
+        new java.lang.String[] { "Type", "Method", "User", "Data", });
     com.google.protobuf.ExtensionRegistry registry =
         com.google.protobuf.ExtensionRegistry.newInstance();
     registry.add(validator.Validator.field);

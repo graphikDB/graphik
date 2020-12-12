@@ -14,7 +14,7 @@ type AuthVM struct {
 
 func NewAuthVM() (*AuthVM, error) {
 	e, err := cel.NewEnv(
-		cel.Types(&apipb.Doc{}, &apipb.Ref{}, &apipb.Request{}),
+		cel.Types(&apipb.Doc{}, &apipb.Ref{}, &apipb.AuthTarget{}, &apipb.Connection{}),
 		cel.Declarations(
 			decls.NewVar("this", decls.NewMapType(decls.String, decls.Any)),
 		),
@@ -51,13 +51,13 @@ func (n *AuthVM) Programs(expressions []string) ([]cel.Program, error) {
 	return programs, nil
 }
 
-func (n *AuthVM) Eval(req *apipb.Request, programs ...cel.Program) (bool, error) {
+func (n *AuthVM) Eval(target *apipb.AuthTarget, programs ...cel.Program) (bool, error) {
 	if len(programs) == 0 || programs[0] == nil {
 		return true, nil
 	}
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"this": req,
+			"this": target,
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "no such key") {

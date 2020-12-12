@@ -131,6 +131,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.Authorizer" do
     optional :name, :string, 1
     optional :expression, :string, 2
+    optional :type, :enum, 3, "api.AuthType"
   end
   add_message "api.Authorizers" do
     repeated :authorizers, :message, 1, "api.Authorizer"
@@ -222,11 +223,11 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.ExprFilter" do
     optional :expression, :string, 1
   end
-  add_message "api.Request" do
-    optional :method, :string, 1
-    optional :user, :message, 2, "api.Doc"
-    optional :timestamp, :message, 3, "google.protobuf.Timestamp"
-    optional :request, :message, 4, "google.protobuf.Struct"
+  add_message "api.AuthTarget" do
+    optional :type, :enum, 1, "api.AuthType"
+    optional :method, :string, 2
+    optional :user, :message, 3, "api.Doc"
+    optional :data, :message, 4, "google.protobuf.Struct"
   end
   add_enum "api.Algorithm" do
     value :BFS, 0
@@ -239,6 +240,11 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     value :MAX, 3
     value :MIN, 4
     value :PROD, 5
+  end
+  add_enum "api.AuthType" do
+    value :REQUEST, 0
+    value :VIEW_DOC, 1
+    value :VIEW_CONNECTION, 2
   end
 end
 
@@ -283,7 +289,8 @@ module Api
   Message = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Message").msgclass
   Schema = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Schema").msgclass
   ExprFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ExprFilter").msgclass
-  Request = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Request").msgclass
+  AuthTarget = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AuthTarget").msgclass
   Algorithm = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Algorithm").enummodule
   Aggregate = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Aggregate").enummodule
+  AuthType = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AuthType").enummodule
 end

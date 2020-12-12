@@ -20,7 +20,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -35,7 +34,7 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 		tokenHash := helpers.Hash([]byte(token))
 		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
-			ctx, err := g.check(ctx, info.FullMethod, req, payload)
+			ctx, err := g.checkRequest(ctx, info.FullMethod, req, payload)
 			if err != nil {
 				return nil, err
 			}
@@ -64,7 +63,7 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		g.jwtCache.Set(tokenHash, payload, 1*time.Hour)
-		ctx, err = g.check(ctx, info.FullMethod, req, payload)
+		ctx, err = g.checkRequest(ctx, info.FullMethod, req, payload)
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +80,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		tokenHash := helpers.Hash([]byte(token))
 		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
-			ctx, err := g.check(ss.Context(), info.FullMethod, srv, payload)
+			ctx, err := g.checkRequest(ss.Context(), info.FullMethod, srv, payload)
 			if err != nil {
 				return err
 			}
@@ -112,7 +111,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 			return status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
 		}
 		g.jwtCache.Set(tokenHash, payload, 1*time.Hour)
-		ctx, err = g.check(ctx, info.FullMethod, srv, payload)
+		ctx, err = g.checkRequest(ctx, info.FullMethod, srv, payload)
 		if err != nil {
 			return err
 		}
@@ -233,32 +232,37 @@ func (g *Graph) verifyJWT(token string) (map[string]interface{}, error) {
 	return data, nil
 }
 
-func (g *Graph) check(ctx context.Context, method string, req interface{}, payload map[string]interface{}) (context.Context, error) {
+func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}, payload map[string]interface{}) (context.Context, error) {
 	ctx = g.methodToContext(ctx, method)
 	ctx, user, err := g.userToContext(ctx, payload)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, err.Error())
 	}
 	if !g.isGraphikAdmin(user) {
-		now := time.Now()
-		request := &apipb.Request{
+		var programs []cel.Program
+		g.rangeAuthorizers(func(a *authorizer) bool {
+			if a.authorizer.GetType() == apipb.AuthType_REQUEST {
+				programs = append(programs, a.program)
+			}
+			return true
+		})
+		if len(programs) == 0 {
+			return ctx, nil
+		}
+		request := &apipb.AuthTarget{
 			Method:    method,
 			User:      user,
-			Timestamp: timestamppb.New(now),
 		}
-		if val, ok := req.(proto.Message); ok {
+		if val, ok := req.(apipb.Mapper); ok {
+			request.Data = apipb.NewStruct(val.AsMap())
+		} else if val, ok := req.(proto.Message); ok {
 			bits, _ := helpers.MarshalJSON(val)
 			reqMap := map[string]interface{}{}
 			if err := json.Unmarshal(bits, &reqMap); err != nil {
 				return nil, status.Error(codes.Internal, err.Error())
 			}
-			request.Request = apipb.NewStruct(reqMap)
+			request.Data = apipb.NewStruct(reqMap)
 		}
-		var programs []cel.Program
-		g.rangeAuthorizers(func(a *authorizer) bool {
-			programs = append(programs, a.program)
-			return true
-		})
 		result, err := g.vm.Auth().Eval(request, programs...)
 		if err != nil {
 			return nil, err

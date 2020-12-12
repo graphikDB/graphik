@@ -19,6 +19,8 @@ var github_com_mwitkow_go$proto$validators_validator_pb = require('./github.com/
 goog.exportSymbol('proto.api.AggFilter', null, global);
 goog.exportSymbol('proto.api.Aggregate', null, global);
 goog.exportSymbol('proto.api.Algorithm', null, global);
+goog.exportSymbol('proto.api.AuthTarget', null, global);
+goog.exportSymbol('proto.api.AuthType', null, global);
 goog.exportSymbol('proto.api.Authorizer', null, global);
 goog.exportSymbol('proto.api.Authorizers', null, global);
 goog.exportSymbol('proto.api.Boolean', null, global);
@@ -48,7 +50,6 @@ goog.exportSymbol('proto.api.Pong', null, global);
 goog.exportSymbol('proto.api.Ref', null, global);
 goog.exportSymbol('proto.api.RefConstructor', null, global);
 goog.exportSymbol('proto.api.Refs', null, global);
-goog.exportSymbol('proto.api.Request', null, global);
 goog.exportSymbol('proto.api.Schema', null, global);
 goog.exportSymbol('proto.api.SearchConnectFilter', null, global);
 goog.exportSymbol('proto.api.SearchConnectMeFilter', null, global);
@@ -5187,7 +5188,8 @@ proto.api.Authorizer.prototype.toObject = function(opt_includeInstance) {
 proto.api.Authorizer.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    expression: jspb.Message.getFieldWithDefault(msg, 2, "")
+    expression: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    type: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -5232,6 +5234,10 @@ proto.api.Authorizer.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setExpression(value);
       break;
+    case 3:
+      var value = /** @type {!proto.api.AuthType} */ (reader.readEnum());
+      msg.setType(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -5275,6 +5281,13 @@ proto.api.Authorizer.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -5305,6 +5318,21 @@ proto.api.Authorizer.prototype.getExpression = function() {
 /** @param {string} value */
 proto.api.Authorizer.prototype.setExpression = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional AuthType type = 3;
+ * @return {!proto.api.AuthType}
+ */
+proto.api.Authorizer.prototype.getType = function() {
+  return /** @type {!proto.api.AuthType} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/** @param {!proto.api.AuthType} value */
+proto.api.Authorizer.prototype.setType = function(value) {
+  jspb.Message.setProto3EnumField(this, 3, value);
 };
 
 
@@ -9258,12 +9286,12 @@ proto.api.ExprFilter.prototype.setExpression = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.api.Request = function(opt_data) {
+proto.api.AuthTarget = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.api.Request, jspb.Message);
+goog.inherits(proto.api.AuthTarget, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.api.Request.displayName = 'proto.api.Request';
+  proto.api.AuthTarget.displayName = 'proto.api.AuthTarget';
 }
 
 
@@ -9278,8 +9306,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.api.Request.prototype.toObject = function(opt_includeInstance) {
-  return proto.api.Request.toObject(opt_includeInstance, this);
+proto.api.AuthTarget.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.AuthTarget.toObject(opt_includeInstance, this);
 };
 
 
@@ -9288,16 +9316,16 @@ proto.api.Request.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.api.Request} msg The msg instance to transform.
+ * @param {!proto.api.AuthTarget} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.Request.toObject = function(includeInstance, msg) {
+proto.api.AuthTarget.toObject = function(includeInstance, msg) {
   var f, obj = {
-    method: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    method: jspb.Message.getFieldWithDefault(msg, 2, ""),
     user: (f = msg.getUser()) && proto.api.Doc.toObject(includeInstance, f),
-    timestamp: (f = msg.getTimestamp()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    request: (f = msg.getRequest()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
+    data: (f = msg.getData()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -9311,23 +9339,23 @@ proto.api.Request.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.api.Request}
+ * @return {!proto.api.AuthTarget}
  */
-proto.api.Request.deserializeBinary = function(bytes) {
+proto.api.AuthTarget.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.api.Request;
-  return proto.api.Request.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.api.AuthTarget;
+  return proto.api.AuthTarget.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.api.Request} msg The message object to deserialize into.
+ * @param {!proto.api.AuthTarget} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.api.Request}
+ * @return {!proto.api.AuthTarget}
  */
-proto.api.Request.deserializeBinaryFromReader = function(msg, reader) {
+proto.api.AuthTarget.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9335,23 +9363,22 @@ proto.api.Request.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {!proto.api.AuthType} */ (reader.readEnum());
+      msg.setType(value);
+      break;
+    case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setMethod(value);
       break;
-    case 2:
+    case 3:
       var value = new proto.api.Doc;
       reader.readMessage(value,proto.api.Doc.deserializeBinaryFromReader);
       msg.setUser(value);
       break;
-    case 3:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setTimestamp(value);
-      break;
     case 4:
       var value = new google_protobuf_struct_pb.Struct;
       reader.readMessage(value,google_protobuf_struct_pb.Struct.deserializeBinaryFromReader);
-      msg.setRequest(value);
+      msg.setData(value);
       break;
     default:
       reader.skipField();
@@ -9366,9 +9393,9 @@ proto.api.Request.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.api.Request.prototype.serializeBinary = function() {
+proto.api.AuthTarget.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.api.Request.serializeBinaryToWriter(this, writer);
+  proto.api.AuthTarget.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9376,36 +9403,35 @@ proto.api.Request.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.api.Request} message
+ * @param {!proto.api.AuthTarget} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.api.Request.serializeBinaryToWriter = function(message, writer) {
+proto.api.AuthTarget.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
   f = message.getMethod();
   if (f.length > 0) {
     writer.writeString(
-      1,
+      2,
       f
     );
   }
   f = message.getUser();
   if (f != null) {
     writer.writeMessage(
-      2,
+      3,
       f,
       proto.api.Doc.serializeBinaryToWriter
     );
   }
-  f = message.getTimestamp();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getRequest();
+  f = message.getData();
   if (f != null) {
     writer.writeMessage(
       4,
@@ -9417,37 +9443,52 @@ proto.api.Request.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string method = 1;
- * @return {string}
+ * optional AuthType type = 1;
+ * @return {!proto.api.AuthType}
  */
-proto.api.Request.prototype.getMethod = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.api.AuthTarget.prototype.getType = function() {
+  return /** @type {!proto.api.AuthType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
-/** @param {string} value */
-proto.api.Request.prototype.setMethod = function(value) {
-  jspb.Message.setProto3StringField(this, 1, value);
+/** @param {!proto.api.AuthType} value */
+proto.api.AuthTarget.prototype.setType = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * optional Doc user = 2;
+ * optional string method = 2;
+ * @return {string}
+ */
+proto.api.AuthTarget.prototype.getMethod = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.AuthTarget.prototype.setMethod = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional Doc user = 3;
  * @return {?proto.api.Doc}
  */
-proto.api.Request.prototype.getUser = function() {
+proto.api.AuthTarget.prototype.getUser = function() {
   return /** @type{?proto.api.Doc} */ (
-    jspb.Message.getWrapperField(this, proto.api.Doc, 2));
+    jspb.Message.getWrapperField(this, proto.api.Doc, 3));
 };
 
 
 /** @param {?proto.api.Doc|undefined} value */
-proto.api.Request.prototype.setUser = function(value) {
-  jspb.Message.setWrapperField(this, 2, value);
+proto.api.AuthTarget.prototype.setUser = function(value) {
+  jspb.Message.setWrapperField(this, 3, value);
 };
 
 
-proto.api.Request.prototype.clearUser = function() {
+proto.api.AuthTarget.prototype.clearUser = function() {
   this.setUser(undefined);
 };
 
@@ -9456,59 +9497,29 @@ proto.api.Request.prototype.clearUser = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.Request.prototype.hasUser = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp timestamp = 3;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.api.Request.prototype.getTimestamp = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 3));
-};
-
-
-/** @param {?proto.google.protobuf.Timestamp|undefined} value */
-proto.api.Request.prototype.setTimestamp = function(value) {
-  jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-proto.api.Request.prototype.clearTimestamp = function() {
-  this.setTimestamp(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.api.Request.prototype.hasTimestamp = function() {
+proto.api.AuthTarget.prototype.hasUser = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
- * optional google.protobuf.Struct request = 4;
+ * optional google.protobuf.Struct data = 4;
  * @return {?proto.google.protobuf.Struct}
  */
-proto.api.Request.prototype.getRequest = function() {
+proto.api.AuthTarget.prototype.getData = function() {
   return /** @type{?proto.google.protobuf.Struct} */ (
     jspb.Message.getWrapperField(this, google_protobuf_struct_pb.Struct, 4));
 };
 
 
 /** @param {?proto.google.protobuf.Struct|undefined} value */
-proto.api.Request.prototype.setRequest = function(value) {
+proto.api.AuthTarget.prototype.setData = function(value) {
   jspb.Message.setWrapperField(this, 4, value);
 };
 
 
-proto.api.Request.prototype.clearRequest = function() {
-  this.setRequest(undefined);
+proto.api.AuthTarget.prototype.clearData = function() {
+  this.setData(undefined);
 };
 
 
@@ -9516,7 +9527,7 @@ proto.api.Request.prototype.clearRequest = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.Request.prototype.hasRequest = function() {
+proto.api.AuthTarget.prototype.hasData = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -9539,6 +9550,15 @@ proto.api.Aggregate = {
   MAX: 3,
   MIN: 4,
   PROD: 5
+};
+
+/**
+ * @enum {number}
+ */
+proto.api.AuthType = {
+  REQUEST: 0,
+  VIEW_DOC: 1,
+  VIEW_CONNECTION: 2
 };
 
 goog.object.extend(exports, proto.api);
