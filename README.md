@@ -1,6 +1,5 @@
 # Graphik
 
-https://graphikdb.github.io/graphik/
 
 [![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
 
@@ -9,6 +8,8 @@ https://graphikdb.github.io/graphik/
 `    docker pull graphikdb/graphik:v0.5.1`
 
 Graphik is an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go
+
+Support: support@graphikdb.io
 
   * [Helpful Links](#helpful-links)
   * [Features](#features)
