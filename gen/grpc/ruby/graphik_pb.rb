@@ -183,6 +183,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :playground_client_id, :string, 11
     optional :playground_client_secret, :string, 12
     optional :playground_redirect, :string, 13
+    optional :playground_session_store, :string, 14
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1

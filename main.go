@@ -52,6 +52,7 @@ func init() {
 	pflag.CommandLine.StringVar(&global.PlaygroundClientId, "playground-client-id", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_ID", ""), "playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)")
 	pflag.CommandLine.StringVar(&global.PlaygroundClientSecret, "playground-client-secret", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_SECRET", ""), "playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)")
 	pflag.CommandLine.StringVar(&global.PlaygroundRedirect, "playground-redirect", helpers.EnvOr("GRAPHIK_PLAYGROUND_REDIRECT", ""), "playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT)")
+	pflag.CommandLine.StringVar(&global.PlaygroundSessionStore, "playground-session-store", helpers.EnvOr("GRAPHIK_PLAYGROUND_SESSION_STORE", "cookies"), "playground session store (options: cookies, file-system) (env: GRAPHIK_PLAYGROUND_SESSION_STORE)")
 	pflag.Parse()
 }
 
@@ -65,6 +66,12 @@ const metricsBind = ":7821"
 func run(ctx context.Context, cfg *apipb.Flags) {
 	if cfg.OpenIdDiscovery == "" {
 		logger.Error("empty open-id connect discovery --open-id")
+		return
+	}
+	if cfg.PlaygroundSessionStore != "cookies" &&
+		cfg.PlaygroundSessionStore != "file-system" &&
+		cfg.PlaygroundSessionStore != "" {
+		logger.Error("invalid playground session store type --playground-session-store")
 		return
 	}
 	ctx, cancel := context.WithCancel(ctx)
@@ -135,11 +142,15 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			Scopes:      []string{"openid", "email", "profile"},
 		}
 	}
+	var sessionPath = ""
+	if global.GetPlaygroundSessionStore() == "file-system" {
+		sessionPath = fmt.Sprintf("%s/playground", global.GetStoragePath())
+	}
 	resolver := gql.NewResolver(ctx, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
 		AllowedOrigins: global.AllowOrigins,
 		AllowedMethods: global.AllowMethods,
 		AllowedHeaders: global.AllowHeaders,
-	}), config)
+	}), config, sessionPath)
 	mux := http.NewServeMux()
 	mux.Handle("/", resolver.QueryHandler())
 	if config != nil {

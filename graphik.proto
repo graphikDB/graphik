@@ -396,6 +396,7 @@ message Flags {
   string playground_client_id =11;
   string playground_client_secret =12;
   string playground_redirect =13;
+  string playground_session_store = 14;
 }
 
 // Boolean is a simple boolean value
