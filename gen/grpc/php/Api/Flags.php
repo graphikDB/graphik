@@ -75,6 +75,10 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string playground_redirect = 13;</code>
      */
     private $playground_redirect = '';
+    /**
+     * Generated from protobuf field <code>string playground_session_store = 14;</code>
+     */
+    private $playground_session_store = '';
 
     /**
      * Constructor.
@@ -101,6 +105,7 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $playground_client_id
      *     @type string $playground_client_secret
      *     @type string $playground_redirect
+     *     @type string $playground_session_store
      * }
      */
     public function __construct($data = NULL) {
@@ -396,6 +401,28 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->playground_redirect = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string playground_session_store = 14;</code>
+     * @return string
+     */
+    public function getPlaygroundSessionStore()
+    {
+        return $this->playground_session_store;
+    }
+
+    /**
+     * Generated from protobuf field <code>string playground_session_store = 14;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setPlaygroundSessionStore($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->playground_session_store = $var;
 
         return $this;
     }

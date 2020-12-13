@@ -7,11 +7,11 @@ type ctxKey string
 const (
 	// Permissions to use on the db file. This is only used if the
 	// database file does not exist and needs to be created.
-	dbFileMode                  = 0600
-	changeChannel               = "state"
-	authCtxKey           ctxKey = "x-graphik-auth-ctx"
-	userType             ctxKey = "user"
-	methodCtxKey         ctxKey = "x-graphik-full-method"
+	dbFileMode                     = 0600
+	changeChannel                  = "state"
+	authCtxKey              ctxKey = "x-graphik-auth-ctx"
+	userType                ctxKey = "user"
+	methodCtxKey            ctxKey = "x-graphik-full-method"
 	bypassAuthorizersCtxKey ctxKey = "x-graphik-authorzer-override"
 )
 

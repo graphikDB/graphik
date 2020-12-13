@@ -31454,6 +31454,16 @@ public final class Graphik {
      */
     com.google.protobuf.ByteString
         getPlaygroundRedirectBytes();
+
+    /**
+     * <code>string playground_session_store = 14;</code>
+     */
+    java.lang.String getPlaygroundSessionStore();
+    /**
+     * <code>string playground_session_store = 14;</code>
+     */
+    com.google.protobuf.ByteString
+        getPlaygroundSessionStoreBytes();
   }
   /**
    * Protobuf type {@code api.Flags}
@@ -31480,6 +31490,7 @@ public final class Graphik {
       playgroundClientId_ = "";
       playgroundClientSecret_ = "";
       playgroundRedirect_ = "";
+      playgroundSessionStore_ = "";
     }
 
     @java.lang.Override
@@ -31587,6 +31598,12 @@ public final class Graphik {
               java.lang.String s = input.readStringRequireUtf8();
 
               playgroundRedirect_ = s;
+              break;
+            }
+            case 114: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              playgroundSessionStore_ = s;
               break;
             }
             default: {
@@ -32081,6 +32098,40 @@ public final class Graphik {
       }
     }
 
+    public static final int PLAYGROUND_SESSION_STORE_FIELD_NUMBER = 14;
+    private volatile java.lang.Object playgroundSessionStore_;
+    /**
+     * <code>string playground_session_store = 14;</code>
+     */
+    public java.lang.String getPlaygroundSessionStore() {
+      java.lang.Object ref = playgroundSessionStore_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        playgroundSessionStore_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string playground_session_store = 14;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPlaygroundSessionStoreBytes() {
+      java.lang.Object ref = playgroundSessionStore_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        playgroundSessionStore_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -32130,6 +32181,9 @@ public final class Graphik {
       }
       if (!getPlaygroundRedirectBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 13, playgroundRedirect_);
+      }
+      if (!getPlaygroundSessionStoreBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 14, playgroundSessionStore_);
       }
       unknownFields.writeTo(output);
     }
@@ -32197,6 +32251,9 @@ public final class Graphik {
       if (!getPlaygroundRedirectBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(13, playgroundRedirect_);
       }
+      if (!getPlaygroundSessionStoreBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(14, playgroundSessionStore_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -32237,6 +32294,8 @@ public final class Graphik {
           .equals(other.getPlaygroundClientSecret());
       result = result && getPlaygroundRedirect()
           .equals(other.getPlaygroundRedirect());
+      result = result && getPlaygroundSessionStore()
+          .equals(other.getPlaygroundSessionStore());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -32281,6 +32340,8 @@ public final class Graphik {
       hash = (53 * hash) + getPlaygroundClientSecret().hashCode();
       hash = (37 * hash) + PLAYGROUND_REDIRECT_FIELD_NUMBER;
       hash = (53 * hash) + getPlaygroundRedirect().hashCode();
+      hash = (37 * hash) + PLAYGROUND_SESSION_STORE_FIELD_NUMBER;
+      hash = (53 * hash) + getPlaygroundSessionStore().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -32438,6 +32499,8 @@ public final class Graphik {
 
         playgroundRedirect_ = "";
 
+        playgroundSessionStore_ = "";
+
         return this;
       }
 
@@ -32494,6 +32557,7 @@ public final class Graphik {
         result.playgroundClientId_ = playgroundClientId_;
         result.playgroundClientSecret_ = playgroundClientSecret_;
         result.playgroundRedirect_ = playgroundRedirect_;
+        result.playgroundSessionStore_ = playgroundSessionStore_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -32612,6 +32676,10 @@ public final class Graphik {
         }
         if (!other.getPlaygroundRedirect().isEmpty()) {
           playgroundRedirect_ = other.playgroundRedirect_;
+          onChanged();
+        }
+        if (!other.getPlaygroundSessionStore().isEmpty()) {
+          playgroundSessionStore_ = other.playgroundSessionStore_;
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -33721,6 +33789,75 @@ public final class Graphik {
   checkByteStringIsUtf8(value);
         
         playgroundRedirect_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object playgroundSessionStore_ = "";
+      /**
+       * <code>string playground_session_store = 14;</code>
+       */
+      public java.lang.String getPlaygroundSessionStore() {
+        java.lang.Object ref = playgroundSessionStore_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          playgroundSessionStore_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string playground_session_store = 14;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPlaygroundSessionStoreBytes() {
+        java.lang.Object ref = playgroundSessionStore_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          playgroundSessionStore_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string playground_session_store = 14;</code>
+       */
+      public Builder setPlaygroundSessionStore(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        playgroundSessionStore_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string playground_session_store = 14;</code>
+       */
+      public Builder clearPlaygroundSessionStore() {
+        
+        playgroundSessionStore_ = getDefaultInstance().getPlaygroundSessionStore();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string playground_session_store = 14;</code>
+       */
+      public Builder setPlaygroundSessionStoreBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        playgroundSessionStore_ = value;
         onChanged();
         return this;
       }
@@ -43083,95 +43220,96 @@ public final class Graphik {
       "amFilter\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,22" +
       "5}$\022\022\n\nexpression\030\002 \001(\t\"G\n\005Graph\022\027\n\004docs" +
       "\030\001 \001(\0132\t.api.Docs\022%\n\013connections\030\002 \001(\0132\020" +
-      ".api.Connections\"\242\002\n\005Flags\022\031\n\021open_id_di" +
+      ".api.Connections\"\304\002\n\005Flags\022\031\n\021open_id_di" +
       "scovery\030\001 \001(\t\022\024\n\014storage_path\030\002 \001(\t\022\017\n\007m" +
       "etrics\030\003 \001(\010\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\ra" +
       "llow_methods\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(" +
       "\t\022\022\n\nroot_users\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022" +
       "\017\n\007tls_key\030\n \001(\t\022\034\n\024playground_client_id" +
       "\030\013 \001(\t\022 \n\030playground_client_secret\030\014 \001(\t" +
-      "\022\033\n\023playground_redirect\030\r \001(\t\"\030\n\007Boolean" +
-      "\022\r\n\005value\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001" +
-      "\"\203\001\n\014ExistsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n" +
-      "^.{1,225}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^." +
-      "{1,225}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022" +
-      "\r\n\005index\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.ap" +
-      "i.RefB\006\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.goog" +
-      "le.protobuf.Struct\"V\n\nEditFilter\022\033\n\006filt" +
-      "er\030\001 \001(\0132\013.api.Filter\022+\n\nattributes\030\002 \001(" +
-      "\0132\027.google.protobuf.Struct\"\027\n\004Pong\022\017\n\007me" +
-      "ssage\030\001 \001(\t\"c\n\017OutboundMessage\022!\n\007channe" +
-      "l\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132" +
-      "\027.google.protobuf.StructB\006\342\337\037\002 \001\"\324\001\n\007Mes" +
-      "sage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022" +
-      "-\n\004data\030\002 \001(\0132\027.google.protobuf.StructB\006" +
-      "\342\337\037\002 \001\022\036\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225" +
-      "\n\ttimestamp\030\004 \001(\0132\032.google.protobuf.Time" +
-      "stampB\006\342\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n\n^.{" +
-      "1,225}$\"\244\001\n\006Schema\022\030\n\020connection_types\030\001" +
-      " \003(\t\022\021\n\tdoc_types\030\002 \003(\t\022%\n\013authorizers\030\003" +
-      " \001(\0132\020.api.Authorizers\022\'\n\nvalidators\030\004 \001" +
-      "(\0132\023.api.TypeValidators\022\035\n\007indexes\030\005 \001(\013" +
-      "2\014.api.Indexes\" \n\nExprFilter\022\022\n\nexpressi" +
-      "on\030\001 \001(\t*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*" +
-      "D\n\tAggregate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020" +
-      "\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\005*:\n\010AuthTyp" +
-      "e\022\013\n\007REQUEST\020\000\022\014\n\010VIEW_DOC\020\001\022\023\n\017VIEW_CON" +
-      "NECTION\020\0022\332\020\n\017DatabaseService\022+\n\004Ping\022\026." +
-      "google.protobuf.Empty\032\t.api.Pong\"\000\0222\n\tGe" +
-      "tSchema\022\026.google.protobuf.Empty\032\013.api.Sc" +
-      "hema\"\000\022<\n\016SetAuthorizers\022\020.api.Authorize" +
-      "rs\032\026.google.protobuf.Empty\"\000\0224\n\nSetIndex" +
-      "es\022\014.api.Indexes\032\026.google.protobuf.Empty" +
-      "\"\000\022B\n\021SetTypeValidators\022\023.api.TypeValida" +
-      "tors\032\026.google.protobuf.Empty\"\000\022(\n\002Me\022\026.g" +
-      "oogle.protobuf.Empty\032\010.api.Doc\"\000\022,\n\tCrea" +
-      "teDoc\022\023.api.DocConstructor\032\010.api.Doc\"\000\022/" +
-      "\n\nCreateDocs\022\024.api.DocConstructors\032\t.api" +
-      ".Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.api.Doc\"\000\022" +
-      "&\n\nSearchDocs\022\013.api.Filter\032\t.api.Docs\"\000\022" +
-      "2\n\010Traverse\022\023.api.TraverseFilter\032\017.api.T" +
-      "raversals\"\000\0226\n\nTraverseMe\022\025.api.Traverse" +
-      "MeFilter\032\017.api.Traversals\"\000\022 \n\007EditDoc\022\t" +
-      ".api.Edit\032\010.api.Doc\"\000\022(\n\010EditDocs\022\017.api." +
-      "EditFilter\032\t.api.Docs\"\000\022,\n\006DelDoc\022\010.api." +
-      "Ref\032\026.google.protobuf.Empty\"\000\0220\n\007DelDocs" +
-      "\022\013.api.Filter\032\026.google.protobuf.Empty\"\000\022" +
-      ".\n\tExistsDoc\022\021.api.ExistsFilter\032\014.api.Bo" +
-      "olean\"\000\0225\n\020ExistsConnection\022\021.api.Exists" +
-      "Filter\032\014.api.Boolean\"\000\022\"\n\006HasDoc\022\010.api.R" +
-      "ef\032\014.api.Boolean\"\000\022)\n\rHasConnection\022\010.ap" +
-      "i.Ref\032\014.api.Boolean\"\000\022A\n\020CreateConnectio" +
-      "n\022\032.api.ConnectionConstructor\032\017.api.Conn" +
-      "ection\"\000\022D\n\021CreateConnections\022\033.api.Conn" +
-      "ectionConstructors\032\020.api.Connections\"\000\022@" +
-      "\n\020SearchAndConnect\022\030.api.SearchConnectFi" +
-      "lter\032\020.api.Connections\"\000\022D\n\022SearchAndCon" +
-      "nectMe\022\032.api.SearchConnectMeFilter\032\020.api" +
-      ".Connections\"\000\022,\n\rGetConnection\022\010.api.Re" +
-      "f\032\017.api.Connection\"\000\0224\n\021SearchConnection" +
-      "s\022\013.api.Filter\032\020.api.Connections\"\000\022.\n\016Ed" +
-      "itConnection\022\t.api.Edit\032\017.api.Connection" +
-      "\"\000\0226\n\017EditConnections\022\017.api.EditFilter\032\020" +
-      ".api.Connections\"\000\0223\n\rDelConnection\022\010.ap" +
-      "i.Ref\032\026.google.protobuf.Empty\"\000\0227\n\016DelCo" +
-      "nnections\022\013.api.Filter\032\026.google.protobuf" +
-      ".Empty\"\000\0229\n\017ConnectionsFrom\022\022.api.Connec" +
-      "tFilter\032\020.api.Connections\"\000\0227\n\rConnectio" +
-      "nsTo\022\022.api.ConnectFilter\032\020.api.Connectio" +
-      "ns\"\000\022.\n\rAggregateDocs\022\016.api.AggFilter\032\013." +
-      "api.Number\"\000\0225\n\024AggregateConnections\022\016.a" +
-      "pi.AggFilter\032\013.api.Number\"\000\022;\n\tBroadcast" +
-      "\022\024.api.OutboundMessage\032\026.google.protobuf" +
-      ".Empty\"\000\022-\n\006Stream\022\021.api.StreamFilter\032\014." +
-      "api.Message\"\0000\001\022:\n\023PushDocConstructors\022\023" +
-      ".api.DocConstructor\032\010.api.Doc\"\000(\0010\001\022O\n\032P" +
-      "ushConnectionConstructors\022\032.api.Connecti" +
-      "onConstructor\032\017.api.Connection\"\000(\0010\001\0220\n\010" +
-      "SeedDocs\022\010.api.Doc\032\026.google.protobuf.Emp" +
-      "ty\"\000(\001\022>\n\017SeedConnections\022\017.api.Connecti" +
-      "on\032\026.google.protobuf.Empty\"\000(\001B\007Z\005apipbb" +
-      "\006proto3"
+      "\022\033\n\023playground_redirect\030\r \001(\t\022 \n\030playgro" +
+      "und_session_store\030\016 \001(\t\"\030\n\007Boolean\022\r\n\005va" +
+      "lue\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014E" +
+      "xistsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
+      "25}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
+      "}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005ind" +
+      "ex\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB" +
+      "\006\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.google.pro" +
+      "tobuf.Struct\"V\n\nEditFilter\022\033\n\006filter\030\001 \001" +
+      "(\0132\013.api.Filter\022+\n\nattributes\030\002 \001(\0132\027.go" +
+      "ogle.protobuf.Struct\"\027\n\004Pong\022\017\n\007message\030" +
+      "\001 \001(\t\"c\n\017OutboundMessage\022!\n\007channel\030\001 \001(" +
+      "\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.goog" +
+      "le.protobuf.StructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!" +
+      "\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004dat" +
+      "a\030\002 \001(\0132\027.google.protobuf.StructB\006\342\337\037\002 \001" +
+      "\022\036\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttime" +
+      "stamp\030\004 \001(\0132\032.google.protobuf.TimestampB" +
+      "\006\342\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
+      "$\"\244\001\n\006Schema\022\030\n\020connection_types\030\001 \003(\t\022\021" +
+      "\n\tdoc_types\030\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020" +
+      ".api.Authorizers\022\'\n\nvalidators\030\004 \001(\0132\023.a" +
+      "pi.TypeValidators\022\035\n\007indexes\030\005 \001(\0132\014.api" +
+      ".Indexes\" \n\nExprFilter\022\022\n\nexpression\030\001 \001" +
+      "(\t*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAgg" +
+      "regate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003M" +
+      "AX\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\005*:\n\010AuthType\022\013\n\007R" +
+      "EQUEST\020\000\022\014\n\010VIEW_DOC\020\001\022\023\n\017VIEW_CONNECTIO" +
+      "N\020\0022\332\020\n\017DatabaseService\022+\n\004Ping\022\026.google" +
+      ".protobuf.Empty\032\t.api.Pong\"\000\0222\n\tGetSchem" +
+      "a\022\026.google.protobuf.Empty\032\013.api.Schema\"\000" +
+      "\022<\n\016SetAuthorizers\022\020.api.Authorizers\032\026.g" +
+      "oogle.protobuf.Empty\"\000\0224\n\nSetIndexes\022\014.a" +
+      "pi.Indexes\032\026.google.protobuf.Empty\"\000\022B\n\021" +
+      "SetTypeValidators\022\023.api.TypeValidators\032\026" +
+      ".google.protobuf.Empty\"\000\022(\n\002Me\022\026.google." +
+      "protobuf.Empty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022" +
+      "\023.api.DocConstructor\032\010.api.Doc\"\000\022/\n\nCrea" +
+      "teDocs\022\024.api.DocConstructors\032\t.api.Docs\"" +
+      "\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.api.Doc\"\000\022&\n\nSea" +
+      "rchDocs\022\013.api.Filter\032\t.api.Docs\"\000\0222\n\010Tra" +
+      "verse\022\023.api.TraverseFilter\032\017.api.Travers" +
+      "als\"\000\0226\n\nTraverseMe\022\025.api.TraverseMeFilt" +
+      "er\032\017.api.Traversals\"\000\022 \n\007EditDoc\022\t.api.E" +
+      "dit\032\010.api.Doc\"\000\022(\n\010EditDocs\022\017.api.EditFi" +
+      "lter\032\t.api.Docs\"\000\022,\n\006DelDoc\022\010.api.Ref\032\026." +
+      "google.protobuf.Empty\"\000\0220\n\007DelDocs\022\013.api" +
+      ".Filter\032\026.google.protobuf.Empty\"\000\022.\n\tExi" +
+      "stsDoc\022\021.api.ExistsFilter\032\014.api.Boolean\"" +
+      "\000\0225\n\020ExistsConnection\022\021.api.ExistsFilter" +
+      "\032\014.api.Boolean\"\000\022\"\n\006HasDoc\022\010.api.Ref\032\014.a" +
+      "pi.Boolean\"\000\022)\n\rHasConnection\022\010.api.Ref\032" +
+      "\014.api.Boolean\"\000\022A\n\020CreateConnection\022\032.ap" +
+      "i.ConnectionConstructor\032\017.api.Connection" +
+      "\"\000\022D\n\021CreateConnections\022\033.api.Connection" +
+      "Constructors\032\020.api.Connections\"\000\022@\n\020Sear" +
+      "chAndConnect\022\030.api.SearchConnectFilter\032\020" +
+      ".api.Connections\"\000\022D\n\022SearchAndConnectMe" +
+      "\022\032.api.SearchConnectMeFilter\032\020.api.Conne" +
+      "ctions\"\000\022,\n\rGetConnection\022\010.api.Ref\032\017.ap" +
+      "i.Connection\"\000\0224\n\021SearchConnections\022\013.ap" +
+      "i.Filter\032\020.api.Connections\"\000\022.\n\016EditConn" +
+      "ection\022\t.api.Edit\032\017.api.Connection\"\000\0226\n\017" +
+      "EditConnections\022\017.api.EditFilter\032\020.api.C" +
+      "onnections\"\000\0223\n\rDelConnection\022\010.api.Ref\032" +
+      "\026.google.protobuf.Empty\"\000\0227\n\016DelConnecti" +
+      "ons\022\013.api.Filter\032\026.google.protobuf.Empty" +
+      "\"\000\0229\n\017ConnectionsFrom\022\022.api.ConnectFilte" +
+      "r\032\020.api.Connections\"\000\0227\n\rConnectionsTo\022\022" +
+      ".api.ConnectFilter\032\020.api.Connections\"\000\022." +
+      "\n\rAggregateDocs\022\016.api.AggFilter\032\013.api.Nu" +
+      "mber\"\000\0225\n\024AggregateConnections\022\016.api.Agg" +
+      "Filter\032\013.api.Number\"\000\022;\n\tBroadcast\022\024.api" +
+      ".OutboundMessage\032\026.google.protobuf.Empty" +
+      "\"\000\022-\n\006Stream\022\021.api.StreamFilter\032\014.api.Me" +
+      "ssage\"\0000\001\022:\n\023PushDocConstructors\022\023.api.D" +
+      "ocConstructor\032\010.api.Doc\"\000(\0010\001\022O\n\032PushCon" +
+      "nectionConstructors\022\032.api.ConnectionCons" +
+      "tructor\032\017.api.Connection\"\000(\0010\001\0220\n\010SeedDo" +
+      "cs\022\010.api.Doc\032\026.google.protobuf.Empty\"\000(\001" +
+      "\022>\n\017SeedConnections\022\017.api.Connection\032\026.g" +
+      "oogle.protobuf.Empty\"\000(\001B\007Z\005apipbb\006proto" +
+      "3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -43375,7 +43513,7 @@ public final class Graphik {
     internal_static_api_Flags_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Flags_descriptor,
-        new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "Metrics", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "PlaygroundClientId", "PlaygroundClientSecret", "PlaygroundRedirect", });
+        new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "Metrics", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "PlaygroundClientId", "PlaygroundClientSecret", "PlaygroundRedirect", "PlaygroundSessionStore", });
     internal_static_api_Boolean_descriptor =
       getDescriptor().getMessageTypes().get(31);
     internal_static_api_Boolean_fieldAccessorTable = new

@@ -23,6 +23,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"html/template"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -37,21 +38,26 @@ type Resolver struct {
 	client     apipb.DatabaseServiceClient
 	cors       *cors.Cors
 	machine    *machine.Machine
-	store      *sessions.CookieStore
+	store      sessions.Store
 	config     *oauth2.Config
 	cookieName string
 }
 
-func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config) *Resolver {
+func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config, sessionPath string) *Resolver {
 	r := &Resolver{
 		client:     client,
 		cors:       cors,
 		machine:    machine.New(ctx),
 		config:     config,
-		cookieName: "graphik",
+		cookieName: "graphik-playground",
 	}
 	if config != nil {
-		r.store = sessions.NewCookieStore([]byte(config.ClientSecret))
+		if sessionPath != "" {
+			os.MkdirAll(sessionPath, 0700)
+			r.store = sessions.NewFilesystemStore(sessionPath, []byte(config.ClientSecret))
+		} else {
+			r.store = sessions.NewCookieStore([]byte(config.ClientSecret))
+		}
 	}
 	return r
 }
@@ -225,6 +231,7 @@ func (r *Resolver) redirectLogin(sess *sessions.Session, w http.ResponseWriter, 
 	sess.Values["state"] = state
 	redirect := r.config.AuthCodeURL(state)
 	if err := sess.Save(req, w); err != nil {
+		logger.Error("failed to save session", zap.Error(err))
 		http.Error(w, "failed to save session", http.StatusInternalServerError)
 		return
 	}
