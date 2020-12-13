@@ -53,6 +53,7 @@ Graphik is an identity-aware, permissioned, persistant document/graph database &
 - [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
 - [OpenID Connect](https://openid.net/connect/)
 - [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
+- [Change Log](CHANGELOG.md)
 
 ## Features
 - [x] 100% Go
@@ -602,3 +603,4 @@ to shutdown:
 - Microsoft: [See More](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc)
 - Auth0: https://${YOUR_DOMAIN}/.well-known/openid-configuration [See More](https://auth0.com/docs/protocols/configure-applications-with-oidc-discovery)
 - Okta: https://${yourOktaOrg}/.well-known/openid-configuration [See More](https://developer.okta.com/docs/concepts/auth-servers/)
+
