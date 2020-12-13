@@ -6,7 +6,7 @@ https://graphikdb.github.io/graphik/
 
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.5.0`
+`    docker pull graphikdb/graphik:v0.5.1`
 
 Graphik is an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go
 
@@ -90,15 +90,16 @@ Graphik is an identity-aware, permissioned, persistant document/graph database &
 ## Flags
 
 ```text
-      --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
+ --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
       --allow-methods strings             cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
       --allow-origins strings             cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
       --metrics                           enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true) (default true)
       --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
       --playground-client-id string       playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)
-      --playground-client-secret string   playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET
+      --playground-client-secret string   playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)
       --playground-redirect string        playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT) (default "http://localhost:7820/playground/callback")
-      --root-users strings                a list of email addresses that bypass registered authorizers(env: GRAPHIK_ROOT_USERS)
+      --playground-session-store string   playground session store (options: cookies, file-system) (env: GRAPHIK_PLAYGROUND_SESSION_STORE) (default "cookies")
+      --root-users strings                a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)
       --storage string                    persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
       --tls-cert string                   path to tls certificate (env: GRAPHIK_TLS_CERT)
       --tls-key string                    path to tls key (env: GRAPHIK_TLS_KEY)
@@ -546,7 +547,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.5.0
+        image: graphikdb/graphik:v0.5.1
         env_file:
           - .env
         ports:
@@ -580,13 +581,13 @@ to shutdown:
  
  ### Linux
  
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.5.0/graphik_linux_amd64 \
+    curl -L https://github.com/graphikDB/graphik/releases/download/v0.5.1/graphik_linux_amd64 \
     --output /usr/local/bin/graphik && \
     chmod +x /usr/local/bin/graphik 
     
  ### Mac/Darwin
  
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.5.0/graphik_darwin_amd64 \
+    curl -L https://github.com/graphikDB/graphik/releases/download/v0.5.1/graphik_darwin_amd64 \
     --output /usr/local/bin/graphik && \
     chmod +x /usr/local/bin/graphik
 

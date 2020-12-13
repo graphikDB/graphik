@@ -1122,7 +1122,7 @@ func (g *Graph) PushConnectionConstructors(server apipb.DatabaseService_PushConn
 }
 
 func (g *Graph) SeedDocs(server apipb.DatabaseService_SeedDocsServer) error {
-	ctx, cancel := context.WithCancel(context.WithValue(server.Context(), bypassAuthorizersCtxKey, true))
+	ctx, cancel := context.WithCancel(server.Context())
 	defer cancel()
 	for {
 		select {

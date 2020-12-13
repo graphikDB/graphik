@@ -531,12 +531,15 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) (*api
 		return nil, ctx.Err()
 	}
 	var authorizers []cel.Program
-	g.rangeAuthorizers(func(a *authorizer) bool {
-		if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
-			authorizers = append(authorizers, a.program)
-		}
-		return true
-	})
+	if ctx.Value(bypassAuthorizersCtxKey) == nil {
+		g.rangeAuthorizers(func(a *authorizer) bool {
+			if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
+				authorizers = append(authorizers, a.program)
+			}
+			return true
+		})
+	}
+
 	if path == nil {
 		return nil, ErrNotFound
 	}
@@ -562,7 +565,8 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) (*api
 				Data:   apipb.NewStruct(doc.AsMap()),
 			}, a)
 			if err != nil {
-				return nil, status.Error(codes.PermissionDenied, err.Error())
+				logger.Error("view connection authorization error", zap.Error(err))
+				return &doc, nil
 			}
 			if !res {
 				return nil, status.Error(codes.PermissionDenied, "view doc = permission denied")
@@ -607,7 +611,8 @@ func (g *Graph) getConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref
 				Data:   apipb.NewStruct(connection.AsMap()),
 			}, a)
 			if err != nil {
-				return nil, status.Error(codes.PermissionDenied, err.Error())
+				logger.Error("view connection authorization error", zap.Error(err))
+				return &connection, nil
 			}
 			if !res {
 				return nil, status.Error(codes.PermissionDenied, "view connection = permission denied")
@@ -667,7 +672,8 @@ func (g *Graph) rangeConnections(ctx context.Context, gType string, fn func(n *a
 						Data:   apipb.NewStruct(connection.AsMap()),
 					}, a)
 					if err != nil {
-						return err
+						logger.Error("view connection authorization error", zap.Error(err))
+						return nil
 					}
 					if !res {
 						return nil
@@ -734,7 +740,8 @@ func (g *Graph) rangeDocs(ctx context.Context, gType string, fn func(n *apipb.Do
 						Data:   apipb.NewStruct(doc.AsMap()),
 					}, a)
 					if err != nil {
-						return err
+						logger.Error("view connection authorization error", zap.Error(err))
+						return nil
 					}
 					if !res {
 						return nil
@@ -912,7 +919,8 @@ func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn
 					Data:   apipb.NewStruct(connection.AsMap()),
 				}, a)
 				if err != nil {
-					return err
+					logger.Error("view connection authorization error", zap.Error(err))
+					return nil
 				}
 				if !res {
 					return nil
@@ -967,7 +975,8 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, 
 					Data:   apipb.NewStruct(connection.AsMap()),
 				}, a)
 				if err != nil {
-					return err
+					logger.Error("view connection authorization error", zap.Error(err))
+					return nil
 				}
 				if !res {
 					return nil
@@ -1030,7 +1039,8 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek str
 							Data:   apipb.NewStruct(connection.AsMap()),
 						}, a)
 						if err != nil {
-							return err
+							logger.Error("view connection authorization error", zap.Error(err))
+							return nil
 						}
 						if !res {
 							return nil
@@ -1060,7 +1070,8 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek str
 							Data:   apipb.NewStruct(connection.AsMap()),
 						}, a)
 						if err != nil {
-							return err
+							logger.Error("view connection authorization error", zap.Error(err))
+							return nil
 						}
 						if !res {
 							return nil
@@ -1085,12 +1096,14 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, in
 		return seek, ctx.Err()
 	}
 	var authorizers []cel.Program
-	g.rangeAuthorizers(func(a *authorizer) bool {
-		if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
-			authorizers = append(authorizers, a.program)
-		}
-		return true
-	})
+	if ctx.Value(bypassAuthorizersCtxKey) == nil {
+		g.rangeAuthorizers(func(a *authorizer) bool {
+			if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
+				authorizers = append(authorizers, a.program)
+			}
+			return true
+		})
+	}
 	var lastKey []byte
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		var c *bbolt.Cursor
@@ -1129,7 +1142,8 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, in
 							Data:   apipb.NewStruct(doc.AsMap()),
 						}, a)
 						if err != nil {
-							return err
+							logger.Error("view doc authorization error", zap.Error(err))
+							return nil
 						}
 						if !res {
 							return nil
@@ -1159,7 +1173,8 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, in
 							Data:   apipb.NewStruct(doc.AsMap()),
 						}, a)
 						if err != nil {
-							return err
+							logger.Error("view doc authorization error", zap.Error(err))
+							return nil
 						}
 						if !res {
 							return nil
