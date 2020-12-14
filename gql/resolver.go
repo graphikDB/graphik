@@ -41,6 +41,8 @@ type Resolver struct {
 	store      sessions.Store
 	config     *oauth2.Config
 	cookieName string
+	sessionPath string
+	sessionType string
 }
 
 func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config, sessionPath string) *Resolver {
@@ -50,6 +52,12 @@ func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *
 		machine:    machine.New(ctx),
 		config:     config,
 		cookieName: "graphik-playground",
+		sessionPath: sessionPath,
+	}
+	if sessionPath == "" {
+		r.sessionType = "cookies"
+	} else {
+		r.sessionType = "file-system"
 	}
 	if config != nil {
 		if sessionPath != "" {
@@ -120,7 +128,8 @@ func (r *Resolver) Playground() http.HandlerFunc {
 		}
 		sess, err := r.store.Get(req, r.cookieName)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			logger.Error("failed to get session - redirecting", zap.Error(err), zap.String("session_type", r.sessionType))
+			r.redirectLogin(nil, w, req)
 			return
 		}
 		if sess.Values["token"] == nil {
@@ -227,13 +236,18 @@ func (r *Resolver) Playground() http.HandlerFunc {
 }
 
 func (r *Resolver) redirectLogin(sess *sessions.Session, w http.ResponseWriter, req *http.Request) {
+	if sess == nil {
+		sess, _ = r.store.New(req, r.cookieName)
+	}
 	state := helpers.Hash([]byte(ksuid.New().String()))
 	sess.Values["state"] = state
 	redirect := r.config.AuthCodeURL(state)
 	if err := sess.Save(req, w); err != nil {
-		logger.Error("failed to save session", zap.Error(err))
-		http.Error(w, "failed to save session", http.StatusInternalServerError)
-		return
+		logger.Error("playground: failed to save session", zap.Error(err), zap.String("session_type", r.sessionType))
+		if sess2, err := r.store.New(req, r.cookieName); err == nil {
+			r.redirectLogin(sess2, w, req)
+			return
+		}
 	}
 	http.Redirect(w, req, redirect, http.StatusTemporaryRedirect)
 }
@@ -244,41 +258,50 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 			http.Error(w, "playground disabled", http.StatusNotFound)
 			return
 		}
+		sess, err := r.store.Get(req, r.cookieName)
+		if err != nil {
+			logger.Error("playground: failed to get session - redirecting", zap.Error(err), zap.String("session_type", r.sessionType))
+			r.redirectLogin(nil, w, req)
+			return
+		}
 		code := req.URL.Query().Get("code")
 		state := req.URL.Query().Get("state")
 		if code == "" {
-			http.Error(w, "empty authorization code", http.StatusBadRequest)
+			logger.Error("playground: empty authorization code - redirecting", zap.String("session_type", r.sessionType))
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		if state == "" {
-			http.Error(w, "empty authorization state", http.StatusBadRequest)
+			logger.Error("playground: empty authorization state - redirecting", zap.String("session_type", r.sessionType))
+			r.redirectLogin(sess, w, req)
 			return
 		}
-		sess, err := r.store.Get(req, r.cookieName)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+
 		stateVal := sess.Values["state"]
 		if stateVal == nil {
-			http.Error(w, "failed to get session state", http.StatusForbidden)
+			logger.Error("playground: failed to get session state - redirecting", zap.String("session_type", r.sessionType))
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		if stateVal.(string) != state {
-			http.Error(w, fmt.Sprintf("session state mismatch: %s", stateVal.(string)), http.StatusForbidden)
+			logger.Error("playground: session state mismatch - redirecting", zap.String("session_type", r.sessionType))
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		token, err := r.config.Exchange(req.Context(), code)
 		if err != nil {
-			logger.Error("failed to exchange authorization code", zap.Error(err))
-			http.Error(w, "failed to exchange authorization code", http.StatusInternalServerError)
+			logger.Error("playground: failed to exchange authorization code - redirecting", zap.Error(err), zap.String("session_type", r.sessionType))
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		sess.Values["token"] = token
 		sess.Values["exp"] = time.Now().Add(1 * time.Hour).Unix()
 		if err := sess.Save(req, w); err != nil {
-			logger.Error("failed to save session", zap.Error(err))
-			http.Error(w, "failed to save session", http.StatusInternalServerError)
+			logger.Error("playground: failed to save session - redirecting", zap.Error(err), zap.String("session_type", r.sessionType))
+			if sess2, err := r.store.New(req, r.cookieName); err == nil {
+				sess = sess2
+			}
+			r.redirectLogin(sess, w, req)
 			return
 		}
 		http.Redirect(w, req, playgroundRedirect, http.StatusTemporaryRedirect)
