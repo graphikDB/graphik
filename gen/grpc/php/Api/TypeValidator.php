@@ -26,17 +26,17 @@ class TypeValidator extends \Google\Protobuf\Internal\Message
      */
     private $expression = '';
     /**
-     * if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
+     * if target_docs is true, this validator will be applied to documents.
      *
-     * Generated from protobuf field <code>bool docs = 4;</code>
+     * Generated from protobuf field <code>bool target_docs = 4;</code>
      */
-    private $docs = false;
+    private $target_docs = false;
     /**
-     * if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
+     * if target_connections is true, this validator will be applied to connections.
      *
-     * Generated from protobuf field <code>bool connections = 5;</code>
+     * Generated from protobuf field <code>bool target_connections = 5;</code>
      */
-    private $connections = false;
+    private $target_connections = false;
 
     /**
      * Constructor.
@@ -47,10 +47,10 @@ class TypeValidator extends \Google\Protobuf\Internal\Message
      *     @type string $name
      *     @type string $gtype
      *     @type string $expression
-     *     @type bool $docs
-     *           if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
-     *     @type bool $connections
-     *           if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
+     *     @type bool $target_docs
+     *           if target_docs is true, this validator will be applied to documents.
+     *     @type bool $target_connections
+     *           if target_connections is true, this validator will be applied to connections.
      * }
      */
     public function __construct($data = NULL) {
@@ -125,53 +125,53 @@ class TypeValidator extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
+     * if target_docs is true, this validator will be applied to documents.
      *
-     * Generated from protobuf field <code>bool docs = 4;</code>
+     * Generated from protobuf field <code>bool target_docs = 4;</code>
      * @return bool
      */
-    public function getDocs()
+    public function getTargetDocs()
     {
-        return $this->docs;
+        return $this->target_docs;
     }
 
     /**
-     * if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
+     * if target_docs is true, this validator will be applied to documents.
      *
-     * Generated from protobuf field <code>bool docs = 4;</code>
+     * Generated from protobuf field <code>bool target_docs = 4;</code>
      * @param bool $var
      * @return $this
      */
-    public function setDocs($var)
+    public function setTargetDocs($var)
     {
         GPBUtil::checkBool($var);
-        $this->docs = $var;
+        $this->target_docs = $var;
 
         return $this;
     }
 
     /**
-     * if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
+     * if target_connections is true, this validator will be applied to connections.
      *
-     * Generated from protobuf field <code>bool connections = 5;</code>
+     * Generated from protobuf field <code>bool target_connections = 5;</code>
      * @return bool
      */
-    public function getConnections()
+    public function getTargetConnections()
     {
-        return $this->connections;
+        return $this->target_connections;
     }
 
     /**
-     * if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
+     * if target_connections is true, this validator will be applied to connections.
      *
-     * Generated from protobuf field <code>bool connections = 5;</code>
+     * Generated from protobuf field <code>bool target_connections = 5;</code>
      * @param bool $var
      * @return $this
      */
-    public function setConnections($var)
+    public function setTargetConnections($var)
     {
         GPBUtil::checkBool($var);
-        $this->connections = $var;
+        $this->target_connections = $var;
 
         return $this;
     }

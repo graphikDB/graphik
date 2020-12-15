@@ -137,13 +137,13 @@ func (g *Graph) cacheTypeValidators() error {
 				return err
 			}
 			var program cel.Program
-			if i.GetConnections() {
+			if i.GetTargetConnections() {
 				program, err = g.vm.Connection().Program(i.Expression)
 				if err != nil {
 					return err
 				}
 			}
-			if i.GetDocs() {
+			if i.GetTargetDocs() {
 				program, err = g.vm.Doc().Program(i.Expression)
 				if err != nil {
 					return err
@@ -249,8 +249,8 @@ func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.Ty
 			return nil, err
 		}
 		current.Expression = i.Expression
-		current.Docs = i.Docs
-		current.Connections = i.Connections
+		current.TargetDocs = i.TargetDocs
+		current.TargetConnections = i.TargetConnections
 		current.Gtype = i.Gtype
 		bits, err := proto.Marshal(current)
 		if err != nil {
@@ -334,7 +334,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	}
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
-		if v.validator.GetDocs() && v.validator.GetGtype() == doc.GetRef().GetGtype() {
+		if v.validator.GetTargetDocs() && v.validator.GetGtype() == doc.GetRef().GetGtype() {
 			res, err := g.vm.Doc().Eval(doc, v.program)
 			if err != nil {
 				validationErr = err
@@ -440,7 +440,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
-		if v.validator.GetConnections() && v.validator.GetGtype() == connection.GetRef().GetGtype() {
+		if v.validator.GetTargetConnections() && v.validator.GetGtype() == connection.GetRef().GetGtype() {
 			res, err := g.vm.Connection().Eval(connection, v.program)
 			if err != nil {
 				validationErr = err

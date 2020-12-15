@@ -92,10 +92,10 @@ type TypeValidator {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if docs is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
 }
 
 # TypeValidators is an array of TypeValidator
@@ -443,10 +443,10 @@ input TypeValidatorInput {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if connections is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
 }
 
 # TypeValidatorsInput is an array of TypeValidatorInput

@@ -146,8 +146,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :name, :string, 1
     optional :gtype, :string, 2
     optional :expression, :string, 3
-    optional :docs, :bool, 4
-    optional :connections, :bool, 5
+    optional :target_docs, :bool, 4
+    optional :target_connections, :bool, 5
   end
   add_message "api.TypeValidators" do
     repeated :validators, :message, 1, "api.TypeValidator"

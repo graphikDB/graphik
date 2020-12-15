@@ -5814,8 +5814,8 @@ proto.api.TypeValidator.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     gtype: jspb.Message.getFieldWithDefault(msg, 2, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    docs: jspb.Message.getFieldWithDefault(msg, 4, false),
-    connections: jspb.Message.getFieldWithDefault(msg, 5, false)
+    targetDocs: jspb.Message.getFieldWithDefault(msg, 4, false),
+    targetConnections: jspb.Message.getFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -5866,11 +5866,11 @@ proto.api.TypeValidator.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 4:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setDocs(value);
+      msg.setTargetDocs(value);
       break;
     case 5:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setConnections(value);
+      msg.setTargetConnections(value);
       break;
     default:
       reader.skipField();
@@ -5922,14 +5922,14 @@ proto.api.TypeValidator.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getDocs();
+  f = message.getTargetDocs();
   if (f) {
     writer.writeBool(
       4,
       f
     );
   }
-  f = message.getConnections();
+  f = message.getTargetConnections();
   if (f) {
     writer.writeBool(
       5,
@@ -5985,35 +5985,35 @@ proto.api.TypeValidator.prototype.setExpression = function(value) {
 
 
 /**
- * optional bool docs = 4;
+ * optional bool target_docs = 4;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.api.TypeValidator.prototype.getDocs = function() {
+proto.api.TypeValidator.prototype.getTargetDocs = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 4, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.TypeValidator.prototype.setDocs = function(value) {
+proto.api.TypeValidator.prototype.setTargetDocs = function(value) {
   jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
 /**
- * optional bool connections = 5;
+ * optional bool target_connections = 5;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.api.TypeValidator.prototype.getConnections = function() {
+proto.api.TypeValidator.prototype.getTargetConnections = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.TypeValidator.prototype.setConnections = function(value) {
+proto.api.TypeValidator.prototype.setTargetConnections = function(value) {
   jspb.Message.setProto3BooleanField(this, 5, value);
 };
 

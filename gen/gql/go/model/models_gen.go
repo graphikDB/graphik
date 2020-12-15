@@ -258,19 +258,19 @@ type TraverseMeFilter struct {
 }
 
 type TypeValidator struct {
-	Name        string `json:"name"`
-	Gtype       string `json:"gtype"`
-	Expression  string `json:"expression"`
-	Docs        bool   `json:"docs"`
-	Connections bool   `json:"connections"`
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
 }
 
 type TypeValidatorInput struct {
-	Name        string `json:"name"`
-	Gtype       string `json:"gtype"`
-	Expression  string `json:"expression"`
-	Docs        bool   `json:"docs"`
-	Connections bool   `json:"connections"`
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
 }
 
 type TypeValidators struct {

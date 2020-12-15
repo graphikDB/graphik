@@ -186,11 +186,11 @@ type ComplexityRoot struct {
 	}
 
 	TypeValidator struct {
-		Connections func(childComplexity int) int
-		Docs        func(childComplexity int) int
-		Expression  func(childComplexity int) int
-		Gtype       func(childComplexity int) int
-		Name        func(childComplexity int) int
+		Expression        func(childComplexity int) int
+		Gtype             func(childComplexity int) int
+		Name              func(childComplexity int) int
+		TargetConnections func(childComplexity int) int
+		TargetDocs        func(childComplexity int) int
 	}
 
 	TypeValidators struct {
@@ -996,20 +996,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Traversals.Traversals(childComplexity), true
 
-	case "TypeValidator.connections":
-		if e.complexity.TypeValidator.Connections == nil {
-			break
-		}
-
-		return e.complexity.TypeValidator.Connections(childComplexity), true
-
-	case "TypeValidator.docs":
-		if e.complexity.TypeValidator.Docs == nil {
-			break
-		}
-
-		return e.complexity.TypeValidator.Docs(childComplexity), true
-
 	case "TypeValidator.expression":
 		if e.complexity.TypeValidator.Expression == nil {
 			break
@@ -1030,6 +1016,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TypeValidator.Name(childComplexity), true
+
+	case "TypeValidator.target_connections":
+		if e.complexity.TypeValidator.TargetConnections == nil {
+			break
+		}
+
+		return e.complexity.TypeValidator.TargetConnections(childComplexity), true
+
+	case "TypeValidator.target_docs":
+		if e.complexity.TypeValidator.TargetDocs == nil {
+			break
+		}
+
+		return e.complexity.TypeValidator.TargetDocs(childComplexity), true
 
 	case "TypeValidators.validators":
 		if e.complexity.TypeValidators.Validators == nil {
@@ -1213,10 +1213,10 @@ type TypeValidator {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if docs is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
 }
 
 # TypeValidators is an array of TypeValidator
@@ -1564,10 +1564,10 @@ input TypeValidatorInput {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if connections is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
 }
 
 # TypeValidatorsInput is an array of TypeValidatorInput
@@ -5435,7 +5435,7 @@ func (ec *executionContext) _TypeValidator_expression(ctx context.Context, field
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _TypeValidator_docs(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
+func (ec *executionContext) _TypeValidator_target_docs(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5453,7 +5453,7 @@ func (ec *executionContext) _TypeValidator_docs(ctx context.Context, field graph
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Docs, nil
+		return obj.TargetDocs, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5470,7 +5470,7 @@ func (ec *executionContext) _TypeValidator_docs(ctx context.Context, field graph
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _TypeValidator_connections(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
+func (ec *executionContext) _TypeValidator_target_connections(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5488,7 +5488,7 @@ func (ec *executionContext) _TypeValidator_connections(ctx context.Context, fiel
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Connections, nil
+		return obj.TargetConnections, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7614,19 +7614,19 @@ func (ec *executionContext) unmarshalInputTypeValidatorInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "docs":
+		case "target_docs":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("docs"))
-			it.Docs, err = ec.unmarshalNBoolean2bool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_docs"))
+			it.TargetDocs, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "connections":
+		case "target_connections":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections"))
-			it.Connections, err = ec.unmarshalNBoolean2bool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_connections"))
+			it.TargetConnections, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8594,13 +8594,13 @@ func (ec *executionContext) _TypeValidator(ctx context.Context, sel ast.Selectio
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "docs":
-			out.Values[i] = ec._TypeValidator_docs(ctx, field, obj)
+		case "target_docs":
+			out.Values[i] = ec._TypeValidator_target_docs(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "connections":
-			out.Values[i] = ec._TypeValidator_connections(ctx, field, obj)
+		case "target_connections":
+			out.Values[i] = ec._TypeValidator_target_connections(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

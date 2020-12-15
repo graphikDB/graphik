@@ -70,11 +70,13 @@ func ExampleClient_SetAuthorizers() {
 		Authorizers: []*apipb2.Authorizer{
 			{
 				Name:           "testing-request",
+				Method: "/api.DatabaseService/Get",
 				Expression:     `this.user.attributes.email.contains("coleman")`,
 				TargetRequests: true,
 			},
 			{
 				Name:            "testing-response",
+				Method: "/api.DatabaseService/GetConnection",
 				Expression:      `this.user.attributes.email.contains("coleman") && this.method != ""`,
 				TargetResponses: true,
 			},
@@ -101,11 +103,11 @@ func ExampleClient_SetTypeValidators() {
 	_, err := client.SetTypeValidators(context.Background(), &apipb2.TypeValidators{
 		Validators: []*apipb2.TypeValidator{
 			{
-				Name:        "testing",
-				Gtype:       "dog",
-				Expression:  `int(this.attributes.weight) > 0`,
-				Docs:        true,
-				Connections: false,
+				Name:              "testing",
+				Gtype:             "dog",
+				Expression:        `int(this.attributes.weight) > 0`,
+				TargetDocs:        true,
+				TargetConnections: false,
 			},
 		},
 	})

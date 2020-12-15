@@ -436,10 +436,10 @@ func protoAuthorizer(auth *model.AuthorizerInput) *apipb.Authorizer {
 
 func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidator {
 	return &apipb.TypeValidator{
-		Name:        validator.Name,
-		Gtype:       validator.Gtype,
-		Expression:  validator.Expression,
-		Docs:        validator.Docs,
-		Connections: validator.Connections,
+		Name:              validator.Name,
+		Gtype:             validator.Gtype,
+		Expression:        validator.Expression,
+		TargetDocs:        validator.TargetDocs,
+		TargetConnections: validator.TargetConnections,
 	}
 }
