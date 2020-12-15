@@ -49,13 +49,13 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	AuthTarget struct {
-		Method func(childComplexity int) int
 		Target func(childComplexity int) int
 		User   func(childComplexity int) int
 	}
 
 	Authorizer struct {
 		Expression      func(childComplexity int) int
+		Method          func(childComplexity int) int
 		Name            func(childComplexity int) int
 		TargetRequests  func(childComplexity int) int
 		TargetResponses func(childComplexity int) int
@@ -256,13 +256,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "AuthTarget.method":
-		if e.complexity.AuthTarget.Method == nil {
-			break
-		}
-
-		return e.complexity.AuthTarget.Method(childComplexity), true
-
 	case "AuthTarget.target":
 		if e.complexity.AuthTarget.Target == nil {
 			break
@@ -283,6 +276,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Authorizer.Expression(childComplexity), true
+
+	case "Authorizer.method":
+		if e.complexity.Authorizer.Method == nil {
+			break
+		}
+
+		return e.complexity.Authorizer.Method(childComplexity), true
 
 	case "Authorizer.name":
 		if e.complexity.Authorizer.Name == nil {
@@ -1188,8 +1188,6 @@ type Traversal {
 
 # AuthTarget
 type AuthTarget {
-  # method is the gRPC method invoked
-  method: String!
   # user is the user making the request
   user: Doc!
   # target is the payload gived to the authorizer(request or response payload)
@@ -1267,13 +1265,17 @@ type Indexes {
   indexes: [Index!]
 }
 
-# Authorizer is a graph primitive used for authorizing inbound requests(see Request)
+# Authorizer is a graph primitive used for authorizing inbound requests and/or responses(see AuthTarget)
 type Authorizer {
   # name is the unique name of the authorizer in the graph
   name: String!
-  # expression is a boolean CEL expression used to evaluate the inbound request
+  # method is the rpc method that will invoke the authorizer
+  method: String!
+  # expression is the boolean CEL expression that evaluates either the request or response body
   expression: String!
+  # target_responses sets the authorizer to evaluate request bodies of the target grpc method
   target_requests:   Boolean!
+  # target_responses sets the authorizer to evaluate response bodies of the target grpc method
   target_responses: Boolean!
 }
 
@@ -1539,9 +1541,13 @@ input IndexesInput {
 input AuthorizerInput {
   # name is the unique name of the authorizer in the graph
   name: String!
-  # expression is a boolean CEL expression used to evaluate the inbound request
+  # method is the rpc method that will invoke the authorizer
+  method: String!
+  # expression is the boolean CEL expression that evaluates either the request or response body
   expression: String!
+  # target_responses sets the authorizer to evaluate request bodies of the target grpc method
   target_requests:   Boolean!
+  # target_responses sets the authorizer to evaluate response bodies of the target grpc method
   target_responses: Boolean!
 }
 
@@ -2263,41 +2269,6 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _AuthTarget_method(ctx context.Context, field graphql.CollectedField, obj *model.AuthTarget) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "AuthTarget",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Method, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _AuthTarget_user(ctx context.Context, field graphql.CollectedField, obj *model.AuthTarget) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2387,6 +2358,41 @@ func (ec *executionContext) _Authorizer_name(ctx context.Context, field graphql.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Authorizer_method(ctx context.Context, field graphql.CollectedField, obj *model.Authorizer) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Authorizer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Method, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6668,6 +6674,14 @@ func (ec *executionContext) unmarshalInputAuthorizerInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
+		case "method":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
+			it.Method, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "expression":
 			var err error
 
@@ -7661,11 +7675,6 @@ func (ec *executionContext) _AuthTarget(ctx context.Context, sel ast.SelectionSe
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("AuthTarget")
-		case "method":
-			out.Values[i] = ec._AuthTarget_method(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "user":
 			out.Values[i] = ec._AuthTarget_user(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -7700,6 +7709,11 @@ func (ec *executionContext) _Authorizer(ctx context.Context, sel ast.SelectionSe
 			out.Values[i] = graphql.MarshalString("Authorizer")
 		case "name":
 			out.Values[i] = ec._Authorizer_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "method":
+			out.Values[i] = ec._Authorizer_method(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

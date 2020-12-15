@@ -65,13 +65,17 @@ const metricsBind = ":7821"
 
 func run(ctx context.Context, cfg *apipb.Flags) {
 	if cfg.OpenIdDiscovery == "" {
-		logger.Error("empty open-id connect discovery --open-id")
+		logger.Error("empty open-id connect discovery --open-id", zap.String("usage", pflag.CommandLine.Lookup("open-id").Usage))
 		return
 	}
 	if cfg.PlaygroundSessionStore != "cookies" &&
 		cfg.PlaygroundSessionStore != "file-system" &&
 		cfg.PlaygroundSessionStore != "" {
-		logger.Error("invalid playground session store type --playground-session-store")
+		logger.Error("invalid playground session store type", zap.String("usage", pflag.CommandLine.Lookup("playground-session-store").Usage))
+		return
+	}
+	if len(cfg.GetRootUsers()) == 0 {
+		logger.Error("zero root users", zap.String("usage", pflag.CommandLine.Lookup("root-users").Usage))
 		return
 	}
 	ctx, cancel := context.WithCancel(ctx)

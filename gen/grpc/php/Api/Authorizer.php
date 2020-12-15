@@ -14,19 +14,33 @@ use Google\Protobuf\Internal\GPBUtil;
 class Authorizer extends \Google\Protobuf\Internal\Message
 {
     /**
+     * name is the unique name of the authorizer
+     *
      * Generated from protobuf field <code>string name = 1 [(.validator.field) = {</code>
      */
     private $name = '';
     /**
-     * Generated from protobuf field <code>string expression = 2 [(.validator.field) = {</code>
+     * method is the rpc method that will invoke the authorizer
+     *
+     * Generated from protobuf field <code>string method = 2 [(.validator.field) = {</code>
+     */
+    private $method = '';
+    /**
+     * expression is the boolean CEL expression that evaluates either the request or response body
+     *
+     * Generated from protobuf field <code>string expression = 3 [(.validator.field) = {</code>
      */
     private $expression = '';
     /**
-     * Generated from protobuf field <code>bool target_requests = 3;</code>
+     * target_responses sets the authorizer to evaluate request bodies
+     *
+     * Generated from protobuf field <code>bool target_requests = 4;</code>
      */
     private $target_requests = false;
     /**
-     * Generated from protobuf field <code>bool target_responses = 4;</code>
+     * target_responses sets the authorizer to evaluate response bodies
+     *
+     * Generated from protobuf field <code>bool target_responses = 5;</code>
      */
     private $target_responses = false;
 
@@ -37,9 +51,15 @@ class Authorizer extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $name
+     *           name is the unique name of the authorizer
+     *     @type string $method
+     *           method is the rpc method that will invoke the authorizer
      *     @type string $expression
+     *           expression is the boolean CEL expression that evaluates either the request or response body
      *     @type bool $target_requests
+     *           target_responses sets the authorizer to evaluate request bodies
      *     @type bool $target_responses
+     *           target_responses sets the authorizer to evaluate response bodies
      * }
      */
     public function __construct($data = NULL) {
@@ -48,6 +68,8 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * name is the unique name of the authorizer
+     *
      * Generated from protobuf field <code>string name = 1 [(.validator.field) = {</code>
      * @return string
      */
@@ -57,6 +79,8 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * name is the unique name of the authorizer
+     *
      * Generated from protobuf field <code>string name = 1 [(.validator.field) = {</code>
      * @param string $var
      * @return $this
@@ -70,7 +94,35 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string expression = 2 [(.validator.field) = {</code>
+     * method is the rpc method that will invoke the authorizer
+     *
+     * Generated from protobuf field <code>string method = 2 [(.validator.field) = {</code>
+     * @return string
+     */
+    public function getMethod()
+    {
+        return $this->method;
+    }
+
+    /**
+     * method is the rpc method that will invoke the authorizer
+     *
+     * Generated from protobuf field <code>string method = 2 [(.validator.field) = {</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setMethod($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->method = $var;
+
+        return $this;
+    }
+
+    /**
+     * expression is the boolean CEL expression that evaluates either the request or response body
+     *
+     * Generated from protobuf field <code>string expression = 3 [(.validator.field) = {</code>
      * @return string
      */
     public function getExpression()
@@ -79,7 +131,9 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string expression = 2 [(.validator.field) = {</code>
+     * expression is the boolean CEL expression that evaluates either the request or response body
+     *
+     * Generated from protobuf field <code>string expression = 3 [(.validator.field) = {</code>
      * @param string $var
      * @return $this
      */
@@ -92,7 +146,9 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>bool target_requests = 3;</code>
+     * target_responses sets the authorizer to evaluate request bodies
+     *
+     * Generated from protobuf field <code>bool target_requests = 4;</code>
      * @return bool
      */
     public function getTargetRequests()
@@ -101,7 +157,9 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>bool target_requests = 3;</code>
+     * target_responses sets the authorizer to evaluate request bodies
+     *
+     * Generated from protobuf field <code>bool target_requests = 4;</code>
      * @param bool $var
      * @return $this
      */
@@ -114,7 +172,9 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>bool target_responses = 4;</code>
+     * target_responses sets the authorizer to evaluate response bodies
+     *
+     * Generated from protobuf field <code>bool target_responses = 5;</code>
      * @return bool
      */
     public function getTargetResponses()
@@ -123,7 +183,9 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>bool target_responses = 4;</code>
+     * target_responses sets the authorizer to evaluate response bodies
+     *
+     * Generated from protobuf field <code>bool target_responses = 5;</code>
      * @param bool $var
      * @return $this
      */

@@ -14,12 +14,6 @@ use Google\Protobuf\Internal\GPBUtil;
 class AuthTarget extends \Google\Protobuf\Internal\Message
 {
     /**
-     * method is the rpc method
-     *
-     * Generated from protobuf field <code>string method = 3 [(.validator.field) = {</code>
-     */
-    private $method = '';
-    /**
      * user is the user making the request
      *
      * Generated from protobuf field <code>.api.Doc user = 4 [(.validator.field) = {</code>
@@ -36,8 +30,6 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type string $method
-     *           method is the rpc method
      *     @type \Api\Doc $user
      *           user is the user making the request
      *     @type \Google\Protobuf\Struct $target
@@ -46,32 +38,6 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     public function __construct($data = NULL) {
         \GPBMetadata\Graphik::initOnce();
         parent::__construct($data);
-    }
-
-    /**
-     * method is the rpc method
-     *
-     * Generated from protobuf field <code>string method = 3 [(.validator.field) = {</code>
-     * @return string
-     */
-    public function getMethod()
-    {
-        return $this->method;
-    }
-
-    /**
-     * method is the rpc method
-     *
-     * Generated from protobuf field <code>string method = 3 [(.validator.field) = {</code>
-     * @param string $var
-     * @return $this
-     */
-    public function setMethod($var)
-    {
-        GPBUtil::checkString($var, True);
-        $this->method = $var;
-
-        return $this;
     }
 
     /**

@@ -49,7 +49,7 @@ type Graph struct {
 	indexes         *generic.Cache
 	authorizers     *generic.Cache
 	typeValidators  *generic.Cache
-	rootUsers       []string
+	flgs            *apipb.Flags
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -78,11 +78,11 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},
-		jwtCache:        generic.NewCache(m, 1*time.Minute),
-		indexes:         generic.NewCache(m, 1*time.Hour),
-		authorizers:     generic.NewCache(m, 1*time.Hour),
-		typeValidators:  generic.NewCache(m, 1*time.Hour),
-		rootUsers:       flgs.RootUsers,
+		jwtCache:        generic.NewCache(m, 5*time.Minute),
+		indexes:         generic.NewCache(m, 0),
+		authorizers:     generic.NewCache(m, 0),
+		typeValidators:  generic.NewCache(m, 0),
+		flgs:            flgs,
 	}
 	if flgs.OpenIdDiscovery != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIdDiscovery)

@@ -19,16 +19,18 @@ func NewCache(m *machine.Machine, garbageCollect time.Duration) *Cache {
 	cache := &Cache{
 		items: sync.Map{},
 	}
-	m.Go(func(routine machine.Routine) {
-		now := time.Now().UnixNano()
-		cache.items.Range(func(key, value interface{}) bool {
-			item := value.(item)
-			if item.expires > 0 && now > item.expires {
-				cache.items.Delete(key)
-			}
-			return true
-		})
-	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(garbageCollect))))
+	if garbageCollect != 0 {
+		m.Go(func(routine machine.Routine) {
+			now := time.Now().UnixNano()
+			cache.items.Range(func(key, value interface{}) bool {
+				item := value.(item)
+				if item.expires > 0 && now > item.expires {
+					cache.items.Delete(key)
+				}
+				return true
+			})
+		}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(garbageCollect))))
+	}
 	return cache
 }
 

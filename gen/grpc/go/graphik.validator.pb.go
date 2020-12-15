@@ -5,15 +5,15 @@ package apipb
 
 import (
 	fmt "fmt"
+	math "math"
 	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/any"
-	_ "github.com/golang/protobuf/ptypes/empty"
 	_ "github.com/golang/protobuf/ptypes/struct"
 	_ "github.com/golang/protobuf/ptypes/timestamp"
+	_ "github.com/golang/protobuf/ptypes/any"
+	_ "github.com/golang/protobuf/ptypes/empty"
 	_ "github.com/mwitkow/go-proto-validators"
-	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
-	math "math"
 	regexp "regexp"
+	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -365,13 +365,7 @@ func (this *IndexConstructor) Validate() error {
 	}
 	return nil
 }
-
-var _regex_AuthTarget_Method = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *AuthTarget) Validate() error {
-	if !_regex_AuthTarget_Method.MatchString(this.Method) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
-	}
 	if nil == this.User {
 		return github_com_mwitkow_go_proto_validators.FieldError("User", fmt.Errorf("message must exist"))
 	}
@@ -389,11 +383,15 @@ func (this *AuthTarget) Validate() error {
 }
 
 var _regex_Authorizer_Name = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Authorizer_Method = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Authorizer_Expression = regexp.MustCompile(`^.{1,225}$`)
 
 func (this *Authorizer) Validate() error {
 	if !_regex_Authorizer_Name.MatchString(this.Name) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Name", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Name))
+	}
+	if !_regex_Authorizer_Method.MatchString(this.Method) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
 	}
 	if !_regex_Authorizer_Expression.MatchString(this.Expression) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))

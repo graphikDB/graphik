@@ -79,6 +79,14 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string playground_session_store = 14;</code>
      */
     private $playground_session_store = '';
+    /**
+     * Generated from protobuf field <code>bool require_request_authorizers = 15;</code>
+     */
+    private $require_request_authorizers = false;
+    /**
+     * Generated from protobuf field <code>bool require_response_authorizers = 16;</code>
+     */
+    private $require_response_authorizers = false;
 
     /**
      * Constructor.
@@ -106,6 +114,8 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $playground_client_secret
      *     @type string $playground_redirect
      *     @type string $playground_session_store
+     *     @type bool $require_request_authorizers
+     *     @type bool $require_response_authorizers
      * }
      */
     public function __construct($data = NULL) {
@@ -423,6 +433,50 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->playground_session_store = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool require_request_authorizers = 15;</code>
+     * @return bool
+     */
+    public function getRequireRequestAuthorizers()
+    {
+        return $this->require_request_authorizers;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool require_request_authorizers = 15;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setRequireRequestAuthorizers($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->require_request_authorizers = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool require_response_authorizers = 16;</code>
+     * @return bool
+     */
+    public function getRequireResponseAuthorizers()
+    {
+        return $this->require_response_authorizers;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool require_response_authorizers = 16;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setRequireResponseAuthorizers($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->require_response_authorizers = $var;
 
         return $this;
     }

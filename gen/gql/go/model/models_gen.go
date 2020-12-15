@@ -16,13 +16,13 @@ type AggFilter struct {
 }
 
 type AuthTarget struct {
-	Method string                 `json:"method"`
 	User   *Doc                   `json:"user"`
 	Target map[string]interface{} `json:"target"`
 }
 
 type Authorizer struct {
 	Name            string `json:"name"`
+	Method          string `json:"method"`
 	Expression      string `json:"expression"`
 	TargetRequests  bool   `json:"target_requests"`
 	TargetResponses bool   `json:"target_responses"`
@@ -30,6 +30,7 @@ type Authorizer struct {
 
 type AuthorizerInput struct {
 	Name            string `json:"name"`
+	Method          string `json:"method"`
 	Expression      string `json:"expression"`
 	TargetRequests  bool   `json:"target_requests"`
 	TargetResponses bool   `json:"target_responses"`

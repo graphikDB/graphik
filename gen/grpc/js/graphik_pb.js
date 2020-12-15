@@ -5186,7 +5186,6 @@ proto.api.AuthTarget.prototype.toObject = function(opt_includeInstance) {
  */
 proto.api.AuthTarget.toObject = function(includeInstance, msg) {
   var f, obj = {
-    method: jspb.Message.getFieldWithDefault(msg, 3, ""),
     user: (f = msg.getUser()) && proto.api.Doc.toObject(includeInstance, f),
     target: (f = msg.getTarget()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
   };
@@ -5225,10 +5224,6 @@ proto.api.AuthTarget.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMethod(value);
-      break;
     case 4:
       var value = new proto.api.Doc;
       reader.readMessage(value,proto.api.Doc.deserializeBinaryFromReader);
@@ -5268,13 +5263,6 @@ proto.api.AuthTarget.prototype.serializeBinary = function() {
  */
 proto.api.AuthTarget.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getMethod();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
   f = message.getUser();
   if (f != null) {
     writer.writeMessage(
@@ -5291,21 +5279,6 @@ proto.api.AuthTarget.serializeBinaryToWriter = function(message, writer) {
       google_protobuf_struct_pb.Struct.serializeBinaryToWriter
     );
   }
-};
-
-
-/**
- * optional string method = 3;
- * @return {string}
- */
-proto.api.AuthTarget.prototype.getMethod = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/** @param {string} value */
-proto.api.AuthTarget.prototype.setMethod = function(value) {
-  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -5417,9 +5390,10 @@ proto.api.Authorizer.prototype.toObject = function(opt_includeInstance) {
 proto.api.Authorizer.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    expression: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    targetRequests: jspb.Message.getFieldWithDefault(msg, 3, false),
-    targetResponses: jspb.Message.getFieldWithDefault(msg, 4, false)
+    method: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    expression: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    targetRequests: jspb.Message.getFieldWithDefault(msg, 4, false),
+    targetResponses: jspb.Message.getFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -5462,13 +5436,17 @@ proto.api.Authorizer.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setExpression(value);
+      msg.setMethod(value);
       break;
     case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExpression(value);
+      break;
+    case 4:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setTargetRequests(value);
       break;
-    case 4:
+    case 5:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setTargetResponses(value);
       break;
@@ -5508,24 +5486,31 @@ proto.api.Authorizer.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getExpression();
+  f = message.getMethod();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
+  f = message.getExpression();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
   f = message.getTargetRequests();
   if (f) {
     writer.writeBool(
-      3,
+      4,
       f
     );
   }
   f = message.getTargetResponses();
   if (f) {
     writer.writeBool(
-      4,
+      5,
       f
     );
   }
@@ -5548,51 +5533,66 @@ proto.api.Authorizer.prototype.setName = function(value) {
 
 
 /**
- * optional string expression = 2;
+ * optional string method = 2;
  * @return {string}
  */
-proto.api.Authorizer.prototype.getExpression = function() {
+proto.api.Authorizer.prototype.getMethod = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.api.Authorizer.prototype.setExpression = function(value) {
+proto.api.Authorizer.prototype.setMethod = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional bool target_requests = 3;
+ * optional string expression = 3;
+ * @return {string}
+ */
+proto.api.Authorizer.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Authorizer.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional bool target_requests = 4;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
 proto.api.Authorizer.prototype.getTargetRequests = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 3, false));
-};
-
-
-/** @param {boolean} value */
-proto.api.Authorizer.prototype.setTargetRequests = function(value) {
-  jspb.Message.setProto3BooleanField(this, 3, value);
-};
-
-
-/**
- * optional bool target_responses = 4;
- * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
- * You should avoid comparisons like {@code val === true/false} in those cases.
- * @return {boolean}
- */
-proto.api.Authorizer.prototype.getTargetResponses = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 4, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.Authorizer.prototype.setTargetResponses = function(value) {
+proto.api.Authorizer.prototype.setTargetRequests = function(value) {
   jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+
+/**
+ * optional bool target_responses = 5;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Authorizer.prototype.getTargetResponses = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Authorizer.prototype.setTargetResponses = function(value) {
+  jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 
@@ -7046,7 +7046,9 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     playgroundClientId: jspb.Message.getFieldWithDefault(msg, 11, ""),
     playgroundClientSecret: jspb.Message.getFieldWithDefault(msg, 12, ""),
     playgroundRedirect: jspb.Message.getFieldWithDefault(msg, 13, ""),
-    playgroundSessionStore: jspb.Message.getFieldWithDefault(msg, 14, "")
+    playgroundSessionStore: jspb.Message.getFieldWithDefault(msg, 14, ""),
+    requireRequestAuthorizers: jspb.Message.getFieldWithDefault(msg, 15, false),
+    requireResponseAuthorizers: jspb.Message.getFieldWithDefault(msg, 16, false)
   };
 
   if (includeInstance) {
@@ -7134,6 +7136,14 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 14:
       var value = /** @type {string} */ (reader.readString());
       msg.setPlaygroundSessionStore(value);
+      break;
+    case 15:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setRequireRequestAuthorizers(value);
+      break;
+    case 16:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setRequireResponseAuthorizers(value);
       break;
     default:
       reader.skipField();
@@ -7252,6 +7262,20 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       14,
+      f
+    );
+  }
+  f = message.getRequireRequestAuthorizers();
+  if (f) {
+    writer.writeBool(
+      15,
+      f
+    );
+  }
+  f = message.getRequireResponseAuthorizers();
+  if (f) {
+    writer.writeBool(
+      16,
       f
     );
   }
@@ -7508,6 +7532,40 @@ proto.api.Flags.prototype.getPlaygroundSessionStore = function() {
 /** @param {string} value */
 proto.api.Flags.prototype.setPlaygroundSessionStore = function(value) {
   jspb.Message.setProto3StringField(this, 14, value);
+};
+
+
+/**
+ * optional bool require_request_authorizers = 15;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Flags.prototype.getRequireRequestAuthorizers = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 15, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Flags.prototype.setRequireRequestAuthorizers = function(value) {
+  jspb.Message.setProto3BooleanField(this, 15, value);
+};
+
+
+/**
+ * optional bool require_response_authorizers = 16;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Flags.prototype.getRequireResponseAuthorizers = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 16, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Flags.prototype.setRequireResponseAuthorizers = function(value) {
+  jspb.Message.setProto3BooleanField(this, 16, value);
 };
 
 

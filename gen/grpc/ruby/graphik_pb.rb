@@ -129,15 +129,15 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :connections, :bool, 7
   end
   add_message "api.AuthTarget" do
-    optional :method, :string, 3
     optional :user, :message, 4, "api.Doc"
     optional :target, :message, 5, "google.protobuf.Struct"
   end
   add_message "api.Authorizer" do
     optional :name, :string, 1
-    optional :expression, :string, 2
-    optional :target_requests, :bool, 3
-    optional :target_responses, :bool, 4
+    optional :method, :string, 2
+    optional :expression, :string, 3
+    optional :target_requests, :bool, 4
+    optional :target_responses, :bool, 5
   end
   add_message "api.Authorizers" do
     repeated :authorizers, :message, 1, "api.Authorizer"
@@ -184,6 +184,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :playground_client_secret, :string, 12
     optional :playground_redirect, :string, 13
     optional :playground_session_store, :string, 14
+    optional :require_request_authorizers, :bool, 15
+    optional :require_response_authorizers, :bool, 16
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1

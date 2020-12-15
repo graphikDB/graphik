@@ -264,17 +264,23 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 	}
 	var programs []cel.Program
 	g.rangeAuthorizers(func(a *authorizer) bool {
-		if a.authorizer.GetTargetRequests() {
+		if a.authorizer.GetTargetRequests() && a.authorizer.GetMethod() == method {
 			programs = append(programs, a.program)
 		}
 		return true
 	})
-	if len(programs) == 0 {
+	if g.flgs.RequireRequestAuthorizers {
+		if len(programs) == 0 {
+			return ctx, status.Errorf(
+				codes.PermissionDenied,
+				"zero registered request authorizers found for invoked gRPC method %s", method)
+		}
+	} else {
 		return ctx, nil
 	}
+
 	request := &apipb.AuthTarget{
-		Method: method,
-		User:   user,
+		User: user,
 	}
 	if val, ok := req.(apipb.Mapper); ok {
 		request.Target = apipb.NewStruct(val.AsMap())
@@ -316,16 +322,21 @@ func (g *Graph) checkResponse(ctx context.Context, method string, response inter
 	}
 	var programs []cel.Program
 	g.rangeAuthorizers(func(a *authorizer) bool {
-		if a.authorizer.GetTargetResponses() {
+		if a.authorizer.GetTargetResponses() && a.authorizer.GetMethod() == method {
 			programs = append(programs, a.program)
 		}
 		return true
 	})
-	if len(programs) == 0 {
+	if g.flgs.RequireResponseAuthorizers {
+		if len(programs) == 0 {
+			return status.Errorf(
+				codes.PermissionDenied,
+				"zero registered response authorizers found for invoked gRPC method %s", method)
+		}
+	} else {
 		return nil
 	}
 	request := &apipb.AuthTarget{
-		Method: method,
 		User:   user,
 		Target: nil,
 	}
@@ -353,5 +364,5 @@ func (g *Graph) isGraphikAdmin(user *apipb.Doc) bool {
 	if user.GetAttributes().GetFields() == nil {
 		return false
 	}
-	return helpers.ContainsString(user.GetAttributes().GetFields()["email"].GetStringValue(), g.rootUsers)
+	return helpers.ContainsString(user.GetAttributes().GetFields()["email"].GetStringValue(), g.flgs.RootUsers)
 }

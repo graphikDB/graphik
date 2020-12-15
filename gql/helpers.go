@@ -427,6 +427,7 @@ func protoIndex(index *model.IndexInput) *apipb.Index {
 func protoAuthorizer(auth *model.AuthorizerInput) *apipb.Authorizer {
 	return &apipb.Authorizer{
 		Name:            auth.Name,
+		Method:          auth.Method,
 		Expression:      auth.Expression,
 		TargetRequests:  auth.TargetRequests,
 		TargetResponses: auth.TargetResponses,

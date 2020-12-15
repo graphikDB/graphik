@@ -305,18 +305,22 @@ message IndexConstructor {
 }
 
 message AuthTarget {
-  // method is the rpc method
-  string method =3 [(validator.field) = {regex : "^.{1,225}$"}];
   // user is the user making the request
   Doc user =4 [(validator.field) = {msg_exists : true}];
   google.protobuf.Struct target = 5;
 }
 
 message Authorizer {
+  // name is the unique name of the authorizer
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
-  string expression =2[(validator.field) = {regex : "^.{1,225}$"}];
-  bool target_requests =3;
-  bool target_responses =4;
+  // method is the rpc method that will invoke the authorizer
+  string method =2 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is the boolean CEL expression that evaluates either the request or response body
+  string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
+  // target_responses sets the authorizer to evaluate request bodies
+  bool target_requests =4;
+  // target_responses sets the authorizer to evaluate response bodies
+  bool target_responses =5;
 }
 
 message Authorizers {
@@ -390,6 +394,8 @@ message Flags {
   string playground_client_secret =12;
   string playground_redirect =13;
   string playground_session_store = 14;
+  bool require_request_authorizers =15;
+  bool require_response_authorizers =16;
 }
 
 // Boolean is a simple boolean value

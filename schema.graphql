@@ -67,8 +67,6 @@ type Traversal {
 
 # AuthTarget
 type AuthTarget {
-  # method is the gRPC method invoked
-  method: String!
   # user is the user making the request
   user: Doc!
   # target is the payload gived to the authorizer(request or response payload)
@@ -146,13 +144,17 @@ type Indexes {
   indexes: [Index!]
 }
 
-# Authorizer is a graph primitive used for authorizing inbound requests(see Request)
+# Authorizer is a graph primitive used for authorizing inbound requests and/or responses(see AuthTarget)
 type Authorizer {
   # name is the unique name of the authorizer in the graph
   name: String!
-  # expression is a boolean CEL expression used to evaluate the inbound request
+  # method is the rpc method that will invoke the authorizer
+  method: String!
+  # expression is the boolean CEL expression that evaluates either the request or response body
   expression: String!
+  # target_responses sets the authorizer to evaluate request bodies of the target grpc method
   target_requests:   Boolean!
+  # target_responses sets the authorizer to evaluate response bodies of the target grpc method
   target_responses: Boolean!
 }
 
@@ -418,9 +420,13 @@ input IndexesInput {
 input AuthorizerInput {
   # name is the unique name of the authorizer in the graph
   name: String!
-  # expression is a boolean CEL expression used to evaluate the inbound request
+  # method is the rpc method that will invoke the authorizer
+  method: String!
+  # expression is the boolean CEL expression that evaluates either the request or response body
   expression: String!
+  # target_responses sets the authorizer to evaluate request bodies of the target grpc method
   target_requests:   Boolean!
+  # target_responses sets the authorizer to evaluate response bodies of the target grpc method
   target_responses: Boolean!
 }
 
