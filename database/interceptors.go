@@ -8,14 +8,12 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/helpers"
-	"github.com/graphikDB/graphik/logger"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jws"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -162,7 +160,6 @@ func (a *Graph) userToContext(ctx context.Context, payload map[string]interface{
 		return nil
 	})
 	if doc == nil {
-		logger.Info("creating user", zap.String("email", email))
 		strct, err := structpb.NewStruct(payload)
 		if err != nil {
 			return nil, nil, err
@@ -269,16 +266,14 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 		}
 		return true
 	})
-	if g.flgs.RequireRequestAuthorizers {
-		if len(programs) == 0 {
-			return ctx, status.Errorf(
-				codes.PermissionDenied,
-				"zero registered request authorizers found for invoked gRPC method %s", method)
-		}
-	} else {
+	if g.flgs.RequireResponseAuthorizers && len(programs) == 0 {
+		return nil, status.Errorf(
+			codes.PermissionDenied,
+			"zero registered request authorizers found for invoked gRPC method %s", method)
+	}
+	if len(programs) == 0 {
 		return ctx, nil
 	}
-
 	request := &apipb.AuthTarget{
 		User: user,
 	}
@@ -327,13 +322,12 @@ func (g *Graph) checkResponse(ctx context.Context, method string, response inter
 		}
 		return true
 	})
-	if g.flgs.RequireResponseAuthorizers {
-		if len(programs) == 0 {
-			return status.Errorf(
-				codes.PermissionDenied,
-				"zero registered response authorizers found for invoked gRPC method %s", method)
-		}
-	} else {
+	if g.flgs.RequireResponseAuthorizers && len(programs) == 0 {
+		return status.Errorf(
+			codes.PermissionDenied,
+			"zero registered response authorizers found for invoked gRPC method %s", method)
+	}
+	if len(programs) == 0 {
 		return nil
 	}
 	request := &apipb.AuthTarget{

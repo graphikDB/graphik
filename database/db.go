@@ -216,6 +216,9 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 			return nil, err
 		}
 		current.Expression = i.Expression
+		current.TargetResponses = i.TargetResponses
+		current.TargetRequests = i.TargetRequests
+		current.Method = i.Method
 		bits, err := proto.Marshal(current)
 		if err != nil {
 			return nil, err
