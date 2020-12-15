@@ -70,15 +70,10 @@ func ExampleClient_SetAuthorizers() {
 		Authorizers: []*apipb2.Authorizer{
 			{
 				Name:           "testing-request",
-				Method: "/api.DatabaseService/Get",
-				Expression:     `this.user.attributes.email.contains("coleman")`,
+				Method: 		"/api.DatabaseService/GetSchema",
+				Expression:     `this.user.attributes.email.contains("colman")`,
 				TargetRequests: true,
-			},
-			{
-				Name:            "testing-response",
-				Method: "/api.DatabaseService/GetConnection",
-				Expression:      `this.user.attributes.email.contains("coleman") && this.method != ""`,
-				TargetResponses: true,
+				TargetResponses: false,
 			},
 		},
 	})
