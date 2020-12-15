@@ -14,3 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - refactor authorizers into either request or response authorizers
 - authorizers are evaluated completely within gRPC middleware
 - every byte that passes through the gRPC server may be targetted for authorization
+
+## [0.7.0] - 2020-12-14
+- add custom session store to resolve issues caused by gorilla/sessions
+- add flags to require request/response authorizers

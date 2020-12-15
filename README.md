@@ -92,7 +92,7 @@ Support: support@graphikdb.io
 ## Flags
 
 ```text
- --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
+      --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
       --allow-methods strings             cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
       --allow-origins strings             cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
       --metrics                           enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true) (default true)
@@ -100,7 +100,8 @@ Support: support@graphikdb.io
       --playground-client-id string       playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)
       --playground-client-secret string   playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)
       --playground-redirect string        playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT) (default "http://localhost:7820/playground/callback")
-      --playground-session-store string   playground session store (options: cookies, file-system) (env: GRAPHIK_PLAYGROUND_SESSION_STORE) (default "cookies")
+      --require-request-authorizers       require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)
+      --require-response-authorizers      require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)
       --root-users strings                a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)
       --storage string                    persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
       --tls-cert string                   path to tls certificate (env: GRAPHIK_TLS_CERT)
