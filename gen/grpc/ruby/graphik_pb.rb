@@ -183,7 +183,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :playground_client_id, :string, 11
     optional :playground_client_secret, :string, 12
     optional :playground_redirect, :string, 13
-    optional :playground_session_store, :string, 14
     optional :require_request_authorizers, :bool, 15
     optional :require_response_authorizers, :bool, 16
   end

@@ -7046,7 +7046,6 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     playgroundClientId: jspb.Message.getFieldWithDefault(msg, 11, ""),
     playgroundClientSecret: jspb.Message.getFieldWithDefault(msg, 12, ""),
     playgroundRedirect: jspb.Message.getFieldWithDefault(msg, 13, ""),
-    playgroundSessionStore: jspb.Message.getFieldWithDefault(msg, 14, ""),
     requireRequestAuthorizers: jspb.Message.getFieldWithDefault(msg, 15, false),
     requireResponseAuthorizers: jspb.Message.getFieldWithDefault(msg, 16, false)
   };
@@ -7132,10 +7131,6 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 13:
       var value = /** @type {string} */ (reader.readString());
       msg.setPlaygroundRedirect(value);
-      break;
-    case 14:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPlaygroundSessionStore(value);
       break;
     case 15:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -7255,13 +7250,6 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       13,
-      f
-    );
-  }
-  f = message.getPlaygroundSessionStore();
-  if (f.length > 0) {
-    writer.writeString(
-      14,
       f
     );
   }
@@ -7517,21 +7505,6 @@ proto.api.Flags.prototype.getPlaygroundRedirect = function() {
 /** @param {string} value */
 proto.api.Flags.prototype.setPlaygroundRedirect = function(value) {
   jspb.Message.setProto3StringField(this, 13, value);
-};
-
-
-/**
- * optional string playground_session_store = 14;
- * @return {string}
- */
-proto.api.Flags.prototype.getPlaygroundSessionStore = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, ""));
-};
-
-
-/** @param {string} value */
-proto.api.Flags.prototype.setPlaygroundSessionStore = function(value) {
-  jspb.Message.setProto3StringField(this, 14, value);
 };
 
 

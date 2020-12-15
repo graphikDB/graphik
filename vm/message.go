@@ -27,7 +27,7 @@ func NewMessageVM() (*MessageVM, error) {
 
 func (n *MessageVM) Program(expression string) (cel.Program, error) {
 	if expression == "" {
-		return nil, errors.New("empty expression")
+		return nil, errors.New("empty message expression")
 	}
 	ast, iss := n.e.Compile(expression)
 	if err := iss.Err(); err != nil {

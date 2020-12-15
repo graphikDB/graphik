@@ -49,10 +49,11 @@ func init() {
 	pflag.CommandLine.StringSliceVar(&global.RootUsers, "root-users", helpers.StringSliceEnvOr("GRAPHIK_ROOT_USERS", nil), "a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)")
 	pflag.CommandLine.StringVar(&global.TlsCert, "tls-cert", helpers.EnvOr("GRAPHIK_TLS_CERT", ""), "path to tls certificate (env: GRAPHIK_TLS_CERT)")
 	pflag.CommandLine.StringVar(&global.TlsKey, "tls-key", helpers.EnvOr("GRAPHIK_TLS_KEY", ""), "path to tls key (env: GRAPHIK_TLS_KEY)")
+	pflag.CommandLine.BoolVar(&global.RequireRequestAuthorizers, "require-request-authorizers", helpers.BoolEnvOr("GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS", false), "require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)")
+	pflag.CommandLine.BoolVar(&global.RequireResponseAuthorizers, "require-response-authorizers", helpers.BoolEnvOr("GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS", false), "require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)")
 	pflag.CommandLine.StringVar(&global.PlaygroundClientId, "playground-client-id", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_ID", ""), "playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)")
 	pflag.CommandLine.StringVar(&global.PlaygroundClientSecret, "playground-client-secret", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_SECRET", ""), "playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)")
 	pflag.CommandLine.StringVar(&global.PlaygroundRedirect, "playground-redirect", helpers.EnvOr("GRAPHIK_PLAYGROUND_REDIRECT", ""), "playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT)")
-	pflag.CommandLine.StringVar(&global.PlaygroundSessionStore, "playground-session-store", helpers.EnvOr("GRAPHIK_PLAYGROUND_SESSION_STORE", "cookies"), "playground session store (options: cookies, file-system) (env: GRAPHIK_PLAYGROUND_SESSION_STORE)")
 	pflag.Parse()
 }
 
@@ -66,12 +67,6 @@ const metricsBind = ":7821"
 func run(ctx context.Context, cfg *apipb.Flags) {
 	if cfg.OpenIdDiscovery == "" {
 		logger.Error("empty open-id connect discovery --open-id", zap.String("usage", pflag.CommandLine.Lookup("open-id").Usage))
-		return
-	}
-	if cfg.PlaygroundSessionStore != "cookies" &&
-		cfg.PlaygroundSessionStore != "file-system" &&
-		cfg.PlaygroundSessionStore != "" {
-		logger.Error("invalid playground session store type", zap.String("usage", pflag.CommandLine.Lookup("playground-session-store").Usage))
 		return
 	}
 	if len(cfg.GetRootUsers()) == 0 {
@@ -146,15 +141,11 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			Scopes:      []string{"openid", "email", "profile"},
 		}
 	}
-	var sessionPath = ""
-	if global.GetPlaygroundSessionStore() == "file-system" {
-		sessionPath = fmt.Sprintf("%s/playground", global.GetStoragePath())
-	}
-	resolver := gql.NewResolver(ctx, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
+	resolver := gql.NewResolver(m, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
 		AllowedOrigins: global.AllowOrigins,
 		AllowedMethods: global.AllowMethods,
 		AllowedHeaders: global.AllowHeaders,
-	}), config, sessionPath)
+	}), config)
 	mux := http.NewServeMux()
 	mux.Handle("/", resolver.QueryHandler())
 	if config != nil {

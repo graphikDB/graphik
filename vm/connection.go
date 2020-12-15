@@ -27,7 +27,7 @@ func NewConnectionVM() (*ConnectionVM, error) {
 
 func (n *ConnectionVM) Program(expression string) (cel.Program, error) {
 	if expression == "" {
-		return nil, errors.New("empty expression")
+		return nil, errors.New("empty connection expression")
 	}
 	ast, iss := n.e.Compile(expression)
 	if iss.Err() != nil {

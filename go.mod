@@ -7,7 +7,6 @@ require (
 	github.com/autom8ter/machine v1.1.2
 	github.com/golang/protobuf v1.4.3
 	github.com/google/cel-go v0.6.1-0.20201210004405-3ea8bd382b11
-	github.com/gorilla/sessions v1.2.1
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0

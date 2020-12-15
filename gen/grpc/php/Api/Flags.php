@@ -76,10 +76,6 @@ class Flags extends \Google\Protobuf\Internal\Message
      */
     private $playground_redirect = '';
     /**
-     * Generated from protobuf field <code>string playground_session_store = 14;</code>
-     */
-    private $playground_session_store = '';
-    /**
      * Generated from protobuf field <code>bool require_request_authorizers = 15;</code>
      */
     private $require_request_authorizers = false;
@@ -113,7 +109,6 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $playground_client_id
      *     @type string $playground_client_secret
      *     @type string $playground_redirect
-     *     @type string $playground_session_store
      *     @type bool $require_request_authorizers
      *     @type bool $require_response_authorizers
      * }
@@ -411,28 +406,6 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->playground_redirect = $var;
-
-        return $this;
-    }
-
-    /**
-     * Generated from protobuf field <code>string playground_session_store = 14;</code>
-     * @return string
-     */
-    public function getPlaygroundSessionStore()
-    {
-        return $this->playground_session_store;
-    }
-
-    /**
-     * Generated from protobuf field <code>string playground_session_store = 14;</code>
-     * @param string $var
-     * @return $this
-     */
-    public function setPlaygroundSessionStore($var)
-    {
-        GPBUtil::checkString($var, True);
-        $this->playground_session_store = $var;
 
         return $this;
     }

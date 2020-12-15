@@ -27,7 +27,7 @@ func NewAuthVM() (*AuthVM, error) {
 
 func (n *AuthVM) Program(expression string) (cel.Program, error) {
 	if expression == "" {
-		return nil, errors.New("empty expression")
+		return nil, errors.New("empty auth expression")
 	}
 	ast, iss := n.e.Compile(expression)
 	if iss.Err() != nil {

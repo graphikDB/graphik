@@ -18,11 +18,11 @@ import (
 	"github.com/graphikDB/graphik/logger"
 	"github.com/pkg/errors"
 	"github.com/rs/cors"
-	"github.com/segmentio/ksuid"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc/metadata"
 	"html/template"
+	"math/rand"
 	"net/http"
 	"time"
 )
@@ -91,9 +91,9 @@ func (r *Resolver) QueryHandler() http.Handler {
 func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
-		if r.store != nil {
-			token, err := r.getToken(req)
-			if err == nil && req.Header.Get("Authorization") == "" {
+		if r.store != nil && r.config != nil && r.config.ClientID != "" {
+			token, _ := r.getToken(req)
+			if token != nil && req.Header.Get("Authorization") == "" {
 				req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
 			}
 		}
@@ -114,7 +114,7 @@ func (r *Resolver) Playground() http.HandlerFunc {
 		}
 		authToken, err := r.getToken(req)
 		if err != nil {
-			logger.Error("failed to get session - redirecting", zap.Error(err))
+			logger.Error("playground: failed to get session - redirecting", zap.Error(err))
 			r.redirectLogin(w, req)
 			return
 		}
@@ -199,7 +199,7 @@ func (r *Resolver) Playground() http.HandlerFunc {
 }
 
 func (r *Resolver) redirectLogin(w http.ResponseWriter, req *http.Request) {
-	state := helpers.Hash([]byte(ksuid.New().String()))
+	state := helpers.Hash([]byte(fmt.Sprint(rand.Int())))
 	r.setState(w, state)
 	redirect := r.config.AuthCodeURL(state)
 	http.Redirect(w, req, redirect, http.StatusTemporaryRedirect)
@@ -241,7 +241,7 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 			r.redirectLogin(w, req)
 			return
 		}
-		r.setToken(w, token)
+		r.setToken(w, req, token)
 		http.Redirect(w, req, playgroundRedirect, http.StatusTemporaryRedirect)
 	}
 }
@@ -262,14 +262,16 @@ func (r *Resolver) getToken(req *http.Request) (*oauth2.Token, error) {
 	return r.refreshToken(val.(*oauth2.Token))
 }
 
-func (r *Resolver) setToken(w http.ResponseWriter, token *oauth2.Token) {
-	id := helpers.Hash([]byte(ksuid.New().String()))
+func (r *Resolver) setToken(w http.ResponseWriter, req *http.Request, token *oauth2.Token) {
+	id := helpers.Hash([]byte(fmt.Sprint(rand.Int())))
 	r.store.Set(id, token, 1*time.Hour)
-	http.SetCookie(w, &http.Cookie{
+	cookie := &http.Cookie{
 		Name:    r.tokenCookie,
 		Value:   id,
 		Expires: time.Now().Add(1 * time.Hour),
-	})
+		Path:    "/",
+	}
+	http.SetCookie(w, cookie)
 }
 
 func (r *Resolver) getState(req *http.Request) (string, error) {
@@ -285,11 +287,12 @@ func (r *Resolver) getState(req *http.Request) (string, error) {
 }
 
 func (r *Resolver) setState(w http.ResponseWriter, state string) {
-	id := helpers.Hash([]byte(ksuid.New().String()))
-	r.store.Set(id, state, 15*time.Minute)
+	id := helpers.Hash([]byte(fmt.Sprint(rand.Int())))
+	r.store.Set(id, state, 5*time.Minute)
 	http.SetCookie(w, &http.Cookie{
-		Name:    r.tokenCookie,
+		Name:    r.stateCookie,
 		Value:   id,
-		Expires: time.Now().Add(1 * time.Hour),
+		Expires: time.Now().Add(5 * time.Minute),
+		Path:    "/",
 	})
 }
