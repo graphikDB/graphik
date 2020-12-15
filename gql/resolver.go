@@ -222,12 +222,6 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 			http.Error(w, "playground disabled", http.StatusNotFound)
 			return
 		}
-		sess, err := r.store.Get(req, r.cookieName)
-		if err != nil {
-			logger.Error("playground: failed to get session - redirecting", zap.Error(err))
-			r.redirectLogin(nil, w, req)
-			return
-		}
 		code := req.URL.Query().Get("code")
 		state := req.URL.Query().Get("state")
 		if code == "" {
@@ -241,13 +235,13 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 			return
 		}
 
-		stateVal := sess.Values["state"]
-		if stateVal == nil {
-			logger.Error("playground: failed to get session state - redirecting")
+		stateVal, err := r.getState(req)
+		if err != nil {
+			logger.Error("playground: failed to get session state - redirecting", zap.Error(err))
 			r.redirectLogin(w, req)
 			return
 		}
-		if stateVal.(string) != state {
+		if stateVal != state {
 			logger.Error("playground: session state mismatch - redirecting")
 			r.redirectLogin(w, req)
 			return
@@ -258,16 +252,7 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 			r.redirectLogin(w, req)
 			return
 		}
-		sess.Values["token"] = token
-		sess.Values["exp"] = time.Now().Add(1 * time.Hour).Unix()
-		if err := sess.Save(req, w); err != nil {
-			logger.Error("playground: failed to save session - redirecting", zap.Error(err))
-			if sess2, err := r.store.New(req, r.cookieName); err == nil {
-				sess = sess2
-			}
-			r.redirectLogin(w, req)
-			return
-		}
+		r.setToken(w, token)
 		http.Redirect(w, req, playgroundRedirect, http.StatusTemporaryRedirect)
 	}
 }
@@ -283,7 +268,7 @@ func (r *Resolver) getToken(req *http.Request) (*oauth2.Token, error) {
 	}
 	val, ok := r.store.Get(cookie.Value)
 	if !ok || val == nil {
-		return nil, ErrNoSession
+		return nil, ErrNoTokenSession
 	}
 	return r.refreshToken(val.(*oauth2.Token))
 }
@@ -304,7 +289,11 @@ func (r *Resolver) getState(req *http.Request) (string, error) {
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to get cookie: %s", r.stateCookie)
 	}
-	return cookie.Value, nil
+	val, ok := r.store.Get(cookie.Value)
+	if !ok || val == nil {
+		return "", ErrNoStateSession
+	}
+	return val.(string), nil
 }
 
 func (r *Resolver) setState(w http.ResponseWriter, state string) {
