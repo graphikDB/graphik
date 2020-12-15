@@ -424,22 +424,12 @@ func protoIndex(index *model.IndexInput) *apipb.Index {
 	}
 }
 
-func protoAuthType(t model.AuthType) apipb.AuthType {
-	switch t {
-	case model.AuthTypeViewConnection:
-		return apipb.AuthType_VIEW_CONNECTION
-	case model.AuthTypeViewDoc:
-		return apipb.AuthType_VIEW_DOC
-	default:
-		return apipb.AuthType_REQUEST
-	}
-}
-
 func protoAuthorizer(auth *model.AuthorizerInput) *apipb.Authorizer {
 	return &apipb.Authorizer{
-		Name:       auth.Name,
-		Expression: auth.Expression,
-		Type:       protoAuthType(auth.Type),
+		Name:            auth.Name,
+		Expression:      auth.Expression,
+		TargetRequests:  auth.TargetRequests,
+		TargetResponses: auth.TargetResponses,
 	}
 }
 

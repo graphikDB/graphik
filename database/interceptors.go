@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/cel-go/cel"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/helpers"
@@ -38,7 +39,14 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			if err != nil {
 				return nil, err
 			}
-			return handler(ctx, req)
+			hresp, err := handler(ctx, req)
+			if err != nil {
+				return hresp, err
+			}
+			if err := g.checkResponse(ctx, info.FullMethod, hresp, payload); err != nil {
+				return nil, err
+			}
+			return hresp, nil
 		}
 		ctx = g.methodToContext(ctx, info.FullMethod)
 		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
@@ -67,7 +75,14 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 		if err != nil {
 			return nil, err
 		}
-		return handler(ctx, req)
+		hresp, err := handler(ctx, req)
+		if err != nil {
+			return hresp, err
+		}
+		if err := g.checkResponse(ctx, info.FullMethod, hresp, payload); err != nil {
+			return nil, err
+		}
+		return hresp, nil
 	}
 }
 
@@ -80,13 +95,19 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		tokenHash := helpers.Hash([]byte(token))
 		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
-			ctx, err := g.checkRequest(ss.Context(), info.FullMethod, srv, payload)
-			if err != nil {
-				return err
+			if info.IsClientStream {
+				ctx, err := g.checkRequest(ss.Context(), info.FullMethod, srv, payload)
+				if err != nil {
+					return err
+				}
+				wrapped := grpc_middleware.WrapServerStream(ss)
+				wrapped.WrappedContext = ctx
+				return handler(srv, wrapped)
+			} else {
+				if err := g.checkResponse(ss.Context(), info.FullMethod, srv, payload); err != nil {
+					return err
+				}
 			}
-			wrapped := grpc_middleware.WrapServerStream(ss)
-			wrapped.WrappedContext = ctx
-			return handler(srv, wrapped)
 		}
 		ctx := g.methodToContext(ss.Context(), info.FullMethod)
 		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
@@ -238,41 +259,94 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, err.Error())
 	}
-	if !g.isGraphikAdmin(user) {
-		ctx = context.WithValue(ctx, bypassAuthorizersCtxKey, true)
-		var programs []cel.Program
-		g.rangeAuthorizers(func(a *authorizer) bool {
-			if a.authorizer.GetType() == apipb.AuthType_REQUEST {
-				programs = append(programs, a.program)
-			}
-			return true
-		})
-		if len(programs) == 0 {
-			return ctx, nil
+	if g.isGraphikAdmin(user) {
+		return context.WithValue(ctx, bypassAuthorizersCtxKey, true), nil
+	}
+	var programs []cel.Program
+	g.rangeAuthorizers(func(a *authorizer) bool {
+		if a.authorizer.GetTargetRequests() {
+			programs = append(programs, a.program)
 		}
-		request := &apipb.AuthTarget{
-			Method: method,
-			User:   user,
+		return true
+	})
+	if len(programs) == 0 {
+		return ctx, nil
+	}
+	request := &apipb.AuthTarget{
+		Method: method,
+		User:   user,
+	}
+	if val, ok := req.(apipb.Mapper); ok {
+		request.Target = apipb.NewStruct(val.AsMap())
+	} else if val, ok := req.(proto.Message); ok {
+		bits, _ := helpers.MarshalJSON(val)
+		reqMap := map[string]interface{}{}
+		if err := json.Unmarshal(bits, &reqMap); err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
 		}
-		if val, ok := req.(apipb.Mapper); ok {
-			request.Data = apipb.NewStruct(val.AsMap())
-		} else if val, ok := req.(proto.Message); ok {
-			bits, _ := helpers.MarshalJSON(val)
-			reqMap := map[string]interface{}{}
-			if err := json.Unmarshal(bits, &reqMap); err != nil {
-				return nil, status.Error(codes.Internal, err.Error())
-			}
-			request.Data = apipb.NewStruct(reqMap)
-		}
-		result, err := g.vm.Auth().Eval(request, programs...)
-		if err != nil {
-			return nil, err
-		}
-		if !result {
-			return nil, status.Errorf(codes.PermissionDenied, "request from %s.%s  authorization = denied", user.GetRef().GetGtype(), user.GetRef().GetGid())
-		}
+		request.Target = apipb.NewStruct(reqMap)
+	}
+	result, err := g.vm.Auth().Eval(request, programs...)
+	if err != nil {
+		return nil, err
+	}
+	if !result {
+		return nil, status.Errorf(codes.PermissionDenied, "request from %s.%s  authorization = denied", user.GetRef().GetGtype(), user.GetRef().GetGid())
 	}
 	return ctx, nil
+}
+
+func (g *Graph) checkResponse(ctx context.Context, method string, response interface{}, payload map[string]interface{}) error {
+	if _, ok := response.(*empty.Empty); ok {
+		return nil
+	}
+	ctx = g.methodToContext(ctx, method)
+	var (
+		err  error
+		user = g.getIdentity(ctx)
+	)
+	if user == nil {
+		ctx, user, err = g.userToContext(ctx, payload)
+		if err != nil {
+			return status.Errorf(codes.Unauthenticated, err.Error())
+		}
+	}
+	if g.isGraphikAdmin(user) {
+		return nil
+	}
+	var programs []cel.Program
+	g.rangeAuthorizers(func(a *authorizer) bool {
+		if a.authorizer.GetTargetResponses() {
+			programs = append(programs, a.program)
+		}
+		return true
+	})
+	if len(programs) == 0 {
+		return nil
+	}
+	request := &apipb.AuthTarget{
+		Method: method,
+		User:   user,
+		Target: nil,
+	}
+	if val, ok := response.(apipb.Mapper); ok {
+		request.Target = apipb.NewStruct(val.AsMap())
+	} else if val, ok := response.(proto.Message); ok {
+		bits, _ := helpers.MarshalJSON(val)
+		reqMap := map[string]interface{}{}
+		if err := json.Unmarshal(bits, &reqMap); err != nil {
+			return status.Error(codes.Internal, err.Error())
+		}
+		request.Target = apipb.NewStruct(reqMap)
+	}
+	result, err := g.vm.Auth().Eval(request, programs...)
+	if err != nil {
+		return err
+	}
+	if !result {
+		return status.Errorf(codes.PermissionDenied, "response to %s.%s  authorization = denied", user.GetRef().GetGtype(), user.GetRef().GetGid())
+	}
+	return nil
 }
 
 func (g *Graph) isGraphikAdmin(user *apipb.Doc) bool {

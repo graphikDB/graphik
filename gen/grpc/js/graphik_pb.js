@@ -20,7 +20,6 @@ goog.exportSymbol('proto.api.AggFilter', null, global);
 goog.exportSymbol('proto.api.Aggregate', null, global);
 goog.exportSymbol('proto.api.Algorithm', null, global);
 goog.exportSymbol('proto.api.AuthTarget', null, global);
-goog.exportSymbol('proto.api.AuthType', null, global);
 goog.exportSymbol('proto.api.Authorizer', null, global);
 goog.exportSymbol('proto.api.Authorizers', null, global);
 goog.exportSymbol('proto.api.Boolean', null, global);
@@ -5187,10 +5186,9 @@ proto.api.AuthTarget.prototype.toObject = function(opt_includeInstance) {
  */
 proto.api.AuthTarget.toObject = function(includeInstance, msg) {
   var f, obj = {
-    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    method: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    method: jspb.Message.getFieldWithDefault(msg, 3, ""),
     user: (f = msg.getUser()) && proto.api.Doc.toObject(includeInstance, f),
-    data: (f = msg.getData()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
+    target: (f = msg.getTarget()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5227,23 +5225,19 @@ proto.api.AuthTarget.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {!proto.api.AuthType} */ (reader.readEnum());
-      msg.setType(value);
-      break;
-    case 2:
+    case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setMethod(value);
       break;
-    case 3:
+    case 4:
       var value = new proto.api.Doc;
       reader.readMessage(value,proto.api.Doc.deserializeBinaryFromReader);
       msg.setUser(value);
       break;
-    case 4:
+    case 5:
       var value = new google_protobuf_struct_pb.Struct;
       reader.readMessage(value,google_protobuf_struct_pb.Struct.deserializeBinaryFromReader);
-      msg.setData(value);
+      msg.setTarget(value);
       break;
     default:
       reader.skipField();
@@ -5274,32 +5268,25 @@ proto.api.AuthTarget.prototype.serializeBinary = function() {
  */
 proto.api.AuthTarget.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getType();
-  if (f !== 0.0) {
-    writer.writeEnum(
-      1,
-      f
-    );
-  }
   f = message.getMethod();
   if (f.length > 0) {
     writer.writeString(
-      2,
+      3,
       f
     );
   }
   f = message.getUser();
   if (f != null) {
     writer.writeMessage(
-      3,
+      4,
       f,
       proto.api.Doc.serializeBinaryToWriter
     );
   }
-  f = message.getData();
+  f = message.getTarget();
   if (f != null) {
     writer.writeMessage(
-      4,
+      5,
       f,
       google_protobuf_struct_pb.Struct.serializeBinaryToWriter
     );
@@ -5308,48 +5295,33 @@ proto.api.AuthTarget.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional AuthType type = 1;
- * @return {!proto.api.AuthType}
- */
-proto.api.AuthTarget.prototype.getType = function() {
-  return /** @type {!proto.api.AuthType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
-};
-
-
-/** @param {!proto.api.AuthType} value */
-proto.api.AuthTarget.prototype.setType = function(value) {
-  jspb.Message.setProto3EnumField(this, 1, value);
-};
-
-
-/**
- * optional string method = 2;
+ * optional string method = 3;
  * @return {string}
  */
 proto.api.AuthTarget.prototype.getMethod = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
 proto.api.AuthTarget.prototype.setMethod = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional Doc user = 3;
+ * optional Doc user = 4;
  * @return {?proto.api.Doc}
  */
 proto.api.AuthTarget.prototype.getUser = function() {
   return /** @type{?proto.api.Doc} */ (
-    jspb.Message.getWrapperField(this, proto.api.Doc, 3));
+    jspb.Message.getWrapperField(this, proto.api.Doc, 4));
 };
 
 
 /** @param {?proto.api.Doc|undefined} value */
 proto.api.AuthTarget.prototype.setUser = function(value) {
-  jspb.Message.setWrapperField(this, 3, value);
+  jspb.Message.setWrapperField(this, 4, value);
 };
 
 
@@ -5363,28 +5335,28 @@ proto.api.AuthTarget.prototype.clearUser = function() {
  * @return {!boolean}
  */
 proto.api.AuthTarget.prototype.hasUser = function() {
-  return jspb.Message.getField(this, 3) != null;
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
 /**
- * optional google.protobuf.Struct data = 4;
+ * optional google.protobuf.Struct target = 5;
  * @return {?proto.google.protobuf.Struct}
  */
-proto.api.AuthTarget.prototype.getData = function() {
+proto.api.AuthTarget.prototype.getTarget = function() {
   return /** @type{?proto.google.protobuf.Struct} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_struct_pb.Struct, 4));
+    jspb.Message.getWrapperField(this, google_protobuf_struct_pb.Struct, 5));
 };
 
 
 /** @param {?proto.google.protobuf.Struct|undefined} value */
-proto.api.AuthTarget.prototype.setData = function(value) {
-  jspb.Message.setWrapperField(this, 4, value);
+proto.api.AuthTarget.prototype.setTarget = function(value) {
+  jspb.Message.setWrapperField(this, 5, value);
 };
 
 
-proto.api.AuthTarget.prototype.clearData = function() {
-  this.setData(undefined);
+proto.api.AuthTarget.prototype.clearTarget = function() {
+  this.setTarget(undefined);
 };
 
 
@@ -5392,8 +5364,8 @@ proto.api.AuthTarget.prototype.clearData = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.api.AuthTarget.prototype.hasData = function() {
-  return jspb.Message.getField(this, 4) != null;
+proto.api.AuthTarget.prototype.hasTarget = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
@@ -5446,7 +5418,8 @@ proto.api.Authorizer.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    targetRequests: jspb.Message.getFieldWithDefault(msg, 3, false),
+    targetResponses: jspb.Message.getFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -5492,8 +5465,12 @@ proto.api.Authorizer.deserializeBinaryFromReader = function(msg, reader) {
       msg.setExpression(value);
       break;
     case 3:
-      var value = /** @type {!proto.api.AuthType} */ (reader.readEnum());
-      msg.setType(value);
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTargetRequests(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTargetResponses(value);
       break;
     default:
       reader.skipField();
@@ -5538,10 +5515,17 @@ proto.api.Authorizer.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getType();
-  if (f !== 0.0) {
-    writer.writeEnum(
+  f = message.getTargetRequests();
+  if (f) {
+    writer.writeBool(
       3,
+      f
+    );
+  }
+  f = message.getTargetResponses();
+  if (f) {
+    writer.writeBool(
+      4,
       f
     );
   }
@@ -5579,17 +5563,36 @@ proto.api.Authorizer.prototype.setExpression = function(value) {
 
 
 /**
- * optional AuthType type = 3;
- * @return {!proto.api.AuthType}
+ * optional bool target_requests = 3;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
  */
-proto.api.Authorizer.prototype.getType = function() {
-  return /** @type {!proto.api.AuthType} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.api.Authorizer.prototype.getTargetRequests = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 3, false));
 };
 
 
-/** @param {!proto.api.AuthType} value */
-proto.api.Authorizer.prototype.setType = function(value) {
-  jspb.Message.setProto3EnumField(this, 3, value);
+/** @param {boolean} value */
+proto.api.Authorizer.prototype.setTargetRequests = function(value) {
+  jspb.Message.setProto3BooleanField(this, 3, value);
+};
+
+
+/**
+ * optional bool target_responses = 4;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Authorizer.prototype.getTargetResponses = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 4, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Authorizer.prototype.setTargetResponses = function(value) {
+  jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
@@ -9577,15 +9580,6 @@ proto.api.Aggregate = {
   MAX: 3,
   MIN: 4,
   PROD: 5
-};
-
-/**
- * @enum {number}
- */
-proto.api.AuthType = {
-  REQUEST: 0,
-  VIEW_DOC: 1,
-  VIEW_CONNECTION: 2
 };
 
 goog.object.extend(exports, proto.api);

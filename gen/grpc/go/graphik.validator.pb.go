@@ -380,9 +380,9 @@ func (this *AuthTarget) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
 		}
 	}
-	if this.Data != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+	if this.Target != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Target); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Target", err)
 		}
 	}
 	return nil

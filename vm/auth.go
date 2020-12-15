@@ -57,7 +57,7 @@ func (n *AuthVM) Eval(target *apipb.AuthTarget, programs ...cel.Program) (bool, 
 	}
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"this": target,
+			"this": target.AsMap(),
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "no such key") {

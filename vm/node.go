@@ -58,7 +58,7 @@ func (n *DocVM) Eval(doc *apipb.Doc, programs ...cel.Program) (bool, error) {
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"this": doc,
+			"this": doc.AsMap(),
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "no such key") {

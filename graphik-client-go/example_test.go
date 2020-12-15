@@ -69,8 +69,14 @@ func ExampleClient_SetAuthorizers() {
 	_, err := client.SetAuthorizers(context.Background(), &apipb2.Authorizers{
 		Authorizers: []*apipb2.Authorizer{
 			{
-				Name:       "testing",
-				Expression: `this.user.attributes.email.contains("coleman")`,
+				Name:           "testing-request",
+				Expression:     `this.user.attributes.email.contains("coleman")`,
+				TargetRequests: true,
+			},
+			{
+				Name:            "testing-response",
+				Expression:      `this.user.attributes.email.contains("coleman") && this.method != ""`,
+				TargetResponses: true,
 			},
 		},
 	})
@@ -88,7 +94,7 @@ func ExampleClient_SetAuthorizers() {
 		authorizers = append(authorizers, a.Name)
 	}
 	fmt.Printf("%s", strings.Join(authorizers, ","))
-	// Output: testing
+	// Output: testing-request,testing-response
 }
 
 func ExampleClient_SetTypeValidators() {
@@ -397,7 +403,7 @@ func ExampleClient_GetSchema() {
 	fmt.Printf("authorizers: %s", strings.Join(authorizers, ","))
 	// Output: doc types: dog,human,user
 	//connection types: created,created_by,edited,edited_by,owner
-	//authorizers: testing
+	//authorizers: testing-request,testing-response
 }
 
 func ExampleClient_Traverse() {

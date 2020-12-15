@@ -35,23 +35,23 @@ func init() {
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	client     apipb.DatabaseServiceClient
-	cors       *cors.Cors
-	machine    *machine.Machine
-	store      sessions.Store
-	config     *oauth2.Config
-	cookieName string
+	client      apipb.DatabaseServiceClient
+	cors        *cors.Cors
+	machine     *machine.Machine
+	store       sessions.Store
+	config      *oauth2.Config
+	cookieName  string
 	sessionPath string
 	sessionType string
 }
 
 func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config, sessionPath string) *Resolver {
 	r := &Resolver{
-		client:     client,
-		cors:       cors,
-		machine:    machine.New(ctx),
-		config:     config,
-		cookieName: "graphik-playground",
+		client:      client,
+		cors:        cors,
+		machine:     machine.New(ctx),
+		config:      config,
+		cookieName:  "graphik-playground",
 		sessionPath: sessionPath,
 	}
 	if sessionPath == "" {

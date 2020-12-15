@@ -49,16 +49,16 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	AuthTarget struct {
-		Data   func(childComplexity int) int
 		Method func(childComplexity int) int
-		Type   func(childComplexity int) int
+		Target func(childComplexity int) int
 		User   func(childComplexity int) int
 	}
 
 	Authorizer struct {
-		Expression func(childComplexity int) int
-		Name       func(childComplexity int) int
-		Type       func(childComplexity int) int
+		Expression      func(childComplexity int) int
+		Name            func(childComplexity int) int
+		TargetRequests  func(childComplexity int) int
+		TargetResponses func(childComplexity int) int
 	}
 
 	Authorizers struct {
@@ -256,13 +256,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "AuthTarget.data":
-		if e.complexity.AuthTarget.Data == nil {
-			break
-		}
-
-		return e.complexity.AuthTarget.Data(childComplexity), true
-
 	case "AuthTarget.method":
 		if e.complexity.AuthTarget.Method == nil {
 			break
@@ -270,12 +263,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuthTarget.Method(childComplexity), true
 
-	case "AuthTarget.type":
-		if e.complexity.AuthTarget.Type == nil {
+	case "AuthTarget.target":
+		if e.complexity.AuthTarget.Target == nil {
 			break
 		}
 
-		return e.complexity.AuthTarget.Type(childComplexity), true
+		return e.complexity.AuthTarget.Target(childComplexity), true
 
 	case "AuthTarget.user":
 		if e.complexity.AuthTarget.User == nil {
@@ -298,12 +291,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Authorizer.Name(childComplexity), true
 
-	case "Authorizer.type":
-		if e.complexity.Authorizer.Type == nil {
+	case "Authorizer.target_requests":
+		if e.complexity.Authorizer.TargetRequests == nil {
 			break
 		}
 
-		return e.complexity.Authorizer.Type(childComplexity), true
+		return e.complexity.Authorizer.TargetRequests(childComplexity), true
+
+	case "Authorizer.target_responses":
+		if e.complexity.Authorizer.TargetResponses == nil {
+			break
+		}
+
+		return e.complexity.Authorizer.TargetResponses(childComplexity), true
 
 	case "Authorizers.authorizers":
 		if e.complexity.Authorizers.Authorizers == nil {
@@ -1149,12 +1149,6 @@ enum Aggregate {
   PROD
 }
 
-enum AuthType {
-  REQUEST
-  VIEW_DOC
-  VIEW_CONNECTION
-}
-
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -1194,13 +1188,12 @@ type Traversal {
 
 # AuthTarget
 type AuthTarget {
-  type: AuthType!
   # method is the gRPC method invoked
   method: String!
   # user is the user making the request
   user: Doc!
-  # data is the payload gived to the authorizer(request, doc, connection)
-  data: Map!
+  # target is the payload gived to the authorizer(request or response payload)
+  target: Map!
 }
 
 # Traversals is an array of Traversal that is returned from Graph traversal algorithms
@@ -1280,7 +1273,8 @@ type Authorizer {
   name: String!
   # expression is a boolean CEL expression used to evaluate the inbound request
   expression: String!
-  type:   AuthType!
+  target_requests:   Boolean!
+  target_responses: Boolean!
 }
 
 # Authorizers is an array of Authorizer
@@ -1547,7 +1541,8 @@ input AuthorizerInput {
   name: String!
   # expression is a boolean CEL expression used to evaluate the inbound request
   expression: String!
-  type:   AuthType!
+  target_requests:   Boolean!
+  target_responses: Boolean!
 }
 
 # AuthorizersInput is an array of authorizers
@@ -2268,41 +2263,6 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _AuthTarget_type(ctx context.Context, field graphql.CollectedField, obj *model.AuthTarget) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "AuthTarget",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Type, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(model.AuthType)
-	fc.Result = res
-	return ec.marshalNAuthType2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthType(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _AuthTarget_method(ctx context.Context, field graphql.CollectedField, obj *model.AuthTarget) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2373,7 +2333,7 @@ func (ec *executionContext) _AuthTarget_user(ctx context.Context, field graphql.
 	return ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _AuthTarget_data(ctx context.Context, field graphql.CollectedField, obj *model.AuthTarget) (ret graphql.Marshaler) {
+func (ec *executionContext) _AuthTarget_target(ctx context.Context, field graphql.CollectedField, obj *model.AuthTarget) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2391,7 +2351,7 @@ func (ec *executionContext) _AuthTarget_data(ctx context.Context, field graphql.
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Data, nil
+		return obj.Target, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2478,7 +2438,7 @@ func (ec *executionContext) _Authorizer_expression(ctx context.Context, field gr
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Authorizer_type(ctx context.Context, field graphql.CollectedField, obj *model.Authorizer) (ret graphql.Marshaler) {
+func (ec *executionContext) _Authorizer_target_requests(ctx context.Context, field graphql.CollectedField, obj *model.Authorizer) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2496,7 +2456,7 @@ func (ec *executionContext) _Authorizer_type(ctx context.Context, field graphql.
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Type, nil
+		return obj.TargetRequests, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2508,9 +2468,44 @@ func (ec *executionContext) _Authorizer_type(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(model.AuthType)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalNAuthType2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthType(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Authorizer_target_responses(ctx context.Context, field graphql.CollectedField, obj *model.Authorizer) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Authorizer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TargetResponses, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Authorizers_authorizers(ctx context.Context, field graphql.CollectedField, obj *model.Authorizers) (ret graphql.Marshaler) {
@@ -6681,11 +6676,19 @@ func (ec *executionContext) unmarshalInputAuthorizerInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
-		case "type":
+		case "target_requests":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
-			it.Type, err = ec.unmarshalNAuthType2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthType(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_requests"))
+			it.TargetRequests, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "target_responses":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_responses"))
+			it.TargetResponses, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7658,11 +7661,6 @@ func (ec *executionContext) _AuthTarget(ctx context.Context, sel ast.SelectionSe
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("AuthTarget")
-		case "type":
-			out.Values[i] = ec._AuthTarget_type(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "method":
 			out.Values[i] = ec._AuthTarget_method(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -7673,8 +7671,8 @@ func (ec *executionContext) _AuthTarget(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "data":
-			out.Values[i] = ec._AuthTarget_data(ctx, field, obj)
+		case "target":
+			out.Values[i] = ec._AuthTarget_target(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -7710,8 +7708,13 @@ func (ec *executionContext) _Authorizer(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "type":
-			out.Values[i] = ec._Authorizer_type(ctx, field, obj)
+		case "target_requests":
+			out.Values[i] = ec._Authorizer_target_requests(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "target_responses":
+			out.Values[i] = ec._Authorizer_target_responses(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -8879,16 +8882,6 @@ func (ec *executionContext) unmarshalNAggregate2githubᚗcomᚋgraphikDBᚋgraph
 }
 
 func (ec *executionContext) marshalNAggregate2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggregate(ctx context.Context, sel ast.SelectionSet, v model.Aggregate) graphql.Marshaler {
-	return v
-}
-
-func (ec *executionContext) unmarshalNAuthType2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthType(ctx context.Context, v interface{}) (model.AuthType, error) {
-	var res model.AuthType
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNAuthType2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthType(ctx context.Context, sel ast.SelectionSet, v model.AuthType) graphql.Marshaler {
 	return v
 }
 

@@ -67,6 +67,17 @@ func (n *Message) AsMap() map[string]interface{} {
 	}
 }
 
+func (n *AuthTarget) AsMap() map[string]interface{} {
+	if n == nil {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{
+		"target": n.GetTarget().AsMap(),
+		"user":   n.GetUser().AsMap(),
+		"method": n.GetMethod(),
+	}
+}
+
 func (p *Refs) AsMap() map[string]interface{} {
 	if p == nil {
 		return map[string]interface{}{}

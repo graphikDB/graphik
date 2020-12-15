@@ -1,4 +1,4 @@
-version := "0.5.2"
+version := "0.6.0"
 
 .DEFAULT_GOAL := help
 

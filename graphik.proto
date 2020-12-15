@@ -100,12 +100,6 @@ enum Aggregate {
   PROD =5;
 }
 
-enum AuthType {
-  REQUEST = 0;
-  VIEW_DOC = 1;
-  VIEW_CONNECTION = 2;
-}
-
 // Ref describes a doc/connection type & id
 message Ref {
   // gtype is the type of the doc/connection ex: pet
@@ -311,19 +305,18 @@ message IndexConstructor {
 }
 
 message AuthTarget {
-  AuthType type =1;
   // method is the rpc method
-  string method =2 [(validator.field) = {regex : "^.{1,225}$"}];
+  string method =3 [(validator.field) = {regex : "^.{1,225}$"}];
   // user is the user making the request
-  Doc user =3 [(validator.field) = {msg_exists : true}];
-  // request is the intercepted request
-  google.protobuf.Struct data = 4;
+  Doc user =4 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Struct target = 5;
 }
 
 message Authorizer {
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   string expression =2[(validator.field) = {regex : "^.{1,225}$"}];
-  AuthType type =3;
+  bool target_requests =3;
+  bool target_responses =4;
 }
 
 message Authorizers {

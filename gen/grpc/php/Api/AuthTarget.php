@@ -14,27 +14,21 @@ use Google\Protobuf\Internal\GPBUtil;
 class AuthTarget extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Generated from protobuf field <code>.api.AuthType type = 1;</code>
-     */
-    private $type = 0;
-    /**
      * method is the rpc method
      *
-     * Generated from protobuf field <code>string method = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string method = 3 [(.validator.field) = {</code>
      */
     private $method = '';
     /**
      * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc user = 3 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 4 [(.validator.field) = {</code>
      */
     private $user = null;
     /**
-     * request is the intercepted request
-     *
-     * Generated from protobuf field <code>.google.protobuf.Struct data = 4;</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct target = 5;</code>
      */
-    private $data = null;
+    private $target = null;
 
     /**
      * Constructor.
@@ -42,13 +36,11 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
-     *     @type int $type
      *     @type string $method
      *           method is the rpc method
      *     @type \Api\Doc $user
      *           user is the user making the request
-     *     @type \Google\Protobuf\Struct $data
-     *           request is the intercepted request
+     *     @type \Google\Protobuf\Struct $target
      * }
      */
     public function __construct($data = NULL) {
@@ -57,31 +49,9 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.api.AuthType type = 1;</code>
-     * @return int
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Generated from protobuf field <code>.api.AuthType type = 1;</code>
-     * @param int $var
-     * @return $this
-     */
-    public function setType($var)
-    {
-        GPBUtil::checkEnum($var, \Api\AuthType::class);
-        $this->type = $var;
-
-        return $this;
-    }
-
-    /**
      * method is the rpc method
      *
-     * Generated from protobuf field <code>string method = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string method = 3 [(.validator.field) = {</code>
      * @return string
      */
     public function getMethod()
@@ -92,7 +62,7 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     /**
      * method is the rpc method
      *
-     * Generated from protobuf field <code>string method = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string method = 3 [(.validator.field) = {</code>
      * @param string $var
      * @return $this
      */
@@ -107,7 +77,7 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     /**
      * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc user = 3 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 4 [(.validator.field) = {</code>
      * @return \Api\Doc
      */
     public function getUser()
@@ -118,7 +88,7 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     /**
      * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc user = 3 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 4 [(.validator.field) = {</code>
      * @param \Api\Doc $var
      * @return $this
      */
@@ -131,27 +101,23 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * request is the intercepted request
-     *
-     * Generated from protobuf field <code>.google.protobuf.Struct data = 4;</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct target = 5;</code>
      * @return \Google\Protobuf\Struct
      */
-    public function getData()
+    public function getTarget()
     {
-        return $this->data;
+        return $this->target;
     }
 
     /**
-     * request is the intercepted request
-     *
-     * Generated from protobuf field <code>.google.protobuf.Struct data = 4;</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct target = 5;</code>
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
-    public function setData($var)
+    public function setTarget($var)
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Struct::class);
-        $this->data = $var;
+        $this->target = $var;
 
         return $this;
     }

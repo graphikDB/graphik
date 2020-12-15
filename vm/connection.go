@@ -55,7 +55,7 @@ func (n *ConnectionVM) Eval(connection *apipb.Connection, programs ...cel.Progra
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"this": connection,
+			"this": connection.AsMap(),
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "no such key") {

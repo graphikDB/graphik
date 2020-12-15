@@ -22,9 +22,13 @@ class Authorizer extends \Google\Protobuf\Internal\Message
      */
     private $expression = '';
     /**
-     * Generated from protobuf field <code>.api.AuthType type = 3;</code>
+     * Generated from protobuf field <code>bool target_requests = 3;</code>
      */
-    private $type = 0;
+    private $target_requests = false;
+    /**
+     * Generated from protobuf field <code>bool target_responses = 4;</code>
+     */
+    private $target_responses = false;
 
     /**
      * Constructor.
@@ -34,7 +38,8 @@ class Authorizer extends \Google\Protobuf\Internal\Message
      *
      *     @type string $name
      *     @type string $expression
-     *     @type int $type
+     *     @type bool $target_requests
+     *     @type bool $target_responses
      * }
      */
     public function __construct($data = NULL) {
@@ -87,23 +92,45 @@ class Authorizer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.api.AuthType type = 3;</code>
-     * @return int
+     * Generated from protobuf field <code>bool target_requests = 3;</code>
+     * @return bool
      */
-    public function getType()
+    public function getTargetRequests()
     {
-        return $this->type;
+        return $this->target_requests;
     }
 
     /**
-     * Generated from protobuf field <code>.api.AuthType type = 3;</code>
-     * @param int $var
+     * Generated from protobuf field <code>bool target_requests = 3;</code>
+     * @param bool $var
      * @return $this
      */
-    public function setType($var)
+    public function setTargetRequests($var)
     {
-        GPBUtil::checkEnum($var, \Api\AuthType::class);
-        $this->type = $var;
+        GPBUtil::checkBool($var);
+        $this->target_requests = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool target_responses = 4;</code>
+     * @return bool
+     */
+    public function getTargetResponses()
+    {
+        return $this->target_responses;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool target_responses = 4;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setTargetResponses($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->target_responses = $var;
 
         return $this;
     }

@@ -55,7 +55,7 @@ func (n *MessageVM) Eval(message *apipb.Message, programs ...cel.Program) (bool,
 	var passes = true
 	for _, program := range programs {
 		out, _, err := program.Eval(map[string]interface{}{
-			"this": message,
+			"this": message.AsMap(),
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "no such key") {
