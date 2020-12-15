@@ -8,3 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.5.1] - 2020-12-13
 
 - add option to use file-system session store instead of cookies(default) by setting the environmental variable GRAPHIK_PLAYGROUND_SESSION_STORE=file-system
+
+## [0.6.0] - 2020-12-14
+
+- refactor authorizers into either request or response authorizers
+- authorizers are evaluated completely within gRPC middleware
+- every byte that passes through the gRPC server may be targetted for authorization
