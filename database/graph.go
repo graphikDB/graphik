@@ -51,7 +51,6 @@ type Graph struct {
 	authorizers     *generic.Cache
 	typeValidators  *generic.Cache
 	flgs            *apipb.Flags
-	peers           map[string]apipb.DatabaseServiceClient
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
