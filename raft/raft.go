@@ -1,6 +1,8 @@
 package raft
 
 import (
+	"bytes"
+	"encoding/gob"
 	"errors"
 	"fmt"
 	"github.com/hashicorp/raft"
@@ -17,6 +19,9 @@ type Raft struct {
 func NewRaft(fsm *FSM, opts ...Opt) (*Raft, error) {
 	if fsm == nil {
 		return nil, errors.New("empty fsm")
+	}
+	if err := fsm.Validate(); err != nil {
+		return nil, err
 	}
 	options := &Options{}
 	for _, o := range opts {
@@ -88,4 +93,24 @@ func (s *Raft) LeaderAddr() string {
 
 func (s *Raft) Stats() map[string]string {
 	return s.raft.Stats()
+}
+
+func (s *Raft) ApplyCommand(cmd *Command) (interface{}, error) {
+	var buf = bytes.NewBuffer(nil)
+	if err := gob.NewEncoder(buf).Encode(cmd); err != nil {
+		return nil, err
+	}
+	f := s.raft.Apply(buf.Bytes(), s.opts.timeout)
+	if err := f.Error(); err != nil {
+		return nil, err
+	}
+	resp := f.Response()
+	if err, ok := resp.(error); ok {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (r *Raft) Close() error {
+	return r.raft.Shutdown().Error()
 }
