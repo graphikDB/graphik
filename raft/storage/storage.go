@@ -1,4 +1,4 @@
-package raft
+package storage
 
 import (
 	"bytes"

@@ -1,10 +1,9 @@
 package raft
 
 import (
-	"bytes"
-	"encoding/gob"
-	"errors"
 	"fmt"
+	"github.com/graphikDB/graphik/raft/fsm"
+	"github.com/graphikDB/graphik/raft/storage"
 	"github.com/hashicorp/raft"
 	"net"
 	"os"
@@ -16,10 +15,7 @@ type Raft struct {
 	opts *Options
 }
 
-func NewRaft(fsm *FSM, opts ...Opt) (*Raft, error) {
-	if fsm == nil {
-		return nil, errors.New("empty fsm")
-	}
+func NewRaft(fsm *fsm.FSM, opts ...Opt) (*Raft, error) {
 	if err := fsm.Validate(); err != nil {
 		return nil, err
 	}
@@ -44,7 +40,7 @@ func NewRaft(fsm *FSM, opts ...Opt) (*Raft, error) {
 	if err != nil {
 		return nil, err
 	}
-	strg, err := NewStorage(filepath.Join(options.raftDir, "raft.db"))
+	strg, err := storage.NewStorage(filepath.Join(options.raftDir, "raft.db"))
 	if err != nil {
 		return nil, err
 	}
@@ -95,12 +91,8 @@ func (s *Raft) Stats() map[string]string {
 	return s.raft.Stats()
 }
 
-func (s *Raft) ApplyCommand(cmd *Command) (interface{}, error) {
-	var buf = bytes.NewBuffer(nil)
-	if err := gob.NewEncoder(buf).Encode(cmd); err != nil {
-		return nil, err
-	}
-	f := s.raft.Apply(buf.Bytes(), s.opts.timeout)
+func (s *Raft) Apply(bits []byte) (interface{}, error) {
+	f := s.raft.Apply(bits, s.opts.timeout)
 	if err := f.Error(); err != nil {
 		return nil, err
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/graphikDB/graphik/generic"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
+	"github.com/graphikDB/graphik/raft"
 	"github.com/graphikDB/graphik/vm"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
@@ -51,6 +52,7 @@ type Graph struct {
 	authorizers     *generic.Cache
 	typeValidators  *generic.Cache
 	flgs            *apipb.Flags
+	raft            *raft.Raft
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -86,6 +88,11 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		typeValidators:  generic.NewCache(m, 0),
 		flgs:            flgs,
 	}
+	rft, err := raft.NewRaft(g.fsm())
+	if err != nil {
+		return nil, err
+	}
+	g.raft = rft
 	if flgs.OpenIdDiscovery != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIdDiscovery)
 		if err != nil {
@@ -658,10 +665,15 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 		}
 		docs = append(docs, doc)
 	}
-
-	docss, err := n.setDocs(ctx, docs...)
-	if err != nil {
-		return nil, err
+	var docss *apipb.Docs
+	if err := n.db.Batch(func(tx *bbolt.Tx) error {
+		docss, err = n.setDocs(ctx, tx, docs...)
+		if err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 	return docss, nil
 }

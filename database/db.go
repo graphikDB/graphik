@@ -398,19 +398,14 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	return doc, nil
 }
 
-func (g *Graph) setDocs(ctx context.Context, docs ...*apipb.Doc) (*apipb.Docs, error) {
+func (g *Graph) setDocs(ctx context.Context, tx *bbolt.Tx, docs ...*apipb.Doc) (*apipb.Docs, error) {
 	var nds = &apipb.Docs{}
-	if err := g.db.Batch(func(tx *bbolt.Tx) error {
-		for _, doc := range docs {
-			n, err := g.setDoc(ctx, tx, doc)
-			if err != nil {
-				return err
-			}
-			nds.Docs = append(nds.Docs, n)
+	for _, doc := range docs {
+		n, err := g.setDoc(ctx, tx, doc)
+		if err != nil {
+			return nil, err
 		}
-		return nil
-	}); err != nil {
-		return nil, err
+		nds.Docs = append(nds.Docs, n)
 	}
 	return nds, nil
 }
