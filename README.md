@@ -7,7 +7,7 @@
     
 `    docker pull graphikdb/graphik:v0.7.1`
 
-Graphik is an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go
+Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
 Support: support@graphikdb.io
 
