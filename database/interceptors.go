@@ -16,6 +16,7 @@ import (
 	"go.etcd.io/bbolt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -26,6 +27,12 @@ import (
 
 func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		md, ok := metadata.FromIncomingContext(ctx)
+		if ok {
+			if len(md.Get(peerHeader)) > 0 {
+				ctx = context.WithValue(ctx, peerCtxKey, md.Get(peerHeader)[0])
+			}
+		}
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
@@ -86,7 +93,14 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 
 func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
+		ctx := g.methodToContext(ss.Context(), info.FullMethod)
+		md, ok := metadata.FromIncomingContext(ctx)
+		if ok {
+			if len(md.Get(peerHeader)) > 0 {
+				ctx = context.WithValue(ctx, peerCtxKey, md.Get(peerHeader)[0])
+			}
+		}
+		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return err
 		}
@@ -94,7 +108,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
 			if info.IsClientStream {
-				ctx, err := g.checkRequest(ss.Context(), info.FullMethod, srv, payload)
+				ctx, err := g.checkRequest(ctx, info.FullMethod, srv, payload)
 				if err != nil {
 					return err
 				}
@@ -102,12 +116,11 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 				wrapped.WrappedContext = ctx
 				return handler(srv, wrapped)
 			} else {
-				if err := g.checkResponse(ss.Context(), info.FullMethod, srv, payload); err != nil {
+				if err := g.checkResponse(ctx, info.FullMethod, srv, payload); err != nil {
 					return err
 				}
 			}
 		}
-		ctx := g.methodToContext(ss.Context(), info.FullMethod)
 		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
@@ -192,6 +205,14 @@ func (s *Graph) getIdentity(ctx context.Context) *apipb.Doc {
 
 func (r *Graph) getMethod(ctx context.Context) string {
 	val, ok := ctx.Value(methodCtxKey).(string)
+	if ok {
+		return val
+	}
+	return ""
+}
+
+func (r *Graph) getPeerID(ctx context.Context) string {
+	val, ok := ctx.Value(peerCtxKey).(string)
 	if ok {
 		return val
 	}

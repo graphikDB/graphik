@@ -32,7 +32,8 @@ import (
 )
 
 type Graph struct {
-	vm *vm.VM
+	peerID string
+	vm     *vm.VM
 	// db is the underlying handle to the db.
 	db              *bbolt.DB
 	jwksMu          sync.RWMutex
@@ -50,6 +51,7 @@ type Graph struct {
 	authorizers     *generic.Cache
 	typeValidators  *generic.Cache
 	flgs            *apipb.Flags
+	peers           map[string]apipb.DatabaseServiceClient
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
