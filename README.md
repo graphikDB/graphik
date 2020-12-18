@@ -89,7 +89,7 @@ Support: support@graphikdb.io
 - go.uber.org/zap
 - golang.org/x/oauth2
 - github.com/99designs/gqlgen
-- https://github.com/hashicorp/raft
+- github.com/hashicorp/raft
 
 ## Flags
 

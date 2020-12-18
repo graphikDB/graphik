@@ -18,3 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.7.0] - 2020-12-14
 - add custom session store to resolve issues caused by gorilla/sessions
 - add flags to require request/response authorizers
+
+## [0.8.0] - 2020-12-17
+- add high availability & horizontal scaleability via Raft consensus protocol
+- automatically redirect mutations to raft leader
