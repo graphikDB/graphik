@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
+	github.com/hashicorp/raft v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/lestrrat-go/jwx v1.0.5
 	github.com/mwitkow/go-proto-validators v0.3.2

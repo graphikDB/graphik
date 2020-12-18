@@ -175,8 +175,9 @@ func (c *Client) ConnectionsTo(ctx context.Context, in *apipb.ConnectFilter, opt
 }
 
 // Broadcast broadcasts a message to a pubsub channel
-func (c *Client) Broadcast(ctx context.Context, in *apipb.OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.Broadcast(ctx, in, opts...)
+func (c *Client) Broadcast(ctx context.Context, in *apipb.OutboundMessage, opts ...grpc.CallOption) error {
+	_, err := c.graph.Broadcast(ctx, in, opts...)
+	return err
 }
 
 // Stream opens a stream of messages that pass a filter on a pubsub channel
@@ -248,18 +249,21 @@ func (c *Client) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.Ca
 }
 
 // SetIndexes sets all of the indexes in the graph
-func (c *Client) SetIndexes(ctx context.Context, in *apipb.Indexes, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.SetIndexes(ctx, in, opts...)
+func (c *Client) SetIndexes(ctx context.Context, in *apipb.Indexes, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetIndexes(ctx, in, opts...)
+	return err
 }
 
 // SetAuthorizers sets all of the authorizers in the graph
-func (c *Client) SetAuthorizers(ctx context.Context, in *apipb.Authorizers, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.SetAuthorizers(ctx, in, opts...)
+func (c *Client) SetAuthorizers(ctx context.Context, in *apipb.Authorizers, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetAuthorizers(ctx, in, opts...)
+	return err
 }
 
 // SetTypeValidators sets all of the type validators in the graph
-func (c *Client) SetTypeValidators(ctx context.Context, in *apipb.TypeValidators, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.SetTypeValidators(ctx, in, opts...)
+func (c *Client) SetTypeValidators(ctx context.Context, in *apipb.TypeValidators, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetTypeValidators(ctx, in, opts...)
+	return err
 }
 
 // SeedDocs
@@ -318,13 +322,15 @@ func (c *Client) Traverse(ctx context.Context, in *apipb.TraverseFilter, opts ..
 }
 
 // DelDoc deletes a doc by reference
-func (c *Client) DelDoc(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.DelDoc(ctx, in, opts...)
+func (c *Client) DelDoc(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) error {
+	_, err := c.graph.DelDoc(ctx, in, opts...)
+	return err
 }
 
 // DelDocs deletes 0-many docs that pass a Filter
-func (c *Client) DelDocs(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.DelDocs(ctx, in, opts...)
+func (c *Client) DelDocs(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) error {
+	_, err := c.graph.DelDocs(ctx, in, opts...)
+	return err
 }
 
 // ExistsDoc checks if a doc exists in the graph
@@ -348,13 +354,15 @@ func (c *Client) HasConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.
 }
 
 // DelConnection deletes a single connection that pass a Filter
-func (c *Client) DelConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.DelConnection(ctx, in, opts...)
+func (c *Client) DelConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) error {
+	_, err := c.graph.DelConnection(ctx, in, opts...)
+	return err
 }
 
 // DelConnections deletes 0-many connections that pass a Filter
-func (c *Client) DelConnections(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.DelConnections(ctx, in, opts...)
+func (c *Client) DelConnections(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) error {
+	_, err := c.graph.DelConnections(ctx, in, opts...)
+	return err
 }
 
 // AggregateDocs executes an aggregation function against a set of documents
@@ -365,4 +373,16 @@ func (c *Client) AggregateDocs(ctx context.Context, in *apipb.AggFilter, opts ..
 // AggregateConnections executes an aggregation function against a set of connections
 func (c *Client) AggregateConnections(ctx context.Context, in *apipb.AggFilter, opts ...grpc.CallOption) (*apipb.Number, error) {
 	return c.graph.AggregateConnections(ctx, in, opts...)
+}
+
+// AddPeer adds a peer node to the raft cluster
+func (c *Client) AddPeer(ctx context.Context, in *apipb.Peer, opts ...grpc.CallOption) error {
+	_, err := c.graph.AddPeer(ctx, in, opts...)
+	return err
+}
+
+// ClusterState returns information about the raft cluster
+func (c *Client) ClusterState(ctx context.Context, _ *empty.Empty, opts ...grpc.CallOption) error {
+	_, err := c.graph.ClusterState(ctx, &empty.Empty{}, opts...)
+	return err
 }

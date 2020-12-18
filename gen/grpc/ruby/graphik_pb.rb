@@ -185,6 +185,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :playground_redirect, :string, 13
     optional :require_request_authorizers, :bool, 15
     optional :require_response_authorizers, :bool, 16
+    optional :join_raft, :string, 17
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1
@@ -231,6 +232,28 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.ExprFilter" do
     optional :expression, :string, 1
   end
+  add_message "api.RaftCommand" do
+    optional :user, :message, 1, "api.Doc"
+    optional :method, :string, 2
+    repeated :set_docs, :message, 3, "api.Doc"
+    repeated :set_connections, :message, 4, "api.Connection"
+    repeated :del_docs, :message, 5, "api.Ref"
+    repeated :del_connections, :message, 6, "api.Ref"
+    optional :set_indexes, :message, 7, "api.Indexes"
+    optional :set_authorizers, :message, 8, "api.Authorizers"
+    optional :set_type_validators, :message, 9, "api.TypeValidators"
+    optional :send_message, :message, 10, "api.Message"
+  end
+  add_message "api.Peer" do
+    optional :node_id, :string, 1
+    optional :addr, :string, 2
+  end
+  add_message "api.RaftState" do
+    optional :leader, :string, 1
+    optional :membership, :enum, 2, "api.Membership"
+    repeated :peers, :message, 3, "api.Peer"
+    map :stats, :string, :string, 4
+  end
   add_enum "api.Algorithm" do
     value :BFS, 0
     value :DFS, 1
@@ -242,6 +265,13 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     value :MAX, 3
     value :MIN, 4
     value :PROD, 5
+  end
+  add_enum "api.Membership" do
+    value :UNKNOWN, 0
+    value :FOLLOWER, 1
+    value :CANDIDATE, 2
+    value :LEADER, 3
+    value :SHUTDOWN, 4
   end
 end
 
@@ -287,6 +317,10 @@ module Api
   Message = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Message").msgclass
   Schema = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Schema").msgclass
   ExprFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ExprFilter").msgclass
+  RaftCommand = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.RaftCommand").msgclass
+  Peer = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Peer").msgclass
+  RaftState = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.RaftState").msgclass
   Algorithm = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Algorithm").enummodule
   Aggregate = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Aggregate").enummodule
+  Membership = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Membership").enummodule
 end

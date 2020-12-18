@@ -86,7 +86,8 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 
 func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-		token, err := grpc_auth.AuthFromMD(ss.Context(), "Bearer")
+		ctx := g.methodToContext(ss.Context(), info.FullMethod)
+		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return err
 		}
@@ -94,7 +95,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
 			if info.IsClientStream {
-				ctx, err := g.checkRequest(ss.Context(), info.FullMethod, srv, payload)
+				ctx, err := g.checkRequest(ctx, info.FullMethod, srv, payload)
 				if err != nil {
 					return err
 				}
@@ -102,12 +103,11 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 				wrapped.WrappedContext = ctx
 				return handler(srv, wrapped)
 			} else {
-				if err := g.checkResponse(ss.Context(), info.FullMethod, srv, payload); err != nil {
+				if err := g.checkResponse(ctx, info.FullMethod, srv, payload); err != nil {
 					return err
 				}
 			}
 		}
-		ctx := g.methodToContext(ss.Context(), info.FullMethod)
 		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
 		if err != nil {
 			return status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())

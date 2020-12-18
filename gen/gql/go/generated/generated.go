@@ -109,6 +109,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		AddPeer            func(childComplexity int, input model.PeerInput) int
 		Broadcast          func(childComplexity int, input model.OutboundMessage) int
 		CreateConnection   func(childComplexity int, input model.ConnectionConstructor) int
 		CreateConnections  func(childComplexity int, input model.ConnectionConstructors) int
@@ -122,11 +123,16 @@ type ComplexityRoot struct {
 		EditConnections    func(childComplexity int, input model.EditFilter) int
 		EditDoc            func(childComplexity int, input model.Edit) int
 		EditDocs           func(childComplexity int, input model.EditFilter) int
-		SearchAndConnect   func(childComplexity int, where model.SearchConnectFilter) int
-		SearchAndConnectMe func(childComplexity int, where model.SearchConnectMeFilter) int
+		SearchAndConnect   func(childComplexity int, input model.SearchConnectFilter) int
+		SearchAndConnectMe func(childComplexity int, input model.SearchConnectMeFilter) int
 		SetAuthorizers     func(childComplexity int, input model.AuthorizersInput) int
 		SetIndexes         func(childComplexity int, input model.IndexesInput) int
 		SetTypeValidators  func(childComplexity int, input model.TypeValidatorsInput) int
+	}
+
+	Peer struct {
+		Addr   func(childComplexity int) int
+		NodeID func(childComplexity int) int
 	}
 
 	Pong struct {
@@ -136,6 +142,7 @@ type ComplexityRoot struct {
 	Query struct {
 		AggregateConnections func(childComplexity int, where model.AggFilter) int
 		AggregateDocs        func(childComplexity int, where model.AggFilter) int
+		ClusterState         func(childComplexity int, where *emptypb.Empty) int
 		ConnectionsFrom      func(childComplexity int, where model.ConnectFilter) int
 		ConnectionsTo        func(childComplexity int, where model.ConnectFilter) int
 		ExistsConnection     func(childComplexity int, where model.ExistsFilter) int
@@ -151,6 +158,13 @@ type ComplexityRoot struct {
 		SearchDocs           func(childComplexity int, where model.Filter) int
 		Traverse             func(childComplexity int, where model.TraverseFilter) int
 		TraverseMe           func(childComplexity int, where model.TraverseMeFilter) int
+	}
+
+	RaftState struct {
+		Leader     func(childComplexity int) int
+		Membership func(childComplexity int) int
+		Peers      func(childComplexity int) int
+		Stats      func(childComplexity int) int
 	}
 
 	Ref struct {
@@ -215,8 +229,9 @@ type MutationResolver interface {
 	SetIndexes(ctx context.Context, input model.IndexesInput) (*emptypb.Empty, error)
 	SetAuthorizers(ctx context.Context, input model.AuthorizersInput) (*emptypb.Empty, error)
 	SetTypeValidators(ctx context.Context, input model.TypeValidatorsInput) (*emptypb.Empty, error)
-	SearchAndConnect(ctx context.Context, where model.SearchConnectFilter) (*model.Connections, error)
-	SearchAndConnectMe(ctx context.Context, where model.SearchConnectMeFilter) (*model.Connections, error)
+	SearchAndConnect(ctx context.Context, input model.SearchConnectFilter) (*model.Connections, error)
+	SearchAndConnectMe(ctx context.Context, input model.SearchConnectMeFilter) (*model.Connections, error)
+	AddPeer(ctx context.Context, input model.PeerInput) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error)
@@ -236,6 +251,7 @@ type QueryResolver interface {
 	ConnectionsTo(ctx context.Context, where model.ConnectFilter) (*model.Connections, error)
 	AggregateDocs(ctx context.Context, where model.AggFilter) (float64, error)
 	AggregateConnections(ctx context.Context, where model.AggFilter) (float64, error)
+	ClusterState(ctx context.Context, where *emptypb.Empty) (*model.RaftState, error)
 }
 type SubscriptionResolver interface {
 	Stream(ctx context.Context, where model.StreamFilter) (<-chan *model.Message, error)
@@ -466,6 +482,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Message.User(childComplexity), true
 
+	case "Mutation.addPeer":
+		if e.complexity.Mutation.AddPeer == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addPeer_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddPeer(childComplexity, args["input"].(model.PeerInput)), true
+
 	case "Mutation.broadcast":
 		if e.complexity.Mutation.Broadcast == nil {
 			break
@@ -632,7 +660,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SearchAndConnect(childComplexity, args["where"].(model.SearchConnectFilter)), true
+		return e.complexity.Mutation.SearchAndConnect(childComplexity, args["input"].(model.SearchConnectFilter)), true
 
 	case "Mutation.searchAndConnectMe":
 		if e.complexity.Mutation.SearchAndConnectMe == nil {
@@ -644,7 +672,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SearchAndConnectMe(childComplexity, args["where"].(model.SearchConnectMeFilter)), true
+		return e.complexity.Mutation.SearchAndConnectMe(childComplexity, args["input"].(model.SearchConnectMeFilter)), true
 
 	case "Mutation.setAuthorizers":
 		if e.complexity.Mutation.SetAuthorizers == nil {
@@ -682,6 +710,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.SetTypeValidators(childComplexity, args["input"].(model.TypeValidatorsInput)), true
 
+	case "Peer.addr":
+		if e.complexity.Peer.Addr == nil {
+			break
+		}
+
+		return e.complexity.Peer.Addr(childComplexity), true
+
+	case "Peer.node_id":
+		if e.complexity.Peer.NodeID == nil {
+			break
+		}
+
+		return e.complexity.Peer.NodeID(childComplexity), true
+
 	case "Pong.message":
 		if e.complexity.Pong.Message == nil {
 			break
@@ -712,6 +754,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.AggregateDocs(childComplexity, args["where"].(model.AggFilter)), true
+
+	case "Query.clusterState":
+		if e.complexity.Query.ClusterState == nil {
+			break
+		}
+
+		args, err := ec.field_Query_clusterState_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ClusterState(childComplexity, args["where"].(*emptypb.Empty)), true
 
 	case "Query.connectionsFrom":
 		if e.complexity.Query.ConnectionsFrom == nil {
@@ -892,6 +946,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.TraverseMe(childComplexity, args["where"].(model.TraverseMeFilter)), true
+
+	case "RaftState.leader":
+		if e.complexity.RaftState.Leader == nil {
+			break
+		}
+
+		return e.complexity.RaftState.Leader(childComplexity), true
+
+	case "RaftState.membership":
+		if e.complexity.RaftState.Membership == nil {
+			break
+		}
+
+		return e.complexity.RaftState.Membership(childComplexity), true
+
+	case "RaftState.peers":
+		if e.complexity.RaftState.Peers == nil {
+			break
+		}
+
+		return e.complexity.RaftState.Peers(childComplexity), true
+
+	case "RaftState.stats":
+		if e.complexity.RaftState.Stats == nil {
+			break
+		}
+
+		return e.complexity.RaftState.Stats(childComplexity), true
 
 	case "Ref.gid":
 		if e.complexity.Ref.Gid == nil {
@@ -1149,6 +1231,15 @@ enum Aggregate {
   PROD
 }
 
+# Membership is the state of a raft membership in a cluster
+enum Membership {
+  UNKNOWN
+  FOLLOWER
+  CANDIDATE
+  LEADER
+  SHUTDOWN
+}
+
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -1265,6 +1356,20 @@ type Indexes {
   indexes: [Index!]
 }
 
+# Peer is the address and id of a node in the raft cluster
+type Peer {
+  node_id: String!
+  addr: String!
+}
+
+# RaftState returns information about the raft cluster
+type RaftState {
+  leader: String!
+  membership: Membership!
+  peers: [Peer!]
+  stats: Map!
+}
+
 # Authorizer is a graph primitive used for authorizing inbound requests and/or responses(see AuthTarget)
 type Authorizer {
   # name is the unique name of the authorizer in the graph
@@ -1360,10 +1465,10 @@ input RefInput {
   gid: String!
 }
 
-# RefPair is a pair of Refs
-input RefPair {
-  ref1: RefInput!
-  ref2: RefInput!
+# PeerInput is the address and id of a node in the raft cluster
+input PeerInput {
+  node_id: String!
+  addr: String!
 }
 
 # Filter is a generic filter using Common Expression Language
@@ -1623,9 +1728,10 @@ type Mutation {
   # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
   # searchAndConnect searches for documents and forms connections based on whether they pass a filter
-  searchAndConnect(where: SearchConnectFilter!): Connections!
+  searchAndConnect(input: SearchConnectFilter!): Connections!
   # searchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
-  searchAndConnectMe(where: SearchConnectMeFilter!): Connections!
+  searchAndConnectMe(input: SearchConnectMeFilter!): Connections!
+  addPeer(input: PeerInput!): Empty
 }
 
 type Query {
@@ -1663,6 +1769,7 @@ type Query {
   aggregateDocs(where: AggFilter!): Float!
   # aggregateConnections executes an aggregation function against a set of connections
   aggregateConnections(where: AggFilter!): Float!
+  clusterState(where: Empty): RaftState!
 }
 
 type Subscription {
@@ -1675,6 +1782,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_addPeer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.PeerInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNPeerInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPeerInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_broadcast_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -1875,14 +1997,14 @@ func (ec *executionContext) field_Mutation_searchAndConnectMe_args(ctx context.C
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.SearchConnectMeFilter
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSearchConnectMeFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSearchConnectMeFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["where"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -1890,14 +2012,14 @@ func (ec *executionContext) field_Mutation_searchAndConnect_args(ctx context.Con
 	var err error
 	args := map[string]interface{}{}
 	var arg0 model.SearchConnectFilter
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNSearchConnectFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐSearchConnectFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["where"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -1983,6 +2105,21 @@ func (ec *executionContext) field_Query_aggregateDocs_args(ctx context.Context, 
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg0, err = ec.unmarshalNAggFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAggFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_clusterState_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *emptypb.Empty
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3968,7 +4105,7 @@ func (ec *executionContext) _Mutation_searchAndConnect(ctx context.Context, fiel
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SearchAndConnect(rctx, args["where"].(model.SearchConnectFilter))
+		return ec.resolvers.Mutation().SearchAndConnect(rctx, args["input"].(model.SearchConnectFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4010,7 +4147,7 @@ func (ec *executionContext) _Mutation_searchAndConnectMe(ctx context.Context, fi
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SearchAndConnectMe(rctx, args["where"].(model.SearchConnectMeFilter))
+		return ec.resolvers.Mutation().SearchAndConnectMe(rctx, args["input"].(model.SearchConnectMeFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4025,6 +4162,115 @@ func (ec *executionContext) _Mutation_searchAndConnectMe(ctx context.Context, fi
 	res := resTmp.(*model.Connections)
 	fc.Result = res
 	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_addPeer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addPeer_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddPeer(rctx, args["input"].(model.PeerInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*emptypb.Empty)
+	fc.Result = res
+	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Peer_node_id(ctx context.Context, field graphql.CollectedField, obj *model.Peer) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Peer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.NodeID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Peer_addr(ctx context.Context, field graphql.CollectedField, obj *model.Peer) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Peer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Addr, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Pong_message(ctx context.Context, field graphql.CollectedField, obj *model.Pong) (ret graphql.Marshaler) {
@@ -4776,6 +5022,48 @@ func (ec *executionContext) _Query_aggregateConnections(ctx context.Context, fie
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_clusterState(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_clusterState_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ClusterState(rctx, args["where"].(*emptypb.Empty))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.RaftState)
+	fc.Result = res
+	return ec.marshalNRaftState2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRaftState(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4845,6 +5133,143 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RaftState_leader(ctx context.Context, field graphql.CollectedField, obj *model.RaftState) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RaftState",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Leader, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RaftState_membership(ctx context.Context, field graphql.CollectedField, obj *model.RaftState) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RaftState",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Membership, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.Membership)
+	fc.Result = res
+	return ec.marshalNMembership2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMembership(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RaftState_peers(ctx context.Context, field graphql.CollectedField, obj *model.RaftState) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RaftState",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Peers, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Peer)
+	fc.Result = res
+	return ec.marshalOPeer2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPeerᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RaftState_stats(ctx context.Context, field graphql.CollectedField, obj *model.RaftState) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RaftState",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Stats, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(map[string]interface{})
+	fc.Result = res
+	return ec.marshalNMap2map(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Ref_gtype(ctx context.Context, field graphql.CollectedField, obj *model.Ref) (ret graphql.Marshaler) {
@@ -7216,6 +7641,34 @@ func (ec *executionContext) unmarshalInputOutboundMessage(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPeerInput(ctx context.Context, obj interface{}) (model.PeerInput, error) {
+	var it model.PeerInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "node_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("node_id"))
+			it.NodeID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addr":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addr"))
+			it.Addr, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputRefConstructor(ctx context.Context, obj interface{}) (model.RefConstructor, error) {
 	var it model.RefConstructor
 	var asMap = obj.(map[string]interface{})
@@ -7263,34 +7716,6 @@ func (ec *executionContext) unmarshalInputRefInput(ctx context.Context, obj inte
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gid"))
 			it.Gid, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputRefPair(ctx context.Context, obj interface{}) (model.RefPair, error) {
-	var it model.RefPair
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "ref1":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref1"))
-			it.Ref1, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "ref2":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref2"))
-			it.Ref2, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8091,6 +8516,40 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "addPeer":
+			out.Values[i] = ec._Mutation_addPeer(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var peerImplementors = []string{"Peer"}
+
+func (ec *executionContext) _Peer(ctx context.Context, sel ast.SelectionSet, obj *model.Peer) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, peerImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Peer")
+		case "node_id":
+			out.Values[i] = ec._Peer_node_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addr":
+			out.Values[i] = ec._Peer_addr(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8382,10 +8841,63 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "clusterState":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_clusterState(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var raftStateImplementors = []string{"RaftState"}
+
+func (ec *executionContext) _RaftState(ctx context.Context, sel ast.SelectionSet, obj *model.RaftState) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, raftStateImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RaftState")
+		case "leader":
+			out.Values[i] = ec._RaftState_leader(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "membership":
+			out.Values[i] = ec._RaftState_membership(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "peers":
+			out.Values[i] = ec._RaftState_peers(ctx, field, obj)
+		case "stats":
+			out.Values[i] = ec._RaftState_stats(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9163,6 +9675,16 @@ func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) unmarshalNMembership2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMembership(ctx context.Context, v interface{}) (model.Membership, error) {
+	var res model.Membership
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMembership2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMembership(ctx context.Context, sel ast.SelectionSet, v model.Membership) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) marshalNMessage2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐMessage(ctx context.Context, sel ast.SelectionSet, v model.Message) graphql.Marshaler {
 	return ec._Message(ctx, sel, &v)
 }
@@ -9182,6 +9704,21 @@ func (ec *executionContext) unmarshalNOutboundMessage2githubᚗcomᚋgraphikDB�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNPeer2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPeer(ctx context.Context, sel ast.SelectionSet, v *model.Peer) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Peer(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPeerInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPeerInput(ctx context.Context, v interface{}) (model.PeerInput, error) {
+	res, err := ec.unmarshalInputPeerInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNPong2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx context.Context, sel ast.SelectionSet, v model.Pong) graphql.Marshaler {
 	return ec._Pong(ctx, sel, &v)
 }
@@ -9194,6 +9731,20 @@ func (ec *executionContext) marshalNPong2ᚖgithubᚗcomᚋgraphikDBᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Pong(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRaftState2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRaftState(ctx context.Context, sel ast.SelectionSet, v model.RaftState) graphql.Marshaler {
+	return ec._RaftState(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRaftState2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRaftState(ctx context.Context, sel ast.SelectionSet, v *model.RaftState) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RaftState(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx context.Context, sel ast.SelectionSet, v *model.Ref) graphql.Marshaler {
@@ -9853,6 +10404,46 @@ func (ec *executionContext) marshalOMap2map(ctx context.Context, sel ast.Selecti
 		return graphql.Null
 	}
 	return graphql.MarshalMap(v)
+}
+
+func (ec *executionContext) marshalOPeer2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPeerᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Peer) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPeer2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPeer(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalORef2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Ref) graphql.Marshaler {

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>RefPair</title>
+    <title>PeerInput</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -95,6 +95,11 @@
                 Algorithm
             </a>
         </li>
+        <li  title="Membership">
+            <a href="membership.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Membership
+            </a>
+        </li>
         <li  title="__DirectiveLocation">
             <a href="directivelocation.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 __DirectiveLocation
@@ -160,9 +165,19 @@
                 Message
             </a>
         </li>
+        <li  title="Peer">
+            <a href="peer.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Peer
+            </a>
+        </li>
         <li  title="Pong">
             <a href="pong.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Pong
+            </a>
+        </li>
+        <li  title="RaftState">
+            <a href="raftstate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RaftState
             </a>
         </li>
         <li  title="Ref">
@@ -315,6 +330,11 @@
                 OutboundMessage
             </a>
         </li>
+        <li class="slds-is-active" title="PeerInput">
+            <a href="peerinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                PeerInput
+            </a>
+        </li>
         <li  title="RefConstructor">
             <a href="refconstructor.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 RefConstructor
@@ -323,11 +343,6 @@
         <li  title="RefInput">
             <a href="refinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 RefInput
-            </a>
-        </li>
-        <li class="slds-is-active" title="RefPair">
-            <a href="refpair.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                RefPair
             </a>
         </li>
         <li  title="SearchConnectFilter">
@@ -401,8 +416,8 @@
     </div>
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
-        <h1 class="slds-text-heading--large">RefPair</h1>
-        <div class="slds-text-body--regular"><p>RefPair is a pair of Refs</p>
+        <h1 class="slds-text-heading--large">PeerInput</h1>
+        <div class="slds-text-body--regular"><p>PeerInput is the address and id of a node in the raft cluster</p>
 </div>
     </div>
 </section>
@@ -414,7 +429,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">RefPair</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">ref1</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">ref2</span>: <a class="support type" href="refinput.doc.html">RefInput</a>!</span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">input</span> <span class="identifier">PeerInput</span> {</li><li><span class="tab"><li><span class="tab"><span class="meta">node_id</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="meta">addr</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -425,7 +440,7 @@
             </a>
             Require by
         </h2>
-        <div class="require-by anyone">This element is not required by anyone</div>
+        <ul class="require-by"><li><a href="mutation.doc.html" title="Mutation - ">Mutation<em></em></a><li></ul>
     </div>
 </section>
 <footer>

@@ -66,12 +66,12 @@ func ExampleClient_Ping() {
 }
 
 func ExampleClient_SetAuthorizers() {
-	_, err := client.SetAuthorizers(context.Background(), &apipb2.Authorizers{
+	err := client.SetAuthorizers(context.Background(), &apipb2.Authorizers{
 		Authorizers: []*apipb2.Authorizer{
 			{
 				Name:            "testing-request",
 				Method:          "/api.DatabaseService/GetSchema",
-				Expression:      `this.user.attributes.email.contains("colman")`,
+				Expression:      `this.user.attributes.email.contains("coleman")`,
 				TargetRequests:  true,
 				TargetResponses: false,
 			},
@@ -95,7 +95,7 @@ func ExampleClient_SetAuthorizers() {
 }
 
 func ExampleClient_SetTypeValidators() {
-	_, err := client.SetTypeValidators(context.Background(), &apipb2.TypeValidators{
+	err := client.SetTypeValidators(context.Background(), &apipb2.TypeValidators{
 		Validators: []*apipb2.TypeValidator{
 			{
 				Name:              "testing",
@@ -124,7 +124,7 @@ func ExampleClient_SetTypeValidators() {
 }
 
 func ExampleClient_SetIndexes() {
-	_, err := client.SetIndexes(context.Background(), &apipb2.Indexes{
+	err := client.SetIndexes(context.Background(), &apipb2.Indexes{
 		Indexes: []*apipb2.Index{
 			{
 				Name:        "testing",
@@ -189,12 +189,12 @@ func ExampleClient_CreateDoc() {
 		}),
 	})
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print("createDoc: ", err)
 		return
 	}
 	has, err := client.HasDoc(ctx, charlie.GetRef())
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print("hasDoc: ", err)
 		return
 	}
 	if !has.GetValue() {
@@ -206,7 +206,7 @@ func ExampleClient_CreateDoc() {
 		Expression: "this.attributes.name.contains('Charlie')",
 	})
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print("existsDoc: ", err)
 		return
 	}
 	if !exists.GetValue() {
@@ -338,7 +338,7 @@ func ExampleClient_EditDoc() {
 }
 
 func ExampleClient_Broadcast() {
-	res, err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
+	err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
 		Channel: "testing",
 		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -348,8 +348,8 @@ func ExampleClient_Broadcast() {
 		fmt.Print(err)
 		return
 	}
-	fmt.Println(res.String())
-	// Output:
+	fmt.Println("success!")
+	// Output: success!
 }
 
 func ExampleClient_Stream() {
@@ -371,7 +371,7 @@ func ExampleClient_Stream() {
 		}
 	})
 	time.Sleep(1 * time.Second)
-	_, err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
+	err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
 		Channel: "testing",
 		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -400,7 +400,7 @@ func ExampleClient_GetSchema() {
 	fmt.Printf("authorizers: %s", strings.Join(authorizers, ","))
 	// Output: doc types: dog,human,user
 	//connection types: created,created_by,edited,edited_by,owner
-	//authorizers: testing-request,testing-response
+	//authorizers: testing-request
 }
 
 func ExampleClient_Traverse() {
@@ -448,7 +448,7 @@ func ExampleClient_Traverse() {
 
 func ExampleClient_DelConnections() {
 	ctx := context.Background()
-	_, err := client.DelConnections(ctx, &apipb2.Filter{
+	err := client.DelConnections(ctx, &apipb2.Filter{
 		Gtype:      "owner",
 		Expression: "this.attributes.primary_owner",
 		Limit:      10,
@@ -463,7 +463,7 @@ func ExampleClient_DelConnections() {
 
 func ExampleClient_DelDocs() {
 	ctx := context.Background()
-	_, err := client.DelDocs(ctx, &apipb2.Filter{
+	err := client.DelDocs(ctx, &apipb2.Filter{
 		Gtype:      "dog",
 		Expression: "this.attributes.name == 'Charlie'",
 		Limit:      10,

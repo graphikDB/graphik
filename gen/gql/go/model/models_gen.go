@@ -167,8 +167,25 @@ type OutboundMessage struct {
 	Data    map[string]interface{} `json:"data"`
 }
 
+type Peer struct {
+	NodeID string `json:"node_id"`
+	Addr   string `json:"addr"`
+}
+
+type PeerInput struct {
+	NodeID string `json:"node_id"`
+	Addr   string `json:"addr"`
+}
+
 type Pong struct {
 	Message string `json:"message"`
+}
+
+type RaftState struct {
+	Leader     string                 `json:"leader"`
+	Membership Membership             `json:"membership"`
+	Peers      []*Peer                `json:"peers"`
+	Stats      map[string]interface{} `json:"stats"`
 }
 
 type Ref struct {
@@ -184,11 +201,6 @@ type RefConstructor struct {
 type RefInput struct {
 	Gtype string `json:"gtype"`
 	Gid   string `json:"gid"`
-}
-
-type RefPair struct {
-	Ref1 *RefInput `json:"ref1"`
-	Ref2 *RefInput `json:"ref2"`
 }
 
 type Refs struct {
@@ -368,5 +380,52 @@ func (e *Algorithm) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Algorithm) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type Membership string
+
+const (
+	MembershipUnknown   Membership = "UNKNOWN"
+	MembershipFollower  Membership = "FOLLOWER"
+	MembershipCandidate Membership = "CANDIDATE"
+	MembershipLeader    Membership = "LEADER"
+	MembershipShutdown  Membership = "SHUTDOWN"
+)
+
+var AllMembership = []Membership{
+	MembershipUnknown,
+	MembershipFollower,
+	MembershipCandidate,
+	MembershipLeader,
+	MembershipShutdown,
+}
+
+func (e Membership) IsValid() bool {
+	switch e {
+	case MembershipUnknown, MembershipFollower, MembershipCandidate, MembershipLeader, MembershipShutdown:
+		return true
+	}
+	return false
+}
+
+func (e Membership) String() string {
+	return string(e)
+}
+
+func (e *Membership) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Membership(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Membership", str)
+	}
+	return nil
+}
+
+func (e Membership) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

@@ -443,3 +443,29 @@ func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidato
 		TargetConnections: validator.TargetConnections,
 	}
 }
+
+func gqlMembership(membership apipb.Membership) model.Membership {
+	switch membership {
+	case apipb.Membership_CANDIDATE:
+		return model.MembershipCandidate
+	case apipb.Membership_FOLLOWER:
+		return model.MembershipFollower
+	case apipb.Membership_LEADER:
+		return model.MembershipLeader
+	case apipb.Membership_SHUTDOWN:
+		return model.MembershipShutdown
+	default:
+		return model.MembershipUnknown
+	}
+}
+
+func gqlPeers(peers []*apipb.Peer) []*model.Peer {
+	var mpeers []*model.Peer
+	for _, p := range peers {
+		mpeers = append(mpeers, &model.Peer{
+			NodeID: p.NodeId,
+			Addr:   p.Addr,
+		})
+	}
+	return mpeers
+}
