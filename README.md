@@ -5,7 +5,7 @@
 
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.8.0`
+`    docker pull graphikdb/graphik:v0.8.1`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -555,7 +555,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.8.0
+        image: graphikdb/graphik:v0.8.1
         env_file:
           - .env
         ports:
@@ -589,13 +589,13 @@ to shutdown:
  
  ### Linux
  
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.8.0/graphik_linux_amd64 \
+    curl -L https://github.com/graphikDB/graphik/releases/download/v0.8.1/graphik_linux_amd64 \
     --output /usr/local/bin/graphik && \
     chmod +x /usr/local/bin/graphik 
     
  ### Mac/Darwin
  
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.8.0/graphik_darwin_amd64 \
+    curl -L https://github.com/graphikDB/graphik/releases/download/v0.8.1/graphik_darwin_amd64 \
     --output /usr/local/bin/graphik && \
     chmod +x /usr/local/bin/graphik
 

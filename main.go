@@ -23,6 +23,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"io/ioutil"
 	"log"
@@ -40,6 +41,7 @@ var global = &apipb.Flags{}
 
 func init() {
 	godotenv.Load()
+	pflag.CommandLine.StringVar(&global.RaftSecret, "raft-secret", os.Getenv("GRAPHIK_RAFT_SECRET"), "raft cluster secret (so only authorized nodes may join cluster) (env: GRAPHIK_RAFT_SECRET)")
 	pflag.CommandLine.StringVar(&global.JoinRaft, "join-raft", os.Getenv("GRAPHIK_JOIN_RAFT"), "join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)")
 	pflag.CommandLine.StringVar(&global.RaftPeerId, "raft-peer-id", os.Getenv("GRAPHIK_RAFT_PEER_ID"), "raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)")
 	pflag.CommandLine.Int64Var(&global.ListenPort, "listen-port", int64(helpers.IntEnvOr("GRAPHIK_LISTEN_PORT", 7820)), "serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT)")
@@ -231,7 +233,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		defer leaderConn.Close()
 		client := apipb.NewDatabaseServiceClient(leaderConn)
 		for x := 0; x < 5; x++ {
-			_, err := client.JoinCluster(context.Background(), &apipb.Peer{
+			_, err := client.JoinCluster(metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", global.RaftSecret), &apipb.Peer{
 				NodeId: g.Raft().PeerID(),
 				Addr:   fmt.Sprintf("localhost:%v", global.ListenPort-10),
 			})

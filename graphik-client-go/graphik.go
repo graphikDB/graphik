@@ -15,9 +15,16 @@ import (
 type Options struct {
 	retry       uint
 	tokenSource oauth2.TokenSource
+	raftSecret  string
 }
 
 type Opt func(o *Options)
+
+func WithRaftSecret(raftSecret string) Opt {
+	return func(o *Options) {
+		o.raftSecret = raftSecret
+	}
+}
 
 func WithRetry(retry uint) Opt {
 	return func(o *Options) {
@@ -80,13 +87,14 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 		return nil, err
 	}
 	return &Client{
-		graph: apipb.NewDatabaseServiceClient(conn),
+		graph:      apipb.NewDatabaseServiceClient(conn),
+		raftSecret: options.raftSecret,
 	}, nil
 }
 
 type Client struct {
-	peerID string
-	graph  apipb.DatabaseServiceClient
+	raftSecret string
+	graph      apipb.DatabaseServiceClient
 }
 
 func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Context, error) {
@@ -378,6 +386,7 @@ func (c *Client) AggregateConnections(ctx context.Context, in *apipb.AggFilter, 
 
 // AddPeer adds a peer node to the raft cluster.
 func (c *Client) JoinCluster(ctx context.Context, peer *apipb.Peer, opts ...grpc.CallOption) error {
+	ctx = metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", c.raftSecret)
 	_, err := c.graph.JoinCluster(ctx, peer, opts...)
 	return err
 }

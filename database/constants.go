@@ -14,6 +14,7 @@ const (
 	methodCtxKey            ctxKey = "x-graphik-full-method"
 	bypassAuthorizersCtxKey ctxKey = "x-graphik-authorzer-override"
 	tokenCtxKey             ctxKey = "x-graphik-token"
+	raftSecretMDKey                = "x-graphik-raft-secret"
 )
 
 var (

@@ -22,3 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.0] - 2020-12-17
 - add high availability & horizontal scaleability via Raft consensus protocol
 - automatically redirect mutations to raft leader
+
+## [0.8.1] - 2020-12-17
+- add raft cluster secret so only nodes with secret may join

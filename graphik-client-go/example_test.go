@@ -22,7 +22,7 @@ func init() {
 		return
 	}
 
-	client, err = graphik.NewClient(ctx, "localhost:7820", graphik.WithTokenSource(tokenSource))
+	client, err = graphik.NewClient(ctx, "localhost:8080", graphik.WithTokenSource(tokenSource))
 	if err != nil {
 		fmt.Print(err)
 		return

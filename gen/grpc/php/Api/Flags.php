@@ -95,6 +95,10 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>int64 listen_port = 19;</code>
      */
     private $listen_port = 0;
+    /**
+     * Generated from protobuf field <code>string raft_secret = 20;</code>
+     */
+    private $raft_secret = '';
 
     /**
      * Constructor.
@@ -126,6 +130,7 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $join_raft
      *     @type string $raft_peer_id
      *     @type int|string $listen_port
+     *     @type string $raft_secret
      * }
      */
     public function __construct($data = NULL) {
@@ -531,6 +536,28 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt64($var);
         $this->listen_port = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_secret = 20;</code>
+     * @return string
+     */
+    public function getRaftSecret()
+    {
+        return $this->raft_secret;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_secret = 20;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRaftSecret($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->raft_secret = $var;
 
         return $this;
     }

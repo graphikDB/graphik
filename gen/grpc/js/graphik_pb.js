@@ -7110,7 +7110,8 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     requireResponseAuthorizers: jspb.Message.getFieldWithDefault(msg, 16, false),
     joinRaft: jspb.Message.getFieldWithDefault(msg, 17, ""),
     raftPeerId: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    listenPort: jspb.Message.getFieldWithDefault(msg, 19, 0)
+    listenPort: jspb.Message.getFieldWithDefault(msg, 19, 0),
+    raftSecret: jspb.Message.getFieldWithDefault(msg, 20, "")
   };
 
   if (includeInstance) {
@@ -7214,6 +7215,10 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 19:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setListenPort(value);
+      break;
+    case 20:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRaftSecret(value);
       break;
     default:
       reader.skipField();
@@ -7360,6 +7365,13 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt64(
       19,
+      f
+    );
+  }
+  f = message.getRaftSecret();
+  if (f.length > 0) {
+    writer.writeString(
+      20,
       f
     );
   }
@@ -7680,6 +7692,21 @@ proto.api.Flags.prototype.getListenPort = function() {
 /** @param {number} value */
 proto.api.Flags.prototype.setListenPort = function(value) {
   jspb.Message.setProto3IntField(this, 19, value);
+};
+
+
+/**
+ * optional string raft_secret = 20;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getRaftSecret = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 20, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setRaftSecret = function(value) {
+  jspb.Message.setProto3StringField(this, 20, value);
 };
 
 

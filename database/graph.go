@@ -215,6 +215,7 @@ func (g *Graph) leaderClient(ctx context.Context) (*graphik.Client, error) {
 			AccessToken: g.getToken(ctx),
 		})),
 		graphik.WithRetry(5),
+		graphik.WithRaftSecret(g.flgs.RaftSecret),
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to contact leader")
@@ -1517,6 +1518,20 @@ func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty
 		}
 		return &empty.Empty{}, client.JoinCluster(invertContext(ctx), peer)
 	}
+	if g.flgs.RaftSecret != "" {
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, status.Error(codes.InvalidArgument, "empty metadata")
+		}
+		val := md.Get(raftSecretMDKey)
+		if len(val) == 0 {
+			return nil, status.Error(codes.Unauthenticated, "empty raft cluster secret")
+		}
+		if val[0] != g.flgs.RaftSecret {
+			return nil, status.Error(codes.PermissionDenied, "invalid raft cluster secret")
+		}
+	}
+
 	if err := g.raft.Join(peer.GetNodeId(), peer.GetAddr()); err != nil {
 		return nil, status.Error(codes.Unknown, fmt.Sprintf("nodeID = %s target = %s error = %s", peer.GetNodeId(), peer.GetAddr(), err.Error()))
 	}
