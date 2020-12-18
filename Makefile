@@ -1,4 +1,4 @@
-version := "0.7.1"
+version := "0.8.0"
 
 .DEFAULT_GOAL := help
 
@@ -11,6 +11,13 @@ help:
 
 run:
 	@go run main.go --open-id https://accounts.google.com/.well-known/openid-configuration
+
+run-follower:
+	@go run main.go \
+	--open-id https://accounts.google.com/.well-known/openid-configuration \
+	--listen-port 8080 \
+	--join-raft localhost:7820 \
+	--storage /tmp/graphik2
 
 gen: proto gql
 

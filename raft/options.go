@@ -11,15 +11,15 @@ type Options struct {
 	raftDir         string
 	peerID          string
 	isLeader        bool
-	listenAddr      string
+	port            int
 	maxPool         int
 	timeout         time.Duration
 	retainSnapshots int
 }
 
 func (o *Options) setDefaults() {
-	if o.listenAddr == "" {
-		o.listenAddr = "localhost:7822"
+	if o.port == 0 {
+		o.port = 7810
 	}
 	if o.maxPool <= 0 {
 		o.maxPool = 5
@@ -32,10 +32,10 @@ func (o *Options) setDefaults() {
 	}
 	if o.peerID == "" {
 		h, _ := os.Hostname()
-		o.peerID = helpers.Hash([]byte(fmt.Sprintf("%s%s", h, o.listenAddr)))
+		o.peerID = helpers.Hash([]byte(fmt.Sprintf("%s%v", h, o.port)))
 	}
 	if o.raftDir == "" {
-		o.raftDir = fmt.Sprintf("/tmp/graphik/raft/%s", o.peerID)
+		o.raftDir = "/tmp/graphik/raft"
 	}
 	os.MkdirAll(o.raftDir, 0700)
 }
@@ -54,9 +54,9 @@ func WithIsLeader(isLeader bool) Opt {
 	}
 }
 
-func WithListenAddr(addr string) Opt {
+func WithListenPort(port int) Opt {
 	return func(o *Options) {
-		o.listenAddr = addr
+		o.port = port
 	}
 }
 
@@ -75,5 +75,11 @@ func WithMaxPool(max int) Opt {
 func WithSnapshotRetention(retention int) Opt {
 	return func(o *Options) {
 		o.retainSnapshots = retention
+	}
+}
+
+func WithRaftDir(dir string) Opt {
+	return func(o *Options) {
+		o.raftDir = dir
 	}
 }

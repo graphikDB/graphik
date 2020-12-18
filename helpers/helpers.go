@@ -8,6 +8,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -48,6 +49,16 @@ func BoolEnvOr(key string, defaul bool) bool {
 			return true
 		default:
 			return false
+		}
+	}
+	return defaul
+}
+
+func IntEnvOr(key string, defaul int) int {
+	if value := os.Getenv(key); value != "" {
+		i, err := strconv.Atoi(value)
+		if err == nil {
+			return i
 		}
 	}
 	return defaul

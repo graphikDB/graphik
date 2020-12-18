@@ -82,7 +82,7 @@ service DatabaseService {
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
   rpc SeedConnections(stream Connection) returns(google.protobuf.Empty){}
-  rpc AddPeer(Peer) returns(google.protobuf.Empty){}
+  rpc JoinCluster(Peer) returns(google.protobuf.Empty){}
   rpc ClusterState(google.protobuf.Empty) returns(RaftState) {}
 }
 
@@ -316,8 +316,10 @@ message IndexConstructor {
 
 message AuthTarget {
   // user is the user making the request
-  Doc user =4 [(validator.field) = {msg_exists : true}];
-  google.protobuf.Struct target = 5;
+  Doc user =1 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Struct target = 2;
+  string peer = 3;
+  map<string, string> headers =4;
 }
 
 message Authorizer {
@@ -406,6 +408,8 @@ message Flags {
   bool require_request_authorizers =15;
   bool require_response_authorizers =16;
   string join_raft = 17;
+  string raft_peer_id =18;
+  int64 listen_port =19;
 }
 
 // Boolean is a simple boolean value
@@ -503,8 +507,8 @@ message RaftCommand {
 }
 
 message Peer {
-  string node_id =1[(validator.field) = {regex : "^.{1,225}$"}];
-  string addr =2[(validator.field) = {regex : "^.{1,225}$"}];
+  string node_id =1;
+  string addr =2;
 }
 
 message RaftState {

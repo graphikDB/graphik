@@ -129,8 +129,10 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :connections, :bool, 7
   end
   add_message "api.AuthTarget" do
-    optional :user, :message, 4, "api.Doc"
-    optional :target, :message, 5, "google.protobuf.Struct"
+    optional :user, :message, 1, "api.Doc"
+    optional :target, :message, 2, "google.protobuf.Struct"
+    optional :peer, :string, 3
+    map :headers, :string, :string, 4
   end
   add_message "api.Authorizer" do
     optional :name, :string, 1
@@ -186,6 +188,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :require_request_authorizers, :bool, 15
     optional :require_response_authorizers, :bool, 16
     optional :join_raft, :string, 17
+    optional :raft_peer_id, :string, 18
+    optional :listen_port, :int64, 19
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1

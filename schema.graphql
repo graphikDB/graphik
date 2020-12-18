@@ -80,6 +80,8 @@ type AuthTarget {
   user: Doc!
   # target is the payload gived to the authorizer(request or response payload)
   target: Map!
+  peer: String!
+  headers: Map!
 }
 
 # Traversals is an array of Traversal that is returned from Graph traversal algorithms
@@ -528,7 +530,6 @@ type Mutation {
   searchAndConnect(input: SearchConnectFilter!): Connections!
   # searchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
   searchAndConnectMe(input: SearchConnectMeFilter!): Connections!
-  addPeer(input: PeerInput!): Empty
 }
 
 type Query {

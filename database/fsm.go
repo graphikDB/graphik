@@ -43,7 +43,7 @@ func (g *Graph) fsm() *fsm.FSM {
 					return status.Error(codes.Internal, err.Error())
 				}
 			}
-			if err := g.db.Batch(func(tx *bbolt.Tx) error {
+			if err := g.db.Update(func(tx *bbolt.Tx) error {
 				if cmd.GetSetAuthorizers() != nil {
 					for _, a := range cmd.GetSetAuthorizers().GetAuthorizers() {
 						_, err := g.setAuthorizer(ctx, tx, a)
@@ -77,7 +77,7 @@ func (g *Graph) fsm() *fsm.FSM {
 						return errors.Wrap(err, "raft: cacheIndexes")
 					}
 				}
-				if len(cmd.SetDocs) > 0 {
+				if len(cmd.GetSetDocs()) > 0 {
 					docs, err := g.setDocs(ctx, tx, cmd.SetDocs...)
 					if err != nil {
 						return errors.Wrap(err, "raft: setDocs")

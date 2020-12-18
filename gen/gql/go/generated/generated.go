@@ -49,8 +49,10 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	AuthTarget struct {
-		Target func(childComplexity int) int
-		User   func(childComplexity int) int
+		Headers func(childComplexity int) int
+		Peer    func(childComplexity int) int
+		Target  func(childComplexity int) int
+		User    func(childComplexity int) int
 	}
 
 	Authorizer struct {
@@ -109,7 +111,6 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AddPeer            func(childComplexity int, input model.PeerInput) int
 		Broadcast          func(childComplexity int, input model.OutboundMessage) int
 		CreateConnection   func(childComplexity int, input model.ConnectionConstructor) int
 		CreateConnections  func(childComplexity int, input model.ConnectionConstructors) int
@@ -231,7 +232,6 @@ type MutationResolver interface {
 	SetTypeValidators(ctx context.Context, input model.TypeValidatorsInput) (*emptypb.Empty, error)
 	SearchAndConnect(ctx context.Context, input model.SearchConnectFilter) (*model.Connections, error)
 	SearchAndConnectMe(ctx context.Context, input model.SearchConnectMeFilter) (*model.Connections, error)
-	AddPeer(ctx context.Context, input model.PeerInput) (*emptypb.Empty, error)
 }
 type QueryResolver interface {
 	Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error)
@@ -271,6 +271,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "AuthTarget.headers":
+		if e.complexity.AuthTarget.Headers == nil {
+			break
+		}
+
+		return e.complexity.AuthTarget.Headers(childComplexity), true
+
+	case "AuthTarget.peer":
+		if e.complexity.AuthTarget.Peer == nil {
+			break
+		}
+
+		return e.complexity.AuthTarget.Peer(childComplexity), true
 
 	case "AuthTarget.target":
 		if e.complexity.AuthTarget.Target == nil {
@@ -481,18 +495,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Message.User(childComplexity), true
-
-	case "Mutation.addPeer":
-		if e.complexity.Mutation.AddPeer == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_addPeer_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.AddPeer(childComplexity, args["input"].(model.PeerInput)), true
 
 	case "Mutation.broadcast":
 		if e.complexity.Mutation.Broadcast == nil {
@@ -1283,6 +1285,8 @@ type AuthTarget {
   user: Doc!
   # target is the payload gived to the authorizer(request or response payload)
   target: Map!
+  peer: String!
+  headers: Map!
 }
 
 # Traversals is an array of Traversal that is returned from Graph traversal algorithms
@@ -1731,7 +1735,6 @@ type Mutation {
   searchAndConnect(input: SearchConnectFilter!): Connections!
   # searchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
   searchAndConnectMe(input: SearchConnectMeFilter!): Connections!
-  addPeer(input: PeerInput!): Empty
 }
 
 type Query {
@@ -1782,21 +1785,6 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
-
-func (ec *executionContext) field_Mutation_addPeer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.PeerInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNPeerInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPeerInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
 
 func (ec *executionContext) field_Mutation_broadcast_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -2460,6 +2448,76 @@ func (ec *executionContext) _AuthTarget_target(ctx context.Context, field graphq
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Target, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(map[string]interface{})
+	fc.Result = res
+	return ec.marshalNMap2map(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthTarget_peer(ctx context.Context, field graphql.CollectedField, obj *model.AuthTarget) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthTarget",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Peer, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _AuthTarget_headers(ctx context.Context, field graphql.CollectedField, obj *model.AuthTarget) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "AuthTarget",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Headers, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4162,45 +4220,6 @@ func (ec *executionContext) _Mutation_searchAndConnectMe(ctx context.Context, fi
 	res := resTmp.(*model.Connections)
 	fc.Result = res
 	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Mutation_addPeer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_addPeer_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().AddPeer(rctx, args["input"].(model.PeerInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*emptypb.Empty)
-	fc.Result = res
-	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Peer_node_id(ctx context.Context, field graphql.CollectedField, obj *model.Peer) (ret graphql.Marshaler) {
@@ -8110,6 +8129,16 @@ func (ec *executionContext) _AuthTarget(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "peer":
+			out.Values[i] = ec._AuthTarget_peer(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "headers":
+			out.Values[i] = ec._AuthTarget_headers(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8516,8 +8545,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "addPeer":
-			out.Values[i] = ec._Mutation_addPeer(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9712,11 +9739,6 @@ func (ec *executionContext) marshalNPeer2ᚖgithubᚗcomᚋgraphikDBᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Peer(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNPeerInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPeerInput(ctx context.Context, v interface{}) (model.PeerInput, error) {
-	res, err := ec.unmarshalInputPeerInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNPong2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx context.Context, sel ast.SelectionSet, v model.Pong) graphql.Marshaler {

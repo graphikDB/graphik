@@ -40,6 +40,9 @@ var global = &apipb.Flags{}
 
 func init() {
 	godotenv.Load()
+	pflag.CommandLine.StringVar(&global.JoinRaft, "join-raft", os.Getenv("GRAPHIK_JOIN_RAFT"), "join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)")
+	pflag.CommandLine.StringVar(&global.RaftPeerId, "raft-peer-id", os.Getenv("GRAPHIK_RAFT_PEER_ID"), "raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)")
+	pflag.CommandLine.Int64Var(&global.ListenPort, "listen-port", int64(helpers.IntEnvOr("GRAPHIK_LISTEN_PORT", 7820)), "serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT)")
 	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
 	pflag.CommandLine.StringVar(&global.OpenIdDiscovery, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)")
 	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", helpers.BoolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
@@ -60,9 +63,6 @@ func init() {
 func main() {
 	run(context.Background(), global)
 }
-
-const bind = ":7820"
-const metricsBind = ":7821"
 
 func run(ctx context.Context, cfg *apipb.Flags) {
 	if cfg.OpenIdDiscovery == "" {
@@ -93,25 +93,19 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			return
 		}
 		config := &tls.Config{Certificates: []tls.Certificate{cer}}
-		lis, err = tls.Listen("tcp", bind, config)
+		lis, err = tls.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort), config)
 		if err != nil {
 			logger.Error("failed to create tls server listener", zap.Error(err))
 			return
 		}
 	} else {
-		lis, err = net.Listen("tcp", bind)
+		lis, err = net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort))
 		if err != nil {
 			logger.Error("failed to create server listener", zap.Error(err))
 			return
 		}
 	}
 	defer lis.Close()
-	self := fmt.Sprintf("localhost%v", bind)
-	conn, err := grpc.DialContext(ctx, self, grpc.WithInsecure())
-	if err != nil {
-		logger.Error("failed to setup graphql endpoint", zap.Error(err))
-		return
-	}
 	var config *oauth2.Config
 	if global.PlaygroundClientId != "" {
 		resp, err := http.DefaultClient.Get(global.OpenIdDiscovery)
@@ -141,6 +135,13 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			Scopes:      []string{"openid", "email", "profile"},
 		}
 	}
+	self := fmt.Sprintf("localhost:%v", global.ListenPort)
+	conn, err := grpc.DialContext(ctx, self, grpc.WithInsecure(), grpc.WithUserAgent(g.Raft().PeerID()))
+	if err != nil {
+		logger.Error("failed to setup graphql endpoint", zap.Error(err))
+		return
+	}
+	defer conn.Close()
 	resolver := gql.NewResolver(m, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
 		AllowedOrigins: global.AllowOrigins,
 		AllowedMethods: global.AllowMethods,
@@ -177,7 +178,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 		metricServer = &http.Server{Handler: router}
 		m.Go(func(routine machine.Routine) {
-			metricLis, err := net.Listen("tcp", metricsBind)
+			metricLis, err := net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort+1))
 			if err != nil {
 				logger.Error("metrics server failure", zap.Error(err))
 				return
@@ -221,6 +222,27 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			logger.Error("listener mux error", zap.Error(err))
 		}
 	})
+	if global.JoinRaft != "" {
+		leaderConn, err := grpc.DialContext(ctx, global.JoinRaft, grpc.WithInsecure())
+		if err != nil {
+			logger.Error("failed to setup graphql endpoint", zap.Error(err))
+			return
+		}
+		defer leaderConn.Close()
+		client := apipb.NewDatabaseServiceClient(leaderConn)
+		for x := 0; x < 5; x++ {
+			_, err := client.JoinCluster(context.Background(), &apipb.Peer{
+				NodeId: g.Raft().PeerID(),
+				Addr:   fmt.Sprintf("localhost:%v", global.ListenPort-10),
+			})
+			if err != nil {
+				logger.Error("failed to join cluster - retrying", zap.Error(err), zap.Int("attempt", x+1))
+				continue
+			} else {
+				break
+			}
+		}
+	}
 	select {
 	case <-interrupt:
 		m.Cancel()

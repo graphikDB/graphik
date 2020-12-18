@@ -16,13 +16,21 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     /**
      * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc user = 4 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 1 [(.validator.field) = {</code>
      */
     private $user = null;
     /**
-     * Generated from protobuf field <code>.google.protobuf.Struct target = 5;</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct target = 2;</code>
      */
     private $target = null;
+    /**
+     * Generated from protobuf field <code>string peer = 3;</code>
+     */
+    private $peer = '';
+    /**
+     * Generated from protobuf field <code>map<string, string> headers = 4;</code>
+     */
+    private $headers;
 
     /**
      * Constructor.
@@ -33,6 +41,8 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
      *     @type \Api\Doc $user
      *           user is the user making the request
      *     @type \Google\Protobuf\Struct $target
+     *     @type string $peer
+     *     @type array|\Google\Protobuf\Internal\MapField $headers
      * }
      */
     public function __construct($data = NULL) {
@@ -43,7 +53,7 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     /**
      * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc user = 4 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 1 [(.validator.field) = {</code>
      * @return \Api\Doc
      */
     public function getUser()
@@ -54,7 +64,7 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     /**
      * user is the user making the request
      *
-     * Generated from protobuf field <code>.api.Doc user = 4 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>.api.Doc user = 1 [(.validator.field) = {</code>
      * @param \Api\Doc $var
      * @return $this
      */
@@ -67,7 +77,7 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.google.protobuf.Struct target = 5;</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct target = 2;</code>
      * @return \Google\Protobuf\Struct
      */
     public function getTarget()
@@ -76,7 +86,7 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.google.protobuf.Struct target = 5;</code>
+     * Generated from protobuf field <code>.google.protobuf.Struct target = 2;</code>
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
@@ -84,6 +94,50 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Struct::class);
         $this->target = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string peer = 3;</code>
+     * @return string
+     */
+    public function getPeer()
+    {
+        return $this->peer;
+    }
+
+    /**
+     * Generated from protobuf field <code>string peer = 3;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setPeer($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->peer = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>map<string, string> headers = 4;</code>
+     * @return \Google\Protobuf\Internal\MapField
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
+     * Generated from protobuf field <code>map<string, string> headers = 4;</code>
+     * @param array|\Google\Protobuf\Internal\MapField $var
+     * @return $this
+     */
+    public function setHeaders($var)
+    {
+        $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->headers = $arr;
 
         return $this;
     }

@@ -29,11 +29,12 @@ func NewRaft(fsm *fsm.FSM, opts ...Opt) (*Raft, error) {
 	fmt.Println(options.peerID)
 	config := raft.DefaultConfig()
 	config.LocalID = raft.ServerID(options.peerID)
-	addr, err := net.ResolveTCPAddr("tcp", options.listenAddr)
+	lisAddr := fmt.Sprintf("localhost:%v", options.port)
+	addr, err := net.ResolveTCPAddr("tcp", lisAddr)
 	if err != nil {
 		return nil, err
 	}
-	transport, err := raft.NewTCPTransport(options.listenAddr, addr, options.maxPool, options.timeout, os.Stderr)
+	transport, err := raft.NewTCPTransport(lisAddr, addr, options.maxPool, options.timeout, os.Stderr)
 	if err != nil {
 		return nil, err
 	}
@@ -132,4 +133,8 @@ func (s *Raft) Apply(bits []byte) (interface{}, error) {
 
 func (r *Raft) Close() error {
 	return r.raft.Shutdown().Error()
+}
+
+func (r *Raft) PeerID() string {
+	return r.opts.peerID
 }

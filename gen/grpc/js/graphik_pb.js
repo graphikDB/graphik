@@ -5191,7 +5191,9 @@ proto.api.AuthTarget.prototype.toObject = function(opt_includeInstance) {
 proto.api.AuthTarget.toObject = function(includeInstance, msg) {
   var f, obj = {
     user: (f = msg.getUser()) && proto.api.Doc.toObject(includeInstance, f),
-    target: (f = msg.getTarget()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f)
+    target: (f = msg.getTarget()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f),
+    peer: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    headersMap: (f = msg.getHeadersMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -5228,15 +5230,25 @@ proto.api.AuthTarget.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 4:
+    case 1:
       var value = new proto.api.Doc;
       reader.readMessage(value,proto.api.Doc.deserializeBinaryFromReader);
       msg.setUser(value);
       break;
-    case 5:
+    case 2:
       var value = new google_protobuf_struct_pb.Struct;
       reader.readMessage(value,google_protobuf_struct_pb.Struct.deserializeBinaryFromReader);
       msg.setTarget(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPeer(value);
+      break;
+    case 4:
+      var value = msg.getHeadersMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "");
+         });
       break;
     default:
       reader.skipField();
@@ -5270,7 +5282,7 @@ proto.api.AuthTarget.serializeBinaryToWriter = function(message, writer) {
   f = message.getUser();
   if (f != null) {
     writer.writeMessage(
-      4,
+      1,
       f,
       proto.api.Doc.serializeBinaryToWriter
     );
@@ -5278,27 +5290,38 @@ proto.api.AuthTarget.serializeBinaryToWriter = function(message, writer) {
   f = message.getTarget();
   if (f != null) {
     writer.writeMessage(
-      5,
+      2,
       f,
       google_protobuf_struct_pb.Struct.serializeBinaryToWriter
     );
+  }
+  f = message.getPeer();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getHeadersMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(4, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
   }
 };
 
 
 /**
- * optional Doc user = 4;
+ * optional Doc user = 1;
  * @return {?proto.api.Doc}
  */
 proto.api.AuthTarget.prototype.getUser = function() {
   return /** @type{?proto.api.Doc} */ (
-    jspb.Message.getWrapperField(this, proto.api.Doc, 4));
+    jspb.Message.getWrapperField(this, proto.api.Doc, 1));
 };
 
 
 /** @param {?proto.api.Doc|undefined} value */
 proto.api.AuthTarget.prototype.setUser = function(value) {
-  jspb.Message.setWrapperField(this, 4, value);
+  jspb.Message.setWrapperField(this, 1, value);
 };
 
 
@@ -5312,23 +5335,23 @@ proto.api.AuthTarget.prototype.clearUser = function() {
  * @return {!boolean}
  */
 proto.api.AuthTarget.prototype.hasUser = function() {
-  return jspb.Message.getField(this, 4) != null;
+  return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * optional google.protobuf.Struct target = 5;
+ * optional google.protobuf.Struct target = 2;
  * @return {?proto.google.protobuf.Struct}
  */
 proto.api.AuthTarget.prototype.getTarget = function() {
   return /** @type{?proto.google.protobuf.Struct} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_struct_pb.Struct, 5));
+    jspb.Message.getWrapperField(this, google_protobuf_struct_pb.Struct, 2));
 };
 
 
 /** @param {?proto.google.protobuf.Struct|undefined} value */
 proto.api.AuthTarget.prototype.setTarget = function(value) {
-  jspb.Message.setWrapperField(this, 5, value);
+  jspb.Message.setWrapperField(this, 2, value);
 };
 
 
@@ -5342,7 +5365,40 @@ proto.api.AuthTarget.prototype.clearTarget = function() {
  * @return {!boolean}
  */
 proto.api.AuthTarget.prototype.hasTarget = function() {
-  return jspb.Message.getField(this, 5) != null;
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional string peer = 3;
+ * @return {string}
+ */
+proto.api.AuthTarget.prototype.getPeer = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.api.AuthTarget.prototype.setPeer = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * map<string, string> headers = 4;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<string,string>}
+ */
+proto.api.AuthTarget.prototype.getHeadersMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<string,string>} */ (
+      jspb.Message.getMapField(this, 4, opt_noLazyCreate,
+      null));
+};
+
+
+proto.api.AuthTarget.prototype.clearHeadersMap = function() {
+  this.getHeadersMap().clear();
 };
 
 
@@ -7052,7 +7108,9 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     playgroundRedirect: jspb.Message.getFieldWithDefault(msg, 13, ""),
     requireRequestAuthorizers: jspb.Message.getFieldWithDefault(msg, 15, false),
     requireResponseAuthorizers: jspb.Message.getFieldWithDefault(msg, 16, false),
-    joinRaft: jspb.Message.getFieldWithDefault(msg, 17, "")
+    joinRaft: jspb.Message.getFieldWithDefault(msg, 17, ""),
+    raftPeerId: jspb.Message.getFieldWithDefault(msg, 18, ""),
+    listenPort: jspb.Message.getFieldWithDefault(msg, 19, 0)
   };
 
   if (includeInstance) {
@@ -7148,6 +7206,14 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 17:
       var value = /** @type {string} */ (reader.readString());
       msg.setJoinRaft(value);
+      break;
+    case 18:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRaftPeerId(value);
+      break;
+    case 19:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setListenPort(value);
       break;
     default:
       reader.skipField();
@@ -7280,6 +7346,20 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       17,
+      f
+    );
+  }
+  f = message.getRaftPeerId();
+  if (f.length > 0) {
+    writer.writeString(
+      18,
+      f
+    );
+  }
+  f = message.getListenPort();
+  if (f !== 0) {
+    writer.writeInt64(
+      19,
       f
     );
   }
@@ -7570,6 +7650,36 @@ proto.api.Flags.prototype.getJoinRaft = function() {
 /** @param {string} value */
 proto.api.Flags.prototype.setJoinRaft = function(value) {
   jspb.Message.setProto3StringField(this, 17, value);
+};
+
+
+/**
+ * optional string raft_peer_id = 18;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getRaftPeerId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setRaftPeerId = function(value) {
+  jspb.Message.setProto3StringField(this, 18, value);
+};
+
+
+/**
+ * optional int64 listen_port = 19;
+ * @return {number}
+ */
+proto.api.Flags.prototype.getListenPort = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
+};
+
+
+/** @param {number} value */
+proto.api.Flags.prototype.setListenPort = function(value) {
+  jspb.Message.setProto3IntField(this, 19, value);
 };
 
 

@@ -301,13 +301,6 @@ func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, input model.S
 	return gqlConnections(connections), nil
 }
 
-func (r *mutationResolver) AddPeer(ctx context.Context, input model.PeerInput) (*emptypb.Empty, error) {
-	return r.client.AddPeer(ctx, &apipb.Peer{
-		NodeId: input.NodeID,
-		Addr:   input.Addr,
-	})
-}
-
 func (r *queryResolver) Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error) {
 	res, err := r.client.Ping(ctx, &emptypb.Empty{})
 	if err != nil {

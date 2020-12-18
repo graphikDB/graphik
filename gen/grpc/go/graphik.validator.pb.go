@@ -379,6 +379,7 @@ func (this *AuthTarget) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Target", err)
 		}
 	}
+	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
 
@@ -669,17 +670,7 @@ func (this *RaftCommand) Validate() error {
 	}
 	return nil
 }
-
-var _regex_Peer_NodeId = regexp.MustCompile(`^.{1,225}$`)
-var _regex_Peer_Addr = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *Peer) Validate() error {
-	if !_regex_Peer_NodeId.MatchString(this.NodeId) {
-		return github_com_mwitkow_go_proto_validators.FieldError("NodeId", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.NodeId))
-	}
-	if !_regex_Peer_Addr.MatchString(this.Addr) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Addr", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Addr))
-	}
 	return nil
 }
 func (this *RaftState) Validate() error {

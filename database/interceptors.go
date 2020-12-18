@@ -16,20 +16,27 @@ import (
 	"go.etcd.io/bbolt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
 func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		if strings.Contains(info.FullMethod, "JoinCluster") {
+			return handler(ctx, req)
+		}
 		token, err := grpc_auth.AuthFromMD(ctx, "Bearer")
 		if err != nil {
 			return nil, err
 		}
+		ctx = g.tokenToContext(ctx, token)
 		tokenHash := helpers.Hash([]byte(token))
 		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
@@ -91,6 +98,7 @@ func (g *Graph) StreamInterceptor() grpc.StreamServerInterceptor {
 		if err != nil {
 			return err
 		}
+		ctx = g.tokenToContext(ctx, token)
 		tokenHash := helpers.Hash([]byte(token))
 		if val, ok := g.jwtCache.Get(tokenHash); ok {
 			payload := val.(map[string]interface{})
@@ -202,6 +210,18 @@ func (r *Graph) methodToContext(ctx context.Context, path string) context.Contex
 	return context.WithValue(ctx, methodCtxKey, path)
 }
 
+func (r *Graph) tokenToContext(ctx context.Context, token string) context.Context {
+	return context.WithValue(ctx, tokenCtxKey, token)
+}
+
+func (r *Graph) getToken(ctx context.Context) string {
+	val, ok := ctx.Value(tokenCtxKey).(string)
+	if ok {
+		return val
+	}
+	return ""
+}
+
 func (g *Graph) verifyJWT(token string) (map[string]interface{}, error) {
 	message, err := jws.ParseString(token)
 	if err != nil {
@@ -275,7 +295,20 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 		return ctx, nil
 	}
 	request := &apipb.AuthTarget{
-		User: user,
+		User:    user,
+		Headers: map[string]string{},
+	}
+	p, ok := peer.FromContext(ctx)
+	if ok {
+		request.Peer = p.Addr.String()
+	}
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		for k, val := range md {
+			if len(val) > 0 {
+				request.Headers[k] = val[0]
+			}
+		}
 	}
 	if val, ok := req.(apipb.Mapper); ok {
 		request.Target = apipb.NewStruct(val.AsMap())
@@ -331,8 +364,29 @@ func (g *Graph) checkResponse(ctx context.Context, method string, response inter
 		return nil
 	}
 	request := &apipb.AuthTarget{
-		User:   user,
-		Target: nil,
+		User:    user,
+		Target:  nil,
+		Headers: map[string]string{},
+	}
+	p, ok := peer.FromContext(ctx)
+	if ok {
+		request.Peer = p.Addr.String()
+	}
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		for k, val := range md {
+			if len(val) > 0 {
+				request.Headers[k] = val[0]
+			}
+		}
+	}
+	md, ok = metadata.FromOutgoingContext(ctx)
+	if ok {
+		for k, val := range md {
+			if len(val) > 0 {
+				request.Headers[k] = val[0]
+			}
+		}
 	}
 	if val, ok := response.(apipb.Mapper); ok {
 		request.Target = apipb.NewStruct(val.AsMap())

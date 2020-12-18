@@ -87,6 +87,14 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string join_raft = 17;</code>
      */
     private $join_raft = '';
+    /**
+     * Generated from protobuf field <code>string raft_peer_id = 18;</code>
+     */
+    private $raft_peer_id = '';
+    /**
+     * Generated from protobuf field <code>int64 listen_port = 19;</code>
+     */
+    private $listen_port = 0;
 
     /**
      * Constructor.
@@ -116,6 +124,8 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type bool $require_request_authorizers
      *     @type bool $require_response_authorizers
      *     @type string $join_raft
+     *     @type string $raft_peer_id
+     *     @type int|string $listen_port
      * }
      */
     public function __construct($data = NULL) {
@@ -477,6 +487,50 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->join_raft = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_peer_id = 18;</code>
+     * @return string
+     */
+    public function getRaftPeerId()
+    {
+        return $this->raft_peer_id;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_peer_id = 18;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRaftPeerId($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->raft_peer_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>int64 listen_port = 19;</code>
+     * @return int|string
+     */
+    public function getListenPort()
+    {
+        return $this->listen_port;
+    }
+
+    /**
+     * Generated from protobuf field <code>int64 listen_port = 19;</code>
+     * @param int|string $var
+     * @return $this
+     */
+    public function setListenPort($var)
+    {
+        GPBUtil::checkInt64($var);
+        $this->listen_port = $var;
 
         return $this;
     }

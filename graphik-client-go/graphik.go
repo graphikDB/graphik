@@ -85,7 +85,8 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 }
 
 type Client struct {
-	graph apipb.DatabaseServiceClient
+	peerID string
+	graph  apipb.DatabaseServiceClient
 }
 
 func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Context, error) {
@@ -375,9 +376,9 @@ func (c *Client) AggregateConnections(ctx context.Context, in *apipb.AggFilter, 
 	return c.graph.AggregateConnections(ctx, in, opts...)
 }
 
-// AddPeer adds a peer node to the raft cluster
-func (c *Client) AddPeer(ctx context.Context, in *apipb.Peer, opts ...grpc.CallOption) error {
-	_, err := c.graph.AddPeer(ctx, in, opts...)
+// AddPeer adds a peer node to the raft cluster.
+func (c *Client) JoinCluster(ctx context.Context, peer *apipb.Peer, opts ...grpc.CallOption) error {
+	_, err := c.graph.JoinCluster(ctx, peer, opts...)
 	return err
 }
 

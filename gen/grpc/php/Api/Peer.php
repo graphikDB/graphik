@@ -14,11 +14,11 @@ use Google\Protobuf\Internal\GPBUtil;
 class Peer extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Generated from protobuf field <code>string node_id = 1 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string node_id = 1;</code>
      */
     private $node_id = '';
     /**
-     * Generated from protobuf field <code>string addr = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string addr = 2;</code>
      */
     private $addr = '';
 
@@ -38,7 +38,7 @@ class Peer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string node_id = 1 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string node_id = 1;</code>
      * @return string
      */
     public function getNodeId()
@@ -47,7 +47,7 @@ class Peer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string node_id = 1 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string node_id = 1;</code>
      * @param string $var
      * @return $this
      */
@@ -60,7 +60,7 @@ class Peer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string addr = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string addr = 2;</code>
      * @return string
      */
     public function getAddr()
@@ -69,7 +69,7 @@ class Peer extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string addr = 2 [(.validator.field) = {</code>
+     * Generated from protobuf field <code>string addr = 2;</code>
      * @param string $var
      * @return $this
      */

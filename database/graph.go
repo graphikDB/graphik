@@ -9,6 +9,7 @@ import (
 	"github.com/google/cel-go/cel"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/generic"
+	"github.com/graphikDB/graphik/graphik-client-go"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
 	"github.com/graphikDB/graphik/raft"
@@ -19,22 +20,25 @@ import (
 	"github.com/segmentio/ksuid"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
 
 type Graph struct {
-	peerID string
-	vm     *vm.VM
+	vm *vm.VM
 	// db is the underlying handle to the db.
 	db              *bbolt.DB
 	jwksMu          sync.RWMutex
@@ -53,7 +57,7 @@ type Graph struct {
 	typeValidators  *generic.Cache
 	flgs            *apipb.Flags
 	raft            *raft.Raft
-	peers           map[string]apipb.DatabaseServiceClient
+	peers           map[string]*graphik.Client
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
@@ -88,7 +92,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		authorizers:     generic.NewCache(m, 0),
 		typeValidators:  generic.NewCache(m, 0),
 		flgs:            flgs,
-		peers:           map[string]apipb.DatabaseServiceClient{},
+		peers:           map[string]*graphik.Client{},
 	}
 	if flgs.OpenIdDiscovery != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIdDiscovery)
@@ -171,7 +175,13 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 			g.jwksMu.Unlock()
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-	rft, err := raft.NewRaft(g.fsm(), raft.WithIsLeader(flgs.JoinRaft == ""))
+	rft, err := raft.NewRaft(
+		g.fsm(),
+		raft.WithIsLeader(flgs.JoinRaft == ""),
+		raft.WithListenPort(int(flgs.ListenPort)-10),
+		raft.WithPeerID(flgs.RaftPeerId),
+		raft.WithRaftDir(fmt.Sprintf("%s/raft", flgs.StoragePath)),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -181,6 +191,36 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 
 func (g *Graph) implements() apipb.DatabaseServiceServer {
 	return g
+}
+
+func (g *Graph) leaderClient(ctx context.Context) (*graphik.Client, error) {
+	leader := g.raft.LeaderAddr()
+	if client, ok := g.peers[leader]; ok {
+		return client, nil
+	}
+	host, port, err := net.SplitHostPort(leader)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse leader host-port")
+	}
+	portNum, err := strconv.Atoi(port)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse leader port")
+	}
+	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum+10))
+	logger.Info("adding peer client", zap.String("addr", addr))
+	client, err := graphik.NewClient(
+		ctx,
+		addr,
+		graphik.WithTokenSource(oauth2.StaticTokenSource(&oauth2.Token{
+			AccessToken: g.getToken(ctx),
+		})),
+		graphik.WithRetry(5),
+	)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to contact leader")
+	}
+	g.peers[leader] = client
+	return client, nil
 }
 
 func (g *Graph) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
@@ -245,6 +285,14 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.E
 	if err := ctx.Err(); err != nil {
 		return nil, status.Error(codes.Canceled, err.Error())
 	}
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		return &empty.Empty{}, client.SetIndexes(invertContext(ctx), index2)
+	}
 	user := g.getIdentity(ctx)
 	if user == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get user")
@@ -264,6 +312,13 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 	if err := ctx.Err(); err != nil {
 		return nil, status.Error(codes.Canceled, err.Error())
 	}
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.SetAuthorizers(invertContext(ctx), as)
+	}
 	user := g.getIdentity(ctx)
 	if user == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get user")
@@ -282,6 +337,13 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators) (*empty.Empty, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, status.Error(codes.Canceled, err.Error())
+	}
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.SetTypeValidators(invertContext(ctx), as)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
@@ -310,11 +372,15 @@ func (g *Graph) Me(ctx context.Context, _ *empty.Empty) (*apipb.Doc, error) {
 }
 
 func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstructors) (*apipb.Docs, error) {
-	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
-	}
 	if err := ctx.Err(); err != nil {
 		return nil, status.Error(codes.Canceled, err.Error())
+	}
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.CreateDocs(invertContext(ctx), constructors)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
@@ -395,7 +461,11 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 
 func (g *Graph) CreateConnection(ctx context.Context, constructor *apipb.ConnectionConstructor) (*apipb.Connection, error) {
 	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.CreateConnection(invertContext(ctx), constructor)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
@@ -410,7 +480,11 @@ func (g *Graph) CreateConnection(ctx context.Context, constructor *apipb.Connect
 
 func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.ConnectionConstructors) (*apipb.Connections, error) {
 	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.CreateConnections(invertContext(ctx), constructors)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
@@ -462,6 +536,13 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 }
 
 func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (*empty.Empty, error) {
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.Broadcast(invertContext(ctx), message)
+	}
 	user := g.getIdentity(ctx)
 	if user == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get user")
@@ -629,7 +710,11 @@ func (g *Graph) CreateDoc(ctx context.Context, constructor *apipb.DocConstructor
 
 func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, error) {
 	if n.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := n.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.EditDoc(invertContext(ctx), value)
 	}
 	user := n.getIdentity(ctx)
 	var setDoc *apipb.Doc
@@ -686,7 +771,11 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 
 func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.Docs, error) {
 	if n.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := n.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.EditDocs(invertContext(ctx), patch)
 	}
 	user := n.getIdentity(ctx)
 	var setDocs []*apipb.Doc
@@ -978,7 +1067,11 @@ func (n *Graph) AllConnections(ctx context.Context) (*apipb.Connections, error) 
 
 func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.Connection, error) {
 	if n.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := n.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.EditConnection(invertContext(ctx), value)
 	}
 	var setConnection *apipb.Connection
 	var err error
@@ -1003,7 +1096,11 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 
 func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*apipb.Connections, error) {
 	if n.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := n.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.EditConnections(invertContext(ctx), patch)
 	}
 	var setConnections []*apipb.Connection
 	before, err := n.SearchConnections(ctx, patch.GetFilter())
@@ -1072,7 +1169,11 @@ func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*a
 
 func (g *Graph) DelDoc(ctx context.Context, path *apipb.Ref) (*empty.Empty, error) {
 	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.DelDoc(invertContext(ctx), path)
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
 		User:    g.getIdentity(ctx),
@@ -1087,7 +1188,11 @@ func (g *Graph) DelDoc(ctx context.Context, path *apipb.Ref) (*empty.Empty, erro
 
 func (g *Graph) DelDocs(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
 	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.DelDocs(invertContext(ctx), filter)
 	}
 	before, err := g.SearchDocs(ctx, filter)
 	if err != nil {
@@ -1110,7 +1215,11 @@ func (g *Graph) DelDocs(ctx context.Context, filter *apipb.Filter) (*empty.Empty
 
 func (g *Graph) DelConnection(ctx context.Context, path *apipb.Ref) (*empty.Empty, error) {
 	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.DelConnection(invertContext(ctx), path)
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
 		User:           g.getIdentity(ctx),
@@ -1125,7 +1234,11 @@ func (g *Graph) DelConnection(ctx context.Context, path *apipb.Ref) (*empty.Empt
 
 func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empty.Empty, error) {
 	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.DelConnections(invertContext(ctx), filter)
 	}
 	before, err := g.SearchConnections(ctx, filter)
 	if err != nil {
@@ -1252,7 +1365,11 @@ func (g *Graph) SeedConnections(server apipb.DatabaseService_SeedConnectionsServ
 
 func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SearchConnectFilter) (*apipb.Connections, error) {
 	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.SearchAndConnect(invertContext(ctx), filter)
 	}
 	docs, err := g.SearchDocs(ctx, filter.GetFilter())
 	if err != nil {
@@ -1275,7 +1392,11 @@ func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SearchConnec
 
 func (g *Graph) SearchAndConnectMe(ctx context.Context, filter *apipb.SearchConnectMeFilter) (*apipb.Connections, error) {
 	if g.raft.State() != raft2.Leader {
-		return nil, status.Error(codes.PermissionDenied, "not raft leader")
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.SearchAndConnectMe(invertContext(ctx), filter)
 	}
 	user := g.getIdentity(ctx)
 	docs, err := g.SearchDocs(ctx, filter.GetFilter())
@@ -1388,9 +1509,16 @@ func (g *Graph) HasConnection(ctx context.Context, ref *apipb.Ref) (*apipb.Boole
 	return &apipb.Boolean{Value: false}, nil
 }
 
-func (g *Graph) AddPeer(ctx context.Context, peer *apipb.Peer) (*empty.Empty, error) {
+func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty, error) {
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.JoinCluster(invertContext(ctx), peer)
+	}
 	if err := g.raft.Join(peer.GetNodeId(), peer.GetAddr()); err != nil {
-		return nil, status.Error(codes.Unknown, err.Error())
+		return nil, status.Error(codes.Unknown, fmt.Sprintf("nodeID = %s target = %s error = %s", peer.GetNodeId(), peer.GetAddr(), err.Error()))
 	}
 	return &empty.Empty{}, nil
 }
@@ -1415,6 +1543,10 @@ func (g *Graph) ClusterState(ctx context.Context, _ *empty.Empty) (*apipb.RaftSt
 	}, nil
 }
 
+func (g *Graph) Raft() *raft.Raft {
+	return g.raft
+}
+
 func toMembership(state raft2.RaftState) apipb.Membership {
 	switch state {
 	case raft2.Shutdown:
@@ -1428,4 +1560,16 @@ func toMembership(state raft2.RaftState) apipb.Membership {
 	default:
 		return apipb.Membership_UNKNOWN
 	}
+}
+
+func invertContext(ctx context.Context) context.Context {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if ok {
+		for k, v := range md {
+			if len(v) > 0 {
+				ctx = metadata.AppendToOutgoingContext(ctx, k, v[0])
+			}
+		}
+	}
+	return ctx
 }
