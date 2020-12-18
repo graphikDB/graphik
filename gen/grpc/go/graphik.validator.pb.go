@@ -613,3 +613,83 @@ func (this *Schema) Validate() error {
 func (this *ExprFilter) Validate() error {
 	return nil
 }
+func (this *RaftCommand) Validate() error {
+	if this.User != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
+		}
+	}
+	for _, item := range this.SetDocs {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("SetDocs", err)
+			}
+		}
+	}
+	for _, item := range this.SetConnections {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("SetConnections", err)
+			}
+		}
+	}
+	for _, item := range this.DelDocs {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("DelDocs", err)
+			}
+		}
+	}
+	for _, item := range this.DelConnections {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("DelConnections", err)
+			}
+		}
+	}
+	if this.SetIndexes != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SetIndexes); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SetIndexes", err)
+		}
+	}
+	if this.SetAuthorizers != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SetAuthorizers); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SetAuthorizers", err)
+		}
+	}
+	if this.SetTypeValidators != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SetTypeValidators); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SetTypeValidators", err)
+		}
+	}
+	if this.SendMessage != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SendMessage); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SendMessage", err)
+		}
+	}
+	return nil
+}
+
+var _regex_Peer_NodeId = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Peer_Addr = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *Peer) Validate() error {
+	if !_regex_Peer_NodeId.MatchString(this.NodeId) {
+		return github_com_mwitkow_go_proto_validators.FieldError("NodeId", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.NodeId))
+	}
+	if !_regex_Peer_Addr.MatchString(this.Addr) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Addr", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Addr))
+	}
+	return nil
+}
+func (this *RaftState) Validate() error {
+	for _, item := range this.Peers {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Peers", err)
+			}
+		}
+	}
+	// Validation of proto3 map<> fields is unsupported.
+	return nil
+}

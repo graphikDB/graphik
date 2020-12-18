@@ -19,7 +19,7 @@ var (
 	dbLogs = []byte("raftLogs")
 	dbConf = []byte("raftConfig")
 	// An error indicating a given key does not exist
-	ErrKeyNotFound = errors.New("raft: not found")
+	ErrKeyNotFound = errors.New("not found")
 )
 
 type Storage struct {
@@ -149,11 +149,7 @@ func (b *Storage) DeleteRange(min, max uint64) error {
 func (b *Storage) Set(k, v []byte) error {
 	return b.db.Update(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket(dbConf)
-		if err := bucket.Put(k, v); err != nil {
-			return err
-		}
-
-		return tx.Commit()
+		return bucket.Put(k, v)
 	})
 }
 
@@ -182,6 +178,7 @@ func (b *Storage) GetUint64(key []byte) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	return helpers.BytesToUint64(val), nil
 }
 

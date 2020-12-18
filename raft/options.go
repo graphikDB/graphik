@@ -19,13 +19,16 @@ type Options struct {
 
 func (o *Options) setDefaults() {
 	if o.listenAddr == "" {
-		o.listenAddr = ":7822"
+		o.listenAddr = "localhost:7822"
 	}
 	if o.maxPool <= 0 {
 		o.maxPool = 5
 	}
 	if o.timeout == 0 {
 		o.timeout = 5 * time.Second
+	}
+	if o.retainSnapshots == 0 {
+		o.retainSnapshots = 1
 	}
 	if o.peerID == "" {
 		h, _ := os.Hostname()

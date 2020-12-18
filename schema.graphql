@@ -28,6 +28,15 @@ enum Aggregate {
   PROD
 }
 
+# Membership is the state of a raft membership in a cluster
+enum Membership {
+  UNKNOWN
+  FOLLOWER
+  CANDIDATE
+  LEADER
+  SHUTDOWN
+}
+
 # Pong returns PONG if the server is healthy
 type Pong {
   message: String!
@@ -144,6 +153,20 @@ type Indexes {
   indexes: [Index!]
 }
 
+# Peer is the address and id of a node in the raft cluster
+type Peer {
+  node_id: String!
+  addr: String!
+}
+
+# RaftState returns information about the raft cluster
+type RaftState {
+  leader: String!
+  membership: Membership!
+  peers: [Peer!]
+  stats: Map!
+}
+
 # Authorizer is a graph primitive used for authorizing inbound requests and/or responses(see AuthTarget)
 type Authorizer {
   # name is the unique name of the authorizer in the graph
@@ -239,10 +262,10 @@ input RefInput {
   gid: String!
 }
 
-# RefPair is a pair of Refs
-input RefPair {
-  ref1: RefInput!
-  ref2: RefInput!
+# PeerInput is the address and id of a node in the raft cluster
+input PeerInput {
+  node_id: String!
+  addr: String!
 }
 
 # Filter is a generic filter using Common Expression Language
@@ -502,9 +525,10 @@ type Mutation {
   # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
   # searchAndConnect searches for documents and forms connections based on whether they pass a filter
-  searchAndConnect(where: SearchConnectFilter!): Connections!
+  searchAndConnect(input: SearchConnectFilter!): Connections!
   # searchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
-  searchAndConnectMe(where: SearchConnectMeFilter!): Connections!
+  searchAndConnectMe(input: SearchConnectMeFilter!): Connections!
+  addPeer(input: PeerInput!): Empty
 }
 
 type Query {
@@ -542,6 +566,7 @@ type Query {
   aggregateDocs(where: AggFilter!): Float!
   # aggregateConnections executes an aggregation function against a set of connections
   aggregateConnections(where: AggFilter!): Float!
+  clusterState(where: Empty): RaftState!
 }
 
 type Subscription {

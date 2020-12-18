@@ -200,7 +200,7 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 	if i.Docs {
 		tx.Bucket(dbIndexDocs).CreateBucketIfNotExists([]byte(i.GetName()))
 	}
-	return i, nil
+	return i, g.cacheIndexes()
 }
 
 func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Authorizer) (*apipb.Authorizer, error) {
@@ -236,7 +236,7 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 	if err := authBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
-	return i, nil
+	return i, g.cacheAuthorizers()
 }
 
 func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.TypeValidator) (*apipb.TypeValidator, error) {
@@ -272,7 +272,7 @@ func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.Ty
 	if err := validatorBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
-	return i, nil
+	return i, g.cacheTypeValidators()
 }
 
 func (g *Graph) setIndexedDoc(ctx context.Context, tx *bbolt.Tx, index string, gid, doc []byte) error {

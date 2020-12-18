@@ -262,13 +262,13 @@ func (r *mutationResolver) SetTypeValidators(ctx context.Context, input model.Ty
 	}
 }
 
-func (r *mutationResolver) SearchAndConnect(ctx context.Context, where model.SearchConnectFilter) (*model.Connections, error) {
+func (r *mutationResolver) SearchAndConnect(ctx context.Context, input model.SearchConnectFilter) (*model.Connections, error) {
 	connections, err := r.client.SearchAndConnect(ctx, &apipb.SearchConnectFilter{
-		Filter:     protoFilter(*where.Filter),
-		Gtype:      where.Gtype,
-		Attributes: apipb.NewStruct(where.Attributes),
-		Directed:   where.Directed,
-		From:       protoIRef(*where.From),
+		Filter:     protoFilter(*input.Filter),
+		Gtype:      input.Gtype,
+		Attributes: apipb.NewStruct(input.Attributes),
+		Directed:   input.Directed,
+		From:       protoIRef(*input.From),
 	})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -282,12 +282,12 @@ func (r *mutationResolver) SearchAndConnect(ctx context.Context, where model.Sea
 	return gqlConnections(connections), nil
 }
 
-func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, where model.SearchConnectMeFilter) (*model.Connections, error) {
+func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, input model.SearchConnectMeFilter) (*model.Connections, error) {
 	connections, err := r.client.SearchAndConnectMe(ctx, &apipb.SearchConnectMeFilter{
-		Filter:     protoFilter(*where.Filter),
-		Gtype:      where.Gtype,
-		Attributes: apipb.NewStruct(where.Attributes),
-		Directed:   where.Directed,
+		Filter:     protoFilter(*input.Filter),
+		Gtype:      input.Gtype,
+		Attributes: apipb.NewStruct(input.Attributes),
+		Directed:   input.Directed,
 	})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -299,6 +299,13 @@ func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, where model.S
 		}
 	}
 	return gqlConnections(connections), nil
+}
+
+func (r *mutationResolver) AddPeer(ctx context.Context, input model.PeerInput) (*emptypb.Empty, error) {
+	return r.client.AddPeer(ctx, &apipb.Peer{
+		NodeId: input.NodeID,
+		Addr:   input.Addr,
+	})
 }
 
 func (r *queryResolver) Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error) {
@@ -538,6 +545,30 @@ func (r *queryResolver) AggregateConnections(ctx context.Context, where model.Ag
 		}
 	}
 	return res.GetValue(), nil
+}
+
+func (r *queryResolver) ClusterState(ctx context.Context, where *emptypb.Empty) (*model.RaftState, error) {
+	state, err := r.client.ClusterState(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	statMap := map[string]interface{}{}
+	for k, v := range state.GetStats() {
+		statMap[k] = v
+	}
+
+	return &model.RaftState{
+		Leader:     state.GetLeader(),
+		Membership: gqlMembership(state.GetMembership()),
+		Stats:      statMap,
+		Peers:      gqlPeers(state.GetPeers()),
+	}, nil
 }
 
 func (r *subscriptionResolver) Stream(ctx context.Context, where model.StreamFilter) (<-chan *model.Message, error) {

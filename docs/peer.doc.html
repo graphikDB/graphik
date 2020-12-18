@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>__Type</title>
+    <title>Peer</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -165,7 +165,7 @@
                 Message
             </a>
         </li>
-        <li  title="Peer">
+        <li class="slds-is-active" title="Peer">
             <a href="peer.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Peer
             </a>
@@ -240,7 +240,7 @@
                 __Schema
             </a>
         </li>
-        <li class="slds-is-active" title="__Type">
+        <li  title="__Type">
             <a href="type.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 __Type
             </a>
@@ -416,9 +416,8 @@
     </div>
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
-        <h1 class="slds-text-heading--large">__Type</h1>
-        <div class="slds-text-body--regular"><p>The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the <code>__TypeKind</code> enum.</p>
-<p>Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.</p>
+        <h1 class="slds-text-heading--large">Peer</h1>
+        <div class="slds-text-body--regular"><p>Peer is the address and id of a node in the raft cluster</p>
 </div>
     </div>
 </section>
@@ -430,7 +429,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">__Type</span> {</li><li></li><li><span class="tab"><span class="meta">kind</span>: <a class="support type" href="typekind.spec.html">__TypeKind</a>! </span></li><li></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a> </span></li><li></li><li><span class="tab"><span class="meta">description</span>: <a class="support type" href="string.doc.html">String</a> </span></li><li></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>includeDeprecated</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">fields</span>(<span class="meta">includeDeprecated</span>: <a class="support type" href="boolean.doc.html">Boolean</a>): [<a class="support type" href="field.spec.html">__Field</a>!] </span></li><li></li><li><span class="tab"><span class="meta">interfaces</span>: [<a class="support type" href="type.spec.html">__Type</a>!] </span></li><li></li><li><span class="tab"><span class="meta">possibleTypes</span>: [<a class="support type" href="type.spec.html">__Type</a>!] </span></li><li></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>includeDeprecated</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">enumValues</span>(<span class="meta">includeDeprecated</span>: <a class="support type" href="boolean.doc.html">Boolean</a>): [<a class="support type" href="enumvalue.spec.html">__EnumValue</a>!] </span></li><li></li><li><span class="tab"><span class="meta">inputFields</span>: [<a class="support type" href="inputvalue.spec.html">__InputValue</a>!] </span></li><li></li><li><span class="tab"><span class="meta">ofType</span>: <a class="support type" href="type.spec.html">__Type</a> </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Peer</span> {</li><li></li><li><span class="tab"><span class="meta">node_id</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="meta">addr</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -441,11 +440,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="field.spec.html" title="__Field - Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.">__Field<em>Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.</em></a><li><li><a href="inputvalue.spec.html" title="__InputValue - Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.">__InputValue<em>Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.</em></a><li><li><a href="schema.spec.html" title="__Schema - A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.">__Schema<em>A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.</em></a><li><li><a href="type.spec.html" title="__Type - The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
-
-Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.">__Type<em>The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
-
-Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.</em></a><li></ul>
+        <ul class="require-by"><li><a href="raftstate.doc.html" title="RaftState - RaftState returns information about the raft cluster">RaftState<em>RaftState returns information about the raft cluster</em></a><li></ul>
     </div>
 </section>
 <footer>

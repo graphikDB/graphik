@@ -2,6 +2,7 @@ package raft
 
 import (
 	"fmt"
+	"github.com/graphikDB/graphik/logger"
 	"github.com/graphikDB/graphik/raft/fsm"
 	"github.com/graphikDB/graphik/raft/storage"
 	"github.com/hashicorp/raft"
@@ -24,6 +25,8 @@ func NewRaft(fsm *fsm.FSM, opts ...Opt) (*Raft, error) {
 		o(options)
 	}
 	options.setDefaults()
+	fmt.Println(options.raftDir)
+	fmt.Println(options.peerID)
 	config := raft.DefaultConfig()
 	config.LocalID = raft.ServerID(options.peerID)
 	addr, err := net.ResolveTCPAddr("tcp", options.listenAddr)
@@ -48,10 +51,34 @@ func NewRaft(fsm *fsm.FSM, opts ...Opt) (*Raft, error) {
 	if err != nil {
 		return nil, err
 	}
+	if options.isLeader {
+		configuration := raft.Configuration{
+			Servers: []raft.Server{
+				{
+					ID:      config.LocalID,
+					Address: transport.LocalAddr(),
+				},
+			},
+		}
+		logger.Info("bootstrapping raft cluster as leader")
+		ra.BootstrapCluster(configuration)
+	}
 	return &Raft{
 		opts: options,
 		raft: ra,
 	}, nil
+}
+
+func (r *Raft) State() raft.RaftState {
+	return r.raft.State()
+}
+
+func (s *Raft) Servers() ([]raft.Server, error) {
+	configFuture := s.raft.GetConfiguration()
+	if err := configFuture.Error(); err != nil {
+		return nil, err
+	}
+	return configFuture.Configuration().Servers, nil
 }
 
 func (s *Raft) Join(nodeID, addr string) error {

@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"os"
@@ -76,4 +77,9 @@ func Uint64ToBytes(u uint64) []byte {
 	buf := make([]byte, 8)
 	binary.BigEndian.PutUint64(buf, u)
 	return buf
+}
+
+func JSONString(obj interface{}) string {
+	bits, _ := json.MarshalIndent(obj, "", "    ")
+	return string(bits)
 }

@@ -82,6 +82,8 @@ service DatabaseService {
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
   rpc SeedConnections(stream Connection) returns(google.protobuf.Empty){}
+  rpc AddPeer(Peer) returns(google.protobuf.Empty){}
+  rpc ClusterState(google.protobuf.Empty) returns(RaftState) {}
 }
 
 enum Algorithm {
@@ -98,6 +100,14 @@ enum Aggregate {
   MAX =3;
   MIN =4;
   PROD =5;
+}
+
+enum Membership {
+  UNKNOWN = 0;
+  FOLLOWER = 1;
+  CANDIDATE =2;
+  LEADER =3;
+  SHUTDOWN =4;
 }
 
 // Ref describes a doc/connection type & id
@@ -395,6 +405,7 @@ message Flags {
   string playground_redirect =13;
   bool require_request_authorizers =15;
   bool require_response_authorizers =16;
+  string join_raft = 17;
 }
 
 // Boolean is a simple boolean value
@@ -459,7 +470,7 @@ message Message {
   Ref user =3 [(validator.field) = {msg_exists : true}];
   // timestamp is when the message was sent
   google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
-  string method = 5[(validator.field) = {regex : "^.{1,225}$"}];
+  string method = 5 [(validator.field) = {regex : "^.{1,225}$"}];
 }
 
 // Schema returns registered connection & doc types
@@ -478,4 +489,27 @@ message ExprFilter {
   string expression =1;
 }
 
+message RaftCommand {
+  Doc user =1;
+  string method =2;
+  repeated Doc set_docs =3;
+  repeated Connection set_connections=4;
+  repeated Ref del_docs =5;
+  repeated Ref del_connections =6;
+  Indexes set_indexes =7;
+  Authorizers set_authorizers =8;
+  TypeValidators set_type_validators =9;
+  Message send_message=10;
+}
 
+message Peer {
+  string node_id =1[(validator.field) = {regex : "^.{1,225}$"}];
+  string addr =2[(validator.field) = {regex : "^.{1,225}$"}];
+}
+
+message RaftState {
+  string leader =1;
+  Membership membership =2;
+  repeated Peer peers =3;
+  map<string,string> stats =4;
+}

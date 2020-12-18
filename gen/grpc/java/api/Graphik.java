@@ -262,6 +262,131 @@ public final class Graphik {
     // @@protoc_insertion_point(enum_scope:api.Aggregate)
   }
 
+  /**
+   * Protobuf enum {@code api.Membership}
+   */
+  public enum Membership
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>UNKNOWN = 0;</code>
+     */
+    UNKNOWN(0),
+    /**
+     * <code>FOLLOWER = 1;</code>
+     */
+    FOLLOWER(1),
+    /**
+     * <code>CANDIDATE = 2;</code>
+     */
+    CANDIDATE(2),
+    /**
+     * <code>LEADER = 3;</code>
+     */
+    LEADER(3),
+    /**
+     * <code>SHUTDOWN = 4;</code>
+     */
+    SHUTDOWN(4),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>UNKNOWN = 0;</code>
+     */
+    public static final int UNKNOWN_VALUE = 0;
+    /**
+     * <code>FOLLOWER = 1;</code>
+     */
+    public static final int FOLLOWER_VALUE = 1;
+    /**
+     * <code>CANDIDATE = 2;</code>
+     */
+    public static final int CANDIDATE_VALUE = 2;
+    /**
+     * <code>LEADER = 3;</code>
+     */
+    public static final int LEADER_VALUE = 3;
+    /**
+     * <code>SHUTDOWN = 4;</code>
+     */
+    public static final int SHUTDOWN_VALUE = 4;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static Membership valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static Membership forNumber(int value) {
+      switch (value) {
+        case 0: return UNKNOWN;
+        case 1: return FOLLOWER;
+        case 2: return CANDIDATE;
+        case 3: return LEADER;
+        case 4: return SHUTDOWN;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<Membership>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        Membership> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Membership>() {
+            public Membership findValueByNumber(int number) {
+              return Membership.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return api.Graphik.getDescriptor().getEnumTypes().get(2);
+    }
+
+    private static final Membership[] VALUES = values();
+
+    public static Membership valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private Membership(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:api.Membership)
+  }
+
   public interface RefOrBuilder extends
       // @@protoc_insertion_point(interface_extends:api.Ref)
       com.google.protobuf.MessageOrBuilder {
@@ -31349,6 +31474,16 @@ public final class Graphik {
      * <code>bool require_response_authorizers = 16;</code>
      */
     boolean getRequireResponseAuthorizers();
+
+    /**
+     * <code>string join_raft = 17;</code>
+     */
+    java.lang.String getJoinRaft();
+    /**
+     * <code>string join_raft = 17;</code>
+     */
+    com.google.protobuf.ByteString
+        getJoinRaftBytes();
   }
   /**
    * Protobuf type {@code api.Flags}
@@ -31377,6 +31512,7 @@ public final class Graphik {
       playgroundRedirect_ = "";
       requireRequestAuthorizers_ = false;
       requireResponseAuthorizers_ = false;
+      joinRaft_ = "";
     }
 
     @java.lang.Override
@@ -31494,6 +31630,12 @@ public final class Graphik {
             case 128: {
 
               requireResponseAuthorizers_ = input.readBool();
+              break;
+            }
+            case 138: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              joinRaft_ = s;
               break;
             }
             default: {
@@ -32006,6 +32148,40 @@ public final class Graphik {
       return requireResponseAuthorizers_;
     }
 
+    public static final int JOIN_RAFT_FIELD_NUMBER = 17;
+    private volatile java.lang.Object joinRaft_;
+    /**
+     * <code>string join_raft = 17;</code>
+     */
+    public java.lang.String getJoinRaft() {
+      java.lang.Object ref = joinRaft_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        joinRaft_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string join_raft = 17;</code>
+     */
+    public com.google.protobuf.ByteString
+        getJoinRaftBytes() {
+      java.lang.Object ref = joinRaft_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        joinRaft_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -32061,6 +32237,9 @@ public final class Graphik {
       }
       if (requireResponseAuthorizers_ != false) {
         output.writeBool(16, requireResponseAuthorizers_);
+      }
+      if (!getJoinRaftBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 17, joinRaft_);
       }
       unknownFields.writeTo(output);
     }
@@ -32136,6 +32315,9 @@ public final class Graphik {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(16, requireResponseAuthorizers_);
       }
+      if (!getJoinRaftBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(17, joinRaft_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -32180,6 +32362,8 @@ public final class Graphik {
           == other.getRequireRequestAuthorizers());
       result = result && (getRequireResponseAuthorizers()
           == other.getRequireResponseAuthorizers());
+      result = result && getJoinRaft()
+          .equals(other.getJoinRaft());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -32230,6 +32414,8 @@ public final class Graphik {
       hash = (37 * hash) + REQUIRE_RESPONSE_AUTHORIZERS_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getRequireResponseAuthorizers());
+      hash = (37 * hash) + JOIN_RAFT_FIELD_NUMBER;
+      hash = (53 * hash) + getJoinRaft().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -32391,6 +32577,8 @@ public final class Graphik {
 
         requireResponseAuthorizers_ = false;
 
+        joinRaft_ = "";
+
         return this;
       }
 
@@ -32449,6 +32637,7 @@ public final class Graphik {
         result.playgroundRedirect_ = playgroundRedirect_;
         result.requireRequestAuthorizers_ = requireRequestAuthorizers_;
         result.requireResponseAuthorizers_ = requireResponseAuthorizers_;
+        result.joinRaft_ = joinRaft_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -32574,6 +32763,10 @@ public final class Graphik {
         }
         if (other.getRequireResponseAuthorizers() != false) {
           setRequireResponseAuthorizers(other.getRequireResponseAuthorizers());
+        }
+        if (!other.getJoinRaft().isEmpty()) {
+          joinRaft_ = other.joinRaft_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -33734,6 +33927,75 @@ public final class Graphik {
       public Builder clearRequireResponseAuthorizers() {
         
         requireResponseAuthorizers_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object joinRaft_ = "";
+      /**
+       * <code>string join_raft = 17;</code>
+       */
+      public java.lang.String getJoinRaft() {
+        java.lang.Object ref = joinRaft_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          joinRaft_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string join_raft = 17;</code>
+       */
+      public com.google.protobuf.ByteString
+          getJoinRaftBytes() {
+        java.lang.Object ref = joinRaft_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          joinRaft_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string join_raft = 17;</code>
+       */
+      public Builder setJoinRaft(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        joinRaft_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string join_raft = 17;</code>
+       */
+      public Builder clearJoinRaft() {
+        
+        joinRaft_ = getDefaultInstance().getJoinRaft();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string join_raft = 17;</code>
+       */
+      public Builder setJoinRaftBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        joinRaft_ = value;
         onChanged();
         return this;
       }
@@ -42788,6 +43050,5009 @@ public final class Graphik {
 
   }
 
+  public interface RaftCommandOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.RaftCommand)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.api.Doc user = 1;</code>
+     */
+    boolean hasUser();
+    /**
+     * <code>.api.Doc user = 1;</code>
+     */
+    api.Graphik.Doc getUser();
+    /**
+     * <code>.api.Doc user = 1;</code>
+     */
+    api.Graphik.DocOrBuilder getUserOrBuilder();
+
+    /**
+     * <code>string method = 2;</code>
+     */
+    java.lang.String getMethod();
+    /**
+     * <code>string method = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMethodBytes();
+
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    java.util.List<api.Graphik.Doc> 
+        getSetDocsList();
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    api.Graphik.Doc getSetDocs(int index);
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    int getSetDocsCount();
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    java.util.List<? extends api.Graphik.DocOrBuilder> 
+        getSetDocsOrBuilderList();
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    api.Graphik.DocOrBuilder getSetDocsOrBuilder(
+        int index);
+
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    java.util.List<api.Graphik.Connection> 
+        getSetConnectionsList();
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    api.Graphik.Connection getSetConnections(int index);
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    int getSetConnectionsCount();
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    java.util.List<? extends api.Graphik.ConnectionOrBuilder> 
+        getSetConnectionsOrBuilderList();
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    api.Graphik.ConnectionOrBuilder getSetConnectionsOrBuilder(
+        int index);
+
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    java.util.List<api.Graphik.Ref> 
+        getDelDocsList();
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    api.Graphik.Ref getDelDocs(int index);
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    int getDelDocsCount();
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    java.util.List<? extends api.Graphik.RefOrBuilder> 
+        getDelDocsOrBuilderList();
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    api.Graphik.RefOrBuilder getDelDocsOrBuilder(
+        int index);
+
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    java.util.List<api.Graphik.Ref> 
+        getDelConnectionsList();
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    api.Graphik.Ref getDelConnections(int index);
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    int getDelConnectionsCount();
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    java.util.List<? extends api.Graphik.RefOrBuilder> 
+        getDelConnectionsOrBuilderList();
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    api.Graphik.RefOrBuilder getDelConnectionsOrBuilder(
+        int index);
+
+    /**
+     * <code>.api.Indexes set_indexes = 7;</code>
+     */
+    boolean hasSetIndexes();
+    /**
+     * <code>.api.Indexes set_indexes = 7;</code>
+     */
+    api.Graphik.Indexes getSetIndexes();
+    /**
+     * <code>.api.Indexes set_indexes = 7;</code>
+     */
+    api.Graphik.IndexesOrBuilder getSetIndexesOrBuilder();
+
+    /**
+     * <code>.api.Authorizers set_authorizers = 8;</code>
+     */
+    boolean hasSetAuthorizers();
+    /**
+     * <code>.api.Authorizers set_authorizers = 8;</code>
+     */
+    api.Graphik.Authorizers getSetAuthorizers();
+    /**
+     * <code>.api.Authorizers set_authorizers = 8;</code>
+     */
+    api.Graphik.AuthorizersOrBuilder getSetAuthorizersOrBuilder();
+
+    /**
+     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     */
+    boolean hasSetTypeValidators();
+    /**
+     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     */
+    api.Graphik.TypeValidators getSetTypeValidators();
+    /**
+     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     */
+    api.Graphik.TypeValidatorsOrBuilder getSetTypeValidatorsOrBuilder();
+
+    /**
+     * <code>.api.Message send_message = 10;</code>
+     */
+    boolean hasSendMessage();
+    /**
+     * <code>.api.Message send_message = 10;</code>
+     */
+    api.Graphik.Message getSendMessage();
+    /**
+     * <code>.api.Message send_message = 10;</code>
+     */
+    api.Graphik.MessageOrBuilder getSendMessageOrBuilder();
+  }
+  /**
+   * Protobuf type {@code api.RaftCommand}
+   */
+  public  static final class RaftCommand extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:api.RaftCommand)
+      RaftCommandOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use RaftCommand.newBuilder() to construct.
+    private RaftCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private RaftCommand() {
+      method_ = "";
+      setDocs_ = java.util.Collections.emptyList();
+      setConnections_ = java.util.Collections.emptyList();
+      delDocs_ = java.util.Collections.emptyList();
+      delConnections_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private RaftCommand(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              api.Graphik.Doc.Builder subBuilder = null;
+              if (user_ != null) {
+                subBuilder = user_.toBuilder();
+              }
+              user_ = input.readMessage(api.Graphik.Doc.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(user_);
+                user_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              method_ = s;
+              break;
+            }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                setDocs_ = new java.util.ArrayList<api.Graphik.Doc>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              setDocs_.add(
+                  input.readMessage(api.Graphik.Doc.parser(), extensionRegistry));
+              break;
+            }
+            case 34: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                setConnections_ = new java.util.ArrayList<api.Graphik.Connection>();
+                mutable_bitField0_ |= 0x00000008;
+              }
+              setConnections_.add(
+                  input.readMessage(api.Graphik.Connection.parser(), extensionRegistry));
+              break;
+            }
+            case 42: {
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                delDocs_ = new java.util.ArrayList<api.Graphik.Ref>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              delDocs_.add(
+                  input.readMessage(api.Graphik.Ref.parser(), extensionRegistry));
+              break;
+            }
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                delConnections_ = new java.util.ArrayList<api.Graphik.Ref>();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              delConnections_.add(
+                  input.readMessage(api.Graphik.Ref.parser(), extensionRegistry));
+              break;
+            }
+            case 58: {
+              api.Graphik.Indexes.Builder subBuilder = null;
+              if (setIndexes_ != null) {
+                subBuilder = setIndexes_.toBuilder();
+              }
+              setIndexes_ = input.readMessage(api.Graphik.Indexes.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(setIndexes_);
+                setIndexes_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 66: {
+              api.Graphik.Authorizers.Builder subBuilder = null;
+              if (setAuthorizers_ != null) {
+                subBuilder = setAuthorizers_.toBuilder();
+              }
+              setAuthorizers_ = input.readMessage(api.Graphik.Authorizers.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(setAuthorizers_);
+                setAuthorizers_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 74: {
+              api.Graphik.TypeValidators.Builder subBuilder = null;
+              if (setTypeValidators_ != null) {
+                subBuilder = setTypeValidators_.toBuilder();
+              }
+              setTypeValidators_ = input.readMessage(api.Graphik.TypeValidators.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(setTypeValidators_);
+                setTypeValidators_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 82: {
+              api.Graphik.Message.Builder subBuilder = null;
+              if (sendMessage_ != null) {
+                subBuilder = sendMessage_.toBuilder();
+              }
+              sendMessage_ = input.readMessage(api.Graphik.Message.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(sendMessage_);
+                sendMessage_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          setDocs_ = java.util.Collections.unmodifiableList(setDocs_);
+        }
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+          setConnections_ = java.util.Collections.unmodifiableList(setConnections_);
+        }
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+          delDocs_ = java.util.Collections.unmodifiableList(delDocs_);
+        }
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          delConnections_ = java.util.Collections.unmodifiableList(delConnections_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return api.Graphik.internal_static_api_RaftCommand_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return api.Graphik.internal_static_api_RaftCommand_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              api.Graphik.RaftCommand.class, api.Graphik.RaftCommand.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int USER_FIELD_NUMBER = 1;
+    private api.Graphik.Doc user_;
+    /**
+     * <code>.api.Doc user = 1;</code>
+     */
+    public boolean hasUser() {
+      return user_ != null;
+    }
+    /**
+     * <code>.api.Doc user = 1;</code>
+     */
+    public api.Graphik.Doc getUser() {
+      return user_ == null ? api.Graphik.Doc.getDefaultInstance() : user_;
+    }
+    /**
+     * <code>.api.Doc user = 1;</code>
+     */
+    public api.Graphik.DocOrBuilder getUserOrBuilder() {
+      return getUser();
+    }
+
+    public static final int METHOD_FIELD_NUMBER = 2;
+    private volatile java.lang.Object method_;
+    /**
+     * <code>string method = 2;</code>
+     */
+    public java.lang.String getMethod() {
+      java.lang.Object ref = method_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        method_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string method = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMethodBytes() {
+      java.lang.Object ref = method_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        method_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int SET_DOCS_FIELD_NUMBER = 3;
+    private java.util.List<api.Graphik.Doc> setDocs_;
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    public java.util.List<api.Graphik.Doc> getSetDocsList() {
+      return setDocs_;
+    }
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    public java.util.List<? extends api.Graphik.DocOrBuilder> 
+        getSetDocsOrBuilderList() {
+      return setDocs_;
+    }
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    public int getSetDocsCount() {
+      return setDocs_.size();
+    }
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    public api.Graphik.Doc getSetDocs(int index) {
+      return setDocs_.get(index);
+    }
+    /**
+     * <code>repeated .api.Doc set_docs = 3;</code>
+     */
+    public api.Graphik.DocOrBuilder getSetDocsOrBuilder(
+        int index) {
+      return setDocs_.get(index);
+    }
+
+    public static final int SET_CONNECTIONS_FIELD_NUMBER = 4;
+    private java.util.List<api.Graphik.Connection> setConnections_;
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    public java.util.List<api.Graphik.Connection> getSetConnectionsList() {
+      return setConnections_;
+    }
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    public java.util.List<? extends api.Graphik.ConnectionOrBuilder> 
+        getSetConnectionsOrBuilderList() {
+      return setConnections_;
+    }
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    public int getSetConnectionsCount() {
+      return setConnections_.size();
+    }
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    public api.Graphik.Connection getSetConnections(int index) {
+      return setConnections_.get(index);
+    }
+    /**
+     * <code>repeated .api.Connection set_connections = 4;</code>
+     */
+    public api.Graphik.ConnectionOrBuilder getSetConnectionsOrBuilder(
+        int index) {
+      return setConnections_.get(index);
+    }
+
+    public static final int DEL_DOCS_FIELD_NUMBER = 5;
+    private java.util.List<api.Graphik.Ref> delDocs_;
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    public java.util.List<api.Graphik.Ref> getDelDocsList() {
+      return delDocs_;
+    }
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    public java.util.List<? extends api.Graphik.RefOrBuilder> 
+        getDelDocsOrBuilderList() {
+      return delDocs_;
+    }
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    public int getDelDocsCount() {
+      return delDocs_.size();
+    }
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    public api.Graphik.Ref getDelDocs(int index) {
+      return delDocs_.get(index);
+    }
+    /**
+     * <code>repeated .api.Ref del_docs = 5;</code>
+     */
+    public api.Graphik.RefOrBuilder getDelDocsOrBuilder(
+        int index) {
+      return delDocs_.get(index);
+    }
+
+    public static final int DEL_CONNECTIONS_FIELD_NUMBER = 6;
+    private java.util.List<api.Graphik.Ref> delConnections_;
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    public java.util.List<api.Graphik.Ref> getDelConnectionsList() {
+      return delConnections_;
+    }
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    public java.util.List<? extends api.Graphik.RefOrBuilder> 
+        getDelConnectionsOrBuilderList() {
+      return delConnections_;
+    }
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    public int getDelConnectionsCount() {
+      return delConnections_.size();
+    }
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    public api.Graphik.Ref getDelConnections(int index) {
+      return delConnections_.get(index);
+    }
+    /**
+     * <code>repeated .api.Ref del_connections = 6;</code>
+     */
+    public api.Graphik.RefOrBuilder getDelConnectionsOrBuilder(
+        int index) {
+      return delConnections_.get(index);
+    }
+
+    public static final int SET_INDEXES_FIELD_NUMBER = 7;
+    private api.Graphik.Indexes setIndexes_;
+    /**
+     * <code>.api.Indexes set_indexes = 7;</code>
+     */
+    public boolean hasSetIndexes() {
+      return setIndexes_ != null;
+    }
+    /**
+     * <code>.api.Indexes set_indexes = 7;</code>
+     */
+    public api.Graphik.Indexes getSetIndexes() {
+      return setIndexes_ == null ? api.Graphik.Indexes.getDefaultInstance() : setIndexes_;
+    }
+    /**
+     * <code>.api.Indexes set_indexes = 7;</code>
+     */
+    public api.Graphik.IndexesOrBuilder getSetIndexesOrBuilder() {
+      return getSetIndexes();
+    }
+
+    public static final int SET_AUTHORIZERS_FIELD_NUMBER = 8;
+    private api.Graphik.Authorizers setAuthorizers_;
+    /**
+     * <code>.api.Authorizers set_authorizers = 8;</code>
+     */
+    public boolean hasSetAuthorizers() {
+      return setAuthorizers_ != null;
+    }
+    /**
+     * <code>.api.Authorizers set_authorizers = 8;</code>
+     */
+    public api.Graphik.Authorizers getSetAuthorizers() {
+      return setAuthorizers_ == null ? api.Graphik.Authorizers.getDefaultInstance() : setAuthorizers_;
+    }
+    /**
+     * <code>.api.Authorizers set_authorizers = 8;</code>
+     */
+    public api.Graphik.AuthorizersOrBuilder getSetAuthorizersOrBuilder() {
+      return getSetAuthorizers();
+    }
+
+    public static final int SET_TYPE_VALIDATORS_FIELD_NUMBER = 9;
+    private api.Graphik.TypeValidators setTypeValidators_;
+    /**
+     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     */
+    public boolean hasSetTypeValidators() {
+      return setTypeValidators_ != null;
+    }
+    /**
+     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     */
+    public api.Graphik.TypeValidators getSetTypeValidators() {
+      return setTypeValidators_ == null ? api.Graphik.TypeValidators.getDefaultInstance() : setTypeValidators_;
+    }
+    /**
+     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     */
+    public api.Graphik.TypeValidatorsOrBuilder getSetTypeValidatorsOrBuilder() {
+      return getSetTypeValidators();
+    }
+
+    public static final int SEND_MESSAGE_FIELD_NUMBER = 10;
+    private api.Graphik.Message sendMessage_;
+    /**
+     * <code>.api.Message send_message = 10;</code>
+     */
+    public boolean hasSendMessage() {
+      return sendMessage_ != null;
+    }
+    /**
+     * <code>.api.Message send_message = 10;</code>
+     */
+    public api.Graphik.Message getSendMessage() {
+      return sendMessage_ == null ? api.Graphik.Message.getDefaultInstance() : sendMessage_;
+    }
+    /**
+     * <code>.api.Message send_message = 10;</code>
+     */
+    public api.Graphik.MessageOrBuilder getSendMessageOrBuilder() {
+      return getSendMessage();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (user_ != null) {
+        output.writeMessage(1, getUser());
+      }
+      if (!getMethodBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, method_);
+      }
+      for (int i = 0; i < setDocs_.size(); i++) {
+        output.writeMessage(3, setDocs_.get(i));
+      }
+      for (int i = 0; i < setConnections_.size(); i++) {
+        output.writeMessage(4, setConnections_.get(i));
+      }
+      for (int i = 0; i < delDocs_.size(); i++) {
+        output.writeMessage(5, delDocs_.get(i));
+      }
+      for (int i = 0; i < delConnections_.size(); i++) {
+        output.writeMessage(6, delConnections_.get(i));
+      }
+      if (setIndexes_ != null) {
+        output.writeMessage(7, getSetIndexes());
+      }
+      if (setAuthorizers_ != null) {
+        output.writeMessage(8, getSetAuthorizers());
+      }
+      if (setTypeValidators_ != null) {
+        output.writeMessage(9, getSetTypeValidators());
+      }
+      if (sendMessage_ != null) {
+        output.writeMessage(10, getSendMessage());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (user_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getUser());
+      }
+      if (!getMethodBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, method_);
+      }
+      for (int i = 0; i < setDocs_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, setDocs_.get(i));
+      }
+      for (int i = 0; i < setConnections_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, setConnections_.get(i));
+      }
+      for (int i = 0; i < delDocs_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, delDocs_.get(i));
+      }
+      for (int i = 0; i < delConnections_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, delConnections_.get(i));
+      }
+      if (setIndexes_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, getSetIndexes());
+      }
+      if (setAuthorizers_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(8, getSetAuthorizers());
+      }
+      if (setTypeValidators_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(9, getSetTypeValidators());
+      }
+      if (sendMessage_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, getSendMessage());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof api.Graphik.RaftCommand)) {
+        return super.equals(obj);
+      }
+      api.Graphik.RaftCommand other = (api.Graphik.RaftCommand) obj;
+
+      boolean result = true;
+      result = result && (hasUser() == other.hasUser());
+      if (hasUser()) {
+        result = result && getUser()
+            .equals(other.getUser());
+      }
+      result = result && getMethod()
+          .equals(other.getMethod());
+      result = result && getSetDocsList()
+          .equals(other.getSetDocsList());
+      result = result && getSetConnectionsList()
+          .equals(other.getSetConnectionsList());
+      result = result && getDelDocsList()
+          .equals(other.getDelDocsList());
+      result = result && getDelConnectionsList()
+          .equals(other.getDelConnectionsList());
+      result = result && (hasSetIndexes() == other.hasSetIndexes());
+      if (hasSetIndexes()) {
+        result = result && getSetIndexes()
+            .equals(other.getSetIndexes());
+      }
+      result = result && (hasSetAuthorizers() == other.hasSetAuthorizers());
+      if (hasSetAuthorizers()) {
+        result = result && getSetAuthorizers()
+            .equals(other.getSetAuthorizers());
+      }
+      result = result && (hasSetTypeValidators() == other.hasSetTypeValidators());
+      if (hasSetTypeValidators()) {
+        result = result && getSetTypeValidators()
+            .equals(other.getSetTypeValidators());
+      }
+      result = result && (hasSendMessage() == other.hasSendMessage());
+      if (hasSendMessage()) {
+        result = result && getSendMessage()
+            .equals(other.getSendMessage());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasUser()) {
+        hash = (37 * hash) + USER_FIELD_NUMBER;
+        hash = (53 * hash) + getUser().hashCode();
+      }
+      hash = (37 * hash) + METHOD_FIELD_NUMBER;
+      hash = (53 * hash) + getMethod().hashCode();
+      if (getSetDocsCount() > 0) {
+        hash = (37 * hash) + SET_DOCS_FIELD_NUMBER;
+        hash = (53 * hash) + getSetDocsList().hashCode();
+      }
+      if (getSetConnectionsCount() > 0) {
+        hash = (37 * hash) + SET_CONNECTIONS_FIELD_NUMBER;
+        hash = (53 * hash) + getSetConnectionsList().hashCode();
+      }
+      if (getDelDocsCount() > 0) {
+        hash = (37 * hash) + DEL_DOCS_FIELD_NUMBER;
+        hash = (53 * hash) + getDelDocsList().hashCode();
+      }
+      if (getDelConnectionsCount() > 0) {
+        hash = (37 * hash) + DEL_CONNECTIONS_FIELD_NUMBER;
+        hash = (53 * hash) + getDelConnectionsList().hashCode();
+      }
+      if (hasSetIndexes()) {
+        hash = (37 * hash) + SET_INDEXES_FIELD_NUMBER;
+        hash = (53 * hash) + getSetIndexes().hashCode();
+      }
+      if (hasSetAuthorizers()) {
+        hash = (37 * hash) + SET_AUTHORIZERS_FIELD_NUMBER;
+        hash = (53 * hash) + getSetAuthorizers().hashCode();
+      }
+      if (hasSetTypeValidators()) {
+        hash = (37 * hash) + SET_TYPE_VALIDATORS_FIELD_NUMBER;
+        hash = (53 * hash) + getSetTypeValidators().hashCode();
+      }
+      if (hasSendMessage()) {
+        hash = (37 * hash) + SEND_MESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getSendMessage().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static api.Graphik.RaftCommand parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.RaftCommand parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.RaftCommand parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.RaftCommand parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.RaftCommand parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.RaftCommand parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.RaftCommand parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.RaftCommand parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.RaftCommand parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static api.Graphik.RaftCommand parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.RaftCommand parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.RaftCommand parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(api.Graphik.RaftCommand prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code api.RaftCommand}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:api.RaftCommand)
+        api.Graphik.RaftCommandOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return api.Graphik.internal_static_api_RaftCommand_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return api.Graphik.internal_static_api_RaftCommand_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                api.Graphik.RaftCommand.class, api.Graphik.RaftCommand.Builder.class);
+      }
+
+      // Construct using api.Graphik.RaftCommand.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getSetDocsFieldBuilder();
+          getSetConnectionsFieldBuilder();
+          getDelDocsFieldBuilder();
+          getDelConnectionsFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (userBuilder_ == null) {
+          user_ = null;
+        } else {
+          user_ = null;
+          userBuilder_ = null;
+        }
+        method_ = "";
+
+        if (setDocsBuilder_ == null) {
+          setDocs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        } else {
+          setDocsBuilder_.clear();
+        }
+        if (setConnectionsBuilder_ == null) {
+          setConnections_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+        } else {
+          setConnectionsBuilder_.clear();
+        }
+        if (delDocsBuilder_ == null) {
+          delDocs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          delDocsBuilder_.clear();
+        }
+        if (delConnectionsBuilder_ == null) {
+          delConnections_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+        } else {
+          delConnectionsBuilder_.clear();
+        }
+        if (setIndexesBuilder_ == null) {
+          setIndexes_ = null;
+        } else {
+          setIndexes_ = null;
+          setIndexesBuilder_ = null;
+        }
+        if (setAuthorizersBuilder_ == null) {
+          setAuthorizers_ = null;
+        } else {
+          setAuthorizers_ = null;
+          setAuthorizersBuilder_ = null;
+        }
+        if (setTypeValidatorsBuilder_ == null) {
+          setTypeValidators_ = null;
+        } else {
+          setTypeValidators_ = null;
+          setTypeValidatorsBuilder_ = null;
+        }
+        if (sendMessageBuilder_ == null) {
+          sendMessage_ = null;
+        } else {
+          sendMessage_ = null;
+          sendMessageBuilder_ = null;
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return api.Graphik.internal_static_api_RaftCommand_descriptor;
+      }
+
+      @java.lang.Override
+      public api.Graphik.RaftCommand getDefaultInstanceForType() {
+        return api.Graphik.RaftCommand.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public api.Graphik.RaftCommand build() {
+        api.Graphik.RaftCommand result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public api.Graphik.RaftCommand buildPartial() {
+        api.Graphik.RaftCommand result = new api.Graphik.RaftCommand(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (userBuilder_ == null) {
+          result.user_ = user_;
+        } else {
+          result.user_ = userBuilder_.build();
+        }
+        result.method_ = method_;
+        if (setDocsBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            setDocs_ = java.util.Collections.unmodifiableList(setDocs_);
+            bitField0_ = (bitField0_ & ~0x00000004);
+          }
+          result.setDocs_ = setDocs_;
+        } else {
+          result.setDocs_ = setDocsBuilder_.build();
+        }
+        if (setConnectionsBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+            setConnections_ = java.util.Collections.unmodifiableList(setConnections_);
+            bitField0_ = (bitField0_ & ~0x00000008);
+          }
+          result.setConnections_ = setConnections_;
+        } else {
+          result.setConnections_ = setConnectionsBuilder_.build();
+        }
+        if (delDocsBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            delDocs_ = java.util.Collections.unmodifiableList(delDocs_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.delDocs_ = delDocs_;
+        } else {
+          result.delDocs_ = delDocsBuilder_.build();
+        }
+        if (delConnectionsBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+            delConnections_ = java.util.Collections.unmodifiableList(delConnections_);
+            bitField0_ = (bitField0_ & ~0x00000020);
+          }
+          result.delConnections_ = delConnections_;
+        } else {
+          result.delConnections_ = delConnectionsBuilder_.build();
+        }
+        if (setIndexesBuilder_ == null) {
+          result.setIndexes_ = setIndexes_;
+        } else {
+          result.setIndexes_ = setIndexesBuilder_.build();
+        }
+        if (setAuthorizersBuilder_ == null) {
+          result.setAuthorizers_ = setAuthorizers_;
+        } else {
+          result.setAuthorizers_ = setAuthorizersBuilder_.build();
+        }
+        if (setTypeValidatorsBuilder_ == null) {
+          result.setTypeValidators_ = setTypeValidators_;
+        } else {
+          result.setTypeValidators_ = setTypeValidatorsBuilder_.build();
+        }
+        if (sendMessageBuilder_ == null) {
+          result.sendMessage_ = sendMessage_;
+        } else {
+          result.sendMessage_ = sendMessageBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof api.Graphik.RaftCommand) {
+          return mergeFrom((api.Graphik.RaftCommand)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(api.Graphik.RaftCommand other) {
+        if (other == api.Graphik.RaftCommand.getDefaultInstance()) return this;
+        if (other.hasUser()) {
+          mergeUser(other.getUser());
+        }
+        if (!other.getMethod().isEmpty()) {
+          method_ = other.method_;
+          onChanged();
+        }
+        if (setDocsBuilder_ == null) {
+          if (!other.setDocs_.isEmpty()) {
+            if (setDocs_.isEmpty()) {
+              setDocs_ = other.setDocs_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+            } else {
+              ensureSetDocsIsMutable();
+              setDocs_.addAll(other.setDocs_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.setDocs_.isEmpty()) {
+            if (setDocsBuilder_.isEmpty()) {
+              setDocsBuilder_.dispose();
+              setDocsBuilder_ = null;
+              setDocs_ = other.setDocs_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+              setDocsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getSetDocsFieldBuilder() : null;
+            } else {
+              setDocsBuilder_.addAllMessages(other.setDocs_);
+            }
+          }
+        }
+        if (setConnectionsBuilder_ == null) {
+          if (!other.setConnections_.isEmpty()) {
+            if (setConnections_.isEmpty()) {
+              setConnections_ = other.setConnections_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+            } else {
+              ensureSetConnectionsIsMutable();
+              setConnections_.addAll(other.setConnections_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.setConnections_.isEmpty()) {
+            if (setConnectionsBuilder_.isEmpty()) {
+              setConnectionsBuilder_.dispose();
+              setConnectionsBuilder_ = null;
+              setConnections_ = other.setConnections_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+              setConnectionsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getSetConnectionsFieldBuilder() : null;
+            } else {
+              setConnectionsBuilder_.addAllMessages(other.setConnections_);
+            }
+          }
+        }
+        if (delDocsBuilder_ == null) {
+          if (!other.delDocs_.isEmpty()) {
+            if (delDocs_.isEmpty()) {
+              delDocs_ = other.delDocs_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureDelDocsIsMutable();
+              delDocs_.addAll(other.delDocs_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.delDocs_.isEmpty()) {
+            if (delDocsBuilder_.isEmpty()) {
+              delDocsBuilder_.dispose();
+              delDocsBuilder_ = null;
+              delDocs_ = other.delDocs_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              delDocsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getDelDocsFieldBuilder() : null;
+            } else {
+              delDocsBuilder_.addAllMessages(other.delDocs_);
+            }
+          }
+        }
+        if (delConnectionsBuilder_ == null) {
+          if (!other.delConnections_.isEmpty()) {
+            if (delConnections_.isEmpty()) {
+              delConnections_ = other.delConnections_;
+              bitField0_ = (bitField0_ & ~0x00000020);
+            } else {
+              ensureDelConnectionsIsMutable();
+              delConnections_.addAll(other.delConnections_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.delConnections_.isEmpty()) {
+            if (delConnectionsBuilder_.isEmpty()) {
+              delConnectionsBuilder_.dispose();
+              delConnectionsBuilder_ = null;
+              delConnections_ = other.delConnections_;
+              bitField0_ = (bitField0_ & ~0x00000020);
+              delConnectionsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getDelConnectionsFieldBuilder() : null;
+            } else {
+              delConnectionsBuilder_.addAllMessages(other.delConnections_);
+            }
+          }
+        }
+        if (other.hasSetIndexes()) {
+          mergeSetIndexes(other.getSetIndexes());
+        }
+        if (other.hasSetAuthorizers()) {
+          mergeSetAuthorizers(other.getSetAuthorizers());
+        }
+        if (other.hasSetTypeValidators()) {
+          mergeSetTypeValidators(other.getSetTypeValidators());
+        }
+        if (other.hasSendMessage()) {
+          mergeSendMessage(other.getSendMessage());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        api.Graphik.RaftCommand parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (api.Graphik.RaftCommand) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private api.Graphik.Doc user_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder> userBuilder_;
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      public boolean hasUser() {
+        return userBuilder_ != null || user_ != null;
+      }
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      public api.Graphik.Doc getUser() {
+        if (userBuilder_ == null) {
+          return user_ == null ? api.Graphik.Doc.getDefaultInstance() : user_;
+        } else {
+          return userBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      public Builder setUser(api.Graphik.Doc value) {
+        if (userBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          user_ = value;
+          onChanged();
+        } else {
+          userBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      public Builder setUser(
+          api.Graphik.Doc.Builder builderForValue) {
+        if (userBuilder_ == null) {
+          user_ = builderForValue.build();
+          onChanged();
+        } else {
+          userBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      public Builder mergeUser(api.Graphik.Doc value) {
+        if (userBuilder_ == null) {
+          if (user_ != null) {
+            user_ =
+              api.Graphik.Doc.newBuilder(user_).mergeFrom(value).buildPartial();
+          } else {
+            user_ = value;
+          }
+          onChanged();
+        } else {
+          userBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      public Builder clearUser() {
+        if (userBuilder_ == null) {
+          user_ = null;
+          onChanged();
+        } else {
+          user_ = null;
+          userBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      public api.Graphik.Doc.Builder getUserBuilder() {
+        
+        onChanged();
+        return getUserFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      public api.Graphik.DocOrBuilder getUserOrBuilder() {
+        if (userBuilder_ != null) {
+          return userBuilder_.getMessageOrBuilder();
+        } else {
+          return user_ == null ?
+              api.Graphik.Doc.getDefaultInstance() : user_;
+        }
+      }
+      /**
+       * <code>.api.Doc user = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder> 
+          getUserFieldBuilder() {
+        if (userBuilder_ == null) {
+          userBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder>(
+                  getUser(),
+                  getParentForChildren(),
+                  isClean());
+          user_ = null;
+        }
+        return userBuilder_;
+      }
+
+      private java.lang.Object method_ = "";
+      /**
+       * <code>string method = 2;</code>
+       */
+      public java.lang.String getMethod() {
+        java.lang.Object ref = method_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          method_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string method = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMethodBytes() {
+        java.lang.Object ref = method_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          method_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string method = 2;</code>
+       */
+      public Builder setMethod(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        method_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string method = 2;</code>
+       */
+      public Builder clearMethod() {
+        
+        method_ = getDefaultInstance().getMethod();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string method = 2;</code>
+       */
+      public Builder setMethodBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        method_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<api.Graphik.Doc> setDocs_ =
+        java.util.Collections.emptyList();
+      private void ensureSetDocsIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          setDocs_ = new java.util.ArrayList<api.Graphik.Doc>(setDocs_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder> setDocsBuilder_;
+
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public java.util.List<api.Graphik.Doc> getSetDocsList() {
+        if (setDocsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(setDocs_);
+        } else {
+          return setDocsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public int getSetDocsCount() {
+        if (setDocsBuilder_ == null) {
+          return setDocs_.size();
+        } else {
+          return setDocsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public api.Graphik.Doc getSetDocs(int index) {
+        if (setDocsBuilder_ == null) {
+          return setDocs_.get(index);
+        } else {
+          return setDocsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder setSetDocs(
+          int index, api.Graphik.Doc value) {
+        if (setDocsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSetDocsIsMutable();
+          setDocs_.set(index, value);
+          onChanged();
+        } else {
+          setDocsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder setSetDocs(
+          int index, api.Graphik.Doc.Builder builderForValue) {
+        if (setDocsBuilder_ == null) {
+          ensureSetDocsIsMutable();
+          setDocs_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          setDocsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder addSetDocs(api.Graphik.Doc value) {
+        if (setDocsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSetDocsIsMutable();
+          setDocs_.add(value);
+          onChanged();
+        } else {
+          setDocsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder addSetDocs(
+          int index, api.Graphik.Doc value) {
+        if (setDocsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSetDocsIsMutable();
+          setDocs_.add(index, value);
+          onChanged();
+        } else {
+          setDocsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder addSetDocs(
+          api.Graphik.Doc.Builder builderForValue) {
+        if (setDocsBuilder_ == null) {
+          ensureSetDocsIsMutable();
+          setDocs_.add(builderForValue.build());
+          onChanged();
+        } else {
+          setDocsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder addSetDocs(
+          int index, api.Graphik.Doc.Builder builderForValue) {
+        if (setDocsBuilder_ == null) {
+          ensureSetDocsIsMutable();
+          setDocs_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          setDocsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder addAllSetDocs(
+          java.lang.Iterable<? extends api.Graphik.Doc> values) {
+        if (setDocsBuilder_ == null) {
+          ensureSetDocsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, setDocs_);
+          onChanged();
+        } else {
+          setDocsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder clearSetDocs() {
+        if (setDocsBuilder_ == null) {
+          setDocs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          onChanged();
+        } else {
+          setDocsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public Builder removeSetDocs(int index) {
+        if (setDocsBuilder_ == null) {
+          ensureSetDocsIsMutable();
+          setDocs_.remove(index);
+          onChanged();
+        } else {
+          setDocsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public api.Graphik.Doc.Builder getSetDocsBuilder(
+          int index) {
+        return getSetDocsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public api.Graphik.DocOrBuilder getSetDocsOrBuilder(
+          int index) {
+        if (setDocsBuilder_ == null) {
+          return setDocs_.get(index);  } else {
+          return setDocsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public java.util.List<? extends api.Graphik.DocOrBuilder> 
+           getSetDocsOrBuilderList() {
+        if (setDocsBuilder_ != null) {
+          return setDocsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(setDocs_);
+        }
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public api.Graphik.Doc.Builder addSetDocsBuilder() {
+        return getSetDocsFieldBuilder().addBuilder(
+            api.Graphik.Doc.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public api.Graphik.Doc.Builder addSetDocsBuilder(
+          int index) {
+        return getSetDocsFieldBuilder().addBuilder(
+            index, api.Graphik.Doc.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Doc set_docs = 3;</code>
+       */
+      public java.util.List<api.Graphik.Doc.Builder> 
+           getSetDocsBuilderList() {
+        return getSetDocsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder> 
+          getSetDocsFieldBuilder() {
+        if (setDocsBuilder_ == null) {
+          setDocsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              api.Graphik.Doc, api.Graphik.Doc.Builder, api.Graphik.DocOrBuilder>(
+                  setDocs_,
+                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          setDocs_ = null;
+        }
+        return setDocsBuilder_;
+      }
+
+      private java.util.List<api.Graphik.Connection> setConnections_ =
+        java.util.Collections.emptyList();
+      private void ensureSetConnectionsIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          setConnections_ = new java.util.ArrayList<api.Graphik.Connection>(setConnections_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Connection, api.Graphik.Connection.Builder, api.Graphik.ConnectionOrBuilder> setConnectionsBuilder_;
+
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public java.util.List<api.Graphik.Connection> getSetConnectionsList() {
+        if (setConnectionsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(setConnections_);
+        } else {
+          return setConnectionsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public int getSetConnectionsCount() {
+        if (setConnectionsBuilder_ == null) {
+          return setConnections_.size();
+        } else {
+          return setConnectionsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public api.Graphik.Connection getSetConnections(int index) {
+        if (setConnectionsBuilder_ == null) {
+          return setConnections_.get(index);
+        } else {
+          return setConnectionsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder setSetConnections(
+          int index, api.Graphik.Connection value) {
+        if (setConnectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSetConnectionsIsMutable();
+          setConnections_.set(index, value);
+          onChanged();
+        } else {
+          setConnectionsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder setSetConnections(
+          int index, api.Graphik.Connection.Builder builderForValue) {
+        if (setConnectionsBuilder_ == null) {
+          ensureSetConnectionsIsMutable();
+          setConnections_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          setConnectionsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder addSetConnections(api.Graphik.Connection value) {
+        if (setConnectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSetConnectionsIsMutable();
+          setConnections_.add(value);
+          onChanged();
+        } else {
+          setConnectionsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder addSetConnections(
+          int index, api.Graphik.Connection value) {
+        if (setConnectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureSetConnectionsIsMutable();
+          setConnections_.add(index, value);
+          onChanged();
+        } else {
+          setConnectionsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder addSetConnections(
+          api.Graphik.Connection.Builder builderForValue) {
+        if (setConnectionsBuilder_ == null) {
+          ensureSetConnectionsIsMutable();
+          setConnections_.add(builderForValue.build());
+          onChanged();
+        } else {
+          setConnectionsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder addSetConnections(
+          int index, api.Graphik.Connection.Builder builderForValue) {
+        if (setConnectionsBuilder_ == null) {
+          ensureSetConnectionsIsMutable();
+          setConnections_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          setConnectionsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder addAllSetConnections(
+          java.lang.Iterable<? extends api.Graphik.Connection> values) {
+        if (setConnectionsBuilder_ == null) {
+          ensureSetConnectionsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, setConnections_);
+          onChanged();
+        } else {
+          setConnectionsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder clearSetConnections() {
+        if (setConnectionsBuilder_ == null) {
+          setConnections_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          onChanged();
+        } else {
+          setConnectionsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public Builder removeSetConnections(int index) {
+        if (setConnectionsBuilder_ == null) {
+          ensureSetConnectionsIsMutable();
+          setConnections_.remove(index);
+          onChanged();
+        } else {
+          setConnectionsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public api.Graphik.Connection.Builder getSetConnectionsBuilder(
+          int index) {
+        return getSetConnectionsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public api.Graphik.ConnectionOrBuilder getSetConnectionsOrBuilder(
+          int index) {
+        if (setConnectionsBuilder_ == null) {
+          return setConnections_.get(index);  } else {
+          return setConnectionsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public java.util.List<? extends api.Graphik.ConnectionOrBuilder> 
+           getSetConnectionsOrBuilderList() {
+        if (setConnectionsBuilder_ != null) {
+          return setConnectionsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(setConnections_);
+        }
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public api.Graphik.Connection.Builder addSetConnectionsBuilder() {
+        return getSetConnectionsFieldBuilder().addBuilder(
+            api.Graphik.Connection.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public api.Graphik.Connection.Builder addSetConnectionsBuilder(
+          int index) {
+        return getSetConnectionsFieldBuilder().addBuilder(
+            index, api.Graphik.Connection.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Connection set_connections = 4;</code>
+       */
+      public java.util.List<api.Graphik.Connection.Builder> 
+           getSetConnectionsBuilderList() {
+        return getSetConnectionsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Connection, api.Graphik.Connection.Builder, api.Graphik.ConnectionOrBuilder> 
+          getSetConnectionsFieldBuilder() {
+        if (setConnectionsBuilder_ == null) {
+          setConnectionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              api.Graphik.Connection, api.Graphik.Connection.Builder, api.Graphik.ConnectionOrBuilder>(
+                  setConnections_,
+                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  getParentForChildren(),
+                  isClean());
+          setConnections_ = null;
+        }
+        return setConnectionsBuilder_;
+      }
+
+      private java.util.List<api.Graphik.Ref> delDocs_ =
+        java.util.Collections.emptyList();
+      private void ensureDelDocsIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          delDocs_ = new java.util.ArrayList<api.Graphik.Ref>(delDocs_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder> delDocsBuilder_;
+
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public java.util.List<api.Graphik.Ref> getDelDocsList() {
+        if (delDocsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(delDocs_);
+        } else {
+          return delDocsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public int getDelDocsCount() {
+        if (delDocsBuilder_ == null) {
+          return delDocs_.size();
+        } else {
+          return delDocsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public api.Graphik.Ref getDelDocs(int index) {
+        if (delDocsBuilder_ == null) {
+          return delDocs_.get(index);
+        } else {
+          return delDocsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder setDelDocs(
+          int index, api.Graphik.Ref value) {
+        if (delDocsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDelDocsIsMutable();
+          delDocs_.set(index, value);
+          onChanged();
+        } else {
+          delDocsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder setDelDocs(
+          int index, api.Graphik.Ref.Builder builderForValue) {
+        if (delDocsBuilder_ == null) {
+          ensureDelDocsIsMutable();
+          delDocs_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          delDocsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder addDelDocs(api.Graphik.Ref value) {
+        if (delDocsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDelDocsIsMutable();
+          delDocs_.add(value);
+          onChanged();
+        } else {
+          delDocsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder addDelDocs(
+          int index, api.Graphik.Ref value) {
+        if (delDocsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDelDocsIsMutable();
+          delDocs_.add(index, value);
+          onChanged();
+        } else {
+          delDocsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder addDelDocs(
+          api.Graphik.Ref.Builder builderForValue) {
+        if (delDocsBuilder_ == null) {
+          ensureDelDocsIsMutable();
+          delDocs_.add(builderForValue.build());
+          onChanged();
+        } else {
+          delDocsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder addDelDocs(
+          int index, api.Graphik.Ref.Builder builderForValue) {
+        if (delDocsBuilder_ == null) {
+          ensureDelDocsIsMutable();
+          delDocs_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          delDocsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder addAllDelDocs(
+          java.lang.Iterable<? extends api.Graphik.Ref> values) {
+        if (delDocsBuilder_ == null) {
+          ensureDelDocsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, delDocs_);
+          onChanged();
+        } else {
+          delDocsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder clearDelDocs() {
+        if (delDocsBuilder_ == null) {
+          delDocs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          delDocsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public Builder removeDelDocs(int index) {
+        if (delDocsBuilder_ == null) {
+          ensureDelDocsIsMutable();
+          delDocs_.remove(index);
+          onChanged();
+        } else {
+          delDocsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public api.Graphik.Ref.Builder getDelDocsBuilder(
+          int index) {
+        return getDelDocsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public api.Graphik.RefOrBuilder getDelDocsOrBuilder(
+          int index) {
+        if (delDocsBuilder_ == null) {
+          return delDocs_.get(index);  } else {
+          return delDocsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public java.util.List<? extends api.Graphik.RefOrBuilder> 
+           getDelDocsOrBuilderList() {
+        if (delDocsBuilder_ != null) {
+          return delDocsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(delDocs_);
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public api.Graphik.Ref.Builder addDelDocsBuilder() {
+        return getDelDocsFieldBuilder().addBuilder(
+            api.Graphik.Ref.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public api.Graphik.Ref.Builder addDelDocsBuilder(
+          int index) {
+        return getDelDocsFieldBuilder().addBuilder(
+            index, api.Graphik.Ref.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Ref del_docs = 5;</code>
+       */
+      public java.util.List<api.Graphik.Ref.Builder> 
+           getDelDocsBuilderList() {
+        return getDelDocsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder> 
+          getDelDocsFieldBuilder() {
+        if (delDocsBuilder_ == null) {
+          delDocsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder>(
+                  delDocs_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          delDocs_ = null;
+        }
+        return delDocsBuilder_;
+      }
+
+      private java.util.List<api.Graphik.Ref> delConnections_ =
+        java.util.Collections.emptyList();
+      private void ensureDelConnectionsIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          delConnections_ = new java.util.ArrayList<api.Graphik.Ref>(delConnections_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder> delConnectionsBuilder_;
+
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public java.util.List<api.Graphik.Ref> getDelConnectionsList() {
+        if (delConnectionsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(delConnections_);
+        } else {
+          return delConnectionsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public int getDelConnectionsCount() {
+        if (delConnectionsBuilder_ == null) {
+          return delConnections_.size();
+        } else {
+          return delConnectionsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public api.Graphik.Ref getDelConnections(int index) {
+        if (delConnectionsBuilder_ == null) {
+          return delConnections_.get(index);
+        } else {
+          return delConnectionsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder setDelConnections(
+          int index, api.Graphik.Ref value) {
+        if (delConnectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDelConnectionsIsMutable();
+          delConnections_.set(index, value);
+          onChanged();
+        } else {
+          delConnectionsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder setDelConnections(
+          int index, api.Graphik.Ref.Builder builderForValue) {
+        if (delConnectionsBuilder_ == null) {
+          ensureDelConnectionsIsMutable();
+          delConnections_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          delConnectionsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder addDelConnections(api.Graphik.Ref value) {
+        if (delConnectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDelConnectionsIsMutable();
+          delConnections_.add(value);
+          onChanged();
+        } else {
+          delConnectionsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder addDelConnections(
+          int index, api.Graphik.Ref value) {
+        if (delConnectionsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureDelConnectionsIsMutable();
+          delConnections_.add(index, value);
+          onChanged();
+        } else {
+          delConnectionsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder addDelConnections(
+          api.Graphik.Ref.Builder builderForValue) {
+        if (delConnectionsBuilder_ == null) {
+          ensureDelConnectionsIsMutable();
+          delConnections_.add(builderForValue.build());
+          onChanged();
+        } else {
+          delConnectionsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder addDelConnections(
+          int index, api.Graphik.Ref.Builder builderForValue) {
+        if (delConnectionsBuilder_ == null) {
+          ensureDelConnectionsIsMutable();
+          delConnections_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          delConnectionsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder addAllDelConnections(
+          java.lang.Iterable<? extends api.Graphik.Ref> values) {
+        if (delConnectionsBuilder_ == null) {
+          ensureDelConnectionsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, delConnections_);
+          onChanged();
+        } else {
+          delConnectionsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder clearDelConnections() {
+        if (delConnectionsBuilder_ == null) {
+          delConnections_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+          onChanged();
+        } else {
+          delConnectionsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public Builder removeDelConnections(int index) {
+        if (delConnectionsBuilder_ == null) {
+          ensureDelConnectionsIsMutable();
+          delConnections_.remove(index);
+          onChanged();
+        } else {
+          delConnectionsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public api.Graphik.Ref.Builder getDelConnectionsBuilder(
+          int index) {
+        return getDelConnectionsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public api.Graphik.RefOrBuilder getDelConnectionsOrBuilder(
+          int index) {
+        if (delConnectionsBuilder_ == null) {
+          return delConnections_.get(index);  } else {
+          return delConnectionsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public java.util.List<? extends api.Graphik.RefOrBuilder> 
+           getDelConnectionsOrBuilderList() {
+        if (delConnectionsBuilder_ != null) {
+          return delConnectionsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(delConnections_);
+        }
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public api.Graphik.Ref.Builder addDelConnectionsBuilder() {
+        return getDelConnectionsFieldBuilder().addBuilder(
+            api.Graphik.Ref.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public api.Graphik.Ref.Builder addDelConnectionsBuilder(
+          int index) {
+        return getDelConnectionsFieldBuilder().addBuilder(
+            index, api.Graphik.Ref.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Ref del_connections = 6;</code>
+       */
+      public java.util.List<api.Graphik.Ref.Builder> 
+           getDelConnectionsBuilderList() {
+        return getDelConnectionsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder> 
+          getDelConnectionsFieldBuilder() {
+        if (delConnectionsBuilder_ == null) {
+          delConnectionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              api.Graphik.Ref, api.Graphik.Ref.Builder, api.Graphik.RefOrBuilder>(
+                  delConnections_,
+                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  getParentForChildren(),
+                  isClean());
+          delConnections_ = null;
+        }
+        return delConnectionsBuilder_;
+      }
+
+      private api.Graphik.Indexes setIndexes_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Indexes, api.Graphik.Indexes.Builder, api.Graphik.IndexesOrBuilder> setIndexesBuilder_;
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      public boolean hasSetIndexes() {
+        return setIndexesBuilder_ != null || setIndexes_ != null;
+      }
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      public api.Graphik.Indexes getSetIndexes() {
+        if (setIndexesBuilder_ == null) {
+          return setIndexes_ == null ? api.Graphik.Indexes.getDefaultInstance() : setIndexes_;
+        } else {
+          return setIndexesBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      public Builder setSetIndexes(api.Graphik.Indexes value) {
+        if (setIndexesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          setIndexes_ = value;
+          onChanged();
+        } else {
+          setIndexesBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      public Builder setSetIndexes(
+          api.Graphik.Indexes.Builder builderForValue) {
+        if (setIndexesBuilder_ == null) {
+          setIndexes_ = builderForValue.build();
+          onChanged();
+        } else {
+          setIndexesBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      public Builder mergeSetIndexes(api.Graphik.Indexes value) {
+        if (setIndexesBuilder_ == null) {
+          if (setIndexes_ != null) {
+            setIndexes_ =
+              api.Graphik.Indexes.newBuilder(setIndexes_).mergeFrom(value).buildPartial();
+          } else {
+            setIndexes_ = value;
+          }
+          onChanged();
+        } else {
+          setIndexesBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      public Builder clearSetIndexes() {
+        if (setIndexesBuilder_ == null) {
+          setIndexes_ = null;
+          onChanged();
+        } else {
+          setIndexes_ = null;
+          setIndexesBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      public api.Graphik.Indexes.Builder getSetIndexesBuilder() {
+        
+        onChanged();
+        return getSetIndexesFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      public api.Graphik.IndexesOrBuilder getSetIndexesOrBuilder() {
+        if (setIndexesBuilder_ != null) {
+          return setIndexesBuilder_.getMessageOrBuilder();
+        } else {
+          return setIndexes_ == null ?
+              api.Graphik.Indexes.getDefaultInstance() : setIndexes_;
+        }
+      }
+      /**
+       * <code>.api.Indexes set_indexes = 7;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Indexes, api.Graphik.Indexes.Builder, api.Graphik.IndexesOrBuilder> 
+          getSetIndexesFieldBuilder() {
+        if (setIndexesBuilder_ == null) {
+          setIndexesBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Indexes, api.Graphik.Indexes.Builder, api.Graphik.IndexesOrBuilder>(
+                  getSetIndexes(),
+                  getParentForChildren(),
+                  isClean());
+          setIndexes_ = null;
+        }
+        return setIndexesBuilder_;
+      }
+
+      private api.Graphik.Authorizers setAuthorizers_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Authorizers, api.Graphik.Authorizers.Builder, api.Graphik.AuthorizersOrBuilder> setAuthorizersBuilder_;
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      public boolean hasSetAuthorizers() {
+        return setAuthorizersBuilder_ != null || setAuthorizers_ != null;
+      }
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      public api.Graphik.Authorizers getSetAuthorizers() {
+        if (setAuthorizersBuilder_ == null) {
+          return setAuthorizers_ == null ? api.Graphik.Authorizers.getDefaultInstance() : setAuthorizers_;
+        } else {
+          return setAuthorizersBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      public Builder setSetAuthorizers(api.Graphik.Authorizers value) {
+        if (setAuthorizersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          setAuthorizers_ = value;
+          onChanged();
+        } else {
+          setAuthorizersBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      public Builder setSetAuthorizers(
+          api.Graphik.Authorizers.Builder builderForValue) {
+        if (setAuthorizersBuilder_ == null) {
+          setAuthorizers_ = builderForValue.build();
+          onChanged();
+        } else {
+          setAuthorizersBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      public Builder mergeSetAuthorizers(api.Graphik.Authorizers value) {
+        if (setAuthorizersBuilder_ == null) {
+          if (setAuthorizers_ != null) {
+            setAuthorizers_ =
+              api.Graphik.Authorizers.newBuilder(setAuthorizers_).mergeFrom(value).buildPartial();
+          } else {
+            setAuthorizers_ = value;
+          }
+          onChanged();
+        } else {
+          setAuthorizersBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      public Builder clearSetAuthorizers() {
+        if (setAuthorizersBuilder_ == null) {
+          setAuthorizers_ = null;
+          onChanged();
+        } else {
+          setAuthorizers_ = null;
+          setAuthorizersBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      public api.Graphik.Authorizers.Builder getSetAuthorizersBuilder() {
+        
+        onChanged();
+        return getSetAuthorizersFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      public api.Graphik.AuthorizersOrBuilder getSetAuthorizersOrBuilder() {
+        if (setAuthorizersBuilder_ != null) {
+          return setAuthorizersBuilder_.getMessageOrBuilder();
+        } else {
+          return setAuthorizers_ == null ?
+              api.Graphik.Authorizers.getDefaultInstance() : setAuthorizers_;
+        }
+      }
+      /**
+       * <code>.api.Authorizers set_authorizers = 8;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Authorizers, api.Graphik.Authorizers.Builder, api.Graphik.AuthorizersOrBuilder> 
+          getSetAuthorizersFieldBuilder() {
+        if (setAuthorizersBuilder_ == null) {
+          setAuthorizersBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Authorizers, api.Graphik.Authorizers.Builder, api.Graphik.AuthorizersOrBuilder>(
+                  getSetAuthorizers(),
+                  getParentForChildren(),
+                  isClean());
+          setAuthorizers_ = null;
+        }
+        return setAuthorizersBuilder_;
+      }
+
+      private api.Graphik.TypeValidators setTypeValidators_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder> setTypeValidatorsBuilder_;
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      public boolean hasSetTypeValidators() {
+        return setTypeValidatorsBuilder_ != null || setTypeValidators_ != null;
+      }
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      public api.Graphik.TypeValidators getSetTypeValidators() {
+        if (setTypeValidatorsBuilder_ == null) {
+          return setTypeValidators_ == null ? api.Graphik.TypeValidators.getDefaultInstance() : setTypeValidators_;
+        } else {
+          return setTypeValidatorsBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      public Builder setSetTypeValidators(api.Graphik.TypeValidators value) {
+        if (setTypeValidatorsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          setTypeValidators_ = value;
+          onChanged();
+        } else {
+          setTypeValidatorsBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      public Builder setSetTypeValidators(
+          api.Graphik.TypeValidators.Builder builderForValue) {
+        if (setTypeValidatorsBuilder_ == null) {
+          setTypeValidators_ = builderForValue.build();
+          onChanged();
+        } else {
+          setTypeValidatorsBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      public Builder mergeSetTypeValidators(api.Graphik.TypeValidators value) {
+        if (setTypeValidatorsBuilder_ == null) {
+          if (setTypeValidators_ != null) {
+            setTypeValidators_ =
+              api.Graphik.TypeValidators.newBuilder(setTypeValidators_).mergeFrom(value).buildPartial();
+          } else {
+            setTypeValidators_ = value;
+          }
+          onChanged();
+        } else {
+          setTypeValidatorsBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      public Builder clearSetTypeValidators() {
+        if (setTypeValidatorsBuilder_ == null) {
+          setTypeValidators_ = null;
+          onChanged();
+        } else {
+          setTypeValidators_ = null;
+          setTypeValidatorsBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      public api.Graphik.TypeValidators.Builder getSetTypeValidatorsBuilder() {
+        
+        onChanged();
+        return getSetTypeValidatorsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      public api.Graphik.TypeValidatorsOrBuilder getSetTypeValidatorsOrBuilder() {
+        if (setTypeValidatorsBuilder_ != null) {
+          return setTypeValidatorsBuilder_.getMessageOrBuilder();
+        } else {
+          return setTypeValidators_ == null ?
+              api.Graphik.TypeValidators.getDefaultInstance() : setTypeValidators_;
+        }
+      }
+      /**
+       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder> 
+          getSetTypeValidatorsFieldBuilder() {
+        if (setTypeValidatorsBuilder_ == null) {
+          setTypeValidatorsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder>(
+                  getSetTypeValidators(),
+                  getParentForChildren(),
+                  isClean());
+          setTypeValidators_ = null;
+        }
+        return setTypeValidatorsBuilder_;
+      }
+
+      private api.Graphik.Message sendMessage_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Message, api.Graphik.Message.Builder, api.Graphik.MessageOrBuilder> sendMessageBuilder_;
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      public boolean hasSendMessage() {
+        return sendMessageBuilder_ != null || sendMessage_ != null;
+      }
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      public api.Graphik.Message getSendMessage() {
+        if (sendMessageBuilder_ == null) {
+          return sendMessage_ == null ? api.Graphik.Message.getDefaultInstance() : sendMessage_;
+        } else {
+          return sendMessageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      public Builder setSendMessage(api.Graphik.Message value) {
+        if (sendMessageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          sendMessage_ = value;
+          onChanged();
+        } else {
+          sendMessageBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      public Builder setSendMessage(
+          api.Graphik.Message.Builder builderForValue) {
+        if (sendMessageBuilder_ == null) {
+          sendMessage_ = builderForValue.build();
+          onChanged();
+        } else {
+          sendMessageBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      public Builder mergeSendMessage(api.Graphik.Message value) {
+        if (sendMessageBuilder_ == null) {
+          if (sendMessage_ != null) {
+            sendMessage_ =
+              api.Graphik.Message.newBuilder(sendMessage_).mergeFrom(value).buildPartial();
+          } else {
+            sendMessage_ = value;
+          }
+          onChanged();
+        } else {
+          sendMessageBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      public Builder clearSendMessage() {
+        if (sendMessageBuilder_ == null) {
+          sendMessage_ = null;
+          onChanged();
+        } else {
+          sendMessage_ = null;
+          sendMessageBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      public api.Graphik.Message.Builder getSendMessageBuilder() {
+        
+        onChanged();
+        return getSendMessageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      public api.Graphik.MessageOrBuilder getSendMessageOrBuilder() {
+        if (sendMessageBuilder_ != null) {
+          return sendMessageBuilder_.getMessageOrBuilder();
+        } else {
+          return sendMessage_ == null ?
+              api.Graphik.Message.getDefaultInstance() : sendMessage_;
+        }
+      }
+      /**
+       * <code>.api.Message send_message = 10;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Message, api.Graphik.Message.Builder, api.Graphik.MessageOrBuilder> 
+          getSendMessageFieldBuilder() {
+        if (sendMessageBuilder_ == null) {
+          sendMessageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Message, api.Graphik.Message.Builder, api.Graphik.MessageOrBuilder>(
+                  getSendMessage(),
+                  getParentForChildren(),
+                  isClean());
+          sendMessage_ = null;
+        }
+        return sendMessageBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:api.RaftCommand)
+    }
+
+    // @@protoc_insertion_point(class_scope:api.RaftCommand)
+    private static final api.Graphik.RaftCommand DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new api.Graphik.RaftCommand();
+    }
+
+    public static api.Graphik.RaftCommand getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<RaftCommand>
+        PARSER = new com.google.protobuf.AbstractParser<RaftCommand>() {
+      @java.lang.Override
+      public RaftCommand parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RaftCommand(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<RaftCommand> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<RaftCommand> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public api.Graphik.RaftCommand getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PeerOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.Peer)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+     */
+    java.lang.String getNodeId();
+    /**
+     * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+     */
+    com.google.protobuf.ByteString
+        getNodeIdBytes();
+
+    /**
+     * <code>string addr = 2 [(.validator.field) = { ... }</code>
+     */
+    java.lang.String getAddr();
+    /**
+     * <code>string addr = 2 [(.validator.field) = { ... }</code>
+     */
+    com.google.protobuf.ByteString
+        getAddrBytes();
+  }
+  /**
+   * Protobuf type {@code api.Peer}
+   */
+  public  static final class Peer extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:api.Peer)
+      PeerOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Peer.newBuilder() to construct.
+    private Peer(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Peer() {
+      nodeId_ = "";
+      addr_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Peer(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              nodeId_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              addr_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return api.Graphik.internal_static_api_Peer_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return api.Graphik.internal_static_api_Peer_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              api.Graphik.Peer.class, api.Graphik.Peer.Builder.class);
+    }
+
+    public static final int NODE_ID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object nodeId_;
+    /**
+     * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+     */
+    public java.lang.String getNodeId() {
+      java.lang.Object ref = nodeId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        nodeId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+     */
+    public com.google.protobuf.ByteString
+        getNodeIdBytes() {
+      java.lang.Object ref = nodeId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        nodeId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int ADDR_FIELD_NUMBER = 2;
+    private volatile java.lang.Object addr_;
+    /**
+     * <code>string addr = 2 [(.validator.field) = { ... }</code>
+     */
+    public java.lang.String getAddr() {
+      java.lang.Object ref = addr_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        addr_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string addr = 2 [(.validator.field) = { ... }</code>
+     */
+    public com.google.protobuf.ByteString
+        getAddrBytes() {
+      java.lang.Object ref = addr_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        addr_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getNodeIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, nodeId_);
+      }
+      if (!getAddrBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, addr_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getNodeIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, nodeId_);
+      }
+      if (!getAddrBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, addr_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof api.Graphik.Peer)) {
+        return super.equals(obj);
+      }
+      api.Graphik.Peer other = (api.Graphik.Peer) obj;
+
+      boolean result = true;
+      result = result && getNodeId()
+          .equals(other.getNodeId());
+      result = result && getAddr()
+          .equals(other.getAddr());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NODE_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getNodeId().hashCode();
+      hash = (37 * hash) + ADDR_FIELD_NUMBER;
+      hash = (53 * hash) + getAddr().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static api.Graphik.Peer parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Peer parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Peer parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Peer parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Peer parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Peer parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Peer parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Peer parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.Peer parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Peer parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.Peer parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Peer parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(api.Graphik.Peer prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code api.Peer}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:api.Peer)
+        api.Graphik.PeerOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return api.Graphik.internal_static_api_Peer_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return api.Graphik.internal_static_api_Peer_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                api.Graphik.Peer.class, api.Graphik.Peer.Builder.class);
+      }
+
+      // Construct using api.Graphik.Peer.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        nodeId_ = "";
+
+        addr_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return api.Graphik.internal_static_api_Peer_descriptor;
+      }
+
+      @java.lang.Override
+      public api.Graphik.Peer getDefaultInstanceForType() {
+        return api.Graphik.Peer.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public api.Graphik.Peer build() {
+        api.Graphik.Peer result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public api.Graphik.Peer buildPartial() {
+        api.Graphik.Peer result = new api.Graphik.Peer(this);
+        result.nodeId_ = nodeId_;
+        result.addr_ = addr_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof api.Graphik.Peer) {
+          return mergeFrom((api.Graphik.Peer)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(api.Graphik.Peer other) {
+        if (other == api.Graphik.Peer.getDefaultInstance()) return this;
+        if (!other.getNodeId().isEmpty()) {
+          nodeId_ = other.nodeId_;
+          onChanged();
+        }
+        if (!other.getAddr().isEmpty()) {
+          addr_ = other.addr_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        api.Graphik.Peer parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (api.Graphik.Peer) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object nodeId_ = "";
+      /**
+       * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+       */
+      public java.lang.String getNodeId() {
+        java.lang.Object ref = nodeId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          nodeId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+       */
+      public com.google.protobuf.ByteString
+          getNodeIdBytes() {
+        java.lang.Object ref = nodeId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          nodeId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+       */
+      public Builder setNodeId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        nodeId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+       */
+      public Builder clearNodeId() {
+        
+        nodeId_ = getDefaultInstance().getNodeId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string node_id = 1 [(.validator.field) = { ... }</code>
+       */
+      public Builder setNodeIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        nodeId_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object addr_ = "";
+      /**
+       * <code>string addr = 2 [(.validator.field) = { ... }</code>
+       */
+      public java.lang.String getAddr() {
+        java.lang.Object ref = addr_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          addr_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string addr = 2 [(.validator.field) = { ... }</code>
+       */
+      public com.google.protobuf.ByteString
+          getAddrBytes() {
+        java.lang.Object ref = addr_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          addr_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string addr = 2 [(.validator.field) = { ... }</code>
+       */
+      public Builder setAddr(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        addr_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string addr = 2 [(.validator.field) = { ... }</code>
+       */
+      public Builder clearAddr() {
+        
+        addr_ = getDefaultInstance().getAddr();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string addr = 2 [(.validator.field) = { ... }</code>
+       */
+      public Builder setAddrBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        addr_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:api.Peer)
+    }
+
+    // @@protoc_insertion_point(class_scope:api.Peer)
+    private static final api.Graphik.Peer DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new api.Graphik.Peer();
+    }
+
+    public static api.Graphik.Peer getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Peer>
+        PARSER = new com.google.protobuf.AbstractParser<Peer>() {
+      @java.lang.Override
+      public Peer parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Peer(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Peer> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Peer> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public api.Graphik.Peer getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface RaftStateOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.RaftState)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string leader = 1;</code>
+     */
+    java.lang.String getLeader();
+    /**
+     * <code>string leader = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getLeaderBytes();
+
+    /**
+     * <code>.api.Membership membership = 2;</code>
+     */
+    int getMembershipValue();
+    /**
+     * <code>.api.Membership membership = 2;</code>
+     */
+    api.Graphik.Membership getMembership();
+
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    java.util.List<api.Graphik.Peer> 
+        getPeersList();
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    api.Graphik.Peer getPeers(int index);
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    int getPeersCount();
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    java.util.List<? extends api.Graphik.PeerOrBuilder> 
+        getPeersOrBuilderList();
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    api.Graphik.PeerOrBuilder getPeersOrBuilder(
+        int index);
+
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+    int getStatsCount();
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+    boolean containsStats(
+        java.lang.String key);
+    /**
+     * Use {@link #getStatsMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String>
+    getStats();
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String>
+    getStatsMap();
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+
+    java.lang.String getStatsOrDefault(
+        java.lang.String key,
+        java.lang.String defaultValue);
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+
+    java.lang.String getStatsOrThrow(
+        java.lang.String key);
+  }
+  /**
+   * Protobuf type {@code api.RaftState}
+   */
+  public  static final class RaftState extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:api.RaftState)
+      RaftStateOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use RaftState.newBuilder() to construct.
+    private RaftState(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private RaftState() {
+      leader_ = "";
+      membership_ = 0;
+      peers_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private RaftState(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              leader_ = s;
+              break;
+            }
+            case 16: {
+              int rawValue = input.readEnum();
+
+              membership_ = rawValue;
+              break;
+            }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                peers_ = new java.util.ArrayList<api.Graphik.Peer>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              peers_.add(
+                  input.readMessage(api.Graphik.Peer.parser(), extensionRegistry));
+              break;
+            }
+            case 34: {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+                stats_ = com.google.protobuf.MapField.newMapField(
+                    StatsDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000008;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+              stats__ = input.readMessage(
+                  StatsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              stats_.getMutableMap().put(
+                  stats__.getKey(), stats__.getValue());
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          peers_ = java.util.Collections.unmodifiableList(peers_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return api.Graphik.internal_static_api_RaftState_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(
+        int number) {
+      switch (number) {
+        case 4:
+          return internalGetStats();
+        default:
+          throw new RuntimeException(
+              "Invalid map field number: " + number);
+      }
+    }
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return api.Graphik.internal_static_api_RaftState_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              api.Graphik.RaftState.class, api.Graphik.RaftState.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int LEADER_FIELD_NUMBER = 1;
+    private volatile java.lang.Object leader_;
+    /**
+     * <code>string leader = 1;</code>
+     */
+    public java.lang.String getLeader() {
+      java.lang.Object ref = leader_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        leader_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string leader = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getLeaderBytes() {
+      java.lang.Object ref = leader_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        leader_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int MEMBERSHIP_FIELD_NUMBER = 2;
+    private int membership_;
+    /**
+     * <code>.api.Membership membership = 2;</code>
+     */
+    public int getMembershipValue() {
+      return membership_;
+    }
+    /**
+     * <code>.api.Membership membership = 2;</code>
+     */
+    public api.Graphik.Membership getMembership() {
+      @SuppressWarnings("deprecation")
+      api.Graphik.Membership result = api.Graphik.Membership.valueOf(membership_);
+      return result == null ? api.Graphik.Membership.UNRECOGNIZED : result;
+    }
+
+    public static final int PEERS_FIELD_NUMBER = 3;
+    private java.util.List<api.Graphik.Peer> peers_;
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    public java.util.List<api.Graphik.Peer> getPeersList() {
+      return peers_;
+    }
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    public java.util.List<? extends api.Graphik.PeerOrBuilder> 
+        getPeersOrBuilderList() {
+      return peers_;
+    }
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    public int getPeersCount() {
+      return peers_.size();
+    }
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    public api.Graphik.Peer getPeers(int index) {
+      return peers_.get(index);
+    }
+    /**
+     * <code>repeated .api.Peer peers = 3;</code>
+     */
+    public api.Graphik.PeerOrBuilder getPeersOrBuilder(
+        int index) {
+      return peers_.get(index);
+    }
+
+    public static final int STATS_FIELD_NUMBER = 4;
+    private static final class StatsDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, java.lang.String> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, java.lang.String>newDefaultInstance(
+                  api.Graphik.internal_static_api_RaftState_StatsEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "");
+    }
+    private com.google.protobuf.MapField<
+        java.lang.String, java.lang.String> stats_;
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+    internalGetStats() {
+      if (stats_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(
+            StatsDefaultEntryHolder.defaultEntry);
+      }
+      return stats_;
+    }
+
+    public int getStatsCount() {
+      return internalGetStats().getMap().size();
+    }
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+
+    public boolean containsStats(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      return internalGetStats().getMap().containsKey(key);
+    }
+    /**
+     * Use {@link #getStatsMap()} instead.
+     */
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getStats() {
+      return getStatsMap();
+    }
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+
+    public java.util.Map<java.lang.String, java.lang.String> getStatsMap() {
+      return internalGetStats().getMap();
+    }
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+
+    public java.lang.String getStatsOrDefault(
+        java.lang.String key,
+        java.lang.String defaultValue) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, java.lang.String> map =
+          internalGetStats().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+    /**
+     * <code>map&lt;string, string&gt; stats = 4;</code>
+     */
+
+    public java.lang.String getStatsOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, java.lang.String> map =
+          internalGetStats().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getLeaderBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, leader_);
+      }
+      if (membership_ != api.Graphik.Membership.UNKNOWN.getNumber()) {
+        output.writeEnum(2, membership_);
+      }
+      for (int i = 0; i < peers_.size(); i++) {
+        output.writeMessage(3, peers_.get(i));
+      }
+      com.google.protobuf.GeneratedMessageV3
+        .serializeStringMapTo(
+          output,
+          internalGetStats(),
+          StatsDefaultEntryHolder.defaultEntry,
+          4);
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getLeaderBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, leader_);
+      }
+      if (membership_ != api.Graphik.Membership.UNKNOWN.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(2, membership_);
+      }
+      for (int i = 0; i < peers_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, peers_.get(i));
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
+           : internalGetStats().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+        stats__ = StatsDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
+        size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(4, stats__);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof api.Graphik.RaftState)) {
+        return super.equals(obj);
+      }
+      api.Graphik.RaftState other = (api.Graphik.RaftState) obj;
+
+      boolean result = true;
+      result = result && getLeader()
+          .equals(other.getLeader());
+      result = result && membership_ == other.membership_;
+      result = result && getPeersList()
+          .equals(other.getPeersList());
+      result = result && internalGetStats().equals(
+          other.internalGetStats());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + LEADER_FIELD_NUMBER;
+      hash = (53 * hash) + getLeader().hashCode();
+      hash = (37 * hash) + MEMBERSHIP_FIELD_NUMBER;
+      hash = (53 * hash) + membership_;
+      if (getPeersCount() > 0) {
+        hash = (37 * hash) + PEERS_FIELD_NUMBER;
+        hash = (53 * hash) + getPeersList().hashCode();
+      }
+      if (!internalGetStats().getMap().isEmpty()) {
+        hash = (37 * hash) + STATS_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetStats().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static api.Graphik.RaftState parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.RaftState parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.RaftState parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.RaftState parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.RaftState parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.RaftState parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.RaftState parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.RaftState parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.RaftState parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static api.Graphik.RaftState parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.RaftState parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.RaftState parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(api.Graphik.RaftState prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code api.RaftState}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:api.RaftState)
+        api.Graphik.RaftStateOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return api.Graphik.internal_static_api_RaftState_descriptor;
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(
+          int number) {
+        switch (number) {
+          case 4:
+            return internalGetStats();
+          default:
+            throw new RuntimeException(
+                "Invalid map field number: " + number);
+        }
+      }
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(
+          int number) {
+        switch (number) {
+          case 4:
+            return internalGetMutableStats();
+          default:
+            throw new RuntimeException(
+                "Invalid map field number: " + number);
+        }
+      }
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return api.Graphik.internal_static_api_RaftState_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                api.Graphik.RaftState.class, api.Graphik.RaftState.Builder.class);
+      }
+
+      // Construct using api.Graphik.RaftState.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPeersFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        leader_ = "";
+
+        membership_ = 0;
+
+        if (peersBuilder_ == null) {
+          peers_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        } else {
+          peersBuilder_.clear();
+        }
+        internalGetMutableStats().clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return api.Graphik.internal_static_api_RaftState_descriptor;
+      }
+
+      @java.lang.Override
+      public api.Graphik.RaftState getDefaultInstanceForType() {
+        return api.Graphik.RaftState.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public api.Graphik.RaftState build() {
+        api.Graphik.RaftState result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public api.Graphik.RaftState buildPartial() {
+        api.Graphik.RaftState result = new api.Graphik.RaftState(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        result.leader_ = leader_;
+        result.membership_ = membership_;
+        if (peersBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            peers_ = java.util.Collections.unmodifiableList(peers_);
+            bitField0_ = (bitField0_ & ~0x00000004);
+          }
+          result.peers_ = peers_;
+        } else {
+          result.peers_ = peersBuilder_.build();
+        }
+        result.stats_ = internalGetStats();
+        result.stats_.makeImmutable();
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof api.Graphik.RaftState) {
+          return mergeFrom((api.Graphik.RaftState)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(api.Graphik.RaftState other) {
+        if (other == api.Graphik.RaftState.getDefaultInstance()) return this;
+        if (!other.getLeader().isEmpty()) {
+          leader_ = other.leader_;
+          onChanged();
+        }
+        if (other.membership_ != 0) {
+          setMembershipValue(other.getMembershipValue());
+        }
+        if (peersBuilder_ == null) {
+          if (!other.peers_.isEmpty()) {
+            if (peers_.isEmpty()) {
+              peers_ = other.peers_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+            } else {
+              ensurePeersIsMutable();
+              peers_.addAll(other.peers_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.peers_.isEmpty()) {
+            if (peersBuilder_.isEmpty()) {
+              peersBuilder_.dispose();
+              peersBuilder_ = null;
+              peers_ = other.peers_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+              peersBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getPeersFieldBuilder() : null;
+            } else {
+              peersBuilder_.addAllMessages(other.peers_);
+            }
+          }
+        }
+        internalGetMutableStats().mergeFrom(
+            other.internalGetStats());
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        api.Graphik.RaftState parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (api.Graphik.RaftState) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object leader_ = "";
+      /**
+       * <code>string leader = 1;</code>
+       */
+      public java.lang.String getLeader() {
+        java.lang.Object ref = leader_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          leader_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string leader = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getLeaderBytes() {
+        java.lang.Object ref = leader_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          leader_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string leader = 1;</code>
+       */
+      public Builder setLeader(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        leader_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string leader = 1;</code>
+       */
+      public Builder clearLeader() {
+        
+        leader_ = getDefaultInstance().getLeader();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string leader = 1;</code>
+       */
+      public Builder setLeaderBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        leader_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int membership_ = 0;
+      /**
+       * <code>.api.Membership membership = 2;</code>
+       */
+      public int getMembershipValue() {
+        return membership_;
+      }
+      /**
+       * <code>.api.Membership membership = 2;</code>
+       */
+      public Builder setMembershipValue(int value) {
+        membership_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.api.Membership membership = 2;</code>
+       */
+      public api.Graphik.Membership getMembership() {
+        @SuppressWarnings("deprecation")
+        api.Graphik.Membership result = api.Graphik.Membership.valueOf(membership_);
+        return result == null ? api.Graphik.Membership.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.api.Membership membership = 2;</code>
+       */
+      public Builder setMembership(api.Graphik.Membership value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        membership_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.api.Membership membership = 2;</code>
+       */
+      public Builder clearMembership() {
+        
+        membership_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<api.Graphik.Peer> peers_ =
+        java.util.Collections.emptyList();
+      private void ensurePeersIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          peers_ = new java.util.ArrayList<api.Graphik.Peer>(peers_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Peer, api.Graphik.Peer.Builder, api.Graphik.PeerOrBuilder> peersBuilder_;
+
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public java.util.List<api.Graphik.Peer> getPeersList() {
+        if (peersBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(peers_);
+        } else {
+          return peersBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public int getPeersCount() {
+        if (peersBuilder_ == null) {
+          return peers_.size();
+        } else {
+          return peersBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public api.Graphik.Peer getPeers(int index) {
+        if (peersBuilder_ == null) {
+          return peers_.get(index);
+        } else {
+          return peersBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder setPeers(
+          int index, api.Graphik.Peer value) {
+        if (peersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePeersIsMutable();
+          peers_.set(index, value);
+          onChanged();
+        } else {
+          peersBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder setPeers(
+          int index, api.Graphik.Peer.Builder builderForValue) {
+        if (peersBuilder_ == null) {
+          ensurePeersIsMutable();
+          peers_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          peersBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder addPeers(api.Graphik.Peer value) {
+        if (peersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePeersIsMutable();
+          peers_.add(value);
+          onChanged();
+        } else {
+          peersBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder addPeers(
+          int index, api.Graphik.Peer value) {
+        if (peersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensurePeersIsMutable();
+          peers_.add(index, value);
+          onChanged();
+        } else {
+          peersBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder addPeers(
+          api.Graphik.Peer.Builder builderForValue) {
+        if (peersBuilder_ == null) {
+          ensurePeersIsMutable();
+          peers_.add(builderForValue.build());
+          onChanged();
+        } else {
+          peersBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder addPeers(
+          int index, api.Graphik.Peer.Builder builderForValue) {
+        if (peersBuilder_ == null) {
+          ensurePeersIsMutable();
+          peers_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          peersBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder addAllPeers(
+          java.lang.Iterable<? extends api.Graphik.Peer> values) {
+        if (peersBuilder_ == null) {
+          ensurePeersIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, peers_);
+          onChanged();
+        } else {
+          peersBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder clearPeers() {
+        if (peersBuilder_ == null) {
+          peers_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          onChanged();
+        } else {
+          peersBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public Builder removePeers(int index) {
+        if (peersBuilder_ == null) {
+          ensurePeersIsMutable();
+          peers_.remove(index);
+          onChanged();
+        } else {
+          peersBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public api.Graphik.Peer.Builder getPeersBuilder(
+          int index) {
+        return getPeersFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public api.Graphik.PeerOrBuilder getPeersOrBuilder(
+          int index) {
+        if (peersBuilder_ == null) {
+          return peers_.get(index);  } else {
+          return peersBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public java.util.List<? extends api.Graphik.PeerOrBuilder> 
+           getPeersOrBuilderList() {
+        if (peersBuilder_ != null) {
+          return peersBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(peers_);
+        }
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public api.Graphik.Peer.Builder addPeersBuilder() {
+        return getPeersFieldBuilder().addBuilder(
+            api.Graphik.Peer.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public api.Graphik.Peer.Builder addPeersBuilder(
+          int index) {
+        return getPeersFieldBuilder().addBuilder(
+            index, api.Graphik.Peer.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Peer peers = 3;</code>
+       */
+      public java.util.List<api.Graphik.Peer.Builder> 
+           getPeersBuilderList() {
+        return getPeersFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Peer, api.Graphik.Peer.Builder, api.Graphik.PeerOrBuilder> 
+          getPeersFieldBuilder() {
+        if (peersBuilder_ == null) {
+          peersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              api.Graphik.Peer, api.Graphik.Peer.Builder, api.Graphik.PeerOrBuilder>(
+                  peers_,
+                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          peers_ = null;
+        }
+        return peersBuilder_;
+      }
+
+      private com.google.protobuf.MapField<
+          java.lang.String, java.lang.String> stats_;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      internalGetStats() {
+        if (stats_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              StatsDefaultEntryHolder.defaultEntry);
+        }
+        return stats_;
+      }
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      internalGetMutableStats() {
+        onChanged();;
+        if (stats_ == null) {
+          stats_ = com.google.protobuf.MapField.newMapField(
+              StatsDefaultEntryHolder.defaultEntry);
+        }
+        if (!stats_.isMutable()) {
+          stats_ = stats_.copy();
+        }
+        return stats_;
+      }
+
+      public int getStatsCount() {
+        return internalGetStats().getMap().size();
+      }
+      /**
+       * <code>map&lt;string, string&gt; stats = 4;</code>
+       */
+
+      public boolean containsStats(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        return internalGetStats().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getStatsMap()} instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getStats() {
+        return getStatsMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; stats = 4;</code>
+       */
+
+      public java.util.Map<java.lang.String, java.lang.String> getStatsMap() {
+        return internalGetStats().getMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; stats = 4;</code>
+       */
+
+      public java.lang.String getStatsOrDefault(
+          java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, java.lang.String> map =
+            internalGetStats().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+      /**
+       * <code>map&lt;string, string&gt; stats = 4;</code>
+       */
+
+      public java.lang.String getStatsOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, java.lang.String> map =
+            internalGetStats().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearStats() {
+        internalGetMutableStats().getMutableMap()
+            .clear();
+        return this;
+      }
+      /**
+       * <code>map&lt;string, string&gt; stats = 4;</code>
+       */
+
+      public Builder removeStats(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableStats().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String>
+      getMutableStats() {
+        return internalGetMutableStats().getMutableMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; stats = 4;</code>
+       */
+      public Builder putStats(
+          java.lang.String key,
+          java.lang.String value) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (value == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableStats().getMutableMap()
+            .put(key, value);
+        return this;
+      }
+      /**
+       * <code>map&lt;string, string&gt; stats = 4;</code>
+       */
+
+      public Builder putAllStats(
+          java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableStats().getMutableMap()
+            .putAll(values);
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:api.RaftState)
+    }
+
+    // @@protoc_insertion_point(class_scope:api.RaftState)
+    private static final api.Graphik.RaftState DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new api.Graphik.RaftState();
+    }
+
+    public static api.Graphik.RaftState getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<RaftState>
+        PARSER = new com.google.protobuf.AbstractParser<RaftState>() {
+      @java.lang.Override
+      public RaftState parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RaftState(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<RaftState> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<RaftState> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public api.Graphik.RaftState getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_api_Ref_descriptor;
   private static final 
@@ -42993,6 +48258,26 @@ public final class Graphik {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_api_ExprFilter_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_api_RaftCommand_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_api_RaftCommand_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_api_Peer_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_api_Peer_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_api_RaftState_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_api_RaftState_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_api_RaftState_StatsEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_api_RaftState_StatsEntry_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -43096,7 +48381,7 @@ public final class Graphik {
       "x\"E\n\014StreamFilter\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014" +
       "\n\n^.{1,225}$\022\022\n\nexpression\030\002 \001(\t\"G\n\005Grap" +
       "h\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022%\n\013connection" +
-      "s\030\002 \001(\0132\020.api.Connections\"\355\002\n\005Flags\022\031\n\021o" +
+      "s\030\002 \001(\0132\020.api.Connections\"\200\003\n\005Flags\022\031\n\021o" +
       "pen_id_discovery\030\001 \001(\t\022\024\n\014storage_path\030\002" +
       " \001(\t\022\017\n\007metrics\030\003 \001(\010\022\025\n\rallow_headers\030\005" +
       " \003(\t\022\025\n\rallow_methods\030\006 \003(\t\022\025\n\rallow_ori" +
@@ -43105,86 +48390,107 @@ public final class Graphik {
       "client_id\030\013 \001(\t\022 \n\030playground_client_sec" +
       "ret\030\014 \001(\t\022\033\n\023playground_redirect\030\r \001(\t\022#" +
       "\n\033require_request_authorizers\030\017 \001(\010\022$\n\034r" +
-      "equire_response_authorizers\030\020 \001(\010\"\030\n\007Boo" +
-      "lean\022\r\n\005value\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001" +
-      " \001(\001\"\203\001\n\014ExistsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337" +
-      "\037\014\n\n^.{1,225}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014" +
-      "\n\n^.{1,225}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 " +
-      "\001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132" +
-      "\010.api.RefB\006\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027." +
-      "google.protobuf.Struct\"V\n\nEditFilter\022\033\n\006" +
-      "filter\030\001 \001(\0132\013.api.Filter\022+\n\nattributes\030" +
-      "\002 \001(\0132\027.google.protobuf.Struct\"\027\n\004Pong\022\017" +
-      "\n\007message\030\001 \001(\t\"c\n\017OutboundMessage\022!\n\007ch" +
-      "annel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 " +
-      "\001(\0132\027.google.protobuf.StructB\006\342\337\037\002 \001\"\324\001\n" +
-      "\007Message\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,22" +
-      "5}$\022-\n\004data\030\002 \001(\0132\027.google.protobuf.Stru" +
-      "ctB\006\342\337\037\002 \001\022\036\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002" +
-      " \001\0225\n\ttimestamp\030\004 \001(\0132\032.google.protobuf." +
-      "TimestampB\006\342\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n" +
-      "\n^.{1,225}$\"\244\001\n\006Schema\022\030\n\020connection_typ" +
-      "es\030\001 \003(\t\022\021\n\tdoc_types\030\002 \003(\t\022%\n\013authorize" +
-      "rs\030\003 \001(\0132\020.api.Authorizers\022\'\n\nvalidators" +
-      "\030\004 \001(\0132\023.api.TypeValidators\022\035\n\007indexes\030\005" +
-      " \001(\0132\014.api.Indexes\" \n\nExprFilter\022\022\n\nexpr" +
-      "ession\030\001 \001(\t*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DF" +
-      "S\020\001*D\n\tAggregate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003" +
-      "AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\0052\332\020\n\017Da" +
-      "tabaseService\022+\n\004Ping\022\026.google.protobuf." +
-      "Empty\032\t.api.Pong\"\000\0222\n\tGetSchema\022\026.google" +
-      ".protobuf.Empty\032\013.api.Schema\"\000\022<\n\016SetAut" +
-      "horizers\022\020.api.Authorizers\032\026.google.prot" +
-      "obuf.Empty\"\000\0224\n\nSetIndexes\022\014.api.Indexes" +
-      "\032\026.google.protobuf.Empty\"\000\022B\n\021SetTypeVal" +
-      "idators\022\023.api.TypeValidators\032\026.google.pr" +
-      "otobuf.Empty\"\000\022(\n\002Me\022\026.google.protobuf.E" +
-      "mpty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022\023.api.DocC" +
-      "onstructor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.a" +
-      "pi.DocConstructors\032\t.api.Docs\"\000\022\036\n\006GetDo" +
-      "c\022\010.api.Ref\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013." +
-      "api.Filter\032\t.api.Docs\"\000\0222\n\010Traverse\022\023.ap" +
-      "i.TraverseFilter\032\017.api.Traversals\"\000\0226\n\nT" +
-      "raverseMe\022\025.api.TraverseMeFilter\032\017.api.T" +
-      "raversals\"\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api." +
-      "Doc\"\000\022(\n\010EditDocs\022\017.api.EditFilter\032\t.api" +
-      ".Docs\"\000\022,\n\006DelDoc\022\010.api.Ref\032\026.google.pro" +
-      "tobuf.Empty\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026." +
-      "google.protobuf.Empty\"\000\022.\n\tExistsDoc\022\021.a" +
-      "pi.ExistsFilter\032\014.api.Boolean\"\000\0225\n\020Exist" +
-      "sConnection\022\021.api.ExistsFilter\032\014.api.Boo" +
-      "lean\"\000\022\"\n\006HasDoc\022\010.api.Ref\032\014.api.Boolean" +
-      "\"\000\022)\n\rHasConnection\022\010.api.Ref\032\014.api.Bool" +
-      "ean\"\000\022A\n\020CreateConnection\022\032.api.Connecti" +
-      "onConstructor\032\017.api.Connection\"\000\022D\n\021Crea" +
-      "teConnections\022\033.api.ConnectionConstructo" +
-      "rs\032\020.api.Connections\"\000\022@\n\020SearchAndConne" +
-      "ct\022\030.api.SearchConnectFilter\032\020.api.Conne" +
-      "ctions\"\000\022D\n\022SearchAndConnectMe\022\032.api.Sea" +
-      "rchConnectMeFilter\032\020.api.Connections\"\000\022," +
-      "\n\rGetConnection\022\010.api.Ref\032\017.api.Connecti" +
-      "on\"\000\0224\n\021SearchConnections\022\013.api.Filter\032\020" +
-      ".api.Connections\"\000\022.\n\016EditConnection\022\t.a" +
-      "pi.Edit\032\017.api.Connection\"\000\0226\n\017EditConnec" +
-      "tions\022\017.api.EditFilter\032\020.api.Connections" +
-      "\"\000\0223\n\rDelConnection\022\010.api.Ref\032\026.google.p" +
-      "rotobuf.Empty\"\000\0227\n\016DelConnections\022\013.api." +
-      "Filter\032\026.google.protobuf.Empty\"\000\0229\n\017Conn" +
-      "ectionsFrom\022\022.api.ConnectFilter\032\020.api.Co" +
-      "nnections\"\000\0227\n\rConnectionsTo\022\022.api.Conne" +
-      "ctFilter\032\020.api.Connections\"\000\022.\n\rAggregat" +
-      "eDocs\022\016.api.AggFilter\032\013.api.Number\"\000\0225\n\024" +
-      "AggregateConnections\022\016.api.AggFilter\032\013.a" +
-      "pi.Number\"\000\022;\n\tBroadcast\022\024.api.OutboundM" +
-      "essage\032\026.google.protobuf.Empty\"\000\022-\n\006Stre" +
-      "am\022\021.api.StreamFilter\032\014.api.Message\"\0000\001\022" +
-      ":\n\023PushDocConstructors\022\023.api.DocConstruc" +
-      "tor\032\010.api.Doc\"\000(\0010\001\022O\n\032PushConnectionCon" +
-      "structors\022\032.api.ConnectionConstructor\032\017." +
-      "api.Connection\"\000(\0010\001\0220\n\010SeedDocs\022\010.api.D" +
-      "oc\032\026.google.protobuf.Empty\"\000(\001\022>\n\017SeedCo" +
-      "nnections\022\017.api.Connection\032\026.google.prot" +
-      "obuf.Empty\"\000(\001B\007Z\005apipbb\006proto3"
+      "equire_response_authorizers\030\020 \001(\010\022\021\n\tjoi" +
+      "n_raft\030\021 \001(\t\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"\027" +
+      "\n\006Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014ExistsFilter" +
+      "\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexp" +
+      "ression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030" +
+      "\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n" +
+      "\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\n" +
+      "attributes\030\002 \001(\0132\027.google.protobuf.Struc" +
+      "t\"V\n\nEditFilter\022\033\n\006filter\030\001 \001(\0132\013.api.Fi" +
+      "lter\022+\n\nattributes\030\002 \001(\0132\027.google.protob" +
+      "uf.Struct\"\027\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017Ou" +
+      "tboundMessage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^." +
+      "{1,225}$\022-\n\004data\030\002 \001(\0132\027.google.protobuf" +
+      ".StructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!\n\007channel\030\001" +
+      " \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.g" +
+      "oogle.protobuf.StructB\006\342\337\037\002 \001\022\036\n\004user\030\003 " +
+      "\001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\013" +
+      "2\032.google.protobuf.TimestampB\006\342\337\037\002 \001\022 \n\006" +
+      "method\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"\244\001\n\006Schem" +
+      "a\022\030\n\020connection_types\030\001 \003(\t\022\021\n\tdoc_types" +
+      "\030\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020.api.Author" +
+      "izers\022\'\n\nvalidators\030\004 \001(\0132\023.api.TypeVali" +
+      "dators\022\035\n\007indexes\030\005 \001(\0132\014.api.Indexes\" \n" +
+      "\nExprFilter\022\022\n\nexpression\030\001 \001(\t\"\336\002\n\013Raft" +
+      "Command\022\026\n\004user\030\001 \001(\0132\010.api.Doc\022\016\n\006metho" +
+      "d\030\002 \001(\t\022\032\n\010set_docs\030\003 \003(\0132\010.api.Doc\022(\n\017s" +
+      "et_connections\030\004 \003(\0132\017.api.Connection\022\032\n" +
+      "\010del_docs\030\005 \003(\0132\010.api.Ref\022!\n\017del_connect" +
+      "ions\030\006 \003(\0132\010.api.Ref\022!\n\013set_indexes\030\007 \001(" +
+      "\0132\014.api.Indexes\022)\n\017set_authorizers\030\010 \001(\013" +
+      "2\020.api.Authorizers\0220\n\023set_type_validator" +
+      "s\030\t \001(\0132\023.api.TypeValidators\022\"\n\014send_mes" +
+      "sage\030\n \001(\0132\014.api.Message\"I\n\004Peer\022!\n\007node" +
+      "_id\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\036\n\004addr\030\002 \001(" +
+      "\tB\020\342\337\037\014\n\n^.{1,225}$\"\262\001\n\tRaftState\022\016\n\006lea" +
+      "der\030\001 \001(\t\022#\n\nmembership\030\002 \001(\0162\017.api.Memb" +
+      "ership\022\030\n\005peers\030\003 \003(\0132\t.api.Peer\022(\n\005stat" +
+      "s\030\004 \003(\0132\031.api.RaftState.StatsEntry\032,\n\nSt" +
+      "atsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001" +
+      "*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggre" +
+      "gate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX" +
+      "\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\005*P\n\nMembership\022\013\n\007U" +
+      "NKNOWN\020\000\022\014\n\010FOLLOWER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n" +
+      "\006LEADER\020\003\022\014\n\010SHUTDOWN\020\0042\304\021\n\017DatabaseServ" +
+      "ice\022+\n\004Ping\022\026.google.protobuf.Empty\032\t.ap" +
+      "i.Pong\"\000\0222\n\tGetSchema\022\026.google.protobuf." +
+      "Empty\032\013.api.Schema\"\000\022<\n\016SetAuthorizers\022\020" +
+      ".api.Authorizers\032\026.google.protobuf.Empty" +
+      "\"\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.google." +
+      "protobuf.Empty\"\000\022B\n\021SetTypeValidators\022\023." +
+      "api.TypeValidators\032\026.google.protobuf.Emp" +
+      "ty\"\000\022(\n\002Me\022\026.google.protobuf.Empty\032\010.api" +
+      ".Doc\"\000\022,\n\tCreateDoc\022\023.api.DocConstructor" +
+      "\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.api.DocCons" +
+      "tructors\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api.Re" +
+      "f\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Filter" +
+      "\032\t.api.Docs\"\000\0222\n\010Traverse\022\023.api.Traverse" +
+      "Filter\032\017.api.Traversals\"\000\0226\n\nTraverseMe\022" +
+      "\025.api.TraverseMeFilter\032\017.api.Traversals\"" +
+      "\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(\n\010E" +
+      "ditDocs\022\017.api.EditFilter\032\t.api.Docs\"\000\022,\n" +
+      "\006DelDoc\022\010.api.Ref\032\026.google.protobuf.Empt" +
+      "y\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google.pro" +
+      "tobuf.Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsF" +
+      "ilter\032\014.api.Boolean\"\000\0225\n\020ExistsConnectio" +
+      "n\022\021.api.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006" +
+      "HasDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasC" +
+      "onnection\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020C" +
+      "reateConnection\022\032.api.ConnectionConstruc" +
+      "tor\032\017.api.Connection\"\000\022D\n\021CreateConnecti" +
+      "ons\022\033.api.ConnectionConstructors\032\020.api.C" +
+      "onnections\"\000\022@\n\020SearchAndConnect\022\030.api.S" +
+      "earchConnectFilter\032\020.api.Connections\"\000\022D" +
+      "\n\022SearchAndConnectMe\022\032.api.SearchConnect" +
+      "MeFilter\032\020.api.Connections\"\000\022,\n\rGetConne" +
+      "ction\022\010.api.Ref\032\017.api.Connection\"\000\0224\n\021Se" +
+      "archConnections\022\013.api.Filter\032\020.api.Conne" +
+      "ctions\"\000\022.\n\016EditConnection\022\t.api.Edit\032\017." +
+      "api.Connection\"\000\0226\n\017EditConnections\022\017.ap" +
+      "i.EditFilter\032\020.api.Connections\"\000\0223\n\rDelC" +
+      "onnection\022\010.api.Ref\032\026.google.protobuf.Em" +
+      "pty\"\000\0227\n\016DelConnections\022\013.api.Filter\032\026.g" +
+      "oogle.protobuf.Empty\"\000\0229\n\017ConnectionsFro" +
+      "m\022\022.api.ConnectFilter\032\020.api.Connections\"" +
+      "\000\0227\n\rConnectionsTo\022\022.api.ConnectFilter\032\020" +
+      ".api.Connections\"\000\022.\n\rAggregateDocs\022\016.ap" +
+      "i.AggFilter\032\013.api.Number\"\000\0225\n\024AggregateC" +
+      "onnections\022\016.api.AggFilter\032\013.api.Number\"" +
+      "\000\022;\n\tBroadcast\022\024.api.OutboundMessage\032\026.g" +
+      "oogle.protobuf.Empty\"\000\022-\n\006Stream\022\021.api.S" +
+      "treamFilter\032\014.api.Message\"\0000\001\022:\n\023PushDoc" +
+      "Constructors\022\023.api.DocConstructor\032\010.api." +
+      "Doc\"\000(\0010\001\022O\n\032PushConnectionConstructors\022" +
+      "\032.api.ConnectionConstructor\032\017.api.Connec" +
+      "tion\"\000(\0010\001\0220\n\010SeedDocs\022\010.api.Doc\032\026.googl" +
+      "e.protobuf.Empty\"\000(\001\022>\n\017SeedConnections\022" +
+      "\017.api.Connection\032\026.google.protobuf.Empty" +
+      "\"\000(\001\022.\n\007AddPeer\022\t.api.Peer\032\026.google.prot" +
+      "obuf.Empty\"\000\0228\n\014ClusterState\022\026.google.pr" +
+      "otobuf.Empty\032\016.api.RaftState\"\000B\007Z\005apipbb" +
+      "\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -43388,7 +48694,7 @@ public final class Graphik {
     internal_static_api_Flags_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Flags_descriptor,
-        new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "Metrics", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "PlaygroundClientId", "PlaygroundClientSecret", "PlaygroundRedirect", "RequireRequestAuthorizers", "RequireResponseAuthorizers", });
+        new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "Metrics", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "PlaygroundClientId", "PlaygroundClientSecret", "PlaygroundRedirect", "RequireRequestAuthorizers", "RequireResponseAuthorizers", "JoinRaft", });
     internal_static_api_Boolean_descriptor =
       getDescriptor().getMessageTypes().get(31);
     internal_static_api_Boolean_fieldAccessorTable = new
@@ -43449,6 +48755,30 @@ public final class Graphik {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ExprFilter_descriptor,
         new java.lang.String[] { "Expression", });
+    internal_static_api_RaftCommand_descriptor =
+      getDescriptor().getMessageTypes().get(41);
+    internal_static_api_RaftCommand_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_api_RaftCommand_descriptor,
+        new java.lang.String[] { "User", "Method", "SetDocs", "SetConnections", "DelDocs", "DelConnections", "SetIndexes", "SetAuthorizers", "SetTypeValidators", "SendMessage", });
+    internal_static_api_Peer_descriptor =
+      getDescriptor().getMessageTypes().get(42);
+    internal_static_api_Peer_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_api_Peer_descriptor,
+        new java.lang.String[] { "NodeId", "Addr", });
+    internal_static_api_RaftState_descriptor =
+      getDescriptor().getMessageTypes().get(43);
+    internal_static_api_RaftState_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_api_RaftState_descriptor,
+        new java.lang.String[] { "Leader", "Membership", "Peers", "Stats", });
+    internal_static_api_RaftState_StatsEntry_descriptor =
+      internal_static_api_RaftState_descriptor.getNestedTypes().get(0);
+    internal_static_api_RaftState_StatsEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_api_RaftState_StatsEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
     com.google.protobuf.ExtensionRegistry registry =
         com.google.protobuf.ExtensionRegistry.newInstance();
     registry.add(validator.Validator.field);

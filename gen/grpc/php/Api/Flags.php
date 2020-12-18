@@ -83,6 +83,10 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>bool require_response_authorizers = 16;</code>
      */
     private $require_response_authorizers = false;
+    /**
+     * Generated from protobuf field <code>string join_raft = 17;</code>
+     */
+    private $join_raft = '';
 
     /**
      * Constructor.
@@ -111,6 +115,7 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $playground_redirect
      *     @type bool $require_request_authorizers
      *     @type bool $require_response_authorizers
+     *     @type string $join_raft
      * }
      */
     public function __construct($data = NULL) {
@@ -450,6 +455,28 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkBool($var);
         $this->require_response_authorizers = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string join_raft = 17;</code>
+     * @return string
+     */
+    public function getJoinRaft()
+    {
+        return $this->join_raft;
+    }
+
+    /**
+     * Generated from protobuf field <code>string join_raft = 17;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setJoinRaft($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->join_raft = $var;
 
         return $this;
     }
