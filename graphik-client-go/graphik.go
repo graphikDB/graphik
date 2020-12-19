@@ -5,17 +5,26 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/logger"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"time"
 )
 
 type Options struct {
 	retry       uint
 	tokenSource oauth2.TokenSource
 	raftSecret  string
+	metrics     bool
+	logging     bool
+	logPayload  bool
 }
 
 type Opt func(o *Options)
@@ -35,6 +44,19 @@ func WithRetry(retry uint) Opt {
 func WithTokenSource(tokenSource oauth2.TokenSource) Opt {
 	return func(o *Options) {
 		o.tokenSource = tokenSource
+	}
+}
+
+func WithMetrics(metrics bool) Opt {
+	return func(o *Options) {
+		o.metrics = metrics
+	}
+}
+
+func WithLogging(logging, logPayload bool) Opt {
+	return func(o *Options) {
+		o.logging = logging
+		o.logPayload = logPayload
 	}
 }
 
@@ -59,6 +81,9 @@ func streamAuth(tokenSource oauth2.TokenSource) grpc.StreamClientInterceptor {
 }
 
 func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error) {
+	if target == "" {
+		return nil, errors.New("empty target")
+	}
 	dialopts := []grpc.DialOption{grpc.WithInsecure()}
 	var uinterceptors []grpc.UnaryClientInterceptor
 	var sinterceptors []grpc.StreamClientInterceptor
@@ -66,22 +91,50 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 	for _, o := range opts {
 		o(options)
 	}
+	if options.retry == 0 {
+		options.retry = 3
+	}
+
+	uinterceptors = append(uinterceptors, grpc_validator.UnaryClientInterceptor())
+
+	if options.metrics {
+		uinterceptors = append(uinterceptors, grpc_prometheus.UnaryClientInterceptor)
+		sinterceptors = append(sinterceptors, grpc_prometheus.StreamClientInterceptor)
+	}
+
 	if options.tokenSource != nil {
 		uinterceptors = append(uinterceptors, unaryAuth(options.tokenSource))
 		sinterceptors = append(sinterceptors, streamAuth(options.tokenSource))
 	}
-	if options.retry > 0 {
-		uinterceptors = append(uinterceptors, grpc_retry.UnaryClientInterceptor(
-			grpc_retry.WithMax(options.retry),
-		))
-		sinterceptors = append(sinterceptors, grpc_retry.StreamClientInterceptor(
-			grpc_retry.WithMax(options.retry),
-		))
+	if options.logging {
+		uinterceptors = append(uinterceptors, grpc_zap.UnaryClientInterceptor(logger.Logger(zap.Bool("client", true))))
+		sinterceptors = append(sinterceptors, grpc_zap.StreamClientInterceptor(logger.Logger(zap.Bool("client", true))))
+
+		if options.logPayload {
+			uinterceptors = append(uinterceptors, grpc_zap.PayloadUnaryClientInterceptor(logger.Logger(zap.Bool("client", true)), func(ctx context.Context, fullMethodName string) bool {
+				return true
+			}))
+			sinterceptors = append(sinterceptors, grpc_zap.PayloadStreamClientInterceptor(logger.Logger(zap.Bool("client", true)), func(ctx context.Context, fullMethodName string) bool {
+				return true
+			}))
+		}
 	}
+
+	uinterceptors = append(uinterceptors, grpc_retry.UnaryClientInterceptor(
+		grpc_retry.WithMax(options.retry),
+		grpc_retry.WithPerRetryTimeout(1*time.Second),
+		grpc_retry.WithBackoff(grpc_retry.BackoffExponential(100*time.Millisecond)),
+	))
+	sinterceptors = append(sinterceptors, grpc_retry.StreamClientInterceptor(
+		grpc_retry.WithMax(options.retry),
+		grpc_retry.WithPerRetryTimeout(1*time.Second),
+		grpc_retry.WithBackoff(grpc_retry.BackoffExponential(100*time.Millisecond)),
+	))
 	dialopts = append(dialopts,
 		grpc.WithChainUnaryInterceptor(uinterceptors...),
 		grpc.WithChainStreamInterceptor(sinterceptors...),
 	)
+
 	conn, err := grpc.DialContext(ctx, target, dialopts...)
 	if err != nil {
 		return nil, err

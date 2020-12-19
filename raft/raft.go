@@ -2,7 +2,6 @@ package raft
 
 import (
 	"fmt"
-	"github.com/graphikDB/graphik/logger"
 	"github.com/graphikDB/graphik/raft/fsm"
 	"github.com/graphikDB/graphik/raft/storage"
 	"github.com/hashicorp/raft"
@@ -25,10 +24,10 @@ func NewRaft(fsm *fsm.FSM, opts ...Opt) (*Raft, error) {
 		o(options)
 	}
 	options.setDefaults()
-	fmt.Println(options.raftDir)
-	fmt.Println(options.peerID)
 	config := raft.DefaultConfig()
+	config.NoSnapshotRestoreOnStart = true
 	config.LocalID = raft.ServerID(options.peerID)
+
 	lisAddr := fmt.Sprintf("localhost:%v", options.port)
 	addr, err := net.ResolveTCPAddr("tcp", lisAddr)
 	if err != nil {
@@ -61,7 +60,6 @@ func NewRaft(fsm *fsm.FSM, opts ...Opt) (*Raft, error) {
 				},
 			},
 		}
-		logger.Info("bootstrapping raft cluster as leader")
 		ra.BootstrapCluster(configuration)
 	}
 	return &Raft{

@@ -22,7 +22,10 @@ func init() {
 		return
 	}
 
-	client, err = graphik.NewClient(ctx, "localhost:8080", graphik.WithTokenSource(tokenSource))
+	client, err = graphik.NewClient(ctx, "localhost:7820",
+		graphik.WithTokenSource(tokenSource),
+		graphik.WithRetry(5),
+	)
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -274,7 +277,7 @@ func ExampleClient_CreateConnection() {
 		return
 	}
 	if !has.GetValue() {
-		fmt.Print("failed to find owner connection")
+		fmt.Print("failed to find owner connection: ", ownerConnection.Ref.String())
 		return
 	}
 	exists, err := client.ExistsConnection(context.Background(), &apipb2.ExistsFilter{
@@ -286,7 +289,7 @@ func ExampleClient_CreateConnection() {
 		return
 	}
 	if !exists.GetValue() {
-		fmt.Print("failed to find owner connection")
+		fmt.Print("failed to find owner connection: ", ownerConnection.Ref.String())
 		return
 	}
 	primary := ownerConnection.Attributes.Fields["primary_owner"].GetBoolValue()
@@ -355,10 +358,11 @@ func ExampleClient_Broadcast() {
 func ExampleClient_Stream() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
-		err := client.Stream(context.Background(), &apipb2.StreamFilter{
-			Channel:    "testing",
-			Expression: `this.data.text.contains("hello")`,
+		err := client.Stream(routine.Context(), &apipb2.StreamFilter{
+			Channel: "testing",
+			//Expression: `this.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {
+			fmt.Println(msg.String())
 			if msg.Data.GetFields()["text"] != nil && msg.Data.GetFields()["text"].GetStringValue() == "hello world" {
 				fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
 				return false

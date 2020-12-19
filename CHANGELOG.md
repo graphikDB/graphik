@@ -25,3 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.1] - 2020-12-17
 - add raft cluster secret so only nodes with secret may join
+
+## [0.8.2] - 2020-12-18
+- add client side options for prometheus metrics / validation / logging

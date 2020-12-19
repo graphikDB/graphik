@@ -306,6 +306,9 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.E
 	if err != nil {
 		return nil, err
 	}
+	if err := g.cacheIndexes(); err != nil {
+		return nil, err
+	}
 	return &empty.Empty{}, nil
 }
 
@@ -332,6 +335,10 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 	if err != nil {
 		return nil, err
 	}
+	if err := g.cacheAuthorizers(); err != nil {
+		return nil, err
+	}
+
 	return &empty.Empty{}, nil
 }
 
@@ -356,6 +363,9 @@ func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators)
 		Method:            g.getMethod(ctx),
 	})
 	if err != nil {
+		return nil, err
+	}
+	if err := g.cacheTypeValidators(); err != nil {
 		return nil, err
 	}
 	return &empty.Empty{}, nil
@@ -553,8 +563,8 @@ func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
 		SendMessage: &apipb.Message{
-			Channel:   message.Channel,
-			Data:      message.Data,
+			Channel:   message.GetChannel(),
+			Data:      message.GetData(),
 			User:      user.GetRef(),
 			Timestamp: timestamppb.Now(),
 			Method:    g.getMethod(ctx),
@@ -600,7 +610,7 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 			return result
 		}
 	}
-	if err := g.machine.PubSub().SubscribeFilter(server.Context(), filter.Channel, filterFunc, func(msg interface{}) {
+	if err := g.machine.PubSub().SubscribeFilter(server.Context(), filter.GetChannel(), filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
 			logger.Error("failed to send subscription", zap.Error(err))
 			return
