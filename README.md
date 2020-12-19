@@ -39,9 +39,6 @@ Support: support@graphikdb.io
   * [Deployment](#deployment)
     + [Docker-Compose](#docker-compose)
     + [Kubernetes](#kubernetes)
-    + [Linux](#linux)
-    + [Mac/Darwin](#mac-darwin)
-    + [Windows](#windows)
   * [OIDC Metadata Urls](#oidc-metadata-urls)
 
 
@@ -587,23 +584,6 @@ to shutdown:
  
  Coming Soon
  
- ### Linux
- 
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.8.2/graphik_linux_amd64 \
-    --output /usr/local/bin/graphik && \
-    chmod +x /usr/local/bin/graphik 
-    
- ### Mac/Darwin
- 
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.8.2/graphik_darwin_amd64 \
-    --output /usr/local/bin/graphik && \
-    chmod +x /usr/local/bin/graphik
-
-### Windows
-
-    Nope - use docker
-    
-    
 ## OIDC Metadata Urls
 
 - Google: https://accounts.google.com/.well-known/openid-configuration
