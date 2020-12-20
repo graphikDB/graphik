@@ -37,11 +37,6 @@ enum Membership {
   SHUTDOWN
 }
 
-# Pong returns PONG if the server is healthy
-type Pong {
-  message: String!
-}
-
 # Ref describes a doc/connection type & id
 type Ref {
   # gtype is the type of the doc/connection ex: pet
@@ -533,8 +528,6 @@ type Mutation {
 }
 
 type Query {
-  # ping checks if the server is healthy.
-  ping(where: Empty): Pong!
   # getSchema gets information about node/connection types, type-validators, indexes, and authorizers
   getSchema(where: Empty): Schema!
   # me returns a Doc of the currently logged in user
@@ -567,7 +560,6 @@ type Query {
   aggregateDocs(where: AggFilter!): Float!
   # aggregateConnections executes an aggregation function against a set of connections
   aggregateConnections(where: AggFilter!): Float!
-  clusterState(where: Empty): RaftState!
 }
 
 type Subscription {

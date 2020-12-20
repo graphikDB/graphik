@@ -5,7 +5,7 @@ import (
 	"fmt"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/graphikDB/graphik/raft/fsm"
+	"github.com/graphikDB/raft/fsm"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
@@ -27,9 +27,10 @@ func (g *Graph) fsm() *fsm.FSM {
 				return err
 			}
 			defer func() {
-				logger.Info("applied raft log",
+				logger.Debug("applied raft log",
 					zap.Duration("dur", time.Since(start)),
 					zap.String("method", cmd.Method),
+					zap.String("user", cmd.User.GetRef().GetGid()),
 				)
 			}()
 			ctx := g.methodToContext(context.Background(), cmd.Method)
@@ -115,7 +116,6 @@ func (g *Graph) fsm() *fsm.FSM {
 				}
 			}
 			if cmd.GetSendMessage() != nil {
-				logger.Info("publishing message")
 				if err := g.machine.PubSub().Publish(cmd.GetSendMessage().GetChannel(), cmd.GetSendMessage()); err != nil {
 					return status.Error(codes.Internal, err.Error())
 				}

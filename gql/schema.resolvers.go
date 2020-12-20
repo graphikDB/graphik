@@ -301,20 +301,6 @@ func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, input model.S
 	return gqlConnections(connections), nil
 }
 
-func (r *queryResolver) Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error) {
-	res, err := r.client.Ping(ctx, &emptypb.Empty{})
-	if err != nil {
-		return nil, &gqlerror.Error{
-			Message: err.Error(),
-			Path:    graphql.GetPath(ctx),
-			Extensions: map[string]interface{}{
-				"code": status.Code(err).String(),
-			},
-		}
-	}
-	return &model.Pong{Message: res.GetMessage()}, nil
-}
-
 func (r *queryResolver) GetSchema(ctx context.Context, where *emptypb.Empty) (*model.Schema, error) {
 	res, err := r.client.GetSchema(ctx, &emptypb.Empty{})
 	if err != nil {
@@ -538,30 +524,6 @@ func (r *queryResolver) AggregateConnections(ctx context.Context, where model.Ag
 		}
 	}
 	return res.GetValue(), nil
-}
-
-func (r *queryResolver) ClusterState(ctx context.Context, where *emptypb.Empty) (*model.RaftState, error) {
-	state, err := r.client.ClusterState(ctx, &emptypb.Empty{})
-	if err != nil {
-		return nil, &gqlerror.Error{
-			Message: err.Error(),
-			Path:    graphql.GetPath(ctx),
-			Extensions: map[string]interface{}{
-				"code": status.Code(err).String(),
-			},
-		}
-	}
-	statMap := map[string]interface{}{}
-	for k, v := range state.GetStats() {
-		statMap[k] = v
-	}
-
-	return &model.RaftState{
-		Leader:     state.GetLeader(),
-		Membership: gqlMembership(state.GetMembership()),
-		Stats:      statMap,
-		Peers:      gqlPeers(state.GetPeers()),
-	}, nil
 }
 
 func (r *subscriptionResolver) Stream(ctx context.Context, where model.StreamFilter) (<-chan *model.Message, error) {

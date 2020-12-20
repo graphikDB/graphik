@@ -144,7 +144,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		return
 	}
 	defer conn.Close()
-	resolver := gql.NewResolver(m, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
+	resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
 		AllowedOrigins: global.AllowOrigins,
 		AllowedMethods: global.AllowMethods,
 		AllowedHeaders: global.AllowHeaders,
@@ -209,6 +209,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		),
 	)
 	apipb.RegisterDatabaseServiceServer(gserver, g)
+	apipb.RegisterRaftServiceServer(gserver, g)
 	reflection.Register(gserver)
 	grpc_prometheus.Register(gserver)
 	m.Go(func(routine machine.Routine) {
@@ -231,9 +232,9 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			return
 		}
 		defer leaderConn.Close()
-		client := apipb.NewDatabaseServiceClient(leaderConn)
+		rclient := apipb.NewRaftServiceClient(leaderConn)
 		for x := 0; x < 5; x++ {
-			_, err := client.JoinCluster(metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", global.RaftSecret), &apipb.Peer{
+			_, err := rclient.JoinCluster(metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", global.RaftSecret), &apipb.Peer{
 				NodeId: g.Raft().PeerID(),
 				Addr:   fmt.Sprintf("localhost:%v", global.ListenPort-10),
 			})

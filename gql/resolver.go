@@ -9,11 +9,10 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/autom8ter/machine"
 	"github.com/gorilla/websocket"
+	"github.com/graphikDB/generic"
 	"github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/grpc/go"
-	"github.com/graphikDB/graphik/generic"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
 	"github.com/pkg/errors"
@@ -37,22 +36,20 @@ func init() {
 type Resolver struct {
 	client      apipb.DatabaseServiceClient
 	cors        *cors.Cors
-	machine     *machine.Machine
 	store       *generic.Cache
 	config      *oauth2.Config
 	tokenCookie string
 	stateCookie string
 }
 
-func NewResolver(machine *machine.Machine, client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config) *Resolver {
+func NewResolver(client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config) *Resolver {
 	return &Resolver{
 		client:      client,
 		cors:        cors,
-		machine:     machine,
 		config:      config,
 		tokenCookie: "graphik-playground-token",
 		stateCookie: "graphik-playground-state",
-		store:       generic.NewCache(machine, 5*time.Minute),
+		store:       generic.NewCache(5 * time.Minute),
 	}
 }
 

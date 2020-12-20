@@ -28,3 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.2] - 2020-12-18
 - add client side options for prometheus metrics / validation / logging
+
+## [0.9.0] - 2020-12-19
+- move raft pkg to https://github.com/graphikDB/raft
+- move generic pkg to https://github.com/graphikDB/generic
+- move raft related methods to RaftService
+- remove raft related methods from graphQL API
+- move main.go to cmd/graphik/main.go

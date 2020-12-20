@@ -7,13 +7,13 @@ import (
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/cel-go/cel"
+	"github.com/graphikDB/generic"
 	"github.com/graphikDB/graphik/gen/grpc/go"
-	"github.com/graphikDB/graphik/generic"
 	"github.com/graphikDB/graphik/graphik-client-go"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/graphikDB/graphik/raft"
 	"github.com/graphikDB/graphik/vm"
+	"github.com/graphikDB/raft"
 	raft2 "github.com/hashicorp/raft"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
@@ -79,7 +79,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		db:              handle,
 		jwksMu:          sync.RWMutex{},
 		jwksSet:         nil,
-		jwtCache:        generic.NewCache(m, 5*time.Minute),
+		jwtCache:        generic.NewCache(5 * time.Minute),
 		openID:          nil,
 		path:            path,
 		mu:              sync.RWMutex{},
@@ -88,9 +88,9 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},
-		indexes:         generic.NewCache(m, 0),
-		authorizers:     generic.NewCache(m, 0),
-		typeValidators:  generic.NewCache(m, 0),
+		indexes:         generic.NewCache(0),
+		authorizers:     generic.NewCache(0),
+		typeValidators:  generic.NewCache(0),
 		flgs:            flgs,
 		peers:           map[string]*graphik.Client{},
 	}
@@ -181,6 +181,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		raft.WithListenPort(int(flgs.ListenPort)-10),
 		raft.WithPeerID(flgs.RaftPeerId),
 		raft.WithRaftDir(fmt.Sprintf("%s/raft", flgs.StoragePath)),
+		raft.WithRestoreSnapshotOnRestart(false),
 	)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-version := "0.8.2"
+version := "0.9.0"
 
 .DEFAULT_GOAL := help
 
@@ -10,10 +10,10 @@ help:
 	@echo "----------------------------------------------------------------"
 
 run:
-	@go run main.go --open-id https://accounts.google.com/.well-known/openid-configuration
+	@go run cmd/graphik/main.go --open-id https://accounts.google.com/.well-known/openid-configuration
 
 run-follower:
-	@go run main.go \
+	@go run cmd/graphik/main.go \
 	--open-id https://accounts.google.com/.well-known/openid-configuration \
 	--listen-port 8080 \
 	--join-raft localhost:7820 \

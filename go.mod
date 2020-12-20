@@ -8,6 +8,8 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/google/cel-go v0.6.1-0.20201210004405-3ea8bd382b11
 	github.com/gorilla/websocket v1.4.2
+	github.com/graphikDB/generic v0.0.0
+	github.com/graphikDB/raft v0.0.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/hashicorp/raft v1.2.0
@@ -19,6 +21,7 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/segmentio/ksuid v1.0.3
 	github.com/soheilhy/cmux v0.1.4
+	github.com/spf13/cobra v0.0.3 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/vektah/gqlparser/v2 v2.1.0
 	go.etcd.io/bbolt v1.3.5

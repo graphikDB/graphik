@@ -136,14 +136,9 @@ type ComplexityRoot struct {
 		NodeID func(childComplexity int) int
 	}
 
-	Pong struct {
-		Message func(childComplexity int) int
-	}
-
 	Query struct {
 		AggregateConnections func(childComplexity int, where model.AggFilter) int
 		AggregateDocs        func(childComplexity int, where model.AggFilter) int
-		ClusterState         func(childComplexity int, where *emptypb.Empty) int
 		ConnectionsFrom      func(childComplexity int, where model.ConnectFilter) int
 		ConnectionsTo        func(childComplexity int, where model.ConnectFilter) int
 		ExistsConnection     func(childComplexity int, where model.ExistsFilter) int
@@ -154,7 +149,6 @@ type ComplexityRoot struct {
 		HasConnection        func(childComplexity int, where model.RefInput) int
 		HasDoc               func(childComplexity int, where model.RefInput) int
 		Me                   func(childComplexity int, where *emptypb.Empty) int
-		Ping                 func(childComplexity int, where *emptypb.Empty) int
 		SearchConnections    func(childComplexity int, where model.Filter) int
 		SearchDocs           func(childComplexity int, where model.Filter) int
 		Traverse             func(childComplexity int, where model.TraverseFilter) int
@@ -234,7 +228,6 @@ type MutationResolver interface {
 	SearchAndConnectMe(ctx context.Context, input model.SearchConnectMeFilter) (*model.Connections, error)
 }
 type QueryResolver interface {
-	Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error)
 	GetSchema(ctx context.Context, where *emptypb.Empty) (*model.Schema, error)
 	Me(ctx context.Context, where *emptypb.Empty) (*model.Doc, error)
 	GetDoc(ctx context.Context, where model.RefInput) (*model.Doc, error)
@@ -251,7 +244,6 @@ type QueryResolver interface {
 	ConnectionsTo(ctx context.Context, where model.ConnectFilter) (*model.Connections, error)
 	AggregateDocs(ctx context.Context, where model.AggFilter) (float64, error)
 	AggregateConnections(ctx context.Context, where model.AggFilter) (float64, error)
-	ClusterState(ctx context.Context, where *emptypb.Empty) (*model.RaftState, error)
 }
 type SubscriptionResolver interface {
 	Stream(ctx context.Context, where model.StreamFilter) (<-chan *model.Message, error)
@@ -726,13 +718,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Peer.NodeID(childComplexity), true
 
-	case "Pong.message":
-		if e.complexity.Pong.Message == nil {
-			break
-		}
-
-		return e.complexity.Pong.Message(childComplexity), true
-
 	case "Query.aggregateConnections":
 		if e.complexity.Query.AggregateConnections == nil {
 			break
@@ -756,18 +741,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.AggregateDocs(childComplexity, args["where"].(model.AggFilter)), true
-
-	case "Query.clusterState":
-		if e.complexity.Query.ClusterState == nil {
-			break
-		}
-
-		args, err := ec.field_Query_clusterState_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.ClusterState(childComplexity, args["where"].(*emptypb.Empty)), true
 
 	case "Query.connectionsFrom":
 		if e.complexity.Query.ConnectionsFrom == nil {
@@ -888,18 +861,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Me(childComplexity, args["where"].(*emptypb.Empty)), true
-
-	case "Query.ping":
-		if e.complexity.Query.Ping == nil {
-			break
-		}
-
-		args, err := ec.field_Query_ping_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Ping(childComplexity, args["where"].(*emptypb.Empty)), true
 
 	case "Query.searchConnections":
 		if e.complexity.Query.SearchConnections == nil {
@@ -1240,11 +1201,6 @@ enum Membership {
   CANDIDATE
   LEADER
   SHUTDOWN
-}
-
-# Pong returns PONG if the server is healthy
-type Pong {
-  message: String!
 }
 
 # Ref describes a doc/connection type & id
@@ -1738,8 +1694,6 @@ type Mutation {
 }
 
 type Query {
-  # ping checks if the server is healthy.
-  ping(where: Empty): Pong!
   # getSchema gets information about node/connection types, type-validators, indexes, and authorizers
   getSchema(where: Empty): Schema!
   # me returns a Doc of the currently logged in user
@@ -1772,7 +1726,6 @@ type Query {
   aggregateDocs(where: AggFilter!): Float!
   # aggregateConnections executes an aggregation function against a set of connections
   aggregateConnections(where: AggFilter!): Float!
-  clusterState(where: Empty): RaftState!
 }
 
 type Subscription {
@@ -2101,21 +2054,6 @@ func (ec *executionContext) field_Query_aggregateDocs_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_clusterState_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *emptypb.Empty
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Query_connectionsFrom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2252,21 +2190,6 @@ func (ec *executionContext) field_Query_hasDoc_args(ctx context.Context, rawArgs
 }
 
 func (ec *executionContext) field_Query_me_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *emptypb.Empty
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_ping_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *emptypb.Empty
@@ -4292,83 +4215,6 @@ func (ec *executionContext) _Peer_addr(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Pong_message(ctx context.Context, field graphql.CollectedField, obj *model.Pong) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Pong",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Message, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_ping(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_ping_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Ping(rctx, args["where"].(*emptypb.Empty))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Pong)
-	fc.Result = res
-	return ec.marshalNPong2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Query_getSchema(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -5039,48 +4885,6 @@ func (ec *executionContext) _Query_aggregateConnections(ctx context.Context, fie
 	res := resTmp.(float64)
 	fc.Result = res
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_clusterState(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_clusterState_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().ClusterState(rctx, args["where"].(*emptypb.Empty))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.RaftState)
-	fc.Result = res
-	return ec.marshalNRaftState2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRaftState(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -8588,33 +8392,6 @@ func (ec *executionContext) _Peer(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
-var pongImplementors = []string{"Pong"}
-
-func (ec *executionContext) _Pong(ctx context.Context, sel ast.SelectionSet, obj *model.Pong) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, pongImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Pong")
-		case "message":
-			out.Values[i] = ec._Pong_message(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -8630,20 +8407,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "ping":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_ping(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
 		case "getSchema":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -8863,20 +8626,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_aggregateConnections(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "clusterState":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_clusterState(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -9739,34 +9488,6 @@ func (ec *executionContext) marshalNPeer2ᚖgithubᚗcomᚋgraphikDBᚋgraphik�
 		return graphql.Null
 	}
 	return ec._Peer(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNPong2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx context.Context, sel ast.SelectionSet, v model.Pong) graphql.Marshaler {
-	return ec._Pong(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNPong2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPong(ctx context.Context, sel ast.SelectionSet, v *model.Pong) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Pong(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNRaftState2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRaftState(ctx context.Context, sel ast.SelectionSet, v model.RaftState) graphql.Marshaler {
-	return ec._RaftState(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNRaftState2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRaftState(ctx context.Context, sel ast.SelectionSet, v *model.RaftState) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._RaftState(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx context.Context, sel ast.SelectionSet, v *model.Ref) graphql.Marshaler {

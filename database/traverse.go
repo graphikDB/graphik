@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"github.com/google/cel-go/cel"
+	"github.com/graphikDB/generic"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
-	"github.com/graphikDB/graphik/generic"
 	"github.com/graphikDB/graphik/logger"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"

@@ -10,10 +10,15 @@ import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
-// DatabaseService is the primary database service
-service DatabaseService {
+service RaftService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  rpc JoinCluster(Peer) returns(google.protobuf.Empty){}
+  rpc ClusterState(google.protobuf.Empty) returns(RaftState) {}
+}
+
+// DatabaseService is the primary database service
+service DatabaseService {
   // GetSchema gets schema about the Graph doc & connection types
   rpc GetSchema(google.protobuf.Empty) returns(Schema){}
   rpc SetAuthorizers(Authorizers) returns(google.protobuf.Empty){}
@@ -82,8 +87,6 @@ service DatabaseService {
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
   rpc SeedConnections(stream Connection) returns(google.protobuf.Empty){}
-  rpc JoinCluster(Peer) returns(google.protobuf.Empty){}
-  rpc ClusterState(google.protobuf.Empty) returns(RaftState) {}
 }
 
 enum Algorithm {

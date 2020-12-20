@@ -179,10 +179,6 @@ type PeerInput struct {
 	Addr   string `json:"addr"`
 }
 
-type Pong struct {
-	Message string `json:"message"`
-}
-
 type RaftState struct {
 	Leader     string                 `json:"leader"`
 	Membership Membership             `json:"membership"`

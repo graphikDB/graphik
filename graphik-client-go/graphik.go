@@ -141,6 +141,7 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 	}
 	return &Client{
 		graph:      apipb.NewDatabaseServiceClient(conn),
+		raft:       apipb.NewRaftServiceClient(conn),
 		raftSecret: options.raftSecret,
 	}, nil
 }
@@ -148,6 +149,7 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 type Client struct {
 	raftSecret string
 	graph      apipb.DatabaseServiceClient
+	raft       apipb.RaftServiceClient
 }
 
 func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Context, error) {
@@ -248,6 +250,8 @@ func (c *Client) Stream(ctx context.Context, in *apipb.StreamFilter, handler fun
 	if err != nil {
 		return err
 	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	for {
 		select {
 		case <-ctx.Done():
@@ -270,6 +274,8 @@ func (c *Client) PushDocConstructors(ctx context.Context, ch <-chan *apipb.DocCo
 	if err != nil {
 		return err
 	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	for {
 		select {
 		case <-ctx.Done():
@@ -288,6 +294,8 @@ func (c *Client) PushConnectionConstructors(ctx context.Context, ch <-chan *apip
 	if err != nil {
 		return err
 	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	for {
 		select {
 		case <-ctx.Done():
@@ -298,11 +306,6 @@ func (c *Client) PushConnectionConstructors(ctx context.Context, ch <-chan *apip
 			}
 		}
 	}
-}
-
-// Ping checks if the server is healthy.
-func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {
-	return c.graph.Ping(ctx, in, opts...)
 }
 
 // GetSchema gets information about node/connection types, type-validators, indexes, and authorizers
@@ -440,12 +443,17 @@ func (c *Client) AggregateConnections(ctx context.Context, in *apipb.AggFilter, 
 // AddPeer adds a peer node to the raft cluster.
 func (c *Client) JoinCluster(ctx context.Context, peer *apipb.Peer, opts ...grpc.CallOption) error {
 	ctx = metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", c.raftSecret)
-	_, err := c.graph.JoinCluster(ctx, peer, opts...)
+	_, err := c.raft.JoinCluster(ctx, peer, opts...)
 	return err
 }
 
 // ClusterState returns information about the raft cluster
 func (c *Client) ClusterState(ctx context.Context, _ *empty.Empty, opts ...grpc.CallOption) error {
-	_, err := c.graph.ClusterState(ctx, &empty.Empty{}, opts...)
+	_, err := c.raft.ClusterState(ctx, &empty.Empty{}, opts...)
 	return err
+}
+
+// Ping checks if the server is healthy.
+func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {
+	return c.raft.Ping(ctx, in, opts...)
 }
