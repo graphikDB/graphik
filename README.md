@@ -95,6 +95,7 @@ Support: support@graphikdb.io
       --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
       --allow-methods strings             cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
       --allow-origins strings             cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
+      --debug                             enable debug logs (env: GRAPHIK_DEBUG)
       --join-raft string                  join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)
       --listen-port int                   serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT) (default 7820)
       --metrics                           enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true) (default true)
