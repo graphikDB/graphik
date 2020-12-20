@@ -191,6 +191,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :raft_peer_id, :string, 18
     optional :listen_port, :int64, 19
     optional :raft_secret, :string, 20
+    optional :debug, :bool, 21
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1

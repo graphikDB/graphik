@@ -40,9 +40,10 @@ type Resolver struct {
 	config      *oauth2.Config
 	tokenCookie string
 	stateCookie string
+	logger      *logger.Logger
 }
 
-func NewResolver(client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config) *Resolver {
+func NewResolver(client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config, logger *logger.Logger) *Resolver {
 	return &Resolver{
 		client:      client,
 		cors:        cors,
@@ -50,6 +51,7 @@ func NewResolver(client apipb.DatabaseServiceClient, cors *cors.Cors, config *oa
 		tokenCookie: "graphik-playground-token",
 		stateCookie: "graphik-playground-state",
 		store:       generic.NewCache(5 * time.Minute),
+		logger:      logger,
 	}
 }
 
@@ -111,7 +113,7 @@ func (r *Resolver) Playground() http.HandlerFunc {
 		}
 		authToken, err := r.getToken(req)
 		if err != nil {
-			logger.Error("playground: failed to get session - redirecting", zap.Error(err))
+			r.logger.Error("playground: failed to get session - redirecting", zap.Error(err))
 			r.redirectLogin(w, req)
 			return
 		}
@@ -211,30 +213,30 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 		code := req.URL.Query().Get("code")
 		state := req.URL.Query().Get("state")
 		if code == "" {
-			logger.Error("playground: empty authorization code - redirecting")
+			r.logger.Error("playground: empty authorization code - redirecting")
 			r.redirectLogin(w, req)
 			return
 		}
 		if state == "" {
-			logger.Error("playground: empty authorization state - redirecting")
+			r.logger.Error("playground: empty authorization state - redirecting")
 			r.redirectLogin(w, req)
 			return
 		}
 
 		stateVal, err := r.getState(req)
 		if err != nil {
-			logger.Error("playground: failed to get session state - redirecting", zap.Error(err))
+			r.logger.Error("playground: failed to get session state - redirecting", zap.Error(err))
 			r.redirectLogin(w, req)
 			return
 		}
 		if stateVal != state {
-			logger.Error("playground: session state mismatch - redirecting")
+			r.logger.Error("playground: session state mismatch - redirecting")
 			r.redirectLogin(w, req)
 			return
 		}
 		token, err := r.config.Exchange(req.Context(), code)
 		if err != nil {
-			logger.Error("playground: failed to exchange authorization code - redirecting", zap.Error(err))
+			r.logger.Error("playground: failed to exchange authorization code - redirecting", zap.Error(err))
 			r.redirectLogin(w, req)
 			return
 		}

@@ -38,3 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.9.1] - 2020-12-19
 - remove client side stream retry middleware which was negatively affecting server -> client streaming
+
+## [0.9.2] - 2020-12-19
+- add flag --debug to toggle debug logs

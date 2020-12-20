@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/google/cel-go/cel"
 	"github.com/graphikDB/graphik/gen/grpc/go"
-	"github.com/graphikDB/graphik/logger"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
@@ -373,13 +372,13 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 			result, err := g.vm.Doc().Eval(doc, i.program)
 			if err != nil {
 				if !strings.Contains(err.Error(), "no such key") {
-					logger.Error("set index failure", zap.Error(err))
+					g.logger.Error("set index failure", zap.Error(err))
 				}
 			}
 			if result {
 				err = g.setIndexedDoc(ctx, tx, i.index.Name, []byte(doc.GetRef().GetGid()), bits)
 				if err != nil {
-					logger.Error("failed to save index", zap.Error(err))
+					g.logger.Error("failed to save index", zap.Error(err))
 					return true
 				}
 			}
@@ -490,7 +489,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			if result {
 				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), []byte(connection.GetRef().GetGid()), bits)
 				if err != nil {
-					logger.Error("failed to save index", zap.Error(err))
+					g.logger.Error("failed to save index", zap.Error(err))
 					return true
 				}
 			}

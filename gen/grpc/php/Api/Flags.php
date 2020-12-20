@@ -99,6 +99,10 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string raft_secret = 20;</code>
      */
     private $raft_secret = '';
+    /**
+     * Generated from protobuf field <code>bool debug = 21;</code>
+     */
+    private $debug = false;
 
     /**
      * Constructor.
@@ -131,6 +135,7 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $raft_peer_id
      *     @type int|string $listen_port
      *     @type string $raft_secret
+     *     @type bool $debug
      * }
      */
     public function __construct($data = NULL) {
@@ -558,6 +563,28 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->raft_secret = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool debug = 21;</code>
+     * @return bool
+     */
+    public function getDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool debug = 21;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setDebug($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->debug = $var;
 
         return $this;
     }

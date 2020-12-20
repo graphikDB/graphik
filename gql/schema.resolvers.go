@@ -10,7 +10,6 @@ import (
 	generated1 "github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/gql/go/model"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
-	"github.com/graphikDB/graphik/logger"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/status"
@@ -549,7 +548,7 @@ func (r *subscriptionResolver) Stream(ctx context.Context, where model.StreamFil
 			default:
 				msg, err := stream.Recv()
 				if err != nil {
-					logger.Error("failed to receive subsription message", zap.Error(err))
+					r.logger.Error("failed to receive subsription message", zap.Error(err))
 					continue
 				}
 				ch <- &model.Message{

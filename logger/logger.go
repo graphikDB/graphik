@@ -8,32 +8,40 @@ import (
 	"runtime"
 )
 
-var logger *zap.Logger
+type Logger struct {
+	logger *zap.Logger
+}
 
-func Logger(withFields ...zap.Field) *zap.Logger {
+func New(debug bool, withFields ...zap.Field) *Logger {
+	hst, _ := os.Hostname()
+	withFields = append(withFields, zap.String("host", hst))
 	withFields = append(withFields, zap.String("service", "graphik"))
 	withFields = append(withFields, zap.String("version", version.Version))
-	if logger == nil {
-		zap.NewDevelopmentConfig()
-		jsonEncoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
-			MessageKey:     "msg",
-			LevelKey:       "level",
-			TimeKey:        "ts",
-			NameKey:        "logger",
-			CallerKey:      "caller",
-			FunctionKey:    "function",
-			StacktraceKey:  "stacktrace",
-			EncodeLevel:    zapcore.LowercaseLevelEncoder,
-			EncodeTime:     zapcore.EpochTimeEncoder,
-			EncodeDuration: zapcore.SecondsDurationEncoder,
-			EncodeCaller:   zapcore.FullCallerEncoder,
-			EncodeName:     zapcore.FullNameEncoder,
-		})
-		fn := zap.LevelEnablerFunc(func(zapcore.Level) bool { return true })
-		core := zapcore.NewCore(jsonEncoder, os.Stdout, fn)
-		logger = zap.New(core).With(withFields...)
+
+	zap.NewDevelopmentConfig()
+	jsonEncoder := zapcore.NewJSONEncoder(zapcore.EncoderConfig{
+		MessageKey:     "msg",
+		LevelKey:       "level",
+		TimeKey:        "ts",
+		NameKey:        "logger",
+		CallerKey:      "caller",
+		FunctionKey:    "function",
+		StacktraceKey:  "stacktrace",
+		EncodeLevel:    zapcore.LowercaseLevelEncoder,
+		EncodeTime:     zapcore.EpochTimeEncoder,
+		EncodeDuration: zapcore.SecondsDurationEncoder,
+		EncodeCaller:   zapcore.FullCallerEncoder,
+		EncodeName:     zapcore.FullNameEncoder,
+	})
+	core := zapcore.NewCore(jsonEncoder, os.Stdout, zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		if lvl == zap.DebugLevel {
+			return debug
+		}
+		return true
+	}))
+	return &Logger{
+		logger: zap.New(core).With(withFields...),
 	}
-	return logger
 }
 
 func appendFields(fields ...zap.Field) []zap.Field {
@@ -41,22 +49,26 @@ func appendFields(fields ...zap.Field) []zap.Field {
 	return fields
 }
 
-func Info(msg string, fields ...zap.Field) {
-	Logger().Info(msg, appendFields(fields...)...)
+func (l *Logger) Info(msg string, fields ...zap.Field) {
+	l.logger.Info(msg, appendFields(fields...)...)
 }
 
-func Fatal(msg string, fields ...zap.Field) {
-	Logger().Fatal(msg, appendFields(fields...)...)
+func (l *Logger) Fatal(msg string, fields ...zap.Field) {
+	l.logger.Fatal(msg, appendFields(fields...)...)
 }
 
-func Warn(msg string, fields ...zap.Field) {
-	Logger().Warn(msg, appendFields(fields...)...)
+func (l *Logger) Warn(msg string, fields ...zap.Field) {
+	l.logger.Warn(msg, appendFields(fields...)...)
 }
 
-func Debug(msg string, fields ...zap.Field) {
-	Logger().Debug(msg, appendFields(fields...)...)
+func (l *Logger) Debug(msg string, fields ...zap.Field) {
+	l.logger.Debug(msg, appendFields(fields...)...)
 }
 
-func Error(msg string, fields ...zap.Field) {
-	Logger().Error(msg, appendFields(fields...)...)
+func (l *Logger) Error(msg string, fields ...zap.Field) {
+	l.logger.Error(msg, appendFields(fields...)...)
+}
+
+func (l *Logger) Zap() *zap.Logger {
+	return l.logger
 }

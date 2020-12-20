@@ -58,10 +58,11 @@ type Graph struct {
 	flgs            *apipb.Flags
 	raft            *raft.Raft
 	peers           map[string]*graphik.Client
+	logger          *logger.Logger
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
-func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
+func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Graph, error) {
 	os.MkdirAll(flgs.StoragePath, 0700)
 	path := filepath.Join(flgs.StoragePath, "graph.db")
 	handle, err := bbolt.Open(path, dbFileMode, nil)
@@ -93,6 +94,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		typeValidators:  generic.NewCache(0),
 		flgs:            flgs,
 		peers:           map[string]*graphik.Client{},
+		logger:          lgger,
 	}
 	if flgs.OpenIdDiscovery != "" {
 		resp, err := http.DefaultClient.Get(flgs.OpenIdDiscovery)
@@ -167,7 +169,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags) (*Graph, error) {
 		if g.openID != nil {
 			set, err := jwk.Fetch(g.openID.JwksURI)
 			if err != nil {
-				logger.Error("failed to fetch jwks", zap.Error(err))
+				g.logger.Error("failed to fetch jwks", zap.Error(err))
 				return
 			}
 			g.jwksMu.Lock()
@@ -208,7 +210,7 @@ func (g *Graph) leaderClient(ctx context.Context) (*graphik.Client, error) {
 		return nil, errors.Wrap(err, "failed to parse leader port")
 	}
 	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum+10))
-	logger.Info("adding peer client", zap.String("addr", addr))
+	g.logger.Info("adding peer client", zap.String("addr", addr))
 	client, err := graphik.NewClient(
 		ctx,
 		addr,
@@ -566,8 +568,8 @@ func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (
 		return nil, status.Error(codes.PermissionDenied, "forbidden from publishing to the changes channel")
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
-		User:              user,
-		Method:            g.getMethod(ctx),
+		User:   user,
+		Method: g.getMethod(ctx),
 		SendMessage: &apipb.Message{
 			Channel:   message.GetChannel(),
 			Data:      message.GetData(),
@@ -600,12 +602,12 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 		filterFunc = func(msg interface{}) bool {
 			val, ok := msg.(*apipb.Message)
 			if !ok {
-				logger.Error("invalid message type received during subscription")
+				g.logger.Error("invalid message type received during subscription")
 				return false
 			}
 			result, err := g.vm.Message().Eval(val, programs)
 			if err != nil {
-				logger.Error("subscription filter failure", zap.Error(err))
+				g.logger.Error("subscription filter failure", zap.Error(err))
 				return false
 			}
 			return result
@@ -613,11 +615,11 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 	}
 	if err := g.machine.PubSub().SubscribeFilter(server.Context(), filter.GetChannel(), filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
-			logger.Error("failed to send subscription", zap.Error(err))
+			g.logger.Error("failed to send subscription", zap.Error(err))
 			return
 		}
 		if err := server.Send(msg.(*apipb.Message)); err != nil {
-			logger.Error("failed to send subscription", zap.Error(err))
+			g.logger.Error("failed to send subscription", zap.Error(err))
 			return
 		}
 	}); err != nil {
@@ -630,7 +632,7 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 func (b *Graph) Close() {
 	b.closeOnce.Do(func() {
 		if err := b.raft.Close(); err != nil {
-			logger.Error("failed to shutdown raft", zap.Error(err))
+			b.logger.Error("failed to shutdown raft", zap.Error(err))
 		}
 		b.machine.Close()
 		for _, closer := range b.closers {
@@ -638,7 +640,7 @@ func (b *Graph) Close() {
 		}
 		b.machine.Wait()
 		if err := b.db.Close(); err != nil {
-			logger.Error("failed to close db", zap.Error(err))
+			b.logger.Error("failed to close db", zap.Error(err))
 		}
 	})
 }
@@ -933,7 +935,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 			pass, err := n.vm.Doc().Eval(doc, program)
 			if err != nil {
 				if !strings.Contains(err.Error(), "no such key") {
-					logger.Error("search docs failure", zap.Error(err))
+					n.logger.Error("search docs failure", zap.Error(err))
 				}
 				return true
 			}

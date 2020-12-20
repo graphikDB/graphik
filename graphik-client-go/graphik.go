@@ -104,14 +104,15 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 		sinterceptors = append(sinterceptors, streamAuth(options.tokenSource))
 	}
 	if options.logging {
-		uinterceptors = append(uinterceptors, grpc_zap.UnaryClientInterceptor(logger.Logger(zap.Bool("client", true))))
-		sinterceptors = append(sinterceptors, grpc_zap.StreamClientInterceptor(logger.Logger(zap.Bool("client", true))))
+		lgger := logger.New(true, zap.Bool("client", true))
+		uinterceptors = append(uinterceptors, grpc_zap.UnaryClientInterceptor(lgger.Zap()))
+		sinterceptors = append(sinterceptors, grpc_zap.StreamClientInterceptor(lgger.Zap()))
 
 		if options.logPayload {
-			uinterceptors = append(uinterceptors, grpc_zap.PayloadUnaryClientInterceptor(logger.Logger(zap.Bool("client", true)), func(ctx context.Context, fullMethodName string) bool {
+			uinterceptors = append(uinterceptors, grpc_zap.PayloadUnaryClientInterceptor(lgger.Zap(), func(ctx context.Context, fullMethodName string) bool {
 				return true
 			}))
-			sinterceptors = append(sinterceptors, grpc_zap.PayloadStreamClientInterceptor(logger.Logger(zap.Bool("client", true)), func(ctx context.Context, fullMethodName string) bool {
+			sinterceptors = append(sinterceptors, grpc_zap.PayloadStreamClientInterceptor(lgger.Zap(), func(ctx context.Context, fullMethodName string) bool {
 				return true
 			}))
 		}

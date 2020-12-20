@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
-	"github.com/graphikDB/graphik/logger"
 	"github.com/graphikDB/raft/fsm"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
@@ -27,7 +26,7 @@ func (g *Graph) fsm() *fsm.FSM {
 				return err
 			}
 			defer func() {
-				logger.Debug("applied raft log",
+				g.logger.Debug("applied raft log",
 					zap.Duration("dur", time.Since(start)),
 					zap.String("method", cmd.Method),
 					zap.String("user", cmd.User.GetRef().GetGid()),
@@ -123,11 +122,11 @@ func (g *Graph) fsm() *fsm.FSM {
 			return cmd
 		},
 		SnapshotFunc: func() (*fsm.Snapshot, error) {
-			logger.Info("raft: snapshot unimplemented")
+			g.logger.Info("raft: snapshot unimplemented")
 			return nil, fmt.Errorf("raft: snapshot unimplemented")
 		},
 		RestoreFunc: func(closer io.ReadCloser) error {
-			logger.Info("raft: restore unimplemented")
+			g.logger.Info("raft: restore unimplemented")
 			return fmt.Errorf("raft: restore unimplemented")
 		},
 	}

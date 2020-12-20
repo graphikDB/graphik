@@ -414,6 +414,7 @@ message Flags {
   string raft_peer_id =18;
   int64 listen_port =19;
   string raft_secret =20;
+  bool  debug = 21;
 }
 
 // Boolean is a simple boolean value

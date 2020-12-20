@@ -7111,7 +7111,8 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     joinRaft: jspb.Message.getFieldWithDefault(msg, 17, ""),
     raftPeerId: jspb.Message.getFieldWithDefault(msg, 18, ""),
     listenPort: jspb.Message.getFieldWithDefault(msg, 19, 0),
-    raftSecret: jspb.Message.getFieldWithDefault(msg, 20, "")
+    raftSecret: jspb.Message.getFieldWithDefault(msg, 20, ""),
+    debug: jspb.Message.getFieldWithDefault(msg, 21, false)
   };
 
   if (includeInstance) {
@@ -7219,6 +7220,10 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 20:
       var value = /** @type {string} */ (reader.readString());
       msg.setRaftSecret(value);
+      break;
+    case 21:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDebug(value);
       break;
     default:
       reader.skipField();
@@ -7372,6 +7377,13 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       20,
+      f
+    );
+  }
+  f = message.getDebug();
+  if (f) {
+    writer.writeBool(
+      21,
       f
     );
   }
@@ -7707,6 +7719,23 @@ proto.api.Flags.prototype.getRaftSecret = function() {
 /** @param {string} value */
 proto.api.Flags.prototype.setRaftSecret = function(value) {
   jspb.Message.setProto3StringField(this, 20, value);
+};
+
+
+/**
+ * optional bool debug = 21;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Flags.prototype.getDebug = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 21, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Flags.prototype.setDebug = function(value) {
+  jspb.Message.setProto3BooleanField(this, 21, value);
 };
 
 
