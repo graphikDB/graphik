@@ -72,8 +72,10 @@ func (n *AuthTarget) AsMap() map[string]interface{} {
 		return map[string]interface{}{}
 	}
 	return map[string]interface{}{
-		"target": n.GetTarget().AsMap(),
-		"user":   n.GetUser().AsMap(),
+		"target":  n.GetTarget().AsMap(),
+		"user":    n.GetUser().AsMap(),
+		"peer":    n.GetPeer(),
+		"headers": n.GetHeaders(),
 	}
 }
 

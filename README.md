@@ -5,7 +5,7 @@
 
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.9.2`
+`    docker pull graphikdb/graphik:v0.9.3`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -91,6 +91,10 @@ Support: support@graphikdb.io
 
 ## Flags
 
+please note that the following flags are required:
+- --root-users
+- --open-id are required flags
+
 ```text
       --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
       --allow-methods strings             cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
@@ -99,14 +103,14 @@ Support: support@graphikdb.io
       --join-raft string                  join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)
       --listen-port int                   serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT) (default 7820)
       --metrics                           enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true) (default true)
-      --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
+      --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)  (required)
       --playground-client-id string       playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)
       --playground-client-secret string   playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)
       --playground-redirect string        playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT) (default "http://localhost:7820/playground/callback")
       --raft-peer-id string               raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)
       --require-request-authorizers       require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)
       --require-response-authorizers      require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)
-      --root-users strings                a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)
+      --root-users strings                a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)  (required)
       --storage string                    persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
       --tls-cert string                   path to tls certificate (env: GRAPHIK_TLS_CERT)
       --tls-key string                    path to tls key (env: GRAPHIK_TLS_KEY)
@@ -177,7 +181,40 @@ message Connection {
 - authorizers are completely optional but highly recommended
 
 #### Authorizers Examples
-Coming Soon
+
+
+1) only allow access to the GetSchema method if the users email contains `coleman` AND their email is verified
+
+```graphql
+mutation {
+  setAuthorizers(input: {
+    authorizers: [{
+      name: "getSchema",
+      method: "/api.DatabaseService/GetSchema",
+      expression: "this.user.attributes.email.contains('coleman') && this.user.attributes.email_verified"
+      target_requests:true,
+      target_responses: true
+    }]
+  })
+}
+```
+
+2) only allow access to the CreateDoc method if the users email endsWith acme.com AND the users email is verified AND the doc to create is of type note
+
+```graphql
+mutation {
+  setAuthorizers(input: {
+    authorizers: [{
+      name: "createNote",
+      method: "/api.DatabaseService/CreateDoc",
+      expression: "this.user.attributes.email.endsWith('acme.com') && this.user.attributes.email_verified && this.target.ref.gtype == 'note'"
+      target_requests:true,
+      target_responses: false
+    }]
+  })
+}
+```
+
 
 ### Secondary Indexes
 - secondary indexes are CEL expressions evaluated against a particular type of Doc or Connection
@@ -192,7 +229,38 @@ Coming Soon
 - type validators are completely optional
 
 #### Type Validator Examples
-Coming Soon
+
+1) ensure all documents of type 'note' have a title
+
+```graphql
+mutation {
+  setTypeValidators(input: {
+    validators: [{
+    	name: "noteValidator"
+			gtype: "note"
+			expression: "this.attributes.title != ''"
+			target_docs: true
+			target_connections: false
+    }]
+  })
+}
+```
+
+2) ensure all documents of type 'product' have a price greater than 0
+
+```graphql
+mutation {
+  setTypeValidators(input: {
+    validators: [{
+    	name: "productValidator"
+			gtype: "product"
+			expression: "int(this.attributes.price) > 0"
+			target_docs: true
+			target_connections: false
+    }]
+  })
+}
+```
 
 ### Identity Graph
 - any time a document is created, a connection of type `created` from the origin user to the new document is also created
@@ -349,6 +417,31 @@ query {
         ]
       }
     }
+  },
+  "extensions": {}
+}
+```
+
+### Set a Request Authorizer
+
+```graphql
+mutation {
+  setAuthorizers(input: {
+    authorizers: [{
+      name: "testing",
+      method: "/api.DatabaseService/GetSchema",
+      expression: "this.user.attributes.email.contains('coleman') && this.user.attributes.email_verified"
+      target_requests:true,
+      target_responses: true
+    }]
+  })
+}
+```
+
+```json
+{
+  "data": {
+    "setAuthorizers": {}
   },
   "extensions": {}
 }
@@ -530,6 +623,63 @@ subscription {
 }
 ```
 
+### Broadcasting a Message
+
+```graphql
+mutation {
+  broadcast(input: {
+    channel: "testing"
+    data: {
+      text: "hello world!"
+    }
+  })
+}
+```
+
+```json
+{
+  "data": {
+    "broadcast": {}
+  },
+  "extensions": {}
+}
+```
+
+### Filtered Streaming
+
+```graphql
+subscription {
+  stream(where: {
+    channel: "testing"
+		expression: "this.data.text == 'hello world!' && this.user.gid.endsWith('graphikdb.io')"
+    
+  }){
+    data
+		user {
+			gid
+			gtype
+		}
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "stream": {
+      "data": {
+        "text": "hello world!"
+      },
+      "user": {
+        "gid": "coleman.word@graphikdb.io",
+        "gtype": "user"
+      }
+    }
+  },
+  "extensions": {}
+}
+```
+
 ## Deployment
 
 Regardless of deployment methodology, please set the following environmental variables or include them in a ${pwd}/.env file
@@ -554,7 +704,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.9.2
+        image: graphikdb/graphik:v0.9.3
         env_file:
           - .env
         ports:

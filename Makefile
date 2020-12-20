@@ -1,4 +1,4 @@
-version := "0.9.2"
+version := "0.9.3"
 
 .DEFAULT_GOAL := help
 
@@ -67,6 +67,6 @@ down: ## shuts down local docker containers
 
 build: ## build the server to ./bin
 	@mkdir -p bin
-	@gox -osarch="linux/amd64" -output="./bin/linux/{{.Dir}}_linux_amd64"
-	@gox -osarch="darwin/amd64" -output="./bin/darwin/{{.Dir}}_darwin_amd64"
-	@gox -osarch="windows/amd64" -output="./bin/windows/{{.Dir}}_windows_amd64"
+	@cd cmd/graphik; gox -osarch="linux/amd64" -output="../../bin/linux/{{.Dir}}_linux_amd64"
+	@cd cmd/graphik; gox -osarch="darwin/amd64" -output="../../bin/darwin/{{.Dir}}_darwin_amd64"
+	@cd cmd/graphik; gox -osarch="windows/amd64" -output="../../bin/windows/{{.Dir}}_windows_amd64"
