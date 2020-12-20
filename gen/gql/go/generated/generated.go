@@ -91,11 +91,11 @@ type ComplexityRoot struct {
 	}
 
 	Index struct {
-		Connections func(childComplexity int) int
-		Docs        func(childComplexity int) int
-		Expression  func(childComplexity int) int
-		Gtype       func(childComplexity int) int
-		Name        func(childComplexity int) int
+		Expression        func(childComplexity int) int
+		Gtype             func(childComplexity int) int
+		Name              func(childComplexity int) int
+		TargetConnections func(childComplexity int) int
+		TargetDocs        func(childComplexity int) int
 	}
 
 	Indexes struct {
@@ -411,20 +411,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Docs.SeekNext(childComplexity), true
 
-	case "Index.connections":
-		if e.complexity.Index.Connections == nil {
-			break
-		}
-
-		return e.complexity.Index.Connections(childComplexity), true
-
-	case "Index.docs":
-		if e.complexity.Index.Docs == nil {
-			break
-		}
-
-		return e.complexity.Index.Docs(childComplexity), true
-
 	case "Index.expression":
 		if e.complexity.Index.Expression == nil {
 			break
@@ -445,6 +431,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Index.Name(childComplexity), true
+
+	case "Index.target_connections":
+		if e.complexity.Index.TargetConnections == nil {
+			break
+		}
+
+		return e.complexity.Index.TargetConnections(childComplexity), true
+
+	case "Index.target_docs":
+		if e.complexity.Index.TargetDocs == nil {
+			break
+		}
+
+		return e.complexity.Index.TargetDocs(childComplexity), true
 
 	case "Indexes.indexes":
 		if e.complexity.Indexes.Indexes == nil {
@@ -1301,14 +1301,14 @@ type Connections {
 type Index {
   # name is the unique name of the index in the graph
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the index will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if docs is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this index will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this index will be applied to connections.
+  target_connections: Boolean!
 }
 
 # Indexes is an array of Index
@@ -1591,10 +1591,10 @@ input IndexInput {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if connections is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this index will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this index will be applied to connections.
+  target_connections: Boolean!
 }
 
 # IndexesInput is an array IndexInput
@@ -3136,7 +3136,7 @@ func (ec *executionContext) _Index_expression(ctx context.Context, field graphql
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Index_docs(ctx context.Context, field graphql.CollectedField, obj *model.Index) (ret graphql.Marshaler) {
+func (ec *executionContext) _Index_target_docs(ctx context.Context, field graphql.CollectedField, obj *model.Index) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3154,7 +3154,7 @@ func (ec *executionContext) _Index_docs(ctx context.Context, field graphql.Colle
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Docs, nil
+		return obj.TargetDocs, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3171,7 +3171,7 @@ func (ec *executionContext) _Index_docs(ctx context.Context, field graphql.Colle
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Index_connections(ctx context.Context, field graphql.CollectedField, obj *model.Index) (ret graphql.Marshaler) {
+func (ec *executionContext) _Index_target_connections(ctx context.Context, field graphql.CollectedField, obj *model.Index) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3189,7 +3189,7 @@ func (ec *executionContext) _Index_connections(ctx context.Context, field graphq
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Connections, nil
+		return obj.TargetConnections, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7394,19 +7394,19 @@ func (ec *executionContext) unmarshalInputIndexInput(ctx context.Context, obj in
 			if err != nil {
 				return it, err
 			}
-		case "docs":
+		case "target_docs":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("docs"))
-			it.Docs, err = ec.unmarshalNBoolean2bool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_docs"))
+			it.TargetDocs, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "connections":
+		case "target_connections":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections"))
-			it.Connections, err = ec.unmarshalNBoolean2bool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_connections"))
+			it.TargetConnections, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8176,13 +8176,13 @@ func (ec *executionContext) _Index(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "docs":
-			out.Values[i] = ec._Index_docs(ctx, field, obj)
+		case "target_docs":
+			out.Values[i] = ec._Index_target_docs(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "connections":
-			out.Values[i] = ec._Index_connections(ctx, field, obj)
+		case "target_connections":
+			out.Values[i] = ec._Index_target_connections(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

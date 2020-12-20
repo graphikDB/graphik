@@ -5,7 +5,7 @@
 
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.9.3`
+`    docker pull graphikdb/graphik:v0.10.0`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -180,8 +180,12 @@ message Connection {
     - registered root users(see flags) bypass these authorizers
 - authorizers are completely optional but highly recommended
 
-#### Authorizers Examples
+please note:
 
+- setAuthorizers method overwrites all authorizers in the database
+- authorizers may be listed with the getSchema method
+
+#### Authorizers Examples
 
 1) only allow access to the GetSchema method if the users email contains `coleman` AND their email is verified
 
@@ -221,12 +225,79 @@ mutation {
 - indexes may be used to speed up queries that iterate over a large number of elements
 - secondary indexes are completely optional but recommended
 
+please note:
+
+- setIndexes method overwrites all indexes in the database
+- indexes may be listed with the getSchema method
+
 #### Secondary Index Examples
-Coming Soon
+
+1) index documents of type `product` that have a price > 100
+
+```graphql
+mutation {
+  setIndexes(input: {
+    indexes: [{
+    	name: "expensiveProducts"
+			gtype: "product"
+			expression: "int(this.attributes.price) > 100"
+			target_docs: true
+			target_connections: false
+    }]
+  })
+}
+```
+
+you can search for the document within the new index like so:
+
+```graphql
+query {
+	searchDocs(where: {
+		gtype: "product"
+		limit: 1
+		index: "expensiveProducts"
+	}){
+		docs {
+			ref {
+				gid
+				gtype
+			}
+			attributes
+		}
+	}
+}
+```
+
+```json
+{
+  "data": {
+    "searchDocs": {
+      "docs": [
+        {
+          "ref": {
+            "gid": "1lw7gcc5yQ01YbLcsgMX0iz0Sgx",
+            "gtype": "product"
+          },
+          "attributes": {
+            "price": 101,
+            "title": "this is a product"
+          }
+        }
+      ]
+    }
+  },
+  "extensions": {}
+}
+```
 
 ### Type Validators
 - type validators are CEL expressions evaluated against a particular type of Doc or Connection to enforce custom constraints
 - type validators are completely optional
+
+please note:
+
+- setTypeValidators overwrites all validators in the database
+- validators may be listed with the getSchema method
 
 #### Type Validator Examples
 
@@ -704,7 +775,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.9.3
+        image: graphikdb/graphik:v0.10.0
         env_file:
           - .env
         ports:

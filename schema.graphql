@@ -135,14 +135,14 @@ type Connections {
 type Index {
   # name is the unique name of the index in the graph
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the index will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if docs is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this index will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this index will be applied to connections.
+  target_connections: Boolean!
 }
 
 # Indexes is an array of Index
@@ -425,10 +425,10 @@ input IndexInput {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if connections is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this index will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this index will be applied to connections.
+  target_connections: Boolean!
 }
 
 # IndexesInput is an array IndexInput
