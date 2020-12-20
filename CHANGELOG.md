@@ -35,3 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - move raft related methods to RaftService
 - remove raft related methods from graphQL API
 - move main.go to cmd/graphik/main.go
+
+## [0.9.1] - 2020-12-19
+- remove client side stream retry middleware which was negatively affecting server -> client streaming

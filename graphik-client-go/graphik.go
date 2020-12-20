@@ -91,9 +91,6 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 	for _, o := range opts {
 		o(options)
 	}
-	if options.retry == 0 {
-		options.retry = 3
-	}
 
 	uinterceptors = append(uinterceptors, grpc_validator.UnaryClientInterceptor())
 
@@ -121,11 +118,6 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 	}
 
 	uinterceptors = append(uinterceptors, grpc_retry.UnaryClientInterceptor(
-		grpc_retry.WithMax(options.retry),
-		grpc_retry.WithPerRetryTimeout(1*time.Second),
-		grpc_retry.WithBackoff(grpc_retry.BackoffExponential(100*time.Millisecond)),
-	))
-	sinterceptors = append(sinterceptors, grpc_retry.StreamClientInterceptor(
 		grpc_retry.WithMax(options.retry),
 		grpc_retry.WithPerRetryTimeout(1*time.Second),
 		grpc_retry.WithBackoff(grpc_retry.BackoffExponential(100*time.Millisecond)),
@@ -248,7 +240,7 @@ func (c *Client) Broadcast(ctx context.Context, in *apipb.OutboundMessage, opts 
 func (c *Client) Stream(ctx context.Context, in *apipb.StreamFilter, handler func(msg *apipb.Message) bool, opts ...grpc.CallOption) error {
 	stream, err := c.graph.Stream(ctx, in, opts...)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "failed to create client stream")
 	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -259,7 +251,7 @@ func (c *Client) Stream(ctx context.Context, in *apipb.StreamFilter, handler fun
 		default:
 			msg, err := stream.Recv()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "failed to receive message")
 			}
 			if !handler(msg) {
 				return nil

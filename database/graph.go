@@ -553,7 +553,10 @@ func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (
 		if err != nil {
 			return nil, err
 		}
-		return &empty.Empty{}, client.Broadcast(invertContext(ctx), message)
+		if err := client.Broadcast(invertContext(ctx), message); err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, nil
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
@@ -563,6 +566,8 @@ func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (
 		return nil, status.Error(codes.PermissionDenied, "forbidden from publishing to the changes channel")
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
+		User:              user,
+		Method:            g.getMethod(ctx),
 		SendMessage: &apipb.Message{
 			Channel:   message.GetChannel(),
 			Data:      message.GetData(),
@@ -570,8 +575,6 @@ func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (
 			Timestamp: timestamppb.Now(),
 			Method:    g.getMethod(ctx),
 		},
-		User:   user,
-		Method: g.getMethod(ctx),
 	})
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -583,11 +586,8 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 	var filterFunc func(msg interface{}) bool
 	if filter.Expression == "" {
 		filterFunc = func(msg interface{}) bool {
-			m, ok := msg.(*apipb.Message)
+			_, ok := msg.(*apipb.Message)
 			if !ok {
-				return false
-			}
-			if err := m.Validate(); err != nil {
 				return false
 			}
 			return true
@@ -616,11 +616,9 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 			logger.Error("failed to send subscription", zap.Error(err))
 			return
 		}
-		if val, ok := msg.(*apipb.Message); ok && val != nil {
-			if err := server.Send(val); err != nil {
-				logger.Error("failed to send subscription", zap.Error(err))
-				return
-			}
+		if err := server.Send(msg.(*apipb.Message)); err != nil {
+			logger.Error("failed to send subscription", zap.Error(err))
+			return
 		}
 	}); err != nil {
 		return err

@@ -116,7 +116,7 @@ func (g *Graph) fsm() *fsm.FSM {
 				}
 			}
 			if cmd.GetSendMessage() != nil {
-				if err := g.machine.PubSub().Publish(cmd.GetSendMessage().GetChannel(), cmd.GetSendMessage()); err != nil {
+				if err := g.machine.PubSub().Publish(cmd.SendMessage.Channel, cmd.SendMessage); err != nil {
 					return status.Error(codes.Internal, err.Error())
 				}
 			}
@@ -134,7 +134,13 @@ func (g *Graph) fsm() *fsm.FSM {
 }
 
 func (g *Graph) applyCommand(rft *apipb.RaftCommand) (*apipb.RaftCommand, error) {
+	if rft == nil {
+		return nil, errors.New("empty raft command")
+	}
 	bits, err := proto.Marshal(rft)
+	if err != nil {
+		return nil, err
+	}
 	i, err := g.raft.Apply(bits)
 	if err != nil {
 		return nil, err

@@ -358,11 +358,10 @@ func ExampleClient_Broadcast() {
 func ExampleClient_Stream() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
-		err := client.Stream(routine.Context(), &apipb2.StreamFilter{
+		err := client.Stream(context.Background(), &apipb2.StreamFilter{
 			Channel: "testing",
 			//Expression: `this.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {
-			fmt.Println(msg.String())
 			if msg.Data.GetFields()["text"] != nil && msg.Data.GetFields()["text"].GetStringValue() == "hello world" {
 				fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
 				return false
@@ -370,7 +369,7 @@ func ExampleClient_Stream() {
 			return true
 		})
 		if err != nil {
-			fmt.Print("failed to subscribe", err)
+			fmt.Print("failed to subscribe: ", err.Error())
 			return
 		}
 	})

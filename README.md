@@ -5,7 +5,7 @@
 
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.9.0`
+`    docker pull graphikdb/graphik:v0.9.1`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -80,13 +80,14 @@ Support: support@graphikdb.io
 ## Key Dependencies
 
 - google.golang.org/grpc
-- github.com/autom8ter/machine
 - github.com/google/cel-go/cel
 - go.etcd.io/bbolt
 - go.uber.org/zap
 - golang.org/x/oauth2
 - github.com/99designs/gqlgen
-- github.com/hashicorp/raft
+- github.com/autom8ter/machine
+- github.com/graphikDB/raft
+- github.com/graphikDB/generic
 
 ## Flags
 
@@ -552,7 +553,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.9.0
+        image: graphikdb/graphik:v0.9.1
         env_file:
           - .env
         ports:
