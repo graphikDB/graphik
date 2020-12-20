@@ -93,7 +93,7 @@ Support: support@graphikdb.io
 
 please note that the following flags are required:
 - --root-users
-- --open-id are required flags
+- --open-id
 
 ```text
       --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
