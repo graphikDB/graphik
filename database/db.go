@@ -61,6 +61,9 @@ func (g *Graph) cacheConnectionRefs() error {
 func (g *Graph) cacheIndexes() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbIndexes).ForEach(func(k, v []byte) error {
+			if k == nil || v == nil {
+				return nil
+			}
 			var i apipb.Index
 			var program cel.Program
 			var err error
@@ -103,7 +106,7 @@ func (g *Graph) rangeTypeValidators(fn func(a *typeValidator) bool) {
 func (g *Graph) cacheAuthorizers() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbAuthorizers).ForEach(func(k, v []byte) error {
-			if v == nil {
+			if k == nil || v == nil {
 				return nil
 			}
 			var i apipb.Authorizer
@@ -111,9 +114,12 @@ func (g *Graph) cacheAuthorizers() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
+			if i.GetExpression() == "" {
+				return nil
+			}
 			program, err := g.vm.Auth().Program(i.Expression)
 			if err != nil {
-				return err
+				return errors.Wrapf(err, "failed to cache auth expression: %s", i.GetName())
 			}
 			g.authorizers.Set(i.GetName(), &authorizer{
 				authorizer: &i,
@@ -127,7 +133,7 @@ func (g *Graph) cacheAuthorizers() error {
 func (g *Graph) cacheTypeValidators() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbTypeValidators).ForEach(func(k, v []byte) error {
-			if v == nil {
+			if k == nil || v == nil {
 				return nil
 			}
 			var i apipb.TypeValidator

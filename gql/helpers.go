@@ -222,9 +222,9 @@ func gqlTypeValidator(val *apipb.TypeValidator) *model.TypeValidator {
 
 func gqlIndex(val *apipb.Index) *model.Index {
 	return &model.Index{
-		Name:        val.GetName(),
-		Gtype:       val.GetGtype(),
-		Expression:  val.GetExpression(),
+		Name:              val.GetName(),
+		Gtype:             val.GetGtype(),
+		Expression:        val.GetExpression(),
 		TargetConnections: val.GetConnections(),
 		TargetDocs:        val.GetDocs(),
 	}
