@@ -12,6 +12,6 @@ RUN go install ./...
 
 FROM alpine
 RUN apk add ca-certificates
-COPY --from=build-env /go/bin/* /usr/local/bin/*
+COPY --from=build-env /go/bin/ /usr/local/bin/
 WORKDIR /workspace
 ENTRYPOINT ["/usr/local/bin/graphik"]
