@@ -65,6 +65,14 @@ func (g *Graph) fsm() *fsm.FSM {
 						}
 					}
 				}
+				if cmd.SetTriggers != nil {
+					for _, a := range cmd.GetSetTriggers().GetTriggers() {
+						_, err := g.setTrigger(ctx, tx, a)
+						if err != nil {
+							return errors.Wrap(err, "raft: setTrigger")
+						}
+					}
+				}
 				if len(cmd.GetSetDocs()) > 0 {
 					docs, err := g.setDocs(ctx, tx, cmd.SetDocs...)
 					if err != nil {
@@ -111,6 +119,11 @@ func (g *Graph) fsm() *fsm.FSM {
 			}
 			if cmd.SetIndexes != nil {
 				if err := g.cacheIndexes(); err != nil {
+					return err
+				}
+			}
+			if cmd.SetTriggers != nil {
+				if err := g.cacheTriggers(); err != nil {
 					return err
 				}
 			}

@@ -23,6 +23,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io/ioutil"
 	"net"
@@ -36,7 +37,6 @@ import (
 )
 
 type Graph struct {
-	vm *eval.Decision
 	// db is the underlying handle to the db.
 	db              *bbolt.DB
 	jwksMu          sync.RWMutex
@@ -52,6 +52,7 @@ type Graph struct {
 	closeOnce       sync.Once
 	indexes         *generic.Cache
 	authorizers     *generic.Cache
+	triggers        *generic.Cache
 	typeValidators  *generic.Cache
 	flgs            *apipb.Flags
 	raft            *raft.Raft
@@ -71,7 +72,6 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 	var closers []func()
 	m := machine.New(ctx, machine.WithMaxRoutines(100000))
 	g := &Graph{
-		vm:              nil,
 		db:              handle,
 		jwksMu:          sync.RWMutex{},
 		jwksSet:         nil,
@@ -271,12 +271,23 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 		jval := typeValidators[j]
 		return fmt.Sprintf("%s.%s", ival.Gtype, ival.Name) < fmt.Sprintf("%s.%s", jval.Gtype, jval.Name)
 	})
+	var triggers []*apipb.Trigger
+	g.rangeTriggers(func(v *trigger) bool {
+		triggers = append(triggers, v.trigger)
+		return true
+	})
+	sort.Slice(triggers, func(i, j int) bool {
+		ival := triggers[i]
+		jval := triggers[j]
+		return fmt.Sprintf("%s.%s", ival.Gtype, ival.Name) < fmt.Sprintf("%s.%s", jval.Gtype, jval.Name)
+	})
 	return &apipb.Schema{
 		ConnectionTypes: e,
 		DocTypes:        n,
 		Authorizers:     &apipb.Authorizers{Authorizers: authorizers},
 		Validators:      &apipb.TypeValidators{Validators: typeValidators},
 		Indexes:         &apipb.Indexes{Indexes: indexes},
+		Triggers:        &apipb.Triggers{Triggers: triggers},
 	}, nil
 }
 
@@ -307,6 +318,36 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.E
 	if err := g.cacheIndexes(); err != nil {
 		return nil, err
 	}
+	return &empty.Empty{}, nil
+}
+
+func (g *Graph) SetTriggers(ctx context.Context, triggers *apipb.Triggers) (*empty.Empty, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, status.Error(codes.Canceled, err.Error())
+	}
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return &empty.Empty{}, client.SetTriggers(invertContext(ctx), triggers)
+	}
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+	}
+	_, err := g.applyCommand(&apipb.RaftCommand{
+		SetTriggers: triggers,
+		User:        user,
+		Method:      g.getMethod(ctx),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err := g.cacheTriggers(); err != nil {
+		return nil, err
+	}
+
 	return &empty.Empty{}, nil
 }
 
@@ -419,6 +460,19 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 				Ref:        path,
 				Attributes: constructor.GetAttributes(),
 			}
+			g.rangeTriggers(func(a *trigger) bool {
+				if a.trigger.GetTargetDocs() && doc.GetRef().GetGtype() == a.trigger.GetGtype() {
+					data := doc.AsMap()
+					err := a.evalTrigger.Trigger(data)
+					if err == nil && len(data) > 0 {
+						for k, v := range data {
+							val, _ := structpb.NewValue(v)
+							doc.GetAttributes().GetFields()[k] = val
+						}
+					}
+				}
+				return true
+			})
 			setDocs = append(setDocs, doc)
 			if doc.GetRef().GetGid() != user.GetRef().GetGid() && doc.GetRef().GetGtype() != user.GetRef().GetGtype() {
 				id := helpers.Hash([]byte(fmt.Sprintf("%s-%s", user.GetRef().String(), doc.GetRef().String())))
@@ -516,18 +570,33 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 			if conn, err := g.getConnection(ctx, tx, path); err == nil || conn != nil {
 				return ErrAlreadyExists
 			}
-			connections = append(connections, &apipb.Connection{
+			c := &apipb.Connection{
 				Ref:        path,
 				Attributes: constructor.GetAttributes(),
 				Directed:   constructor.GetDirected(),
 				From:       constructor.GetFrom(),
 				To:         constructor.GetTo(),
+			}
+			g.rangeTriggers(func(a *trigger) bool {
+				if a.trigger.GetTargetConnections() && c.GetRef().GetGtype() == a.trigger.GetGtype() {
+					data := c.AsMap()
+					err := a.evalTrigger.Trigger(data)
+					if err == nil && len(data) > 0 {
+						for k, v := range data {
+							val, _ := structpb.NewValue(v)
+							c.GetAttributes().GetFields()[k] = val
+						}
+					}
+				}
+				return true
 			})
+			connections = append(connections, c)
 		}
 		return nil
 	}); err != nil {
 		return nil, err
 	}
+
 	cmd, err := g.applyCommand(&apipb.RaftCommand{
 		SetConnections: connections,
 		User:           user,
@@ -739,6 +808,19 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 		for k, v := range value.GetAttributes().GetFields() {
 			setDoc.Attributes.GetFields()[k] = v
 		}
+		n.rangeTriggers(func(a *trigger) bool {
+			if a.trigger.GetTargetDocs() && setDoc.GetRef().GetGtype() == a.trigger.GetGtype() {
+				data := setDoc.AsMap()
+				err := a.evalTrigger.Trigger(data)
+				if err == nil && len(data) > 0 {
+					for k, v := range data {
+						val, _ := structpb.NewValue(v)
+						setDoc.GetAttributes().GetFields()[k] = val
+					}
+				}
+			}
+			return true
+		})
 
 		if setDoc.GetRef().GetGid() != user.GetRef().GetGid() && setDoc.GetRef().GetGtype() != user.GetRef().GetGtype() {
 			id := helpers.Hash([]byte(fmt.Sprintf("%s-%s", user.GetRef().String(), setDoc.GetRef().String())))
@@ -799,6 +881,19 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 		for k, v := range patch.GetAttributes().GetFields() {
 			setDoc.Attributes.GetFields()[k] = v
 		}
+		n.rangeTriggers(func(a *trigger) bool {
+			if a.trigger.GetTargetDocs() && setDoc.GetRef().GetGtype() == a.trigger.GetGtype() {
+				data := setDoc.AsMap()
+				err := a.evalTrigger.Trigger(data)
+				if err == nil && len(data) > 0 {
+					for k, v := range data {
+						val, _ := structpb.NewValue(v)
+						setDoc.GetAttributes().GetFields()[k] = val
+					}
+				}
+			}
+			return true
+		})
 		setDocs = append(setDocs, setDoc)
 		if setDoc.GetRef().GetGid() != user.GetRef().GetGid() && setDoc.GetRef().GetGtype() != user.GetRef().GetGtype() {
 			id := helpers.Hash([]byte(fmt.Sprintf("%s-%s", user.GetRef().String(), setDoc.GetRef().String())))
@@ -1078,6 +1173,19 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 		for k, v := range value.GetAttributes().GetFields() {
 			setConnection.Attributes.GetFields()[k] = v
 		}
+		n.rangeTriggers(func(a *trigger) bool {
+			if a.trigger.GetTargetConnections() && setConnection.GetRef().GetGtype() == a.trigger.GetGtype() {
+				data := setConnection.AsMap()
+				err := a.evalTrigger.Trigger(data)
+				if err == nil && len(data) > 0 {
+					for k, v := range data {
+						val, _ := structpb.NewValue(v)
+						setConnection.GetAttributes().GetFields()[k] = val
+					}
+				}
+			}
+			return true
+		})
 		return nil
 	}); err != nil {
 		return nil, err
@@ -1107,6 +1215,19 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*
 			for k, v := range patch.GetAttributes().GetFields() {
 				connection.Attributes.GetFields()[k] = v
 			}
+			n.rangeTriggers(func(a *trigger) bool {
+				if a.trigger.GetTargetConnections() && connection.GetRef().GetGtype() == a.trigger.GetGtype() {
+					data := connection.AsMap()
+					err := a.evalTrigger.Trigger(data)
+					if err == nil && len(data) > 0 {
+						for k, v := range data {
+							val, _ := structpb.NewValue(v)
+							connection.GetAttributes().GetFields()[k] = val
+						}
+					}
+				}
+				return true
+			})
 			setConnections = append(setConnections, connection)
 		}
 		return nil
@@ -1319,6 +1440,19 @@ func (g *Graph) SeedDocs(server apipb.DatabaseService_SeedDocsServer) error {
 			if err != nil {
 				return err
 			}
+			g.rangeTriggers(func(a *trigger) bool {
+				if a.trigger.GetTargetDocs() && msg.GetRef().GetGtype() == a.trigger.GetGtype() {
+					data := msg.AsMap()
+					err := a.evalTrigger.Trigger(data)
+					if err == nil && len(data) > 0 {
+						for k, v := range data {
+							val, _ := structpb.NewValue(v)
+							msg.GetAttributes().GetFields()[k] = val
+						}
+					}
+				}
+				return true
+			})
 			_, err = g.applyCommand(&apipb.RaftCommand{
 				User:    user,
 				Method:  method,

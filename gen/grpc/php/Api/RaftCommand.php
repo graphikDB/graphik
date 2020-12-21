@@ -53,6 +53,10 @@ class RaftCommand extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.api.Message send_message = 10;</code>
      */
     private $send_message = null;
+    /**
+     * Generated from protobuf field <code>.api.Triggers set_triggers = 11;</code>
+     */
+    private $set_triggers = null;
 
     /**
      * Constructor.
@@ -70,6 +74,7 @@ class RaftCommand extends \Google\Protobuf\Internal\Message
      *     @type \Api\Authorizers $set_authorizers
      *     @type \Api\TypeValidators $set_type_validators
      *     @type \Api\Message $send_message
+     *     @type \Api\Triggers $set_triggers
      * }
      */
     public function __construct($data = NULL) {
@@ -293,6 +298,28 @@ class RaftCommand extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Api\Message::class);
         $this->send_message = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.api.Triggers set_triggers = 11;</code>
+     * @return \Api\Triggers
+     */
+    public function getSetTriggers()
+    {
+        return $this->set_triggers;
+    }
+
+    /**
+     * Generated from protobuf field <code>.api.Triggers set_triggers = 11;</code>
+     * @param \Api\Triggers $var
+     * @return $this
+     */
+    public function setSetTriggers($var)
+    {
+        GPBUtil::checkMessage($var, \Api\Triggers::class);
+        $this->set_triggers = $var;
 
         return $this;
     }

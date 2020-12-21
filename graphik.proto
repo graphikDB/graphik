@@ -24,6 +24,7 @@ service DatabaseService {
   rpc SetAuthorizers(Authorizers) returns(google.protobuf.Empty){}
   rpc SetIndexes(Indexes) returns(google.protobuf.Empty){}
   rpc SetTypeValidators(TypeValidators) returns(google.protobuf.Empty){}
+  rpc SetTriggers(Triggers) returns(google.protobuf.Empty){}
   // Me returns a Doc of the currently logged in user
   rpc Me(google.protobuf.Empty) returns(Doc){}
   // CreateDoc creates a doc in the graph
@@ -372,6 +373,25 @@ message Indexes {
   repeated Index indexes =1;
 }
 
+message Trigger {
+  // name is the unique name of the authorizer
+  string name =1[(validator.field) = {regex : "^.{1,225}$"}];
+  // gtype is the type of doc/connection will invoke the trigger
+  string gtype =2[(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+  string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
+  // trigger is the map CEL expression that mutates the doc/connection before it is stored
+  string trigger = 4[(validator.field) = {regex : "^.{1,225}$"}];
+  // if target_docs is true, this trigger will be applied to documents.
+  bool target_docs =5;
+  // if target_connections is true, this trigger will be applied to connections.
+  bool target_connections =6;
+}
+
+message Triggers {
+  repeated Trigger triggers =1;
+}
+
 // StreamFilter is used to filter messages in a pubsub channel
 message StreamFilter {
   // channel is the target channel to filter from
@@ -491,6 +511,7 @@ message Schema {
   Authorizers authorizers =3;
   TypeValidators validators =4;
   Indexes indexes =5;
+  Triggers triggers =6;
 }
 
 message ExprFilter {
@@ -509,6 +530,7 @@ message RaftCommand {
   Authorizers set_authorizers =8;
   TypeValidators set_type_validators =9;
   Message send_message=10;
+  Triggers set_triggers =11;
 }
 
 message Peer {

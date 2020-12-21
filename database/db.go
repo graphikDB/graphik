@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
 )
@@ -27,6 +28,11 @@ type authorizer struct {
 type typeValidator struct {
 	validator *apipb.TypeValidator
 	decision  *eval.Decision
+}
+
+type trigger struct {
+	trigger     *apipb.Trigger
+	evalTrigger *eval.Trigger
 }
 
 func (g *Graph) rangeIndexes(fn func(index *index) bool) {
@@ -87,6 +93,12 @@ func (g *Graph) rangeAuthorizers(fn func(a *authorizer) bool) {
 	})
 }
 
+func (g *Graph) rangeTriggers(fn func(a *trigger) bool) {
+	g.triggers.Range(func(key, value interface{}) bool {
+		return fn(value.(*trigger))
+	})
+}
+
 func (g *Graph) rangeTypeValidators(fn func(a *typeValidator) bool) {
 	g.typeValidators.Range(func(key, value interface{}) bool {
 		return fn(value.(*typeValidator))
@@ -114,6 +126,37 @@ func (g *Graph) cacheAuthorizers() error {
 			g.authorizers.Set(i.GetName(), &authorizer{
 				authorizer: &i,
 				decision:   decision,
+			}, 0)
+			return nil
+		})
+	})
+}
+
+func (g *Graph) cacheTriggers() error {
+	return g.db.View(func(tx *bbolt.Tx) error {
+		return tx.Bucket(dbTriggers).ForEach(func(k, v []byte) error {
+			if k == nil || v == nil {
+				return nil
+			}
+			var i apipb.Trigger
+			var err error
+			if err := proto.Unmarshal(v, &i); err != nil {
+				return err
+			}
+			if i.GetExpression() == "" {
+				return nil
+			}
+			decision, err := eval.NewDecision(eval.AllTrue, []string{i.GetExpression()})
+			if err != nil {
+				return errors.Wrapf(err, "failed to cache trigger decision: %s", i.GetName())
+			}
+			trig, err := eval.NewTrigger(decision, []string{i.GetTrigger()})
+			if err != nil {
+				return errors.Wrapf(err, "failed to cache trigger expression: %s", i.GetName())
+			}
+			g.triggers.Set(i.GetName(), &trigger{
+				trigger:     &i,
+				evalTrigger: trig,
 			}, 0)
 			return nil
 		})
@@ -186,7 +229,7 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 	if i.Docs {
 		tx.Bucket(dbIndexDocs).CreateBucketIfNotExists([]byte(i.GetName()))
 	}
-	return i, g.cacheIndexes()
+	return i, nil
 }
 
 func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Authorizer) (*apipb.Authorizer, error) {
@@ -222,7 +265,7 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 	if err := authBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
-	return i, g.cacheAuthorizers()
+	return i, nil
 }
 
 func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.TypeValidator) (*apipb.TypeValidator, error) {
@@ -258,7 +301,44 @@ func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.Ty
 	if err := validatorBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
-	return i, g.cacheTypeValidators()
+	return i, nil
+}
+
+func (g *Graph) setTrigger(ctx context.Context, tx *bbolt.Tx, i *apipb.Trigger) (*apipb.Trigger, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	triggerBucket := tx.Bucket(dbTriggers)
+	val := triggerBucket.Get([]byte(i.GetName()))
+	if val != nil && len(val) > 0 {
+		var current = &apipb.Trigger{}
+		err := proto.Unmarshal(val, current)
+		if err != nil {
+			return nil, err
+		}
+		current.Expression = i.Expression
+		current.TargetDocs = i.TargetDocs
+		current.TargetConnections = i.TargetConnections
+		current.Gtype = i.Gtype
+		current.Trigger = i.Trigger
+		bits, err := proto.Marshal(current)
+		if err != nil {
+			return nil, err
+		}
+		err = triggerBucket.Put([]byte(i.GetName()), bits)
+		if err != nil {
+			return nil, err
+		}
+		return current, nil
+	}
+	bits, err := proto.Marshal(i)
+	if err != nil {
+		return nil, err
+	}
+	if err := triggerBucket.Put([]byte(i.GetName()), bits); err != nil {
+		return nil, err
+	}
+	return i, nil
 }
 
 func (g *Graph) setIndexedDoc(ctx context.Context, tx *bbolt.Tx, index string, gid, doc []byte) error {
@@ -646,6 +726,19 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 			Ref:        path,
 			Attributes: constructor.GetAttributes(),
 		}
+		g.rangeTriggers(func(a *trigger) bool {
+			if a.trigger.GetTargetDocs() && newDock.GetRef().GetGtype() == a.trigger.GetGtype() {
+				data := newDock.AsMap()
+				err := a.evalTrigger.Trigger(data)
+				if err == nil && len(data) > 0 {
+					for k, v := range data {
+						val, _ := structpb.NewValue(v)
+						newDock.GetAttributes().GetFields()[k] = val
+					}
+				}
+			}
+			return true
+		})
 		newDock, err = g.setDoc(ctx, tx, newDock)
 		if err != nil {
 			return err

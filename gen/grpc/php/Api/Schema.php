@@ -39,6 +39,10 @@ class Schema extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.api.Indexes indexes = 5;</code>
      */
     private $indexes = null;
+    /**
+     * Generated from protobuf field <code>.api.Triggers triggers = 6;</code>
+     */
+    private $triggers = null;
 
     /**
      * Constructor.
@@ -53,6 +57,7 @@ class Schema extends \Google\Protobuf\Internal\Message
      *     @type \Api\Authorizers $authorizers
      *     @type \Api\TypeValidators $validators
      *     @type \Api\Indexes $indexes
+     *     @type \Api\Triggers $triggers
      * }
      */
     public function __construct($data = NULL) {
@@ -174,6 +179,28 @@ class Schema extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Api\Indexes::class);
         $this->indexes = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>.api.Triggers triggers = 6;</code>
+     * @return \Api\Triggers
+     */
+    public function getTriggers()
+    {
+        return $this->triggers;
+    }
+
+    /**
+     * Generated from protobuf field <code>.api.Triggers triggers = 6;</code>
+     * @param \Api\Triggers $var
+     * @return $this
+     */
+    public function setTriggers($var)
+    {
+        GPBUtil::checkMessage($var, \Api\Triggers::class);
+        $this->triggers = $var;
 
         return $this;
     }

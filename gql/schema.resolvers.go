@@ -5,7 +5,6 @@ package gql
 
 import (
 	"context"
-
 	"github.com/99designs/gqlgen/graphql"
 	generated1 "github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/gql/go/model"
@@ -248,6 +247,26 @@ func (r *mutationResolver) SetTypeValidators(ctx context.Context, input model.Ty
 	}
 	if e, err := r.client.SetTypeValidators(ctx, &apipb.TypeValidators{
 		Validators: validators,
+	}); err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	} else {
+		return e, nil
+	}
+}
+
+func (r *mutationResolver) SetTriggers(ctx context.Context, input model.TriggersInput) (*emptypb.Empty, error) {
+	var triggers []*apipb.Trigger
+	for _, trigger := range input.Triggers {
+		triggers = append(triggers, protoTrigger(trigger))
+	}
+	if e, err := r.client.SetTriggers(ctx, &apipb.Triggers{
+		Triggers: triggers,
 	}); err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),

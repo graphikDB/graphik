@@ -444,6 +444,17 @@ func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidato
 	}
 }
 
+func protoTrigger(trigger *model.TriggerInput) *apipb.Trigger {
+	return &apipb.Trigger{
+		Name:              trigger.Name,
+		Gtype:             trigger.Gtype,
+		Expression:        trigger.Expression,
+		Trigger:           trigger.Trigger,
+		TargetDocs:        trigger.TargetDocs,
+		TargetConnections: trigger.TargetConnections,
+	}
+}
+
 func gqlMembership(membership apipb.Membership) model.Membership {
 	switch membership {
 	case apipb.Membership_CANDIDATE:
