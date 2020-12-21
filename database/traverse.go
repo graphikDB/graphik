@@ -2,12 +2,11 @@ package database
 
 import (
 	"context"
-	"github.com/google/cel-go/cel"
+	"github.com/graphikDB/eval"
 	"github.com/graphikDB/generic"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
-	"strings"
 	"time"
 )
 
@@ -20,8 +19,8 @@ type traversal struct {
 	traversals        *apipb.Traversals
 	filter            *apipb.TraverseFilter
 	traversalPath     []*apipb.Ref
-	connectionProgram *cel.Program
-	docProgram        *cel.Program
+	connectionProgram *eval.Decision
+	docProgram        *eval.Decision
 }
 
 func (g *Graph) newTraversal(filter *apipb.TraverseFilter) (*traversal, error) {
@@ -35,18 +34,18 @@ func (g *Graph) newTraversal(filter *apipb.TraverseFilter) (*traversal, error) {
 		traversalPath: []*apipb.Ref{},
 	}
 	if filter.GetConnectionExpression() != "" {
-		program, err := g.vm.Connection().Program(filter.GetConnectionExpression())
+		decision, err := eval.NewDecision(eval.AllTrue, []string{filter.GetConnectionExpression()})
 		if err != nil {
 			return nil, err
 		}
-		t.connectionProgram = &program
+		t.connectionProgram = decision
 	}
 	if filter.GetDocExpression() != "" {
-		program, err := g.vm.Doc().Program(filter.GetDocExpression())
+		decision, err := eval.NewDecision(eval.AllTrue, []string{filter.GetDocExpression()})
 		if err != nil {
 			return nil, err
 		}
-		t.docProgram = &program
+		t.docProgram = decision
 	}
 	return t, nil
 }
@@ -77,11 +76,7 @@ func (d *traversal) walkDFS(ctx context.Context, tx *bbolt.Tx) error {
 			Hops:          uint64(len(d.visited)),
 		})
 	} else {
-		res, err := d.g.vm.Doc().Eval(doc, *d.docProgram)
-		if err != nil {
-			return err
-		}
-		if res {
+		if err := d.docProgram.Eval(doc.AsMap()); err == nil {
 			d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 				Doc:           doc,
 				TraversalPath: d.traversalPath,
@@ -110,17 +105,10 @@ func (d *traversal) walkDFS(ctx context.Context, tx *bbolt.Tx) error {
 	return nil
 }
 
-func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
+func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *eval.Decision) error {
 	if err := d.g.rangeFrom(ctx, tx, popped.GetRef(), func(e *apipb.Connection) bool {
 		if connectionProgram != nil {
-			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
-			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					d.g.logger.Error("dfs failure", zap.Error(err))
-				}
-				return true
-			}
-			if !res {
+			if err := connectionProgram.Eval(e.AsMap()); err != nil {
 				return true
 			}
 		}
@@ -144,14 +132,7 @@ func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc
 					})
 				}
 			} else {
-				res, err := d.g.vm.Doc().Eval(to, *docProgram)
-				if err != nil {
-					if !strings.Contains(err.Error(), "no such key") {
-						d.g.logger.Error("dfs failure", zap.Error(err))
-					}
-					return true
-				}
-				if res {
+				if err := docProgram.Eval(to.AsMap()); err == nil {
 					if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
 						d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 							Doc:           to,
@@ -172,17 +153,10 @@ func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc
 	return nil
 }
 
-func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
+func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *eval.Decision) error {
 	if err := d.g.rangeTo(ctx, tx, popped.GetRef(), func(e *apipb.Connection) bool {
 		if connectionProgram != nil {
-			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
-			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					d.g.logger.Error("dfs failure", zap.Error(err))
-				}
-				return true
-			}
-			if !res {
+			if err := connectionProgram.Eval(e.AsMap()); err != nil {
 				return true
 			}
 		}
@@ -206,14 +180,7 @@ func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, 
 					})
 				}
 			} else {
-				res, err := d.g.vm.Doc().Eval(from, *docProgram)
-				if err != nil {
-					if !strings.Contains(err.Error(), "no such key") {
-						d.g.logger.Error("dfs failure", zap.Error(err))
-					}
-					return true
-				}
-				if res {
+				if err := docProgram.Eval(from.AsMap()); err == nil {
 					if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
 						d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 							Doc:           from,
@@ -250,11 +217,7 @@ func (d *traversal) walkBFS(ctx context.Context, tx *bbolt.Tx) error {
 			})
 		}
 	} else {
-		res, err := d.g.vm.Doc().Eval(doc, *d.docProgram)
-		if err != nil {
-			return err
-		}
-		if res {
+		if err := d.docProgram.Eval(doc.AsMap()); err == nil {
 			if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
 				d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 					Doc:           doc,
@@ -285,17 +248,10 @@ func (d *traversal) walkBFS(ctx context.Context, tx *bbolt.Tx) error {
 	return nil
 }
 
-func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
+func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc, connectionProgram, docProgram *eval.Decision) error {
 	if err := d.g.rangeTo(ctx, tx, dequeued.GetRef(), func(e *apipb.Connection) bool {
 		if connectionProgram != nil {
-			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
-			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					d.g.logger.Error("bfs connection failure(to)", zap.Error(err))
-				}
-				return true
-			}
-			if !res {
+			if err := connectionProgram.Eval(e.AsMap()); err != nil {
 				return true
 			}
 		}
@@ -319,14 +275,7 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 					})
 				}
 			} else {
-				res, err := d.g.vm.Doc().Eval(from, *docProgram)
-				if err != nil {
-					if !strings.Contains(err.Error(), "no such key") {
-						d.g.logger.Error("bfs failure", zap.Error(err))
-					}
-					return true
-				}
-				if res {
+				if err := docProgram.Eval(from.AsMap()); err == nil {
 					if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
 						d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 							Doc:           from,
@@ -347,18 +296,11 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 	return nil
 }
 
-func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Doc, connectionProgram, docProgram *cel.Program) error {
+func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Doc, connectionProgram, docProgram *eval.Decision) error {
 	if err := d.g.rangeFrom(ctx, tx, dequeue.GetRef(), func(e *apipb.Connection) bool {
 
 		if connectionProgram != nil {
-			res, err := d.g.vm.Connection().Eval(e, *connectionProgram)
-			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					d.g.logger.Error("bfs failure", zap.Error(err))
-				}
-				return true
-			}
-			if !res {
+			if err := connectionProgram.Eval(e.AsMap()); err != nil {
 				return true
 			}
 		}
@@ -382,14 +324,7 @@ func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Do
 					})
 				}
 			} else {
-				res, err := d.g.vm.Doc().Eval(to, *docProgram)
-				if err != nil {
-					if !strings.Contains(err.Error(), "no such key") {
-						d.g.logger.Error("bfs failure", zap.Error(err))
-					}
-					return true
-				}
-				if res {
+				if err := docProgram.Eval(to.AsMap()); err == nil {
 					if len(d.traversalPath) <= int(d.filter.MaxDepth) && len(d.visited) <= int(d.filter.MaxHops) {
 						d.traversals.Traversals = append(d.traversals.Traversals, &apipb.Traversal{
 							Doc:           to,

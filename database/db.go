@@ -2,8 +2,7 @@ package database
 
 import (
 	"context"
-	"fmt"
-	"github.com/google/cel-go/cel"
+	"github.com/graphikDB/eval"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
@@ -13,22 +12,21 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
-	"strings"
 )
 
 type index struct {
-	index   *apipb.Index
-	program cel.Program
+	index    *apipb.Index
+	decision *eval.Decision
 }
 
 type authorizer struct {
 	authorizer *apipb.Authorizer
-	program    cel.Program
+	decision   *eval.Decision
 }
 
 type typeValidator struct {
 	validator *apipb.TypeValidator
-	program   cel.Program
+	decision  *eval.Decision
 }
 
 func (g *Graph) rangeIndexes(fn func(index *index) bool) {
@@ -65,25 +63,17 @@ func (g *Graph) cacheIndexes() error {
 				return nil
 			}
 			var i apipb.Index
-			var program cel.Program
 			var err error
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			if i.Connections {
-				program, err = g.vm.Connection().Program(i.Expression)
-				if err != nil {
-					return err
-				}
-			} else if i.Docs {
-				program, err = g.vm.Doc().Program(i.Expression)
-				if err != nil {
-					return err
-				}
+			decision, err := eval.NewDecision(eval.AllTrue, []string{i.Expression})
+			if err != nil {
+				return err
 			}
 			ind := &index{
-				index:   &i,
-				program: program,
+				index:    &i,
+				decision: decision,
 			}
 			g.indexes.Set(i.GetName(), ind, 0)
 			return nil
@@ -117,13 +107,13 @@ func (g *Graph) cacheAuthorizers() error {
 			if i.GetExpression() == "" {
 				return nil
 			}
-			program, err := g.vm.Auth().Program(i.Expression)
+			decision, err := eval.NewDecision(eval.AllTrue, []string{i.GetExpression()})
 			if err != nil {
 				return errors.Wrapf(err, "failed to cache auth expression: %s", i.GetName())
 			}
 			g.authorizers.Set(i.GetName(), &authorizer{
 				authorizer: &i,
-				program:    program,
+				decision:   decision,
 			}, 0)
 			return nil
 		})
@@ -141,22 +131,13 @@ func (g *Graph) cacheTypeValidators() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			var program cel.Program
-			if i.GetTargetConnections() {
-				program, err = g.vm.Connection().Program(i.Expression)
-				if err != nil {
-					return err
-				}
-			}
-			if i.GetTargetDocs() {
-				program, err = g.vm.Doc().Program(i.Expression)
-				if err != nil {
-					return err
-				}
+			decision, err := eval.NewDecision(eval.AllTrue, []string{i.Expression})
+			if err != nil {
+				return err
 			}
 			g.typeValidators.Set(i.GetName(), &typeValidator{
 				validator: &i,
-				program:   program,
+				decision:  decision,
 			}, 0)
 			return nil
 		})
@@ -340,16 +321,13 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
+	docMap := doc.AsMap()
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
 		if v.validator.GetTargetDocs() && v.validator.GetGtype() == doc.GetRef().GetGtype() {
-			res, err := g.vm.Doc().Eval(doc, v.program)
+			err := v.decision.Eval(docMap)
 			if err != nil {
-				validationErr = err
-				return false
-			}
-			if !res {
-				validationErr = errors.New(fmt.Sprintf("%s.%s document validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression()))
+				validationErr = errors.Wrapf(err, "%s.%s document validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression())
 				return false
 			}
 		}
@@ -375,13 +353,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	}
 	g.rangeIndexes(func(i *index) bool {
 		if i.index.Docs {
-			result, err := g.vm.Doc().Eval(doc, i.program)
-			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					g.logger.Error("set index failure", zap.Error(err))
-				}
-			}
-			if result {
+			if err := i.decision.Eval(docMap); err == nil {
 				err = g.setIndexedDoc(ctx, tx, i.index.Name, []byte(doc.GetRef().GetGid()), bits)
 				if err != nil {
 					g.logger.Error("failed to save index", zap.Error(err))
@@ -440,17 +412,13 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			return nil, errors.Errorf("to doc %s does not exist", connection.GetTo().String())
 		}
 	}
-
+	connMap := connection.AsMap()
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
 		if v.validator.GetTargetConnections() && v.validator.GetGtype() == connection.GetRef().GetGtype() {
-			res, err := g.vm.Connection().Eval(connection, v.program)
+			err := v.decision.Eval(connMap)
 			if err != nil {
-				validationErr = err
-				return false
-			}
-			if !res {
-				validationErr = errors.New(fmt.Sprintf("%s.%s connection validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression()))
+				validationErr = errors.Wrapf(err, "%s.%s connection validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression())
 				return false
 			}
 		}
@@ -491,8 +459,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	}
 	g.rangeIndexes(func(i *index) bool {
 		if i.index.Connections {
-			result, _ := g.vm.Connection().Eval(connection, i.program)
-			if result {
+			if err := i.decision.Eval(connMap); err == nil {
 				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), []byte(connection.GetRef().GetGid()), bits)
 				if err != nil {
 					g.logger.Error("failed to save index", zap.Error(err))

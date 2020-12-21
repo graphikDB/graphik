@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/google/cel-go/cel"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/helpers"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -279,19 +278,19 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 	if g.isGraphikAdmin(user) {
 		return context.WithValue(ctx, bypassAuthorizersCtxKey, true), nil
 	}
-	var programs []cel.Program
+	var authorizers []*authorizer
 	g.rangeAuthorizers(func(a *authorizer) bool {
 		if a.authorizer.GetTargetRequests() && a.authorizer.GetMethod() == method {
-			programs = append(programs, a.program)
+			authorizers = append(authorizers, a)
 		}
 		return true
 	})
-	if g.flgs.RequireResponseAuthorizers && len(programs) == 0 {
+	if g.flgs.RequireResponseAuthorizers && len(authorizers) == 0 {
 		return nil, status.Errorf(
 			codes.PermissionDenied,
 			"zero registered request authorizers found for invoked gRPC method %s", method)
 	}
-	if len(programs) == 0 {
+	if len(authorizers) == 0 {
 		return ctx, nil
 	}
 	request := &apipb.AuthTarget{
@@ -320,14 +319,12 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 		}
 		request.Target = apipb.NewStruct(reqMap)
 	}
-	result, err := g.vm.Auth().Eval(request, programs...)
-	if err != nil {
-		return nil, err
+	for _, a := range authorizers {
+		if err := a.decision.Eval(request.AsMap()); err == nil {
+			return ctx, nil
+		}
 	}
-	if !result {
-		return nil, status.Errorf(codes.PermissionDenied, "request from %s.%s  authorization = denied", user.GetRef().GetGtype(), user.GetRef().GetGid())
-	}
-	return ctx, nil
+	return nil, status.Errorf(codes.PermissionDenied, "request from %s.%s  authorization = denied", user.GetRef().GetGtype(), user.GetRef().GetGid())
 }
 
 func (g *Graph) checkResponse(ctx context.Context, method string, response interface{}, payload map[string]interface{}) error {
@@ -348,19 +345,19 @@ func (g *Graph) checkResponse(ctx context.Context, method string, response inter
 	if g.isGraphikAdmin(user) {
 		return nil
 	}
-	var programs []cel.Program
+	var authorizers []*authorizer
 	g.rangeAuthorizers(func(a *authorizer) bool {
 		if a.authorizer.GetTargetResponses() && a.authorizer.GetMethod() == method {
-			programs = append(programs, a.program)
+			authorizers = append(authorizers, a)
 		}
 		return true
 	})
-	if g.flgs.RequireResponseAuthorizers && len(programs) == 0 {
+	if g.flgs.RequireResponseAuthorizers && len(authorizers) == 0 {
 		return status.Errorf(
 			codes.PermissionDenied,
 			"zero registered response authorizers found for invoked gRPC method %s", method)
 	}
-	if len(programs) == 0 {
+	if len(authorizers) == 0 {
 		return nil
 	}
 	request := &apipb.AuthTarget{
@@ -398,14 +395,12 @@ func (g *Graph) checkResponse(ctx context.Context, method string, response inter
 		}
 		request.Target = apipb.NewStruct(reqMap)
 	}
-	result, err := g.vm.Auth().Eval(request, programs...)
-	if err != nil {
-		return err
+	for _, a := range authorizers {
+		if err := a.decision.Eval(request.AsMap()); err == nil {
+			return nil
+		}
 	}
-	if !result {
-		return status.Errorf(codes.PermissionDenied, "response to %s.%s  authorization = denied", user.GetRef().GetGtype(), user.GetRef().GetGid())
-	}
-	return nil
+	return status.Errorf(codes.PermissionDenied, "response to %s.%s  authorization = denied", user.GetRef().GetGtype(), user.GetRef().GetGid())
 }
 
 func (g *Graph) isGraphikAdmin(user *apipb.Doc) bool {

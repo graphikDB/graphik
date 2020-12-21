@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/google/cel-go/cel"
+	"github.com/graphikDB/eval"
 	"github.com/graphikDB/generic"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/graphik-client-go"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/graphikDB/graphik/vm"
 	"github.com/graphikDB/raft"
 	raft2 "github.com/hashicorp/raft"
 	"github.com/lestrrat-go/jwx/jwk"
@@ -32,13 +31,12 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
-	"strings"
 	"sync"
 	"time"
 )
 
 type Graph struct {
-	vm *vm.VM
+	vm *eval.Decision
 	// db is the underlying handle to the db.
 	db              *bbolt.DB
 	jwksMu          sync.RWMutex
@@ -69,14 +67,11 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 	if err != nil {
 		return nil, err
 	}
-	vMachine, err := vm.NewVM()
-	if err != nil {
-		return nil, err
-	}
+
 	var closers []func()
 	m := machine.New(ctx, machine.WithMaxRoutines(100000))
 	g := &Graph{
-		vm:              vMachine,
+		vm:              nil,
 		db:              handle,
 		jwksMu:          sync.RWMutex{},
 		jwksSet:         nil,
@@ -595,7 +590,7 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 			return true
 		}
 	} else {
-		programs, err := g.vm.Message().Program(filter.Expression)
+		vm, err := eval.NewDecision(eval.AllTrue, []string{filter.GetExpression()})
 		if err != nil {
 			return err
 		}
@@ -605,12 +600,16 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 				g.logger.Error("invalid message type received during subscription")
 				return false
 			}
-			result, err := g.vm.Message().Eval(val, programs)
-			if err != nil {
-				g.logger.Error("subscription filter failure", zap.Error(err))
+			if err := vm.Eval(val.AsMap()); err != nil {
+				if err != eval.ErrDecisionDenied {
+					g.logger.Error("subscription filter failure", zap.Error(err))
+				}
 				return false
 			}
-			return result
+			if err != nil {
+				return false
+			}
+			return true
 		}
 	}
 	if err := g.machine.PubSub().SubscribeFilter(server.Context(), filter.GetChannel(), filterFunc, func(msg interface{}) {
@@ -875,17 +874,17 @@ func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 
 func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectFilter) (*apipb.Connections, error) {
 	var (
-		program cel.Program
-		err     error
+		decision *eval.Decision
+		err      error
 	)
-	if filter.Expression != "" {
-		program, err = g.vm.Connection().Program(filter.Expression)
+
+	if filter.GetExpression() != "" {
+		decision, err = eval.NewDecision(eval.AllTrue, []string{filter.GetExpression()})
 		if err != nil {
 			return nil, err
 		}
 	}
 	var connections []*apipb.Connection
-	var pass bool
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		if err = g.rangeFrom(ctx, tx, filter.GetDocRef(), func(connection *apipb.Connection) bool {
 			if filter.Gtype != "*" {
@@ -893,12 +892,8 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectFilter
 					return true
 				}
 			}
-			if program != nil {
-				pass, err = g.vm.Connection().Eval(connection, program)
-				if err != nil {
-					return true
-				}
-				if pass {
+			if decision != nil {
+				if err := decision.Eval(connection.AsMap()); err == nil {
 					connections = append(connections, connection)
 				}
 			} else {
@@ -922,24 +917,17 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectFilter
 
 func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Docs, error) {
 	var docs []*apipb.Doc
-	var program cel.Program
+	var decision *eval.Decision
 	var err error
-	if filter.Expression != "" {
-		program, err = n.vm.Doc().Program(filter.Expression)
+	if filter.GetExpression() != "" {
+		decision, err = eval.NewDecision(eval.AllTrue, []string{filter.GetExpression()})
 		if err != nil {
 			return nil, err
 		}
 	}
 	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), filter.GetReverse(), func(doc *apipb.Doc) bool {
-		if program != nil {
-			pass, err := n.vm.Doc().Eval(doc, program)
-			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					n.logger.Error("search docs failure", zap.Error(err))
-				}
-				return true
-			}
-			if pass {
+		if decision != nil {
+			if err := decision.Eval(doc.AsMap()); err == nil {
 				docs = append(docs, doc)
 			}
 		} else {
@@ -1017,17 +1005,16 @@ func (n *Graph) TraverseMe(ctx context.Context, filter *apipb.TraverseMeFilter) 
 
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectFilter) (*apipb.Connections, error) {
 	var (
-		program cel.Program
-		err     error
+		decision *eval.Decision
+		err      error
 	)
-	if filter.Expression != "" {
-		program, err = g.vm.Connection().Program(filter.Expression)
+	if filter.GetExpression() != "" {
+		decision, err = eval.NewDecision(eval.AllTrue, []string{filter.GetExpression()})
 		if err != nil {
 			return nil, err
 		}
 	}
 	var connections []*apipb.Connection
-	var pass bool
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		if err = g.rangeTo(ctx, tx, filter.GetDocRef(), func(connection *apipb.Connection) bool {
 			if filter.Gtype != "*" {
@@ -1035,12 +1022,8 @@ func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectFilter) 
 					return true
 				}
 			}
-			if program != nil {
-				pass, err = g.vm.Connection().Eval(connection, program)
-				if err != nil {
-					return true
-				}
-				if pass {
+			if decision != nil {
+				if err := decision.Eval(connection.AsMap()); err == nil {
 					connections = append(connections, connection)
 				}
 			} else {
@@ -1141,23 +1124,19 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*
 
 func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*apipb.Connections, error) {
 	var (
-		program cel.Program
-		err     error
+		decision *eval.Decision
+		err      error
 	)
-	if filter.Expression != "" {
-		program, err = e.vm.Connection().Program(filter.Expression)
+	if filter.GetExpression() != "" {
+		decision, err = eval.NewDecision(eval.AllTrue, []string{filter.GetExpression()})
 		if err != nil {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 	}
 	var connections []*apipb.Connection
 	seek, err := e.rangeSeekConnections(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), filter.GetReverse(), func(connection *apipb.Connection) bool {
-		if program != nil {
-			pass, err := e.vm.Connection().Eval(connection, program)
-			if err != nil {
-				return true
-			}
-			if pass {
+		if decision != nil {
+			if err := decision.Eval(connection.AsMap()); err == nil {
 				connections = append(connections, connection)
 			}
 		} else {
@@ -1431,21 +1410,17 @@ func (g *Graph) SearchAndConnectMe(ctx context.Context, filter *apipb.SearchConn
 }
 
 func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.ExistsFilter) (*apipb.Boolean, error) {
-	program, err := g.vm.Doc().Program(has.GetExpression())
+	decision, err := eval.NewDecision(eval.AllTrue, []string{has.GetExpression()})
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	var (
-		hasErr error
-		res    bool
+		hasDoc = false
 	)
 
 	_, err = g.rangeSeekDocs(ctx, has.GetGtype(), has.GetSeek(), has.GetIndex(), has.GetReverse(), func(n *apipb.Doc) bool {
-		res, hasErr = g.vm.Doc().Eval(n, program)
-		if hasErr != nil {
-			return false
-		}
-		if res {
+		if err := decision.Eval(n.AsMap()); err == nil {
+			hasDoc = true
 			return false
 		}
 		return true
@@ -1456,47 +1431,32 @@ func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.ExistsFilter) (*apipb.
 		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	if hasErr != nil {
-		if err == ErrNotFound {
-			return &apipb.Boolean{Value: false}, nil
-		}
-		return nil, status.Error(codes.InvalidArgument, hasErr.Error())
-	}
-	return &apipb.Boolean{Value: res}, nil
+	return &apipb.Boolean{Value: hasDoc}, nil
 }
 
 func (g *Graph) ExistsConnection(ctx context.Context, has *apipb.ExistsFilter) (*apipb.Boolean, error) {
-	program, err := g.vm.Connection().Program(has.GetExpression())
+	decision, err := eval.NewDecision(eval.AllTrue, []string{has.GetExpression()})
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	var (
-		hasErr error
-		res    bool
+		hasConn = false
 	)
-	_, err = g.rangeSeekConnections(ctx, has.GetGtype(), has.GetSeek(), has.GetIndex(), has.GetReverse(), func(n *apipb.Connection) bool {
-		res, hasErr = g.vm.Connection().Eval(n, program)
-		if hasErr != nil {
-			return false
-		}
-		if res {
+
+	_, err = g.rangeSeekConnections(ctx, has.GetGtype(), has.GetSeek(), has.GetIndex(), has.GetReverse(), func(c *apipb.Connection) bool {
+		if err := decision.Eval(c.AsMap()); err == nil {
+			hasConn = true
 			return false
 		}
 		return true
 	})
 	if err != nil {
 		if err == ErrNotFound {
-			return &apipb.Boolean{Value: false}, nil
+			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	if hasErr != nil {
-		if err == ErrNotFound {
-			return nil, status.Error(codes.NotFound, err.Error())
-		}
-		return nil, status.Error(codes.InvalidArgument, hasErr.Error())
-	}
-	return &apipb.Boolean{Value: res}, nil
+	return &apipb.Boolean{Value: hasConn}, nil
 }
 
 func (g *Graph) HasDoc(ctx context.Context, ref *apipb.Ref) (*apipb.Boolean, error) {
