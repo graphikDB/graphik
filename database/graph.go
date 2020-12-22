@@ -87,6 +87,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 		indexes:         generic.NewCache(0),
 		authorizers:     generic.NewCache(0),
 		typeValidators:  generic.NewCache(0),
+		triggers:        generic.NewCache(0),
 		flgs:            flgs,
 		peers:           map[string]*graphik.Client{},
 		logger:          lgger,
@@ -143,6 +144,10 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 		if err != nil {
 			return errors.Wrap(err, "failed to create connection/index bucket")
 		}
+		_, err = tx.CreateBucketIfNotExists(dbTriggers)
+		if err != nil {
+			return errors.Wrap(err, "failed to create trigger bucket")
+		}
 		return nil
 	})
 	if err != nil {
@@ -158,6 +163,9 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 		return nil, err
 	}
 	if err := g.cacheTypeValidators(); err != nil {
+		return nil, err
+	}
+	if err := g.cacheTriggers(); err != nil {
 		return nil, err
 	}
 	g.machine.Go(func(routine machine.Routine) {

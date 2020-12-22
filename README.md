@@ -24,6 +24,8 @@ Support: support@graphikdb.io
       - [Secondary Index Examples](#secondary-index-examples)
     + [Type Validators](#type-validators)
       - [Type Validator Examples](#type-validator-examples)
+    + [Triggers](#triggers)
+      - [Trigger Examples](#trigger-examples)
     + [Identity Graph](#identity-graph)
     + [GraphQL vs gRPC API](#graphql-vs-grpc-api)
     + [Streaming/PubSub](#streaming-pubsub)
@@ -32,15 +34,17 @@ Support: support@graphikdb.io
   * [Sample GraphQL Queries](#sample-graphql-queries)
     + [Get Currently Logged In User(me)](#get-currently-logged-in-user-me-)
     + [Get the Graph Schema](#get-the-graph-schema)
+    + [Set a Request Authorizer](#set-a-request-authorizer)
     + [Create a Document](#create-a-document)
     + [Traverse Documents](#traverse-documents)
     + [Traverse Documents Related to Logged In User](#traverse-documents-related-to-logged-in-user)
     + [Change Streaming](#change-streaming)
+    + [Broadcasting a Message](#broadcasting-a-message)
+    + [Filtered Streaming](#filtered-streaming)
   * [Deployment](#deployment)
     + [Docker-Compose](#docker-compose)
     + [Kubernetes](#kubernetes)
   * [OIDC Metadata Urls](#oidc-metadata-urls)
-
 
 ## Helpful Links
 
@@ -330,6 +334,49 @@ mutation {
 			target_connections: false
     }]
   })
+}
+```
+
+### Triggers
+
+- triggers may be used to automatically mutate data before it is commited to the database
+- this is useful for automatically annotating your data without having to make additional client-side requests
+
+#### Trigger Examples
+
+1) automatically add updated_at & created_at timestamp to all documents & connections
+
+```graphql
+mutation {
+	setTriggers(input: {
+		triggers: [
+			{
+				name: "updatedAt"
+				gtype: "note"
+				expression: "true"
+				trigger: "{'updated_at': now}"
+				target_docs: true
+				target_connections: false
+		},
+			{
+				name: "createdAt"
+				gtype: "note"
+				expression: "!has(this.attributes.created_at)"
+				trigger: "{'created_at': now}"
+				target_docs: true
+				target_connections: false
+		},
+		]
+	})
+}
+```
+
+```json
+{
+  "data": {
+    "setTriggers": {}
+  },
+  "extensions": {}
 }
 ```
 
