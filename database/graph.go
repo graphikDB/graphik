@@ -470,9 +470,12 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 			}
 			g.rangeTriggers(func(a *trigger) bool {
 				if a.trigger.GetTargetDocs() && (doc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
-					data := doc.AsMap()
+					data := doc.GetAttributes().AsMap()
+					if data == nil {
+						data = map[string]interface{}{}
+					}
 					err := a.evalTrigger.Trigger(data)
-					if err == nil && len(data) > 0 {
+					if err == nil {
 						for k, v := range data {
 							val, _ := structpb.NewValue(v)
 							doc.GetAttributes().GetFields()[k] = val
@@ -587,9 +590,12 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 			}
 			g.rangeTriggers(func(a *trigger) bool {
 				if a.trigger.GetTargetConnections() && (c.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
-					data := c.AsMap()
+					data := c.GetAttributes().AsMap()
+					if data == nil {
+						data = map[string]interface{}{}
+					}
 					err := a.evalTrigger.Trigger(data)
-					if err == nil && len(data) > 0 {
+					if err == nil {
 						for k, v := range data {
 							val, _ := structpb.NewValue(v)
 							c.GetAttributes().GetFields()[k] = val
@@ -818,9 +824,12 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 		}
 		n.rangeTriggers(func(a *trigger) bool {
 			if a.trigger.GetTargetDocs() && (setDoc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
-				data := setDoc.AsMap()
+				data := setDoc.GetAttributes().AsMap()
+				if data == nil {
+					data = map[string]interface{}{}
+				}
 				err := a.evalTrigger.Trigger(data)
-				if err == nil && len(data) > 0 {
+				if err == nil {
 					for k, v := range data {
 						val, _ := structpb.NewValue(v)
 						setDoc.GetAttributes().GetFields()[k] = val
@@ -891,9 +900,12 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 		}
 		n.rangeTriggers(func(a *trigger) bool {
 			if a.trigger.GetTargetDocs() && (setDoc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
-				data := setDoc.AsMap()
+				data := setDoc.GetAttributes().AsMap()
+				if data == nil {
+					data = map[string]interface{}{}
+				}
 				err := a.evalTrigger.Trigger(data)
-				if err == nil && len(data) > 0 {
+				if err == nil {
 					for k, v := range data {
 						val, _ := structpb.NewValue(v)
 						setDoc.GetAttributes().GetFields()[k] = val
@@ -1184,9 +1196,12 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 		n.rangeTriggers(func(a *trigger) bool {
 			if a.trigger.GetTargetConnections() && (setConnection.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 				data := setConnection.AsMap()
+				if data == nil {
+					data = map[string]interface{}{}
+				}
 				err := a.evalTrigger.Trigger(data)
-				if err == nil && len(data) > 0 {
-					for k, v := range data {
+				if err == nil && data["attributes"] != nil {
+					for k, v := range data["attributes"].(map[string]interface{}) {
 						val, _ := structpb.NewValue(v)
 						setConnection.GetAttributes().GetFields()[k] = val
 					}
@@ -1225,9 +1240,12 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*
 			}
 			n.rangeTriggers(func(a *trigger) bool {
 				if a.trigger.GetTargetConnections() && (connection.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
-					data := connection.AsMap()
+					data := connection.GetAttributes().AsMap()
+					if data == nil {
+						data = map[string]interface{}{}
+					}
 					err := a.evalTrigger.Trigger(data)
-					if err == nil && len(data) > 0 {
+					if err == nil {
 						for k, v := range data {
 							val, _ := structpb.NewValue(v)
 							connection.GetAttributes().GetFields()[k] = val
@@ -1450,9 +1468,12 @@ func (g *Graph) SeedDocs(server apipb.DatabaseService_SeedDocsServer) error {
 			}
 			g.rangeTriggers(func(a *trigger) bool {
 				if a.trigger.GetTargetDocs() && (msg.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
-					data := msg.AsMap()
+					data := msg.GetAttributes().AsMap()
+					if data == nil {
+						data = map[string]interface{}{}
+					}
 					err := a.evalTrigger.Trigger(data)
-					if err == nil && len(data) > 0 {
+					if err == nil {
 						for k, v := range data {
 							val, _ := structpb.NewValue(v)
 							msg.GetAttributes().GetFields()[k] = val

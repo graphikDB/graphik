@@ -8,7 +8,7 @@ services:
       - "7820:7820"
       - "7821:7821"
     volumes:
-      - default:/tmp/graphik
+      - default:/tmp/graphik2
     networks:
       default:
         aliases:

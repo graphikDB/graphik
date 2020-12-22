@@ -339,7 +339,7 @@ mutation {
 
 ### Triggers
 
-- triggers may be used to automatically mutate data before it is commited to the database
+- triggers may be used to automatically mutate the attributes of documents/connections before they are commited to the database
 - this is useful for automatically annotating your data without having to make additional client-side requests
 
 #### Trigger Examples
@@ -361,10 +361,10 @@ mutation {
 			{
 				name: "createdAt"
 				gtype: "*"
-				expression: "!has(this.attributes.created_at)"
+				expression: "!has(this.created_at)"
 				trigger: "{'created_at': now}"
 				target_docs: true
-				target_connections: false
+				target_connections: true
 		},
 		]
 	})
