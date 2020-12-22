@@ -73,7 +73,7 @@ func (g *Graph) cacheIndexes() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			decision, err := eval.NewDecision(eval.AllTrue, []string{i.Expression})
+			decision, err := eval.NewDecision(eval.AllTrue, i.Expression)
 			if err != nil {
 				return err
 			}
@@ -119,7 +119,7 @@ func (g *Graph) cacheAuthorizers() error {
 			if i.GetExpression() == "" {
 				return nil
 			}
-			decision, err := eval.NewDecision(eval.AllTrue, []string{i.GetExpression()})
+			decision, err := eval.NewDecision(eval.AllTrue, i.GetExpression())
 			if err != nil {
 				return errors.Wrapf(err, "failed to cache auth expression: %s", i.GetName())
 			}
@@ -146,11 +146,11 @@ func (g *Graph) cacheTriggers() error {
 			if i.GetExpression() == "" {
 				return nil
 			}
-			decision, err := eval.NewDecision(eval.AllTrue, []string{i.GetExpression()})
+			decision, err := eval.NewDecision(eval.AllTrue, i.GetExpression())
 			if err != nil {
 				return errors.Wrapf(err, "failed to cache trigger decision: %s", i.GetName())
 			}
-			trig, err := eval.NewTrigger(decision, []string{i.GetTrigger()})
+			trig, err := eval.NewTrigger(decision, i.GetTrigger())
 			if err != nil {
 				return errors.Wrapf(err, "failed to cache trigger expression: %s", i.GetName())
 			}
@@ -174,7 +174,7 @@ func (g *Graph) cacheTypeValidators() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			decision, err := eval.NewDecision(eval.AllTrue, []string{i.Expression})
+			decision, err := eval.NewDecision(eval.AllTrue, i.Expression)
 			if err != nil {
 				return err
 			}
@@ -728,8 +728,7 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 		}
 		g.rangeTriggers(func(a *trigger) bool {
 			if a.trigger.GetTargetDocs() && newDock.GetRef().GetGtype() == a.trigger.GetGtype() {
-				data := newDock.AsMap()
-				err := a.evalTrigger.Trigger(data)
+				data, err := a.evalTrigger.Trigger(newDock.AsMap())
 				if err == nil && len(data) > 0 {
 					for k, v := range data {
 						val, _ := structpb.NewValue(v)

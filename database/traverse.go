@@ -34,14 +34,14 @@ func (g *Graph) newTraversal(filter *apipb.TraverseFilter) (*traversal, error) {
 		traversalPath: []*apipb.Ref{},
 	}
 	if filter.GetConnectionExpression() != "" {
-		decision, err := eval.NewDecision(eval.AllTrue, []string{filter.GetConnectionExpression()})
+		decision, err := eval.NewDecision(eval.AllTrue, filter.GetConnectionExpression())
 		if err != nil {
 			return nil, err
 		}
 		t.connectionProgram = decision
 	}
 	if filter.GetDocExpression() != "" {
-		decision, err := eval.NewDecision(eval.AllTrue, []string{filter.GetDocExpression()})
+		decision, err := eval.NewDecision(eval.AllTrue, filter.GetDocExpression())
 		if err != nil {
 			return nil, err
 		}
