@@ -254,6 +254,25 @@ func gqlTypeValidators(val *apipb.TypeValidators) *model.TypeValidators {
 	return &model.TypeValidators{Validators: vals}
 }
 
+func gqlTrigger(val *apipb.Trigger) *model.Trigger {
+	return &model.Trigger{
+		Name:              val.GetName(),
+		Gtype:             val.GetGtype(),
+		Expression:        val.GetExpression(),
+		Trigger:           val.GetTrigger(),
+		TargetDocs:        val.GetTargetDocs(),
+		TargetConnections: val.GetTargetConnections(),
+	}
+}
+
+func gqlTriggers(val *apipb.Triggers) *model.Triggers {
+	var triggers []*model.Trigger
+	for _, t := range val.GetTriggers() {
+		triggers = append(triggers, gqlTrigger(t))
+	}
+	return &model.Triggers{Triggers: triggers}
+}
+
 func gqlSchema(s *apipb.Schema) *model.Schema {
 	return &model.Schema{
 		ConnectionTypes: s.GetConnectionTypes(),
@@ -261,6 +280,7 @@ func gqlSchema(s *apipb.Schema) *model.Schema {
 		Authorizers:     gqlAuthorizers(s.GetAuthorizers()),
 		Validators:      gqlTypeValidators(s.GetValidators()),
 		Indexes:         gqlIndexes(s.GetIndexes()),
+		Triggers:        gqlTriggers(s.GetTriggers()),
 	}
 }
 
