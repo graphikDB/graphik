@@ -469,7 +469,7 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 				Attributes: constructor.GetAttributes(),
 			}
 			g.rangeTriggers(func(a *trigger) bool {
-				if a.trigger.GetTargetDocs() && doc.GetRef().GetGtype() == a.trigger.GetGtype() {
+				if a.trigger.GetTargetDocs() && (doc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 					data := doc.AsMap()
 					err := a.evalTrigger.Trigger(data)
 					if err == nil && len(data) > 0 {
@@ -586,7 +586,7 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 				To:         constructor.GetTo(),
 			}
 			g.rangeTriggers(func(a *trigger) bool {
-				if a.trigger.GetTargetConnections() && c.GetRef().GetGtype() == a.trigger.GetGtype() {
+				if a.trigger.GetTargetConnections() && (c.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 					data := c.AsMap()
 					err := a.evalTrigger.Trigger(data)
 					if err == nil && len(data) > 0 {
@@ -817,7 +817,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 			setDoc.Attributes.GetFields()[k] = v
 		}
 		n.rangeTriggers(func(a *trigger) bool {
-			if a.trigger.GetTargetDocs() && setDoc.GetRef().GetGtype() == a.trigger.GetGtype() {
+			if a.trigger.GetTargetDocs() && (setDoc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 				data := setDoc.AsMap()
 				err := a.evalTrigger.Trigger(data)
 				if err == nil && len(data) > 0 {
@@ -890,7 +890,7 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 			setDoc.Attributes.GetFields()[k] = v
 		}
 		n.rangeTriggers(func(a *trigger) bool {
-			if a.trigger.GetTargetDocs() && setDoc.GetRef().GetGtype() == a.trigger.GetGtype() {
+			if a.trigger.GetTargetDocs() && (setDoc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 				data := setDoc.AsMap()
 				err := a.evalTrigger.Trigger(data)
 				if err == nil && len(data) > 0 {
@@ -1182,7 +1182,7 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 			setConnection.Attributes.GetFields()[k] = v
 		}
 		n.rangeTriggers(func(a *trigger) bool {
-			if a.trigger.GetTargetConnections() && setConnection.GetRef().GetGtype() == a.trigger.GetGtype() {
+			if a.trigger.GetTargetConnections() && (setConnection.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 				data := setConnection.AsMap()
 				err := a.evalTrigger.Trigger(data)
 				if err == nil && len(data) > 0 {
@@ -1224,7 +1224,7 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*
 				connection.Attributes.GetFields()[k] = v
 			}
 			n.rangeTriggers(func(a *trigger) bool {
-				if a.trigger.GetTargetConnections() && connection.GetRef().GetGtype() == a.trigger.GetGtype() {
+				if a.trigger.GetTargetConnections() && (connection.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 					data := connection.AsMap()
 					err := a.evalTrigger.Trigger(data)
 					if err == nil && len(data) > 0 {
@@ -1449,7 +1449,7 @@ func (g *Graph) SeedDocs(server apipb.DatabaseService_SeedDocsServer) error {
 				return err
 			}
 			g.rangeTriggers(func(a *trigger) bool {
-				if a.trigger.GetTargetDocs() && msg.GetRef().GetGtype() == a.trigger.GetGtype() {
+				if a.trigger.GetTargetDocs() && (msg.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 					data := msg.AsMap()
 					err := a.evalTrigger.Trigger(data)
 					if err == nil && len(data) > 0 {

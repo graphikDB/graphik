@@ -404,7 +404,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	docMap := doc.AsMap()
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
-		if v.validator.GetTargetDocs() && v.validator.GetGtype() == doc.GetRef().GetGtype() {
+		if v.validator.GetTargetDocs() && (v.validator.GetGtype() == apipb.Any || v.validator.GetGtype() == doc.GetRef().GetGtype()) {
 			err := v.decision.Eval(docMap)
 			if err != nil {
 				validationErr = errors.Wrapf(err, "%s.%s document validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression())
@@ -432,7 +432,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 		return nil, err
 	}
 	g.rangeIndexes(func(i *index) bool {
-		if i.index.Docs {
+		if i.index.GetDocs() && i.index.GetGtype() == doc.GetRef().GetGtype() {
 			if err := i.decision.Eval(docMap); err == nil {
 				err = g.setIndexedDoc(ctx, tx, i.index.Name, []byte(doc.GetRef().GetGid()), bits)
 				if err != nil {
@@ -495,7 +495,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	connMap := connection.AsMap()
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
-		if v.validator.GetTargetConnections() && v.validator.GetGtype() == connection.GetRef().GetGtype() {
+		if v.validator.GetTargetConnections() && (v.validator.GetGtype() == apipb.Any || v.validator.GetGtype() == connection.GetRef().GetGtype()) {
 			err := v.decision.Eval(connMap)
 			if err != nil {
 				validationErr = errors.Wrapf(err, "%s.%s connection validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression())
@@ -538,7 +538,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 		g.connectionsFrom[connection.GetTo().String()][refstr] = struct{}{}
 	}
 	g.rangeIndexes(func(i *index) bool {
-		if i.index.Connections {
+		if i.index.Connections && i.index.GetGtype() == connection.GetRef().GetGtype() {
 			if err := i.decision.Eval(connMap); err == nil {
 				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), []byte(connection.GetRef().GetGid()), bits)
 				if err != nil {
@@ -765,7 +765,7 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) error
 		return true
 	})
 	g.rangeIndexes(func(index *index) bool {
-		if index.index.Docs && index.index.GetGtype() == path.GetGtype() {
+		if index.index.Docs && index.index.GetGtype() == doc.GetRef().GetGtype() {
 			g.delIndexedDoc(ctx, tx, []byte(index.index.Name), []byte(path.GetGid()))
 		}
 		return true
