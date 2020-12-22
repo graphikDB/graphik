@@ -93,6 +93,7 @@ Support: support@graphikdb.io
 - github.com/autom8ter/machine
 - github.com/graphikDB/raft
 - github.com/graphikDB/generic
+- github.com/graphikDB/eval
 
 ## Flags
 
