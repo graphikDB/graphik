@@ -71,6 +71,7 @@ Support: support@graphikdb.io
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Type Validators
+- [x] [Common Expression Language](https://opensource.google/projects/cel) Server Side Triggers
 - [x] Loosely-Typed(mongo-esque)
 - [x] Horizontal Scalability/HA via Raft Consensus Protocol
 - [x] [Prometheus Metrics](https://prometheus.io/)
