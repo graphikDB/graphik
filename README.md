@@ -1,12 +1,12 @@
 # Graphik
 
+https://graphikdb.github.io/graphik/
 
 [![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
 
-
-    git clone git@github.com:graphikDB/graphik.git
+`git clone git@github.com:graphikDB/graphik.git`
     
-`   docker pull graphikdb/graphik:v0.11.2`
+`docker pull graphikdb/graphik:v0.11.2`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -111,7 +111,7 @@ This is bad for the following reasons:
 
 ### Solution
 
-- a loosely typed Graph database with built in identity awareness via a configured identity provider
+- a loosely typed Graph database with built in identity awareness via a configured identity provider(Google, Microsoft, Okta, Auth0, etc)
     - relational-oriented benefits of a SQL database
     - non-relational-oriented productivity benefits of a NOSQL database
 - zero password management- this is delegated to the configured identity provider
@@ -202,7 +202,9 @@ please note that the following flags are required:
 
 ## Implemenation Details
 
-Please see [GraphQL Documentation Site](https://graphikdb.github.io/graphik/) for additional details
+- [graphQL Schema](graphik.proto)
+- [gRPC Schema](schema.graphql)
+- [graphQL Schema Documentation](docs/index.html)
 
 ### Primitives
 
