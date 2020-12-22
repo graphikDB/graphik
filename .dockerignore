@@ -10,3 +10,4 @@ gen/grpc/csharp
 gen/grpc/php
 .env
 bin
+assets
