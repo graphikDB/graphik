@@ -124,7 +124,8 @@ This is bad for the following reasons:
 - graphQL API to support a declarative query language for public clients(user on browser, ios app, android app, etc), data analysts, and database administrators
 - graphQL playground for built in, SSO protected user interface for interacting with the database and exploring data outside of software development
 - gRPC API for api -> database requests - gRPC tooling server side is more performant & has better tooling
- 
+    - auto-generate client SDK's in most languages (python, javascript, csharp, java, go, etc)
+
 ## Glossary
 
 |Term                                  |Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |Source                                                                                                                                                                                           |
