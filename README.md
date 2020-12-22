@@ -3,21 +3,30 @@
 
 [![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
 
+
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.11.2`
+`   docker pull graphikdb/graphik:v0.11.2`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
 Support: support@graphikdb.io
 
-  * [Helpful Links](#helpful-links)
+  * [Problem Statement](#problem-statement)
+      - [Traditional relational databases are powerful but come with a number of issues that interfere with agile development methodologies:](#traditional-relational-databases-are-powerful-but-come-with-a-number-of-issues-that-interfere-with-agile-development-methodologies-)
+      - [Traditional non-relational databases are non-relational](#traditional-non-relational-databases-are-non-relational)
+      - [Traditional non-relational databases often don't have a declarative query language](#traditional-non-relational-databases-often-don-t-have-a-declarative-query-language)
+      - [Traditional non-relational databases often don't support custom constraints](#traditional-non-relational-databases-often-don-t-support-custom-constraints)
+      - [No awareness of origin/end user accessing the records(only the API/dba making the request)](#no-awareness-of-origin-end-user-accessing-the-records-only-the-api-dba-making-the-request-)
+    + [Solution](#solution)
+  * [Glossary](#glossary)
   * [Features](#features)
   * [Key Dependencies](#key-dependencies)
   * [Flags](#flags)
   * [gRPC Client SDKs](#grpc-client-sdks)
   * [Implemenation Details](#implemenation-details)
     + [Primitives](#primitives)
+    + [Identity Graph](#identity-graph)
     + [Login/Authorization/Authorizers](#login-authorization-authorizers)
       - [Authorizers Examples](#authorizers-examples)
     + [Secondary Indexes](#secondary-indexes)
@@ -26,7 +35,6 @@ Support: support@graphikdb.io
       - [Type Validator Examples](#type-validator-examples)
     + [Triggers](#triggers)
       - [Trigger Examples](#trigger-examples)
-    + [Identity Graph](#identity-graph)
     + [GraphQL vs gRPC API](#graphql-vs-grpc-api)
     + [Streaming/PubSub](#streaming-pubsub)
     + [Graphik Playground](#graphik-playground)
@@ -46,17 +54,106 @@ Support: support@graphikdb.io
     + [Kubernetes](#kubernetes)
   * [OIDC Metadata Urls](#oidc-metadata-urls)
 
-## Helpful Links
 
-- [GraphQL Documentation Site](https://graphikdb.github.io/graphik/)
-- [Protobuf/gRPC API Spec](https://github.com/graphikDB/graphik/blob/master/graphik.proto)
-- [Graphql API Spec](https://github.com/graphikDB/graphik/blob/master/schema.graphQL)
-- [Common Expression Language Code Lab](https://codelabs.developers.google.com/codelabs/cel-go/index.html#0)
-- [CEL Standard Functions/Definitions](https://github.com/google/cel-spec/blob/master/doc/langdef.md#standard-definitions)
-- [OpenID Connect](https://openid.net/connect/)
-- [Directed Graph Wiki](https://en.wikipedia.org/wiki/Directed_graph)
-- [Change Log](CHANGELOG.md)
+## Problem Statement
 
+#### Traditional relational databases are powerful but come with a number of issues that interfere with agile development methodologies:
+
+- [database schema](https://en.wikipedia.org/wiki/Database_schema) setup requires application context & configuration overhead
+- database [schema changes are often dangerous](https://wikitech.wikimedia.org/wiki/Schema_changes#Dangers_of_schema_changes) and require skilled administration to pull off without downtime
+- [password rotation](https://www.beyondtrust.com/resources/glossary/password-rotation) is burdensome and leads to password sharing/leaks
+- user/application passwords are generally stored in an external store(identity provider) causing duplication of passwords(password-sprawl)
+- traditional database indexing requires application context in addition to database administration 
+
+Because of these reasons, proper database adminstration requires a skilled database adminstration team(DBA).
+
+This is bad for the following reasons:
+
+- hiring dba's is [costly](https://www.payscale.com/research/US/Job=Database_Administrator_(DBA)/Salary)
+- dba's generally have little context of the API accessing the database(only the intricacies of the database itself)
+- communication between developers & dba's is slow (meetings & JIRA tickets)
+
+
+![sql-schema-change-workflow](assets/sql-schema-change.png)
+    
+    
+#### Traditional non-relational databases are non-relational  
+- many times developers will utilize a NOSQL database in order to avoid the downsides of traditional relational databases
+- this leads to relational APIs being built on non-relational databases
+
+Because of these reasons, APIs often end up developing anti-patterns
+
+- references to related objects/records are embedded within the record itself instead of joined via foreign key
+    - as an API scales, the number of relationships will often grow, causing embedded relationships and/or multi-request queries to grow 
+- references to related objects/records are stored as foreign keys & joined client-side via multiple requests(slow)
+
+#### Traditional non-relational databases often don't have a declarative query language
+- declarative query languages are much easier to build via graphical tooling for since a single query "console" is generally the only requirement. 
+- without a declarative query language, interaction with the database often involves complicated forms on a user-interface to gather user input.
+- declarative query languages open up database querying to analysts, operators, managers and others with core competencies outside of software programming.
+
+#### Traditional non-relational databases often don't support custom constraints
+- constraints are important for ensuring data integrity
+- for instance, you may want to apply a constraint to the "age" field of a user to ensure it's greater than 0 and less than 150
+- this leads to developers enforcing constraints within the applications themselves, which leads to bugs
+
+![nosql-constraints](assets/nosql-constraints.png)
+
+
+#### No awareness of origin/end user accessing the records(only the API/dba making the request)
+- database "users" are generally expected to be database administrators and/or another API.
+- 3rd party [SSO](https://en.wikipedia.org/wiki/Single_sign-on) integrations are generally non-native
+- databases may be secured properly by the dba team while the APIs connecting to them can be insecure depending on the "origin" user
+
+This is bad for the following reasons:
+- dba teams falsely assuming their database resources are secured due to insecure APIs
+- api teams falsely assuming their api resources are secured due to insecure database administration
+
+
+### Solution
+
+- a loosely typed Graph database with built in identity awareness via a configured identity provider
+    - relational-oriented benefits of a SQL database
+    - non-relational-oriented productivity benefits of a NOSQL database
+- zero password management- this is delegated to the configured identity provider
+- schema-optional for productivity gains - type validators enforce custom constraints when necessary
+- "identity graph" which creates automatically creates connections between users & the database objects the create/modify
+    - index-free-adjacency allows insanely fast relational lookups from the POV of the origin user
+- fine-grained authorization model to support requests directly from the origin user/public client(user on browser, ios app, android app, etc)
+    - enforce role-based-access-control based on attributes found on the profile of the user manged by the identity provider
+- graphQL API to support a declarative query language for public clients(user on browser, ios app, android app, etc), data analysts, and database administrators
+- graphQL playground for built in, SSO protected user interface for interacting with the database and exploring data outside of software development
+- gRPC API for api -> database requests - gRPC tooling server side is more performant & has better tooling
+    - auto-generate client SDK's in most languages (python, javascript, csharp, java, go, etc)
+
+## Glossary
+
+|Term                                  |Definition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |Source                                                                                                                                                                                           |
+|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|Application Programming Interface(API)|An application programming interface (API) is a computing interface that defines interactions between multiple software intermediaries. It defines the kinds of calls or requests that can be made, how to make them, the data formats that should be used, the conventions to follow, etc.                                                                                                                                                                                                              |https://en.wikipedia.org/wiki/API#:~:text=An%20application%20programming%20interface%20(API,the%20conventions%20to%20follow%2C%20etc.                                                            |
+|Structured Query Language(SQL)        |a domain-specific language used in programming and designed for managing data held in a relational database management system (RDBMS), or for stream processing in a relational data stream management system (RDSMS). It is particularly useful in handling structured data, i.e. data incorporating relations among entities and variables.                                                                                                                                                            |https://en.wikipedia.org/wiki/SQL                                                                                                                                                                |
+|NOSQL                                 |(originally referring to "non-SQL" or "non-relational") database provides a mechanism for storage and retrieval of data that is modeled in means other than the tabular relations used in relational databases                                                                                                                                                                                                                                                                                           |https://en.wikipedia.org/wiki/NoSQL                                                                                                                                                              |
+|Graph Database                        |Very simply, a graph database is a database designed to treat the relationships between data as equally important to the data itself. It is intended to hold data without constricting it to a pre-defined model. Instead, the data is stored like we first draw it out - showing how each individual entity connects with or is related to others.                                                                                                                                                      |https://neo4j.com/developer/graph-database/                                                                                                                                                      |
+|Identity Provider                     |An identity provider (abbreviated IdP or IDP) is a system entity that creates, maintains, and manages identity information for principals and also provides authentication services to relying applications within a federation or distributed network.                                                                                                                                                                                                                                                  |https://en.wikipedia.org/wiki/Identity_provider                                                                                                                                                  |
+|OAuth2                                |The OAuth 2.0 authorization framework enables a third-party                                                                                                                                                                                                                                                                                                                                                                                                                                              |https://tools.ietf.org/html/rfc6749                                                                                                                                                              |
+|Open ID Connect(OIDC)                 |application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf.                                                                                                                                                                                                                                   |https://en.wikipedia.org/wiki/OpenID_Connect                                                                                                                                                     |
+|Open ID Connect Provider Metadata     |OpenID Providers supporting Discovery MUST make a JSON document available at the path formed by concatenating the string /.well-known/openid-configuration to the Issuer.                                                                                                                                                                                                                                                                                                                                |https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata                                                                                                                      |
+|gRPC                                  |gRPC is a modern open source high performance RPC framework that can run in any environment. It can efficiently connect services in and across data centers with pluggable support for load balancing, tracing, health checking and authentication. It is also applicable in last mile of distributed computing to connect devices, mobile applications and browsers to backend services.                                                                                                                |https://grpc.io/                                                                                                                                                                                 |
+|graphQL                               |GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data. GraphQL provides a complete and understandable description of the data in your API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.                                                                                                                                                 |https://graphql.org/                                                                                                                                                                             |
+|Client-Server Model                   |Client–server model is a distributed application structure that partitions tasks or workloads between the providers of a resource or service, called servers, and service requesters, called clients.                                                                                                                                                                                                                                                                                                    |https://en.wikipedia.org/wiki/Client%E2%80%93server_model                                                                                                                                        |
+|Publish-Subscribe Architecture(PubSub)|In software architecture, publish–subscribe is a messaging pattern where senders of messages, called publishers, do not program the messages to be sent directly to specific receivers, called subscribers, but instead categorize published messages into classes without knowledge of which subscribers, if any, there may be. Similarly, subscribers express interest in one or more classes and only receive messages that are of interest, without knowledge of which publishers, if any, there are.|https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern                                                                                                                                  |
+|Database Administrator                |Database administrators ensure databases run efficiently. Database administrators use specialized software to store and organize data, such as financial information and customer shipping records. They make sure that data are available to users and secure from unauthorized access.                                                                                                                                                                                                                 |https://www.bls.gov/ooh/computer-and-information-technology/database-administrators.htm#:~:text=Database%20administrators%20ensure%20databases%20run,and%20secure%20from%20unauthorized%20access.|
+|Raft                                  |Raft is a consensus algorithm designed as an alternative to the Paxos family of algorithms. It was meant to be more understandable than Paxos by means of separation of logic, but it is also formally proven safe and offers some additional features.[1] Raft offers a generic way to distribute a state machine across a cluster of computing systems, ensuring that each node in the cluster agrees upon the same series of state transitions.                                                       |https://en.wikipedia.org/wiki/Raft_(algorithm)                                                                                                                                                   |
+|Raft Leader                           |At any given time, the peer set elects a single node to be the leader. The leader is responsible for ingesting new log entries, replicating to followers, and managing when an entry is considered committed.                                                                                                                                                                                                                                                                                            |https://www.consul.io/docs/architecture/consensus                                                                                                                                                |
+|Raft Quorum                           |A quorum is a majority of members from a peer set: for a set of size N, quorum requires at least (N/2)+1 members. For example, if there are 5 members in the peer set, we would need 3 nodes to form a quorum. If a quorum of nodes is unavailable for any reason, the cluster becomes unavailable and no new logs can be committed.                                                                                                                                                                     |https://www.consul.io/docs/architecture/consensus                                                                                                                                                |
+|Raft Log                              |The primary unit of work in a Raft system is a log entry. The problem of consistency can be decomposed into a replicated log. A log is an ordered sequence of entries. Entries includes any cluster change: adding nodes, adding services, new key-value pairs, etc. We consider the log consistent if all members agree on the entries and their order.                                                                                                                                                 |https://www.consul.io/docs/architecture/consensus                                                                                                                                                |
+|High Availability                     |High availability (HA) is a characteristic of a system which aims to ensure an agreed level of operational performance, usually uptime, for a higher than normal period.                                                                                                                                                                                                                                                                                                                                 |https://en.wikipedia.org/wiki/High_availability#:~:text=High%20availability%20(HA)%20is%20a,increased%20reliance%20on%20these%20systems.                                                         |
+|Horizontal Scaleability               |Horizontal scaling means scaling by adding more machines to your pool of resources (also described as “scaling out”), whereas vertical scaling refers to scaling by adding more power (e.g. CPU, RAM) to an existing machine (also described as “scaling up”).                                                                                                                                                                                                                                           |https://www.section.io/blog/scaling-horizontally-vs-vertically/#:~:text=Horizontal%20scaling%20means%20scaling%20by,as%20%E2%80%9Cscaling%20up%E2%80%9D).                                        |
+|Database Trigger                      |A database trigger is procedural code that is automatically executed in response to certain events on a particular table or view in a database                                                                                                                                                                                                                                                                                                                                                           |https://en.wikipedia.org/wiki/Database_trigger                                                                                                                                                   |
+|Secondary Index                       |A secondary index, put simply, is a way to efficiently access records in a database (the primary) by means of some piece of information other than the usual (primary) key.                                                                                                                                                                                                                                                                                                                              |https://docs.oracle.com/cd/E17275_01/html/programmer_reference/am_second.html#:~:text=A%20secondary%20index%2C%20put%20simply,the%20usual%20(primary)%20key.                                     |
+|Authentication vs Authorization       |Authentication and authorization might sound similar, but they are distinct security processes in the world of identity and access management (IAM). Authentication confirms that users are who they say they are. Authorization gives those users permission to access a resource.                                                                                                                                                                                                                      |https://www.okta.com/identity-101/authentication-vs-authorization/#:~:text=Authentication%20and%20authorization%20might%20sound,permission%20to%20access%20a%20resource.                         |
+|Role Based Access Control(RBAC)       |Role-based access control (RBAC) is a method of restricting network access based on the roles of individual users within an enterprise. RBAC lets employees have access rights only to the information they need to do their jobs and prevents them from accessing information that doesn't pertain to them.                                                                                                                                                                                             |https://searchsecurity.techtarget.com/definition/role-based-access-control-RBAC#:~:text=Role%2Dbased%20access%20control%20(RBAC)%20is%20a%20method%20of,doesn't%20pertain%20to%20them.           |
+| Index Free Adjacency | Data lookup performance is dependent on the access speed from one particular node to another. Because index-free adjacency enforces the nodes to have direct physical RAM addresses and physically point to other adjacent nodes, it results in a fast retrieval. A native graph system with index-free adjacency does not have to move through any other type of data structures to find links between the nodes. | https://en.wikipedia.org/wiki/Graph_database#Index-free_adjacency
 ## Features
 - [x] 100% Go
 - [x] Native gRPC Support
@@ -175,6 +272,13 @@ message Connection {
   Ref to =5 [(validator.field) = {msg_exists : true}];
 }
 ```
+
+### Identity Graph
+- any time a document is created, a connection of type `created` from the origin user to the new document is also created
+- any time a document is created, a connection of type `created_by` from the new document to the origin user is also created
+- any time a document is edited, a connection of type `edited` from the origin user to the new document is also created(if none exists)
+- any time a document is edited, a connection of type `edited_by` from the new document to the origin user is also created(if none exists)
+- every document a user has ever interacted with may be queried via the Traverse method with the user as the root document of the traversal
 
 ### Login/Authorization/Authorizers
 - an access token `Authorization: Bearer ${token}` from the configured open-id connect identity provider is required for all database functionality
@@ -381,13 +485,6 @@ mutation {
   "extensions": {}
 }
 ```
-
-### Identity Graph
-- any time a document is created, a connection of type `created` from the origin user to the new document is also created
-- any time a document is created, a connection of type `created_by` from the new document to the origin user is also created
-- any time a document is edited, a connection of type `edited` from the origin user to the new document is also created(if none exists)
-- any time a document is edited, a connection of type `edited_by` from the new document to the origin user is also created(if none exists)
-- every document a user has ever interacted with may be queried via the Traverse method with the user as the root document of the traversal
 
 ### GraphQL vs gRPC API
 
