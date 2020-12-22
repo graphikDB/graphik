@@ -352,21 +352,21 @@ mutation {
 mutation {
 	setTriggers(input: {
 		triggers: [
-			{
+		{
 				name: "updatedAt"
 				gtype: "*"
 				expression: "true"
 				trigger: "{'updated_at': now()}"
 				target_docs: true
-				target_connections: true
+				target_connections: false
 		},
-			{
+		{
 				name: "createdAt"
 				gtype: "*"
-				expression: "!has(this.created_at)"
+				expression: "!has(this.attributes.created_at)"
 				trigger: "{'created_at': now()}"
 				target_docs: true
-				target_connections: true
+				target_connections: false
 		},
 		]
 	})
