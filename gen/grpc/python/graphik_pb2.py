@@ -25,7 +25,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='api',
   syntax='proto3',
   serialized_options=_b('Z\005apipb'),
-  serialized_pb=_b('\n\rgraphik.proto\x12\x03\x61pi\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x36github.com/mwitkow/go-proto-validators/validator.proto\"E\n\x03Ref\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1d\n\x03gid\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\">\n\x0eRefConstructor\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0b\n\x03gid\x18\x02 \x01(\t\"\x1e\n\x04Refs\x12\x16\n\x04refs\x18\x01 \x03(\x0b\x32\x08.api.Ref\"Q\n\x03\x44oc\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"g\n\x0e\x44ocConstructor\x12(\n\x03ref\x18\x01 \x01(\x0b\x32\x13.api.RefConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"4\n\x0f\x44ocConstructors\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.api.DocConstructor\"a\n\tTraversal\x12\x15\n\x03\x64oc\x18\x01 \x01(\x0b\x32\x08.api.Doc\x12 \n\x0etraversal_path\x18\x02 \x03(\x0b\x32\x08.api.Ref\x12\r\n\x05\x64\x65pth\x18\x03 \x01(\x04\x12\x0c\n\x04hops\x18\x04 \x01(\x04\"0\n\nTraversals\x12\"\n\ntraversals\x18\x01 \x03(\x0b\x32\x0e.api.Traversal\"1\n\x04\x44ocs\x12\x16\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x08.api.Doc\x12\x11\n\tseek_next\x18\x02 \x01(\t\"\xa8\x01\n\nConnection\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x03 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x04 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\xbe\x01\n\x15\x43onnectionConstructor\x12(\n\x03ref\x18\x01 \x01(\x0b\x32\x13.api.RefConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x06 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\xa0\x01\n\x13SearchConnectFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12\r\n\x05gtype\x18\x02 \x01(\t\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\x82\x01\n\x15SearchConnectMeFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12\r\n\x05gtype\x18\x02 \x01(\t\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\"I\n\x16\x43onnectionConstructors\x12/\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x1a.api.ConnectionConstructor\"F\n\x0b\x43onnections\x12$\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x0f.api.Connection\x12\x11\n\tseek_next\x18\x02 \x01(\t\"\xe2\x01\n\rConnectFilter\x12!\n\x07\x64oc_ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x05 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0c\n\x04seek\x18\x06 \x01(\t\x12\x0f\n\x07reverse\x18\x07 \x01(\x08\"\xc7\x01\n\x06\x46ilter\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\x12\x15\n\x05limit\x18\x03 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x04 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0c\n\x04seek\x18\x05 \x01(\t\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\x12\r\n\x05index\x18\x07 \x01(\t\"\x87\x01\n\tAggFilter\x12#\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.FilterB\x06\xe2\xdf\x1f\x02 \x01\x12!\n\taggregate\x18\x02 \x01(\x0e\x32\x0e.api.Aggregate\x12\x32\n\x05\x66ield\x18\x03 \x01(\tB#\xe2\xdf\x1f\x1f\n\x1d((^|, )(|^attributes.(.*)))+$\"\xac\x02\n\x0eTraverseFilter\x12\x1e\n\x04root\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x16\n\x0e\x64oc_expression\x18\x02 \x01(\t\x12\x1d\n\x15\x63onnection_expression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x05 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\x12!\n\talgorithm\x18\x07 \x01(\x0e\x32\x0e.api.Algorithm\x12\x19\n\tmax_depth\x18\x08 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x18\n\x08max_hops\x18\t \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\"\x8e\x02\n\x10TraverseMeFilter\x12\x16\n\x0e\x64oc_expression\x18\x01 \x01(\t\x12\x1d\n\x15\x63onnection_expression\x18\x02 \x01(\t\x12\x15\n\x05limit\x18\x03 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x04 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0f\n\x07reverse\x18\x05 \x01(\x08\x12!\n\talgorithm\x18\x06 \x01(\x0e\x32\x0e.api.Algorithm\x12\x19\n\tmax_depth\x18\x07 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x18\n\x08max_hops\x18\x08 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\"\x9c\x01\n\x10IndexConstructor\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"\x92\x01\n\nAuthTarget\x12\x1b\n\x04type\x18\x01 \x01(\x0e\x32\r.api.AuthType\x12 \n\x06method\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1e\n\x04user\x18\x03 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12%\n\x04\x64\x61ta\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct\"o\n\nAuthorizer\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1b\n\x04type\x18\x03 \x01(\x0e\x32\r.api.AuthType\"3\n\x0b\x41uthorizers\x12$\n\x0b\x61uthorizers\x18\x01 \x03(\x0b\x32\x0f.api.Authorizer\"\x99\x01\n\rTypeValidator\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x04 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x05 \x01(\x08\"8\n\x0eTypeValidators\x12&\n\nvalidators\x18\x01 \x03(\x0b\x32\x12.api.TypeValidator\"\x91\x01\n\x05Index\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"&\n\x07Indexes\x12\x1b\n\x07indexes\x18\x01 \x03(\x0b\x32\n.api.Index\"E\n\x0cStreamFilter\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\"G\n\x05Graph\x12\x17\n\x04\x64ocs\x18\x01 \x01(\x0b\x32\t.api.Docs\x12%\n\x0b\x63onnections\x18\x02 \x01(\x0b\x32\x10.api.Connections\"\xc4\x02\n\x05\x46lags\x12\x19\n\x11open_id_discovery\x18\x01 \x01(\t\x12\x14\n\x0cstorage_path\x18\x02 \x01(\t\x12\x0f\n\x07metrics\x18\x03 \x01(\x08\x12\x15\n\rallow_headers\x18\x05 \x03(\t\x12\x15\n\rallow_methods\x18\x06 \x03(\t\x12\x15\n\rallow_origins\x18\x07 \x03(\t\x12\x12\n\nroot_users\x18\x08 \x03(\t\x12\x10\n\x08tls_cert\x18\t \x01(\t\x12\x0f\n\x07tls_key\x18\n \x01(\t\x12\x1c\n\x14playground_client_id\x18\x0b \x01(\t\x12 \n\x18playground_client_secret\x18\x0c \x01(\t\x12\x1b\n\x13playground_redirect\x18\r \x01(\t\x12 \n\x18playground_session_store\x18\x0e \x01(\t\"\x18\n\x07\x42oolean\x12\r\n\x05value\x18\x01 \x01(\x08\"\x17\n\x06Number\x12\r\n\x05value\x18\x01 \x01(\x01\"\x83\x01\n\x0c\x45xistsFilter\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04seek\x18\x03 \x01(\t\x12\x0f\n\x07reverse\x18\x04 \x01(\x08\x12\r\n\x05index\x18\x05 \x01(\t\"R\n\x04\x45\x64it\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"V\n\nEditFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"\x17\n\x04Pong\x12\x0f\n\x07message\x18\x01 \x01(\t\"c\n\x0fOutboundMessage\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\"\xd4\x01\n\x07Message\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\x12\x1e\n\x04user\x18\x03 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12 \n\x06method\x18\x05 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\"\xa4\x01\n\x06Schema\x12\x18\n\x10\x63onnection_types\x18\x01 \x03(\t\x12\x11\n\tdoc_types\x18\x02 \x03(\t\x12%\n\x0b\x61uthorizers\x18\x03 \x01(\x0b\x32\x10.api.Authorizers\x12\'\n\nvalidators\x18\x04 \x01(\x0b\x32\x13.api.TypeValidators\x12\x1d\n\x07indexes\x18\x05 \x01(\x0b\x32\x0c.api.Indexes\" \n\nExprFilter\x12\x12\n\nexpression\x18\x01 \x01(\t*\x1d\n\tAlgorithm\x12\x07\n\x03\x42\x46S\x10\x00\x12\x07\n\x03\x44\x46S\x10\x01*D\n\tAggregate\x12\t\n\x05\x43OUNT\x10\x00\x12\x07\n\x03SUM\x10\x01\x12\x07\n\x03\x41VG\x10\x02\x12\x07\n\x03MAX\x10\x03\x12\x07\n\x03MIN\x10\x04\x12\x08\n\x04PROD\x10\x05*:\n\x08\x41uthType\x12\x0b\n\x07REQUEST\x10\x00\x12\x0c\n\x08VIEW_DOC\x10\x01\x12\x13\n\x0fVIEW_CONNECTION\x10\x02\x32\xda\x10\n\x0f\x44\x61tabaseService\x12+\n\x04Ping\x12\x16.google.protobuf.Empty\x1a\t.api.Pong\"\x00\x12\x32\n\tGetSchema\x12\x16.google.protobuf.Empty\x1a\x0b.api.Schema\"\x00\x12<\n\x0eSetAuthorizers\x12\x10.api.Authorizers\x1a\x16.google.protobuf.Empty\"\x00\x12\x34\n\nSetIndexes\x12\x0c.api.Indexes\x1a\x16.google.protobuf.Empty\"\x00\x12\x42\n\x11SetTypeValidators\x12\x13.api.TypeValidators\x1a\x16.google.protobuf.Empty\"\x00\x12(\n\x02Me\x12\x16.google.protobuf.Empty\x1a\x08.api.Doc\"\x00\x12,\n\tCreateDoc\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00\x12/\n\nCreateDocs\x12\x14.api.DocConstructors\x1a\t.api.Docs\"\x00\x12\x1e\n\x06GetDoc\x12\x08.api.Ref\x1a\x08.api.Doc\"\x00\x12&\n\nSearchDocs\x12\x0b.api.Filter\x1a\t.api.Docs\"\x00\x12\x32\n\x08Traverse\x12\x13.api.TraverseFilter\x1a\x0f.api.Traversals\"\x00\x12\x36\n\nTraverseMe\x12\x15.api.TraverseMeFilter\x1a\x0f.api.Traversals\"\x00\x12 \n\x07\x45\x64itDoc\x12\t.api.Edit\x1a\x08.api.Doc\"\x00\x12(\n\x08\x45\x64itDocs\x12\x0f.api.EditFilter\x1a\t.api.Docs\"\x00\x12,\n\x06\x44\x65lDoc\x12\x08.api.Ref\x1a\x16.google.protobuf.Empty\"\x00\x12\x30\n\x07\x44\x65lDocs\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12.\n\tExistsDoc\x12\x11.api.ExistsFilter\x1a\x0c.api.Boolean\"\x00\x12\x35\n\x10\x45xistsConnection\x12\x11.api.ExistsFilter\x1a\x0c.api.Boolean\"\x00\x12\"\n\x06HasDoc\x12\x08.api.Ref\x1a\x0c.api.Boolean\"\x00\x12)\n\rHasConnection\x12\x08.api.Ref\x1a\x0c.api.Boolean\"\x00\x12\x41\n\x10\x43reateConnection\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00\x12\x44\n\x11\x43reateConnections\x12\x1b.api.ConnectionConstructors\x1a\x10.api.Connections\"\x00\x12@\n\x10SearchAndConnect\x12\x18.api.SearchConnectFilter\x1a\x10.api.Connections\"\x00\x12\x44\n\x12SearchAndConnectMe\x12\x1a.api.SearchConnectMeFilter\x1a\x10.api.Connections\"\x00\x12,\n\rGetConnection\x12\x08.api.Ref\x1a\x0f.api.Connection\"\x00\x12\x34\n\x11SearchConnections\x12\x0b.api.Filter\x1a\x10.api.Connections\"\x00\x12.\n\x0e\x45\x64itConnection\x12\t.api.Edit\x1a\x0f.api.Connection\"\x00\x12\x36\n\x0f\x45\x64itConnections\x12\x0f.api.EditFilter\x1a\x10.api.Connections\"\x00\x12\x33\n\rDelConnection\x12\x08.api.Ref\x1a\x16.google.protobuf.Empty\"\x00\x12\x37\n\x0e\x44\x65lConnections\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12\x39\n\x0f\x43onnectionsFrom\x12\x12.api.ConnectFilter\x1a\x10.api.Connections\"\x00\x12\x37\n\rConnectionsTo\x12\x12.api.ConnectFilter\x1a\x10.api.Connections\"\x00\x12.\n\rAggregateDocs\x12\x0e.api.AggFilter\x1a\x0b.api.Number\"\x00\x12\x35\n\x14\x41ggregateConnections\x12\x0e.api.AggFilter\x1a\x0b.api.Number\"\x00\x12;\n\tBroadcast\x12\x14.api.OutboundMessage\x1a\x16.google.protobuf.Empty\"\x00\x12-\n\x06Stream\x12\x11.api.StreamFilter\x1a\x0c.api.Message\"\x00\x30\x01\x12:\n\x13PushDocConstructors\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00(\x01\x30\x01\x12O\n\x1aPushConnectionConstructors\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00(\x01\x30\x01\x12\x30\n\x08SeedDocs\x12\x08.api.Doc\x1a\x16.google.protobuf.Empty\"\x00(\x01\x12>\n\x0fSeedConnections\x12\x0f.api.Connection\x1a\x16.google.protobuf.Empty\"\x00(\x01\x42\x07Z\x05\x61pipbb\x06proto3')
+  serialized_pb=_b('\n\rgraphik.proto\x12\x03\x61pi\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19google/protobuf/any.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x36github.com/mwitkow/go-proto-validators/validator.proto\"E\n\x03Ref\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1d\n\x03gid\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\">\n\x0eRefConstructor\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0b\n\x03gid\x18\x02 \x01(\t\"\x1e\n\x04Refs\x12\x16\n\x04refs\x18\x01 \x03(\x0b\x32\x08.api.Ref\"Q\n\x03\x44oc\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"g\n\x0e\x44ocConstructor\x12(\n\x03ref\x18\x01 \x01(\x0b\x32\x13.api.RefConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"4\n\x0f\x44ocConstructors\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.api.DocConstructor\"a\n\tTraversal\x12\x15\n\x03\x64oc\x18\x01 \x01(\x0b\x32\x08.api.Doc\x12 \n\x0etraversal_path\x18\x02 \x03(\x0b\x32\x08.api.Ref\x12\r\n\x05\x64\x65pth\x18\x03 \x01(\x04\x12\x0c\n\x04hops\x18\x04 \x01(\x04\"0\n\nTraversals\x12\"\n\ntraversals\x18\x01 \x03(\x0b\x32\x0e.api.Traversal\"1\n\x04\x44ocs\x12\x16\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x08.api.Doc\x12\x11\n\tseek_next\x18\x02 \x01(\t\"\xa8\x01\n\nConnection\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x03 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x04 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\xbe\x01\n\x15\x43onnectionConstructor\x12(\n\x03ref\x18\x01 \x01(\x0b\x32\x13.api.RefConstructorB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1c\n\x02to\x18\x06 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\xa0\x01\n\x13SearchConnectFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12\r\n\x05gtype\x18\x02 \x01(\t\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\x12\x1e\n\x04\x66rom\x18\x05 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\"\x82\x01\n\x15SearchConnectMeFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12\r\n\x05gtype\x18\x02 \x01(\t\x12+\n\nattributes\x18\x03 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08\x64irected\x18\x04 \x01(\x08\"I\n\x16\x43onnectionConstructors\x12/\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x1a.api.ConnectionConstructor\"F\n\x0b\x43onnections\x12$\n\x0b\x63onnections\x18\x01 \x03(\x0b\x32\x0f.api.Connection\x12\x11\n\tseek_next\x18\x02 \x01(\t\"\xe2\x01\n\rConnectFilter\x12!\n\x07\x64oc_ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x05 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0c\n\x04seek\x18\x06 \x01(\t\x12\x0f\n\x07reverse\x18\x07 \x01(\x08\"\xc7\x01\n\x06\x46ilter\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\x12\x15\n\x05limit\x18\x03 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x04 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0c\n\x04seek\x18\x05 \x01(\t\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\x12\r\n\x05index\x18\x07 \x01(\t\"\x87\x01\n\tAggFilter\x12#\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.FilterB\x06\xe2\xdf\x1f\x02 \x01\x12!\n\taggregate\x18\x02 \x01(\x0e\x32\x0e.api.Aggregate\x12\x32\n\x05\x66ield\x18\x03 \x01(\tB#\xe2\xdf\x1f\x1f\n\x1d((^|, )(|^attributes.(.*)))+$\"\xac\x02\n\x0eTraverseFilter\x12\x1e\n\x04root\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x16\n\x0e\x64oc_expression\x18\x02 \x01(\t\x12\x1d\n\x15\x63onnection_expression\x18\x03 \x01(\t\x12\x15\n\x05limit\x18\x04 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x05 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0f\n\x07reverse\x18\x06 \x01(\x08\x12!\n\talgorithm\x18\x07 \x01(\x0e\x32\x0e.api.Algorithm\x12\x19\n\tmax_depth\x18\x08 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x18\n\x08max_hops\x18\t \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\"\x8e\x02\n\x10TraverseMeFilter\x12\x16\n\x0e\x64oc_expression\x18\x01 \x01(\t\x12\x1d\n\x15\x63onnection_expression\x18\x02 \x01(\t\x12\x15\n\x05limit\x18\x03 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x43\n\x04sort\x18\x04 \x01(\tB5\xe2\xdf\x1f\x31\n/((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))+$\x12\x0f\n\x07reverse\x18\x05 \x01(\x08\x12!\n\talgorithm\x18\x06 \x01(\x0e\x32\x0e.api.Algorithm\x12\x19\n\tmax_depth\x18\x07 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\x12\x18\n\x08max_hops\x18\x08 \x01(\x04\x42\x06\xe2\xdf\x1f\x02\x10\x00\"\x9c\x01\n\x10IndexConstructor\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"\xc2\x01\n\nAuthTarget\x12\x1e\n\x04user\x18\x01 \x01(\x0b\x32\x08.api.DocB\x06\xe2\xdf\x1f\x02 \x01\x12\'\n\x06target\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x0c\n\x04peer\x18\x03 \x01(\t\x12-\n\x07headers\x18\x04 \x03(\x0b\x32\x1c.api.AuthTarget.HeadersEntry\x1a.\n\x0cHeadersEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xa7\x01\n\nAuthorizer\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12 \n\x06method\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x17\n\x0ftarget_requests\x18\x04 \x01(\x08\x12\x18\n\x10target_responses\x18\x05 \x01(\x08\"3\n\x0b\x41uthorizers\x12$\n\x0b\x61uthorizers\x18\x01 \x03(\x0b\x32\x0f.api.Authorizer\"\xa7\x01\n\rTypeValidator\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x13\n\x0btarget_docs\x18\x04 \x01(\x08\x12\x1a\n\x12target_connections\x18\x05 \x01(\x08\"8\n\x0eTypeValidators\x12&\n\nvalidators\x18\x01 \x03(\x0b\x32\x12.api.TypeValidator\"\x91\x01\n\x05Index\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04\x64ocs\x18\x06 \x01(\x08\x12\x13\n\x0b\x63onnections\x18\x07 \x01(\x08\"&\n\x07Indexes\x12\x1b\n\x07indexes\x18\x01 \x03(\x0b\x32\n.api.Index\"\xc4\x01\n\x07Trigger\x12\x1e\n\x04name\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x1f\n\x05gtype\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x03 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12!\n\x07trigger\x18\x04 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x13\n\x0btarget_docs\x18\x05 \x01(\x08\x12\x1a\n\x12target_connections\x18\x06 \x01(\x08\"*\n\x08Triggers\x12\x1e\n\x08triggers\x18\x01 \x03(\x0b\x32\x0c.api.Trigger\"E\n\x0cStreamFilter\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x12\n\nexpression\x18\x02 \x01(\t\"G\n\x05Graph\x12\x17\n\x04\x64ocs\x18\x01 \x01(\x0b\x32\t.api.Docs\x12%\n\x0b\x63onnections\x18\x02 \x01(\x0b\x32\x10.api.Connections\"\xcf\x03\n\x05\x46lags\x12\x19\n\x11open_id_discovery\x18\x01 \x01(\t\x12\x14\n\x0cstorage_path\x18\x02 \x01(\t\x12\x0f\n\x07metrics\x18\x03 \x01(\x08\x12\x15\n\rallow_headers\x18\x05 \x03(\t\x12\x15\n\rallow_methods\x18\x06 \x03(\t\x12\x15\n\rallow_origins\x18\x07 \x03(\t\x12\x12\n\nroot_users\x18\x08 \x03(\t\x12\x10\n\x08tls_cert\x18\t \x01(\t\x12\x0f\n\x07tls_key\x18\n \x01(\t\x12\x1c\n\x14playground_client_id\x18\x0b \x01(\t\x12 \n\x18playground_client_secret\x18\x0c \x01(\t\x12\x1b\n\x13playground_redirect\x18\r \x01(\t\x12#\n\x1brequire_request_authorizers\x18\x0f \x01(\x08\x12$\n\x1crequire_response_authorizers\x18\x10 \x01(\x08\x12\x11\n\tjoin_raft\x18\x11 \x01(\t\x12\x14\n\x0craft_peer_id\x18\x12 \x01(\t\x12\x13\n\x0blisten_port\x18\x13 \x01(\x03\x12\x13\n\x0braft_secret\x18\x14 \x01(\t\x12\r\n\x05\x64\x65\x62ug\x18\x15 \x01(\x08\"\x18\n\x07\x42oolean\x12\r\n\x05value\x18\x01 \x01(\x08\"\x17\n\x06Number\x12\r\n\x05value\x18\x01 \x01(\x01\"\x83\x01\n\x0c\x45xistsFilter\x12\x1f\n\x05gtype\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12$\n\nexpression\x18\x02 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12\x0c\n\x04seek\x18\x03 \x01(\t\x12\x0f\n\x07reverse\x18\x04 \x01(\x08\x12\r\n\x05index\x18\x05 \x01(\t\"R\n\x04\x45\x64it\x12\x1d\n\x03ref\x18\x01 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"V\n\nEditFilter\x12\x1b\n\x06\x66ilter\x18\x01 \x01(\x0b\x32\x0b.api.Filter\x12+\n\nattributes\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"\x17\n\x04Pong\x12\x0f\n\x07message\x18\x01 \x01(\t\"c\n\x0fOutboundMessage\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\"\xd4\x01\n\x07Message\x12!\n\x07\x63hannel\x18\x01 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\x12-\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x17.google.protobuf.StructB\x06\xe2\xdf\x1f\x02 \x01\x12\x1e\n\x04user\x18\x03 \x01(\x0b\x32\x08.api.RefB\x06\xe2\xdf\x1f\x02 \x01\x12\x35\n\ttimestamp\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x06\xe2\xdf\x1f\x02 \x01\x12 \n\x06method\x18\x05 \x01(\tB\x10\xe2\xdf\x1f\x0c\n\n^.{1,225}$\"\xc5\x01\n\x06Schema\x12\x18\n\x10\x63onnection_types\x18\x01 \x03(\t\x12\x11\n\tdoc_types\x18\x02 \x03(\t\x12%\n\x0b\x61uthorizers\x18\x03 \x01(\x0b\x32\x10.api.Authorizers\x12\'\n\nvalidators\x18\x04 \x01(\x0b\x32\x13.api.TypeValidators\x12\x1d\n\x07indexes\x18\x05 \x01(\x0b\x32\x0c.api.Indexes\x12\x1f\n\x08triggers\x18\x06 \x01(\x0b\x32\r.api.Triggers\" \n\nExprFilter\x12\x12\n\nexpression\x18\x01 \x01(\t\"\x83\x03\n\x0bRaftCommand\x12\x16\n\x04user\x18\x01 \x01(\x0b\x32\x08.api.Doc\x12\x0e\n\x06method\x18\x02 \x01(\t\x12\x1a\n\x08set_docs\x18\x03 \x03(\x0b\x32\x08.api.Doc\x12(\n\x0fset_connections\x18\x04 \x03(\x0b\x32\x0f.api.Connection\x12\x1a\n\x08\x64\x65l_docs\x18\x05 \x03(\x0b\x32\x08.api.Ref\x12!\n\x0f\x64\x65l_connections\x18\x06 \x03(\x0b\x32\x08.api.Ref\x12!\n\x0bset_indexes\x18\x07 \x01(\x0b\x32\x0c.api.Indexes\x12)\n\x0fset_authorizers\x18\x08 \x01(\x0b\x32\x10.api.Authorizers\x12\x30\n\x13set_type_validators\x18\t \x01(\x0b\x32\x13.api.TypeValidators\x12\"\n\x0csend_message\x18\n \x01(\x0b\x32\x0c.api.Message\x12#\n\x0cset_triggers\x18\x0b \x01(\x0b\x32\r.api.Triggers\"%\n\x04Peer\x12\x0f\n\x07node_id\x18\x01 \x01(\t\x12\x0c\n\x04\x61\x64\x64r\x18\x02 \x01(\t\"\xb2\x01\n\tRaftState\x12\x0e\n\x06leader\x18\x01 \x01(\t\x12#\n\nmembership\x18\x02 \x01(\x0e\x32\x0f.api.Membership\x12\x18\n\x05peers\x18\x03 \x03(\x0b\x32\t.api.Peer\x12(\n\x05stats\x18\x04 \x03(\x0b\x32\x19.api.RaftState.StatsEntry\x1a,\n\nStatsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01*\x1d\n\tAlgorithm\x12\x07\n\x03\x42\x46S\x10\x00\x12\x07\n\x03\x44\x46S\x10\x01*D\n\tAggregate\x12\t\n\x05\x43OUNT\x10\x00\x12\x07\n\x03SUM\x10\x01\x12\x07\n\x03\x41VG\x10\x02\x12\x07\n\x03MAX\x10\x03\x12\x07\n\x03MIN\x10\x04\x12\x08\n\x04PROD\x10\x05*P\n\nMembership\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0c\n\x08\x46OLLOWER\x10\x01\x12\r\n\tCANDIDATE\x10\x02\x12\n\n\x06LEADER\x10\x03\x12\x0c\n\x08SHUTDOWN\x10\x04\x32\xa8\x01\n\x0bRaftService\x12+\n\x04Ping\x12\x16.google.protobuf.Empty\x1a\t.api.Pong\"\x00\x12\x32\n\x0bJoinCluster\x12\t.api.Peer\x1a\x16.google.protobuf.Empty\"\x00\x12\x38\n\x0c\x43lusterState\x12\x16.google.protobuf.Empty\x1a\x0e.api.RaftState\"\x00\x32\xe5\x10\n\x0f\x44\x61tabaseService\x12\x32\n\tGetSchema\x12\x16.google.protobuf.Empty\x1a\x0b.api.Schema\"\x00\x12<\n\x0eSetAuthorizers\x12\x10.api.Authorizers\x1a\x16.google.protobuf.Empty\"\x00\x12\x34\n\nSetIndexes\x12\x0c.api.Indexes\x1a\x16.google.protobuf.Empty\"\x00\x12\x42\n\x11SetTypeValidators\x12\x13.api.TypeValidators\x1a\x16.google.protobuf.Empty\"\x00\x12\x36\n\x0bSetTriggers\x12\r.api.Triggers\x1a\x16.google.protobuf.Empty\"\x00\x12(\n\x02Me\x12\x16.google.protobuf.Empty\x1a\x08.api.Doc\"\x00\x12,\n\tCreateDoc\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00\x12/\n\nCreateDocs\x12\x14.api.DocConstructors\x1a\t.api.Docs\"\x00\x12\x1e\n\x06GetDoc\x12\x08.api.Ref\x1a\x08.api.Doc\"\x00\x12&\n\nSearchDocs\x12\x0b.api.Filter\x1a\t.api.Docs\"\x00\x12\x32\n\x08Traverse\x12\x13.api.TraverseFilter\x1a\x0f.api.Traversals\"\x00\x12\x36\n\nTraverseMe\x12\x15.api.TraverseMeFilter\x1a\x0f.api.Traversals\"\x00\x12 \n\x07\x45\x64itDoc\x12\t.api.Edit\x1a\x08.api.Doc\"\x00\x12(\n\x08\x45\x64itDocs\x12\x0f.api.EditFilter\x1a\t.api.Docs\"\x00\x12,\n\x06\x44\x65lDoc\x12\x08.api.Ref\x1a\x16.google.protobuf.Empty\"\x00\x12\x30\n\x07\x44\x65lDocs\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12.\n\tExistsDoc\x12\x11.api.ExistsFilter\x1a\x0c.api.Boolean\"\x00\x12\x35\n\x10\x45xistsConnection\x12\x11.api.ExistsFilter\x1a\x0c.api.Boolean\"\x00\x12\"\n\x06HasDoc\x12\x08.api.Ref\x1a\x0c.api.Boolean\"\x00\x12)\n\rHasConnection\x12\x08.api.Ref\x1a\x0c.api.Boolean\"\x00\x12\x41\n\x10\x43reateConnection\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00\x12\x44\n\x11\x43reateConnections\x12\x1b.api.ConnectionConstructors\x1a\x10.api.Connections\"\x00\x12@\n\x10SearchAndConnect\x12\x18.api.SearchConnectFilter\x1a\x10.api.Connections\"\x00\x12\x44\n\x12SearchAndConnectMe\x12\x1a.api.SearchConnectMeFilter\x1a\x10.api.Connections\"\x00\x12,\n\rGetConnection\x12\x08.api.Ref\x1a\x0f.api.Connection\"\x00\x12\x34\n\x11SearchConnections\x12\x0b.api.Filter\x1a\x10.api.Connections\"\x00\x12.\n\x0e\x45\x64itConnection\x12\t.api.Edit\x1a\x0f.api.Connection\"\x00\x12\x36\n\x0f\x45\x64itConnections\x12\x0f.api.EditFilter\x1a\x10.api.Connections\"\x00\x12\x33\n\rDelConnection\x12\x08.api.Ref\x1a\x16.google.protobuf.Empty\"\x00\x12\x37\n\x0e\x44\x65lConnections\x12\x0b.api.Filter\x1a\x16.google.protobuf.Empty\"\x00\x12\x39\n\x0f\x43onnectionsFrom\x12\x12.api.ConnectFilter\x1a\x10.api.Connections\"\x00\x12\x37\n\rConnectionsTo\x12\x12.api.ConnectFilter\x1a\x10.api.Connections\"\x00\x12.\n\rAggregateDocs\x12\x0e.api.AggFilter\x1a\x0b.api.Number\"\x00\x12\x35\n\x14\x41ggregateConnections\x12\x0e.api.AggFilter\x1a\x0b.api.Number\"\x00\x12;\n\tBroadcast\x12\x14.api.OutboundMessage\x1a\x16.google.protobuf.Empty\"\x00\x12-\n\x06Stream\x12\x11.api.StreamFilter\x1a\x0c.api.Message\"\x00\x30\x01\x12:\n\x13PushDocConstructors\x12\x13.api.DocConstructor\x1a\x08.api.Doc\"\x00(\x01\x30\x01\x12O\n\x1aPushConnectionConstructors\x12\x1a.api.ConnectionConstructor\x1a\x0f.api.Connection\"\x00(\x01\x30\x01\x12\x30\n\x08SeedDocs\x12\x08.api.Doc\x1a\x16.google.protobuf.Empty\"\x00(\x01\x12>\n\x0fSeedConnections\x12\x0f.api.Connection\x1a\x16.google.protobuf.Empty\"\x00(\x01\x42\x07Z\x05\x61pipbb\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,google_dot_protobuf_dot_any__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,github_dot_com_dot_mwitkow_dot_go__proto__validators_dot_validator__pb2.DESCRIPTOR,])
 
@@ -46,8 +46,8 @@ _ALGORITHM = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=5004,
-  serialized_end=5033,
+  serialized_start=6148,
+  serialized_end=6177,
 )
 _sym_db.RegisterEnumDescriptor(_ALGORITHM)
 
@@ -85,39 +85,47 @@ _AGGREGATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=5035,
-  serialized_end=5103,
+  serialized_start=6179,
+  serialized_end=6247,
 )
 _sym_db.RegisterEnumDescriptor(_AGGREGATE)
 
 Aggregate = enum_type_wrapper.EnumTypeWrapper(_AGGREGATE)
-_AUTHTYPE = _descriptor.EnumDescriptor(
-  name='AuthType',
-  full_name='api.AuthType',
+_MEMBERSHIP = _descriptor.EnumDescriptor(
+  name='Membership',
+  full_name='api.Membership',
   filename=None,
   file=DESCRIPTOR,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='REQUEST', index=0, number=0,
+      name='UNKNOWN', index=0, number=0,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VIEW_DOC', index=1, number=1,
+      name='FOLLOWER', index=1, number=1,
       serialized_options=None,
       type=None),
     _descriptor.EnumValueDescriptor(
-      name='VIEW_CONNECTION', index=2, number=2,
+      name='CANDIDATE', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='LEADER', index=3, number=3,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='SHUTDOWN', index=4, number=4,
       serialized_options=None,
       type=None),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=5105,
-  serialized_end=5163,
+  serialized_start=6249,
+  serialized_end=6329,
 )
-_sym_db.RegisterEnumDescriptor(_AUTHTYPE)
+_sym_db.RegisterEnumDescriptor(_MEMBERSHIP)
 
-AuthType = enum_type_wrapper.EnumTypeWrapper(_AUTHTYPE)
+Membership = enum_type_wrapper.EnumTypeWrapper(_MEMBERSHIP)
 BFS = 0
 DFS = 1
 COUNT = 0
@@ -126,9 +134,11 @@ AVG = 2
 MAX = 3
 MIN = 4
 PROD = 5
-REQUEST = 0
-VIEW_DOC = 1
-VIEW_CONNECTION = 2
+UNKNOWN = 0
+FOLLOWER = 1
+CANDIDATE = 2
+LEADER = 3
+SHUTDOWN = 4
 
 
 
@@ -1182,38 +1192,24 @@ _INDEXCONSTRUCTOR = _descriptor.Descriptor(
 )
 
 
-_AUTHTARGET = _descriptor.Descriptor(
-  name='AuthTarget',
-  full_name='api.AuthTarget',
+_AUTHTARGET_HEADERSENTRY = _descriptor.Descriptor(
+  name='HeadersEntry',
+  full_name='api.AuthTarget.HeadersEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='type', full_name='api.AuthTarget.type', index=0,
-      number=1, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
+      name='key', full_name='api.AuthTarget.HeadersEntry.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='method', full_name='api.AuthTarget.method', index=1,
+      name='value', full_name='api.AuthTarget.HeadersEntry.value', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='user', full_name='api.AuthTarget.user', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=_b('\342\337\037\002 \001'), file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='data', full_name='api.AuthTarget.data', index=3,
-      number=4, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -1223,6 +1219,57 @@ _AUTHTARGET = _descriptor.Descriptor(
   nested_types=[],
   enum_types=[
   ],
+  serialized_options=_b('8\001'),
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3066,
+  serialized_end=3112,
+)
+
+_AUTHTARGET = _descriptor.Descriptor(
+  name='AuthTarget',
+  full_name='api.AuthTarget',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='user', full_name='api.AuthTarget.user', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=_b('\342\337\037\002 \001'), file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='target', full_name='api.AuthTarget.target', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='peer', full_name='api.AuthTarget.peer', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='headers', full_name='api.AuthTarget.headers', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[_AUTHTARGET_HEADERSENTRY, ],
+  enum_types=[
+  ],
   serialized_options=None,
   is_extendable=False,
   syntax='proto3',
@@ -1230,7 +1277,7 @@ _AUTHTARGET = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=2918,
-  serialized_end=3064,
+  serialized_end=3112,
 )
 
 
@@ -1249,16 +1296,30 @@ _AUTHORIZER = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='expression', full_name='api.Authorizer.expression', index=1,
+      name='method', full_name='api.Authorizer.method', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='type', full_name='api.Authorizer.type', index=2,
-      number=3, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
+      name='expression', full_name='api.Authorizer.expression', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='target_requests', full_name='api.Authorizer.target_requests', index=3,
+      number=4, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='target_responses', full_name='api.Authorizer.target_responses', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -1274,8 +1335,8 @@ _AUTHORIZER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3066,
-  serialized_end=3177,
+  serialized_start=3115,
+  serialized_end=3282,
 )
 
 
@@ -1305,8 +1366,8 @@ _AUTHORIZERS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3179,
-  serialized_end=3230,
+  serialized_start=3284,
+  serialized_end=3335,
 )
 
 
@@ -1339,14 +1400,14 @@ _TYPEVALIDATOR = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='docs', full_name='api.TypeValidator.docs', index=3,
+      name='target_docs', full_name='api.TypeValidator.target_docs', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='connections', full_name='api.TypeValidator.connections', index=4,
+      name='target_connections', full_name='api.TypeValidator.target_connections', index=4,
       number=5, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -1364,8 +1425,8 @@ _TYPEVALIDATOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3233,
-  serialized_end=3386,
+  serialized_start=3338,
+  serialized_end=3505,
 )
 
 
@@ -1395,8 +1456,8 @@ _TYPEVALIDATORS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3388,
-  serialized_end=3444,
+  serialized_start=3507,
+  serialized_end=3563,
 )
 
 
@@ -1454,8 +1515,8 @@ _INDEX = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3447,
-  serialized_end=3592,
+  serialized_start=3566,
+  serialized_end=3711,
 )
 
 
@@ -1485,8 +1546,105 @@ _INDEXES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3594,
-  serialized_end=3632,
+  serialized_start=3713,
+  serialized_end=3751,
+)
+
+
+_TRIGGER = _descriptor.Descriptor(
+  name='Trigger',
+  full_name='api.Trigger',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='api.Trigger.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='gtype', full_name='api.Trigger.gtype', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='expression', full_name='api.Trigger.expression', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='trigger', full_name='api.Trigger.trigger', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=_b('\342\337\037\014\n\n^.{1,225}$'), file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='target_docs', full_name='api.Trigger.target_docs', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='target_connections', full_name='api.Trigger.target_connections', index=5,
+      number=6, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3754,
+  serialized_end=3950,
+)
+
+
+_TRIGGERS = _descriptor.Descriptor(
+  name='Triggers',
+  full_name='api.Triggers',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='triggers', full_name='api.Triggers.triggers', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=3952,
+  serialized_end=3994,
 )
 
 
@@ -1523,8 +1681,8 @@ _STREAMFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3634,
-  serialized_end=3703,
+  serialized_start=3996,
+  serialized_end=4065,
 )
 
 
@@ -1561,8 +1719,8 @@ _GRAPH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3705,
-  serialized_end=3776,
+  serialized_start=4067,
+  serialized_end=4138,
 )
 
 
@@ -1658,9 +1816,51 @@ _FLAGS = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='playground_session_store', full_name='api.Flags.playground_session_store', index=12,
-      number=14, type=9, cpp_type=9, label=1,
+      name='require_request_authorizers', full_name='api.Flags.require_request_authorizers', index=12,
+      number=15, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='require_response_authorizers', full_name='api.Flags.require_response_authorizers', index=13,
+      number=16, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='join_raft', full_name='api.Flags.join_raft', index=14,
+      number=17, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='raft_peer_id', full_name='api.Flags.raft_peer_id', index=15,
+      number=18, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='listen_port', full_name='api.Flags.listen_port', index=16,
+      number=19, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='raft_secret', full_name='api.Flags.raft_secret', index=17,
+      number=20, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='debug', full_name='api.Flags.debug', index=18,
+      number=21, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -1676,8 +1876,8 @@ _FLAGS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3779,
-  serialized_end=4103,
+  serialized_start=4141,
+  serialized_end=4604,
 )
 
 
@@ -1707,8 +1907,8 @@ _BOOLEAN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4105,
-  serialized_end=4129,
+  serialized_start=4606,
+  serialized_end=4630,
 )
 
 
@@ -1738,8 +1938,8 @@ _NUMBER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4131,
-  serialized_end=4154,
+  serialized_start=4632,
+  serialized_end=4655,
 )
 
 
@@ -1797,8 +1997,8 @@ _EXISTSFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4157,
-  serialized_end=4288,
+  serialized_start=4658,
+  serialized_end=4789,
 )
 
 
@@ -1835,8 +2035,8 @@ _EDIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4290,
-  serialized_end=4372,
+  serialized_start=4791,
+  serialized_end=4873,
 )
 
 
@@ -1873,8 +2073,8 @@ _EDITFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4374,
-  serialized_end=4460,
+  serialized_start=4875,
+  serialized_end=4961,
 )
 
 
@@ -1904,8 +2104,8 @@ _PONG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4462,
-  serialized_end=4485,
+  serialized_start=4963,
+  serialized_end=4986,
 )
 
 
@@ -1942,8 +2142,8 @@ _OUTBOUNDMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4487,
-  serialized_end=4586,
+  serialized_start=4988,
+  serialized_end=5087,
 )
 
 
@@ -2001,8 +2201,8 @@ _MESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4589,
-  serialized_end=4801,
+  serialized_start=5090,
+  serialized_end=5302,
 )
 
 
@@ -2048,6 +2248,13 @@ _SCHEMA = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='triggers', full_name='api.Schema.triggers', index=5,
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -2060,8 +2267,8 @@ _SCHEMA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4804,
-  serialized_end=4968,
+  serialized_start=5305,
+  serialized_end=5502,
 )
 
 
@@ -2091,8 +2298,236 @@ _EXPRFILTER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4970,
-  serialized_end=5002,
+  serialized_start=5504,
+  serialized_end=5536,
+)
+
+
+_RAFTCOMMAND = _descriptor.Descriptor(
+  name='RaftCommand',
+  full_name='api.RaftCommand',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='user', full_name='api.RaftCommand.user', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='method', full_name='api.RaftCommand.method', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='set_docs', full_name='api.RaftCommand.set_docs', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='set_connections', full_name='api.RaftCommand.set_connections', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='del_docs', full_name='api.RaftCommand.del_docs', index=4,
+      number=5, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='del_connections', full_name='api.RaftCommand.del_connections', index=5,
+      number=6, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='set_indexes', full_name='api.RaftCommand.set_indexes', index=6,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='set_authorizers', full_name='api.RaftCommand.set_authorizers', index=7,
+      number=8, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='set_type_validators', full_name='api.RaftCommand.set_type_validators', index=8,
+      number=9, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='send_message', full_name='api.RaftCommand.send_message', index=9,
+      number=10, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='set_triggers', full_name='api.RaftCommand.set_triggers', index=10,
+      number=11, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=5539,
+  serialized_end=5926,
+)
+
+
+_PEER = _descriptor.Descriptor(
+  name='Peer',
+  full_name='api.Peer',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='node_id', full_name='api.Peer.node_id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='addr', full_name='api.Peer.addr', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=5928,
+  serialized_end=5965,
+)
+
+
+_RAFTSTATE_STATSENTRY = _descriptor.Descriptor(
+  name='StatsEntry',
+  full_name='api.RaftState.StatsEntry',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='api.RaftState.StatsEntry.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='api.RaftState.StatsEntry.value', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=_b('8\001'),
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=6102,
+  serialized_end=6146,
+)
+
+_RAFTSTATE = _descriptor.Descriptor(
+  name='RaftState',
+  full_name='api.RaftState',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='leader', full_name='api.RaftState.leader', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='membership', full_name='api.RaftState.membership', index=1,
+      number=2, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='peers', full_name='api.RaftState.peers', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='stats', full_name='api.RaftState.stats', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[_RAFTSTATE_STATSENTRY, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=5968,
+  serialized_end=6146,
 )
 
 _REFS.fields_by_name['refs'].message_type = _REF
@@ -2126,13 +2561,14 @@ _AGGFILTER.fields_by_name['aggregate'].enum_type = _AGGREGATE
 _TRAVERSEFILTER.fields_by_name['root'].message_type = _REF
 _TRAVERSEFILTER.fields_by_name['algorithm'].enum_type = _ALGORITHM
 _TRAVERSEMEFILTER.fields_by_name['algorithm'].enum_type = _ALGORITHM
-_AUTHTARGET.fields_by_name['type'].enum_type = _AUTHTYPE
+_AUTHTARGET_HEADERSENTRY.containing_type = _AUTHTARGET
 _AUTHTARGET.fields_by_name['user'].message_type = _DOC
-_AUTHTARGET.fields_by_name['data'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
-_AUTHORIZER.fields_by_name['type'].enum_type = _AUTHTYPE
+_AUTHTARGET.fields_by_name['target'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
+_AUTHTARGET.fields_by_name['headers'].message_type = _AUTHTARGET_HEADERSENTRY
 _AUTHORIZERS.fields_by_name['authorizers'].message_type = _AUTHORIZER
 _TYPEVALIDATORS.fields_by_name['validators'].message_type = _TYPEVALIDATOR
 _INDEXES.fields_by_name['indexes'].message_type = _INDEX
+_TRIGGERS.fields_by_name['triggers'].message_type = _TRIGGER
 _GRAPH.fields_by_name['docs'].message_type = _DOCS
 _GRAPH.fields_by_name['connections'].message_type = _CONNECTIONS
 _EDIT.fields_by_name['ref'].message_type = _REF
@@ -2146,6 +2582,21 @@ _MESSAGE.fields_by_name['timestamp'].message_type = google_dot_protobuf_dot_time
 _SCHEMA.fields_by_name['authorizers'].message_type = _AUTHORIZERS
 _SCHEMA.fields_by_name['validators'].message_type = _TYPEVALIDATORS
 _SCHEMA.fields_by_name['indexes'].message_type = _INDEXES
+_SCHEMA.fields_by_name['triggers'].message_type = _TRIGGERS
+_RAFTCOMMAND.fields_by_name['user'].message_type = _DOC
+_RAFTCOMMAND.fields_by_name['set_docs'].message_type = _DOC
+_RAFTCOMMAND.fields_by_name['set_connections'].message_type = _CONNECTION
+_RAFTCOMMAND.fields_by_name['del_docs'].message_type = _REF
+_RAFTCOMMAND.fields_by_name['del_connections'].message_type = _REF
+_RAFTCOMMAND.fields_by_name['set_indexes'].message_type = _INDEXES
+_RAFTCOMMAND.fields_by_name['set_authorizers'].message_type = _AUTHORIZERS
+_RAFTCOMMAND.fields_by_name['set_type_validators'].message_type = _TYPEVALIDATORS
+_RAFTCOMMAND.fields_by_name['send_message'].message_type = _MESSAGE
+_RAFTCOMMAND.fields_by_name['set_triggers'].message_type = _TRIGGERS
+_RAFTSTATE_STATSENTRY.containing_type = _RAFTSTATE
+_RAFTSTATE.fields_by_name['membership'].enum_type = _MEMBERSHIP
+_RAFTSTATE.fields_by_name['peers'].message_type = _PEER
+_RAFTSTATE.fields_by_name['stats'].message_type = _RAFTSTATE_STATSENTRY
 DESCRIPTOR.message_types_by_name['Ref'] = _REF
 DESCRIPTOR.message_types_by_name['RefConstructor'] = _REFCONSTRUCTOR
 DESCRIPTOR.message_types_by_name['Refs'] = _REFS
@@ -2174,6 +2625,8 @@ DESCRIPTOR.message_types_by_name['TypeValidator'] = _TYPEVALIDATOR
 DESCRIPTOR.message_types_by_name['TypeValidators'] = _TYPEVALIDATORS
 DESCRIPTOR.message_types_by_name['Index'] = _INDEX
 DESCRIPTOR.message_types_by_name['Indexes'] = _INDEXES
+DESCRIPTOR.message_types_by_name['Trigger'] = _TRIGGER
+DESCRIPTOR.message_types_by_name['Triggers'] = _TRIGGERS
 DESCRIPTOR.message_types_by_name['StreamFilter'] = _STREAMFILTER
 DESCRIPTOR.message_types_by_name['Graph'] = _GRAPH
 DESCRIPTOR.message_types_by_name['Flags'] = _FLAGS
@@ -2187,9 +2640,12 @@ DESCRIPTOR.message_types_by_name['OutboundMessage'] = _OUTBOUNDMESSAGE
 DESCRIPTOR.message_types_by_name['Message'] = _MESSAGE
 DESCRIPTOR.message_types_by_name['Schema'] = _SCHEMA
 DESCRIPTOR.message_types_by_name['ExprFilter'] = _EXPRFILTER
+DESCRIPTOR.message_types_by_name['RaftCommand'] = _RAFTCOMMAND
+DESCRIPTOR.message_types_by_name['Peer'] = _PEER
+DESCRIPTOR.message_types_by_name['RaftState'] = _RAFTSTATE
 DESCRIPTOR.enum_types_by_name['Algorithm'] = _ALGORITHM
 DESCRIPTOR.enum_types_by_name['Aggregate'] = _AGGREGATE
-DESCRIPTOR.enum_types_by_name['AuthType'] = _AUTHTYPE
+DESCRIPTOR.enum_types_by_name['Membership'] = _MEMBERSHIP
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Ref = _reflection.GeneratedProtocolMessageType('Ref', (_message.Message,), dict(
@@ -2340,11 +2796,19 @@ IndexConstructor = _reflection.GeneratedProtocolMessageType('IndexConstructor', 
 _sym_db.RegisterMessage(IndexConstructor)
 
 AuthTarget = _reflection.GeneratedProtocolMessageType('AuthTarget', (_message.Message,), dict(
+
+  HeadersEntry = _reflection.GeneratedProtocolMessageType('HeadersEntry', (_message.Message,), dict(
+    DESCRIPTOR = _AUTHTARGET_HEADERSENTRY,
+    __module__ = 'graphik_pb2'
+    # @@protoc_insertion_point(class_scope:api.AuthTarget.HeadersEntry)
+    ))
+  ,
   DESCRIPTOR = _AUTHTARGET,
   __module__ = 'graphik_pb2'
   # @@protoc_insertion_point(class_scope:api.AuthTarget)
   ))
 _sym_db.RegisterMessage(AuthTarget)
+_sym_db.RegisterMessage(AuthTarget.HeadersEntry)
 
 Authorizer = _reflection.GeneratedProtocolMessageType('Authorizer', (_message.Message,), dict(
   DESCRIPTOR = _AUTHORIZER,
@@ -2387,6 +2851,20 @@ Indexes = _reflection.GeneratedProtocolMessageType('Indexes', (_message.Message,
   # @@protoc_insertion_point(class_scope:api.Indexes)
   ))
 _sym_db.RegisterMessage(Indexes)
+
+Trigger = _reflection.GeneratedProtocolMessageType('Trigger', (_message.Message,), dict(
+  DESCRIPTOR = _TRIGGER,
+  __module__ = 'graphik_pb2'
+  # @@protoc_insertion_point(class_scope:api.Trigger)
+  ))
+_sym_db.RegisterMessage(Trigger)
+
+Triggers = _reflection.GeneratedProtocolMessageType('Triggers', (_message.Message,), dict(
+  DESCRIPTOR = _TRIGGERS,
+  __module__ = 'graphik_pb2'
+  # @@protoc_insertion_point(class_scope:api.Triggers)
+  ))
+_sym_db.RegisterMessage(Triggers)
 
 StreamFilter = _reflection.GeneratedProtocolMessageType('StreamFilter', (_message.Message,), dict(
   DESCRIPTOR = _STREAMFILTER,
@@ -2479,6 +2957,35 @@ ExprFilter = _reflection.GeneratedProtocolMessageType('ExprFilter', (_message.Me
   ))
 _sym_db.RegisterMessage(ExprFilter)
 
+RaftCommand = _reflection.GeneratedProtocolMessageType('RaftCommand', (_message.Message,), dict(
+  DESCRIPTOR = _RAFTCOMMAND,
+  __module__ = 'graphik_pb2'
+  # @@protoc_insertion_point(class_scope:api.RaftCommand)
+  ))
+_sym_db.RegisterMessage(RaftCommand)
+
+Peer = _reflection.GeneratedProtocolMessageType('Peer', (_message.Message,), dict(
+  DESCRIPTOR = _PEER,
+  __module__ = 'graphik_pb2'
+  # @@protoc_insertion_point(class_scope:api.Peer)
+  ))
+_sym_db.RegisterMessage(Peer)
+
+RaftState = _reflection.GeneratedProtocolMessageType('RaftState', (_message.Message,), dict(
+
+  StatsEntry = _reflection.GeneratedProtocolMessageType('StatsEntry', (_message.Message,), dict(
+    DESCRIPTOR = _RAFTSTATE_STATSENTRY,
+    __module__ = 'graphik_pb2'
+    # @@protoc_insertion_point(class_scope:api.RaftState.StatsEntry)
+    ))
+  ,
+  DESCRIPTOR = _RAFTSTATE,
+  __module__ = 'graphik_pb2'
+  # @@protoc_insertion_point(class_scope:api.RaftState)
+  ))
+_sym_db.RegisterMessage(RaftState)
+_sym_db.RegisterMessage(RaftState.StatsEntry)
+
 
 DESCRIPTOR._options = None
 _REF.fields_by_name['gtype']._options = None
@@ -2514,9 +3021,10 @@ _TRAVERSEMEFILTER.fields_by_name['max_hops']._options = None
 _INDEXCONSTRUCTOR.fields_by_name['name']._options = None
 _INDEXCONSTRUCTOR.fields_by_name['gtype']._options = None
 _INDEXCONSTRUCTOR.fields_by_name['expression']._options = None
-_AUTHTARGET.fields_by_name['method']._options = None
+_AUTHTARGET_HEADERSENTRY._options = None
 _AUTHTARGET.fields_by_name['user']._options = None
 _AUTHORIZER.fields_by_name['name']._options = None
+_AUTHORIZER.fields_by_name['method']._options = None
 _AUTHORIZER.fields_by_name['expression']._options = None
 _TYPEVALIDATOR.fields_by_name['name']._options = None
 _TYPEVALIDATOR.fields_by_name['gtype']._options = None
@@ -2524,6 +3032,10 @@ _TYPEVALIDATOR.fields_by_name['expression']._options = None
 _INDEX.fields_by_name['name']._options = None
 _INDEX.fields_by_name['gtype']._options = None
 _INDEX.fields_by_name['expression']._options = None
+_TRIGGER.fields_by_name['name']._options = None
+_TRIGGER.fields_by_name['gtype']._options = None
+_TRIGGER.fields_by_name['expression']._options = None
+_TRIGGER.fields_by_name['trigger']._options = None
 _STREAMFILTER.fields_by_name['channel']._options = None
 _EXISTSFILTER.fields_by_name['gtype']._options = None
 _EXISTSFILTER.fields_by_name['expression']._options = None
@@ -2535,19 +3047,20 @@ _MESSAGE.fields_by_name['data']._options = None
 _MESSAGE.fields_by_name['user']._options = None
 _MESSAGE.fields_by_name['timestamp']._options = None
 _MESSAGE.fields_by_name['method']._options = None
+_RAFTSTATE_STATSENTRY._options = None
 
-_DATABASESERVICE = _descriptor.ServiceDescriptor(
-  name='DatabaseService',
-  full_name='api.DatabaseService',
+_RAFTSERVICE = _descriptor.ServiceDescriptor(
+  name='RaftService',
+  full_name='api.RaftService',
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=5166,
-  serialized_end=7304,
+  serialized_start=6332,
+  serialized_end=6500,
   methods=[
   _descriptor.MethodDescriptor(
     name='Ping',
-    full_name='api.DatabaseService.Ping',
+    full_name='api.RaftService.Ping',
     index=0,
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
@@ -2555,9 +3068,42 @@ _DATABASESERVICE = _descriptor.ServiceDescriptor(
     serialized_options=None,
   ),
   _descriptor.MethodDescriptor(
+    name='JoinCluster',
+    full_name='api.RaftService.JoinCluster',
+    index=1,
+    containing_service=None,
+    input_type=_PEER,
+    output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='ClusterState',
+    full_name='api.RaftService.ClusterState',
+    index=2,
+    containing_service=None,
+    input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    output_type=_RAFTSTATE,
+    serialized_options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_RAFTSERVICE)
+
+DESCRIPTOR.services_by_name['RaftService'] = _RAFTSERVICE
+
+
+_DATABASESERVICE = _descriptor.ServiceDescriptor(
+  name='DatabaseService',
+  full_name='api.DatabaseService',
+  file=DESCRIPTOR,
+  index=1,
+  serialized_options=None,
+  serialized_start=6503,
+  serialized_end=8652,
+  methods=[
+  _descriptor.MethodDescriptor(
     name='GetSchema',
     full_name='api.DatabaseService.GetSchema',
-    index=1,
+    index=0,
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     output_type=_SCHEMA,
@@ -2566,7 +3112,7 @@ _DATABASESERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SetAuthorizers',
     full_name='api.DatabaseService.SetAuthorizers',
-    index=2,
+    index=1,
     containing_service=None,
     input_type=_AUTHORIZERS,
     output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
@@ -2575,7 +3121,7 @@ _DATABASESERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SetIndexes',
     full_name='api.DatabaseService.SetIndexes',
-    index=3,
+    index=2,
     containing_service=None,
     input_type=_INDEXES,
     output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
@@ -2584,9 +3130,18 @@ _DATABASESERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SetTypeValidators',
     full_name='api.DatabaseService.SetTypeValidators',
-    index=4,
+    index=3,
     containing_service=None,
     input_type=_TYPEVALIDATORS,
+    output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='SetTriggers',
+    full_name='api.DatabaseService.SetTriggers',
+    index=4,
+    containing_service=None,
+    input_type=_TRIGGERS,
     output_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     serialized_options=None,
   ),

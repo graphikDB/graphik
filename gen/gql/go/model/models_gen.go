@@ -16,22 +16,26 @@ type AggFilter struct {
 }
 
 type AuthTarget struct {
-	Type   AuthType               `json:"type"`
-	Method string                 `json:"method"`
-	User   *Doc                   `json:"user"`
-	Data   map[string]interface{} `json:"data"`
+	User    *Doc                   `json:"user"`
+	Target  map[string]interface{} `json:"target"`
+	Peer    string                 `json:"peer"`
+	Headers map[string]interface{} `json:"headers"`
 }
 
 type Authorizer struct {
-	Name       string   `json:"name"`
-	Expression string   `json:"expression"`
-	Type       AuthType `json:"type"`
+	Name            string `json:"name"`
+	Method          string `json:"method"`
+	Expression      string `json:"expression"`
+	TargetRequests  bool   `json:"target_requests"`
+	TargetResponses bool   `json:"target_responses"`
 }
 
 type AuthorizerInput struct {
-	Name       string   `json:"name"`
-	Expression string   `json:"expression"`
-	Type       AuthType `json:"type"`
+	Name            string `json:"name"`
+	Method          string `json:"method"`
+	Expression      string `json:"expression"`
+	TargetRequests  bool   `json:"target_requests"`
+	TargetResponses bool   `json:"target_responses"`
 }
 
 type Authorizers struct {
@@ -129,19 +133,19 @@ type Filter struct {
 }
 
 type Index struct {
-	Name        string `json:"name"`
-	Gtype       string `json:"gtype"`
-	Expression  string `json:"expression"`
-	Docs        bool   `json:"docs"`
-	Connections bool   `json:"connections"`
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
 }
 
 type IndexInput struct {
-	Name        string `json:"name"`
-	Gtype       string `json:"gtype"`
-	Expression  string `json:"expression"`
-	Docs        bool   `json:"docs"`
-	Connections bool   `json:"connections"`
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
 }
 
 type Indexes struct {
@@ -165,8 +169,21 @@ type OutboundMessage struct {
 	Data    map[string]interface{} `json:"data"`
 }
 
-type Pong struct {
-	Message string `json:"message"`
+type Peer struct {
+	NodeID string `json:"node_id"`
+	Addr   string `json:"addr"`
+}
+
+type PeerInput struct {
+	NodeID string `json:"node_id"`
+	Addr   string `json:"addr"`
+}
+
+type RaftState struct {
+	Leader     string                 `json:"leader"`
+	Membership Membership             `json:"membership"`
+	Peers      []*Peer                `json:"peers"`
+	Stats      map[string]interface{} `json:"stats"`
 }
 
 type Ref struct {
@@ -184,11 +201,6 @@ type RefInput struct {
 	Gid   string `json:"gid"`
 }
 
-type RefPair struct {
-	Ref1 *RefInput `json:"ref1"`
-	Ref2 *RefInput `json:"ref2"`
-}
-
 type Refs struct {
 	Refs []*Ref `json:"refs"`
 }
@@ -199,6 +211,7 @@ type Schema struct {
 	Authorizers     *Authorizers    `json:"authorizers"`
 	Validators      *TypeValidators `json:"validators"`
 	Indexes         *Indexes        `json:"indexes"`
+	Triggers        *Triggers       `json:"triggers"`
 }
 
 type SearchConnectFilter struct {
@@ -255,20 +268,46 @@ type TraverseMeFilter struct {
 	MaxHops              int        `json:"max_hops"`
 }
 
+type Trigger struct {
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	Trigger           string `json:"trigger"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
+}
+
+type TriggerInput struct {
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	Trigger           string `json:"trigger"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
+}
+
+type Triggers struct {
+	Triggers []*Trigger `json:"triggers"`
+}
+
+type TriggersInput struct {
+	Triggers []*TriggerInput `json:"triggers"`
+}
+
 type TypeValidator struct {
-	Name        string `json:"name"`
-	Gtype       string `json:"gtype"`
-	Expression  string `json:"expression"`
-	Docs        bool   `json:"docs"`
-	Connections bool   `json:"connections"`
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
 }
 
 type TypeValidatorInput struct {
-	Name        string `json:"name"`
-	Gtype       string `json:"gtype"`
-	Expression  string `json:"expression"`
-	Docs        bool   `json:"docs"`
-	Connections bool   `json:"connections"`
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
 }
 
 type TypeValidators struct {
@@ -369,45 +408,49 @@ func (e Algorithm) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
-type AuthType string
+type Membership string
 
 const (
-	AuthTypeRequest        AuthType = "REQUEST"
-	AuthTypeViewDoc        AuthType = "VIEW_DOC"
-	AuthTypeViewConnection AuthType = "VIEW_CONNECTION"
+	MembershipUnknown   Membership = "UNKNOWN"
+	MembershipFollower  Membership = "FOLLOWER"
+	MembershipCandidate Membership = "CANDIDATE"
+	MembershipLeader    Membership = "LEADER"
+	MembershipShutdown  Membership = "SHUTDOWN"
 )
 
-var AllAuthType = []AuthType{
-	AuthTypeRequest,
-	AuthTypeViewDoc,
-	AuthTypeViewConnection,
+var AllMembership = []Membership{
+	MembershipUnknown,
+	MembershipFollower,
+	MembershipCandidate,
+	MembershipLeader,
+	MembershipShutdown,
 }
 
-func (e AuthType) IsValid() bool {
+func (e Membership) IsValid() bool {
 	switch e {
-	case AuthTypeRequest, AuthTypeViewDoc, AuthTypeViewConnection:
+	case MembershipUnknown, MembershipFollower, MembershipCandidate, MembershipLeader, MembershipShutdown:
 		return true
 	}
 	return false
 }
 
-func (e AuthType) String() string {
+func (e Membership) String() string {
 	return string(e)
 }
 
-func (e *AuthType) UnmarshalGQL(v interface{}) error {
+func (e *Membership) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = AuthType(str)
+	*e = Membership(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid AuthType", str)
+		return fmt.Errorf("%s is not a valid Membership", str)
 	}
 	return nil
 }
 
-func (e AuthType) MarshalGQL(w io.Writer) {
+func (e Membership) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

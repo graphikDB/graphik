@@ -5,19 +5,35 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/logger"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_retry "github.com/grpc-ecosystem/go-grpc-middleware/retry"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"time"
 )
 
 type Options struct {
 	retry       uint
 	tokenSource oauth2.TokenSource
+	raftSecret  string
+	metrics     bool
+	logging     bool
+	logPayload  bool
 }
 
 type Opt func(o *Options)
+
+func WithRaftSecret(raftSecret string) Opt {
+	return func(o *Options) {
+		o.raftSecret = raftSecret
+	}
+}
 
 func WithRetry(retry uint) Opt {
 	return func(o *Options) {
@@ -28,6 +44,19 @@ func WithRetry(retry uint) Opt {
 func WithTokenSource(tokenSource oauth2.TokenSource) Opt {
 	return func(o *Options) {
 		o.tokenSource = tokenSource
+	}
+}
+
+func WithMetrics(metrics bool) Opt {
+	return func(o *Options) {
+		o.metrics = metrics
+	}
+}
+
+func WithLogging(logging, logPayload bool) Opt {
+	return func(o *Options) {
+		o.logging = logging
+		o.logPayload = logPayload
 	}
 }
 
@@ -52,6 +81,9 @@ func streamAuth(tokenSource oauth2.TokenSource) grpc.StreamClientInterceptor {
 }
 
 func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error) {
+	if target == "" {
+		return nil, errors.New("empty target")
+	}
 	dialopts := []grpc.DialOption{grpc.WithInsecure()}
 	var uinterceptors []grpc.UnaryClientInterceptor
 	var sinterceptors []grpc.StreamClientInterceptor
@@ -59,33 +91,58 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 	for _, o := range opts {
 		o(options)
 	}
+
+	uinterceptors = append(uinterceptors, grpc_validator.UnaryClientInterceptor())
+
+	if options.metrics {
+		uinterceptors = append(uinterceptors, grpc_prometheus.UnaryClientInterceptor)
+		sinterceptors = append(sinterceptors, grpc_prometheus.StreamClientInterceptor)
+	}
+
 	if options.tokenSource != nil {
 		uinterceptors = append(uinterceptors, unaryAuth(options.tokenSource))
 		sinterceptors = append(sinterceptors, streamAuth(options.tokenSource))
 	}
-	if options.retry > 0 {
-		uinterceptors = append(uinterceptors, grpc_retry.UnaryClientInterceptor(
-			grpc_retry.WithMax(options.retry),
-		))
-		sinterceptors = append(sinterceptors, grpc_retry.StreamClientInterceptor(
-			grpc_retry.WithMax(options.retry),
-		))
+	if options.logging {
+		lgger := logger.New(true, zap.Bool("client", true))
+		uinterceptors = append(uinterceptors, grpc_zap.UnaryClientInterceptor(lgger.Zap()))
+		sinterceptors = append(sinterceptors, grpc_zap.StreamClientInterceptor(lgger.Zap()))
+
+		if options.logPayload {
+			uinterceptors = append(uinterceptors, grpc_zap.PayloadUnaryClientInterceptor(lgger.Zap(), func(ctx context.Context, fullMethodName string) bool {
+				return true
+			}))
+			sinterceptors = append(sinterceptors, grpc_zap.PayloadStreamClientInterceptor(lgger.Zap(), func(ctx context.Context, fullMethodName string) bool {
+				return true
+			}))
+		}
 	}
+
+	uinterceptors = append(uinterceptors, grpc_retry.UnaryClientInterceptor(
+		grpc_retry.WithMax(options.retry),
+		grpc_retry.WithPerRetryTimeout(1*time.Second),
+		grpc_retry.WithBackoff(grpc_retry.BackoffExponential(100*time.Millisecond)),
+	))
 	dialopts = append(dialopts,
 		grpc.WithChainUnaryInterceptor(uinterceptors...),
 		grpc.WithChainStreamInterceptor(sinterceptors...),
 	)
+
 	conn, err := grpc.DialContext(ctx, target, dialopts...)
 	if err != nil {
 		return nil, err
 	}
 	return &Client{
-		graph: apipb.NewDatabaseServiceClient(conn),
+		graph:      apipb.NewDatabaseServiceClient(conn),
+		raft:       apipb.NewRaftServiceClient(conn),
+		raftSecret: options.raftSecret,
 	}, nil
 }
 
 type Client struct {
-	graph apipb.DatabaseServiceClient
+	raftSecret string
+	graph      apipb.DatabaseServiceClient
+	raft       apipb.RaftServiceClient
 }
 
 func toContext(ctx context.Context, tokenSource oauth2.TokenSource) (context.Context, error) {
@@ -175,16 +232,19 @@ func (c *Client) ConnectionsTo(ctx context.Context, in *apipb.ConnectFilter, opt
 }
 
 // Broadcast broadcasts a message to a pubsub channel
-func (c *Client) Broadcast(ctx context.Context, in *apipb.OutboundMessage, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.Broadcast(ctx, in, opts...)
+func (c *Client) Broadcast(ctx context.Context, in *apipb.OutboundMessage, opts ...grpc.CallOption) error {
+	_, err := c.graph.Broadcast(ctx, in, opts...)
+	return err
 }
 
 // Stream opens a stream of messages that pass a filter on a pubsub channel
 func (c *Client) Stream(ctx context.Context, in *apipb.StreamFilter, handler func(msg *apipb.Message) bool, opts ...grpc.CallOption) error {
 	stream, err := c.graph.Stream(ctx, in, opts...)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "failed to create client stream")
 	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	for {
 		select {
 		case <-ctx.Done():
@@ -192,7 +252,7 @@ func (c *Client) Stream(ctx context.Context, in *apipb.StreamFilter, handler fun
 		default:
 			msg, err := stream.Recv()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "failed to receive message")
 			}
 			if !handler(msg) {
 				return nil
@@ -207,6 +267,8 @@ func (c *Client) PushDocConstructors(ctx context.Context, ch <-chan *apipb.DocCo
 	if err != nil {
 		return err
 	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	for {
 		select {
 		case <-ctx.Done():
@@ -225,6 +287,8 @@ func (c *Client) PushConnectionConstructors(ctx context.Context, ch <-chan *apip
 	if err != nil {
 		return err
 	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	for {
 		select {
 		case <-ctx.Done():
@@ -237,29 +301,33 @@ func (c *Client) PushConnectionConstructors(ctx context.Context, ch <-chan *apip
 	}
 }
 
-// Ping checks if the server is healthy.
-func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {
-	return c.graph.Ping(ctx, in, opts...)
-}
-
 // GetSchema gets information about node/connection types, type-validators, indexes, and authorizers
 func (c *Client) GetSchema(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Schema, error) {
 	return c.graph.GetSchema(ctx, in, opts...)
 }
 
 // SetIndexes sets all of the indexes in the graph
-func (c *Client) SetIndexes(ctx context.Context, in *apipb.Indexes, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.SetIndexes(ctx, in, opts...)
+func (c *Client) SetIndexes(ctx context.Context, in *apipb.Indexes, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetIndexes(ctx, in, opts...)
+	return err
 }
 
 // SetAuthorizers sets all of the authorizers in the graph
-func (c *Client) SetAuthorizers(ctx context.Context, in *apipb.Authorizers, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.SetAuthorizers(ctx, in, opts...)
+func (c *Client) SetAuthorizers(ctx context.Context, in *apipb.Authorizers, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetAuthorizers(ctx, in, opts...)
+	return err
 }
 
 // SetTypeValidators sets all of the type validators in the graph
-func (c *Client) SetTypeValidators(ctx context.Context, in *apipb.TypeValidators, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.SetTypeValidators(ctx, in, opts...)
+func (c *Client) SetTypeValidators(ctx context.Context, in *apipb.TypeValidators, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetTypeValidators(ctx, in, opts...)
+	return err
+}
+
+// SetTriggers sets all of the triggers in the graph
+func (c *Client) SetTriggers(ctx context.Context, in *apipb.Triggers, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetTriggers(ctx, in, opts...)
+	return err
 }
 
 // SeedDocs
@@ -318,13 +386,15 @@ func (c *Client) Traverse(ctx context.Context, in *apipb.TraverseFilter, opts ..
 }
 
 // DelDoc deletes a doc by reference
-func (c *Client) DelDoc(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.DelDoc(ctx, in, opts...)
+func (c *Client) DelDoc(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) error {
+	_, err := c.graph.DelDoc(ctx, in, opts...)
+	return err
 }
 
 // DelDocs deletes 0-many docs that pass a Filter
-func (c *Client) DelDocs(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.DelDocs(ctx, in, opts...)
+func (c *Client) DelDocs(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) error {
+	_, err := c.graph.DelDocs(ctx, in, opts...)
+	return err
 }
 
 // ExistsDoc checks if a doc exists in the graph
@@ -348,13 +418,15 @@ func (c *Client) HasConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.
 }
 
 // DelConnection deletes a single connection that pass a Filter
-func (c *Client) DelConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.DelConnection(ctx, in, opts...)
+func (c *Client) DelConnection(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) error {
+	_, err := c.graph.DelConnection(ctx, in, opts...)
+	return err
 }
 
 // DelConnections deletes 0-many connections that pass a Filter
-func (c *Client) DelConnections(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) (*empty.Empty, error) {
-	return c.graph.DelConnections(ctx, in, opts...)
+func (c *Client) DelConnections(ctx context.Context, in *apipb.Filter, opts ...grpc.CallOption) error {
+	_, err := c.graph.DelConnections(ctx, in, opts...)
+	return err
 }
 
 // AggregateDocs executes an aggregation function against a set of documents
@@ -365,4 +437,22 @@ func (c *Client) AggregateDocs(ctx context.Context, in *apipb.AggFilter, opts ..
 // AggregateConnections executes an aggregation function against a set of connections
 func (c *Client) AggregateConnections(ctx context.Context, in *apipb.AggFilter, opts ...grpc.CallOption) (*apipb.Number, error) {
 	return c.graph.AggregateConnections(ctx, in, opts...)
+}
+
+// AddPeer adds a peer node to the raft cluster.
+func (c *Client) JoinCluster(ctx context.Context, peer *apipb.Peer, opts ...grpc.CallOption) error {
+	ctx = metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", c.raftSecret)
+	_, err := c.raft.JoinCluster(ctx, peer, opts...)
+	return err
+}
+
+// ClusterState returns information about the raft cluster
+func (c *Client) ClusterState(ctx context.Context, _ *empty.Empty, opts ...grpc.CallOption) error {
+	_, err := c.raft.ClusterState(ctx, &empty.Empty{}, opts...)
+	return err
+}
+
+// Ping checks if the server is healthy.
+func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {
+	return c.raft.Ping(ctx, in, opts...)
 }

@@ -1,4 +1,4 @@
-version := "0.5.1"
+version := "0.11.2"
 
 .DEFAULT_GOAL := help
 
@@ -10,7 +10,14 @@ help:
 	@echo "----------------------------------------------------------------"
 
 run:
-	@go run main.go --open-id https://accounts.google.com/.well-known/openid-configuration
+	@go run cmd/graphik/main.go --open-id https://accounts.google.com/.well-known/openid-configuration
+
+run-follower:
+	@go run cmd/graphik/main.go \
+	--open-id https://accounts.google.com/.well-known/openid-configuration \
+	--listen-port 8080 \
+	--join-raft localhost:7820 \
+	--storage /tmp/graphik2
 
 gen: proto gql
 
@@ -60,6 +67,6 @@ down: ## shuts down local docker containers
 
 build: ## build the server to ./bin
 	@mkdir -p bin
-	@gox -osarch="linux/amd64" -output="./bin/linux/{{.Dir}}_linux_amd64"
-	@gox -osarch="darwin/amd64" -output="./bin/darwin/{{.Dir}}_darwin_amd64"
-	@gox -osarch="windows/amd64" -output="./bin/windows/{{.Dir}}_windows_amd64"
+	@cd cmd/graphik; gox -osarch="linux/amd64" -output="../../bin/linux/{{.Dir}}_linux_amd64"
+	@cd cmd/graphik; gox -osarch="darwin/amd64" -output="../../bin/darwin/{{.Dir}}_darwin_amd64"
+	@cd cmd/graphik; gox -osarch="windows/amd64" -output="../../bin/windows/{{.Dir}}_windows_amd64"

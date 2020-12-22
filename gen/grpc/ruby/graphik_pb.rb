@@ -129,15 +129,17 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :connections, :bool, 7
   end
   add_message "api.AuthTarget" do
-    optional :type, :enum, 1, "api.AuthType"
-    optional :method, :string, 2
-    optional :user, :message, 3, "api.Doc"
-    optional :data, :message, 4, "google.protobuf.Struct"
+    optional :user, :message, 1, "api.Doc"
+    optional :target, :message, 2, "google.protobuf.Struct"
+    optional :peer, :string, 3
+    map :headers, :string, :string, 4
   end
   add_message "api.Authorizer" do
     optional :name, :string, 1
-    optional :expression, :string, 2
-    optional :type, :enum, 3, "api.AuthType"
+    optional :method, :string, 2
+    optional :expression, :string, 3
+    optional :target_requests, :bool, 4
+    optional :target_responses, :bool, 5
   end
   add_message "api.Authorizers" do
     repeated :authorizers, :message, 1, "api.Authorizer"
@@ -146,8 +148,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :name, :string, 1
     optional :gtype, :string, 2
     optional :expression, :string, 3
-    optional :docs, :bool, 4
-    optional :connections, :bool, 5
+    optional :target_docs, :bool, 4
+    optional :target_connections, :bool, 5
   end
   add_message "api.TypeValidators" do
     repeated :validators, :message, 1, "api.TypeValidator"
@@ -161,6 +163,17 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   end
   add_message "api.Indexes" do
     repeated :indexes, :message, 1, "api.Index"
+  end
+  add_message "api.Trigger" do
+    optional :name, :string, 1
+    optional :gtype, :string, 2
+    optional :expression, :string, 3
+    optional :trigger, :string, 4
+    optional :target_docs, :bool, 5
+    optional :target_connections, :bool, 6
+  end
+  add_message "api.Triggers" do
+    repeated :triggers, :message, 1, "api.Trigger"
   end
   add_message "api.StreamFilter" do
     optional :channel, :string, 1
@@ -183,7 +196,13 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :playground_client_id, :string, 11
     optional :playground_client_secret, :string, 12
     optional :playground_redirect, :string, 13
-    optional :playground_session_store, :string, 14
+    optional :require_request_authorizers, :bool, 15
+    optional :require_response_authorizers, :bool, 16
+    optional :join_raft, :string, 17
+    optional :raft_peer_id, :string, 18
+    optional :listen_port, :int64, 19
+    optional :raft_secret, :string, 20
+    optional :debug, :bool, 21
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1
@@ -226,9 +245,33 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :authorizers, :message, 3, "api.Authorizers"
     optional :validators, :message, 4, "api.TypeValidators"
     optional :indexes, :message, 5, "api.Indexes"
+    optional :triggers, :message, 6, "api.Triggers"
   end
   add_message "api.ExprFilter" do
     optional :expression, :string, 1
+  end
+  add_message "api.RaftCommand" do
+    optional :user, :message, 1, "api.Doc"
+    optional :method, :string, 2
+    repeated :set_docs, :message, 3, "api.Doc"
+    repeated :set_connections, :message, 4, "api.Connection"
+    repeated :del_docs, :message, 5, "api.Ref"
+    repeated :del_connections, :message, 6, "api.Ref"
+    optional :set_indexes, :message, 7, "api.Indexes"
+    optional :set_authorizers, :message, 8, "api.Authorizers"
+    optional :set_type_validators, :message, 9, "api.TypeValidators"
+    optional :send_message, :message, 10, "api.Message"
+    optional :set_triggers, :message, 11, "api.Triggers"
+  end
+  add_message "api.Peer" do
+    optional :node_id, :string, 1
+    optional :addr, :string, 2
+  end
+  add_message "api.RaftState" do
+    optional :leader, :string, 1
+    optional :membership, :enum, 2, "api.Membership"
+    repeated :peers, :message, 3, "api.Peer"
+    map :stats, :string, :string, 4
   end
   add_enum "api.Algorithm" do
     value :BFS, 0
@@ -242,10 +285,12 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     value :MIN, 4
     value :PROD, 5
   end
-  add_enum "api.AuthType" do
-    value :REQUEST, 0
-    value :VIEW_DOC, 1
-    value :VIEW_CONNECTION, 2
+  add_enum "api.Membership" do
+    value :UNKNOWN, 0
+    value :FOLLOWER, 1
+    value :CANDIDATE, 2
+    value :LEADER, 3
+    value :SHUTDOWN, 4
   end
 end
 
@@ -278,6 +323,8 @@ module Api
   TypeValidators = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TypeValidators").msgclass
   Index = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Index").msgclass
   Indexes = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Indexes").msgclass
+  Trigger = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Trigger").msgclass
+  Triggers = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Triggers").msgclass
   StreamFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.StreamFilter").msgclass
   Graph = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Graph").msgclass
   Flags = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Flags").msgclass
@@ -291,7 +338,10 @@ module Api
   Message = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Message").msgclass
   Schema = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Schema").msgclass
   ExprFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ExprFilter").msgclass
+  RaftCommand = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.RaftCommand").msgclass
+  Peer = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Peer").msgclass
+  RaftState = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.RaftState").msgclass
   Algorithm = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Algorithm").enummodule
   Aggregate = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Aggregate").enummodule
-  AuthType = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AuthType").enummodule
+  Membership = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Membership").enummodule
 end

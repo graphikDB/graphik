@@ -9,21 +9,20 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
-	"github.com/autom8ter/machine"
-	"github.com/gorilla/sessions"
 	"github.com/gorilla/websocket"
+	"github.com/graphikDB/generic"
 	"github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
+	"github.com/pkg/errors"
 	"github.com/rs/cors"
-	"github.com/segmentio/ksuid"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc/metadata"
 	"html/template"
+	"math/rand"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -35,31 +34,25 @@ func init() {
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	client     apipb.DatabaseServiceClient
-	cors       *cors.Cors
-	machine    *machine.Machine
-	store      sessions.Store
-	config     *oauth2.Config
-	cookieName string
+	client      apipb.DatabaseServiceClient
+	cors        *cors.Cors
+	store       *generic.Cache
+	config      *oauth2.Config
+	tokenCookie string
+	stateCookie string
+	logger      *logger.Logger
 }
 
-func NewResolver(ctx context.Context, client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config, sessionPath string) *Resolver {
-	r := &Resolver{
-		client:     client,
-		cors:       cors,
-		machine:    machine.New(ctx),
-		config:     config,
-		cookieName: "graphik-playground",
+func NewResolver(client apipb.DatabaseServiceClient, cors *cors.Cors, config *oauth2.Config, logger *logger.Logger) *Resolver {
+	return &Resolver{
+		client:      client,
+		cors:        cors,
+		config:      config,
+		tokenCookie: "graphik-playground-token",
+		stateCookie: "graphik-playground-state",
+		store:       generic.NewCache(5 * time.Minute),
+		logger:      logger,
 	}
-	if config != nil {
-		if sessionPath != "" {
-			os.MkdirAll(sessionPath, 0700)
-			r.store = sessions.NewFilesystemStore(sessionPath, []byte(config.ClientSecret))
-		} else {
-			r.store = sessions.NewCookieStore([]byte(config.ClientSecret))
-		}
-	}
-	return r
 }
 
 func (r *Resolver) QueryHandler() http.Handler {
@@ -97,10 +90,10 @@ func (r *Resolver) QueryHandler() http.Handler {
 func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
-		if r.store != nil {
-			sess, _ := r.store.Get(req, r.cookieName)
-			if sess != nil && req.Header.Get("Authorization") == "" && sess.Values["token"] != nil {
-				req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", sess.Values["token"].(*oauth2.Token).AccessToken))
+		if r.store != nil && r.config != nil && r.config.ClientID != "" {
+			token, _ := r.getToken(req)
+			if token != nil && req.Header.Get("Authorization") == "" {
+				req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
 			}
 		}
 		for k, arr := range req.Header {
@@ -118,40 +111,18 @@ func (r *Resolver) Playground() http.HandlerFunc {
 			http.Error(w, "playground disabled", http.StatusNotFound)
 			return
 		}
-		sess, err := r.store.Get(req, r.cookieName)
+		authToken, err := r.getToken(req)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if sess.Values["token"] == nil {
-			r.redirectLogin(sess, w, req)
-			return
-		}
-		val, ok := sess.Values["token"]
-		if !ok {
-			r.redirectLogin(sess, w, req)
-			return
-		}
-		authToken, ok := val.(*oauth2.Token)
-		if !ok {
-			r.redirectLogin(sess, w, req)
+			r.logger.Error("playground: failed to get session - redirecting", zap.Error(err))
+			r.redirectLogin(w, req)
 			return
 		}
 		if authToken == nil {
-			r.redirectLogin(sess, w, req)
+			r.redirectLogin(w, req)
 			return
 		}
-		rtoken, err := r.refreshToken(authToken)
-		if err == nil {
-			authToken = rtoken
-		} else {
-			if time.Unix(sess.Values["exp"].(int64), 0).Before(time.Now()) {
-				r.redirectLogin(sess, w, req)
-				return
-			}
-		}
 		if !authToken.Valid() {
-			r.redirectLogin(sess, w, req)
+			r.redirectLogin(w, req)
 			return
 		}
 		w.Header().Add("Content-Type", "text/html")
@@ -226,15 +197,10 @@ func (r *Resolver) Playground() http.HandlerFunc {
 	}
 }
 
-func (r *Resolver) redirectLogin(sess *sessions.Session, w http.ResponseWriter, req *http.Request) {
-	state := helpers.Hash([]byte(ksuid.New().String()))
-	sess.Values["state"] = state
+func (r *Resolver) redirectLogin(w http.ResponseWriter, req *http.Request) {
+	state := helpers.Hash([]byte(fmt.Sprint(rand.Int())))
+	r.setState(w, state)
 	redirect := r.config.AuthCodeURL(state)
-	if err := sess.Save(req, w); err != nil {
-		logger.Error("failed to save session", zap.Error(err))
-		http.Error(w, "failed to save session", http.StatusInternalServerError)
-		return
-	}
 	http.Redirect(w, req, redirect, http.StatusTemporaryRedirect)
 }
 
@@ -247,44 +213,85 @@ func (r *Resolver) PlaygroundCallback(playgroundRedirect string) http.HandlerFun
 		code := req.URL.Query().Get("code")
 		state := req.URL.Query().Get("state")
 		if code == "" {
-			http.Error(w, "empty authorization code", http.StatusBadRequest)
+			r.logger.Error("playground: empty authorization code - redirecting")
+			r.redirectLogin(w, req)
 			return
 		}
 		if state == "" {
-			http.Error(w, "empty authorization state", http.StatusBadRequest)
+			r.logger.Error("playground: empty authorization state - redirecting")
+			r.redirectLogin(w, req)
 			return
 		}
-		sess, err := r.store.Get(req, r.cookieName)
+
+		stateVal, err := r.getState(req)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			r.logger.Error("playground: failed to get session state - redirecting", zap.Error(err))
+			r.redirectLogin(w, req)
 			return
 		}
-		stateVal := sess.Values["state"]
-		if stateVal == nil {
-			http.Error(w, "failed to get session state", http.StatusForbidden)
-			return
-		}
-		if stateVal.(string) != state {
-			http.Error(w, fmt.Sprintf("session state mismatch: %s", stateVal.(string)), http.StatusForbidden)
+		if stateVal != state {
+			r.logger.Error("playground: session state mismatch - redirecting")
+			r.redirectLogin(w, req)
 			return
 		}
 		token, err := r.config.Exchange(req.Context(), code)
 		if err != nil {
-			logger.Error("failed to exchange authorization code", zap.Error(err))
-			http.Error(w, "failed to exchange authorization code", http.StatusInternalServerError)
+			r.logger.Error("playground: failed to exchange authorization code - redirecting", zap.Error(err))
+			r.redirectLogin(w, req)
 			return
 		}
-		sess.Values["token"] = token
-		sess.Values["exp"] = time.Now().Add(1 * time.Hour).Unix()
-		if err := sess.Save(req, w); err != nil {
-			logger.Error("failed to save session", zap.Error(err))
-			http.Error(w, "failed to save session", http.StatusInternalServerError)
-			return
-		}
+		r.setToken(w, req, token)
 		http.Redirect(w, req, playgroundRedirect, http.StatusTemporaryRedirect)
 	}
 }
 
 func (r *Resolver) refreshToken(token *oauth2.Token) (*oauth2.Token, error) {
 	return r.config.TokenSource(oauth2.NoContext, token).Token()
+}
+
+func (r *Resolver) getToken(req *http.Request) (*oauth2.Token, error) {
+	cookie, err := req.Cookie(r.tokenCookie)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to get cookie: %s", r.tokenCookie)
+	}
+	val, ok := r.store.Get(cookie.Value)
+	if !ok || val == nil {
+		return nil, ErrNoTokenSession
+	}
+	return r.refreshToken(val.(*oauth2.Token))
+}
+
+func (r *Resolver) setToken(w http.ResponseWriter, req *http.Request, token *oauth2.Token) {
+	id := helpers.Hash([]byte(fmt.Sprint(rand.Int())))
+	r.store.Set(id, token, 1*time.Hour)
+	cookie := &http.Cookie{
+		Name:    r.tokenCookie,
+		Value:   id,
+		Expires: time.Now().Add(1 * time.Hour),
+		Path:    "/",
+	}
+	http.SetCookie(w, cookie)
+}
+
+func (r *Resolver) getState(req *http.Request) (string, error) {
+	cookie, err := req.Cookie(r.stateCookie)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to get cookie: %s", r.stateCookie)
+	}
+	val, ok := r.store.Get(cookie.Value)
+	if !ok || val == nil {
+		return "", ErrNoStateSession
+	}
+	return val.(string), nil
+}
+
+func (r *Resolver) setState(w http.ResponseWriter, state string) {
+	id := helpers.Hash([]byte(fmt.Sprint(rand.Int())))
+	r.store.Set(id, state, 5*time.Minute)
+	http.SetCookie(w, &http.Cookie{
+		Name:    r.stateCookie,
+		Value:   id,
+		Expires: time.Now().Add(5 * time.Minute),
+		Path:    "/",
+	})
 }

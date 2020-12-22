@@ -222,11 +222,11 @@ func gqlTypeValidator(val *apipb.TypeValidator) *model.TypeValidator {
 
 func gqlIndex(val *apipb.Index) *model.Index {
 	return &model.Index{
-		Name:        val.GetName(),
-		Gtype:       val.GetGtype(),
-		Expression:  val.GetExpression(),
-		Connections: val.Connections,
-		Docs:        val.Docs,
+		Name:              val.GetName(),
+		Gtype:             val.GetGtype(),
+		Expression:        val.GetExpression(),
+		TargetConnections: val.GetConnections(),
+		TargetDocs:        val.GetDocs(),
 	}
 }
 
@@ -254,6 +254,25 @@ func gqlTypeValidators(val *apipb.TypeValidators) *model.TypeValidators {
 	return &model.TypeValidators{Validators: vals}
 }
 
+func gqlTrigger(val *apipb.Trigger) *model.Trigger {
+	return &model.Trigger{
+		Name:              val.GetName(),
+		Gtype:             val.GetGtype(),
+		Expression:        val.GetExpression(),
+		Trigger:           val.GetTrigger(),
+		TargetDocs:        val.GetTargetDocs(),
+		TargetConnections: val.GetTargetConnections(),
+	}
+}
+
+func gqlTriggers(val *apipb.Triggers) *model.Triggers {
+	var triggers []*model.Trigger
+	for _, t := range val.GetTriggers() {
+		triggers = append(triggers, gqlTrigger(t))
+	}
+	return &model.Triggers{Triggers: triggers}
+}
+
 func gqlSchema(s *apipb.Schema) *model.Schema {
 	return &model.Schema{
 		ConnectionTypes: s.GetConnectionTypes(),
@@ -261,6 +280,7 @@ func gqlSchema(s *apipb.Schema) *model.Schema {
 		Authorizers:     gqlAuthorizers(s.GetAuthorizers()),
 		Validators:      gqlTypeValidators(s.GetValidators()),
 		Indexes:         gqlIndexes(s.GetIndexes()),
+		Triggers:        gqlTriggers(s.GetTriggers()),
 	}
 }
 
@@ -419,36 +439,64 @@ func protoIndex(index *model.IndexInput) *apipb.Index {
 		Name:        index.Name,
 		Gtype:       index.Gtype,
 		Expression:  index.Expression,
-		Docs:        index.Docs,
-		Connections: index.Connections,
-	}
-}
-
-func protoAuthType(t model.AuthType) apipb.AuthType {
-	switch t {
-	case model.AuthTypeViewConnection:
-		return apipb.AuthType_VIEW_CONNECTION
-	case model.AuthTypeViewDoc:
-		return apipb.AuthType_VIEW_DOC
-	default:
-		return apipb.AuthType_REQUEST
+		Docs:        index.TargetDocs,
+		Connections: index.TargetConnections,
 	}
 }
 
 func protoAuthorizer(auth *model.AuthorizerInput) *apipb.Authorizer {
 	return &apipb.Authorizer{
-		Name:       auth.Name,
-		Expression: auth.Expression,
-		Type:       protoAuthType(auth.Type),
+		Name:            auth.Name,
+		Method:          auth.Method,
+		Expression:      auth.Expression,
+		TargetRequests:  auth.TargetRequests,
+		TargetResponses: auth.TargetResponses,
 	}
 }
 
 func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidator {
 	return &apipb.TypeValidator{
-		Name:        validator.Name,
-		Gtype:       validator.Gtype,
-		Expression:  validator.Expression,
-		Docs:        validator.Docs,
-		Connections: validator.Connections,
+		Name:              validator.Name,
+		Gtype:             validator.Gtype,
+		Expression:        validator.Expression,
+		TargetDocs:        validator.TargetDocs,
+		TargetConnections: validator.TargetConnections,
 	}
+}
+
+func protoTrigger(trigger *model.TriggerInput) *apipb.Trigger {
+	return &apipb.Trigger{
+		Name:              trigger.Name,
+		Gtype:             trigger.Gtype,
+		Expression:        trigger.Expression,
+		Trigger:           trigger.Trigger,
+		TargetDocs:        trigger.TargetDocs,
+		TargetConnections: trigger.TargetConnections,
+	}
+}
+
+func gqlMembership(membership apipb.Membership) model.Membership {
+	switch membership {
+	case apipb.Membership_CANDIDATE:
+		return model.MembershipCandidate
+	case apipb.Membership_FOLLOWER:
+		return model.MembershipFollower
+	case apipb.Membership_LEADER:
+		return model.MembershipLeader
+	case apipb.Membership_SHUTDOWN:
+		return model.MembershipShutdown
+	default:
+		return model.MembershipUnknown
+	}
+}
+
+func gqlPeers(peers []*apipb.Peer) []*model.Peer {
+	var mpeers []*model.Peer
+	for _, p := range peers {
+		mpeers = append(mpeers, &model.Peer{
+			NodeID: p.NodeId,
+			Addr:   p.Addr,
+		})
+	}
+	return mpeers
 }

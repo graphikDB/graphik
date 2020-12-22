@@ -76,9 +76,33 @@ class Flags extends \Google\Protobuf\Internal\Message
      */
     private $playground_redirect = '';
     /**
-     * Generated from protobuf field <code>string playground_session_store = 14;</code>
+     * Generated from protobuf field <code>bool require_request_authorizers = 15;</code>
      */
-    private $playground_session_store = '';
+    private $require_request_authorizers = false;
+    /**
+     * Generated from protobuf field <code>bool require_response_authorizers = 16;</code>
+     */
+    private $require_response_authorizers = false;
+    /**
+     * Generated from protobuf field <code>string join_raft = 17;</code>
+     */
+    private $join_raft = '';
+    /**
+     * Generated from protobuf field <code>string raft_peer_id = 18;</code>
+     */
+    private $raft_peer_id = '';
+    /**
+     * Generated from protobuf field <code>int64 listen_port = 19;</code>
+     */
+    private $listen_port = 0;
+    /**
+     * Generated from protobuf field <code>string raft_secret = 20;</code>
+     */
+    private $raft_secret = '';
+    /**
+     * Generated from protobuf field <code>bool debug = 21;</code>
+     */
+    private $debug = false;
 
     /**
      * Constructor.
@@ -105,7 +129,13 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $playground_client_id
      *     @type string $playground_client_secret
      *     @type string $playground_redirect
-     *     @type string $playground_session_store
+     *     @type bool $require_request_authorizers
+     *     @type bool $require_response_authorizers
+     *     @type string $join_raft
+     *     @type string $raft_peer_id
+     *     @type int|string $listen_port
+     *     @type string $raft_secret
+     *     @type bool $debug
      * }
      */
     public function __construct($data = NULL) {
@@ -406,23 +436,155 @@ class Flags extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string playground_session_store = 14;</code>
-     * @return string
+     * Generated from protobuf field <code>bool require_request_authorizers = 15;</code>
+     * @return bool
      */
-    public function getPlaygroundSessionStore()
+    public function getRequireRequestAuthorizers()
     {
-        return $this->playground_session_store;
+        return $this->require_request_authorizers;
     }
 
     /**
-     * Generated from protobuf field <code>string playground_session_store = 14;</code>
+     * Generated from protobuf field <code>bool require_request_authorizers = 15;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setRequireRequestAuthorizers($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->require_request_authorizers = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool require_response_authorizers = 16;</code>
+     * @return bool
+     */
+    public function getRequireResponseAuthorizers()
+    {
+        return $this->require_response_authorizers;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool require_response_authorizers = 16;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setRequireResponseAuthorizers($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->require_response_authorizers = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string join_raft = 17;</code>
+     * @return string
+     */
+    public function getJoinRaft()
+    {
+        return $this->join_raft;
+    }
+
+    /**
+     * Generated from protobuf field <code>string join_raft = 17;</code>
      * @param string $var
      * @return $this
      */
-    public function setPlaygroundSessionStore($var)
+    public function setJoinRaft($var)
     {
         GPBUtil::checkString($var, True);
-        $this->playground_session_store = $var;
+        $this->join_raft = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_peer_id = 18;</code>
+     * @return string
+     */
+    public function getRaftPeerId()
+    {
+        return $this->raft_peer_id;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_peer_id = 18;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRaftPeerId($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->raft_peer_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>int64 listen_port = 19;</code>
+     * @return int|string
+     */
+    public function getListenPort()
+    {
+        return $this->listen_port;
+    }
+
+    /**
+     * Generated from protobuf field <code>int64 listen_port = 19;</code>
+     * @param int|string $var
+     * @return $this
+     */
+    public function setListenPort($var)
+    {
+        GPBUtil::checkInt64($var);
+        $this->listen_port = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_secret = 20;</code>
+     * @return string
+     */
+    public function getRaftSecret()
+    {
+        return $this->raft_secret;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_secret = 20;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRaftSecret($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->raft_secret = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool debug = 21;</code>
+     * @return bool
+     */
+    public function getDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool debug = 21;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setDebug($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->debug = $var;
 
         return $this;
     }

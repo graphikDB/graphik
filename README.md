@@ -1,14 +1,15 @@
 # Graphik
 
-https://graphikdb.github.io/graphik/
 
 [![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
 
     git clone git@github.com:graphikDB/graphik.git
     
-`    docker pull graphikdb/graphik:v0.5.1`
+`    docker pull graphikdb/graphik:v0.11.2`
 
-Graphik is an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go
+Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
+
+Support: support@graphikdb.io
 
   * [Helpful Links](#helpful-links)
   * [Features](#features)
@@ -23,6 +24,8 @@ Graphik is an identity-aware, permissioned, persistant document/graph database &
       - [Secondary Index Examples](#secondary-index-examples)
     + [Type Validators](#type-validators)
       - [Type Validator Examples](#type-validator-examples)
+    + [Triggers](#triggers)
+      - [Trigger Examples](#trigger-examples)
     + [Identity Graph](#identity-graph)
     + [GraphQL vs gRPC API](#graphql-vs-grpc-api)
     + [Streaming/PubSub](#streaming-pubsub)
@@ -31,18 +34,17 @@ Graphik is an identity-aware, permissioned, persistant document/graph database &
   * [Sample GraphQL Queries](#sample-graphql-queries)
     + [Get Currently Logged In User(me)](#get-currently-logged-in-user-me-)
     + [Get the Graph Schema](#get-the-graph-schema)
+    + [Set a Request Authorizer](#set-a-request-authorizer)
     + [Create a Document](#create-a-document)
     + [Traverse Documents](#traverse-documents)
     + [Traverse Documents Related to Logged In User](#traverse-documents-related-to-logged-in-user)
     + [Change Streaming](#change-streaming)
+    + [Broadcasting a Message](#broadcasting-a-message)
+    + [Filtered Streaming](#filtered-streaming)
   * [Deployment](#deployment)
     + [Docker-Compose](#docker-compose)
     + [Kubernetes](#kubernetes)
-    + [Linux](#linux)
-    + [Mac/Darwin](#mac-darwin)
-    + [Windows](#windows)
   * [OIDC Metadata Urls](#oidc-metadata-urls)
-
 
 ## Helpful Links
 
@@ -69,7 +71,9 @@ Graphik is an identity-aware, permissioned, persistant document/graph database &
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
 - [x] [Common Expression Language](https://opensource.google/projects/cel) Type Validators
+- [x] [Common Expression Language](https://opensource.google/projects/cel) Server Side Triggers
 - [x] Loosely-Typed(mongo-esque)
+- [x] Horizontal Scalability/HA via Raft Consensus Protocol
 - [x] [Prometheus Metrics](https://prometheus.io/)
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
 - [x] Safe to Deploy Publicly(with authorizers/tls/validators/cors)
@@ -81,26 +85,38 @@ Graphik is an identity-aware, permissioned, persistant document/graph database &
 ## Key Dependencies
 
 - google.golang.org/grpc
-- github.com/autom8ter/machine
 - github.com/google/cel-go/cel
 - go.etcd.io/bbolt
 - go.uber.org/zap
 - golang.org/x/oauth2
 - github.com/99designs/gqlgen
+- github.com/autom8ter/machine
+- github.com/graphikDB/raft
+- github.com/graphikDB/generic
+- github.com/graphikDB/eval
 
 ## Flags
 
+please note that the following flags are required:
+- --root-users
+- --open-id
+
 ```text
- --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
+      --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
       --allow-methods strings             cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
       --allow-origins strings             cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
+      --debug                             enable debug logs (env: GRAPHIK_DEBUG)
+      --join-raft string                  join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)
+      --listen-port int                   serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT) (default 7820)
       --metrics                           enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true) (default true)
-      --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
+      --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)  (required)
       --playground-client-id string       playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)
       --playground-client-secret string   playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)
       --playground-redirect string        playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT) (default "http://localhost:7820/playground/callback")
-      --playground-session-store string   playground session store (options: cookies, file-system) (env: GRAPHIK_PLAYGROUND_SESSION_STORE) (default "cookies")
-      --root-users strings                a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)
+      --raft-peer-id string               raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)
+      --require-request-authorizers       require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)
+      --require-response-authorizers      require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)
+      --root-users strings                a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)  (required)
       --storage string                    persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
       --tls-cert string                   path to tls certificate (env: GRAPHIK_TLS_CERT)
       --tls-key string                    path to tls key (env: GRAPHIK_TLS_KEY)
@@ -170,23 +186,201 @@ message Connection {
     - registered root users(see flags) bypass these authorizers
 - authorizers are completely optional but highly recommended
 
+please note:
+
+- setAuthorizers method overwrites all authorizers in the database
+- authorizers may be listed with the getSchema method
+
 #### Authorizers Examples
-Coming Soon
+
+1) only allow access to the GetSchema method if the users email contains `coleman` AND their email is verified
+
+```graphql
+mutation {
+  setAuthorizers(input: {
+    authorizers: [{
+      name: "getSchema",
+      method: "/api.DatabaseService/GetSchema",
+      expression: "this.user.attributes.email.contains('coleman') && this.user.attributes.email_verified"
+      target_requests:true,
+      target_responses: true
+    }]
+  })
+}
+```
+
+2) only allow access to the CreateDoc method if the users email endsWith acme.com AND the users email is verified AND the doc to create is of type note
+
+```graphql
+mutation {
+  setAuthorizers(input: {
+    authorizers: [{
+      name: "createNote",
+      method: "/api.DatabaseService/CreateDoc",
+      expression: "this.user.attributes.email.endsWith('acme.com') && this.user.attributes.email_verified && this.target.ref.gtype == 'note'"
+      target_requests:true,
+      target_responses: false
+    }]
+  })
+}
+```
+
 
 ### Secondary Indexes
 - secondary indexes are CEL expressions evaluated against a particular type of Doc or Connection
 - indexes may be used to speed up queries that iterate over a large number of elements
 - secondary indexes are completely optional but recommended
 
+please note:
+
+- setIndexes method overwrites all indexes in the database
+- indexes may be listed with the getSchema method
+
 #### Secondary Index Examples
-Coming Soon
+
+1) index documents of type `product` that have a price > 100
+
+```graphql
+mutation {
+  setIndexes(input: {
+    indexes: [{
+    	name: "expensiveProducts"
+			gtype: "product"
+			expression: "int(this.attributes.price) > 100"
+			target_docs: true
+			target_connections: false
+    }]
+  })
+}
+```
+
+you can search for the document within the new index like so:
+
+```graphql
+query {
+	searchDocs(where: {
+		gtype: "product"
+		limit: 1
+		index: "expensiveProducts"
+	}){
+		docs {
+			ref {
+				gid
+				gtype
+			}
+			attributes
+		}
+	}
+}
+```
+
+```json
+{
+  "data": {
+    "searchDocs": {
+      "docs": [
+        {
+          "ref": {
+            "gid": "1lw7gcc5yQ01YbLcsgMX0iz0Sgx",
+            "gtype": "product"
+          },
+          "attributes": {
+            "price": 101,
+            "title": "this is a product"
+          }
+        }
+      ]
+    }
+  },
+  "extensions": {}
+}
+```
 
 ### Type Validators
 - type validators are CEL expressions evaluated against a particular type of Doc or Connection to enforce custom constraints
 - type validators are completely optional
 
+please note:
+
+- setTypeValidators overwrites all validators in the database
+- validators may be listed with the getSchema method
+
 #### Type Validator Examples
-Coming Soon
+
+1) ensure all documents of type 'note' have a title
+
+```graphql
+mutation {
+  setTypeValidators(input: {
+    validators: [{
+    	name: "noteValidator"
+			gtype: "note"
+			expression: "this.attributes.title != ''"
+			target_docs: true
+			target_connections: false
+    }]
+  })
+}
+```
+
+2) ensure all documents of type 'product' have a price greater than 0
+
+```graphql
+mutation {
+  setTypeValidators(input: {
+    validators: [{
+    	name: "productValidator"
+			gtype: "product"
+			expression: "int(this.attributes.price) > 0"
+			target_docs: true
+			target_connections: false
+    }]
+  })
+}
+```
+
+### Triggers
+
+- triggers may be used to automatically mutate the attributes of documents/connections before they are commited to the database
+- this is useful for automatically annotating your data without having to make additional client-side requests
+
+#### Trigger Examples
+
+1) automatically add updated_at & created_at timestamp to all documents & connections
+
+```graphql
+mutation {
+	setTriggers(input: {
+		triggers: [
+		{
+				name: "updatedAt"
+				gtype: "*"
+				expression: "true"
+				trigger: "{'updated_at': now()}"
+				target_docs: true
+				target_connections: true
+		},
+		{
+				name: "createdAt"
+				gtype: "*"
+				expression: "!has(this.attributes.created_at)"
+				trigger: "{'created_at': now()}"
+				target_docs: true
+				target_connections: true
+		},
+		]
+	})
+}
+```
+
+```json
+{
+  "data": {
+    "setTriggers": {}
+  },
+  "extensions": {}
+}
+```
 
 ### Identity Graph
 - any time a document is created, a connection of type `created` from the origin user to the new document is also created
@@ -343,6 +537,31 @@ query {
         ]
       }
     }
+  },
+  "extensions": {}
+}
+```
+
+### Set a Request Authorizer
+
+```graphql
+mutation {
+  setAuthorizers(input: {
+    authorizers: [{
+      name: "testing",
+      method: "/api.DatabaseService/GetSchema",
+      expression: "this.user.attributes.email.contains('coleman') && this.user.attributes.email_verified"
+      target_requests:true,
+      target_responses: true
+    }]
+  })
+}
+```
+
+```json
+{
+  "data": {
+    "setAuthorizers": {}
   },
   "extensions": {}
 }
@@ -524,6 +743,63 @@ subscription {
 }
 ```
 
+### Broadcasting a Message
+
+```graphql
+mutation {
+  broadcast(input: {
+    channel: "testing"
+    data: {
+      text: "hello world!"
+    }
+  })
+}
+```
+
+```json
+{
+  "data": {
+    "broadcast": {}
+  },
+  "extensions": {}
+}
+```
+
+### Filtered Streaming
+
+```graphql
+subscription {
+  stream(where: {
+    channel: "testing"
+		expression: "this.data.text == 'hello world!' && this.user.gid.endsWith('graphikdb.io')"
+    
+  }){
+    data
+		user {
+			gid
+			gtype
+		}
+  }
+}
+```
+
+```json
+{
+  "data": {
+    "stream": {
+      "data": {
+        "text": "hello world!"
+      },
+      "user": {
+        "gid": "coleman.word@graphikdb.io",
+        "gtype": "user"
+      }
+    }
+  },
+  "extensions": {}
+}
+```
+
 ## Deployment
 
 Regardless of deployment methodology, please set the following environmental variables or include them in a ${pwd}/.env file
@@ -548,7 +824,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.5.1
+        image: graphikdb/graphik:v0.11.2
         env_file:
           - .env
         ports:
@@ -580,23 +856,6 @@ to shutdown:
  
  Coming Soon
  
- ### Linux
- 
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.5.1/graphik_linux_amd64 \
-    --output /usr/local/bin/graphik && \
-    chmod +x /usr/local/bin/graphik 
-    
- ### Mac/Darwin
- 
-    curl -L https://github.com/graphikDB/graphik/releases/download/v0.5.1/graphik_darwin_amd64 \
-    --output /usr/local/bin/graphik && \
-    chmod +x /usr/local/bin/graphik
-
-### Windows
-
-    Nope - use docker
-    
-    
 ## OIDC Metadata Urls
 
 - Google: https://accounts.google.com/.well-known/openid-configuration

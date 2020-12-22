@@ -10,7 +10,6 @@ import (
 	generated1 "github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/gql/go/model"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
-	"github.com/graphikDB/graphik/logger"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/status"
@@ -262,13 +261,33 @@ func (r *mutationResolver) SetTypeValidators(ctx context.Context, input model.Ty
 	}
 }
 
-func (r *mutationResolver) SearchAndConnect(ctx context.Context, where model.SearchConnectFilter) (*model.Connections, error) {
+func (r *mutationResolver) SetTriggers(ctx context.Context, input model.TriggersInput) (*emptypb.Empty, error) {
+	var triggers []*apipb.Trigger
+	for _, trigger := range input.Triggers {
+		triggers = append(triggers, protoTrigger(trigger))
+	}
+	if e, err := r.client.SetTriggers(ctx, &apipb.Triggers{
+		Triggers: triggers,
+	}); err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	} else {
+		return e, nil
+	}
+}
+
+func (r *mutationResolver) SearchAndConnect(ctx context.Context, input model.SearchConnectFilter) (*model.Connections, error) {
 	connections, err := r.client.SearchAndConnect(ctx, &apipb.SearchConnectFilter{
-		Filter:     protoFilter(*where.Filter),
-		Gtype:      where.Gtype,
-		Attributes: apipb.NewStruct(where.Attributes),
-		Directed:   where.Directed,
-		From:       protoIRef(*where.From),
+		Filter:     protoFilter(*input.Filter),
+		Gtype:      input.Gtype,
+		Attributes: apipb.NewStruct(input.Attributes),
+		Directed:   input.Directed,
+		From:       protoIRef(*input.From),
 	})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -282,12 +301,12 @@ func (r *mutationResolver) SearchAndConnect(ctx context.Context, where model.Sea
 	return gqlConnections(connections), nil
 }
 
-func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, where model.SearchConnectMeFilter) (*model.Connections, error) {
+func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, input model.SearchConnectMeFilter) (*model.Connections, error) {
 	connections, err := r.client.SearchAndConnectMe(ctx, &apipb.SearchConnectMeFilter{
-		Filter:     protoFilter(*where.Filter),
-		Gtype:      where.Gtype,
-		Attributes: apipb.NewStruct(where.Attributes),
-		Directed:   where.Directed,
+		Filter:     protoFilter(*input.Filter),
+		Gtype:      input.Gtype,
+		Attributes: apipb.NewStruct(input.Attributes),
+		Directed:   input.Directed,
 	})
 	if err != nil {
 		return nil, &gqlerror.Error{
@@ -299,20 +318,6 @@ func (r *mutationResolver) SearchAndConnectMe(ctx context.Context, where model.S
 		}
 	}
 	return gqlConnections(connections), nil
-}
-
-func (r *queryResolver) Ping(ctx context.Context, where *emptypb.Empty) (*model.Pong, error) {
-	res, err := r.client.Ping(ctx, &emptypb.Empty{})
-	if err != nil {
-		return nil, &gqlerror.Error{
-			Message: err.Error(),
-			Path:    graphql.GetPath(ctx),
-			Extensions: map[string]interface{}{
-				"code": status.Code(err).String(),
-			},
-		}
-	}
-	return &model.Pong{Message: res.GetMessage()}, nil
 }
 
 func (r *queryResolver) GetSchema(ctx context.Context, where *emptypb.Empty) (*model.Schema, error) {
@@ -563,7 +568,7 @@ func (r *subscriptionResolver) Stream(ctx context.Context, where model.StreamFil
 			default:
 				msg, err := stream.Recv()
 				if err != nil {
-					logger.Error("failed to receive subsription message", zap.Error(err))
+					r.logger.Error("failed to receive subsription message", zap.Error(err))
 					continue
 				}
 				ch <- &model.Message{

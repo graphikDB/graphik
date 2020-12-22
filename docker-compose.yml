@@ -1,14 +1,14 @@
 version: '3.7'
 services:
   graphik:
-    image: graphikdb/graphik:v0.5.1
+    image: graphikdb/graphik:v0.11.2
     env_file:
       - .env
     ports:
       - "7820:7820"
       - "7821:7821"
     volumes:
-      - default:/tmp/graphik
+      - default:/tmp/graphik2
     networks:
       default:
         aliases:

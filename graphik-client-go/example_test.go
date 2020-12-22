@@ -22,7 +22,10 @@ func init() {
 		return
 	}
 
-	client, err = graphik.NewClient(ctx, "localhost:7820", graphik.WithTokenSource(tokenSource))
+	client, err = graphik.NewClient(ctx, "localhost:7820",
+		graphik.WithTokenSource(tokenSource),
+		graphik.WithRetry(5),
+	)
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -66,11 +69,14 @@ func ExampleClient_Ping() {
 }
 
 func ExampleClient_SetAuthorizers() {
-	_, err := client.SetAuthorizers(context.Background(), &apipb2.Authorizers{
+	err := client.SetAuthorizers(context.Background(), &apipb2.Authorizers{
 		Authorizers: []*apipb2.Authorizer{
 			{
-				Name:       "testing",
-				Expression: `this.user.attributes.email.contains("coleman")`,
+				Name:            "testing-request",
+				Method:          "/api.DatabaseService/GetSchema",
+				Expression:      `this.user.attributes.email.contains("coleman")`,
+				TargetRequests:  true,
+				TargetResponses: false,
 			},
 		},
 	})
@@ -88,18 +94,18 @@ func ExampleClient_SetAuthorizers() {
 		authorizers = append(authorizers, a.Name)
 	}
 	fmt.Printf("%s", strings.Join(authorizers, ","))
-	// Output: testing
+	// Output: testing-request
 }
 
 func ExampleClient_SetTypeValidators() {
-	_, err := client.SetTypeValidators(context.Background(), &apipb2.TypeValidators{
+	err := client.SetTypeValidators(context.Background(), &apipb2.TypeValidators{
 		Validators: []*apipb2.TypeValidator{
 			{
-				Name:        "testing",
-				Gtype:       "dog",
-				Expression:  `int(this.attributes.weight) > 0`,
-				Docs:        true,
-				Connections: false,
+				Name:              "testing",
+				Gtype:             "dog",
+				Expression:        `int(this.attributes.weight) > 0`,
+				TargetDocs:        true,
+				TargetConnections: false,
 			},
 		},
 	})
@@ -121,7 +127,7 @@ func ExampleClient_SetTypeValidators() {
 }
 
 func ExampleClient_SetIndexes() {
-	_, err := client.SetIndexes(context.Background(), &apipb2.Indexes{
+	err := client.SetIndexes(context.Background(), &apipb2.Indexes{
 		Indexes: []*apipb2.Index{
 			{
 				Name:        "testing",
@@ -186,12 +192,12 @@ func ExampleClient_CreateDoc() {
 		}),
 	})
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print("createDoc: ", err)
 		return
 	}
 	has, err := client.HasDoc(ctx, charlie.GetRef())
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print("hasDoc: ", err)
 		return
 	}
 	if !has.GetValue() {
@@ -203,7 +209,7 @@ func ExampleClient_CreateDoc() {
 		Expression: "this.attributes.name.contains('Charlie')",
 	})
 	if err != nil {
-		fmt.Print(err)
+		fmt.Print("existsDoc: ", err)
 		return
 	}
 	if !exists.GetValue() {
@@ -271,7 +277,7 @@ func ExampleClient_CreateConnection() {
 		return
 	}
 	if !has.GetValue() {
-		fmt.Print("failed to find owner connection")
+		fmt.Print("failed to find owner connection: ", ownerConnection.Ref.String())
 		return
 	}
 	exists, err := client.ExistsConnection(context.Background(), &apipb2.ExistsFilter{
@@ -283,7 +289,7 @@ func ExampleClient_CreateConnection() {
 		return
 	}
 	if !exists.GetValue() {
-		fmt.Print("failed to find owner connection")
+		fmt.Print("failed to find owner connection: ", ownerConnection.Ref.String())
 		return
 	}
 	primary := ownerConnection.Attributes.Fields["primary_owner"].GetBoolValue()
@@ -335,7 +341,7 @@ func ExampleClient_EditDoc() {
 }
 
 func ExampleClient_Broadcast() {
-	res, err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
+	err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
 		Channel: "testing",
 		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -345,16 +351,16 @@ func ExampleClient_Broadcast() {
 		fmt.Print(err)
 		return
 	}
-	fmt.Println(res.String())
-	// Output:
+	fmt.Println("success!")
+	// Output: success!
 }
 
 func ExampleClient_Stream() {
 	m := machine.New(context.Background())
 	m.Go(func(routine machine.Routine) {
 		err := client.Stream(context.Background(), &apipb2.StreamFilter{
-			Channel:    "testing",
-			Expression: `this.data.text.contains("hello")`,
+			Channel: "testing",
+			//Expression: `this.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {
 			if msg.Data.GetFields()["text"] != nil && msg.Data.GetFields()["text"].GetStringValue() == "hello world" {
 				fmt.Println(msg.Data.GetFields()["text"].GetStringValue())
@@ -363,12 +369,12 @@ func ExampleClient_Stream() {
 			return true
 		})
 		if err != nil {
-			fmt.Print("failed to subscribe", err)
+			fmt.Print("failed to subscribe: ", err.Error())
 			return
 		}
 	})
 	time.Sleep(1 * time.Second)
-	_, err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
+	err := client.Broadcast(context.Background(), &apipb2.OutboundMessage{
 		Channel: "testing",
 		Data: apipb2.NewStruct(map[string]interface{}{
 			"text": "hello world",
@@ -397,7 +403,7 @@ func ExampleClient_GetSchema() {
 	fmt.Printf("authorizers: %s", strings.Join(authorizers, ","))
 	// Output: doc types: dog,human,user
 	//connection types: created,created_by,edited,edited_by,owner
-	//authorizers: testing
+	//authorizers: testing-request
 }
 
 func ExampleClient_Traverse() {
@@ -445,7 +451,7 @@ func ExampleClient_Traverse() {
 
 func ExampleClient_DelConnections() {
 	ctx := context.Background()
-	_, err := client.DelConnections(ctx, &apipb2.Filter{
+	err := client.DelConnections(ctx, &apipb2.Filter{
 		Gtype:      "owner",
 		Expression: "this.attributes.primary_owner",
 		Limit:      10,
@@ -460,7 +466,7 @@ func ExampleClient_DelConnections() {
 
 func ExampleClient_DelDocs() {
 	ctx := context.Background()
-	_, err := client.DelDocs(ctx, &apipb2.Filter{
+	err := client.DelDocs(ctx, &apipb2.Filter{
 		Gtype:      "dog",
 		Expression: "this.attributes.name == 'Charlie'",
 		Limit:      10,

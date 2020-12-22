@@ -2,34 +2,37 @@ package database
 
 import (
 	"context"
-	"fmt"
-	"github.com/google/cel-go/cel"
+	"github.com/graphikDB/eval"
 	"github.com/graphikDB/graphik/gen/grpc/go"
-	"github.com/graphikDB/graphik/logger"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"sort"
-	"strings"
 )
 
 type index struct {
-	index   *apipb.Index
-	program cel.Program
+	index    *apipb.Index
+	decision *eval.Decision
 }
 
 type authorizer struct {
 	authorizer *apipb.Authorizer
-	program    cel.Program
+	decision   *eval.Decision
 }
 
 type typeValidator struct {
 	validator *apipb.TypeValidator
-	program   cel.Program
+	decision  *eval.Decision
+}
+
+type trigger struct {
+	trigger     *apipb.Trigger
+	evalTrigger *eval.Trigger
 }
 
 func (g *Graph) rangeIndexes(fn func(index *index) bool) {
@@ -62,26 +65,21 @@ func (g *Graph) cacheConnectionRefs() error {
 func (g *Graph) cacheIndexes() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbIndexes).ForEach(func(k, v []byte) error {
+			if k == nil || v == nil {
+				return nil
+			}
 			var i apipb.Index
-			var program cel.Program
 			var err error
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			if i.Connections {
-				program, err = g.vm.Connection().Program(i.Expression)
-				if err != nil {
-					return err
-				}
-			} else if i.Docs {
-				program, err = g.vm.Doc().Program(i.Expression)
-				if err != nil {
-					return err
-				}
+			decision, err := eval.NewDecision(eval.AllTrue, i.Expression)
+			if err != nil {
+				return err
 			}
 			ind := &index{
-				index:   &i,
-				program: program,
+				index:    &i,
+				decision: decision,
 			}
 			g.indexes.Set(i.GetName(), ind, 0)
 			return nil
@@ -95,6 +93,12 @@ func (g *Graph) rangeAuthorizers(fn func(a *authorizer) bool) {
 	})
 }
 
+func (g *Graph) rangeTriggers(fn func(a *trigger) bool) {
+	g.triggers.Range(func(key, value interface{}) bool {
+		return fn(value.(*trigger))
+	})
+}
+
 func (g *Graph) rangeTypeValidators(fn func(a *typeValidator) bool) {
 	g.typeValidators.Range(func(key, value interface{}) bool {
 		return fn(value.(*typeValidator))
@@ -104,7 +108,7 @@ func (g *Graph) rangeTypeValidators(fn func(a *typeValidator) bool) {
 func (g *Graph) cacheAuthorizers() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbAuthorizers).ForEach(func(k, v []byte) error {
-			if v == nil {
+			if k == nil || v == nil {
 				return nil
 			}
 			var i apipb.Authorizer
@@ -112,13 +116,47 @@ func (g *Graph) cacheAuthorizers() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			program, err := g.vm.Auth().Program(i.Expression)
+			if i.GetExpression() == "" {
+				return nil
+			}
+			decision, err := eval.NewDecision(eval.AllTrue, i.GetExpression())
 			if err != nil {
-				return err
+				return errors.Wrapf(err, "failed to cache auth expression: %s", i.GetName())
 			}
 			g.authorizers.Set(i.GetName(), &authorizer{
 				authorizer: &i,
-				program:    program,
+				decision:   decision,
+			}, 0)
+			return nil
+		})
+	})
+}
+
+func (g *Graph) cacheTriggers() error {
+	return g.db.View(func(tx *bbolt.Tx) error {
+		return tx.Bucket(dbTriggers).ForEach(func(k, v []byte) error {
+			if k == nil || v == nil {
+				return nil
+			}
+			var i apipb.Trigger
+			var err error
+			if err := proto.Unmarshal(v, &i); err != nil {
+				return err
+			}
+			if i.GetExpression() == "" {
+				return nil
+			}
+			decision, err := eval.NewDecision(eval.AllTrue, i.GetExpression())
+			if err != nil {
+				return errors.Wrapf(err, "failed to cache trigger decision: %s", i.GetName())
+			}
+			trig, err := eval.NewTrigger(decision, i.GetTrigger())
+			if err != nil {
+				return errors.Wrapf(err, "failed to cache trigger expression: %s", i.GetName())
+			}
+			g.triggers.Set(i.GetName(), &trigger{
+				trigger:     &i,
+				evalTrigger: trig,
 			}, 0)
 			return nil
 		})
@@ -128,7 +166,7 @@ func (g *Graph) cacheAuthorizers() error {
 func (g *Graph) cacheTypeValidators() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
 		return tx.Bucket(dbTypeValidators).ForEach(func(k, v []byte) error {
-			if v == nil {
+			if k == nil || v == nil {
 				return nil
 			}
 			var i apipb.TypeValidator
@@ -136,22 +174,13 @@ func (g *Graph) cacheTypeValidators() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			var program cel.Program
-			if i.GetConnections() {
-				program, err = g.vm.Connection().Program(i.Expression)
-				if err != nil {
-					return err
-				}
-			}
-			if i.GetDocs() {
-				program, err = g.vm.Doc().Program(i.Expression)
-				if err != nil {
-					return err
-				}
+			decision, err := eval.NewDecision(eval.AllTrue, i.Expression)
+			if err != nil {
+				return err
 			}
 			g.typeValidators.Set(i.GetName(), &typeValidator{
 				validator: &i,
-				program:   program,
+				decision:  decision,
 			}, 0)
 			return nil
 		})
@@ -216,6 +245,9 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 			return nil, err
 		}
 		current.Expression = i.Expression
+		current.TargetResponses = i.TargetResponses
+		current.TargetRequests = i.TargetRequests
+		current.Method = i.Method
 		bits, err := proto.Marshal(current)
 		if err != nil {
 			return nil, err
@@ -249,8 +281,8 @@ func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.Ty
 			return nil, err
 		}
 		current.Expression = i.Expression
-		current.Docs = i.Docs
-		current.Connections = i.Connections
+		current.TargetDocs = i.TargetDocs
+		current.TargetConnections = i.TargetConnections
 		current.Gtype = i.Gtype
 		bits, err := proto.Marshal(current)
 		if err != nil {
@@ -267,6 +299,43 @@ func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.Ty
 		return nil, err
 	}
 	if err := validatorBucket.Put([]byte(i.GetName()), bits); err != nil {
+		return nil, err
+	}
+	return i, nil
+}
+
+func (g *Graph) setTrigger(ctx context.Context, tx *bbolt.Tx, i *apipb.Trigger) (*apipb.Trigger, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	triggerBucket := tx.Bucket(dbTriggers)
+	val := triggerBucket.Get([]byte(i.GetName()))
+	if val != nil && len(val) > 0 {
+		var current = &apipb.Trigger{}
+		err := proto.Unmarshal(val, current)
+		if err != nil {
+			return nil, err
+		}
+		current.Expression = i.Expression
+		current.TargetDocs = i.TargetDocs
+		current.TargetConnections = i.TargetConnections
+		current.Gtype = i.Gtype
+		current.Trigger = i.Trigger
+		bits, err := proto.Marshal(current)
+		if err != nil {
+			return nil, err
+		}
+		err = triggerBucket.Put([]byte(i.GetName()), bits)
+		if err != nil {
+			return nil, err
+		}
+		return current, nil
+	}
+	bits, err := proto.Marshal(i)
+	if err != nil {
+		return nil, err
+	}
+	if err := triggerBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
 	return i, nil
@@ -332,16 +401,13 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
+	docMap := doc.AsMap()
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
-		if v.validator.GetDocs() && v.validator.GetGtype() == doc.GetRef().GetGtype() {
-			res, err := g.vm.Doc().Eval(doc, v.program)
+		if v.validator.GetTargetDocs() && (v.validator.GetGtype() == apipb.Any || v.validator.GetGtype() == doc.GetRef().GetGtype()) {
+			err := v.decision.Eval(docMap)
 			if err != nil {
-				validationErr = err
-				return false
-			}
-			if !res {
-				validationErr = errors.New(fmt.Sprintf("%s.%s document validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression()))
+				validationErr = errors.Wrapf(err, "%s.%s document validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression())
 				return false
 			}
 		}
@@ -366,17 +432,11 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 		return nil, err
 	}
 	g.rangeIndexes(func(i *index) bool {
-		if i.index.Docs {
-			result, err := g.vm.Doc().Eval(doc, i.program)
-			if err != nil {
-				if !strings.Contains(err.Error(), "no such key") {
-					logger.Error("set index failure", zap.Error(err))
-				}
-			}
-			if result {
+		if i.index.GetDocs() && i.index.GetGtype() == doc.GetRef().GetGtype() {
+			if err := i.decision.Eval(docMap); err == nil {
 				err = g.setIndexedDoc(ctx, tx, i.index.Name, []byte(doc.GetRef().GetGid()), bits)
 				if err != nil {
-					logger.Error("failed to save index", zap.Error(err))
+					g.logger.Error("failed to save index", zap.Error(err))
 					return true
 				}
 			}
@@ -395,19 +455,14 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	return doc, nil
 }
 
-func (g *Graph) setDocs(ctx context.Context, docs ...*apipb.Doc) (*apipb.Docs, error) {
+func (g *Graph) setDocs(ctx context.Context, tx *bbolt.Tx, docs ...*apipb.Doc) (*apipb.Docs, error) {
 	var nds = &apipb.Docs{}
-	if err := g.db.Batch(func(tx *bbolt.Tx) error {
-		for _, doc := range docs {
-			n, err := g.setDoc(ctx, tx, doc)
-			if err != nil {
-				return err
-			}
-			nds.Docs = append(nds.Docs, n)
+	for _, doc := range docs {
+		n, err := g.setDoc(ctx, tx, doc)
+		if err != nil {
+			return nil, err
 		}
-		return nil
-	}); err != nil {
-		return nil, err
+		nds.Docs = append(nds.Docs, n)
 	}
 	return nds, nil
 }
@@ -437,17 +492,13 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			return nil, errors.Errorf("to doc %s does not exist", connection.GetTo().String())
 		}
 	}
-
+	connMap := connection.AsMap()
 	var validationErr error
 	g.rangeTypeValidators(func(v *typeValidator) bool {
-		if v.validator.GetConnections() && v.validator.GetGtype() == connection.GetRef().GetGtype() {
-			res, err := g.vm.Connection().Eval(connection, v.program)
+		if v.validator.GetTargetConnections() && (v.validator.GetGtype() == apipb.Any || v.validator.GetGtype() == connection.GetRef().GetGtype()) {
+			err := v.decision.Eval(connMap)
 			if err != nil {
-				validationErr = err
-				return false
-			}
-			if !res {
-				validationErr = errors.New(fmt.Sprintf("%s.%s connection validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression()))
+				validationErr = errors.Wrapf(err, "%s.%s connection validation error! validator expression: %s", v.validator.GetGtype(), v.validator.GetName(), v.validator.GetExpression())
 				return false
 			}
 		}
@@ -487,12 +538,11 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 		g.connectionsFrom[connection.GetTo().String()][refstr] = struct{}{}
 	}
 	g.rangeIndexes(func(i *index) bool {
-		if i.index.Connections {
-			result, _ := g.vm.Connection().Eval(connection, i.program)
-			if result {
+		if i.index.Connections && i.index.GetGtype() == connection.GetRef().GetGtype() {
+			if err := i.decision.Eval(connMap); err == nil {
 				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), []byte(connection.GetRef().GetGid()), bits)
 				if err != nil {
-					logger.Error("failed to save index", zap.Error(err))
+					g.logger.Error("failed to save index", zap.Error(err))
 					return true
 				}
 			}
@@ -530,16 +580,6 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) (*api
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
-	var authorizers []cel.Program
-	if ctx.Value(bypassAuthorizersCtxKey) == nil {
-		g.rangeAuthorizers(func(a *authorizer) bool {
-			if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
-				authorizers = append(authorizers, a.program)
-			}
-			return true
-		})
-	}
-
 	if path == nil {
 		return nil, ErrNotFound
 	}
@@ -556,23 +596,6 @@ func (g *Graph) getDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) (*api
 	if err := proto.Unmarshal(bits, &doc); err != nil {
 		return nil, err
 	}
-	if len(authorizers) > 0 {
-		for _, a := range authorizers {
-			res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-				Type:   apipb.AuthType_VIEW_DOC,
-				Method: g.getMethod(ctx),
-				User:   g.getIdentity(ctx),
-				Data:   apipb.NewStruct(doc.AsMap()),
-			}, a)
-			if err != nil {
-				logger.Error("view connection authorization error", zap.Error(err))
-				return &doc, nil
-			}
-			if !res {
-				return nil, status.Error(codes.PermissionDenied, "view doc = permission denied")
-			}
-		}
-	}
 	return &doc, nil
 }
 
@@ -583,13 +606,6 @@ func (g *Graph) getConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
-	var authorizers []cel.Program
-	g.rangeAuthorizers(func(a *authorizer) bool {
-		if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
-			authorizers = append(authorizers, a.program)
-		}
-		return true
-	})
 	var connection apipb.Connection
 	bucket := tx.Bucket(dbConnections).Bucket([]byte(path.Gtype))
 	if bucket == nil {
@@ -602,38 +618,12 @@ func (g *Graph) getConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref
 	if err := proto.Unmarshal(bits, &connection); err != nil {
 		return nil, err
 	}
-	if len(authorizers) > 0 {
-		for _, a := range authorizers {
-			res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-				Type:   apipb.AuthType_VIEW_CONNECTION,
-				Method: g.getMethod(ctx),
-				User:   g.getIdentity(ctx),
-				Data:   apipb.NewStruct(connection.AsMap()),
-			}, a)
-			if err != nil {
-				logger.Error("view connection authorization error", zap.Error(err))
-				return &connection, nil
-			}
-			if !res {
-				return nil, status.Error(codes.PermissionDenied, "view connection = permission denied")
-			}
-		}
-	}
 	return &connection, nil
 }
 
 func (g *Graph) rangeConnections(ctx context.Context, gType string, fn func(n *apipb.Connection) bool) error {
 	if err := ctx.Err(); err != nil {
 		return err
-	}
-	var authorizers []cel.Program
-	if ctx.Value(bypassAuthorizersCtxKey) == nil {
-		g.rangeAuthorizers(func(a *authorizer) bool {
-			if a.authorizer.GetType() == apipb.AuthType_VIEW_CONNECTION {
-				authorizers = append(authorizers, a.program)
-			}
-			return true
-		})
 	}
 
 	if err := g.db.View(func(tx *bbolt.Tx) error {
@@ -662,24 +652,6 @@ func (g *Graph) rangeConnections(ctx context.Context, gType string, fn func(n *a
 			if err := proto.Unmarshal(v, &connection); err != nil {
 				return err
 			}
-
-			if len(authorizers) > 0 {
-				for _, a := range authorizers {
-					res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-						Type:   apipb.AuthType_VIEW_CONNECTION,
-						Method: g.getMethod(ctx),
-						User:   g.getIdentity(ctx),
-						Data:   apipb.NewStruct(connection.AsMap()),
-					}, a)
-					if err != nil {
-						logger.Error("view connection authorization error", zap.Error(err))
-						return nil
-					}
-					if !res {
-						return nil
-					}
-				}
-			}
 			if !fn(&connection) {
 				return DONE
 			}
@@ -694,15 +666,6 @@ func (g *Graph) rangeConnections(ctx context.Context, gType string, fn func(n *a
 func (g *Graph) rangeDocs(ctx context.Context, gType string, fn func(n *apipb.Doc) bool) error {
 	if err := ctx.Err(); err != nil {
 		return err
-	}
-	var authorizers []cel.Program
-	if ctx.Value(bypassAuthorizersCtxKey) == nil {
-		g.rangeAuthorizers(func(a *authorizer) bool {
-			if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
-				authorizers = append(authorizers, a.program)
-			}
-			return true
-		})
 	}
 
 	if err := g.db.View(func(tx *bbolt.Tx) error {
@@ -730,23 +693,6 @@ func (g *Graph) rangeDocs(ctx context.Context, gType string, fn func(n *apipb.Do
 			var doc apipb.Doc
 			if err := proto.Unmarshal(v, &doc); err != nil {
 				return err
-			}
-			if len(authorizers) > 0 {
-				for _, a := range authorizers {
-					res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-						Type:   apipb.AuthType_VIEW_DOC,
-						Method: g.getMethod(ctx),
-						User:   g.getIdentity(ctx),
-						Data:   apipb.NewStruct(doc.AsMap()),
-					}, a)
-					if err != nil {
-						logger.Error("view connection authorization error", zap.Error(err))
-						return nil
-					}
-					if !res {
-						return nil
-					}
-				}
 			}
 			if !fn(&doc) {
 				return DONE
@@ -780,6 +726,18 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 			Ref:        path,
 			Attributes: constructor.GetAttributes(),
 		}
+		g.rangeTriggers(func(a *trigger) bool {
+			if a.trigger.GetTargetDocs() && newDock.GetRef().GetGtype() == a.trigger.GetGtype() {
+				data, err := a.evalTrigger.Trigger(newDock.AsMap())
+				if err == nil && len(data) > 0 {
+					for k, v := range data {
+						val, _ := structpb.NewValue(v)
+						newDock.GetAttributes().GetFields()[k] = val
+					}
+				}
+			}
+			return true
+		})
 		newDock, err = g.setDoc(ctx, tx, newDock)
 		if err != nil {
 			return err
@@ -806,7 +764,7 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) error
 		return true
 	})
 	g.rangeIndexes(func(index *index) bool {
-		if index.index.Docs && index.index.GetGtype() == path.GetGtype() {
+		if index.index.Docs && index.index.GetGtype() == doc.GetRef().GetGtype() {
 			g.delIndexedDoc(ctx, tx, []byte(index.index.Name), []byte(path.GetGid()))
 		}
 		return true
@@ -885,16 +843,6 @@ func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn
 		paths = append(paths, path)
 	}
 	sort.Strings(paths)
-	var authorizers []cel.Program
-	if ctx.Value(bypassAuthorizersCtxKey) == nil {
-		g.rangeAuthorizers(func(a *authorizer) bool {
-			if a.authorizer.GetType() == apipb.AuthType_VIEW_CONNECTION {
-				authorizers = append(authorizers, a.program)
-			}
-			return true
-		})
-	}
-
 	for _, path := range paths {
 		if err := ctx.Err(); err != nil {
 			return err
@@ -909,23 +857,6 @@ func (g *Graph) rangeTo(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, fn
 		bits := bucket.Get([]byte(ref.GetGid()))
 		if err := proto.Unmarshal(bits, &connection); err != nil {
 			return err
-		}
-		if len(authorizers) > 0 {
-			for _, a := range authorizers {
-				res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-					Type:   apipb.AuthType_VIEW_CONNECTION,
-					Method: g.getMethod(ctx),
-					User:   g.getIdentity(ctx),
-					Data:   apipb.NewStruct(connection.AsMap()),
-				}, a)
-				if err != nil {
-					logger.Error("view connection authorization error", zap.Error(err))
-					return nil
-				}
-				if !res {
-					return nil
-				}
-			}
 		}
 		if !fn(&connection) {
 			return nil
@@ -943,15 +874,6 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, 
 		paths = append(paths, path)
 	}
 	sort.Strings(paths)
-	var authorizers []cel.Program
-	if ctx.Value(bypassAuthorizersCtxKey) == nil {
-		g.rangeAuthorizers(func(a *authorizer) bool {
-			if a.authorizer.GetType() == apipb.AuthType_VIEW_CONNECTION {
-				authorizers = append(authorizers, a.program)
-			}
-			return true
-		})
-	}
 	for _, val := range paths {
 		if err := ctx.Err(); err != nil {
 			return err
@@ -966,23 +888,6 @@ func (g *Graph) rangeFrom(ctx context.Context, tx *bbolt.Tx, docRef *apipb.Ref, 
 		if err := proto.Unmarshal(bits, &connection); err != nil {
 			return err
 		}
-		if len(authorizers) > 0 {
-			for _, a := range authorizers {
-				res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-					Type:   apipb.AuthType_VIEW_CONNECTION,
-					Method: g.getMethod(ctx),
-					User:   g.getIdentity(ctx),
-					Data:   apipb.NewStruct(connection.AsMap()),
-				}, a)
-				if err != nil {
-					logger.Error("view connection authorization error", zap.Error(err))
-					return nil
-				}
-				if !res {
-					return nil
-				}
-			}
-		}
 		if !fn(&connection) {
 			return nil
 		}
@@ -994,13 +899,6 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek str
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
 	}
-	var authorizers []cel.Program
-	g.rangeAuthorizers(func(a *authorizer) bool {
-		if a.authorizer.GetType() == apipb.AuthType_VIEW_CONNECTION {
-			authorizers = append(authorizers, a.program)
-		}
-		return true
-	})
 	var lastKey []byte
 	if err := g.db.View(func(tx *bbolt.Tx) error {
 		var c *bbolt.Cursor
@@ -1030,23 +928,6 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek str
 				if err := proto.Unmarshal(v, &connection); err != nil {
 					return err
 				}
-				if len(authorizers) > 0 {
-					for _, a := range authorizers {
-						res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-							Type:   apipb.AuthType_VIEW_CONNECTION,
-							Method: g.getMethod(ctx),
-							User:   g.getIdentity(ctx),
-							Data:   apipb.NewStruct(connection.AsMap()),
-						}, a)
-						if err != nil {
-							logger.Error("view connection authorization error", zap.Error(err))
-							return nil
-						}
-						if !res {
-							return nil
-						}
-					}
-				}
 				lastKey = k
 				if !fn(&connection) {
 					return DONE
@@ -1060,23 +941,6 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek str
 				var connection apipb.Connection
 				if err := proto.Unmarshal(v, &connection); err != nil {
 					return err
-				}
-				if len(authorizers) > 0 {
-					for _, a := range authorizers {
-						res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-							Type:   apipb.AuthType_VIEW_CONNECTION,
-							Method: g.getMethod(ctx),
-							User:   g.getIdentity(ctx),
-							Data:   apipb.NewStruct(connection.AsMap()),
-						}, a)
-						if err != nil {
-							logger.Error("view connection authorization error", zap.Error(err))
-							return nil
-						}
-						if !res {
-							return nil
-						}
-					}
 				}
 				lastKey = k
 				if !fn(&connection) {
@@ -1094,15 +958,6 @@ func (g *Graph) rangeSeekConnections(ctx context.Context, gType string, seek str
 func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, index string, reverse bool, fn func(e *apipb.Doc) bool) (string, error) {
 	if ctx.Err() != nil {
 		return seek, ctx.Err()
-	}
-	var authorizers []cel.Program
-	if ctx.Value(bypassAuthorizersCtxKey) == nil {
-		g.rangeAuthorizers(func(a *authorizer) bool {
-			if a.authorizer.GetType() == apipb.AuthType_VIEW_DOC {
-				authorizers = append(authorizers, a.program)
-			}
-			return true
-		})
 	}
 	var lastKey []byte
 	if err := g.db.View(func(tx *bbolt.Tx) error {
@@ -1133,23 +988,6 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, in
 				if err := proto.Unmarshal(v, &doc); err != nil {
 					return err
 				}
-				if len(authorizers) > 0 {
-					for _, a := range authorizers {
-						res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-							Type:   apipb.AuthType_VIEW_DOC,
-							Method: g.getMethod(ctx),
-							User:   g.getIdentity(ctx),
-							Data:   apipb.NewStruct(doc.AsMap()),
-						}, a)
-						if err != nil {
-							logger.Error("view doc authorization error", zap.Error(err))
-							return nil
-						}
-						if !res {
-							return nil
-						}
-					}
-				}
 				lastKey = k
 				if !fn(&doc) {
 					return DONE
@@ -1163,23 +1001,6 @@ func (g *Graph) rangeSeekDocs(ctx context.Context, gType string, seek string, in
 				var doc apipb.Doc
 				if err := proto.Unmarshal(v, &doc); err != nil {
 					return err
-				}
-				if len(authorizers) > 0 {
-					for _, a := range authorizers {
-						res, err := g.vm.Auth().Eval(&apipb.AuthTarget{
-							Type:   apipb.AuthType_VIEW_DOC,
-							Method: g.getMethod(ctx),
-							User:   g.getIdentity(ctx),
-							Data:   apipb.NewStruct(doc.AsMap()),
-						}, a)
-						if err != nil {
-							logger.Error("view doc authorization error", zap.Error(err))
-							return nil
-						}
-						if !res {
-							return nil
-						}
-					}
 				}
 				lastKey = k
 				if !fn(&doc) {

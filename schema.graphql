@@ -28,15 +28,13 @@ enum Aggregate {
   PROD
 }
 
-enum AuthType {
-  REQUEST
-  VIEW_DOC
-  VIEW_CONNECTION
-}
-
-# Pong returns PONG if the server is healthy
-type Pong {
-  message: String!
+# Membership is the state of a raft membership in a cluster
+enum Membership {
+  UNKNOWN
+  FOLLOWER
+  CANDIDATE
+  LEADER
+  SHUTDOWN
 }
 
 # Ref describes a doc/connection type & id
@@ -73,13 +71,12 @@ type Traversal {
 
 # AuthTarget
 type AuthTarget {
-  type: AuthType!
-  # method is the gRPC method invoked
-  method: String!
   # user is the user making the request
   user: Doc!
-  # data is the payload gived to the authorizer(request, doc, connection)
-  data: Map!
+  # target is the payload gived to the authorizer(request or response payload)
+  target: Map!
+  peer: String!
+  headers: Map!
 }
 
 # Traversals is an array of Traversal that is returned from Graph traversal algorithms
@@ -101,15 +98,34 @@ type TypeValidator {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if docs is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
 }
 
 # TypeValidators is an array of TypeValidator
 type TypeValidators {
   validators: [TypeValidator!]
+}
+
+type Trigger {
+  # name is the unique name of the type validator
+  name: String!
+  # gtype is the type of object the validator will be applied to (ex: user)
+  gtype: String!
+  # expression is a boolean CEL expression used to evaluate the doc/connection
+  expression: String!
+  # trigger is the map CEL expression that mutates the doc/connection before it is stored
+  trigger: String!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
+}
+
+type Triggers {
+  triggers: [Trigger!]
 }
 
 # Connection is a graph primitive that represents a relationship between two docs
@@ -138,14 +154,14 @@ type Connections {
 type Index {
   # name is the unique name of the index in the graph
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the index will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if docs is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this index will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this index will be applied to connections.
+  target_connections: Boolean!
 }
 
 # Indexes is an array of Index
@@ -153,13 +169,32 @@ type Indexes {
   indexes: [Index!]
 }
 
-# Authorizer is a graph primitive used for authorizing inbound requests(see Request)
+# Peer is the address and id of a node in the raft cluster
+type Peer {
+  node_id: String!
+  addr: String!
+}
+
+# RaftState returns information about the raft cluster
+type RaftState {
+  leader: String!
+  membership: Membership!
+  peers: [Peer!]
+  stats: Map!
+}
+
+# Authorizer is a graph primitive used for authorizing inbound requests and/or responses(see AuthTarget)
 type Authorizer {
   # name is the unique name of the authorizer in the graph
   name: String!
-  # expression is a boolean CEL expression used to evaluate the inbound request
+  # method is the rpc method that will invoke the authorizer
+  method: String!
+  # expression is the boolean CEL expression that evaluates either the request or response body
   expression: String!
-  type:   AuthType!
+  # target_responses sets the authorizer to evaluate request bodies of the target grpc method
+  target_requests:   Boolean!
+  # target_responses sets the authorizer to evaluate response bodies of the target grpc method
+  target_responses: Boolean!
 }
 
 # Authorizers is an array of Authorizer
@@ -179,6 +214,8 @@ type Schema {
   validators: TypeValidators
   # indexes are all of the registered indexes in the graph
   indexes: Indexes
+  # triggers are all of the registered triggers in the graph
+  triggers: Triggers
 }
 
 # Message is received on PubSub subscriptions
@@ -243,10 +280,10 @@ input RefInput {
   gid: String!
 }
 
-# RefPair is a pair of Refs
-input RefPair {
-  ref1: RefInput!
-  ref2: RefInput!
+# PeerInput is the address and id of a node in the raft cluster
+input PeerInput {
+  node_id: String!
+  addr: String!
 }
 
 # Filter is a generic filter using Common Expression Language
@@ -409,10 +446,10 @@ input IndexInput {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if connections is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this index will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this index will be applied to connections.
+  target_connections: Boolean!
 }
 
 # IndexesInput is an array IndexInput
@@ -420,13 +457,40 @@ input IndexesInput {
   indexes: [IndexInput!]
 }
 
+
+# TriggerInput is used to construct Trigger
+input TriggerInput {
+  # name is the unique name of the type validator
+  name: String!
+  # gtype is the type of object the validator will be applied to (ex: user)
+  gtype: String!
+  # expression is a boolean CEL expression used to evaluate the doc/connection
+  expression: String!
+  # trigger is the map CEL expression that mutates the doc/connection before it is stored
+  trigger: String!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
+}
+
+# TriggersInput is an array TriggerInput
+input TriggersInput {
+  triggers: [TriggerInput!]
+}
+
 # AuthorizerInput is used to create a new Authorizer
 input AuthorizerInput {
   # name is the unique name of the authorizer in the graph
   name: String!
-  # expression is a boolean CEL expression used to evaluate the inbound request
+  # method is the rpc method that will invoke the authorizer
+  method: String!
+  # expression is the boolean CEL expression that evaluates either the request or response body
   expression: String!
-  type:   AuthType!
+  # target_responses sets the authorizer to evaluate request bodies of the target grpc method
+  target_requests:   Boolean!
+  # target_responses sets the authorizer to evaluate response bodies of the target grpc method
+  target_responses: Boolean!
 }
 
 # AuthorizersInput is an array of authorizers
@@ -442,10 +506,10 @@ input TypeValidatorInput {
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if docs is true, this validator will be applied to documents.
-  docs: Boolean!
-  # if connections is true, this validator will be applied to connections.
-  connections: Boolean!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
 }
 
 # TypeValidatorsInput is an array of TypeValidatorInput
@@ -500,15 +564,15 @@ type Mutation {
   setAuthorizers(input: AuthorizersInput!): Empty
   # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
+  # v sets all of the triggers in the graph
+  setTriggers(input: TriggersInput!): Empty
   # searchAndConnect searches for documents and forms connections based on whether they pass a filter
-  searchAndConnect(where: SearchConnectFilter!): Connections!
+  searchAndConnect(input: SearchConnectFilter!): Connections!
   # searchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
-  searchAndConnectMe(where: SearchConnectMeFilter!): Connections!
+  searchAndConnectMe(input: SearchConnectMeFilter!): Connections!
 }
 
 type Query {
-  # ping checks if the server is healthy.
-  ping(where: Empty): Pong!
   # getSchema gets information about node/connection types, type-validators, indexes, and authorizers
   getSchema(where: Empty): Schema!
   # me returns a Doc of the currently logged in user

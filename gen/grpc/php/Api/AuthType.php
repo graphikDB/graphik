@@ -14,12 +14,8 @@ class AuthType
      */
     const REQUEST = 0;
     /**
-     * Generated from protobuf enum <code>VIEW_DOC = 1;</code>
+     * Generated from protobuf enum <code>RESPONSE = 1;</code>
      */
-    const VIEW_DOC = 1;
-    /**
-     * Generated from protobuf enum <code>VIEW_CONNECTION = 2;</code>
-     */
-    const VIEW_CONNECTION = 2;
+    const RESPONSE = 1;
 }
 

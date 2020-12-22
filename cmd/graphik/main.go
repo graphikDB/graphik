@@ -23,6 +23,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"io/ioutil"
 	"log"
@@ -40,19 +41,25 @@ var global = &apipb.Flags{}
 
 func init() {
 	godotenv.Load()
+	pflag.CommandLine.BoolVar(&global.Debug, "debug", helpers.BoolEnvOr("GRAPHIK_DEBUG", false), "enable debug logs (env: GRAPHIK_DEBUG)")
+	pflag.CommandLine.StringVar(&global.RaftSecret, "raft-secret", os.Getenv("GRAPHIK_RAFT_SECRET"), "raft cluster secret (so only authorized nodes may join cluster) (env: GRAPHIK_RAFT_SECRET)")
+	pflag.CommandLine.StringVar(&global.JoinRaft, "join-raft", os.Getenv("GRAPHIK_JOIN_RAFT"), "join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)")
+	pflag.CommandLine.StringVar(&global.RaftPeerId, "raft-peer-id", os.Getenv("GRAPHIK_RAFT_PEER_ID"), "raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)")
+	pflag.CommandLine.Int64Var(&global.ListenPort, "listen-port", int64(helpers.IntEnvOr("GRAPHIK_LISTEN_PORT", 7820)), "serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT)")
 	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
-	pflag.CommandLine.StringVar(&global.OpenIdDiscovery, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)")
+	pflag.CommandLine.StringVar(&global.OpenIdDiscovery, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) (required)")
 	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", helpers.BoolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
 	pflag.CommandLine.StringSliceVar(&global.AllowHeaders, "allow-headers", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
 	pflag.CommandLine.StringSliceVar(&global.AllowOrigins, "allow-origins", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
 	pflag.CommandLine.StringSliceVar(&global.AllowMethods, "allow-methods", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
-	pflag.CommandLine.StringSliceVar(&global.RootUsers, "root-users", helpers.StringSliceEnvOr("GRAPHIK_ROOT_USERS", nil), "a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)")
+	pflag.CommandLine.StringSliceVar(&global.RootUsers, "root-users", helpers.StringSliceEnvOr("GRAPHIK_ROOT_USERS", nil), "a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)  (required)")
 	pflag.CommandLine.StringVar(&global.TlsCert, "tls-cert", helpers.EnvOr("GRAPHIK_TLS_CERT", ""), "path to tls certificate (env: GRAPHIK_TLS_CERT)")
 	pflag.CommandLine.StringVar(&global.TlsKey, "tls-key", helpers.EnvOr("GRAPHIK_TLS_KEY", ""), "path to tls key (env: GRAPHIK_TLS_KEY)")
+	pflag.CommandLine.BoolVar(&global.RequireRequestAuthorizers, "require-request-authorizers", helpers.BoolEnvOr("GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS", false), "require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)")
+	pflag.CommandLine.BoolVar(&global.RequireResponseAuthorizers, "require-response-authorizers", helpers.BoolEnvOr("GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS", false), "require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)")
 	pflag.CommandLine.StringVar(&global.PlaygroundClientId, "playground-client-id", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_ID", ""), "playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)")
 	pflag.CommandLine.StringVar(&global.PlaygroundClientSecret, "playground-client-secret", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_SECRET", ""), "playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)")
 	pflag.CommandLine.StringVar(&global.PlaygroundRedirect, "playground-redirect", helpers.EnvOr("GRAPHIK_PLAYGROUND_REDIRECT", ""), "playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT)")
-	pflag.CommandLine.StringVar(&global.PlaygroundSessionStore, "playground-session-store", helpers.EnvOr("GRAPHIK_PLAYGROUND_SESSION_STORE", "cookies"), "playground session store (options: cookies, file-system) (env: GRAPHIK_PLAYGROUND_SESSION_STORE)")
 	pflag.Parse()
 }
 
@@ -60,18 +67,14 @@ func main() {
 	run(context.Background(), global)
 }
 
-const bind = ":7820"
-const metricsBind = ":7821"
-
 func run(ctx context.Context, cfg *apipb.Flags) {
+	lgger := logger.New(cfg.Debug)
 	if cfg.OpenIdDiscovery == "" {
-		logger.Error("empty open-id connect discovery --open-id")
+		lgger.Error("empty open-id connect discovery --open-id", zap.String("usage", pflag.CommandLine.Lookup("open-id").Usage))
 		return
 	}
-	if cfg.PlaygroundSessionStore != "cookies" &&
-		cfg.PlaygroundSessionStore != "file-system" &&
-		cfg.PlaygroundSessionStore != "" {
-		logger.Error("invalid playground session store type --playground-session-store")
+	if len(cfg.GetRootUsers()) == 0 {
+		lgger.Error("zero root users", zap.String("usage", pflag.CommandLine.Lookup("root-users").Usage))
 		return
 	}
 	ctx, cancel := context.WithCancel(ctx)
@@ -80,9 +83,9 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
 	m := machine.New(ctx)
-	g, err := database.NewGraph(ctx, cfg)
+	g, err := database.NewGraph(ctx, cfg, lgger)
 	if err != nil {
-		logger.Error("failed to create graph", zap.Error(err))
+		lgger.Error("failed to create graph", zap.Error(err))
 		return
 	}
 	defer g.Close()
@@ -94,41 +97,35 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			return
 		}
 		config := &tls.Config{Certificates: []tls.Certificate{cer}}
-		lis, err = tls.Listen("tcp", bind, config)
+		lis, err = tls.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort), config)
 		if err != nil {
-			logger.Error("failed to create tls server listener", zap.Error(err))
+			lgger.Error("failed to create tls server listener", zap.Error(err))
 			return
 		}
 	} else {
-		lis, err = net.Listen("tcp", bind)
+		lis, err = net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort))
 		if err != nil {
-			logger.Error("failed to create server listener", zap.Error(err))
+			lgger.Error("failed to create server listener", zap.Error(err))
 			return
 		}
 	}
 	defer lis.Close()
-	self := fmt.Sprintf("localhost%v", bind)
-	conn, err := grpc.DialContext(ctx, self, grpc.WithInsecure())
-	if err != nil {
-		logger.Error("failed to setup graphql endpoint", zap.Error(err))
-		return
-	}
 	var config *oauth2.Config
 	if global.PlaygroundClientId != "" {
 		resp, err := http.DefaultClient.Get(global.OpenIdDiscovery)
 		if err != nil {
-			logger.Error("failed to get oidc", zap.Error(err))
+			lgger.Error("failed to get oidc", zap.Error(err))
 			return
 		}
 		defer resp.Body.Close()
 		var openID = map[string]interface{}{}
 		bits, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			logger.Error("failed to get oidc", zap.Error(err))
+			lgger.Error("failed to get oidc", zap.Error(err))
 			return
 		}
 		if err := json.Unmarshal(bits, &openID); err != nil {
-			logger.Error("failed to get oidc", zap.Error(err))
+			lgger.Error("failed to get oidc", zap.Error(err))
 			return
 		}
 		config = &oauth2.Config{
@@ -142,15 +139,18 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			Scopes:      []string{"openid", "email", "profile"},
 		}
 	}
-	var sessionPath = ""
-	if global.GetPlaygroundSessionStore() == "file-system" {
-		sessionPath = fmt.Sprintf("%s/playground", global.GetStoragePath())
+	self := fmt.Sprintf("localhost:%v", global.ListenPort)
+	conn, err := grpc.DialContext(ctx, self, grpc.WithInsecure(), grpc.WithUserAgent(g.Raft().PeerID()))
+	if err != nil {
+		lgger.Error("failed to setup graphql endpoint", zap.Error(err))
+		return
 	}
-	resolver := gql.NewResolver(ctx, apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
+	defer conn.Close()
+	resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
 		AllowedOrigins: global.AllowOrigins,
 		AllowedMethods: global.AllowMethods,
 		AllowedHeaders: global.AllowHeaders,
-	}), config, sessionPath)
+	}), config, lgger)
 	mux := http.NewServeMux()
 	mux.Handle("/", resolver.QueryHandler())
 	if config != nil {
@@ -164,11 +164,11 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	m.Go(func(routine machine.Routine) {
 		hmatcher := cm.Match(cmux.HTTP1())
 		defer hmatcher.Close()
-		logger.Info("starting http server",
+		lgger.Info("starting http server",
 			zap.String("address", hmatcher.Addr().String()),
 		)
 		if err := httpServer.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
-			logger.Error("http server failure", zap.Error(err))
+			lgger.Error("http server failure", zap.Error(err))
 		}
 	})
 	var metricServer *http.Server
@@ -182,50 +182,72 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 		metricServer = &http.Server{Handler: router}
 		m.Go(func(routine machine.Routine) {
-			metricLis, err := net.Listen("tcp", metricsBind)
+			metricLis, err := net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort+1))
 			if err != nil {
-				logger.Error("metrics server failure", zap.Error(err))
+				lgger.Error("metrics server failure", zap.Error(err))
 				return
 			}
 			defer metricLis.Close()
-			logger.Info("starting metrics server", zap.String("address", metricLis.Addr().String()))
+			lgger.Info("starting metrics server", zap.String("address", metricLis.Addr().String()))
 			if err := metricServer.Serve(metricLis); err != nil && err != http.ErrServerClosed {
-				logger.Error("metrics server failure", zap.Error(err))
+				lgger.Error("metrics server failure", zap.Error(err))
 			}
 		})
 	}
 	gserver := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			grpc_prometheus.UnaryServerInterceptor,
-			grpc_zap.UnaryServerInterceptor(logger.Logger()),
+			grpc_zap.UnaryServerInterceptor(lgger.Zap()),
 			grpc_validator.UnaryServerInterceptor(),
 			g.UnaryInterceptor(),
 			grpc_recovery.UnaryServerInterceptor(),
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_prometheus.StreamServerInterceptor,
-			grpc_zap.StreamServerInterceptor(logger.Logger()),
+			grpc_zap.StreamServerInterceptor(lgger.Zap()),
 			grpc_validator.StreamServerInterceptor(),
 			g.StreamInterceptor(),
 			grpc_recovery.StreamServerInterceptor(),
 		),
 	)
 	apipb.RegisterDatabaseServiceServer(gserver, g)
+	apipb.RegisterRaftServiceServer(gserver, g)
 	reflection.Register(gserver)
 	grpc_prometheus.Register(gserver)
 	m.Go(func(routine machine.Routine) {
 		gmatcher := cm.Match(cmux.HTTP2())
 		defer gmatcher.Close()
-		logger.Info("starting gRPC server", zap.String("address", lis.Addr().String()))
+		lgger.Info("starting gRPC server", zap.String("address", lis.Addr().String()))
 		if err := gserver.Serve(gmatcher); err != nil && err != http.ErrServerClosed && !strings.Contains(err.Error(), "mux: listener closed") {
-			logger.Error("gRPC server failure", zap.Error(err))
+			lgger.Error("gRPC server failure", zap.Error(err))
 		}
 	})
 	m.Go(func(routine machine.Routine) {
 		if err := cm.Serve(); err != nil && !strings.Contains(err.Error(), "closed network connection") {
-			logger.Error("listener mux error", zap.Error(err))
+			lgger.Error("listener mux error", zap.Error(err))
 		}
 	})
+	if global.JoinRaft != "" {
+		leaderConn, err := grpc.DialContext(ctx, global.JoinRaft, grpc.WithInsecure())
+		if err != nil {
+			lgger.Error("failed to setup graphql endpoint", zap.Error(err))
+			return
+		}
+		defer leaderConn.Close()
+		rclient := apipb.NewRaftServiceClient(leaderConn)
+		for x := 0; x < 5; x++ {
+			_, err := rclient.JoinCluster(metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", global.RaftSecret), &apipb.Peer{
+				NodeId: g.Raft().PeerID(),
+				Addr:   fmt.Sprintf("localhost:%v", global.ListenPort-10),
+			})
+			if err != nil {
+				lgger.Error("failed to join cluster - retrying", zap.Error(err), zap.Int("attempt", x+1))
+				continue
+			} else {
+				break
+			}
+		}
+	}
 	select {
 	case <-interrupt:
 		m.Cancel()
@@ -235,7 +257,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		break
 	}
 
-	logger.Warn("shutdown signal received")
+	lgger.Warn("shutdown signal received")
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
 
@@ -257,5 +279,5 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		t.Stop()
 	}
 	m.Wait()
-	logger.Info("shutdown successful")
+	lgger.Info("shutdown successful")
 }

@@ -365,13 +365,7 @@ func (this *IndexConstructor) Validate() error {
 	}
 	return nil
 }
-
-var _regex_AuthTarget_Method = regexp.MustCompile(`^.{1,225}$`)
-
 func (this *AuthTarget) Validate() error {
-	if !_regex_AuthTarget_Method.MatchString(this.Method) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
-	}
 	if nil == this.User {
 		return github_com_mwitkow_go_proto_validators.FieldError("User", fmt.Errorf("message must exist"))
 	}
@@ -380,20 +374,25 @@ func (this *AuthTarget) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
 		}
 	}
-	if this.Data != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+	if this.Target != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Target); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Target", err)
 		}
 	}
+	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
 
 var _regex_Authorizer_Name = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Authorizer_Method = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Authorizer_Expression = regexp.MustCompile(`^.{1,225}$`)
 
 func (this *Authorizer) Validate() error {
 	if !_regex_Authorizer_Name.MatchString(this.Name) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Name", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Name))
+	}
+	if !_regex_Authorizer_Method.MatchString(this.Method) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Method", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Method))
 	}
 	if !_regex_Authorizer_Expression.MatchString(this.Expression) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
@@ -459,6 +458,37 @@ func (this *Indexes) Validate() error {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
 				return github_com_mwitkow_go_proto_validators.FieldError("Indexes", err)
+			}
+		}
+	}
+	return nil
+}
+
+var _regex_Trigger_Name = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Trigger_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Trigger_Expression = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Trigger_Trigger = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *Trigger) Validate() error {
+	if !_regex_Trigger_Name.MatchString(this.Name) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Name", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Name))
+	}
+	if !_regex_Trigger_Gtype.MatchString(this.Gtype) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	}
+	if !_regex_Trigger_Expression.MatchString(this.Expression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	if !_regex_Trigger_Trigger.MatchString(this.Trigger) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Trigger", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Trigger))
+	}
+	return nil
+}
+func (this *Triggers) Validate() error {
+	for _, item := range this.Triggers {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Triggers", err)
 			}
 		}
 	}
@@ -610,8 +640,88 @@ func (this *Schema) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Indexes", err)
 		}
 	}
+	if this.Triggers != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Triggers); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Triggers", err)
+		}
+	}
 	return nil
 }
 func (this *ExprFilter) Validate() error {
+	return nil
+}
+func (this *RaftCommand) Validate() error {
+	if this.User != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.User); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("User", err)
+		}
+	}
+	for _, item := range this.SetDocs {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("SetDocs", err)
+			}
+		}
+	}
+	for _, item := range this.SetConnections {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("SetConnections", err)
+			}
+		}
+	}
+	for _, item := range this.DelDocs {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("DelDocs", err)
+			}
+		}
+	}
+	for _, item := range this.DelConnections {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("DelConnections", err)
+			}
+		}
+	}
+	if this.SetIndexes != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SetIndexes); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SetIndexes", err)
+		}
+	}
+	if this.SetAuthorizers != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SetAuthorizers); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SetAuthorizers", err)
+		}
+	}
+	if this.SetTypeValidators != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SetTypeValidators); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SetTypeValidators", err)
+		}
+	}
+	if this.SendMessage != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SendMessage); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SendMessage", err)
+		}
+	}
+	if this.SetTriggers != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SetTriggers); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SetTriggers", err)
+		}
+	}
+	return nil
+}
+func (this *Peer) Validate() error {
+	return nil
+}
+func (this *RaftState) Validate() error {
+	for _, item := range this.Peers {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Peers", err)
+			}
+		}
+	}
+	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }

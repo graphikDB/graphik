@@ -13,6 +13,8 @@ const (
 	userType                ctxKey = "user"
 	methodCtxKey            ctxKey = "x-graphik-full-method"
 	bypassAuthorizersCtxKey ctxKey = "x-graphik-authorzer-override"
+	tokenCtxKey             ctxKey = "x-graphik-token"
+	raftSecretMDKey                = "x-graphik-raft-secret"
 )
 
 var (
@@ -22,6 +24,7 @@ var (
 	dbDocs             = []byte("docs")
 	dbIndexes          = []byte("indexes")
 	dbAuthorizers      = []byte("authorizers")
+	dbTriggers         = []byte("triggers")
 	dbTypeValidators   = []byte("typeValidators")
 	dbIndexDocs        = []byte("indexedDocs")
 	dbIndexConnections = []byte("indexedConnections")

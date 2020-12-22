@@ -10,15 +10,21 @@ import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
-// DatabaseService is the primary database service
-service DatabaseService {
+service RaftService {
   // Ping returns PONG if the server is health
   rpc Ping(google.protobuf.Empty) returns(Pong) {}
+  rpc JoinCluster(Peer) returns(google.protobuf.Empty){}
+  rpc ClusterState(google.protobuf.Empty) returns(RaftState) {}
+}
+
+// DatabaseService is the primary database service
+service DatabaseService {
   // GetSchema gets schema about the Graph doc & connection types
   rpc GetSchema(google.protobuf.Empty) returns(Schema){}
   rpc SetAuthorizers(Authorizers) returns(google.protobuf.Empty){}
   rpc SetIndexes(Indexes) returns(google.protobuf.Empty){}
   rpc SetTypeValidators(TypeValidators) returns(google.protobuf.Empty){}
+  rpc SetTriggers(Triggers) returns(google.protobuf.Empty){}
   // Me returns a Doc of the currently logged in user
   rpc Me(google.protobuf.Empty) returns(Doc){}
   // CreateDoc creates a doc in the graph
@@ -100,10 +106,12 @@ enum Aggregate {
   PROD =5;
 }
 
-enum AuthType {
-  REQUEST = 0;
-  VIEW_DOC = 1;
-  VIEW_CONNECTION = 2;
+enum Membership {
+  UNKNOWN = 0;
+  FOLLOWER = 1;
+  CANDIDATE =2;
+  LEADER =3;
+  SHUTDOWN =4;
 }
 
 // Ref describes a doc/connection type & id
@@ -311,19 +319,24 @@ message IndexConstructor {
 }
 
 message AuthTarget {
-  AuthType type =1;
-  // method is the rpc method
-  string method =2 [(validator.field) = {regex : "^.{1,225}$"}];
   // user is the user making the request
-  Doc user =3 [(validator.field) = {msg_exists : true}];
-  // request is the intercepted request
-  google.protobuf.Struct data = 4;
+  Doc user =1 [(validator.field) = {msg_exists : true}];
+  google.protobuf.Struct target = 2;
+  string peer = 3;
+  map<string, string> headers =4;
 }
 
 message Authorizer {
+  // name is the unique name of the authorizer
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
-  string expression =2[(validator.field) = {regex : "^.{1,225}$"}];
-  AuthType type =3;
+  // method is the rpc method that will invoke the authorizer
+  string method =2 [(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is the boolean CEL expression that evaluates either the request or response body
+  string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
+  // target_responses sets the authorizer to evaluate request bodies
+  bool target_requests =4;
+  // target_responses sets the authorizer to evaluate response bodies
+  bool target_responses =5;
 }
 
 message Authorizers {
@@ -334,10 +347,10 @@ message TypeValidator {
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   string gtype =2[(validator.field) = {regex : "^.{1,225}$"}];
   string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
-  // if docs is true, this validator will be applied to documents. Either docs or connections may be true, but not both.
-  bool docs =4;
-  // if docs is true, this validator will be applied to connections. Either docs or connections may be true, but not both.
-  bool connections =5;
+  // if target_docs is true, this validator will be applied to documents.
+  bool target_docs =4;
+  // if target_connections is true, this validator will be applied to connections.
+  bool target_connections =5;
 }
 
 message TypeValidators {
@@ -358,6 +371,25 @@ message Index {
 
 message Indexes {
   repeated Index indexes =1;
+}
+
+message Trigger {
+  // name is the unique name of the authorizer
+  string name =1[(validator.field) = {regex : "^.{1,225}$"}];
+  // gtype is the type of doc/connection will invoke the trigger
+  string gtype =2[(validator.field) = {regex : "^.{1,225}$"}];
+  // expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+  string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
+  // trigger is the map CEL expression that mutates the doc/connection before it is stored
+  string trigger = 4[(validator.field) = {regex : "^.{1,225}$"}];
+  // if target_docs is true, this trigger will be applied to documents.
+  bool target_docs =5;
+  // if target_connections is true, this trigger will be applied to connections.
+  bool target_connections =6;
+}
+
+message Triggers {
+  repeated Trigger triggers =1;
 }
 
 // StreamFilter is used to filter messages in a pubsub channel
@@ -396,7 +428,13 @@ message Flags {
   string playground_client_id =11;
   string playground_client_secret =12;
   string playground_redirect =13;
-  string playground_session_store = 14;
+  bool require_request_authorizers =15;
+  bool require_response_authorizers =16;
+  string join_raft = 17;
+  string raft_peer_id =18;
+  int64 listen_port =19;
+  string raft_secret =20;
+  bool  debug = 21;
 }
 
 // Boolean is a simple boolean value
@@ -461,7 +499,7 @@ message Message {
   Ref user =3 [(validator.field) = {msg_exists : true}];
   // timestamp is when the message was sent
   google.protobuf.Timestamp timestamp=4 [(validator.field) = {msg_exists : true}];
-  string method = 5[(validator.field) = {regex : "^.{1,225}$"}];
+  string method = 5 [(validator.field) = {regex : "^.{1,225}$"}];
 }
 
 // Schema returns registered connection & doc types
@@ -473,6 +511,7 @@ message Schema {
   Authorizers authorizers =3;
   TypeValidators validators =4;
   Indexes indexes =5;
+  Triggers triggers =6;
 }
 
 message ExprFilter {
@@ -480,4 +519,28 @@ message ExprFilter {
   string expression =1;
 }
 
+message RaftCommand {
+  Doc user =1;
+  string method =2;
+  repeated Doc set_docs =3;
+  repeated Connection set_connections=4;
+  repeated Ref del_docs =5;
+  repeated Ref del_connections =6;
+  Indexes set_indexes =7;
+  Authorizers set_authorizers =8;
+  TypeValidators set_type_validators =9;
+  Message send_message=10;
+  Triggers set_triggers =11;
+}
 
+message Peer {
+  string node_id =1;
+  string addr =2;
+}
+
+message RaftState {
+  string leader =1;
+  Membership membership =2;
+  repeated Peer peers =3;
+  map<string,string> stats =4;
+}
