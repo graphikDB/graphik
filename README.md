@@ -352,15 +352,15 @@ mutation {
 		triggers: [
 			{
 				name: "updatedAt"
-				gtype: "note"
+				gtype: "*"
 				expression: "true"
 				trigger: "{'updated_at': now}"
 				target_docs: true
-				target_connections: false
+				target_connections: true
 		},
 			{
 				name: "createdAt"
-				gtype: "note"
+				gtype: "*"
 				expression: "!has(this.attributes.created_at)"
 				trigger: "{'created_at': now}"
 				target_docs: true
