@@ -464,6 +464,37 @@ func (this *Indexes) Validate() error {
 	return nil
 }
 
+var _regex_Trigger_Name = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Trigger_Gtype = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Trigger_Expression = regexp.MustCompile(`^.{1,225}$`)
+var _regex_Trigger_Trigger = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *Trigger) Validate() error {
+	if !_regex_Trigger_Name.MatchString(this.Name) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Name", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Name))
+	}
+	if !_regex_Trigger_Gtype.MatchString(this.Gtype) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
+	}
+	if !_regex_Trigger_Expression.MatchString(this.Expression) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
+	}
+	if !_regex_Trigger_Trigger.MatchString(this.Trigger) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Trigger", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Trigger))
+	}
+	return nil
+}
+func (this *Triggers) Validate() error {
+	for _, item := range this.Triggers {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Triggers", err)
+			}
+		}
+	}
+	return nil
+}
+
 var _regex_StreamFilter_Channel = regexp.MustCompile(`^.{1,225}$`)
 
 func (this *StreamFilter) Validate() error {
@@ -609,6 +640,11 @@ func (this *Schema) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Indexes", err)
 		}
 	}
+	if this.Triggers != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Triggers); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Triggers", err)
+		}
+	}
 	return nil
 }
 func (this *ExprFilter) Validate() error {
@@ -666,6 +702,11 @@ func (this *RaftCommand) Validate() error {
 	if this.SendMessage != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SendMessage); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("SendMessage", err)
+		}
+	}
+	if this.SetTriggers != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.SetTriggers); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("SetTriggers", err)
 		}
 	}
 	return nil

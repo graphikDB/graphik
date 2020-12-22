@@ -29979,6 +29979,2061 @@ public final class Graphik {
 
   }
 
+  public interface TriggerOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.Trigger)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <pre>
+     * name is the unique name of the authorizer
+     * </pre>
+     *
+     * <code>string name = 1 [(.validator.field) = { ... }</code>
+     */
+    java.lang.String getName();
+    /**
+     * <pre>
+     * name is the unique name of the authorizer
+     * </pre>
+     *
+     * <code>string name = 1 [(.validator.field) = { ... }</code>
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    /**
+     * <pre>
+     * gtype is the type of doc/connection will invoke the trigger
+     * </pre>
+     *
+     * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+     */
+    java.lang.String getGtype();
+    /**
+     * <pre>
+     * gtype is the type of doc/connection will invoke the trigger
+     * </pre>
+     *
+     * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+     */
+    com.google.protobuf.ByteString
+        getGtypeBytes();
+
+    /**
+     * <pre>
+     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+     * </pre>
+     *
+     * <code>string expression = 3 [(.validator.field) = { ... }</code>
+     */
+    java.lang.String getExpression();
+    /**
+     * <pre>
+     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+     * </pre>
+     *
+     * <code>string expression = 3 [(.validator.field) = { ... }</code>
+     */
+    com.google.protobuf.ByteString
+        getExpressionBytes();
+
+    /**
+     * <pre>
+     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * </pre>
+     *
+     * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+     */
+    java.lang.String getTrigger();
+    /**
+     * <pre>
+     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * </pre>
+     *
+     * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+     */
+    com.google.protobuf.ByteString
+        getTriggerBytes();
+
+    /**
+     * <pre>
+     * if target_docs is true, this trigger will be applied to documents.
+     * </pre>
+     *
+     * <code>bool target_docs = 5;</code>
+     */
+    boolean getTargetDocs();
+
+    /**
+     * <pre>
+     * if target_connections is true, this trigger will be applied to connections.
+     * </pre>
+     *
+     * <code>bool target_connections = 6;</code>
+     */
+    boolean getTargetConnections();
+  }
+  /**
+   * Protobuf type {@code api.Trigger}
+   */
+  public  static final class Trigger extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:api.Trigger)
+      TriggerOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Trigger.newBuilder() to construct.
+    private Trigger(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Trigger() {
+      name_ = "";
+      gtype_ = "";
+      expression_ = "";
+      trigger_ = "";
+      targetDocs_ = false;
+      targetConnections_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Trigger(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              name_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              gtype_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              expression_ = s;
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              trigger_ = s;
+              break;
+            }
+            case 40: {
+
+              targetDocs_ = input.readBool();
+              break;
+            }
+            case 48: {
+
+              targetConnections_ = input.readBool();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return api.Graphik.internal_static_api_Trigger_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return api.Graphik.internal_static_api_Trigger_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              api.Graphik.Trigger.class, api.Graphik.Trigger.Builder.class);
+    }
+
+    public static final int NAME_FIELD_NUMBER = 1;
+    private volatile java.lang.Object name_;
+    /**
+     * <pre>
+     * name is the unique name of the authorizer
+     * </pre>
+     *
+     * <code>string name = 1 [(.validator.field) = { ... }</code>
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * name is the unique name of the authorizer
+     * </pre>
+     *
+     * <code>string name = 1 [(.validator.field) = { ... }</code>
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int GTYPE_FIELD_NUMBER = 2;
+    private volatile java.lang.Object gtype_;
+    /**
+     * <pre>
+     * gtype is the type of doc/connection will invoke the trigger
+     * </pre>
+     *
+     * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+     */
+    public java.lang.String getGtype() {
+      java.lang.Object ref = gtype_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        gtype_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * gtype is the type of doc/connection will invoke the trigger
+     * </pre>
+     *
+     * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+     */
+    public com.google.protobuf.ByteString
+        getGtypeBytes() {
+      java.lang.Object ref = gtype_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        gtype_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int EXPRESSION_FIELD_NUMBER = 3;
+    private volatile java.lang.Object expression_;
+    /**
+     * <pre>
+     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+     * </pre>
+     *
+     * <code>string expression = 3 [(.validator.field) = { ... }</code>
+     */
+    public java.lang.String getExpression() {
+      java.lang.Object ref = expression_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        expression_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+     * </pre>
+     *
+     * <code>string expression = 3 [(.validator.field) = { ... }</code>
+     */
+    public com.google.protobuf.ByteString
+        getExpressionBytes() {
+      java.lang.Object ref = expression_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        expression_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TRIGGER_FIELD_NUMBER = 4;
+    private volatile java.lang.Object trigger_;
+    /**
+     * <pre>
+     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * </pre>
+     *
+     * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+     */
+    public java.lang.String getTrigger() {
+      java.lang.Object ref = trigger_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        trigger_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * </pre>
+     *
+     * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+     */
+    public com.google.protobuf.ByteString
+        getTriggerBytes() {
+      java.lang.Object ref = trigger_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        trigger_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TARGET_DOCS_FIELD_NUMBER = 5;
+    private boolean targetDocs_;
+    /**
+     * <pre>
+     * if target_docs is true, this trigger will be applied to documents.
+     * </pre>
+     *
+     * <code>bool target_docs = 5;</code>
+     */
+    public boolean getTargetDocs() {
+      return targetDocs_;
+    }
+
+    public static final int TARGET_CONNECTIONS_FIELD_NUMBER = 6;
+    private boolean targetConnections_;
+    /**
+     * <pre>
+     * if target_connections is true, this trigger will be applied to connections.
+     * </pre>
+     *
+     * <code>bool target_connections = 6;</code>
+     */
+    public boolean getTargetConnections() {
+      return targetConnections_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getNameBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+      }
+      if (!getGtypeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, gtype_);
+      }
+      if (!getExpressionBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, expression_);
+      }
+      if (!getTriggerBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, trigger_);
+      }
+      if (targetDocs_ != false) {
+        output.writeBool(5, targetDocs_);
+      }
+      if (targetConnections_ != false) {
+        output.writeBool(6, targetConnections_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getNameBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+      }
+      if (!getGtypeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, gtype_);
+      }
+      if (!getExpressionBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, expression_);
+      }
+      if (!getTriggerBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, trigger_);
+      }
+      if (targetDocs_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, targetDocs_);
+      }
+      if (targetConnections_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(6, targetConnections_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof api.Graphik.Trigger)) {
+        return super.equals(obj);
+      }
+      api.Graphik.Trigger other = (api.Graphik.Trigger) obj;
+
+      boolean result = true;
+      result = result && getName()
+          .equals(other.getName());
+      result = result && getGtype()
+          .equals(other.getGtype());
+      result = result && getExpression()
+          .equals(other.getExpression());
+      result = result && getTrigger()
+          .equals(other.getTrigger());
+      result = result && (getTargetDocs()
+          == other.getTargetDocs());
+      result = result && (getTargetConnections()
+          == other.getTargetConnections());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + NAME_FIELD_NUMBER;
+      hash = (53 * hash) + getName().hashCode();
+      hash = (37 * hash) + GTYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getGtype().hashCode();
+      hash = (37 * hash) + EXPRESSION_FIELD_NUMBER;
+      hash = (53 * hash) + getExpression().hashCode();
+      hash = (37 * hash) + TRIGGER_FIELD_NUMBER;
+      hash = (53 * hash) + getTrigger().hashCode();
+      hash = (37 * hash) + TARGET_DOCS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getTargetDocs());
+      hash = (37 * hash) + TARGET_CONNECTIONS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getTargetConnections());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static api.Graphik.Trigger parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Trigger parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Trigger parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Trigger parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Trigger parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Trigger parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Trigger parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Trigger parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.Trigger parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Trigger parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.Trigger parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Trigger parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(api.Graphik.Trigger prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code api.Trigger}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:api.Trigger)
+        api.Graphik.TriggerOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return api.Graphik.internal_static_api_Trigger_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return api.Graphik.internal_static_api_Trigger_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                api.Graphik.Trigger.class, api.Graphik.Trigger.Builder.class);
+      }
+
+      // Construct using api.Graphik.Trigger.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        name_ = "";
+
+        gtype_ = "";
+
+        expression_ = "";
+
+        trigger_ = "";
+
+        targetDocs_ = false;
+
+        targetConnections_ = false;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return api.Graphik.internal_static_api_Trigger_descriptor;
+      }
+
+      @java.lang.Override
+      public api.Graphik.Trigger getDefaultInstanceForType() {
+        return api.Graphik.Trigger.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public api.Graphik.Trigger build() {
+        api.Graphik.Trigger result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public api.Graphik.Trigger buildPartial() {
+        api.Graphik.Trigger result = new api.Graphik.Trigger(this);
+        result.name_ = name_;
+        result.gtype_ = gtype_;
+        result.expression_ = expression_;
+        result.trigger_ = trigger_;
+        result.targetDocs_ = targetDocs_;
+        result.targetConnections_ = targetConnections_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof api.Graphik.Trigger) {
+          return mergeFrom((api.Graphik.Trigger)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(api.Graphik.Trigger other) {
+        if (other == api.Graphik.Trigger.getDefaultInstance()) return this;
+        if (!other.getName().isEmpty()) {
+          name_ = other.name_;
+          onChanged();
+        }
+        if (!other.getGtype().isEmpty()) {
+          gtype_ = other.gtype_;
+          onChanged();
+        }
+        if (!other.getExpression().isEmpty()) {
+          expression_ = other.expression_;
+          onChanged();
+        }
+        if (!other.getTrigger().isEmpty()) {
+          trigger_ = other.trigger_;
+          onChanged();
+        }
+        if (other.getTargetDocs() != false) {
+          setTargetDocs(other.getTargetDocs());
+        }
+        if (other.getTargetConnections() != false) {
+          setTargetConnections(other.getTargetConnections());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        api.Graphik.Trigger parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (api.Graphik.Trigger) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object name_ = "";
+      /**
+       * <pre>
+       * name is the unique name of the authorizer
+       * </pre>
+       *
+       * <code>string name = 1 [(.validator.field) = { ... }</code>
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * name is the unique name of the authorizer
+       * </pre>
+       *
+       * <code>string name = 1 [(.validator.field) = { ... }</code>
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * name is the unique name of the authorizer
+       * </pre>
+       *
+       * <code>string name = 1 [(.validator.field) = { ... }</code>
+       */
+      public Builder setName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        name_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * name is the unique name of the authorizer
+       * </pre>
+       *
+       * <code>string name = 1 [(.validator.field) = { ... }</code>
+       */
+      public Builder clearName() {
+        
+        name_ = getDefaultInstance().getName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * name is the unique name of the authorizer
+       * </pre>
+       *
+       * <code>string name = 1 [(.validator.field) = { ... }</code>
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        name_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object gtype_ = "";
+      /**
+       * <pre>
+       * gtype is the type of doc/connection will invoke the trigger
+       * </pre>
+       *
+       * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+       */
+      public java.lang.String getGtype() {
+        java.lang.Object ref = gtype_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          gtype_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * gtype is the type of doc/connection will invoke the trigger
+       * </pre>
+       *
+       * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+       */
+      public com.google.protobuf.ByteString
+          getGtypeBytes() {
+        java.lang.Object ref = gtype_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          gtype_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * gtype is the type of doc/connection will invoke the trigger
+       * </pre>
+       *
+       * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+       */
+      public Builder setGtype(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        gtype_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * gtype is the type of doc/connection will invoke the trigger
+       * </pre>
+       *
+       * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+       */
+      public Builder clearGtype() {
+        
+        gtype_ = getDefaultInstance().getGtype();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * gtype is the type of doc/connection will invoke the trigger
+       * </pre>
+       *
+       * <code>string gtype = 2 [(.validator.field) = { ... }</code>
+       */
+      public Builder setGtypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        gtype_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object expression_ = "";
+      /**
+       * <pre>
+       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+       * </pre>
+       *
+       * <code>string expression = 3 [(.validator.field) = { ... }</code>
+       */
+      public java.lang.String getExpression() {
+        java.lang.Object ref = expression_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          expression_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+       * </pre>
+       *
+       * <code>string expression = 3 [(.validator.field) = { ... }</code>
+       */
+      public com.google.protobuf.ByteString
+          getExpressionBytes() {
+        java.lang.Object ref = expression_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          expression_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+       * </pre>
+       *
+       * <code>string expression = 3 [(.validator.field) = { ... }</code>
+       */
+      public Builder setExpression(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        expression_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+       * </pre>
+       *
+       * <code>string expression = 3 [(.validator.field) = { ... }</code>
+       */
+      public Builder clearExpression() {
+        
+        expression_ = getDefaultInstance().getExpression();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
+       * </pre>
+       *
+       * <code>string expression = 3 [(.validator.field) = { ... }</code>
+       */
+      public Builder setExpressionBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        expression_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object trigger_ = "";
+      /**
+       * <pre>
+       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * </pre>
+       *
+       * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+       */
+      public java.lang.String getTrigger() {
+        java.lang.Object ref = trigger_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          trigger_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * </pre>
+       *
+       * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+       */
+      public com.google.protobuf.ByteString
+          getTriggerBytes() {
+        java.lang.Object ref = trigger_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          trigger_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * </pre>
+       *
+       * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+       */
+      public Builder setTrigger(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        trigger_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * </pre>
+       *
+       * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+       */
+      public Builder clearTrigger() {
+        
+        trigger_ = getDefaultInstance().getTrigger();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * </pre>
+       *
+       * <code>string trigger = 4 [(.validator.field) = { ... }</code>
+       */
+      public Builder setTriggerBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        trigger_ = value;
+        onChanged();
+        return this;
+      }
+
+      private boolean targetDocs_ ;
+      /**
+       * <pre>
+       * if target_docs is true, this trigger will be applied to documents.
+       * </pre>
+       *
+       * <code>bool target_docs = 5;</code>
+       */
+      public boolean getTargetDocs() {
+        return targetDocs_;
+      }
+      /**
+       * <pre>
+       * if target_docs is true, this trigger will be applied to documents.
+       * </pre>
+       *
+       * <code>bool target_docs = 5;</code>
+       */
+      public Builder setTargetDocs(boolean value) {
+        
+        targetDocs_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * if target_docs is true, this trigger will be applied to documents.
+       * </pre>
+       *
+       * <code>bool target_docs = 5;</code>
+       */
+      public Builder clearTargetDocs() {
+        
+        targetDocs_ = false;
+        onChanged();
+        return this;
+      }
+
+      private boolean targetConnections_ ;
+      /**
+       * <pre>
+       * if target_connections is true, this trigger will be applied to connections.
+       * </pre>
+       *
+       * <code>bool target_connections = 6;</code>
+       */
+      public boolean getTargetConnections() {
+        return targetConnections_;
+      }
+      /**
+       * <pre>
+       * if target_connections is true, this trigger will be applied to connections.
+       * </pre>
+       *
+       * <code>bool target_connections = 6;</code>
+       */
+      public Builder setTargetConnections(boolean value) {
+        
+        targetConnections_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * if target_connections is true, this trigger will be applied to connections.
+       * </pre>
+       *
+       * <code>bool target_connections = 6;</code>
+       */
+      public Builder clearTargetConnections() {
+        
+        targetConnections_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:api.Trigger)
+    }
+
+    // @@protoc_insertion_point(class_scope:api.Trigger)
+    private static final api.Graphik.Trigger DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new api.Graphik.Trigger();
+    }
+
+    public static api.Graphik.Trigger getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Trigger>
+        PARSER = new com.google.protobuf.AbstractParser<Trigger>() {
+      @java.lang.Override
+      public Trigger parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Trigger(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Trigger> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Trigger> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public api.Graphik.Trigger getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface TriggersOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.Triggers)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    java.util.List<api.Graphik.Trigger> 
+        getTriggersList();
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    api.Graphik.Trigger getTriggers(int index);
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    int getTriggersCount();
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    java.util.List<? extends api.Graphik.TriggerOrBuilder> 
+        getTriggersOrBuilderList();
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    api.Graphik.TriggerOrBuilder getTriggersOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code api.Triggers}
+   */
+  public  static final class Triggers extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:api.Triggers)
+      TriggersOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Triggers.newBuilder() to construct.
+    private Triggers(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Triggers() {
+      triggers_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Triggers(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                triggers_ = new java.util.ArrayList<api.Graphik.Trigger>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              triggers_.add(
+                  input.readMessage(api.Graphik.Trigger.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          triggers_ = java.util.Collections.unmodifiableList(triggers_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return api.Graphik.internal_static_api_Triggers_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return api.Graphik.internal_static_api_Triggers_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              api.Graphik.Triggers.class, api.Graphik.Triggers.Builder.class);
+    }
+
+    public static final int TRIGGERS_FIELD_NUMBER = 1;
+    private java.util.List<api.Graphik.Trigger> triggers_;
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    public java.util.List<api.Graphik.Trigger> getTriggersList() {
+      return triggers_;
+    }
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    public java.util.List<? extends api.Graphik.TriggerOrBuilder> 
+        getTriggersOrBuilderList() {
+      return triggers_;
+    }
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    public int getTriggersCount() {
+      return triggers_.size();
+    }
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    public api.Graphik.Trigger getTriggers(int index) {
+      return triggers_.get(index);
+    }
+    /**
+     * <code>repeated .api.Trigger triggers = 1;</code>
+     */
+    public api.Graphik.TriggerOrBuilder getTriggersOrBuilder(
+        int index) {
+      return triggers_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < triggers_.size(); i++) {
+        output.writeMessage(1, triggers_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < triggers_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, triggers_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof api.Graphik.Triggers)) {
+        return super.equals(obj);
+      }
+      api.Graphik.Triggers other = (api.Graphik.Triggers) obj;
+
+      boolean result = true;
+      result = result && getTriggersList()
+          .equals(other.getTriggersList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getTriggersCount() > 0) {
+        hash = (37 * hash) + TRIGGERS_FIELD_NUMBER;
+        hash = (53 * hash) + getTriggersList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static api.Graphik.Triggers parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Triggers parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Triggers parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Triggers parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Triggers parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.Triggers parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.Triggers parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Triggers parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.Triggers parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Triggers parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.Triggers parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.Triggers parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(api.Graphik.Triggers prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code api.Triggers}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:api.Triggers)
+        api.Graphik.TriggersOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return api.Graphik.internal_static_api_Triggers_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return api.Graphik.internal_static_api_Triggers_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                api.Graphik.Triggers.class, api.Graphik.Triggers.Builder.class);
+      }
+
+      // Construct using api.Graphik.Triggers.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getTriggersFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (triggersBuilder_ == null) {
+          triggers_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          triggersBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return api.Graphik.internal_static_api_Triggers_descriptor;
+      }
+
+      @java.lang.Override
+      public api.Graphik.Triggers getDefaultInstanceForType() {
+        return api.Graphik.Triggers.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public api.Graphik.Triggers build() {
+        api.Graphik.Triggers result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public api.Graphik.Triggers buildPartial() {
+        api.Graphik.Triggers result = new api.Graphik.Triggers(this);
+        int from_bitField0_ = bitField0_;
+        if (triggersBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            triggers_ = java.util.Collections.unmodifiableList(triggers_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.triggers_ = triggers_;
+        } else {
+          result.triggers_ = triggersBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof api.Graphik.Triggers) {
+          return mergeFrom((api.Graphik.Triggers)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(api.Graphik.Triggers other) {
+        if (other == api.Graphik.Triggers.getDefaultInstance()) return this;
+        if (triggersBuilder_ == null) {
+          if (!other.triggers_.isEmpty()) {
+            if (triggers_.isEmpty()) {
+              triggers_ = other.triggers_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureTriggersIsMutable();
+              triggers_.addAll(other.triggers_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.triggers_.isEmpty()) {
+            if (triggersBuilder_.isEmpty()) {
+              triggersBuilder_.dispose();
+              triggersBuilder_ = null;
+              triggers_ = other.triggers_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              triggersBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getTriggersFieldBuilder() : null;
+            } else {
+              triggersBuilder_.addAllMessages(other.triggers_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        api.Graphik.Triggers parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (api.Graphik.Triggers) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<api.Graphik.Trigger> triggers_ =
+        java.util.Collections.emptyList();
+      private void ensureTriggersIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          triggers_ = new java.util.ArrayList<api.Graphik.Trigger>(triggers_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Trigger, api.Graphik.Trigger.Builder, api.Graphik.TriggerOrBuilder> triggersBuilder_;
+
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public java.util.List<api.Graphik.Trigger> getTriggersList() {
+        if (triggersBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(triggers_);
+        } else {
+          return triggersBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public int getTriggersCount() {
+        if (triggersBuilder_ == null) {
+          return triggers_.size();
+        } else {
+          return triggersBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public api.Graphik.Trigger getTriggers(int index) {
+        if (triggersBuilder_ == null) {
+          return triggers_.get(index);
+        } else {
+          return triggersBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder setTriggers(
+          int index, api.Graphik.Trigger value) {
+        if (triggersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTriggersIsMutable();
+          triggers_.set(index, value);
+          onChanged();
+        } else {
+          triggersBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder setTriggers(
+          int index, api.Graphik.Trigger.Builder builderForValue) {
+        if (triggersBuilder_ == null) {
+          ensureTriggersIsMutable();
+          triggers_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          triggersBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder addTriggers(api.Graphik.Trigger value) {
+        if (triggersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTriggersIsMutable();
+          triggers_.add(value);
+          onChanged();
+        } else {
+          triggersBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder addTriggers(
+          int index, api.Graphik.Trigger value) {
+        if (triggersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTriggersIsMutable();
+          triggers_.add(index, value);
+          onChanged();
+        } else {
+          triggersBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder addTriggers(
+          api.Graphik.Trigger.Builder builderForValue) {
+        if (triggersBuilder_ == null) {
+          ensureTriggersIsMutable();
+          triggers_.add(builderForValue.build());
+          onChanged();
+        } else {
+          triggersBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder addTriggers(
+          int index, api.Graphik.Trigger.Builder builderForValue) {
+        if (triggersBuilder_ == null) {
+          ensureTriggersIsMutable();
+          triggers_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          triggersBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder addAllTriggers(
+          java.lang.Iterable<? extends api.Graphik.Trigger> values) {
+        if (triggersBuilder_ == null) {
+          ensureTriggersIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, triggers_);
+          onChanged();
+        } else {
+          triggersBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder clearTriggers() {
+        if (triggersBuilder_ == null) {
+          triggers_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          triggersBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public Builder removeTriggers(int index) {
+        if (triggersBuilder_ == null) {
+          ensureTriggersIsMutable();
+          triggers_.remove(index);
+          onChanged();
+        } else {
+          triggersBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public api.Graphik.Trigger.Builder getTriggersBuilder(
+          int index) {
+        return getTriggersFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public api.Graphik.TriggerOrBuilder getTriggersOrBuilder(
+          int index) {
+        if (triggersBuilder_ == null) {
+          return triggers_.get(index);  } else {
+          return triggersBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public java.util.List<? extends api.Graphik.TriggerOrBuilder> 
+           getTriggersOrBuilderList() {
+        if (triggersBuilder_ != null) {
+          return triggersBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(triggers_);
+        }
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public api.Graphik.Trigger.Builder addTriggersBuilder() {
+        return getTriggersFieldBuilder().addBuilder(
+            api.Graphik.Trigger.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public api.Graphik.Trigger.Builder addTriggersBuilder(
+          int index) {
+        return getTriggersFieldBuilder().addBuilder(
+            index, api.Graphik.Trigger.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .api.Trigger triggers = 1;</code>
+       */
+      public java.util.List<api.Graphik.Trigger.Builder> 
+           getTriggersBuilderList() {
+        return getTriggersFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          api.Graphik.Trigger, api.Graphik.Trigger.Builder, api.Graphik.TriggerOrBuilder> 
+          getTriggersFieldBuilder() {
+        if (triggersBuilder_ == null) {
+          triggersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              api.Graphik.Trigger, api.Graphik.Trigger.Builder, api.Graphik.TriggerOrBuilder>(
+                  triggers_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          triggers_ = null;
+        }
+        return triggersBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:api.Triggers)
+    }
+
+    // @@protoc_insertion_point(class_scope:api.Triggers)
+    private static final api.Graphik.Triggers DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new api.Graphik.Triggers();
+    }
+
+    public static api.Graphik.Triggers getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Triggers>
+        PARSER = new com.google.protobuf.AbstractParser<Triggers>() {
+      @java.lang.Override
+      public Triggers parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Triggers(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Triggers> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Triggers> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public api.Graphik.Triggers getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface StreamFilterOrBuilder extends
       // @@protoc_insertion_point(interface_extends:api.StreamFilter)
       com.google.protobuf.MessageOrBuilder {
@@ -41905,6 +43960,19 @@ public final class Graphik {
      * <code>.api.Indexes indexes = 5;</code>
      */
     api.Graphik.IndexesOrBuilder getIndexesOrBuilder();
+
+    /**
+     * <code>.api.Triggers triggers = 6;</code>
+     */
+    boolean hasTriggers();
+    /**
+     * <code>.api.Triggers triggers = 6;</code>
+     */
+    api.Graphik.Triggers getTriggers();
+    /**
+     * <code>.api.Triggers triggers = 6;</code>
+     */
+    api.Graphik.TriggersOrBuilder getTriggersOrBuilder();
   }
   /**
    * <pre>
@@ -42004,6 +44072,19 @@ public final class Graphik {
               if (subBuilder != null) {
                 subBuilder.mergeFrom(indexes_);
                 indexes_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 50: {
+              api.Graphik.Triggers.Builder subBuilder = null;
+              if (triggers_ != null) {
+                subBuilder = triggers_.toBuilder();
+              }
+              triggers_ = input.readMessage(api.Graphik.Triggers.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(triggers_);
+                triggers_ = subBuilder.buildPartial();
               }
 
               break;
@@ -42200,6 +44281,27 @@ public final class Graphik {
       return getIndexes();
     }
 
+    public static final int TRIGGERS_FIELD_NUMBER = 6;
+    private api.Graphik.Triggers triggers_;
+    /**
+     * <code>.api.Triggers triggers = 6;</code>
+     */
+    public boolean hasTriggers() {
+      return triggers_ != null;
+    }
+    /**
+     * <code>.api.Triggers triggers = 6;</code>
+     */
+    public api.Graphik.Triggers getTriggers() {
+      return triggers_ == null ? api.Graphik.Triggers.getDefaultInstance() : triggers_;
+    }
+    /**
+     * <code>.api.Triggers triggers = 6;</code>
+     */
+    public api.Graphik.TriggersOrBuilder getTriggersOrBuilder() {
+      return getTriggers();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -42228,6 +44330,9 @@ public final class Graphik {
       }
       if (indexes_ != null) {
         output.writeMessage(5, getIndexes());
+      }
+      if (triggers_ != null) {
+        output.writeMessage(6, getTriggers());
       }
       unknownFields.writeTo(output);
     }
@@ -42266,6 +44371,10 @@ public final class Graphik {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, getIndexes());
       }
+      if (triggers_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, getTriggers());
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -42301,6 +44410,11 @@ public final class Graphik {
         result = result && getIndexes()
             .equals(other.getIndexes());
       }
+      result = result && (hasTriggers() == other.hasTriggers());
+      if (hasTriggers()) {
+        result = result && getTriggers()
+            .equals(other.getTriggers());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -42331,6 +44445,10 @@ public final class Graphik {
       if (hasIndexes()) {
         hash = (37 * hash) + INDEXES_FIELD_NUMBER;
         hash = (53 * hash) + getIndexes().hashCode();
+      }
+      if (hasTriggers()) {
+        hash = (37 * hash) + TRIGGERS_FIELD_NUMBER;
+        hash = (53 * hash) + getTriggers().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -42491,6 +44609,12 @@ public final class Graphik {
           indexes_ = null;
           indexesBuilder_ = null;
         }
+        if (triggersBuilder_ == null) {
+          triggers_ = null;
+        } else {
+          triggers_ = null;
+          triggersBuilder_ = null;
+        }
         return this;
       }
 
@@ -42543,6 +44667,11 @@ public final class Graphik {
           result.indexes_ = indexes_;
         } else {
           result.indexes_ = indexesBuilder_.build();
+        }
+        if (triggersBuilder_ == null) {
+          result.triggers_ = triggers_;
+        } else {
+          result.triggers_ = triggersBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -42621,6 +44750,9 @@ public final class Graphik {
         }
         if (other.hasIndexes()) {
           mergeIndexes(other.getIndexes());
+        }
+        if (other.hasTriggers()) {
+          mergeTriggers(other.getTriggers());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -43261,6 +45393,123 @@ public final class Graphik {
           indexes_ = null;
         }
         return indexesBuilder_;
+      }
+
+      private api.Graphik.Triggers triggers_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Triggers, api.Graphik.Triggers.Builder, api.Graphik.TriggersOrBuilder> triggersBuilder_;
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      public boolean hasTriggers() {
+        return triggersBuilder_ != null || triggers_ != null;
+      }
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      public api.Graphik.Triggers getTriggers() {
+        if (triggersBuilder_ == null) {
+          return triggers_ == null ? api.Graphik.Triggers.getDefaultInstance() : triggers_;
+        } else {
+          return triggersBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      public Builder setTriggers(api.Graphik.Triggers value) {
+        if (triggersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          triggers_ = value;
+          onChanged();
+        } else {
+          triggersBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      public Builder setTriggers(
+          api.Graphik.Triggers.Builder builderForValue) {
+        if (triggersBuilder_ == null) {
+          triggers_ = builderForValue.build();
+          onChanged();
+        } else {
+          triggersBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      public Builder mergeTriggers(api.Graphik.Triggers value) {
+        if (triggersBuilder_ == null) {
+          if (triggers_ != null) {
+            triggers_ =
+              api.Graphik.Triggers.newBuilder(triggers_).mergeFrom(value).buildPartial();
+          } else {
+            triggers_ = value;
+          }
+          onChanged();
+        } else {
+          triggersBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      public Builder clearTriggers() {
+        if (triggersBuilder_ == null) {
+          triggers_ = null;
+          onChanged();
+        } else {
+          triggers_ = null;
+          triggersBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      public api.Graphik.Triggers.Builder getTriggersBuilder() {
+        
+        onChanged();
+        return getTriggersFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      public api.Graphik.TriggersOrBuilder getTriggersOrBuilder() {
+        if (triggersBuilder_ != null) {
+          return triggersBuilder_.getMessageOrBuilder();
+        } else {
+          return triggers_ == null ?
+              api.Graphik.Triggers.getDefaultInstance() : triggers_;
+        }
+      }
+      /**
+       * <code>.api.Triggers triggers = 6;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Triggers, api.Graphik.Triggers.Builder, api.Graphik.TriggersOrBuilder> 
+          getTriggersFieldBuilder() {
+        if (triggersBuilder_ == null) {
+          triggersBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Triggers, api.Graphik.Triggers.Builder, api.Graphik.TriggersOrBuilder>(
+                  getTriggers(),
+                  getParentForChildren(),
+                  isClean());
+          triggers_ = null;
+        }
+        return triggersBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -44075,6 +46324,19 @@ public final class Graphik {
      * <code>.api.Message send_message = 10;</code>
      */
     api.Graphik.MessageOrBuilder getSendMessageOrBuilder();
+
+    /**
+     * <code>.api.Triggers set_triggers = 11;</code>
+     */
+    boolean hasSetTriggers();
+    /**
+     * <code>.api.Triggers set_triggers = 11;</code>
+     */
+    api.Graphik.Triggers getSetTriggers();
+    /**
+     * <code>.api.Triggers set_triggers = 11;</code>
+     */
+    api.Graphik.TriggersOrBuilder getSetTriggersOrBuilder();
   }
   /**
    * Protobuf type {@code api.RaftCommand}
@@ -44223,6 +46485,19 @@ public final class Graphik {
               if (subBuilder != null) {
                 subBuilder.mergeFrom(sendMessage_);
                 sendMessage_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 90: {
+              api.Graphik.Triggers.Builder subBuilder = null;
+              if (setTriggers_ != null) {
+                subBuilder = setTriggers_.toBuilder();
+              }
+              setTriggers_ = input.readMessage(api.Graphik.Triggers.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(setTriggers_);
+                setTriggers_ = subBuilder.buildPartial();
               }
 
               break;
@@ -44551,6 +46826,27 @@ public final class Graphik {
       return getSendMessage();
     }
 
+    public static final int SET_TRIGGERS_FIELD_NUMBER = 11;
+    private api.Graphik.Triggers setTriggers_;
+    /**
+     * <code>.api.Triggers set_triggers = 11;</code>
+     */
+    public boolean hasSetTriggers() {
+      return setTriggers_ != null;
+    }
+    /**
+     * <code>.api.Triggers set_triggers = 11;</code>
+     */
+    public api.Graphik.Triggers getSetTriggers() {
+      return setTriggers_ == null ? api.Graphik.Triggers.getDefaultInstance() : setTriggers_;
+    }
+    /**
+     * <code>.api.Triggers set_triggers = 11;</code>
+     */
+    public api.Graphik.TriggersOrBuilder getSetTriggersOrBuilder() {
+      return getSetTriggers();
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -44594,6 +46890,9 @@ public final class Graphik {
       }
       if (sendMessage_ != null) {
         output.writeMessage(10, getSendMessage());
+      }
+      if (setTriggers_ != null) {
+        output.writeMessage(11, getSetTriggers());
       }
       unknownFields.writeTo(output);
     }
@@ -44642,6 +46941,10 @@ public final class Graphik {
       if (sendMessage_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(10, getSendMessage());
+      }
+      if (setTriggers_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, getSetTriggers());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -44694,6 +46997,11 @@ public final class Graphik {
         result = result && getSendMessage()
             .equals(other.getSendMessage());
       }
+      result = result && (hasSetTriggers() == other.hasSetTriggers());
+      if (hasSetTriggers()) {
+        result = result && getSetTriggers()
+            .equals(other.getSetTriggers());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -44742,6 +47050,10 @@ public final class Graphik {
       if (hasSendMessage()) {
         hash = (37 * hash) + SEND_MESSAGE_FIELD_NUMBER;
         hash = (53 * hash) + getSendMessage().hashCode();
+      }
+      if (hasSetTriggers()) {
+        hash = (37 * hash) + SET_TRIGGERS_FIELD_NUMBER;
+        hash = (53 * hash) + getSetTriggers().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -44936,6 +47248,12 @@ public final class Graphik {
           sendMessage_ = null;
           sendMessageBuilder_ = null;
         }
+        if (setTriggersBuilder_ == null) {
+          setTriggers_ = null;
+        } else {
+          setTriggers_ = null;
+          setTriggersBuilder_ = null;
+        }
         return this;
       }
 
@@ -45025,6 +47343,11 @@ public final class Graphik {
           result.sendMessage_ = sendMessage_;
         } else {
           result.sendMessage_ = sendMessageBuilder_.build();
+        }
+        if (setTriggersBuilder_ == null) {
+          result.setTriggers_ = setTriggers_;
+        } else {
+          result.setTriggers_ = setTriggersBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -45197,6 +47520,9 @@ public final class Graphik {
         }
         if (other.hasSendMessage()) {
           mergeSendMessage(other.getSendMessage());
+        }
+        if (other.hasSetTriggers()) {
+          mergeSetTriggers(other.getSetTriggers());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -46840,6 +49166,123 @@ public final class Graphik {
           sendMessage_ = null;
         }
         return sendMessageBuilder_;
+      }
+
+      private api.Graphik.Triggers setTriggers_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Triggers, api.Graphik.Triggers.Builder, api.Graphik.TriggersOrBuilder> setTriggersBuilder_;
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      public boolean hasSetTriggers() {
+        return setTriggersBuilder_ != null || setTriggers_ != null;
+      }
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      public api.Graphik.Triggers getSetTriggers() {
+        if (setTriggersBuilder_ == null) {
+          return setTriggers_ == null ? api.Graphik.Triggers.getDefaultInstance() : setTriggers_;
+        } else {
+          return setTriggersBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      public Builder setSetTriggers(api.Graphik.Triggers value) {
+        if (setTriggersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          setTriggers_ = value;
+          onChanged();
+        } else {
+          setTriggersBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      public Builder setSetTriggers(
+          api.Graphik.Triggers.Builder builderForValue) {
+        if (setTriggersBuilder_ == null) {
+          setTriggers_ = builderForValue.build();
+          onChanged();
+        } else {
+          setTriggersBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      public Builder mergeSetTriggers(api.Graphik.Triggers value) {
+        if (setTriggersBuilder_ == null) {
+          if (setTriggers_ != null) {
+            setTriggers_ =
+              api.Graphik.Triggers.newBuilder(setTriggers_).mergeFrom(value).buildPartial();
+          } else {
+            setTriggers_ = value;
+          }
+          onChanged();
+        } else {
+          setTriggersBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      public Builder clearSetTriggers() {
+        if (setTriggersBuilder_ == null) {
+          setTriggers_ = null;
+          onChanged();
+        } else {
+          setTriggers_ = null;
+          setTriggersBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      public api.Graphik.Triggers.Builder getSetTriggersBuilder() {
+        
+        onChanged();
+        return getSetTriggersFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      public api.Graphik.TriggersOrBuilder getSetTriggersOrBuilder() {
+        if (setTriggersBuilder_ != null) {
+          return setTriggersBuilder_.getMessageOrBuilder();
+        } else {
+          return setTriggers_ == null ?
+              api.Graphik.Triggers.getDefaultInstance() : setTriggers_;
+        }
+      }
+      /**
+       * <code>.api.Triggers set_triggers = 11;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          api.Graphik.Triggers, api.Graphik.Triggers.Builder, api.Graphik.TriggersOrBuilder> 
+          getSetTriggersFieldBuilder() {
+        if (setTriggersBuilder_ == null) {
+          setTriggersBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Triggers, api.Graphik.Triggers.Builder, api.Graphik.TriggersOrBuilder>(
+                  getSetTriggers(),
+                  getParentForChildren(),
+                  isClean());
+          setTriggers_ = null;
+        }
+        return setTriggersBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -49050,6 +51493,16 @@ public final class Graphik {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_api_Indexes_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_api_Trigger_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_api_Trigger_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_api_Triggers_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_api_Triggers_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_api_StreamFilter_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -49236,121 +51689,130 @@ public final class Graphik {
       "225}$\022\037\n\005gtype\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$" +
       "\n\nexpression\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004" +
       "docs\030\006 \001(\010\022\023\n\013connections\030\007 \001(\010\"&\n\007Index" +
-      "es\022\033\n\007indexes\030\001 \003(\0132\n.api.Index\"E\n\014Strea" +
-      "mFilter\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
-      "}$\022\022\n\nexpression\030\002 \001(\t\"G\n\005Graph\022\027\n\004docs\030" +
-      "\001 \001(\0132\t.api.Docs\022%\n\013connections\030\002 \001(\0132\020." +
-      "api.Connections\"\317\003\n\005Flags\022\031\n\021open_id_dis" +
-      "covery\030\001 \001(\t\022\024\n\014storage_path\030\002 \001(\t\022\017\n\007me" +
-      "trics\030\003 \001(\010\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\ral" +
-      "low_methods\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(\t" +
-      "\022\022\n\nroot_users\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017" +
-      "\n\007tls_key\030\n \001(\t\022\034\n\024playground_client_id\030" +
-      "\013 \001(\t\022 \n\030playground_client_secret\030\014 \001(\t\022" +
-      "\033\n\023playground_redirect\030\r \001(\t\022#\n\033require_" +
-      "request_authorizers\030\017 \001(\010\022$\n\034require_res" +
-      "ponse_authorizers\030\020 \001(\010\022\021\n\tjoin_raft\030\021 \001" +
-      "(\t\022\024\n\014raft_peer_id\030\022 \001(\t\022\023\n\013listen_port\030" +
-      "\023 \001(\003\022\023\n\013raft_secret\030\024 \001(\t\022\r\n\005debug\030\025 \001(" +
-      "\010\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"\027\n\006Number\022\r\n" +
-      "\005value\030\001 \001(\001\"\203\001\n\014ExistsFilter\022\037\n\005gtype\030\001" +
-      " \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\002 \001" +
-      "(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007re" +
-      "verse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004Edit\022\035\n\003re" +
-      "f\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\nattributes\030" +
-      "\002 \001(\0132\027.google.protobuf.Struct\"V\n\nEditFi" +
-      "lter\022\033\n\006filter\030\001 \001(\0132\013.api.Filter\022+\n\natt" +
-      "ributes\030\002 \001(\0132\027.google.protobuf.Struct\"\027" +
-      "\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017OutboundMessa" +
-      "ge\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n" +
-      "\004data\030\002 \001(\0132\027.google.protobuf.StructB\006\342\337" +
-      "\037\002 \001\"\324\001\n\007Message\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n" +
-      "\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.google.proto" +
-      "buf.StructB\006\342\337\037\002 \001\022\036\n\004user\030\003 \001(\0132\010.api.R" +
-      "efB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\0132\032.google.p" +
-      "rotobuf.TimestampB\006\342\337\037\002 \001\022 \n\006method\030\005 \001(" +
-      "\tB\020\342\337\037\014\n\n^.{1,225}$\"\244\001\n\006Schema\022\030\n\020connec" +
-      "tion_types\030\001 \003(\t\022\021\n\tdoc_types\030\002 \003(\t\022%\n\013a" +
-      "uthorizers\030\003 \001(\0132\020.api.Authorizers\022\'\n\nva" +
-      "lidators\030\004 \001(\0132\023.api.TypeValidators\022\035\n\007i" +
-      "ndexes\030\005 \001(\0132\014.api.Indexes\" \n\nExprFilter" +
-      "\022\022\n\nexpression\030\001 \001(\t\"\336\002\n\013RaftCommand\022\026\n\004" +
-      "user\030\001 \001(\0132\010.api.Doc\022\016\n\006method\030\002 \001(\t\022\032\n\010" +
-      "set_docs\030\003 \003(\0132\010.api.Doc\022(\n\017set_connecti" +
-      "ons\030\004 \003(\0132\017.api.Connection\022\032\n\010del_docs\030\005" +
-      " \003(\0132\010.api.Ref\022!\n\017del_connections\030\006 \003(\0132" +
-      "\010.api.Ref\022!\n\013set_indexes\030\007 \001(\0132\014.api.Ind" +
-      "exes\022)\n\017set_authorizers\030\010 \001(\0132\020.api.Auth" +
-      "orizers\0220\n\023set_type_validators\030\t \001(\0132\023.a" +
-      "pi.TypeValidators\022\"\n\014send_message\030\n \001(\0132" +
-      "\014.api.Message\"%\n\004Peer\022\017\n\007node_id\030\001 \001(\t\022\014" +
-      "\n\004addr\030\002 \001(\t\"\262\001\n\tRaftState\022\016\n\006leader\030\001 \001" +
-      "(\t\022#\n\nmembership\030\002 \001(\0162\017.api.Membership\022" +
-      "\030\n\005peers\030\003 \003(\0132\t.api.Peer\022(\n\005stats\030\004 \003(\013" +
-      "2\031.api.RaftState.StatsEntry\032,\n\nStatsEntr" +
-      "y\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001*\035\n\tAlg" +
-      "orithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t\n" +
-      "\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003M" +
-      "IN\020\004\022\010\n\004PROD\020\005*P\n\nMembership\022\013\n\007UNKNOWN\020" +
-      "\000\022\014\n\010FOLLOWER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n\006LEADER" +
-      "\020\003\022\014\n\010SHUTDOWN\020\0042\250\001\n\013RaftService\022+\n\004Ping" +
-      "\022\026.google.protobuf.Empty\032\t.api.Pong\"\000\0222\n" +
-      "\013JoinCluster\022\t.api.Peer\032\026.google.protobu" +
-      "f.Empty\"\000\0228\n\014ClusterState\022\026.google.proto" +
-      "buf.Empty\032\016.api.RaftState\"\0002\255\020\n\017Database" +
-      "Service\0222\n\tGetSchema\022\026.google.protobuf.E" +
-      "mpty\032\013.api.Schema\"\000\022<\n\016SetAuthorizers\022\020." +
-      "api.Authorizers\032\026.google.protobuf.Empty\"" +
-      "\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.google.p" +
-      "rotobuf.Empty\"\000\022B\n\021SetTypeValidators\022\023.a" +
-      "pi.TypeValidators\032\026.google.protobuf.Empt" +
-      "y\"\000\022(\n\002Me\022\026.google.protobuf.Empty\032\010.api." +
-      "Doc\"\000\022,\n\tCreateDoc\022\023.api.DocConstructor\032" +
-      "\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.api.DocConst" +
-      "ructors\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref" +
-      "\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Filter\032" +
-      "\t.api.Docs\"\000\0222\n\010Traverse\022\023.api.TraverseF" +
-      "ilter\032\017.api.Traversals\"\000\0226\n\nTraverseMe\022\025" +
-      ".api.TraverseMeFilter\032\017.api.Traversals\"\000" +
-      "\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(\n\010Ed" +
-      "itDocs\022\017.api.EditFilter\032\t.api.Docs\"\000\022,\n\006" +
-      "DelDoc\022\010.api.Ref\032\026.google.protobuf.Empty" +
-      "\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google.prot" +
-      "obuf.Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsFi" +
-      "lter\032\014.api.Boolean\"\000\0225\n\020ExistsConnection" +
-      "\022\021.api.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006H" +
-      "asDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasCo" +
-      "nnection\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020Cr" +
-      "eateConnection\022\032.api.ConnectionConstruct" +
-      "or\032\017.api.Connection\"\000\022D\n\021CreateConnectio" +
-      "ns\022\033.api.ConnectionConstructors\032\020.api.Co" +
-      "nnections\"\000\022@\n\020SearchAndConnect\022\030.api.Se" +
-      "archConnectFilter\032\020.api.Connections\"\000\022D\n" +
-      "\022SearchAndConnectMe\022\032.api.SearchConnectM" +
-      "eFilter\032\020.api.Connections\"\000\022,\n\rGetConnec" +
-      "tion\022\010.api.Ref\032\017.api.Connection\"\000\0224\n\021Sea" +
-      "rchConnections\022\013.api.Filter\032\020.api.Connec" +
-      "tions\"\000\022.\n\016EditConnection\022\t.api.Edit\032\017.a" +
-      "pi.Connection\"\000\0226\n\017EditConnections\022\017.api" +
-      ".EditFilter\032\020.api.Connections\"\000\0223\n\rDelCo" +
-      "nnection\022\010.api.Ref\032\026.google.protobuf.Emp" +
-      "ty\"\000\0227\n\016DelConnections\022\013.api.Filter\032\026.go" +
-      "ogle.protobuf.Empty\"\000\0229\n\017ConnectionsFrom" +
-      "\022\022.api.ConnectFilter\032\020.api.Connections\"\000" +
-      "\0227\n\rConnectionsTo\022\022.api.ConnectFilter\032\020." +
-      "api.Connections\"\000\022.\n\rAggregateDocs\022\016.api" +
-      ".AggFilter\032\013.api.Number\"\000\0225\n\024AggregateCo" +
-      "nnections\022\016.api.AggFilter\032\013.api.Number\"\000" +
-      "\022;\n\tBroadcast\022\024.api.OutboundMessage\032\026.go" +
-      "ogle.protobuf.Empty\"\000\022-\n\006Stream\022\021.api.St" +
-      "reamFilter\032\014.api.Message\"\0000\001\022:\n\023PushDocC" +
-      "onstructors\022\023.api.DocConstructor\032\010.api.D" +
-      "oc\"\000(\0010\001\022O\n\032PushConnectionConstructors\022\032" +
-      ".api.ConnectionConstructor\032\017.api.Connect" +
-      "ion\"\000(\0010\001\0220\n\010SeedDocs\022\010.api.Doc\032\026.google" +
-      ".protobuf.Empty\"\000(\001\022>\n\017SeedConnections\022\017" +
-      ".api.Connection\032\026.google.protobuf.Empty\"" +
-      "\000(\001B\007Z\005apipbb\006proto3"
+      "es\022\033\n\007indexes\030\001 \003(\0132\n.api.Index\"\304\001\n\007Trig" +
+      "ger\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005g" +
+      "type\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpressi" +
+      "on\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022!\n\007trigger\030\004 " +
+      "\001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\023\n\013target_docs\030\005 \001" +
+      "(\010\022\032\n\022target_connections\030\006 \001(\010\"*\n\010Trigge" +
+      "rs\022\036\n\010triggers\030\001 \003(\0132\014.api.Trigger\"E\n\014St" +
+      "reamFilter\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1," +
+      "225}$\022\022\n\nexpression\030\002 \001(\t\"G\n\005Graph\022\027\n\004do" +
+      "cs\030\001 \001(\0132\t.api.Docs\022%\n\013connections\030\002 \001(\013" +
+      "2\020.api.Connections\"\317\003\n\005Flags\022\031\n\021open_id_" +
+      "discovery\030\001 \001(\t\022\024\n\014storage_path\030\002 \001(\t\022\017\n" +
+      "\007metrics\030\003 \001(\010\022\025\n\rallow_headers\030\005 \003(\t\022\025\n" +
+      "\rallow_methods\030\006 \003(\t\022\025\n\rallow_origins\030\007 " +
+      "\003(\t\022\022\n\nroot_users\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(" +
+      "\t\022\017\n\007tls_key\030\n \001(\t\022\034\n\024playground_client_" +
+      "id\030\013 \001(\t\022 \n\030playground_client_secret\030\014 \001" +
+      "(\t\022\033\n\023playground_redirect\030\r \001(\t\022#\n\033requi" +
+      "re_request_authorizers\030\017 \001(\010\022$\n\034require_" +
+      "response_authorizers\030\020 \001(\010\022\021\n\tjoin_raft\030" +
+      "\021 \001(\t\022\024\n\014raft_peer_id\030\022 \001(\t\022\023\n\013listen_po" +
+      "rt\030\023 \001(\003\022\023\n\013raft_secret\030\024 \001(\t\022\r\n\005debug\030\025" +
+      " \001(\010\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"\027\n\006Number" +
+      "\022\r\n\005value\030\001 \001(\001\"\203\001\n\014ExistsFilter\022\037\n\005gtyp" +
+      "e\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030" +
+      "\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030\003 \001(\t\022\017\n" +
+      "\007reverse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004Edit\022\035\n" +
+      "\003ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\nattribut" +
+      "es\030\002 \001(\0132\027.google.protobuf.Struct\"V\n\nEdi" +
+      "tFilter\022\033\n\006filter\030\001 \001(\0132\013.api.Filter\022+\n\n" +
+      "attributes\030\002 \001(\0132\027.google.protobuf.Struc" +
+      "t\"\027\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017OutboundMe" +
+      "ssage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$" +
+      "\022-\n\004data\030\002 \001(\0132\027.google.protobuf.StructB" +
+      "\006\342\337\037\002 \001\"\324\001\n\007Message\022!\n\007channel\030\001 \001(\tB\020\342\337" +
+      "\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.google.pr" +
+      "otobuf.StructB\006\342\337\037\002 \001\022\036\n\004user\030\003 \001(\0132\010.ap" +
+      "i.RefB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\0132\032.googl" +
+      "e.protobuf.TimestampB\006\342\337\037\002 \001\022 \n\006method\030\005" +
+      " \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"\305\001\n\006Schema\022\030\n\020con" +
+      "nection_types\030\001 \003(\t\022\021\n\tdoc_types\030\002 \003(\t\022%" +
+      "\n\013authorizers\030\003 \001(\0132\020.api.Authorizers\022\'\n" +
+      "\nvalidators\030\004 \001(\0132\023.api.TypeValidators\022\035" +
+      "\n\007indexes\030\005 \001(\0132\014.api.Indexes\022\037\n\010trigger" +
+      "s\030\006 \001(\0132\r.api.Triggers\" \n\nExprFilter\022\022\n\n" +
+      "expression\030\001 \001(\t\"\203\003\n\013RaftCommand\022\026\n\004user" +
+      "\030\001 \001(\0132\010.api.Doc\022\016\n\006method\030\002 \001(\t\022\032\n\010set_" +
+      "docs\030\003 \003(\0132\010.api.Doc\022(\n\017set_connections\030" +
+      "\004 \003(\0132\017.api.Connection\022\032\n\010del_docs\030\005 \003(\013" +
+      "2\010.api.Ref\022!\n\017del_connections\030\006 \003(\0132\010.ap" +
+      "i.Ref\022!\n\013set_indexes\030\007 \001(\0132\014.api.Indexes" +
+      "\022)\n\017set_authorizers\030\010 \001(\0132\020.api.Authoriz" +
+      "ers\0220\n\023set_type_validators\030\t \001(\0132\023.api.T" +
+      "ypeValidators\022\"\n\014send_message\030\n \001(\0132\014.ap" +
+      "i.Message\022#\n\014set_triggers\030\013 \001(\0132\r.api.Tr" +
+      "iggers\"%\n\004Peer\022\017\n\007node_id\030\001 \001(\t\022\014\n\004addr\030" +
+      "\002 \001(\t\"\262\001\n\tRaftState\022\016\n\006leader\030\001 \001(\t\022#\n\nm" +
+      "embership\030\002 \001(\0162\017.api.Membership\022\030\n\005peer" +
+      "s\030\003 \003(\0132\t.api.Peer\022(\n\005stats\030\004 \003(\0132\031.api." +
+      "RaftState.StatsEntry\032,\n\nStatsEntry\022\013\n\003ke" +
+      "y\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001*\035\n\tAlgorithm\022" +
+      "\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t\n\005COUNT\020" +
+      "\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n" +
+      "\004PROD\020\005*P\n\nMembership\022\013\n\007UNKNOWN\020\000\022\014\n\010FO" +
+      "LLOWER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n\006LEADER\020\003\022\014\n\010S" +
+      "HUTDOWN\020\0042\250\001\n\013RaftService\022+\n\004Ping\022\026.goog" +
+      "le.protobuf.Empty\032\t.api.Pong\"\000\0222\n\013JoinCl" +
+      "uster\022\t.api.Peer\032\026.google.protobuf.Empty" +
+      "\"\000\0228\n\014ClusterState\022\026.google.protobuf.Emp" +
+      "ty\032\016.api.RaftState\"\0002\345\020\n\017DatabaseService" +
+      "\0222\n\tGetSchema\022\026.google.protobuf.Empty\032\013." +
+      "api.Schema\"\000\022<\n\016SetAuthorizers\022\020.api.Aut" +
+      "horizers\032\026.google.protobuf.Empty\"\000\0224\n\nSe" +
+      "tIndexes\022\014.api.Indexes\032\026.google.protobuf" +
+      ".Empty\"\000\022B\n\021SetTypeValidators\022\023.api.Type" +
+      "Validators\032\026.google.protobuf.Empty\"\000\0226\n\013" +
+      "SetTriggers\022\r.api.Triggers\032\026.google.prot" +
+      "obuf.Empty\"\000\022(\n\002Me\022\026.google.protobuf.Emp" +
+      "ty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022\023.api.DocCon" +
+      "structor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.api" +
+      ".DocConstructors\032\t.api.Docs\"\000\022\036\n\006GetDoc\022" +
+      "\010.api.Ref\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.ap" +
+      "i.Filter\032\t.api.Docs\"\000\0222\n\010Traverse\022\023.api." +
+      "TraverseFilter\032\017.api.Traversals\"\000\0226\n\nTra" +
+      "verseMe\022\025.api.TraverseMeFilter\032\017.api.Tra" +
+      "versals\"\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Do" +
+      "c\"\000\022(\n\010EditDocs\022\017.api.EditFilter\032\t.api.D" +
+      "ocs\"\000\022,\n\006DelDoc\022\010.api.Ref\032\026.google.proto" +
+      "buf.Empty\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.go" +
+      "ogle.protobuf.Empty\"\000\022.\n\tExistsDoc\022\021.api" +
+      ".ExistsFilter\032\014.api.Boolean\"\000\0225\n\020ExistsC" +
+      "onnection\022\021.api.ExistsFilter\032\014.api.Boole" +
+      "an\"\000\022\"\n\006HasDoc\022\010.api.Ref\032\014.api.Boolean\"\000" +
+      "\022)\n\rHasConnection\022\010.api.Ref\032\014.api.Boolea" +
+      "n\"\000\022A\n\020CreateConnection\022\032.api.Connection" +
+      "Constructor\032\017.api.Connection\"\000\022D\n\021Create" +
+      "Connections\022\033.api.ConnectionConstructors" +
+      "\032\020.api.Connections\"\000\022@\n\020SearchAndConnect" +
+      "\022\030.api.SearchConnectFilter\032\020.api.Connect" +
+      "ions\"\000\022D\n\022SearchAndConnectMe\022\032.api.Searc" +
+      "hConnectMeFilter\032\020.api.Connections\"\000\022,\n\r" +
+      "GetConnection\022\010.api.Ref\032\017.api.Connection" +
+      "\"\000\0224\n\021SearchConnections\022\013.api.Filter\032\020.a" +
+      "pi.Connections\"\000\022.\n\016EditConnection\022\t.api" +
+      ".Edit\032\017.api.Connection\"\000\0226\n\017EditConnecti" +
+      "ons\022\017.api.EditFilter\032\020.api.Connections\"\000" +
+      "\0223\n\rDelConnection\022\010.api.Ref\032\026.google.pro" +
+      "tobuf.Empty\"\000\0227\n\016DelConnections\022\013.api.Fi" +
+      "lter\032\026.google.protobuf.Empty\"\000\0229\n\017Connec" +
+      "tionsFrom\022\022.api.ConnectFilter\032\020.api.Conn" +
+      "ections\"\000\0227\n\rConnectionsTo\022\022.api.Connect" +
+      "Filter\032\020.api.Connections\"\000\022.\n\rAggregateD" +
+      "ocs\022\016.api.AggFilter\032\013.api.Number\"\000\0225\n\024Ag" +
+      "gregateConnections\022\016.api.AggFilter\032\013.api" +
+      ".Number\"\000\022;\n\tBroadcast\022\024.api.OutboundMes" +
+      "sage\032\026.google.protobuf.Empty\"\000\022-\n\006Stream" +
+      "\022\021.api.StreamFilter\032\014.api.Message\"\0000\001\022:\n" +
+      "\023PushDocConstructors\022\023.api.DocConstructo" +
+      "r\032\010.api.Doc\"\000(\0010\001\022O\n\032PushConnectionConst" +
+      "ructors\022\032.api.ConnectionConstructor\032\017.ap" +
+      "i.Connection\"\000(\0010\001\0220\n\010SeedDocs\022\010.api.Doc" +
+      "\032\026.google.protobuf.Empty\"\000(\001\022>\n\017SeedConn" +
+      "ections\022\017.api.Connection\032\026.google.protob" +
+      "uf.Empty\"\000(\001B\007Z\005apipbb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -49543,98 +52005,110 @@ public final class Graphik {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Indexes_descriptor,
         new java.lang.String[] { "Indexes", });
-    internal_static_api_StreamFilter_descriptor =
+    internal_static_api_Trigger_descriptor =
       getDescriptor().getMessageTypes().get(28);
+    internal_static_api_Trigger_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_api_Trigger_descriptor,
+        new java.lang.String[] { "Name", "Gtype", "Expression", "Trigger", "TargetDocs", "TargetConnections", });
+    internal_static_api_Triggers_descriptor =
+      getDescriptor().getMessageTypes().get(29);
+    internal_static_api_Triggers_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_api_Triggers_descriptor,
+        new java.lang.String[] { "Triggers", });
+    internal_static_api_StreamFilter_descriptor =
+      getDescriptor().getMessageTypes().get(30);
     internal_static_api_StreamFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_StreamFilter_descriptor,
         new java.lang.String[] { "Channel", "Expression", });
     internal_static_api_Graph_descriptor =
-      getDescriptor().getMessageTypes().get(29);
+      getDescriptor().getMessageTypes().get(31);
     internal_static_api_Graph_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Graph_descriptor,
         new java.lang.String[] { "Docs", "Connections", });
     internal_static_api_Flags_descriptor =
-      getDescriptor().getMessageTypes().get(30);
+      getDescriptor().getMessageTypes().get(32);
     internal_static_api_Flags_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Flags_descriptor,
         new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "Metrics", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "PlaygroundClientId", "PlaygroundClientSecret", "PlaygroundRedirect", "RequireRequestAuthorizers", "RequireResponseAuthorizers", "JoinRaft", "RaftPeerId", "ListenPort", "RaftSecret", "Debug", });
     internal_static_api_Boolean_descriptor =
-      getDescriptor().getMessageTypes().get(31);
+      getDescriptor().getMessageTypes().get(33);
     internal_static_api_Boolean_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Boolean_descriptor,
         new java.lang.String[] { "Value", });
     internal_static_api_Number_descriptor =
-      getDescriptor().getMessageTypes().get(32);
+      getDescriptor().getMessageTypes().get(34);
     internal_static_api_Number_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Number_descriptor,
         new java.lang.String[] { "Value", });
     internal_static_api_ExistsFilter_descriptor =
-      getDescriptor().getMessageTypes().get(33);
+      getDescriptor().getMessageTypes().get(35);
     internal_static_api_ExistsFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ExistsFilter_descriptor,
         new java.lang.String[] { "Gtype", "Expression", "Seek", "Reverse", "Index", });
     internal_static_api_Edit_descriptor =
-      getDescriptor().getMessageTypes().get(34);
+      getDescriptor().getMessageTypes().get(36);
     internal_static_api_Edit_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Edit_descriptor,
         new java.lang.String[] { "Ref", "Attributes", });
     internal_static_api_EditFilter_descriptor =
-      getDescriptor().getMessageTypes().get(35);
+      getDescriptor().getMessageTypes().get(37);
     internal_static_api_EditFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_EditFilter_descriptor,
         new java.lang.String[] { "Filter", "Attributes", });
     internal_static_api_Pong_descriptor =
-      getDescriptor().getMessageTypes().get(36);
+      getDescriptor().getMessageTypes().get(38);
     internal_static_api_Pong_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Pong_descriptor,
         new java.lang.String[] { "Message", });
     internal_static_api_OutboundMessage_descriptor =
-      getDescriptor().getMessageTypes().get(37);
+      getDescriptor().getMessageTypes().get(39);
     internal_static_api_OutboundMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_OutboundMessage_descriptor,
         new java.lang.String[] { "Channel", "Data", });
     internal_static_api_Message_descriptor =
-      getDescriptor().getMessageTypes().get(38);
+      getDescriptor().getMessageTypes().get(40);
     internal_static_api_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Message_descriptor,
         new java.lang.String[] { "Channel", "Data", "User", "Timestamp", "Method", });
     internal_static_api_Schema_descriptor =
-      getDescriptor().getMessageTypes().get(39);
+      getDescriptor().getMessageTypes().get(41);
     internal_static_api_Schema_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Schema_descriptor,
-        new java.lang.String[] { "ConnectionTypes", "DocTypes", "Authorizers", "Validators", "Indexes", });
+        new java.lang.String[] { "ConnectionTypes", "DocTypes", "Authorizers", "Validators", "Indexes", "Triggers", });
     internal_static_api_ExprFilter_descriptor =
-      getDescriptor().getMessageTypes().get(40);
+      getDescriptor().getMessageTypes().get(42);
     internal_static_api_ExprFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ExprFilter_descriptor,
         new java.lang.String[] { "Expression", });
     internal_static_api_RaftCommand_descriptor =
-      getDescriptor().getMessageTypes().get(41);
+      getDescriptor().getMessageTypes().get(43);
     internal_static_api_RaftCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_RaftCommand_descriptor,
-        new java.lang.String[] { "User", "Method", "SetDocs", "SetConnections", "DelDocs", "DelConnections", "SetIndexes", "SetAuthorizers", "SetTypeValidators", "SendMessage", });
+        new java.lang.String[] { "User", "Method", "SetDocs", "SetConnections", "DelDocs", "DelConnections", "SetIndexes", "SetAuthorizers", "SetTypeValidators", "SendMessage", "SetTriggers", });
     internal_static_api_Peer_descriptor =
-      getDescriptor().getMessageTypes().get(42);
+      getDescriptor().getMessageTypes().get(44);
     internal_static_api_Peer_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Peer_descriptor,
         new java.lang.String[] { "NodeId", "Addr", });
     internal_static_api_RaftState_descriptor =
-      getDescriptor().getMessageTypes().get(43);
+      getDescriptor().getMessageTypes().get(45);
     internal_static_api_RaftState_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_RaftState_descriptor,

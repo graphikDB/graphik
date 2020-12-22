@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>ExistsFilter</title>
+    <title>Triggers</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -205,7 +205,7 @@
                 Trigger
             </a>
         </li>
-        <li  title="Triggers">
+        <li class="slds-is-active" title="Triggers">
             <a href="triggers.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Triggers
             </a>
@@ -305,7 +305,7 @@
                 EditFilter
             </a>
         </li>
-        <li class="slds-is-active" title="ExistsFilter">
+        <li  title="ExistsFilter">
             <a href="existsfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 ExistsFilter
             </a>
@@ -430,10 +430,9 @@
         </div>
     </div>
     <div class="container">
-        <p class="slds-text-title--caps slds-text-color--weak">INPUT_OBJECT</p>
-        <h1 class="slds-text-heading--large">ExistsFilter</h1>
-        <div class="slds-text-body--regular"><p>Exists is a filter used to determine whether a doc/connection exists in the graph</p>
-</div>
+        <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
+        <h1 class="slds-text-heading--large">Triggers</h1>
+        <div class="slds-text-body--regular"></div>
     </div>
 </section>
 <section>
@@ -444,7 +443,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">input</span> <span class="identifier">ExistsFilter</span> {</li><li><span class="tab"><li><span class="tab"><span class="comment line">#   gtype is the doc/connection type to be filtered</span></span></li><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   expression is a CEL expression used to filter connections/nodes</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>!</span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   seek to a specific key for pagination</span></span></li><li><span class="tab"><span class="meta">seek</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   reverse the results</span></span></li><li><span class="tab"><span class="meta">reverse</span>: <a class="support type" href="boolean.doc.html">Boolean</a></span></li></span></li><li><span class="tab"><li><span class="tab"><span class="comment line">#   search in a specific index</span></span></li><li><span class="tab"><span class="meta">index</span>: <a class="support type" href="string.doc.html">String</a></span></li></span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Triggers</span> {</li><li></li><li><span class="tab"><span class="meta">triggers</span>: [<a class="support type" href="trigger.doc.html">Trigger</a>!] </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -455,7 +454,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="query.doc.html" title="Query - ">Query<em></em></a><li></ul>
+        <ul class="require-by"><li><a href="schema.doc.html" title="Schema - Schema returns registered connection & doc types & other graph primitives">Schema<em>Schema returns registered connection & doc types & other graph primitives</em></a><li></ul>
     </div>
 </section>
 <footer>

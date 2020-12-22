@@ -61,6 +61,8 @@ goog.exportSymbol('proto.api.Traversal', null, global);
 goog.exportSymbol('proto.api.Traversals', null, global);
 goog.exportSymbol('proto.api.TraverseFilter', null, global);
 goog.exportSymbol('proto.api.TraverseMeFilter', null, global);
+goog.exportSymbol('proto.api.Trigger', null, global);
+goog.exportSymbol('proto.api.Triggers', null, global);
 goog.exportSymbol('proto.api.TypeValidator', null, global);
 goog.exportSymbol('proto.api.TypeValidators', null, global);
 
@@ -6679,6 +6681,455 @@ proto.api.Indexes.prototype.clearIndexesList = function() {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.api.Trigger = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.api.Trigger, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.api.Trigger.displayName = 'proto.api.Trigger';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.api.Trigger.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.Trigger.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.api.Trigger} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Trigger.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    gtype: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    expression: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    trigger: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    targetDocs: jspb.Message.getFieldWithDefault(msg, 5, false),
+    targetConnections: jspb.Message.getFieldWithDefault(msg, 6, false)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.api.Trigger}
+ */
+proto.api.Trigger.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.api.Trigger;
+  return proto.api.Trigger.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.api.Trigger} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.api.Trigger}
+ */
+proto.api.Trigger.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setGtype(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setExpression(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTrigger(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTargetDocs(value);
+      break;
+    case 6:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTargetConnections(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.api.Trigger.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.api.Trigger.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.api.Trigger} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Trigger.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getGtype();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getExpression();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getTrigger();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getTargetDocs();
+  if (f) {
+    writer.writeBool(
+      5,
+      f
+    );
+  }
+  f = message.getTargetConnections();
+  if (f) {
+    writer.writeBool(
+      6,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string name = 1;
+ * @return {string}
+ */
+proto.api.Trigger.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Trigger.prototype.setName = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string gtype = 2;
+ * @return {string}
+ */
+proto.api.Trigger.prototype.getGtype = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Trigger.prototype.setGtype = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string expression = 3;
+ * @return {string}
+ */
+proto.api.Trigger.prototype.getExpression = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Trigger.prototype.setExpression = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string trigger = 4;
+ * @return {string}
+ */
+proto.api.Trigger.prototype.getTrigger = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Trigger.prototype.setTrigger = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional bool target_docs = 5;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Trigger.prototype.getTargetDocs = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Trigger.prototype.setTargetDocs = function(value) {
+  jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+
+/**
+ * optional bool target_connections = 6;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Trigger.prototype.getTargetConnections = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 6, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Trigger.prototype.setTargetConnections = function(value) {
+  jspb.Message.setProto3BooleanField(this, 6, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.api.Triggers = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.api.Triggers.repeatedFields_, null);
+};
+goog.inherits(proto.api.Triggers, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.api.Triggers.displayName = 'proto.api.Triggers';
+}
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.api.Triggers.repeatedFields_ = [1];
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.api.Triggers.prototype.toObject = function(opt_includeInstance) {
+  return proto.api.Triggers.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.api.Triggers} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Triggers.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    triggersList: jspb.Message.toObjectList(msg.getTriggersList(),
+    proto.api.Trigger.toObject, includeInstance)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.api.Triggers}
+ */
+proto.api.Triggers.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.api.Triggers;
+  return proto.api.Triggers.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.api.Triggers} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.api.Triggers}
+ */
+proto.api.Triggers.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new proto.api.Trigger;
+      reader.readMessage(value,proto.api.Trigger.deserializeBinaryFromReader);
+      msg.addTriggers(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.api.Triggers.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.api.Triggers.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.api.Triggers} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.api.Triggers.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getTriggersList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      1,
+      f,
+      proto.api.Trigger.serializeBinaryToWriter
+    );
+  }
+};
+
+
+/**
+ * repeated Trigger triggers = 1;
+ * @return {!Array<!proto.api.Trigger>}
+ */
+proto.api.Triggers.prototype.getTriggersList = function() {
+  return /** @type{!Array<!proto.api.Trigger>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.api.Trigger, 1));
+};
+
+
+/** @param {!Array<!proto.api.Trigger>} value */
+proto.api.Triggers.prototype.setTriggersList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 1, value);
+};
+
+
+/**
+ * @param {!proto.api.Trigger=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.api.Trigger}
+ */
+proto.api.Triggers.prototype.addTriggers = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 1, opt_value, proto.api.Trigger, opt_index);
+};
+
+
+proto.api.Triggers.prototype.clearTriggersList = function() {
+  this.setTriggersList([]);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.api.StreamFilter = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -9370,7 +9821,8 @@ proto.api.Schema.toObject = function(includeInstance, msg) {
     docTypesList: jspb.Message.getRepeatedField(msg, 2),
     authorizers: (f = msg.getAuthorizers()) && proto.api.Authorizers.toObject(includeInstance, f),
     validators: (f = msg.getValidators()) && proto.api.TypeValidators.toObject(includeInstance, f),
-    indexes: (f = msg.getIndexes()) && proto.api.Indexes.toObject(includeInstance, f)
+    indexes: (f = msg.getIndexes()) && proto.api.Indexes.toObject(includeInstance, f),
+    triggers: (f = msg.getTriggers()) && proto.api.Triggers.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -9429,6 +9881,11 @@ proto.api.Schema.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.api.Indexes;
       reader.readMessage(value,proto.api.Indexes.deserializeBinaryFromReader);
       msg.setIndexes(value);
+      break;
+    case 6:
+      var value = new proto.api.Triggers;
+      reader.readMessage(value,proto.api.Triggers.deserializeBinaryFromReader);
+      msg.setTriggers(value);
       break;
     default:
       reader.skipField();
@@ -9495,6 +9952,14 @@ proto.api.Schema.serializeBinaryToWriter = function(message, writer) {
       5,
       f,
       proto.api.Indexes.serializeBinaryToWriter
+    );
+  }
+  f = message.getTriggers();
+  if (f != null) {
+    writer.writeMessage(
+      6,
+      f,
+      proto.api.Triggers.serializeBinaryToWriter
     );
   }
 };
@@ -9645,6 +10110,36 @@ proto.api.Schema.prototype.clearIndexes = function() {
  */
 proto.api.Schema.prototype.hasIndexes = function() {
   return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional Triggers triggers = 6;
+ * @return {?proto.api.Triggers}
+ */
+proto.api.Schema.prototype.getTriggers = function() {
+  return /** @type{?proto.api.Triggers} */ (
+    jspb.Message.getWrapperField(this, proto.api.Triggers, 6));
+};
+
+
+/** @param {?proto.api.Triggers|undefined} value */
+proto.api.Schema.prototype.setTriggers = function(value) {
+  jspb.Message.setWrapperField(this, 6, value);
+};
+
+
+proto.api.Schema.prototype.clearTriggers = function() {
+  this.setTriggers(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.api.Schema.prototype.hasTriggers = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
@@ -9857,7 +10352,8 @@ proto.api.RaftCommand.toObject = function(includeInstance, msg) {
     setIndexes: (f = msg.getSetIndexes()) && proto.api.Indexes.toObject(includeInstance, f),
     setAuthorizers: (f = msg.getSetAuthorizers()) && proto.api.Authorizers.toObject(includeInstance, f),
     setTypeValidators: (f = msg.getSetTypeValidators()) && proto.api.TypeValidators.toObject(includeInstance, f),
-    sendMessage: (f = msg.getSendMessage()) && proto.api.Message.toObject(includeInstance, f)
+    sendMessage: (f = msg.getSendMessage()) && proto.api.Message.toObject(includeInstance, f),
+    setTriggers: (f = msg.getSetTriggers()) && proto.api.Triggers.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -9942,6 +10438,11 @@ proto.api.RaftCommand.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.api.Message;
       reader.readMessage(value,proto.api.Message.deserializeBinaryFromReader);
       msg.setSendMessage(value);
+      break;
+    case 11:
+      var value = new proto.api.Triggers;
+      reader.readMessage(value,proto.api.Triggers.deserializeBinaryFromReader);
+      msg.setSetTriggers(value);
       break;
     default:
       reader.skipField();
@@ -10049,6 +10550,14 @@ proto.api.RaftCommand.serializeBinaryToWriter = function(message, writer) {
       10,
       f,
       proto.api.Message.serializeBinaryToWriter
+    );
+  }
+  f = message.getSetTriggers();
+  if (f != null) {
+    writer.writeMessage(
+      11,
+      f,
+      proto.api.Triggers.serializeBinaryToWriter
     );
   }
 };
@@ -10340,6 +10849,36 @@ proto.api.RaftCommand.prototype.clearSendMessage = function() {
  */
 proto.api.RaftCommand.prototype.hasSendMessage = function() {
   return jspb.Message.getField(this, 10) != null;
+};
+
+
+/**
+ * optional Triggers set_triggers = 11;
+ * @return {?proto.api.Triggers}
+ */
+proto.api.RaftCommand.prototype.getSetTriggers = function() {
+  return /** @type{?proto.api.Triggers} */ (
+    jspb.Message.getWrapperField(this, proto.api.Triggers, 11));
+};
+
+
+/** @param {?proto.api.Triggers|undefined} value */
+proto.api.RaftCommand.prototype.setSetTriggers = function(value) {
+  jspb.Message.setWrapperField(this, 11, value);
+};
+
+
+proto.api.RaftCommand.prototype.clearSetTriggers = function() {
+  this.setSetTriggers(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.api.RaftCommand.prototype.hasSetTriggers = function() {
+  return jspb.Message.getField(this, 11) != null;
 };
 
 

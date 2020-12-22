@@ -109,6 +109,25 @@ type TypeValidators {
   validators: [TypeValidator!]
 }
 
+type Trigger {
+  # name is the unique name of the type validator
+  name: String!
+  # gtype is the type of object the validator will be applied to (ex: user)
+  gtype: String!
+  # expression is a boolean CEL expression used to evaluate the doc/connection
+  expression: String!
+  # trigger is the map CEL expression that mutates the doc/connection before it is stored
+  trigger: String!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
+}
+
+type Triggers {
+  triggers: [Trigger!]
+}
+
 # Connection is a graph primitive that represents a relationship between two docs
 type Connection {
   # ref is the ref to the connection
@@ -195,6 +214,8 @@ type Schema {
   validators: TypeValidators
   # indexes are all of the registered indexes in the graph
   indexes: Indexes
+  # triggers are all of the registered triggers in the graph
+  triggers: Triggers
 }
 
 # Message is received on PubSub subscriptions
@@ -436,6 +457,28 @@ input IndexesInput {
   indexes: [IndexInput!]
 }
 
+
+# TriggerInput is used to construct Trigger
+input TriggerInput {
+  # name is the unique name of the type validator
+  name: String!
+  # gtype is the type of object the validator will be applied to (ex: user)
+  gtype: String!
+  # expression is a boolean CEL expression used to evaluate the doc/connection
+  expression: String!
+  # trigger is the map CEL expression that mutates the doc/connection before it is stored
+  trigger: String!
+  # if target_docs is true, this validator will be applied to documents.
+  target_docs: Boolean!
+  # if target_connections is true, this validator will be applied to connections.
+  target_connections: Boolean!
+}
+
+# TriggersInput is an array TriggerInput
+input TriggersInput {
+  triggers: [TriggerInput!]
+}
+
 # AuthorizerInput is used to create a new Authorizer
 input AuthorizerInput {
   # name is the unique name of the authorizer in the graph
@@ -521,6 +564,8 @@ type Mutation {
   setAuthorizers(input: AuthorizersInput!): Empty
   # setTypeValidators sets all of the type validators in the graph
   setTypeValidators(input: TypeValidatorsInput!): Empty
+  # v sets all of the triggers in the graph
+  setTriggers(input: TriggersInput!): Empty
   # searchAndConnect searches for documents and forms connections based on whether they pass a filter
   searchAndConnect(input: SearchConnectFilter!): Connections!
   # searchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter

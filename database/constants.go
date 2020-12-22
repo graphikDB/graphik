@@ -24,6 +24,7 @@ var (
 	dbDocs             = []byte("docs")
 	dbIndexes          = []byte("indexes")
 	dbAuthorizers      = []byte("authorizers")
+	dbTriggers         = []byte("triggers")
 	dbTypeValidators   = []byte("typeValidators")
 	dbIndexDocs        = []byte("indexedDocs")
 	dbIndexConnections = []byte("indexedConnections")

@@ -6,8 +6,9 @@ require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/autom8ter/machine v1.1.2
 	github.com/golang/protobuf v1.4.3
-	github.com/google/cel-go v0.6.1-0.20201210004405-3ea8bd382b11
+	github.com/google/cel-go v0.6.1-0.20201210004405-3ea8bd382b11 // indirect
 	github.com/gorilla/websocket v1.4.2
+	github.com/graphikDB/eval v0.0.5
 	github.com/graphikDB/generic v0.0.0
 	github.com/graphikDB/raft v0.0.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2

@@ -147,9 +147,14 @@ github.com/gorilla/mux v1.7.3/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2z
 github.com/gorilla/websocket v0.0.0-20170926233335-4201258b820c/go.mod h1:E7qHFY5m1UJ88s3WnNqhKjPHQ0heANvMoAMk2YaljkQ=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/graphikDB/eval v0.0.4 h1:XsitL4Y3aSim34dyzm+V0RimAuJ96DuQ9tKYW18RTyE=
+github.com/graphikDB/eval v0.0.4/go.mod h1:FSiAFxTjfdTxZKQkGs5e0zHu+jJzgYgjn0dNv9sGzIE=
+github.com/graphikDB/eval v0.0.5 h1:mvLP4pkgxPtoeESm81s12Se3IDOanq1VlDiohSAlBU4=
+github.com/graphikDB/eval v0.0.5/go.mod h1:FSiAFxTjfdTxZKQkGs5e0zHu+jJzgYgjn0dNv9sGzIE=
 github.com/graphikDB/generic v0.0.0 h1:foivlhonzw5pUuVD1WmRveEu20ylkDg7r+UrV/U4DHE=
 github.com/graphikDB/generic v0.0.0/go.mod h1:3Dji4QoogUaekuR3a+qDFRAmut1CUtsMkhVkW0oGAiw=
 github.com/graphikDB/graphik v0.8.2/go.mod h1:fJHmHpdS8Qs2Aj9WVAzTVHHSh03o26208HH4UAuFCMY=
+github.com/graphikDB/graphik v0.10.0/go.mod h1:JnR87zxAUPReVQwrwkFcJMFp5uyIrxxAIG7jtA2MDqI=
 github.com/graphikDB/raft v0.0.0 h1:hQsO9dx/ObsHPMS7eZfLAw55ajwU+uFyp6FTq2ndjxc=
 github.com/graphikDB/raft v0.0.0/go.mod h1:WIylhU9T0j6k0Ynh8RMb2PCvUYehlgCrTCTCusMLO6g=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=

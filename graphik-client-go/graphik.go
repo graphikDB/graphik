@@ -324,6 +324,12 @@ func (c *Client) SetTypeValidators(ctx context.Context, in *apipb.TypeValidators
 	return err
 }
 
+// SetTriggers sets all of the triggers in the graph
+func (c *Client) SetTriggers(ctx context.Context, in *apipb.Triggers, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetTriggers(ctx, in, opts...)
+	return err
+}
+
 // SeedDocs
 func (c *Client) SeedDocs(ctx context.Context, docChan <-chan *apipb.Doc, opts ...grpc.CallOption) error {
 	stream, err := c.graph.SeedDocs(ctx, opts...)

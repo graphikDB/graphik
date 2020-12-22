@@ -164,6 +164,17 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.Indexes" do
     repeated :indexes, :message, 1, "api.Index"
   end
+  add_message "api.Trigger" do
+    optional :name, :string, 1
+    optional :gtype, :string, 2
+    optional :expression, :string, 3
+    optional :trigger, :string, 4
+    optional :target_docs, :bool, 5
+    optional :target_connections, :bool, 6
+  end
+  add_message "api.Triggers" do
+    repeated :triggers, :message, 1, "api.Trigger"
+  end
   add_message "api.StreamFilter" do
     optional :channel, :string, 1
     optional :expression, :string, 2
@@ -234,6 +245,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :authorizers, :message, 3, "api.Authorizers"
     optional :validators, :message, 4, "api.TypeValidators"
     optional :indexes, :message, 5, "api.Indexes"
+    optional :triggers, :message, 6, "api.Triggers"
   end
   add_message "api.ExprFilter" do
     optional :expression, :string, 1
@@ -249,6 +261,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :set_authorizers, :message, 8, "api.Authorizers"
     optional :set_type_validators, :message, 9, "api.TypeValidators"
     optional :send_message, :message, 10, "api.Message"
+    optional :set_triggers, :message, 11, "api.Triggers"
   end
   add_message "api.Peer" do
     optional :node_id, :string, 1
@@ -310,6 +323,8 @@ module Api
   TypeValidators = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TypeValidators").msgclass
   Index = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Index").msgclass
   Indexes = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Indexes").msgclass
+  Trigger = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Trigger").msgclass
+  Triggers = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Triggers").msgclass
   StreamFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.StreamFilter").msgclass
   Graph = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Graph").msgclass
   Flags = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Flags").msgclass

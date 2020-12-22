@@ -211,6 +211,7 @@ type Schema struct {
 	Authorizers     *Authorizers    `json:"authorizers"`
 	Validators      *TypeValidators `json:"validators"`
 	Indexes         *Indexes        `json:"indexes"`
+	Triggers        *Triggers       `json:"triggers"`
 }
 
 type SearchConnectFilter struct {
@@ -265,6 +266,32 @@ type TraverseMeFilter struct {
 	Algorithm            *Algorithm `json:"algorithm"`
 	MaxDepth             int        `json:"max_depth"`
 	MaxHops              int        `json:"max_hops"`
+}
+
+type Trigger struct {
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	Trigger           string `json:"trigger"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
+}
+
+type TriggerInput struct {
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	Trigger           string `json:"trigger"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
+}
+
+type Triggers struct {
+	Triggers []*Trigger `json:"triggers"`
+}
+
+type TriggersInput struct {
+	Triggers []*TriggerInput `json:"triggers"`
 }
 
 type TypeValidator struct {
