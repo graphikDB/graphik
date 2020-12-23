@@ -2,9 +2,9 @@ package database
 
 import (
 	"context"
-	"github.com/graphikDB/eval"
 	"github.com/graphikDB/generic"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/trigger"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
 	"time"
@@ -19,8 +19,8 @@ type traversal struct {
 	traversals        *apipb.Traversals
 	filter            *apipb.TraverseFilter
 	traversalPath     []*apipb.Ref
-	connectionProgram *eval.Decision
-	docProgram        *eval.Decision
+	connectionProgram *trigger.Decision
+	docProgram        *trigger.Decision
 }
 
 func (g *Graph) newTraversal(filter *apipb.TraverseFilter) (*traversal, error) {
@@ -34,14 +34,14 @@ func (g *Graph) newTraversal(filter *apipb.TraverseFilter) (*traversal, error) {
 		traversalPath: []*apipb.Ref{},
 	}
 	if filter.GetConnectionExpression() != "" {
-		decision, err := eval.NewDecision(eval.AllTrue, filter.GetConnectionExpression())
+		decision, err := trigger.NewDecision(filter.GetConnectionExpression())
 		if err != nil {
 			return nil, err
 		}
 		t.connectionProgram = decision
 	}
 	if filter.GetDocExpression() != "" {
-		decision, err := eval.NewDecision(eval.AllTrue, filter.GetDocExpression())
+		decision, err := trigger.NewDecision(filter.GetDocExpression())
 		if err != nil {
 			return nil, err
 		}
@@ -105,7 +105,7 @@ func (d *traversal) walkDFS(ctx context.Context, tx *bbolt.Tx) error {
 	return nil
 }
 
-func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *eval.Decision) error {
+func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *trigger.Decision) error {
 	if err := d.g.rangeFrom(ctx, tx, popped.GetRef(), func(e *apipb.Connection) bool {
 		if connectionProgram != nil {
 			if err := connectionProgram.Eval(e.AsMap()); err != nil {
@@ -153,7 +153,7 @@ func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc
 	return nil
 }
 
-func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *eval.Decision) error {
+func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, connectionProgram, docProgram *trigger.Decision) error {
 	if err := d.g.rangeTo(ctx, tx, popped.GetRef(), func(e *apipb.Connection) bool {
 		if connectionProgram != nil {
 			if err := connectionProgram.Eval(e.AsMap()); err != nil {
@@ -248,7 +248,7 @@ func (d *traversal) walkBFS(ctx context.Context, tx *bbolt.Tx) error {
 	return nil
 }
 
-func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc, connectionProgram, docProgram *eval.Decision) error {
+func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc, connectionProgram, docProgram *trigger.Decision) error {
 	if err := d.g.rangeTo(ctx, tx, dequeued.GetRef(), func(e *apipb.Connection) bool {
 		if connectionProgram != nil {
 			if err := connectionProgram.Eval(e.AsMap()); err != nil {
@@ -296,7 +296,7 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 	return nil
 }
 
-func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Doc, connectionProgram, docProgram *eval.Decision) error {
+func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Doc, connectionProgram, docProgram *trigger.Decision) error {
 	if err := d.g.rangeFrom(ctx, tx, dequeue.GetRef(), func(e *apipb.Connection) bool {
 
 		if connectionProgram != nil {

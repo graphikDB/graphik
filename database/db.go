@@ -2,8 +2,8 @@ package database
 
 import (
 	"context"
-	"github.com/graphikDB/eval"
 	"github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/trigger"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"go.uber.org/zap"
@@ -17,22 +17,22 @@ import (
 
 type index struct {
 	index    *apipb.Index
-	decision *eval.Decision
+	decision *trigger.Decision
 }
 
 type authorizer struct {
 	authorizer *apipb.Authorizer
-	decision   *eval.Decision
+	decision   *trigger.Decision
 }
 
 type typeValidator struct {
 	validator *apipb.TypeValidator
-	decision  *eval.Decision
+	decision  *trigger.Decision
 }
 
-type trigger struct {
+type triggerCache struct {
 	trigger     *apipb.Trigger
-	evalTrigger *eval.Trigger
+	evalTrigger *trigger.Trigger
 }
 
 func (g *Graph) rangeIndexes(fn func(index *index) bool) {
@@ -73,7 +73,7 @@ func (g *Graph) cacheIndexes() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			decision, err := eval.NewDecision(eval.AllTrue, i.Expression)
+			decision, err := trigger.NewDecision(i.Expression)
 			if err != nil {
 				return err
 			}
@@ -93,9 +93,9 @@ func (g *Graph) rangeAuthorizers(fn func(a *authorizer) bool) {
 	})
 }
 
-func (g *Graph) rangeTriggers(fn func(a *trigger) bool) {
+func (g *Graph) rangeTriggers(fn func(a *triggerCache) bool) {
 	g.triggers.Range(func(key, value interface{}) bool {
-		return fn(value.(*trigger))
+		return fn(value.(*triggerCache))
 	})
 }
 
@@ -119,7 +119,7 @@ func (g *Graph) cacheAuthorizers() error {
 			if i.GetExpression() == "" {
 				return nil
 			}
-			decision, err := eval.NewDecision(eval.AllTrue, i.GetExpression())
+			decision, err := trigger.NewDecision(i.GetExpression())
 			if err != nil {
 				return errors.Wrapf(err, "failed to cache auth expression: %s", i.GetName())
 			}
@@ -146,15 +146,15 @@ func (g *Graph) cacheTriggers() error {
 			if i.GetExpression() == "" {
 				return nil
 			}
-			decision, err := eval.NewDecision(eval.AllTrue, i.GetExpression())
+			decision, err := trigger.NewDecision(i.GetExpression())
 			if err != nil {
 				return errors.Wrapf(err, "failed to cache trigger decision: %s", i.GetName())
 			}
-			trig, err := eval.NewTrigger(decision, i.GetTrigger())
+			trig, err := trigger.NewTrigger(decision, i.GetTrigger())
 			if err != nil {
 				return errors.Wrapf(err, "failed to cache trigger expression: %s", i.GetName())
 			}
-			g.triggers.Set(i.GetName(), &trigger{
+			g.triggers.Set(i.GetName(), &triggerCache{
 				trigger:     &i,
 				evalTrigger: trig,
 			}, 0)
@@ -174,7 +174,7 @@ func (g *Graph) cacheTypeValidators() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			decision, err := eval.NewDecision(eval.AllTrue, i.Expression)
+			decision, err := trigger.NewDecision(i.Expression)
 			if err != nil {
 				return err
 			}
@@ -726,7 +726,7 @@ func (g *Graph) createIdentity(ctx context.Context, constructor *apipb.DocConstr
 			Ref:        path,
 			Attributes: constructor.GetAttributes(),
 		}
-		g.rangeTriggers(func(a *trigger) bool {
+		g.rangeTriggers(func(a *triggerCache) bool {
 			if a.trigger.GetTargetDocs() && newDock.GetRef().GetGtype() == a.trigger.GetGtype() {
 				data, err := a.evalTrigger.Trigger(newDock.AsMap())
 				if err == nil && len(data) > 0 {

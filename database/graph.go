@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/graphikDB/eval"
 	"github.com/graphikDB/generic"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/graphik-client-go"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
 	"github.com/graphikDB/raft"
+	"github.com/graphikDB/trigger"
 	raft2 "github.com/hashicorp/raft"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
@@ -280,7 +280,7 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 		return fmt.Sprintf("%s.%s", ival.Gtype, ival.Name) < fmt.Sprintf("%s.%s", jval.Gtype, jval.Name)
 	})
 	var triggers []*apipb.Trigger
-	g.rangeTriggers(func(v *trigger) bool {
+	g.rangeTriggers(func(v *triggerCache) bool {
 		triggers = append(triggers, v.trigger)
 		return true
 	})
@@ -468,7 +468,7 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 				Ref:        path,
 				Attributes: constructor.GetAttributes(),
 			}
-			g.rangeTriggers(func(a *trigger) bool {
+			g.rangeTriggers(func(a *triggerCache) bool {
 				if a.trigger.GetTargetDocs() && (doc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 					data, err := a.evalTrigger.Trigger(doc.AsMap())
 					if err == nil {
@@ -584,7 +584,7 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 				From:       constructor.GetFrom(),
 				To:         constructor.GetTo(),
 			}
-			g.rangeTriggers(func(a *trigger) bool {
+			g.rangeTriggers(func(a *triggerCache) bool {
 				if a.trigger.GetTargetConnections() && (c.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 					data, err := a.evalTrigger.Trigger(c.AsMap())
 					if err == nil {
@@ -665,7 +665,7 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 			return true
 		}
 	} else {
-		decision, err := eval.NewDecision(eval.AllTrue, filter.GetExpression())
+		decision, err := trigger.NewDecision(filter.GetExpression())
 		if err != nil {
 			return err
 		}
@@ -676,7 +676,7 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 				return false
 			}
 			if err := decision.Eval(val.AsMap()); err != nil {
-				if err != eval.ErrDecisionDenied {
+				if err != trigger.ErrDecisionDenied {
 					g.logger.Error("subscription filter failure", zap.Error(err))
 				}
 				return false
@@ -814,7 +814,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 		for k, v := range value.GetAttributes().GetFields() {
 			setDoc.Attributes.GetFields()[k] = v
 		}
-		n.rangeTriggers(func(a *trigger) bool {
+		n.rangeTriggers(func(a *triggerCache) bool {
 			if a.trigger.GetTargetDocs() && (setDoc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 				data, err := a.evalTrigger.Trigger(setDoc.AsMap())
 				if err == nil {
@@ -886,7 +886,7 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 		for k, v := range patch.GetAttributes().GetFields() {
 			setDoc.Attributes.GetFields()[k] = v
 		}
-		n.rangeTriggers(func(a *trigger) bool {
+		n.rangeTriggers(func(a *triggerCache) bool {
 			if a.trigger.GetTargetDocs() && (setDoc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 				data, err := a.evalTrigger.Trigger(setDoc.AsMap())
 				if err == nil {
@@ -973,12 +973,12 @@ func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 
 func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectFilter) (*apipb.Connections, error) {
 	var (
-		decision *eval.Decision
+		decision *trigger.Decision
 		err      error
 	)
 
 	if filter.GetExpression() != "" {
-		decision, err = eval.NewDecision(eval.AllTrue, filter.GetExpression())
+		decision, err = trigger.NewDecision(filter.GetExpression())
 		if err != nil {
 			return nil, err
 		}
@@ -1016,10 +1016,10 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectFilter
 
 func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Docs, error) {
 	var docs []*apipb.Doc
-	var decision *eval.Decision
+	var decision *trigger.Decision
 	var err error
 	if filter.GetExpression() != "" {
-		decision, err = eval.NewDecision(eval.AllTrue, filter.GetExpression())
+		decision, err = trigger.NewDecision(filter.GetExpression())
 		if err != nil {
 			return nil, err
 		}
@@ -1104,11 +1104,11 @@ func (n *Graph) TraverseMe(ctx context.Context, filter *apipb.TraverseMeFilter) 
 
 func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectFilter) (*apipb.Connections, error) {
 	var (
-		decision *eval.Decision
+		decision *trigger.Decision
 		err      error
 	)
 	if filter.GetExpression() != "" {
-		decision, err = eval.NewDecision(eval.AllTrue, filter.GetExpression())
+		decision, err = trigger.NewDecision(filter.GetExpression())
 		if err != nil {
 			return nil, err
 		}
@@ -1177,7 +1177,7 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 		for k, v := range value.GetAttributes().GetFields() {
 			setConnection.Attributes.GetFields()[k] = v
 		}
-		n.rangeTriggers(func(a *trigger) bool {
+		n.rangeTriggers(func(a *triggerCache) bool {
 			if a.trigger.GetTargetConnections() && (setConnection.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 				data, err := a.evalTrigger.Trigger(setConnection.AsMap())
 				if err == nil {
@@ -1218,7 +1218,7 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*
 			for k, v := range patch.GetAttributes().GetFields() {
 				connection.Attributes.GetFields()[k] = v
 			}
-			n.rangeTriggers(func(a *trigger) bool {
+			n.rangeTriggers(func(a *triggerCache) bool {
 				if a.trigger.GetTargetConnections() && (connection.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 					data, err := a.evalTrigger.Trigger(connection.AsMap())
 					if err == nil {
@@ -1247,11 +1247,11 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*
 
 func (e *Graph) SearchConnections(ctx context.Context, filter *apipb.Filter) (*apipb.Connections, error) {
 	var (
-		decision *eval.Decision
+		decision *trigger.Decision
 		err      error
 	)
 	if filter.GetExpression() != "" {
-		decision, err = eval.NewDecision(eval.AllTrue, filter.GetExpression())
+		decision, err = trigger.NewDecision(filter.GetExpression())
 		if err != nil {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
@@ -1442,7 +1442,7 @@ func (g *Graph) SeedDocs(server apipb.DatabaseService_SeedDocsServer) error {
 			if err != nil {
 				return err
 			}
-			g.rangeTriggers(func(a *trigger) bool {
+			g.rangeTriggers(func(a *triggerCache) bool {
 				if a.trigger.GetTargetDocs() && (msg.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
 					data, err := a.evalTrigger.Trigger(msg.AsMap())
 					if err == nil {
@@ -1545,7 +1545,7 @@ func (g *Graph) SearchAndConnectMe(ctx context.Context, filter *apipb.SearchConn
 }
 
 func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.ExistsFilter) (*apipb.Boolean, error) {
-	decision, err := eval.NewDecision(eval.AllTrue, has.GetExpression())
+	decision, err := trigger.NewDecision(has.GetExpression())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
@@ -1570,7 +1570,7 @@ func (g *Graph) ExistsDoc(ctx context.Context, has *apipb.ExistsFilter) (*apipb.
 }
 
 func (g *Graph) ExistsConnection(ctx context.Context, has *apipb.ExistsFilter) (*apipb.Boolean, error) {
-	decision, err := eval.NewDecision(eval.AllTrue, has.GetExpression())
+	decision, err := trigger.NewDecision(has.GetExpression())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}

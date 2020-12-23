@@ -16,7 +16,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -297,10 +296,6 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 		User:    user,
 		Headers: map[string]string{},
 	}
-	p, ok := peer.FromContext(ctx)
-	if ok {
-		request.Peer = p.Addr.String()
-	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		for k, val := range md {
@@ -364,10 +359,6 @@ func (g *Graph) checkResponse(ctx context.Context, method string, response inter
 		User:    user,
 		Target:  nil,
 		Headers: map[string]string{},
-	}
-	p, ok := peer.FromContext(ctx)
-	if ok {
-		request.Peer = p.Addr.String()
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if ok {

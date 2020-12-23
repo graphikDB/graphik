@@ -6,7 +6,7 @@ https://graphikdb.github.io/graphik/
 
 `git clone git@github.com:graphikDB/graphik.git`
     
-`docker pull graphikdb/graphik:v0.11.2`
+`docker pull graphikdb/graphik:v0.11.3`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -162,7 +162,7 @@ This is bad for the following reasons:
 - github.com/autom8ter/machine
 - github.com/graphikDB/raft
 - github.com/graphikDB/generic
-- github.com/graphikDB/eval
+- github.com/graphikDB/trigger
 
 ## Flags
 
@@ -896,7 +896,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.11.2
+        image: graphikdb/graphik:v0.11.3
         env_file:
           - .env
         ports:

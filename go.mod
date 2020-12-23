@@ -8,9 +8,9 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/google/cel-go v0.6.1-0.20201210004405-3ea8bd382b11 // indirect
 	github.com/gorilla/websocket v1.4.2
-	github.com/graphikDB/eval v0.0.6
 	github.com/graphikDB/generic v0.0.0
 	github.com/graphikDB/raft v0.0.0
+	github.com/graphikDB/trigger v0.0.8
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/hashicorp/raft v1.2.0
