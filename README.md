@@ -137,10 +137,10 @@ This is bad for the following reasons:
 - [x] Persistant(bbolt LMDB)
 - [x] Identity-Aware PubSub with Channels & Message Filtering(gRPC & graphQL)
 - [x] Change Streams
-- [x] [Common Expression Language](https://opensource.google/projects/cel) Query Filtering
-- [x] [Common Expression Language](https://opensource.google/projects/cel) Request Authorization
-- [x] [Common Expression Language](https://opensource.google/projects/cel) Type Validators
-- [x] [Common Expression Language](https://opensource.google/projects/cel) Server Side Triggers
+- [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Query Filtering
+- [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Request Authorization
+- [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Type Validators
+- [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Server Side Triggers
 - [x] Loosely-Typed(mongo-esque)
 - [x] Horizontal Scalability/HA via Raft Consensus Protocol
 - [x] [Prometheus Metrics](https://prometheus.io/)
@@ -964,3 +964,4 @@ to shutdown:
 |Authentication vs Authorization       |Authentication and authorization might sound similar, but they are distinct security processes in the world of identity and access management (IAM). Authentication confirms that users are who they say they are. Authorization gives those users permission to access a resource.                                                                                                                                                                                                                      |https://www.okta.com/identity-101/authentication-vs-authorization/#:~:text=Authentication%20and%20authorization%20might%20sound,permission%20to%20access%20a%20resource.                         |
 |Role Based Access Control(RBAC)       |Role-based access control (RBAC) is a method of restricting network access based on the roles of individual users within an enterprise. RBAC lets employees have access rights only to the information they need to do their jobs and prevents them from accessing information that doesn't pertain to them.                                                                                                                                                                                             |https://searchsecurity.techtarget.com/definition/role-based-access-control-RBAC#:~:text=Role%2Dbased%20access%20control%20(RBAC)%20is%20a%20method%20of,doesn't%20pertain%20to%20them.           |
 | Index Free Adjacency | Data lookup performance is dependent on the access speed from one particular node to another. Because index-free adjacency enforces the nodes to have direct physical RAM addresses and physically point to other adjacent nodes, it results in a fast retrieval. A native graph system with index-free adjacency does not have to move through any other type of data structures to find links between the nodes. | https://en.wikipedia.org/wiki/Graph_database#Index-free_adjacency
+| Extended Common Expression Language | An extensive decision & trigger framework backed by Google's Common Expression Language | https://github.com/graphikDB/trigger#standard-definitionslibrary
