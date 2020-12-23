@@ -51,3 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.11.4] - 2020-12-22
 - fine-tune server-side triggers and add 
+
+## [0.11.5] - 2020-12-23
+- upgrate trigger to v0.10.0 - 20+ CEL macros added
