@@ -124,7 +124,7 @@ This is bad for the following reasons:
 - graphQL playground for built in, SSO protected user interface for interacting with the database and exploring data outside of software development
 - gRPC API for api -> database requests - gRPC tooling server side is more performant & has better tooling
     - auto-generate client SDK's in most languages (python, javascript, csharp, java, go, etc)
-
+- database schema operations managed via integration with state of the art change management/automation tooling - [terraform](https://terraform.io)
 
 ## Features
 - [x] 100% Go
