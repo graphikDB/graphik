@@ -5194,7 +5194,6 @@ proto.api.AuthTarget.toObject = function(includeInstance, msg) {
   var f, obj = {
     user: (f = msg.getUser()) && proto.api.Doc.toObject(includeInstance, f),
     target: (f = msg.getTarget()) && google_protobuf_struct_pb.Struct.toObject(includeInstance, f),
-    peer: jspb.Message.getFieldWithDefault(msg, 3, ""),
     headersMap: (f = msg.getHeadersMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
@@ -5243,10 +5242,6 @@ proto.api.AuthTarget.deserializeBinaryFromReader = function(msg, reader) {
       msg.setTarget(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPeer(value);
-      break;
-    case 4:
       var value = msg.getHeadersMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "");
@@ -5297,16 +5292,9 @@ proto.api.AuthTarget.serializeBinaryToWriter = function(message, writer) {
       google_protobuf_struct_pb.Struct.serializeBinaryToWriter
     );
   }
-  f = message.getPeer();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
   f = message.getHeadersMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(4, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
   }
 };
 
@@ -5372,29 +5360,14 @@ proto.api.AuthTarget.prototype.hasTarget = function() {
 
 
 /**
- * optional string peer = 3;
- * @return {string}
- */
-proto.api.AuthTarget.prototype.getPeer = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/** @param {string} value */
-proto.api.AuthTarget.prototype.setPeer = function(value) {
-  jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * map<string, string> headers = 4;
+ * map<string, string> headers = 3;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,string>}
  */
 proto.api.AuthTarget.prototype.getHeadersMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,string>} */ (
-      jspb.Message.getMapField(this, 4, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
       null));
 };
 

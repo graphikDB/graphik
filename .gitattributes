@@ -3,3 +3,5 @@
 /gen/grpc/java/* linguist-vendored
 /gen/grpc/python/* linguist-vendored
 /gen/grpc/php/* linguist-vendored
+/gen/gql/docs/* linguist-vendored
+/gen/grpc/docs/* linguist-vendored

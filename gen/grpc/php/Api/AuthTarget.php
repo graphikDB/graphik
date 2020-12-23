@@ -9,6 +9,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * AuthTarget is the payload/input to Authorizer expressions
+ *
  * Generated from protobuf message <code>api.AuthTarget</code>
  */
 class AuthTarget extends \Google\Protobuf\Internal\Message
@@ -20,15 +22,15 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
      */
     private $user = null;
     /**
+     * target is the request/response represented as a Struct
+     *
      * Generated from protobuf field <code>.google.protobuf.Struct target = 2;</code>
      */
     private $target = null;
     /**
-     * Generated from protobuf field <code>string peer = 3;</code>
-     */
-    private $peer = '';
-    /**
-     * Generated from protobuf field <code>map<string, string> headers = 4;</code>
+     * headers are the request headers
+     *
+     * Generated from protobuf field <code>map<string, string> headers = 3;</code>
      */
     private $headers;
 
@@ -41,8 +43,9 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
      *     @type \Api\Doc $user
      *           user is the user making the request
      *     @type \Google\Protobuf\Struct $target
-     *     @type string $peer
+     *           target is the request/response represented as a Struct
      *     @type array|\Google\Protobuf\Internal\MapField $headers
+     *           headers are the request headers
      * }
      */
     public function __construct($data = NULL) {
@@ -77,6 +80,8 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * target is the request/response represented as a Struct
+     *
      * Generated from protobuf field <code>.google.protobuf.Struct target = 2;</code>
      * @return \Google\Protobuf\Struct
      */
@@ -86,6 +91,8 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * target is the request/response represented as a Struct
+     *
      * Generated from protobuf field <code>.google.protobuf.Struct target = 2;</code>
      * @param \Google\Protobuf\Struct $var
      * @return $this
@@ -99,29 +106,9 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string peer = 3;</code>
-     * @return string
-     */
-    public function getPeer()
-    {
-        return $this->peer;
-    }
-
-    /**
-     * Generated from protobuf field <code>string peer = 3;</code>
-     * @param string $var
-     * @return $this
-     */
-    public function setPeer($var)
-    {
-        GPBUtil::checkString($var, True);
-        $this->peer = $var;
-
-        return $this;
-    }
-
-    /**
-     * Generated from protobuf field <code>map<string, string> headers = 4;</code>
+     * headers are the request headers
+     *
+     * Generated from protobuf field <code>map<string, string> headers = 3;</code>
      * @return \Google\Protobuf\Internal\MapField
      */
     public function getHeaders()
@@ -130,7 +117,9 @@ class AuthTarget extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>map<string, string> headers = 4;</code>
+     * headers are the request headers
+     *
+     * Generated from protobuf field <code>map<string, string> headers = 3;</code>
      * @param array|\Google\Protobuf\Internal\MapField $var
      * @return $this
      */

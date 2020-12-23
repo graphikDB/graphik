@@ -9,11 +9,15 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * IndexConstructor is used to construct Indexes
+ *
  * Generated from protobuf message <code>api.IndexConstructor</code>
  */
 class IndexConstructor extends \Google\Protobuf\Internal\Message
 {
     /**
+     * name is the unique name of the Index
+     *
      * Generated from protobuf field <code>string name = 1 [(.validator.field) = {</code>
      */
     private $name = '';
@@ -49,6 +53,7 @@ class IndexConstructor extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $name
+     *           name is the unique name of the Index
      *     @type string $gtype
      *           gtype is the doc/connection type to be filtered
      *     @type string $expression
@@ -65,6 +70,8 @@ class IndexConstructor extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * name is the unique name of the Index
+     *
      * Generated from protobuf field <code>string name = 1 [(.validator.field) = {</code>
      * @return string
      */
@@ -74,6 +81,8 @@ class IndexConstructor extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * name is the unique name of the Index
+     *
      * Generated from protobuf field <code>string name = 1 [(.validator.field) = {</code>
      * @param string $var
      * @return $this

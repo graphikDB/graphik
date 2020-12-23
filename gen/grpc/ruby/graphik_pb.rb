@@ -131,8 +131,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.AuthTarget" do
     optional :user, :message, 1, "api.Doc"
     optional :target, :message, 2, "google.protobuf.Struct"
-    optional :peer, :string, 3
-    map :headers, :string, :string, 4
+    map :headers, :string, :string, 3
   end
   add_message "api.Authorizer" do
     optional :name, :string, 1

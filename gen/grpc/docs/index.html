@@ -1,0 +1,4100 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Protocol Documentation</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic"/>
+    <style>
+      body {
+        width: 60em;
+        margin: 1em auto;
+        color: #222;
+        font-family: "Ubuntu", sans-serif;
+        padding-bottom: 4em;
+      }
+
+      h1 {
+        font-weight: normal;
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+      }
+
+      h2 {
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+        margin: 1.5em 0;
+      }
+
+      h3 {
+        font-weight: normal;
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+      }
+
+      a {
+        text-decoration: none;
+        color: #567e25;
+      }
+
+      table {
+        width: 100%;
+        font-size: 80%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        font-weight: 700;
+        background-color: #dcdcdc;
+      }
+
+      tbody tr:nth-child(even) {
+        background-color: #fbfbfb;
+      }
+
+      td {
+        border: 1px solid #ccc;
+        padding: 0.5ex 2ex;
+      }
+
+      td p {
+        text-indent: 1em;
+        margin: 0;
+      }
+
+      td p:nth-child(1) {
+        text-indent: 0;  
+      }
+
+       
+      .field-table td:nth-child(1) {  
+        width: 10em;
+      }
+      .field-table td:nth-child(2) {  
+        width: 10em;
+      }
+      .field-table td:nth-child(3) {  
+        width: 6em;
+      }
+      .field-table td:nth-child(4) {  
+        width: auto;
+      }
+
+       
+      .extension-table td:nth-child(1) {  
+        width: 10em;
+      }
+      .extension-table td:nth-child(2) {  
+        width: 10em;
+      }
+      .extension-table td:nth-child(3) {  
+        width: 10em;
+      }
+      .extension-table td:nth-child(4) {  
+        width: 5em;
+      }
+      .extension-table td:nth-child(5) {  
+        width: auto;
+      }
+
+       
+      .enum-table td:nth-child(1) {  
+        width: 10em;
+      }
+      .enum-table td:nth-child(2) {  
+        width: 10em;
+      }
+      .enum-table td:nth-child(3) {  
+        width: auto;
+      }
+
+       
+      .scalar-value-types-table tr {
+        height: 3em;
+      }
+
+       
+      #toc-container ul {
+        list-style-type: none;
+        padding-left: 1em;
+        line-height: 180%;
+        margin: 0;
+      }
+      #toc > li > a {
+        font-weight: bold;
+      }
+
+       
+      .file-heading {
+        width: 100%;
+        display: table;
+        border-bottom: 1px solid #aaa;
+        margin: 4em 0 1.5em 0;
+      }
+      .file-heading h2 {
+        border: none;
+        display: table-cell;
+      }
+      .file-heading a {
+        text-align: right;
+        display: table-cell;
+      }
+
+       
+      .badge {
+        width: 1.6em;
+        height: 1.6em;
+        display: inline-block;
+
+        line-height: 1.6em;
+        text-align: center;
+        font-weight: bold;
+        font-size: 60%;
+
+        color: #89ba48;
+        background-color: #dff0c8;
+
+        margin: 0.5ex 1em 0.5ex -1em;
+        border: 1px solid #fbfbfb;
+        border-radius: 1ex;
+      }
+    </style>
+
+    
+    <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+  </head>
+
+  <body>
+
+    <h1 id="title">Protocol Documentation</h1>
+
+    <h2>Table of Contents</h2>
+
+    <div id="toc-container">
+      <ul id="toc">
+        
+          
+          <li>
+            <a href="#graphik.proto">graphik.proto</a>
+            <ul>
+              
+                <li>
+                  <a href="#api.AggFilter"><span class="badge">M</span>AggFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.AuthTarget"><span class="badge">M</span>AuthTarget</a>
+                </li>
+              
+                <li>
+                  <a href="#api.AuthTarget.HeadersEntry"><span class="badge">M</span>AuthTarget.HeadersEntry</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Authorizer"><span class="badge">M</span>Authorizer</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Authorizers"><span class="badge">M</span>Authorizers</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Boolean"><span class="badge">M</span>Boolean</a>
+                </li>
+              
+                <li>
+                  <a href="#api.ConnectFilter"><span class="badge">M</span>ConnectFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Connection"><span class="badge">M</span>Connection</a>
+                </li>
+              
+                <li>
+                  <a href="#api.ConnectionConstructor"><span class="badge">M</span>ConnectionConstructor</a>
+                </li>
+              
+                <li>
+                  <a href="#api.ConnectionConstructors"><span class="badge">M</span>ConnectionConstructors</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Connections"><span class="badge">M</span>Connections</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Doc"><span class="badge">M</span>Doc</a>
+                </li>
+              
+                <li>
+                  <a href="#api.DocConstructor"><span class="badge">M</span>DocConstructor</a>
+                </li>
+              
+                <li>
+                  <a href="#api.DocConstructors"><span class="badge">M</span>DocConstructors</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Docs"><span class="badge">M</span>Docs</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Edit"><span class="badge">M</span>Edit</a>
+                </li>
+              
+                <li>
+                  <a href="#api.EditFilter"><span class="badge">M</span>EditFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.ExistsFilter"><span class="badge">M</span>ExistsFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.ExprFilter"><span class="badge">M</span>ExprFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Filter"><span class="badge">M</span>Filter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Flags"><span class="badge">M</span>Flags</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Graph"><span class="badge">M</span>Graph</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Index"><span class="badge">M</span>Index</a>
+                </li>
+              
+                <li>
+                  <a href="#api.IndexConstructor"><span class="badge">M</span>IndexConstructor</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Indexes"><span class="badge">M</span>Indexes</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Message"><span class="badge">M</span>Message</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Number"><span class="badge">M</span>Number</a>
+                </li>
+              
+                <li>
+                  <a href="#api.OutboundMessage"><span class="badge">M</span>OutboundMessage</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Peer"><span class="badge">M</span>Peer</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Pong"><span class="badge">M</span>Pong</a>
+                </li>
+              
+                <li>
+                  <a href="#api.RaftCommand"><span class="badge">M</span>RaftCommand</a>
+                </li>
+              
+                <li>
+                  <a href="#api.RaftState"><span class="badge">M</span>RaftState</a>
+                </li>
+              
+                <li>
+                  <a href="#api.RaftState.StatsEntry"><span class="badge">M</span>RaftState.StatsEntry</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Ref"><span class="badge">M</span>Ref</a>
+                </li>
+              
+                <li>
+                  <a href="#api.RefConstructor"><span class="badge">M</span>RefConstructor</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Refs"><span class="badge">M</span>Refs</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Schema"><span class="badge">M</span>Schema</a>
+                </li>
+              
+                <li>
+                  <a href="#api.SearchConnectFilter"><span class="badge">M</span>SearchConnectFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.SearchConnectMeFilter"><span class="badge">M</span>SearchConnectMeFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.StreamFilter"><span class="badge">M</span>StreamFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Traversal"><span class="badge">M</span>Traversal</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Traversals"><span class="badge">M</span>Traversals</a>
+                </li>
+              
+                <li>
+                  <a href="#api.TraverseFilter"><span class="badge">M</span>TraverseFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.TraverseMeFilter"><span class="badge">M</span>TraverseMeFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Trigger"><span class="badge">M</span>Trigger</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Triggers"><span class="badge">M</span>Triggers</a>
+                </li>
+              
+                <li>
+                  <a href="#api.TypeValidator"><span class="badge">M</span>TypeValidator</a>
+                </li>
+              
+                <li>
+                  <a href="#api.TypeValidators"><span class="badge">M</span>TypeValidators</a>
+                </li>
+              
+              
+                <li>
+                  <a href="#api.Aggregate"><span class="badge">E</span>Aggregate</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Algorithm"><span class="badge">E</span>Algorithm</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Membership"><span class="badge">E</span>Membership</a>
+                </li>
+              
+              
+              
+                <li>
+                  <a href="#api.DatabaseService"><span class="badge">S</span>DatabaseService</a>
+                </li>
+              
+                <li>
+                  <a href="#api.RaftService"><span class="badge">S</span>RaftService</a>
+                </li>
+              
+            </ul>
+          </li>
+        
+        <li><a href="#scalar-value-types">Scalar Value Types</a></li>
+      </ul>
+    </div>
+
+    
+      
+      <div class="file-heading">
+        <h2 id="graphik.proto">graphik.proto</h2><a href="#title">Top</a>
+      </div>
+      <p></p>
+
+      
+        <h3 id="api.AggFilter">AggFilter</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>filter</td>
+                  <td><a href="#api.Filter">Filter</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>aggregate</td>
+                  <td><a href="#api.Aggregate">Aggregate</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>field</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>filter</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>field</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ((^|, )(|^attributes.(.*)))&#43;$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.AuthTarget">AuthTarget</h3>
+        <p>AuthTarget is the payload/input to Authorizer expressions</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>user</td>
+                  <td><a href="#api.Doc">Doc</a></td>
+                  <td></td>
+                  <td><p>user is the user making the request </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>target is the request/response represented as a Struct </p></td>
+                </tr>
+              
+                <tr>
+                  <td>headers</td>
+                  <td><a href="#api.AuthTarget.HeadersEntry">AuthTarget.HeadersEntry</a></td>
+                  <td>repeated</td>
+                  <td><p>headers are the request headers </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>user</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.AuthTarget.HeadersEntry">AuthTarget.HeadersEntry</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>key</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Authorizer">Authorizer</h3>
+        <p>Authorizer is a graph primitive used for authorizing inbound requests and/or responses(see AuthTarget)</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>name is the unique name of the authorizer </p></td>
+                </tr>
+              
+                <tr>
+                  <td>method</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>method is the rpc method that will invoke the authorizer </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>expression is the boolean CEL expression that evaluates either the request or response body </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target_requests</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>target_responses sets the authorizer to evaluate request bodies </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target_responses</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>target_responses sets the authorizer to evaluate response bodies </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>method</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Authorizers">Authorizers</h3>
+        <p>Authorizers is an array of authorizer</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>authorizers</td>
+                  <td><a href="#api.Authorizer">Authorizer</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Boolean">Boolean</h3>
+        <p>Boolean is a simple boolean value</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.ConnectFilter">ConnectFilter</h3>
+        <p>ConnectFilter is used to fetch connections related to a single noted</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>doc_ref</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>doc_ref is the ref to the target doc. (validator.field) = {msg_exists : true}] </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gtype is the type of connections to return. (validator.field) = {regex : &#34;^.{1,225}$&#34;} </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>expression is a CEL expression used to filter connections/modes </p></td>
+                </tr>
+              
+                <tr>
+                  <td>limit</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>limit is the maximum number of items to return. (validator.field) = {int_gt : 0} </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sort</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$&#34;} </p></td>
+                </tr>
+              
+                <tr>
+                  <td>seek</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>seek to a specific key for pagination </p></td>
+                </tr>
+              
+                <tr>
+                  <td>reverse</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>reverse the results </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>doc_ref</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>limit</td>
+                  <td>
+                    <ul>
+                    
+                      <li>int_gt: 0</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>sort</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Connection">Connection</h3>
+        <p>Connection is a graph primitive that represents a relationship between two docs</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>ref is the ref to the connection </p></td>
+                </tr>
+              
+                <tr>
+                  <td>attributes</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>attributes are k/v pairs </p></td>
+                </tr>
+              
+                <tr>
+                  <td>directed</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>directed is false if the connection is bi-directional </p></td>
+                </tr>
+              
+                <tr>
+                  <td>from</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>from is the doc ref that is the source of the connection </p></td>
+                </tr>
+              
+                <tr>
+                  <td>to</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>to is the doc ref that is the destination of the connection </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>from</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>to</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.ConnectionConstructor">ConnectionConstructor</h3>
+        <p>ConnectionConstructor is used to create an Connection</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td><a href="#api.RefConstructor">RefConstructor</a></td>
+                  <td></td>
+                  <td><p>ref is the ref to the new Connection. If an id isn&#39;t present, one will be generated. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>attributes</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>attributes are k/v pairs </p></td>
+                </tr>
+              
+                <tr>
+                  <td>directed</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>directed is false if the connection is bi-directional </p></td>
+                </tr>
+              
+                <tr>
+                  <td>from</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>from is the doc ref that is the root of the connection </p></td>
+                </tr>
+              
+                <tr>
+                  <td>to</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>to is the doc ref that is the destination of the connection </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>from</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>to</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.ConnectionConstructors">ConnectionConstructors</h3>
+        <p>ConnectionConstructors is an array of ConnectionConstructor</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>connections</td>
+                  <td><a href="#api.ConnectionConstructor">ConnectionConstructor</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Connections">Connections</h3>
+        <p>Connections is an array of Connection</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>connections</td>
+                  <td><a href="#api.Connection">Connection</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>seek_next</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Doc">Doc</h3>
+        <p>Doc is a Graph primitive representing a single entity/resource. It is connected to other docs via Connections</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>ref is the ref to the doc </p></td>
+                </tr>
+              
+                <tr>
+                  <td>attributes</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>k/v pairs </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.DocConstructor">DocConstructor</h3>
+        <p>DocConstructor is used to create a doc</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td><a href="#api.RefConstructor">RefConstructor</a></td>
+                  <td></td>
+                  <td><p>ref is the ref to the new Doc. If an id isn&#39;t present, one will be generated. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>attributes</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>arbitrary k/v pairs </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.DocConstructors">DocConstructors</h3>
+        <p>DocConstructor is used to create a batch of docs</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>docs</td>
+                  <td><a href="#api.DocConstructor">DocConstructor</a></td>
+                  <td>repeated</td>
+                  <td><p>docs is an array of doc constructors </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Docs">Docs</h3>
+        <p>Docs is an array of docs</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>docs</td>
+                  <td><a href="#api.Doc">Doc</a></td>
+                  <td>repeated</td>
+                  <td><p>docs is an array of docs </p></td>
+                </tr>
+              
+                <tr>
+                  <td>seek_next</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Edit">Edit</h3>
+        <p>Edit patches the attributes of a Doc or Connection</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>ref is the ref to the target doc/connection to patch </p></td>
+                </tr>
+              
+                <tr>
+                  <td>attributes</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>attributes are k/v pairs used to overwrite k/v pairs on a doc/connection </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>ref</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.EditFilter">EditFilter</h3>
+        <p>EditFilter is used to patch/edit docs/connections</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>filter</td>
+                  <td><a href="#api.Filter">Filter</a></td>
+                  <td></td>
+                  <td><p>filter is used to filter docs/connections to patch </p></td>
+                </tr>
+              
+                <tr>
+                  <td>attributes</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>attributes are k/v pairs used to overwrite k/v pairs on all docs/connections that pass the filter </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.ExistsFilter">ExistsFilter</h3>
+        <p>ExistsFilter is used as input into all Exists(boolean) related queries.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>seek</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>seek to a specific key for pagination </p></td>
+                </tr>
+              
+                <tr>
+                  <td>reverse</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>reverse the results </p></td>
+                </tr>
+              
+                <tr>
+                  <td>index</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>search in a specific index </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.ExprFilter">ExprFilter</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>expression is a CEL expression used to filter connections/nodes </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Filter">Filter</h3>
+        <p>Filter is a generic filter using Common Expression Language</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gtype is the doc/connection type to be filtered </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>expression is a CEL expression used to filter connections/modes </p></td>
+                </tr>
+              
+                <tr>
+                  <td>limit</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>limit is the maximum number of items to return </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sort</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>custom sorting of the results. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>seek</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>seek to a specific key for pagination </p></td>
+                </tr>
+              
+                <tr>
+                  <td>reverse</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>reverse the results </p></td>
+                </tr>
+              
+                <tr>
+                  <td>index</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>search in a specific index </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>limit</td>
+                  <td>
+                    <ul>
+                    
+                      <li>int_gt: 0</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>sort</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Flags">Flags</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>open_id_discovery</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>storage_path</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>persistant storage ref (env: GRAPHIK_STORAGE_PATH) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>metrics</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>enable prometheus &amp; pprof metrics (emv: GRAPHIK_METRICS = true) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>allow_headers</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>cors allow headers (env: GRAPHIK_ALLOW_HEADERS) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>allow_methods</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>cors allow methods (env: GRAPHIK_ALLOW_METHODS) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>allow_origins</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>root_users</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>root user is a list of email addresses that bypass authorizers. (env: GRAPHIK_ROOT_USERS) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>tls_cert</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>tls_key</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>playground_client_id</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>playground_client_secret</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>playground_redirect</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>require_request_authorizers</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>require_response_authorizers</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>join_raft</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>raft_peer_id</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>listen_port</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>raft_secret</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>debug</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Graph">Graph</h3>
+        <p>Graph is an array of docs and connections</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>docs</td>
+                  <td><a href="#api.Docs">Docs</a></td>
+                  <td></td>
+                  <td><p>docs are docs present in the graph </p></td>
+                </tr>
+              
+                <tr>
+                  <td>connections</td>
+                  <td><a href="#api.Connections">Connections</a></td>
+                  <td></td>
+                  <td><p>connections are connections present in the graph </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Index">Index</h3>
+        <p>Index is a secondary index</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gtype is the doc/connection type to be filtered </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>expression is a CEL expression used to filter connections/modes </p></td>
+                </tr>
+              
+                <tr>
+                  <td>docs</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>connections</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.IndexConstructor">IndexConstructor</h3>
+        <p>IndexConstructor is used to construct Indexes</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>name is the unique name of the Index </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gtype is the doc/connection type to be filtered </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>expression is a CEL expression used to filter connections/modes </p></td>
+                </tr>
+              
+                <tr>
+                  <td>docs</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>connections</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Indexes">Indexes</h3>
+        <p>Indexes is an array of Index</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>indexes</td>
+                  <td><a href="#api.Index">Index</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Message">Message</h3>
+        <p>Message is received on PubSub subscriptions</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>channel</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>channel is the channel the message was sent to </p></td>
+                </tr>
+              
+                <tr>
+                  <td>data</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>data is the data sent with the message </p></td>
+                </tr>
+              
+                <tr>
+                  <td>user</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>user is the sender that triggered/sent the message </p></td>
+                </tr>
+              
+                <tr>
+                  <td>timestamp</td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
+                  <td></td>
+                  <td><p>timestamp is when the message was sent </p></td>
+                </tr>
+              
+                <tr>
+                  <td>method</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>channel</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>data</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>user</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>timestamp</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>method</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Number">Number</h3>
+        <p>Number is a simple double/float64 value</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#double">double</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.OutboundMessage">OutboundMessage</h3>
+        <p>OutboundMessage is a message to be published to a pubsub channel</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>channel</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>channel is the target channel to send the message to </p></td>
+                </tr>
+              
+                <tr>
+                  <td>data</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>data is the data to send with the message </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>channel</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>data</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Peer">Peer</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>node_id</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>addr</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Pong">Pong</h3>
+        <p>Pong returns PONG if the server is healthy</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>message returns PONG if healthy </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.RaftCommand">RaftCommand</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>user</td>
+                  <td><a href="#api.Doc">Doc</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>method</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>set_docs</td>
+                  <td><a href="#api.Doc">Doc</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>set_connections</td>
+                  <td><a href="#api.Connection">Connection</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>del_docs</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>del_connections</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>set_indexes</td>
+                  <td><a href="#api.Indexes">Indexes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>set_authorizers</td>
+                  <td><a href="#api.Authorizers">Authorizers</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>set_type_validators</td>
+                  <td><a href="#api.TypeValidators">TypeValidators</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>send_message</td>
+                  <td><a href="#api.Message">Message</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>set_triggers</td>
+                  <td><a href="#api.Triggers">Triggers</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.RaftState">RaftState</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>leader</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>membership</td>
+                  <td><a href="#api.Membership">Membership</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>peers</td>
+                  <td><a href="#api.Peer">Peer</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>stats</td>
+                  <td><a href="#api.RaftState.StatsEntry">RaftState.StatsEntry</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.RaftState.StatsEntry">RaftState.StatsEntry</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>key</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Ref">Ref</h3>
+        <p>Ref describes a doc/connection type & id</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gtype is the type of the doc/connection ex: pet </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gid</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gid is the unique id of the doc/connection within the context of it&#39;s type </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>gid</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.RefConstructor">RefConstructor</h3>
+        <p>RefConstructor creates a new Ref</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gtype is the type of the doc/connection ex: pet </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gid</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gid is the unique id of the doc/connection within the context of it&#39;s type </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Refs">Refs</h3>
+        <p>Refs is an array of refs</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>refs</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Schema">Schema</h3>
+        <p>Schema returns registered connection & doc types</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>connection_types</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>connection_types are the types of connections in the graph </p></td>
+                </tr>
+              
+                <tr>
+                  <td>doc_types</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>doc_types are the types of docs in the graph </p></td>
+                </tr>
+              
+                <tr>
+                  <td>authorizers</td>
+                  <td><a href="#api.Authorizers">Authorizers</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>validators</td>
+                  <td><a href="#api.TypeValidators">TypeValidators</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>indexes</td>
+                  <td><a href="#api.Indexes">Indexes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>triggers</td>
+                  <td><a href="#api.Triggers">Triggers</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.SearchConnectFilter">SearchConnectFilter</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>filter</td>
+                  <td><a href="#api.Filter">Filter</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>attributes</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>attributes are k/v pairs </p></td>
+                </tr>
+              
+                <tr>
+                  <td>directed</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>directed is false if the connection is bi-directional </p></td>
+                </tr>
+              
+                <tr>
+                  <td>from</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p>from is the doc ref that is the root of the connection </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>from</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.SearchConnectMeFilter">SearchConnectMeFilter</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>filter</td>
+                  <td><a href="#api.Filter">Filter</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>attributes</td>
+                  <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+                  <td></td>
+                  <td><p>attributes are k/v pairs </p></td>
+                </tr>
+              
+                <tr>
+                  <td>directed</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>directed is false if the connection is bi-directional </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.StreamFilter">StreamFilter</h3>
+        <p>StreamFilter is used to filter messages in a pubsub channel</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>channel</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>channel is the target channel to filter from </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>expression is CEL expression used to filter messages </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>channel</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Traversal">Traversal</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>doc</td>
+                  <td><a href="#api.Doc">Doc</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>traversal_path</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>depth</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>hops</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Traversals">Traversals</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>traversals</td>
+                  <td><a href="#api.Traversal">Traversal</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.TraverseFilter">TraverseFilter</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>root</td>
+                  <td><a href="#api.Ref">Ref</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>doc_expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>connection_expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>limit</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sort</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$&#34;} </p></td>
+                </tr>
+              
+                <tr>
+                  <td>reverse</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>algorithm</td>
+                  <td><a href="#api.Algorithm">Algorithm</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>max_depth</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>maximum degree/depth of nodes to be visited during traversal </p></td>
+                </tr>
+              
+                <tr>
+                  <td>max_hops</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>maximum number of nodes to be visited during traversal </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>root</td>
+                  <td>
+                    <ul>
+                    
+                      <li>msg_exists: true</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>limit</td>
+                  <td>
+                    <ul>
+                    
+                      <li>int_gt: 0</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>sort</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>max_depth</td>
+                  <td>
+                    <ul>
+                    
+                      <li>int_gt: 0</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>max_hops</td>
+                  <td>
+                    <ul>
+                    
+                      <li>int_gt: 0</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.TraverseMeFilter">TraverseMeFilter</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>doc_expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>connection_expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>limit</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sort</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>custom sorting of the results. (validator.field) = {regex : &#34;((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$&#34;} </p></td>
+                </tr>
+              
+                <tr>
+                  <td>reverse</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>algorithm</td>
+                  <td><a href="#api.Algorithm">Algorithm</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>max_depth</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>maximum degree/depth of nodes to be visited during traversal </p></td>
+                </tr>
+              
+                <tr>
+                  <td>max_hops</td>
+                  <td><a href="#uint64">uint64</a></td>
+                  <td></td>
+                  <td><p>maximum number of nodes to be visited during traversal </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>limit</td>
+                  <td>
+                    <ul>
+                    
+                      <li>int_gt: 0</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>sort</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ((^|, )(|ref.gid|ref.gtype|^attributes.(.*)))&#43;$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>max_depth</td>
+                  <td>
+                    <ul>
+                    
+                      <li>int_gt: 0</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>max_hops</td>
+                  <td>
+                    <ul>
+                    
+                      <li>int_gt: 0</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Trigger">Trigger</h3>
+        <p>Trigger may be used to automatically mutate the attributes of documents/connections before they are commited to the database</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>name is the unique name of the authorizer </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>gtype is the type of doc/connection will invoke the trigger </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed </p></td>
+                </tr>
+              
+                <tr>
+                  <td>trigger</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>trigger is the map CEL expression that mutates the doc/connection before it is stored </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target_docs</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if target_docs is true, this trigger will be applied to documents. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target_connections</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if target_connections is true, this trigger will be applied to connections. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>trigger</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Triggers">Triggers</h3>
+        <p>Triggers is an array of Trigger</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>triggers</td>
+                  <td><a href="#api.Trigger">Trigger</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.TypeValidator">TypeValidator</h3>
+        <p>TypeValidator a graph primitive used to validate custom doc/connection constraints</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target_docs</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if target_docs is true, this validator will be applied to documents. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target_connections</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if target_connections is true, this validator will be applied to connections. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.TypeValidators">TypeValidators</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>validators</td>
+                  <td><a href="#api.TypeValidator">TypeValidator</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+
+      
+        <h3 id="api.Aggregate">Aggregate</h3>
+        <p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>COUNT</td>
+                <td>0</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>SUM</td>
+                <td>1</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>AVG</td>
+                <td>2</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>MAX</td>
+                <td>3</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>MIN</td>
+                <td>4</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>PROD</td>
+                <td>5</td>
+                <td><p></p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="api.Algorithm">Algorithm</h3>
+        <p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>BFS</td>
+                <td>0</td>
+                <td><p>BFS is short for the breadth-first search algorithm</p></td>
+              </tr>
+            
+              <tr>
+                <td>DFS</td>
+                <td>1</td>
+                <td><p>DFS is short for the depth-first search algorithm</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="api.Membership">Membership</h3>
+        <p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>UNKNOWN</td>
+                <td>0</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>FOLLOWER</td>
+                <td>1</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>CANDIDATE</td>
+                <td>2</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>LEADER</td>
+                <td>3</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>SHUTDOWN</td>
+                <td>4</td>
+                <td><p></p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+
+      
+
+      
+        <h3 id="api.DatabaseService">DatabaseService</h3>
+        <p>DatabaseService is the primary database service</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>GetSchema</td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><a href="#api.Schema">Schema</a></td>
+                <td><p>GetSchema gets schema about the Graph doc &amp; connection types</p></td>
+              </tr>
+            
+              <tr>
+                <td>SetAuthorizers</td>
+                <td><a href="#api.Authorizers">Authorizers</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>SetAuthorizers sets all of the authorizers in the graph database</p></td>
+              </tr>
+            
+              <tr>
+                <td>SetIndexes</td>
+                <td><a href="#api.Indexes">Indexes</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>SetIndexes sets all of the indexes in the graph database</p></td>
+              </tr>
+            
+              <tr>
+                <td>SetTypeValidators</td>
+                <td><a href="#api.TypeValidators">TypeValidators</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>SetTypeValidators sets all of the type validators in the graph database</p></td>
+              </tr>
+            
+              <tr>
+                <td>SetTriggers</td>
+                <td><a href="#api.Triggers">Triggers</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>SetTriggers sets all of the triggers in the graph database</p></td>
+              </tr>
+            
+              <tr>
+                <td>Me</td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><a href="#api.Doc">Doc</a></td>
+                <td><p>Me returns a Doc of the currently logged in user</p></td>
+              </tr>
+            
+              <tr>
+                <td>CreateDoc</td>
+                <td><a href="#api.DocConstructor">DocConstructor</a></td>
+                <td><a href="#api.Doc">Doc</a></td>
+                <td><p>CreateDoc creates a doc in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>CreateDocs</td>
+                <td><a href="#api.DocConstructors">DocConstructors</a></td>
+                <td><a href="#api.Docs">Docs</a></td>
+                <td><p>CreateDocs creates a batch of docs in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetDoc</td>
+                <td><a href="#api.Ref">Ref</a></td>
+                <td><a href="#api.Doc">Doc</a></td>
+                <td><p>GetDoc gets a single doc in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>SearchDocs</td>
+                <td><a href="#api.Filter">Filter</a></td>
+                <td><a href="#api.Docs">Docs</a></td>
+                <td><p>SearchDocs searches the graph for docs</p></td>
+              </tr>
+            
+              <tr>
+                <td>Traverse</td>
+                <td><a href="#api.TraverseFilter">TraverseFilter</a></td>
+                <td><a href="#api.Traversals">Traversals</a></td>
+                <td><p>Traverse executes a depth first search of the graph for docs</p></td>
+              </tr>
+            
+              <tr>
+                <td>TraverseMe</td>
+                <td><a href="#api.TraverseMeFilter">TraverseMeFilter</a></td>
+                <td><a href="#api.Traversals">Traversals</a></td>
+                <td><p>TraverseMe executes a graph traversal searching for docs related to the currently logged in user</p></td>
+              </tr>
+            
+              <tr>
+                <td>EditDoc</td>
+                <td><a href="#api.Edit">Edit</a></td>
+                <td><a href="#api.Doc">Doc</a></td>
+                <td><p>EditDoc patches/edits a docs attributes</p></td>
+              </tr>
+            
+              <tr>
+                <td>EditDocs</td>
+                <td><a href="#api.EditFilter">EditFilter</a></td>
+                <td><a href="#api.Docs">Docs</a></td>
+                <td><p>EditDocs patches a batch of docs attributes that pass the patch filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>DelDoc</td>
+                <td><a href="#api.Ref">Ref</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>DelDoc deletes a doc &amp; all of it&#39;s connected connections</p></td>
+              </tr>
+            
+              <tr>
+                <td>DelDocs</td>
+                <td><a href="#api.Filter">Filter</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>DelDocs deletes a batch of docs that pass the filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>ExistsDoc</td>
+                <td><a href="#api.ExistsFilter">ExistsFilter</a></td>
+                <td><a href="#api.Boolean">Boolean</a></td>
+                <td><p>ExistsDoc searches for a Doc and returns a Boolean indicating if it exists in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>ExistsConnection</td>
+                <td><a href="#api.ExistsFilter">ExistsFilter</a></td>
+                <td><a href="#api.Boolean">Boolean</a></td>
+                <td><p>ExistsConnection searches for a Connection and returns a Boolean indicating if it exists in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>HasDoc</td>
+                <td><a href="#api.Ref">Ref</a></td>
+                <td><a href="#api.Boolean">Boolean</a></td>
+                <td><p>HasDoc searches for the Doc by Ref returns a Boolean indicating if it exists in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>HasConnection</td>
+                <td><a href="#api.Ref">Ref</a></td>
+                <td><a href="#api.Boolean">Boolean</a></td>
+                <td><p>HasConnection searches for the Connection by Ref returns a Boolean indicating if it exists in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>CreateConnection</td>
+                <td><a href="#api.ConnectionConstructor">ConnectionConstructor</a></td>
+                <td><a href="#api.Connection">Connection</a></td>
+                <td><p>CreateConnection creates an connection in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>CreateConnections</td>
+                <td><a href="#api.ConnectionConstructors">ConnectionConstructors</a></td>
+                <td><a href="#api.Connections">Connections</a></td>
+                <td><p>CreateConnections creates a batch of connections in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>SearchAndConnect</td>
+                <td><a href="#api.SearchConnectFilter">SearchConnectFilter</a></td>
+                <td><a href="#api.Connections">Connections</a></td>
+                <td><p>searches for documents and forms connections based on whether they pass a filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>SearchAndConnectMe</td>
+                <td><a href="#api.SearchConnectMeFilter">SearchConnectMeFilter</a></td>
+                <td><a href="#api.Connections">Connections</a></td>
+                <td><p>SearchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetConnection</td>
+                <td><a href="#api.Ref">Ref</a></td>
+                <td><a href="#api.Connection">Connection</a></td>
+                <td><p>GetConnection gets a single connection in the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>SearchConnections</td>
+                <td><a href="#api.Filter">Filter</a></td>
+                <td><a href="#api.Connections">Connections</a></td>
+                <td><p>SearchConnections searches the graph for connections</p></td>
+              </tr>
+            
+              <tr>
+                <td>EditConnection</td>
+                <td><a href="#api.Edit">Edit</a></td>
+                <td><a href="#api.Connection">Connection</a></td>
+                <td><p>EditConnection patches an connections attributes</p></td>
+              </tr>
+            
+              <tr>
+                <td>EditConnections</td>
+                <td><a href="#api.EditFilter">EditFilter</a></td>
+                <td><a href="#api.Connections">Connections</a></td>
+                <td><p>EditConnections patches a batch of connections attributes that pass the patch filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>DelConnection</td>
+                <td><a href="#api.Ref">Ref</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>DelConnection deletes an connection from the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>DelConnections</td>
+                <td><a href="#api.Filter">Filter</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>DelConnections deletes a batch of connections that pass the filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>ConnectionsFrom</td>
+                <td><a href="#api.ConnectFilter">ConnectFilter</a></td>
+                <td><a href="#api.Connections">Connections</a></td>
+                <td><p>ConnectionsFrom returns connections that source from the given doc ref that pass the filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>ConnectionsTo</td>
+                <td><a href="#api.ConnectFilter">ConnectFilter</a></td>
+                <td><a href="#api.Connections">Connections</a></td>
+                <td><p>ConnectionsTo returns connections that point to the given doc ref that pass the filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>AggregateDocs</td>
+                <td><a href="#api.AggFilter">AggFilter</a></td>
+                <td><a href="#api.Number">Number</a></td>
+                <td><p>AggregateDocs executes an aggregation function against the graph</p></td>
+              </tr>
+            
+              <tr>
+                <td>AggregateConnections</td>
+                <td><a href="#api.AggFilter">AggFilter</a></td>
+                <td><a href="#api.Number">Number</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>Broadcast</td>
+                <td><a href="#api.OutboundMessage">OutboundMessage</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p>Broadcast broadcasts a message to a pubsub channel</p></td>
+              </tr>
+            
+              <tr>
+                <td>Stream</td>
+                <td><a href="#api.StreamFilter">StreamFilter</a></td>
+                <td><a href="#api.Message">Message</a> stream</td>
+                <td><p>Stream subscribes to messages on a pubsub channel</p></td>
+              </tr>
+            
+              <tr>
+                <td>PushDocConstructors</td>
+                <td><a href="#api.DocConstructor">DocConstructor</a> stream</td>
+                <td><a href="#api.Doc">Doc</a> stream</td>
+                <td><p>PushDocConstructors streams DocConstructor to the server, creating them as they&#39;re sent and streaming the new doc to the client</p></td>
+              </tr>
+            
+              <tr>
+                <td>PushConnectionConstructors</td>
+                <td><a href="#api.ConnectionConstructor">ConnectionConstructor</a> stream</td>
+                <td><a href="#api.Connection">Connection</a> stream</td>
+                <td><p>PushConnectionConstructors streams ConnectionConstructor to the server, creating them as they&#39;re sent and streaming the new connection to the client</p></td>
+              </tr>
+            
+              <tr>
+                <td>SeedDocs</td>
+                <td><a href="#api.Doc">Doc</a> stream</td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>SeedConnections</td>
+                <td><a href="#api.Connection">Connection</a> stream</td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p></p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+
+        
+        <h3 id="api.RaftService">RaftService</h3>
+        <p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>Ping</td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><a href="#api.Pong">Pong</a></td>
+                <td><p>Ping returns PONG if the server is health</p></td>
+              </tr>
+            
+              <tr>
+                <td>JoinCluster</td>
+                <td><a href="#api.Peer">Peer</a></td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>ClusterState</td>
+                <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
+                <td><a href="#api.RaftState">RaftState</a></td>
+                <td><p></p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+
+        
+    
+
+    <h2 id="scalar-value-types">Scalar Value Types</h2>
+    <table class="scalar-value-types-table">
+      <thead>
+        <tr><td>.proto Type</td><td>Notes</td><td>C++</td><td>Java</td><td>Python</td><td>Go</td><td>C#</td><td>PHP</td><td>Ruby</td></tr>
+      </thead>
+      <tbody>
+        
+          <tr id="double">
+            <td>double</td>
+            <td></td>
+            <td>double</td>
+            <td>double</td>
+            <td>float</td>
+            <td>float64</td>
+            <td>double</td>
+            <td>float</td>
+            <td>Float</td>
+          </tr>
+        
+          <tr id="float">
+            <td>float</td>
+            <td></td>
+            <td>float</td>
+            <td>float</td>
+            <td>float</td>
+            <td>float32</td>
+            <td>float</td>
+            <td>float</td>
+            <td>Float</td>
+          </tr>
+        
+          <tr id="int32">
+            <td>int32</td>
+            <td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>int</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="int64">
+            <td>int64</td>
+            <td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>integer/string</td>
+            <td>Bignum</td>
+          </tr>
+        
+          <tr id="uint32">
+            <td>uint32</td>
+            <td>Uses variable-length encoding.</td>
+            <td>uint32</td>
+            <td>int</td>
+            <td>int/long</td>
+            <td>uint32</td>
+            <td>uint</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="uint64">
+            <td>uint64</td>
+            <td>Uses variable-length encoding.</td>
+            <td>uint64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>uint64</td>
+            <td>ulong</td>
+            <td>integer/string</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="sint32">
+            <td>sint32</td>
+            <td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>int</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="sint64">
+            <td>sint64</td>
+            <td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>integer/string</td>
+            <td>Bignum</td>
+          </tr>
+        
+          <tr id="fixed32">
+            <td>fixed32</td>
+            <td>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</td>
+            <td>uint32</td>
+            <td>int</td>
+            <td>int</td>
+            <td>uint32</td>
+            <td>uint</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="fixed64">
+            <td>fixed64</td>
+            <td>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</td>
+            <td>uint64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>uint64</td>
+            <td>ulong</td>
+            <td>integer/string</td>
+            <td>Bignum</td>
+          </tr>
+        
+          <tr id="sfixed32">
+            <td>sfixed32</td>
+            <td>Always four bytes.</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>int</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="sfixed64">
+            <td>sfixed64</td>
+            <td>Always eight bytes.</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>integer/string</td>
+            <td>Bignum</td>
+          </tr>
+        
+          <tr id="bool">
+            <td>bool</td>
+            <td></td>
+            <td>bool</td>
+            <td>boolean</td>
+            <td>boolean</td>
+            <td>bool</td>
+            <td>bool</td>
+            <td>boolean</td>
+            <td>TrueClass/FalseClass</td>
+          </tr>
+        
+          <tr id="string">
+            <td>string</td>
+            <td>A string must always contain UTF-8 encoded or 7-bit ASCII text.</td>
+            <td>string</td>
+            <td>String</td>
+            <td>str/unicode</td>
+            <td>string</td>
+            <td>string</td>
+            <td>string</td>
+            <td>String (UTF-8)</td>
+          </tr>
+        
+          <tr id="bytes">
+            <td>bytes</td>
+            <td>May contain any arbitrary sequence of bytes.</td>
+            <td>string</td>
+            <td>ByteString</td>
+            <td>str</td>
+            <td>[]byte</td>
+            <td>ByteString</td>
+            <td>string</td>
+            <td>String (ASCII-8BIT)</td>
+          </tr>
+        
+      </tbody>
+    </table>
+  </body>
+</html>
+

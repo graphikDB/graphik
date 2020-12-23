@@ -9,6 +9,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Triggers is an array of Trigger
+ *
  * Generated from protobuf message <code>api.Triggers</code>
  */
 class Triggers extends \Google\Protobuf\Internal\Message

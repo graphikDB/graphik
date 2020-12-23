@@ -9,6 +9,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Trigger may be used to automatically mutate the attributes of documents/connections before they are commited to the database
+ *
  * Generated from protobuf message <code>api.Trigger</code>
  */
 class Trigger extends \Google\Protobuf\Internal\Message

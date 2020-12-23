@@ -9,6 +9,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Authorizer is a graph primitive used for authorizing inbound requests and/or responses(see AuthTarget)
+ *
  * Generated from protobuf message <code>api.Authorizer</code>
  */
 class Authorizer extends \Google\Protobuf\Internal\Message

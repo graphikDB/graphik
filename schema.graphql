@@ -69,13 +69,13 @@ type Traversal {
   hops: Int!
 }
 
-# AuthTarget
+# AuthTarget is the payload/input to Authorizer expressions
 type AuthTarget {
   # user is the user making the request
   user: Doc!
-  # target is the payload gived to the authorizer(request or response payload)
+  # target is the request/response represented as a Map
   target: Map!
-  peer: String!
+  # headers are the request headers
   headers: Map!
 }
 
@@ -109,6 +109,7 @@ type TypeValidators {
   validators: [TypeValidator!]
 }
 
+# triggers may be used to automatically mutate the attributes of documents/connections before they are commited to the database
 type Trigger {
   # name is the unique name of the type validator
   name: String!
@@ -124,6 +125,7 @@ type Trigger {
   target_connections: Boolean!
 }
 
+# Triggers is an array of Trigger
 type Triggers {
   triggers: [Trigger!]
 }

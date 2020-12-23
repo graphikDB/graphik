@@ -9,6 +9,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Index is a secondary index
+ *
  * Generated from protobuf message <code>api.Index</code>
  */
 class Index extends \Google\Protobuf\Internal\Message

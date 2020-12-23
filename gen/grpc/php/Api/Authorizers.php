@@ -9,6 +9,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Authorizers is an array of authorizer
+ *
  * Generated from protobuf message <code>api.Authorizers</code>
  */
 class Authorizers extends \Google\Protobuf\Internal\Message

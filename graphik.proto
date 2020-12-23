@@ -21,9 +21,13 @@ service RaftService {
 service DatabaseService {
   // GetSchema gets schema about the Graph doc & connection types
   rpc GetSchema(google.protobuf.Empty) returns(Schema){}
+  // SetAuthorizers sets all of the authorizers in the graph database
   rpc SetAuthorizers(Authorizers) returns(google.protobuf.Empty){}
+  // SetIndexes sets all of the indexes in the graph database
   rpc SetIndexes(Indexes) returns(google.protobuf.Empty){}
+  // SetTypeValidators sets all of the type validators in the graph database
   rpc SetTypeValidators(TypeValidators) returns(google.protobuf.Empty){}
+  // SetTriggers sets all of the triggers in the graph database
   rpc SetTriggers(Triggers) returns(google.protobuf.Empty){}
   // Me returns a Doc of the currently logged in user
   rpc Me(google.protobuf.Empty) returns(Doc){}
@@ -59,7 +63,9 @@ service DatabaseService {
   rpc CreateConnection(ConnectionConstructor) returns(Connection){}
   // CreateConnections creates a batch of connections in the graph
   rpc CreateConnections(ConnectionConstructors) returns(Connections){}
+  // searches for documents and forms connections based on whether they pass a filter
   rpc SearchAndConnect(SearchConnectFilter) returns(Connections){}
+  // SearchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
   rpc SearchAndConnectMe(SearchConnectMeFilter) returns(Connections){}
   // GetConnection gets a single connection in the graph
   rpc GetConnection(Ref) returns(Connection){}
@@ -84,7 +90,9 @@ service DatabaseService {
   rpc Broadcast(OutboundMessage) returns(google.protobuf.Empty){}
   // Stream subscribes to messages on a pubsub channel
   rpc Stream(StreamFilter) returns(stream Message){}
+  // PushDocConstructors streams DocConstructor to the server, creating them as they're sent and streaming the new doc to the client
   rpc PushDocConstructors(stream DocConstructor) returns (stream Doc){}
+  // PushConnectionConstructors streams ConnectionConstructor to the server, creating them as they're sent and streaming the new connection to the client
   rpc PushConnectionConstructors(stream ConnectionConstructor) returns (stream Connection){}
   rpc SeedDocs(stream Doc) returns(google.protobuf.Empty){}
   rpc SeedConnections(stream Connection) returns(google.protobuf.Empty){}
@@ -306,7 +314,9 @@ message TraverseMeFilter {
   uint64 max_hops =8[(validator.field) = {int_gt : 0}];
 }
 
+// IndexConstructor is used to construct Indexes
 message IndexConstructor {
+  // name is the unique name of the Index
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   // gtype is the doc/connection type to be filtered
   string gtype =3 [(validator.field) = {regex : "^.{1,225}$"}];
@@ -318,14 +328,17 @@ message IndexConstructor {
   bool connections =7;
 }
 
+// AuthTarget is the payload/input to Authorizer expressions
 message AuthTarget {
   // user is the user making the request
   Doc user =1 [(validator.field) = {msg_exists : true}];
+  // target is the request/response represented as a Struct
   google.protobuf.Struct target = 2;
-  string peer = 3;
-  map<string, string> headers =4;
+  // headers are the request headers
+  map<string, string> headers =3;
 }
 
+// Authorizer is a graph primitive used for authorizing inbound requests and/or responses(see AuthTarget)
 message Authorizer {
   // name is the unique name of the authorizer
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
@@ -339,10 +352,12 @@ message Authorizer {
   bool target_responses =5;
 }
 
+// Authorizers is an array of authorizer
 message Authorizers {
   repeated Authorizer authorizers =1;
 }
 
+// TypeValidator a graph primitive used to validate custom doc/connection constraints
 message TypeValidator {
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   string gtype =2[(validator.field) = {regex : "^.{1,225}$"}];
@@ -357,6 +372,7 @@ message TypeValidators {
   repeated TypeValidator validators =1;
 }
 
+// Index is a secondary index
 message Index {
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   // gtype is the doc/connection type to be filtered
@@ -369,10 +385,12 @@ message Index {
   bool connections =7;
 }
 
+// Indexes is an array of Index
 message Indexes {
   repeated Index indexes =1;
 }
 
+// Trigger may be used to automatically mutate the attributes of documents/connections before they are commited to the database
 message Trigger {
   // name is the unique name of the authorizer
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
@@ -388,6 +406,7 @@ message Trigger {
   bool target_connections =6;
 }
 
+// Triggers is an array of Trigger
 message Triggers {
   repeated Trigger triggers =1;
 }

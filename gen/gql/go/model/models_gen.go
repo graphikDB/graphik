@@ -18,7 +18,6 @@ type AggFilter struct {
 type AuthTarget struct {
 	User    *Doc                   `json:"user"`
 	Target  map[string]interface{} `json:"target"`
-	Peer    string                 `json:"peer"`
 	Headers map[string]interface{} `json:"headers"`
 }
 
