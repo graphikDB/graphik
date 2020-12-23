@@ -204,7 +204,7 @@ please note that the following flags are required:
 
 - [graphQL Schema](graphik.proto)
 - [gRPC Schema](schema.graphql)
-- [graphQL Schema Documentation](docs/index.html)
+- [graphQL Schema Documentation](gen/gql/docs/index.html)
 
 ### Primitives
 

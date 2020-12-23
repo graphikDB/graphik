@@ -48,7 +48,7 @@ proto: ## regenerate gRPC code
 .PHONY: gql
 gql: ## regenerate graphql code
 	@gqlgen generate
-	@graphdoc -s ./schema.graphql -o ./docs --force
+	@graphdoc -s ./schema.graphql -o ./gen/gql/docs --force
 
 release: ## build release binaries to ./bin
 	@mkdir -p bin
