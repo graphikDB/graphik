@@ -44,3 +44,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.11.0] - 2020-12-21
 - add server side triggers
+
+## [0.11.2] - 2020-12-22
+- extensive problem statement & solution added to README
+- better github pages set up at https://graphikdb.github.io/graphik/
+
+## [0.11.4] - 2020-12-22
+- fine-tune server-side triggers and add 
