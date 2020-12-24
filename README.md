@@ -30,7 +30,7 @@ Support: support@graphikdb.io
       - [Authorizers Examples](#authorizers-examples)
     + [Secondary Indexes](#secondary-indexes)
       - [Secondary Index Examples](#secondary-index-examples)
-    + [Type Validators](#type-validators)
+    + [Constraints](#constraints)
       - [Type Validator Examples](#type-validator-examples)
     + [Triggers](#triggers)
       - [Trigger Examples](#trigger-examples)
@@ -115,7 +115,7 @@ This is bad for the following reasons:
     - relational-oriented benefits of a SQL database
     - non-relational-oriented productivity benefits of a NOSQL database
 - zero password management- this is delegated to the configured identity provider
-- schema-optional for productivity gains - type validators enforce custom constraints when necessary
+- schema-optional for productivity gains - constraints enforce custom constraints when necessary
 - "identity graph" which creates automatically creates connections between users & the database objects the create/modify
     - index-free-adjacency allows insanely fast relational lookups from the POV of the origin user
 - fine-grained authorization model to support requests directly from the origin user/public client(user on browser, ios app, android app, etc)
@@ -139,13 +139,13 @@ This is bad for the following reasons:
 - [x] Change Streams
 - [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Query Filtering
 - [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Request Authorization
-- [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Type Validators
+- [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Constraints
 - [x] [Extended Common Expression Language](https://github.com/graphikDB/trigger#standard-definitionslibrary) Server Side Triggers
 - [x] Loosely-Typed(mongo-esque)
 - [x] Horizontal Scalability/HA via Raft Consensus Protocol
 - [x] [Prometheus Metrics](https://prometheus.io/)
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
-- [x] Safe to Deploy Publicly(with authorizers/tls/validators/cors)
+- [x] Safe to Deploy Publicly(with authorizers/tls/constraints/cors)
 - [x] Read-Optimized
 - [x] Full Text Search Expression Macros/Functions(`startsWith, endsWith, contains`)
 - [x] RegularExp Expression Macros/Functions(`matches`)
@@ -381,14 +381,14 @@ query {
 }
 ```
 
-### Type Validators
-- type validators are CEL expressions evaluated against a particular type of Doc or Connection to enforce custom constraints
-- type validators are completely optional
+### Constraints
+- constraints are CEL expressions evaluated against a particular type of Doc or Connection to enforce custom constraints
+- constraints are completely optional
 
 please note:
 
-- setTypeValidators overwrites all validators in the database
-- validators may be listed with the getSchema method
+- setConstraints overwrites all constraints in the database
+- constraints may be listed with the getSchema method
 
 #### Type Validator Examples
 
@@ -396,8 +396,8 @@ please note:
 
 ```graphql
 mutation {
-  setTypeValidators(input: {
-    validators: [{
+  setConstraints(input: {
+    constraints: [{
     	name: "noteValidator"
 			gtype: "note"
 			expression: "this.attributes.title != ''"
@@ -412,8 +412,8 @@ mutation {
 
 ```graphql
 mutation {
-  setTypeValidators(input: {
-    validators: [{
+  setConstraints(input: {
+    constraints: [{
     	name: "productValidator"
 			gtype: "product"
 			expression: "int(this.attributes.price) > 0"
@@ -476,7 +476,7 @@ the graphQL api is technically a wrapper that may be used for developing user in
 
 The gRPC server is more performant so it is advised that you import one of the gRPC client libraries as opposed to utilizing the graphQL endpoint when developing backend APIs.
 
-The graphQL endpoint is particularly useful for developing public user interfaces against since it can be locked down to nearly any extent via authorizers, cors, validators, & tls.
+The graphQL endpoint is particularly useful for developing public user interfaces against since it can be locked down to nearly any extent via authorizers, cors, constraints, & tls.
 
 ### Streaming/PubSub
 
@@ -557,8 +557,8 @@ query {
         expression
       }
     }
-		validators {
-			validators {
+		constraints {
+			constraints {
 				name
 				expression
 			}
@@ -598,8 +598,8 @@ query {
           }
         ]
       },
-      "validators": {
-        "validators": [
+      "constraints": {
+        "constraints": [
           {
             "name": "testing",
             "expression": "this.user.attributes.email.contains(\"coleman\")"
