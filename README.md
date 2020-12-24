@@ -31,7 +31,7 @@ Support: support@graphikdb.io
     + [Secondary Indexes](#secondary-indexes)
       - [Secondary Index Examples](#secondary-index-examples)
     + [Constraints](#constraints)
-      - [Type Validator Examples](#type-validator-examples)
+      - [Constraint Examples](#type-validator-examples)
     + [Triggers](#triggers)
       - [Trigger Examples](#trigger-examples)
     + [GraphQL vs gRPC API](#graphql-vs-grpc-api)
@@ -390,7 +390,7 @@ please note:
 - setConstraints overwrites all constraints in the database
 - constraints may be listed with the getSchema method
 
-#### Type Validator Examples
+#### Constraint Examples
 
 1) ensure all documents of type 'note' have a title
 
