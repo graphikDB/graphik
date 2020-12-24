@@ -54,3 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.11.5] - 2020-12-23
 - upgrate trigger to v0.10.0 - 20+ CEL macros added
+
+## [0.12.0] - 2020-12-23
+- refactor every instance of `TypeValidator` to `constraint` - better naming convention

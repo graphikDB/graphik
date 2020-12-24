@@ -9,11 +9,11 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * TypeValidator a graph primitive used to validate custom doc/connection constraints
+ * Constraint a graph primitive used to validate custom doc/connection constraints
  *
- * Generated from protobuf message <code>api.TypeValidator</code>
+ * Generated from protobuf message <code>api.Constraint</code>
  */
-class TypeValidator extends \Google\Protobuf\Internal\Message
+class Constraint extends \Google\Protobuf\Internal\Message
 {
     /**
      * Generated from protobuf field <code>string name = 1 [(.validator.field) = {</code>

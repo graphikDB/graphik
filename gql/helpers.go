@@ -213,8 +213,8 @@ func gqlAuthorizer(val *apipb.Authorizer) *model.Authorizer {
 	}
 }
 
-func gqlTypeValidator(val *apipb.TypeValidator) *model.TypeValidator {
-	return &model.TypeValidator{
+func gqlConstraint(val *apipb.Constraint) *model.Constraint {
+	return &model.Constraint{
 		Name:       val.GetName(),
 		Expression: val.GetExpression(),
 	}
@@ -246,12 +246,12 @@ func gqlAuthorizers(val *apipb.Authorizers) *model.Authorizers {
 	return &model.Authorizers{Authorizers: vals}
 }
 
-func gqlTypeValidators(val *apipb.TypeValidators) *model.TypeValidators {
-	var vals []*model.TypeValidator
-	for _, v := range val.GetValidators() {
-		vals = append(vals, gqlTypeValidator(v))
+func gqlConstraints(val *apipb.Constraints) *model.Constraints {
+	var vals []*model.Constraint
+	for _, v := range val.GetConstraints() {
+		vals = append(vals, gqlConstraint(v))
 	}
-	return &model.TypeValidators{Validators: vals}
+	return &model.Constraints{Constraints: vals}
 }
 
 func gqlTrigger(val *apipb.Trigger) *model.Trigger {
@@ -278,7 +278,7 @@ func gqlSchema(s *apipb.Schema) *model.Schema {
 		ConnectionTypes: s.GetConnectionTypes(),
 		DocTypes:        s.GetDocTypes(),
 		Authorizers:     gqlAuthorizers(s.GetAuthorizers()),
-		Validators:      gqlTypeValidators(s.GetValidators()),
+		Constraints:     gqlConstraints(s.GetConstraints()),
 		Indexes:         gqlIndexes(s.GetIndexes()),
 		Triggers:        gqlTriggers(s.GetTriggers()),
 	}
@@ -454,8 +454,8 @@ func protoAuthorizer(auth *model.AuthorizerInput) *apipb.Authorizer {
 	}
 }
 
-func protoTypeValidator(validator *model.TypeValidatorInput) *apipb.TypeValidator {
-	return &apipb.TypeValidator{
+func protoConstraint(validator *model.ConstraintInput) *apipb.Constraint {
+	return &apipb.Constraint{
 		Name:              validator.Name,
 		Gtype:             validator.Gtype,
 		Expression:        validator.Expression,

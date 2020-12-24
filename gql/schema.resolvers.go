@@ -241,13 +241,13 @@ func (r *mutationResolver) SetAuthorizers(ctx context.Context, input model.Autho
 	}
 }
 
-func (r *mutationResolver) SetTypeValidators(ctx context.Context, input model.TypeValidatorsInput) (*emptypb.Empty, error) {
-	var validators []*apipb.TypeValidator
-	for _, validator := range input.Validators {
-		validators = append(validators, protoTypeValidator(validator))
+func (r *mutationResolver) SetConstraints(ctx context.Context, input model.ConstraintsInput) (*emptypb.Empty, error) {
+	var validators []*apipb.Constraint
+	for _, validator := range input.Constraints {
+		validators = append(validators, protoConstraint(validator))
 	}
-	if e, err := r.client.SetTypeValidators(ctx, &apipb.TypeValidators{
-		Validators: validators,
+	if e, err := r.client.SetConstraints(ctx, &apipb.Constraints{
+		Constraints: validators,
 	}); err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),

@@ -318,9 +318,9 @@ func (c *Client) SetAuthorizers(ctx context.Context, in *apipb.Authorizers, opts
 	return err
 }
 
-// SetTypeValidators sets all of the type validators in the graph
-func (c *Client) SetTypeValidators(ctx context.Context, in *apipb.TypeValidators, opts ...grpc.CallOption) error {
-	_, err := c.graph.SetTypeValidators(ctx, in, opts...)
+// SetConstraints sets all of the type validators in the graph
+func (c *Client) SetConstraints(ctx context.Context, in *apipb.Constraints, opts ...grpc.CallOption) error {
+	_, err := c.graph.SetConstraints(ctx, in, opts...)
 	return err
 }
 

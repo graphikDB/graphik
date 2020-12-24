@@ -26414,8 +26414,8 @@ public final class Graphik {
 
   }
 
-  public interface TypeValidatorOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:api.TypeValidator)
+  public interface ConstraintOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.Constraint)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -26468,21 +26468,21 @@ public final class Graphik {
   }
   /**
    * <pre>
-   * TypeValidator a graph primitive used to validate custom doc/connection constraints
+   * Constraint a graph primitive used to validate custom doc/connection constraints
    * </pre>
    *
-   * Protobuf type {@code api.TypeValidator}
+   * Protobuf type {@code api.Constraint}
    */
-  public  static final class TypeValidator extends
+  public  static final class Constraint extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:api.TypeValidator)
-      TypeValidatorOrBuilder {
+      // @@protoc_insertion_point(message_implements:api.Constraint)
+      ConstraintOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use TypeValidator.newBuilder() to construct.
-    private TypeValidator(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use Constraint.newBuilder() to construct.
+    private Constraint(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private TypeValidator() {
+    private Constraint() {
       name_ = "";
       gtype_ = "";
       expression_ = "";
@@ -26495,7 +26495,7 @@ public final class Graphik {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private TypeValidator(
+    private Constraint(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -26563,15 +26563,15 @@ public final class Graphik {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return api.Graphik.internal_static_api_TypeValidator_descriptor;
+      return api.Graphik.internal_static_api_Constraint_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return api.Graphik.internal_static_api_TypeValidator_fieldAccessorTable
+      return api.Graphik.internal_static_api_Constraint_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              api.Graphik.TypeValidator.class, api.Graphik.TypeValidator.Builder.class);
+              api.Graphik.Constraint.class, api.Graphik.Constraint.Builder.class);
     }
 
     public static final int NAME_FIELD_NUMBER = 1;
@@ -26767,10 +26767,10 @@ public final class Graphik {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof api.Graphik.TypeValidator)) {
+      if (!(obj instanceof api.Graphik.Constraint)) {
         return super.equals(obj);
       }
-      api.Graphik.TypeValidator other = (api.Graphik.TypeValidator) obj;
+      api.Graphik.Constraint other = (api.Graphik.Constraint) obj;
 
       boolean result = true;
       result = result && getName()
@@ -26811,69 +26811,69 @@ public final class Graphik {
       return hash;
     }
 
-    public static api.Graphik.TypeValidator parseFrom(
+    public static api.Graphik.Constraint parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.TypeValidator parseFrom(
+    public static api.Graphik.Constraint parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.TypeValidator parseFrom(
+    public static api.Graphik.Constraint parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.TypeValidator parseFrom(
+    public static api.Graphik.Constraint parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.TypeValidator parseFrom(byte[] data)
+    public static api.Graphik.Constraint parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.TypeValidator parseFrom(
+    public static api.Graphik.Constraint parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.TypeValidator parseFrom(java.io.InputStream input)
+    public static api.Graphik.Constraint parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.TypeValidator parseFrom(
+    public static api.Graphik.Constraint parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.TypeValidator parseDelimitedFrom(java.io.InputStream input)
+    public static api.Graphik.Constraint parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static api.Graphik.TypeValidator parseDelimitedFrom(
+    public static api.Graphik.Constraint parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.TypeValidator parseFrom(
+    public static api.Graphik.Constraint parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.TypeValidator parseFrom(
+    public static api.Graphik.Constraint parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -26886,7 +26886,7 @@ public final class Graphik {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(api.Graphik.TypeValidator prototype) {
+    public static Builder newBuilder(api.Graphik.Constraint prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -26903,29 +26903,29 @@ public final class Graphik {
     }
     /**
      * <pre>
-     * TypeValidator a graph primitive used to validate custom doc/connection constraints
+     * Constraint a graph primitive used to validate custom doc/connection constraints
      * </pre>
      *
-     * Protobuf type {@code api.TypeValidator}
+     * Protobuf type {@code api.Constraint}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:api.TypeValidator)
-        api.Graphik.TypeValidatorOrBuilder {
+        // @@protoc_insertion_point(builder_implements:api.Constraint)
+        api.Graphik.ConstraintOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return api.Graphik.internal_static_api_TypeValidator_descriptor;
+        return api.Graphik.internal_static_api_Constraint_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return api.Graphik.internal_static_api_TypeValidator_fieldAccessorTable
+        return api.Graphik.internal_static_api_Constraint_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                api.Graphik.TypeValidator.class, api.Graphik.TypeValidator.Builder.class);
+                api.Graphik.Constraint.class, api.Graphik.Constraint.Builder.class);
       }
 
-      // Construct using api.Graphik.TypeValidator.newBuilder()
+      // Construct using api.Graphik.Constraint.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -26959,17 +26959,17 @@ public final class Graphik {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return api.Graphik.internal_static_api_TypeValidator_descriptor;
+        return api.Graphik.internal_static_api_Constraint_descriptor;
       }
 
       @java.lang.Override
-      public api.Graphik.TypeValidator getDefaultInstanceForType() {
-        return api.Graphik.TypeValidator.getDefaultInstance();
+      public api.Graphik.Constraint getDefaultInstanceForType() {
+        return api.Graphik.Constraint.getDefaultInstance();
       }
 
       @java.lang.Override
-      public api.Graphik.TypeValidator build() {
-        api.Graphik.TypeValidator result = buildPartial();
+      public api.Graphik.Constraint build() {
+        api.Graphik.Constraint result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -26977,8 +26977,8 @@ public final class Graphik {
       }
 
       @java.lang.Override
-      public api.Graphik.TypeValidator buildPartial() {
-        api.Graphik.TypeValidator result = new api.Graphik.TypeValidator(this);
+      public api.Graphik.Constraint buildPartial() {
+        api.Graphik.Constraint result = new api.Graphik.Constraint(this);
         result.name_ = name_;
         result.gtype_ = gtype_;
         result.expression_ = expression_;
@@ -27022,16 +27022,16 @@ public final class Graphik {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof api.Graphik.TypeValidator) {
-          return mergeFrom((api.Graphik.TypeValidator)other);
+        if (other instanceof api.Graphik.Constraint) {
+          return mergeFrom((api.Graphik.Constraint)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(api.Graphik.TypeValidator other) {
-        if (other == api.Graphik.TypeValidator.getDefaultInstance()) return this;
+      public Builder mergeFrom(api.Graphik.Constraint other) {
+        if (other == api.Graphik.Constraint.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
           onChanged();
@@ -27065,11 +27065,11 @@ public final class Graphik {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        api.Graphik.TypeValidator parsedMessage = null;
+        api.Graphik.Constraint parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (api.Graphik.TypeValidator) e.getUnfinishedMessage();
+          parsedMessage = (api.Graphik.Constraint) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -27374,88 +27374,88 @@ public final class Graphik {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:api.TypeValidator)
+      // @@protoc_insertion_point(builder_scope:api.Constraint)
     }
 
-    // @@protoc_insertion_point(class_scope:api.TypeValidator)
-    private static final api.Graphik.TypeValidator DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:api.Constraint)
+    private static final api.Graphik.Constraint DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new api.Graphik.TypeValidator();
+      DEFAULT_INSTANCE = new api.Graphik.Constraint();
     }
 
-    public static api.Graphik.TypeValidator getDefaultInstance() {
+    public static api.Graphik.Constraint getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<TypeValidator>
-        PARSER = new com.google.protobuf.AbstractParser<TypeValidator>() {
+    private static final com.google.protobuf.Parser<Constraint>
+        PARSER = new com.google.protobuf.AbstractParser<Constraint>() {
       @java.lang.Override
-      public TypeValidator parsePartialFrom(
+      public Constraint parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TypeValidator(input, extensionRegistry);
+        return new Constraint(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<TypeValidator> parser() {
+    public static com.google.protobuf.Parser<Constraint> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<TypeValidator> getParserForType() {
+    public com.google.protobuf.Parser<Constraint> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public api.Graphik.TypeValidator getDefaultInstanceForType() {
+    public api.Graphik.Constraint getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface TypeValidatorsOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:api.TypeValidators)
+  public interface ConstraintsOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.Constraints)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    java.util.List<api.Graphik.TypeValidator> 
-        getValidatorsList();
+    java.util.List<api.Graphik.Constraint> 
+        getConstraintsList();
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    api.Graphik.TypeValidator getValidators(int index);
+    api.Graphik.Constraint getConstraints(int index);
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    int getValidatorsCount();
+    int getConstraintsCount();
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    java.util.List<? extends api.Graphik.TypeValidatorOrBuilder> 
-        getValidatorsOrBuilderList();
+    java.util.List<? extends api.Graphik.ConstraintOrBuilder> 
+        getConstraintsOrBuilderList();
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    api.Graphik.TypeValidatorOrBuilder getValidatorsOrBuilder(
+    api.Graphik.ConstraintOrBuilder getConstraintsOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code api.TypeValidators}
+   * Protobuf type {@code api.Constraints}
    */
-  public  static final class TypeValidators extends
+  public  static final class Constraints extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:api.TypeValidators)
-      TypeValidatorsOrBuilder {
+      // @@protoc_insertion_point(message_implements:api.Constraints)
+      ConstraintsOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use TypeValidators.newBuilder() to construct.
-    private TypeValidators(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use Constraints.newBuilder() to construct.
+    private Constraints(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private TypeValidators() {
-      validators_ = java.util.Collections.emptyList();
+    private Constraints() {
+      constraints_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -27463,7 +27463,7 @@ public final class Graphik {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private TypeValidators(
+    private Constraints(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -27484,11 +27484,11 @@ public final class Graphik {
               break;
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                validators_ = new java.util.ArrayList<api.Graphik.TypeValidator>();
+                constraints_ = new java.util.ArrayList<api.Graphik.Constraint>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              validators_.add(
-                  input.readMessage(api.Graphik.TypeValidator.parser(), extensionRegistry));
+              constraints_.add(
+                  input.readMessage(api.Graphik.Constraint.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -27507,7 +27507,7 @@ public final class Graphik {
             e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          validators_ = java.util.Collections.unmodifiableList(validators_);
+          constraints_ = java.util.Collections.unmodifiableList(constraints_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -27515,50 +27515,50 @@ public final class Graphik {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return api.Graphik.internal_static_api_TypeValidators_descriptor;
+      return api.Graphik.internal_static_api_Constraints_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return api.Graphik.internal_static_api_TypeValidators_fieldAccessorTable
+      return api.Graphik.internal_static_api_Constraints_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              api.Graphik.TypeValidators.class, api.Graphik.TypeValidators.Builder.class);
+              api.Graphik.Constraints.class, api.Graphik.Constraints.Builder.class);
     }
 
-    public static final int VALIDATORS_FIELD_NUMBER = 1;
-    private java.util.List<api.Graphik.TypeValidator> validators_;
+    public static final int CONSTRAINTS_FIELD_NUMBER = 1;
+    private java.util.List<api.Graphik.Constraint> constraints_;
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    public java.util.List<api.Graphik.TypeValidator> getValidatorsList() {
-      return validators_;
+    public java.util.List<api.Graphik.Constraint> getConstraintsList() {
+      return constraints_;
     }
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    public java.util.List<? extends api.Graphik.TypeValidatorOrBuilder> 
-        getValidatorsOrBuilderList() {
-      return validators_;
+    public java.util.List<? extends api.Graphik.ConstraintOrBuilder> 
+        getConstraintsOrBuilderList() {
+      return constraints_;
     }
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    public int getValidatorsCount() {
-      return validators_.size();
+    public int getConstraintsCount() {
+      return constraints_.size();
     }
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    public api.Graphik.TypeValidator getValidators(int index) {
-      return validators_.get(index);
+    public api.Graphik.Constraint getConstraints(int index) {
+      return constraints_.get(index);
     }
     /**
-     * <code>repeated .api.TypeValidator validators = 1;</code>
+     * <code>repeated .api.Constraint constraints = 1;</code>
      */
-    public api.Graphik.TypeValidatorOrBuilder getValidatorsOrBuilder(
+    public api.Graphik.ConstraintOrBuilder getConstraintsOrBuilder(
         int index) {
-      return validators_.get(index);
+      return constraints_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -27575,8 +27575,8 @@ public final class Graphik {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (int i = 0; i < validators_.size(); i++) {
-        output.writeMessage(1, validators_.get(i));
+      for (int i = 0; i < constraints_.size(); i++) {
+        output.writeMessage(1, constraints_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -27587,9 +27587,9 @@ public final class Graphik {
       if (size != -1) return size;
 
       size = 0;
-      for (int i = 0; i < validators_.size(); i++) {
+      for (int i = 0; i < constraints_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, validators_.get(i));
+          .computeMessageSize(1, constraints_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -27601,14 +27601,14 @@ public final class Graphik {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof api.Graphik.TypeValidators)) {
+      if (!(obj instanceof api.Graphik.Constraints)) {
         return super.equals(obj);
       }
-      api.Graphik.TypeValidators other = (api.Graphik.TypeValidators) obj;
+      api.Graphik.Constraints other = (api.Graphik.Constraints) obj;
 
       boolean result = true;
-      result = result && getValidatorsList()
-          .equals(other.getValidatorsList());
+      result = result && getConstraintsList()
+          .equals(other.getConstraintsList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -27620,78 +27620,78 @@ public final class Graphik {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getValidatorsCount() > 0) {
-        hash = (37 * hash) + VALIDATORS_FIELD_NUMBER;
-        hash = (53 * hash) + getValidatorsList().hashCode();
+      if (getConstraintsCount() > 0) {
+        hash = (37 * hash) + CONSTRAINTS_FIELD_NUMBER;
+        hash = (53 * hash) + getConstraintsList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static api.Graphik.TypeValidators parseFrom(
+    public static api.Graphik.Constraints parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.TypeValidators parseFrom(
+    public static api.Graphik.Constraints parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.TypeValidators parseFrom(
+    public static api.Graphik.Constraints parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.TypeValidators parseFrom(
+    public static api.Graphik.Constraints parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.TypeValidators parseFrom(byte[] data)
+    public static api.Graphik.Constraints parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static api.Graphik.TypeValidators parseFrom(
+    public static api.Graphik.Constraints parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static api.Graphik.TypeValidators parseFrom(java.io.InputStream input)
+    public static api.Graphik.Constraints parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.TypeValidators parseFrom(
+    public static api.Graphik.Constraints parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.TypeValidators parseDelimitedFrom(java.io.InputStream input)
+    public static api.Graphik.Constraints parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static api.Graphik.TypeValidators parseDelimitedFrom(
+    public static api.Graphik.Constraints parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static api.Graphik.TypeValidators parseFrom(
+    public static api.Graphik.Constraints parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static api.Graphik.TypeValidators parseFrom(
+    public static api.Graphik.Constraints parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -27704,7 +27704,7 @@ public final class Graphik {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(api.Graphik.TypeValidators prototype) {
+    public static Builder newBuilder(api.Graphik.Constraints prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -27720,26 +27720,26 @@ public final class Graphik {
       return builder;
     }
     /**
-     * Protobuf type {@code api.TypeValidators}
+     * Protobuf type {@code api.Constraints}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:api.TypeValidators)
-        api.Graphik.TypeValidatorsOrBuilder {
+        // @@protoc_insertion_point(builder_implements:api.Constraints)
+        api.Graphik.ConstraintsOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return api.Graphik.internal_static_api_TypeValidators_descriptor;
+        return api.Graphik.internal_static_api_Constraints_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return api.Graphik.internal_static_api_TypeValidators_fieldAccessorTable
+        return api.Graphik.internal_static_api_Constraints_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                api.Graphik.TypeValidators.class, api.Graphik.TypeValidators.Builder.class);
+                api.Graphik.Constraints.class, api.Graphik.Constraints.Builder.class);
       }
 
-      // Construct using api.Graphik.TypeValidators.newBuilder()
+      // Construct using api.Graphik.Constraints.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -27752,17 +27752,17 @@ public final class Graphik {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
-          getValidatorsFieldBuilder();
+          getConstraintsFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (validatorsBuilder_ == null) {
-          validators_ = java.util.Collections.emptyList();
+        if (constraintsBuilder_ == null) {
+          constraints_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
         } else {
-          validatorsBuilder_.clear();
+          constraintsBuilder_.clear();
         }
         return this;
       }
@@ -27770,17 +27770,17 @@ public final class Graphik {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return api.Graphik.internal_static_api_TypeValidators_descriptor;
+        return api.Graphik.internal_static_api_Constraints_descriptor;
       }
 
       @java.lang.Override
-      public api.Graphik.TypeValidators getDefaultInstanceForType() {
-        return api.Graphik.TypeValidators.getDefaultInstance();
+      public api.Graphik.Constraints getDefaultInstanceForType() {
+        return api.Graphik.Constraints.getDefaultInstance();
       }
 
       @java.lang.Override
-      public api.Graphik.TypeValidators build() {
-        api.Graphik.TypeValidators result = buildPartial();
+      public api.Graphik.Constraints build() {
+        api.Graphik.Constraints result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -27788,17 +27788,17 @@ public final class Graphik {
       }
 
       @java.lang.Override
-      public api.Graphik.TypeValidators buildPartial() {
-        api.Graphik.TypeValidators result = new api.Graphik.TypeValidators(this);
+      public api.Graphik.Constraints buildPartial() {
+        api.Graphik.Constraints result = new api.Graphik.Constraints(this);
         int from_bitField0_ = bitField0_;
-        if (validatorsBuilder_ == null) {
+        if (constraintsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
-            validators_ = java.util.Collections.unmodifiableList(validators_);
+            constraints_ = java.util.Collections.unmodifiableList(constraints_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
-          result.validators_ = validators_;
+          result.constraints_ = constraints_;
         } else {
-          result.validators_ = validatorsBuilder_.build();
+          result.constraints_ = constraintsBuilder_.build();
         }
         onBuilt();
         return result;
@@ -27838,39 +27838,39 @@ public final class Graphik {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof api.Graphik.TypeValidators) {
-          return mergeFrom((api.Graphik.TypeValidators)other);
+        if (other instanceof api.Graphik.Constraints) {
+          return mergeFrom((api.Graphik.Constraints)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(api.Graphik.TypeValidators other) {
-        if (other == api.Graphik.TypeValidators.getDefaultInstance()) return this;
-        if (validatorsBuilder_ == null) {
-          if (!other.validators_.isEmpty()) {
-            if (validators_.isEmpty()) {
-              validators_ = other.validators_;
+      public Builder mergeFrom(api.Graphik.Constraints other) {
+        if (other == api.Graphik.Constraints.getDefaultInstance()) return this;
+        if (constraintsBuilder_ == null) {
+          if (!other.constraints_.isEmpty()) {
+            if (constraints_.isEmpty()) {
+              constraints_ = other.constraints_;
               bitField0_ = (bitField0_ & ~0x00000001);
             } else {
-              ensureValidatorsIsMutable();
-              validators_.addAll(other.validators_);
+              ensureConstraintsIsMutable();
+              constraints_.addAll(other.constraints_);
             }
             onChanged();
           }
         } else {
-          if (!other.validators_.isEmpty()) {
-            if (validatorsBuilder_.isEmpty()) {
-              validatorsBuilder_.dispose();
-              validatorsBuilder_ = null;
-              validators_ = other.validators_;
+          if (!other.constraints_.isEmpty()) {
+            if (constraintsBuilder_.isEmpty()) {
+              constraintsBuilder_.dispose();
+              constraintsBuilder_ = null;
+              constraints_ = other.constraints_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              validatorsBuilder_ = 
+              constraintsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getValidatorsFieldBuilder() : null;
+                   getConstraintsFieldBuilder() : null;
             } else {
-              validatorsBuilder_.addAllMessages(other.validators_);
+              constraintsBuilder_.addAllMessages(other.constraints_);
             }
           }
         }
@@ -27889,11 +27889,11 @@ public final class Graphik {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        api.Graphik.TypeValidators parsedMessage = null;
+        api.Graphik.Constraints parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (api.Graphik.TypeValidators) e.getUnfinishedMessage();
+          parsedMessage = (api.Graphik.Constraints) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -27904,244 +27904,244 @@ public final class Graphik {
       }
       private int bitField0_;
 
-      private java.util.List<api.Graphik.TypeValidator> validators_ =
+      private java.util.List<api.Graphik.Constraint> constraints_ =
         java.util.Collections.emptyList();
-      private void ensureValidatorsIsMutable() {
+      private void ensureConstraintsIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          validators_ = new java.util.ArrayList<api.Graphik.TypeValidator>(validators_);
+          constraints_ = new java.util.ArrayList<api.Graphik.Constraint>(constraints_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          api.Graphik.TypeValidator, api.Graphik.TypeValidator.Builder, api.Graphik.TypeValidatorOrBuilder> validatorsBuilder_;
+          api.Graphik.Constraint, api.Graphik.Constraint.Builder, api.Graphik.ConstraintOrBuilder> constraintsBuilder_;
 
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public java.util.List<api.Graphik.TypeValidator> getValidatorsList() {
-        if (validatorsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(validators_);
+      public java.util.List<api.Graphik.Constraint> getConstraintsList() {
+        if (constraintsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(constraints_);
         } else {
-          return validatorsBuilder_.getMessageList();
+          return constraintsBuilder_.getMessageList();
         }
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public int getValidatorsCount() {
-        if (validatorsBuilder_ == null) {
-          return validators_.size();
+      public int getConstraintsCount() {
+        if (constraintsBuilder_ == null) {
+          return constraints_.size();
         } else {
-          return validatorsBuilder_.getCount();
+          return constraintsBuilder_.getCount();
         }
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public api.Graphik.TypeValidator getValidators(int index) {
-        if (validatorsBuilder_ == null) {
-          return validators_.get(index);
+      public api.Graphik.Constraint getConstraints(int index) {
+        if (constraintsBuilder_ == null) {
+          return constraints_.get(index);
         } else {
-          return validatorsBuilder_.getMessage(index);
+          return constraintsBuilder_.getMessage(index);
         }
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder setValidators(
-          int index, api.Graphik.TypeValidator value) {
-        if (validatorsBuilder_ == null) {
+      public Builder setConstraints(
+          int index, api.Graphik.Constraint value) {
+        if (constraintsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureValidatorsIsMutable();
-          validators_.set(index, value);
+          ensureConstraintsIsMutable();
+          constraints_.set(index, value);
           onChanged();
         } else {
-          validatorsBuilder_.setMessage(index, value);
+          constraintsBuilder_.setMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder setValidators(
-          int index, api.Graphik.TypeValidator.Builder builderForValue) {
-        if (validatorsBuilder_ == null) {
-          ensureValidatorsIsMutable();
-          validators_.set(index, builderForValue.build());
+      public Builder setConstraints(
+          int index, api.Graphik.Constraint.Builder builderForValue) {
+        if (constraintsBuilder_ == null) {
+          ensureConstraintsIsMutable();
+          constraints_.set(index, builderForValue.build());
           onChanged();
         } else {
-          validatorsBuilder_.setMessage(index, builderForValue.build());
+          constraintsBuilder_.setMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder addValidators(api.Graphik.TypeValidator value) {
-        if (validatorsBuilder_ == null) {
+      public Builder addConstraints(api.Graphik.Constraint value) {
+        if (constraintsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureValidatorsIsMutable();
-          validators_.add(value);
+          ensureConstraintsIsMutable();
+          constraints_.add(value);
           onChanged();
         } else {
-          validatorsBuilder_.addMessage(value);
+          constraintsBuilder_.addMessage(value);
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder addValidators(
-          int index, api.Graphik.TypeValidator value) {
-        if (validatorsBuilder_ == null) {
+      public Builder addConstraints(
+          int index, api.Graphik.Constraint value) {
+        if (constraintsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureValidatorsIsMutable();
-          validators_.add(index, value);
+          ensureConstraintsIsMutable();
+          constraints_.add(index, value);
           onChanged();
         } else {
-          validatorsBuilder_.addMessage(index, value);
+          constraintsBuilder_.addMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder addValidators(
-          api.Graphik.TypeValidator.Builder builderForValue) {
-        if (validatorsBuilder_ == null) {
-          ensureValidatorsIsMutable();
-          validators_.add(builderForValue.build());
+      public Builder addConstraints(
+          api.Graphik.Constraint.Builder builderForValue) {
+        if (constraintsBuilder_ == null) {
+          ensureConstraintsIsMutable();
+          constraints_.add(builderForValue.build());
           onChanged();
         } else {
-          validatorsBuilder_.addMessage(builderForValue.build());
+          constraintsBuilder_.addMessage(builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder addValidators(
-          int index, api.Graphik.TypeValidator.Builder builderForValue) {
-        if (validatorsBuilder_ == null) {
-          ensureValidatorsIsMutable();
-          validators_.add(index, builderForValue.build());
+      public Builder addConstraints(
+          int index, api.Graphik.Constraint.Builder builderForValue) {
+        if (constraintsBuilder_ == null) {
+          ensureConstraintsIsMutable();
+          constraints_.add(index, builderForValue.build());
           onChanged();
         } else {
-          validatorsBuilder_.addMessage(index, builderForValue.build());
+          constraintsBuilder_.addMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder addAllValidators(
-          java.lang.Iterable<? extends api.Graphik.TypeValidator> values) {
-        if (validatorsBuilder_ == null) {
-          ensureValidatorsIsMutable();
+      public Builder addAllConstraints(
+          java.lang.Iterable<? extends api.Graphik.Constraint> values) {
+        if (constraintsBuilder_ == null) {
+          ensureConstraintsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, validators_);
+              values, constraints_);
           onChanged();
         } else {
-          validatorsBuilder_.addAllMessages(values);
+          constraintsBuilder_.addAllMessages(values);
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder clearValidators() {
-        if (validatorsBuilder_ == null) {
-          validators_ = java.util.Collections.emptyList();
+      public Builder clearConstraints() {
+        if (constraintsBuilder_ == null) {
+          constraints_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
-          validatorsBuilder_.clear();
+          constraintsBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public Builder removeValidators(int index) {
-        if (validatorsBuilder_ == null) {
-          ensureValidatorsIsMutable();
-          validators_.remove(index);
+      public Builder removeConstraints(int index) {
+        if (constraintsBuilder_ == null) {
+          ensureConstraintsIsMutable();
+          constraints_.remove(index);
           onChanged();
         } else {
-          validatorsBuilder_.remove(index);
+          constraintsBuilder_.remove(index);
         }
         return this;
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public api.Graphik.TypeValidator.Builder getValidatorsBuilder(
+      public api.Graphik.Constraint.Builder getConstraintsBuilder(
           int index) {
-        return getValidatorsFieldBuilder().getBuilder(index);
+        return getConstraintsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public api.Graphik.TypeValidatorOrBuilder getValidatorsOrBuilder(
+      public api.Graphik.ConstraintOrBuilder getConstraintsOrBuilder(
           int index) {
-        if (validatorsBuilder_ == null) {
-          return validators_.get(index);  } else {
-          return validatorsBuilder_.getMessageOrBuilder(index);
+        if (constraintsBuilder_ == null) {
+          return constraints_.get(index);  } else {
+          return constraintsBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public java.util.List<? extends api.Graphik.TypeValidatorOrBuilder> 
-           getValidatorsOrBuilderList() {
-        if (validatorsBuilder_ != null) {
-          return validatorsBuilder_.getMessageOrBuilderList();
+      public java.util.List<? extends api.Graphik.ConstraintOrBuilder> 
+           getConstraintsOrBuilderList() {
+        if (constraintsBuilder_ != null) {
+          return constraintsBuilder_.getMessageOrBuilderList();
         } else {
-          return java.util.Collections.unmodifiableList(validators_);
+          return java.util.Collections.unmodifiableList(constraints_);
         }
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public api.Graphik.TypeValidator.Builder addValidatorsBuilder() {
-        return getValidatorsFieldBuilder().addBuilder(
-            api.Graphik.TypeValidator.getDefaultInstance());
+      public api.Graphik.Constraint.Builder addConstraintsBuilder() {
+        return getConstraintsFieldBuilder().addBuilder(
+            api.Graphik.Constraint.getDefaultInstance());
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public api.Graphik.TypeValidator.Builder addValidatorsBuilder(
+      public api.Graphik.Constraint.Builder addConstraintsBuilder(
           int index) {
-        return getValidatorsFieldBuilder().addBuilder(
-            index, api.Graphik.TypeValidator.getDefaultInstance());
+        return getConstraintsFieldBuilder().addBuilder(
+            index, api.Graphik.Constraint.getDefaultInstance());
       }
       /**
-       * <code>repeated .api.TypeValidator validators = 1;</code>
+       * <code>repeated .api.Constraint constraints = 1;</code>
        */
-      public java.util.List<api.Graphik.TypeValidator.Builder> 
-           getValidatorsBuilderList() {
-        return getValidatorsFieldBuilder().getBuilderList();
+      public java.util.List<api.Graphik.Constraint.Builder> 
+           getConstraintsBuilderList() {
+        return getConstraintsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          api.Graphik.TypeValidator, api.Graphik.TypeValidator.Builder, api.Graphik.TypeValidatorOrBuilder> 
-          getValidatorsFieldBuilder() {
-        if (validatorsBuilder_ == null) {
-          validatorsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              api.Graphik.TypeValidator, api.Graphik.TypeValidator.Builder, api.Graphik.TypeValidatorOrBuilder>(
-                  validators_,
+          api.Graphik.Constraint, api.Graphik.Constraint.Builder, api.Graphik.ConstraintOrBuilder> 
+          getConstraintsFieldBuilder() {
+        if (constraintsBuilder_ == null) {
+          constraintsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              api.Graphik.Constraint, api.Graphik.Constraint.Builder, api.Graphik.ConstraintOrBuilder>(
+                  constraints_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
                   isClean());
-          validators_ = null;
+          constraints_ = null;
         }
-        return validatorsBuilder_;
+        return constraintsBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -28156,41 +28156,41 @@ public final class Graphik {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:api.TypeValidators)
+      // @@protoc_insertion_point(builder_scope:api.Constraints)
     }
 
-    // @@protoc_insertion_point(class_scope:api.TypeValidators)
-    private static final api.Graphik.TypeValidators DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:api.Constraints)
+    private static final api.Graphik.Constraints DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new api.Graphik.TypeValidators();
+      DEFAULT_INSTANCE = new api.Graphik.Constraints();
     }
 
-    public static api.Graphik.TypeValidators getDefaultInstance() {
+    public static api.Graphik.Constraints getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<TypeValidators>
-        PARSER = new com.google.protobuf.AbstractParser<TypeValidators>() {
+    private static final com.google.protobuf.Parser<Constraints>
+        PARSER = new com.google.protobuf.AbstractParser<Constraints>() {
       @java.lang.Override
-      public TypeValidators parsePartialFrom(
+      public Constraints parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TypeValidators(input, extensionRegistry);
+        return new Constraints(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<TypeValidators> parser() {
+    public static com.google.protobuf.Parser<Constraints> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<TypeValidators> getParserForType() {
+    public com.google.protobuf.Parser<Constraints> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public api.Graphik.TypeValidators getDefaultInstanceForType() {
+    public api.Graphik.Constraints getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -44031,17 +44031,17 @@ public final class Graphik {
     api.Graphik.AuthorizersOrBuilder getAuthorizersOrBuilder();
 
     /**
-     * <code>.api.TypeValidators validators = 4;</code>
+     * <code>.api.Constraints constraints = 4;</code>
      */
-    boolean hasValidators();
+    boolean hasConstraints();
     /**
-     * <code>.api.TypeValidators validators = 4;</code>
+     * <code>.api.Constraints constraints = 4;</code>
      */
-    api.Graphik.TypeValidators getValidators();
+    api.Graphik.Constraints getConstraints();
     /**
-     * <code>.api.TypeValidators validators = 4;</code>
+     * <code>.api.Constraints constraints = 4;</code>
      */
-    api.Graphik.TypeValidatorsOrBuilder getValidatorsOrBuilder();
+    api.Graphik.ConstraintsOrBuilder getConstraintsOrBuilder();
 
     /**
      * <code>.api.Indexes indexes = 5;</code>
@@ -44146,14 +44146,14 @@ public final class Graphik {
               break;
             }
             case 34: {
-              api.Graphik.TypeValidators.Builder subBuilder = null;
-              if (validators_ != null) {
-                subBuilder = validators_.toBuilder();
+              api.Graphik.Constraints.Builder subBuilder = null;
+              if (constraints_ != null) {
+                subBuilder = constraints_.toBuilder();
               }
-              validators_ = input.readMessage(api.Graphik.TypeValidators.parser(), extensionRegistry);
+              constraints_ = input.readMessage(api.Graphik.Constraints.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(validators_);
-                validators_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(constraints_);
+                constraints_ = subBuilder.buildPartial();
               }
 
               break;
@@ -44334,25 +44334,25 @@ public final class Graphik {
       return getAuthorizers();
     }
 
-    public static final int VALIDATORS_FIELD_NUMBER = 4;
-    private api.Graphik.TypeValidators validators_;
+    public static final int CONSTRAINTS_FIELD_NUMBER = 4;
+    private api.Graphik.Constraints constraints_;
     /**
-     * <code>.api.TypeValidators validators = 4;</code>
+     * <code>.api.Constraints constraints = 4;</code>
      */
-    public boolean hasValidators() {
-      return validators_ != null;
+    public boolean hasConstraints() {
+      return constraints_ != null;
     }
     /**
-     * <code>.api.TypeValidators validators = 4;</code>
+     * <code>.api.Constraints constraints = 4;</code>
      */
-    public api.Graphik.TypeValidators getValidators() {
-      return validators_ == null ? api.Graphik.TypeValidators.getDefaultInstance() : validators_;
+    public api.Graphik.Constraints getConstraints() {
+      return constraints_ == null ? api.Graphik.Constraints.getDefaultInstance() : constraints_;
     }
     /**
-     * <code>.api.TypeValidators validators = 4;</code>
+     * <code>.api.Constraints constraints = 4;</code>
      */
-    public api.Graphik.TypeValidatorsOrBuilder getValidatorsOrBuilder() {
-      return getValidators();
+    public api.Graphik.ConstraintsOrBuilder getConstraintsOrBuilder() {
+      return getConstraints();
     }
 
     public static final int INDEXES_FIELD_NUMBER = 5;
@@ -44420,8 +44420,8 @@ public final class Graphik {
       if (authorizers_ != null) {
         output.writeMessage(3, getAuthorizers());
       }
-      if (validators_ != null) {
-        output.writeMessage(4, getValidators());
+      if (constraints_ != null) {
+        output.writeMessage(4, getConstraints());
       }
       if (indexes_ != null) {
         output.writeMessage(5, getIndexes());
@@ -44458,9 +44458,9 @@ public final class Graphik {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getAuthorizers());
       }
-      if (validators_ != null) {
+      if (constraints_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, getValidators());
+          .computeMessageSize(4, getConstraints());
       }
       if (indexes_ != null) {
         size += com.google.protobuf.CodedOutputStream
@@ -44495,10 +44495,10 @@ public final class Graphik {
         result = result && getAuthorizers()
             .equals(other.getAuthorizers());
       }
-      result = result && (hasValidators() == other.hasValidators());
-      if (hasValidators()) {
-        result = result && getValidators()
-            .equals(other.getValidators());
+      result = result && (hasConstraints() == other.hasConstraints());
+      if (hasConstraints()) {
+        result = result && getConstraints()
+            .equals(other.getConstraints());
       }
       result = result && (hasIndexes() == other.hasIndexes());
       if (hasIndexes()) {
@@ -44533,9 +44533,9 @@ public final class Graphik {
         hash = (37 * hash) + AUTHORIZERS_FIELD_NUMBER;
         hash = (53 * hash) + getAuthorizers().hashCode();
       }
-      if (hasValidators()) {
-        hash = (37 * hash) + VALIDATORS_FIELD_NUMBER;
-        hash = (53 * hash) + getValidators().hashCode();
+      if (hasConstraints()) {
+        hash = (37 * hash) + CONSTRAINTS_FIELD_NUMBER;
+        hash = (53 * hash) + getConstraints().hashCode();
       }
       if (hasIndexes()) {
         hash = (37 * hash) + INDEXES_FIELD_NUMBER;
@@ -44692,11 +44692,11 @@ public final class Graphik {
           authorizers_ = null;
           authorizersBuilder_ = null;
         }
-        if (validatorsBuilder_ == null) {
-          validators_ = null;
+        if (constraintsBuilder_ == null) {
+          constraints_ = null;
         } else {
-          validators_ = null;
-          validatorsBuilder_ = null;
+          constraints_ = null;
+          constraintsBuilder_ = null;
         }
         if (indexesBuilder_ == null) {
           indexes_ = null;
@@ -44753,10 +44753,10 @@ public final class Graphik {
         } else {
           result.authorizers_ = authorizersBuilder_.build();
         }
-        if (validatorsBuilder_ == null) {
-          result.validators_ = validators_;
+        if (constraintsBuilder_ == null) {
+          result.constraints_ = constraints_;
         } else {
-          result.validators_ = validatorsBuilder_.build();
+          result.constraints_ = constraintsBuilder_.build();
         }
         if (indexesBuilder_ == null) {
           result.indexes_ = indexes_;
@@ -44840,8 +44840,8 @@ public final class Graphik {
         if (other.hasAuthorizers()) {
           mergeAuthorizers(other.getAuthorizers());
         }
-        if (other.hasValidators()) {
-          mergeValidators(other.getValidators());
+        if (other.hasConstraints()) {
+          mergeConstraints(other.getConstraints());
         }
         if (other.hasIndexes()) {
           mergeIndexes(other.getIndexes());
@@ -45256,121 +45256,121 @@ public final class Graphik {
         return authorizersBuilder_;
       }
 
-      private api.Graphik.TypeValidators validators_ = null;
+      private api.Graphik.Constraints constraints_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder> validatorsBuilder_;
+          api.Graphik.Constraints, api.Graphik.Constraints.Builder, api.Graphik.ConstraintsOrBuilder> constraintsBuilder_;
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
-      public boolean hasValidators() {
-        return validatorsBuilder_ != null || validators_ != null;
+      public boolean hasConstraints() {
+        return constraintsBuilder_ != null || constraints_ != null;
       }
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
-      public api.Graphik.TypeValidators getValidators() {
-        if (validatorsBuilder_ == null) {
-          return validators_ == null ? api.Graphik.TypeValidators.getDefaultInstance() : validators_;
+      public api.Graphik.Constraints getConstraints() {
+        if (constraintsBuilder_ == null) {
+          return constraints_ == null ? api.Graphik.Constraints.getDefaultInstance() : constraints_;
         } else {
-          return validatorsBuilder_.getMessage();
+          return constraintsBuilder_.getMessage();
         }
       }
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
-      public Builder setValidators(api.Graphik.TypeValidators value) {
-        if (validatorsBuilder_ == null) {
+      public Builder setConstraints(api.Graphik.Constraints value) {
+        if (constraintsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          validators_ = value;
+          constraints_ = value;
           onChanged();
         } else {
-          validatorsBuilder_.setMessage(value);
+          constraintsBuilder_.setMessage(value);
         }
 
         return this;
       }
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
-      public Builder setValidators(
-          api.Graphik.TypeValidators.Builder builderForValue) {
-        if (validatorsBuilder_ == null) {
-          validators_ = builderForValue.build();
+      public Builder setConstraints(
+          api.Graphik.Constraints.Builder builderForValue) {
+        if (constraintsBuilder_ == null) {
+          constraints_ = builderForValue.build();
           onChanged();
         } else {
-          validatorsBuilder_.setMessage(builderForValue.build());
+          constraintsBuilder_.setMessage(builderForValue.build());
         }
 
         return this;
       }
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
-      public Builder mergeValidators(api.Graphik.TypeValidators value) {
-        if (validatorsBuilder_ == null) {
-          if (validators_ != null) {
-            validators_ =
-              api.Graphik.TypeValidators.newBuilder(validators_).mergeFrom(value).buildPartial();
+      public Builder mergeConstraints(api.Graphik.Constraints value) {
+        if (constraintsBuilder_ == null) {
+          if (constraints_ != null) {
+            constraints_ =
+              api.Graphik.Constraints.newBuilder(constraints_).mergeFrom(value).buildPartial();
           } else {
-            validators_ = value;
+            constraints_ = value;
           }
           onChanged();
         } else {
-          validatorsBuilder_.mergeFrom(value);
+          constraintsBuilder_.mergeFrom(value);
         }
 
         return this;
       }
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
-      public Builder clearValidators() {
-        if (validatorsBuilder_ == null) {
-          validators_ = null;
+      public Builder clearConstraints() {
+        if (constraintsBuilder_ == null) {
+          constraints_ = null;
           onChanged();
         } else {
-          validators_ = null;
-          validatorsBuilder_ = null;
+          constraints_ = null;
+          constraintsBuilder_ = null;
         }
 
         return this;
       }
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
-      public api.Graphik.TypeValidators.Builder getValidatorsBuilder() {
+      public api.Graphik.Constraints.Builder getConstraintsBuilder() {
         
         onChanged();
-        return getValidatorsFieldBuilder().getBuilder();
+        return getConstraintsFieldBuilder().getBuilder();
       }
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
-      public api.Graphik.TypeValidatorsOrBuilder getValidatorsOrBuilder() {
-        if (validatorsBuilder_ != null) {
-          return validatorsBuilder_.getMessageOrBuilder();
+      public api.Graphik.ConstraintsOrBuilder getConstraintsOrBuilder() {
+        if (constraintsBuilder_ != null) {
+          return constraintsBuilder_.getMessageOrBuilder();
         } else {
-          return validators_ == null ?
-              api.Graphik.TypeValidators.getDefaultInstance() : validators_;
+          return constraints_ == null ?
+              api.Graphik.Constraints.getDefaultInstance() : constraints_;
         }
       }
       /**
-       * <code>.api.TypeValidators validators = 4;</code>
+       * <code>.api.Constraints constraints = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder> 
-          getValidatorsFieldBuilder() {
-        if (validatorsBuilder_ == null) {
-          validatorsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder>(
-                  getValidators(),
+          api.Graphik.Constraints, api.Graphik.Constraints.Builder, api.Graphik.ConstraintsOrBuilder> 
+          getConstraintsFieldBuilder() {
+        if (constraintsBuilder_ == null) {
+          constraintsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Constraints, api.Graphik.Constraints.Builder, api.Graphik.ConstraintsOrBuilder>(
+                  getConstraints(),
                   getParentForChildren(),
                   isClean());
-          validators_ = null;
+          constraints_ = null;
         }
-        return validatorsBuilder_;
+        return constraintsBuilder_;
       }
 
       private api.Graphik.Indexes indexes_ = null;
@@ -46395,17 +46395,17 @@ public final class Graphik {
     api.Graphik.AuthorizersOrBuilder getSetAuthorizersOrBuilder();
 
     /**
-     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     * <code>.api.Constraints set_constraints = 9;</code>
      */
-    boolean hasSetTypeValidators();
+    boolean hasSetConstraints();
     /**
-     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     * <code>.api.Constraints set_constraints = 9;</code>
      */
-    api.Graphik.TypeValidators getSetTypeValidators();
+    api.Graphik.Constraints getSetConstraints();
     /**
-     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     * <code>.api.Constraints set_constraints = 9;</code>
      */
-    api.Graphik.TypeValidatorsOrBuilder getSetTypeValidatorsOrBuilder();
+    api.Graphik.ConstraintsOrBuilder getSetConstraintsOrBuilder();
 
     /**
      * <code>.api.Message send_message = 10;</code>
@@ -46559,14 +46559,14 @@ public final class Graphik {
               break;
             }
             case 74: {
-              api.Graphik.TypeValidators.Builder subBuilder = null;
-              if (setTypeValidators_ != null) {
-                subBuilder = setTypeValidators_.toBuilder();
+              api.Graphik.Constraints.Builder subBuilder = null;
+              if (setConstraints_ != null) {
+                subBuilder = setConstraints_.toBuilder();
               }
-              setTypeValidators_ = input.readMessage(api.Graphik.TypeValidators.parser(), extensionRegistry);
+              setConstraints_ = input.readMessage(api.Graphik.Constraints.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(setTypeValidators_);
-                setTypeValidators_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(setConstraints_);
+                setConstraints_ = subBuilder.buildPartial();
               }
 
               break;
@@ -46879,25 +46879,25 @@ public final class Graphik {
       return getSetAuthorizers();
     }
 
-    public static final int SET_TYPE_VALIDATORS_FIELD_NUMBER = 9;
-    private api.Graphik.TypeValidators setTypeValidators_;
+    public static final int SET_CONSTRAINTS_FIELD_NUMBER = 9;
+    private api.Graphik.Constraints setConstraints_;
     /**
-     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     * <code>.api.Constraints set_constraints = 9;</code>
      */
-    public boolean hasSetTypeValidators() {
-      return setTypeValidators_ != null;
+    public boolean hasSetConstraints() {
+      return setConstraints_ != null;
     }
     /**
-     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     * <code>.api.Constraints set_constraints = 9;</code>
      */
-    public api.Graphik.TypeValidators getSetTypeValidators() {
-      return setTypeValidators_ == null ? api.Graphik.TypeValidators.getDefaultInstance() : setTypeValidators_;
+    public api.Graphik.Constraints getSetConstraints() {
+      return setConstraints_ == null ? api.Graphik.Constraints.getDefaultInstance() : setConstraints_;
     }
     /**
-     * <code>.api.TypeValidators set_type_validators = 9;</code>
+     * <code>.api.Constraints set_constraints = 9;</code>
      */
-    public api.Graphik.TypeValidatorsOrBuilder getSetTypeValidatorsOrBuilder() {
-      return getSetTypeValidators();
+    public api.Graphik.ConstraintsOrBuilder getSetConstraintsOrBuilder() {
+      return getSetConstraints();
     }
 
     public static final int SEND_MESSAGE_FIELD_NUMBER = 10;
@@ -46980,8 +46980,8 @@ public final class Graphik {
       if (setAuthorizers_ != null) {
         output.writeMessage(8, getSetAuthorizers());
       }
-      if (setTypeValidators_ != null) {
-        output.writeMessage(9, getSetTypeValidators());
+      if (setConstraints_ != null) {
+        output.writeMessage(9, getSetConstraints());
       }
       if (sendMessage_ != null) {
         output.writeMessage(10, getSendMessage());
@@ -47029,9 +47029,9 @@ public final class Graphik {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(8, getSetAuthorizers());
       }
-      if (setTypeValidators_ != null) {
+      if (setConstraints_ != null) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(9, getSetTypeValidators());
+          .computeMessageSize(9, getSetConstraints());
       }
       if (sendMessage_ != null) {
         size += com.google.protobuf.CodedOutputStream
@@ -47082,10 +47082,10 @@ public final class Graphik {
         result = result && getSetAuthorizers()
             .equals(other.getSetAuthorizers());
       }
-      result = result && (hasSetTypeValidators() == other.hasSetTypeValidators());
-      if (hasSetTypeValidators()) {
-        result = result && getSetTypeValidators()
-            .equals(other.getSetTypeValidators());
+      result = result && (hasSetConstraints() == other.hasSetConstraints());
+      if (hasSetConstraints()) {
+        result = result && getSetConstraints()
+            .equals(other.getSetConstraints());
       }
       result = result && (hasSendMessage() == other.hasSendMessage());
       if (hasSendMessage()) {
@@ -47138,9 +47138,9 @@ public final class Graphik {
         hash = (37 * hash) + SET_AUTHORIZERS_FIELD_NUMBER;
         hash = (53 * hash) + getSetAuthorizers().hashCode();
       }
-      if (hasSetTypeValidators()) {
-        hash = (37 * hash) + SET_TYPE_VALIDATORS_FIELD_NUMBER;
-        hash = (53 * hash) + getSetTypeValidators().hashCode();
+      if (hasSetConstraints()) {
+        hash = (37 * hash) + SET_CONSTRAINTS_FIELD_NUMBER;
+        hash = (53 * hash) + getSetConstraints().hashCode();
       }
       if (hasSendMessage()) {
         hash = (37 * hash) + SEND_MESSAGE_FIELD_NUMBER;
@@ -47331,11 +47331,11 @@ public final class Graphik {
           setAuthorizers_ = null;
           setAuthorizersBuilder_ = null;
         }
-        if (setTypeValidatorsBuilder_ == null) {
-          setTypeValidators_ = null;
+        if (setConstraintsBuilder_ == null) {
+          setConstraints_ = null;
         } else {
-          setTypeValidators_ = null;
-          setTypeValidatorsBuilder_ = null;
+          setConstraints_ = null;
+          setConstraintsBuilder_ = null;
         }
         if (sendMessageBuilder_ == null) {
           sendMessage_ = null;
@@ -47429,10 +47429,10 @@ public final class Graphik {
         } else {
           result.setAuthorizers_ = setAuthorizersBuilder_.build();
         }
-        if (setTypeValidatorsBuilder_ == null) {
-          result.setTypeValidators_ = setTypeValidators_;
+        if (setConstraintsBuilder_ == null) {
+          result.setConstraints_ = setConstraints_;
         } else {
-          result.setTypeValidators_ = setTypeValidatorsBuilder_.build();
+          result.setConstraints_ = setConstraintsBuilder_.build();
         }
         if (sendMessageBuilder_ == null) {
           result.sendMessage_ = sendMessage_;
@@ -47610,8 +47610,8 @@ public final class Graphik {
         if (other.hasSetAuthorizers()) {
           mergeSetAuthorizers(other.getSetAuthorizers());
         }
-        if (other.hasSetTypeValidators()) {
-          mergeSetTypeValidators(other.getSetTypeValidators());
+        if (other.hasSetConstraints()) {
+          mergeSetConstraints(other.getSetConstraints());
         }
         if (other.hasSendMessage()) {
           mergeSendMessage(other.getSendMessage());
@@ -49029,121 +49029,121 @@ public final class Graphik {
         return setAuthorizersBuilder_;
       }
 
-      private api.Graphik.TypeValidators setTypeValidators_ = null;
+      private api.Graphik.Constraints setConstraints_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder> setTypeValidatorsBuilder_;
+          api.Graphik.Constraints, api.Graphik.Constraints.Builder, api.Graphik.ConstraintsOrBuilder> setConstraintsBuilder_;
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
-      public boolean hasSetTypeValidators() {
-        return setTypeValidatorsBuilder_ != null || setTypeValidators_ != null;
+      public boolean hasSetConstraints() {
+        return setConstraintsBuilder_ != null || setConstraints_ != null;
       }
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
-      public api.Graphik.TypeValidators getSetTypeValidators() {
-        if (setTypeValidatorsBuilder_ == null) {
-          return setTypeValidators_ == null ? api.Graphik.TypeValidators.getDefaultInstance() : setTypeValidators_;
+      public api.Graphik.Constraints getSetConstraints() {
+        if (setConstraintsBuilder_ == null) {
+          return setConstraints_ == null ? api.Graphik.Constraints.getDefaultInstance() : setConstraints_;
         } else {
-          return setTypeValidatorsBuilder_.getMessage();
+          return setConstraintsBuilder_.getMessage();
         }
       }
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
-      public Builder setSetTypeValidators(api.Graphik.TypeValidators value) {
-        if (setTypeValidatorsBuilder_ == null) {
+      public Builder setSetConstraints(api.Graphik.Constraints value) {
+        if (setConstraintsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          setTypeValidators_ = value;
+          setConstraints_ = value;
           onChanged();
         } else {
-          setTypeValidatorsBuilder_.setMessage(value);
+          setConstraintsBuilder_.setMessage(value);
         }
 
         return this;
       }
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
-      public Builder setSetTypeValidators(
-          api.Graphik.TypeValidators.Builder builderForValue) {
-        if (setTypeValidatorsBuilder_ == null) {
-          setTypeValidators_ = builderForValue.build();
+      public Builder setSetConstraints(
+          api.Graphik.Constraints.Builder builderForValue) {
+        if (setConstraintsBuilder_ == null) {
+          setConstraints_ = builderForValue.build();
           onChanged();
         } else {
-          setTypeValidatorsBuilder_.setMessage(builderForValue.build());
+          setConstraintsBuilder_.setMessage(builderForValue.build());
         }
 
         return this;
       }
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
-      public Builder mergeSetTypeValidators(api.Graphik.TypeValidators value) {
-        if (setTypeValidatorsBuilder_ == null) {
-          if (setTypeValidators_ != null) {
-            setTypeValidators_ =
-              api.Graphik.TypeValidators.newBuilder(setTypeValidators_).mergeFrom(value).buildPartial();
+      public Builder mergeSetConstraints(api.Graphik.Constraints value) {
+        if (setConstraintsBuilder_ == null) {
+          if (setConstraints_ != null) {
+            setConstraints_ =
+              api.Graphik.Constraints.newBuilder(setConstraints_).mergeFrom(value).buildPartial();
           } else {
-            setTypeValidators_ = value;
+            setConstraints_ = value;
           }
           onChanged();
         } else {
-          setTypeValidatorsBuilder_.mergeFrom(value);
+          setConstraintsBuilder_.mergeFrom(value);
         }
 
         return this;
       }
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
-      public Builder clearSetTypeValidators() {
-        if (setTypeValidatorsBuilder_ == null) {
-          setTypeValidators_ = null;
+      public Builder clearSetConstraints() {
+        if (setConstraintsBuilder_ == null) {
+          setConstraints_ = null;
           onChanged();
         } else {
-          setTypeValidators_ = null;
-          setTypeValidatorsBuilder_ = null;
+          setConstraints_ = null;
+          setConstraintsBuilder_ = null;
         }
 
         return this;
       }
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
-      public api.Graphik.TypeValidators.Builder getSetTypeValidatorsBuilder() {
+      public api.Graphik.Constraints.Builder getSetConstraintsBuilder() {
         
         onChanged();
-        return getSetTypeValidatorsFieldBuilder().getBuilder();
+        return getSetConstraintsFieldBuilder().getBuilder();
       }
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
-      public api.Graphik.TypeValidatorsOrBuilder getSetTypeValidatorsOrBuilder() {
-        if (setTypeValidatorsBuilder_ != null) {
-          return setTypeValidatorsBuilder_.getMessageOrBuilder();
+      public api.Graphik.ConstraintsOrBuilder getSetConstraintsOrBuilder() {
+        if (setConstraintsBuilder_ != null) {
+          return setConstraintsBuilder_.getMessageOrBuilder();
         } else {
-          return setTypeValidators_ == null ?
-              api.Graphik.TypeValidators.getDefaultInstance() : setTypeValidators_;
+          return setConstraints_ == null ?
+              api.Graphik.Constraints.getDefaultInstance() : setConstraints_;
         }
       }
       /**
-       * <code>.api.TypeValidators set_type_validators = 9;</code>
+       * <code>.api.Constraints set_constraints = 9;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder> 
-          getSetTypeValidatorsFieldBuilder() {
-        if (setTypeValidatorsBuilder_ == null) {
-          setTypeValidatorsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              api.Graphik.TypeValidators, api.Graphik.TypeValidators.Builder, api.Graphik.TypeValidatorsOrBuilder>(
-                  getSetTypeValidators(),
+          api.Graphik.Constraints, api.Graphik.Constraints.Builder, api.Graphik.ConstraintsOrBuilder> 
+          getSetConstraintsFieldBuilder() {
+        if (setConstraintsBuilder_ == null) {
+          setConstraintsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              api.Graphik.Constraints, api.Graphik.Constraints.Builder, api.Graphik.ConstraintsOrBuilder>(
+                  getSetConstraints(),
                   getParentForChildren(),
                   isClean());
-          setTypeValidators_ = null;
+          setConstraints_ = null;
         }
-        return setTypeValidatorsBuilder_;
+        return setConstraintsBuilder_;
       }
 
       private api.Graphik.Message sendMessage_ = null;
@@ -51568,15 +51568,15 @@ public final class Graphik {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_api_Authorizers_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_api_TypeValidator_descriptor;
+    internal_static_api_Constraint_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_api_TypeValidator_fieldAccessorTable;
+      internal_static_api_Constraint_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_api_TypeValidators_descriptor;
+    internal_static_api_Constraints_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_api_TypeValidators_fieldAccessorTable;
+      internal_static_api_Constraints_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_api_Index_descriptor;
   private static final 
@@ -51774,140 +51774,139 @@ public final class Graphik {
       "\020\342\337\037\014\n\n^.{1,225}$\022\027\n\017target_requests\030\004 \001" +
       "(\010\022\030\n\020target_responses\030\005 \001(\010\"3\n\013Authoriz" +
       "ers\022$\n\013authorizers\030\001 \003(\0132\017.api.Authorize" +
-      "r\"\247\001\n\rTypeValidator\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n" +
-      "\n^.{1,225}$\022\037\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
-      "25}$\022$\n\nexpression\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
-      "}$\022\023\n\013target_docs\030\004 \001(\010\022\032\n\022target_connec" +
-      "tions\030\005 \001(\010\"8\n\016TypeValidators\022&\n\nvalidat" +
-      "ors\030\001 \003(\0132\022.api.TypeValidator\"\221\001\n\005Index\022" +
-      "\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype" +
-      "\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\004" +
-      " \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004docs\030\006 \001(\010\022\023\n\013" +
-      "connections\030\007 \001(\010\"&\n\007Indexes\022\033\n\007indexes\030" +
-      "\001 \003(\0132\n.api.Index\"\304\001\n\007Trigger\022\036\n\004name\030\001 " +
-      "\001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\002 \001(\tB\020\342\337" +
-      "\037\014\n\n^.{1,225}$\022$\n\nexpression\030\003 \001(\tB\020\342\337\037\014" +
-      "\n\n^.{1,225}$\022!\n\007trigger\030\004 \001(\tB\020\342\337\037\014\n\n^.{" +
-      "1,225}$\022\023\n\013target_docs\030\005 \001(\010\022\032\n\022target_c" +
-      "onnections\030\006 \001(\010\"*\n\010Triggers\022\036\n\010triggers" +
-      "\030\001 \003(\0132\014.api.Trigger\"E\n\014StreamFilter\022!\n\007" +
-      "channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\022\n\nexpre" +
-      "ssion\030\002 \001(\t\"G\n\005Graph\022\027\n\004docs\030\001 \001(\0132\t.api" +
-      ".Docs\022%\n\013connections\030\002 \001(\0132\020.api.Connect" +
-      "ions\"\317\003\n\005Flags\022\031\n\021open_id_discovery\030\001 \001(" +
-      "\t\022\024\n\014storage_path\030\002 \001(\t\022\017\n\007metrics\030\003 \001(\010" +
-      "\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\rallow_methods" +
-      "\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(\t\022\022\n\nroot_us" +
-      "ers\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007tls_key\030\n" +
-      " \001(\t\022\034\n\024playground_client_id\030\013 \001(\t\022 \n\030pl" +
-      "ayground_client_secret\030\014 \001(\t\022\033\n\023playgrou" +
-      "nd_redirect\030\r \001(\t\022#\n\033require_request_aut" +
-      "horizers\030\017 \001(\010\022$\n\034require_response_autho" +
-      "rizers\030\020 \001(\010\022\021\n\tjoin_raft\030\021 \001(\t\022\024\n\014raft_" +
-      "peer_id\030\022 \001(\t\022\023\n\013listen_port\030\023 \001(\003\022\023\n\013ra" +
-      "ft_secret\030\024 \001(\t\022\r\n\005debug\030\025 \001(\010\"\030\n\007Boolea" +
-      "n\022\r\n\005value\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(" +
-      "\001\"\203\001\n\014ExistsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n" +
-      "\n^.{1,225}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^" +
-      ".{1,225}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010" +
-      "\022\r\n\005index\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.a" +
-      "pi.RefB\006\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.goo" +
-      "gle.protobuf.Struct\"V\n\nEditFilter\022\033\n\006fil" +
-      "ter\030\001 \001(\0132\013.api.Filter\022+\n\nattributes\030\002 \001" +
-      "(\0132\027.google.protobuf.Struct\"\027\n\004Pong\022\017\n\007m" +
-      "essage\030\001 \001(\t\"c\n\017OutboundMessage\022!\n\007chann" +
-      "el\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\013" +
-      "2\027.google.protobuf.StructB\006\342\337\037\002 \001\"\324\001\n\007Me" +
-      "ssage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$" +
-      "\022-\n\004data\030\002 \001(\0132\027.google.protobuf.StructB" +
-      "\006\342\337\037\002 \001\022\036\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022" +
-      "5\n\ttimestamp\030\004 \001(\0132\032.google.protobuf.Tim" +
-      "estampB\006\342\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n\n^." +
-      "{1,225}$\"\305\001\n\006Schema\022\030\n\020connection_types\030" +
-      "\001 \003(\t\022\021\n\tdoc_types\030\002 \003(\t\022%\n\013authorizers\030" +
-      "\003 \001(\0132\020.api.Authorizers\022\'\n\nvalidators\030\004 " +
-      "\001(\0132\023.api.TypeValidators\022\035\n\007indexes\030\005 \001(" +
-      "\0132\014.api.Indexes\022\037\n\010triggers\030\006 \001(\0132\r.api." +
-      "Triggers\" \n\nExprFilter\022\022\n\nexpression\030\001 \001" +
-      "(\t\"\203\003\n\013RaftCommand\022\026\n\004user\030\001 \001(\0132\010.api.D" +
-      "oc\022\016\n\006method\030\002 \001(\t\022\032\n\010set_docs\030\003 \003(\0132\010.a" +
-      "pi.Doc\022(\n\017set_connections\030\004 \003(\0132\017.api.Co" +
-      "nnection\022\032\n\010del_docs\030\005 \003(\0132\010.api.Ref\022!\n\017" +
-      "del_connections\030\006 \003(\0132\010.api.Ref\022!\n\013set_i" +
-      "ndexes\030\007 \001(\0132\014.api.Indexes\022)\n\017set_author" +
-      "izers\030\010 \001(\0132\020.api.Authorizers\0220\n\023set_typ" +
-      "e_validators\030\t \001(\0132\023.api.TypeValidators\022" +
-      "\"\n\014send_message\030\n \001(\0132\014.api.Message\022#\n\014s" +
-      "et_triggers\030\013 \001(\0132\r.api.Triggers\"%\n\004Peer" +
-      "\022\017\n\007node_id\030\001 \001(\t\022\014\n\004addr\030\002 \001(\t\"\262\001\n\tRaft" +
-      "State\022\016\n\006leader\030\001 \001(\t\022#\n\nmembership\030\002 \001(" +
-      "\0162\017.api.Membership\022\030\n\005peers\030\003 \003(\0132\t.api." +
-      "Peer\022(\n\005stats\030\004 \003(\0132\031.api.RaftState.Stat" +
-      "sEntry\032,\n\nStatsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005val" +
-      "ue\030\002 \001(\t:\0028\001*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DF" +
-      "S\020\001*D\n\tAggregate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003" +
-      "AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\005*P\n\nMem" +
-      "bership\022\013\n\007UNKNOWN\020\000\022\014\n\010FOLLOWER\020\001\022\r\n\tCA" +
-      "NDIDATE\020\002\022\n\n\006LEADER\020\003\022\014\n\010SHUTDOWN\020\0042\250\001\n\013" +
-      "RaftService\022+\n\004Ping\022\026.google.protobuf.Em" +
-      "pty\032\t.api.Pong\"\000\0222\n\013JoinCluster\022\t.api.Pe" +
-      "er\032\026.google.protobuf.Empty\"\000\0228\n\014ClusterS" +
-      "tate\022\026.google.protobuf.Empty\032\016.api.RaftS" +
-      "tate\"\0002\345\020\n\017DatabaseService\0222\n\tGetSchema\022" +
-      "\026.google.protobuf.Empty\032\013.api.Schema\"\000\022<" +
-      "\n\016SetAuthorizers\022\020.api.Authorizers\032\026.goo" +
-      "gle.protobuf.Empty\"\000\0224\n\nSetIndexes\022\014.api" +
-      ".Indexes\032\026.google.protobuf.Empty\"\000\022B\n\021Se" +
-      "tTypeValidators\022\023.api.TypeValidators\032\026.g" +
-      "oogle.protobuf.Empty\"\000\0226\n\013SetTriggers\022\r." +
-      "api.Triggers\032\026.google.protobuf.Empty\"\000\022(" +
-      "\n\002Me\022\026.google.protobuf.Empty\032\010.api.Doc\"\000" +
-      "\022,\n\tCreateDoc\022\023.api.DocConstructor\032\010.api" +
-      ".Doc\"\000\022/\n\nCreateDocs\022\024.api.DocConstructo" +
-      "rs\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.ap" +
-      "i.Doc\"\000\022&\n\nSearchDocs\022\013.api.Filter\032\t.api" +
-      ".Docs\"\000\0222\n\010Traverse\022\023.api.TraverseFilter" +
-      "\032\017.api.Traversals\"\000\0226\n\nTraverseMe\022\025.api." +
-      "TraverseMeFilter\032\017.api.Traversals\"\000\022 \n\007E" +
-      "ditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(\n\010EditDoc" +
-      "s\022\017.api.EditFilter\032\t.api.Docs\"\000\022,\n\006DelDo" +
-      "c\022\010.api.Ref\032\026.google.protobuf.Empty\"\000\0220\n" +
-      "\007DelDocs\022\013.api.Filter\032\026.google.protobuf." +
-      "Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsFilter\032" +
-      "\014.api.Boolean\"\000\0225\n\020ExistsConnection\022\021.ap" +
-      "i.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006HasDoc" +
-      "\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasConnect" +
-      "ion\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020CreateC" +
-      "onnection\022\032.api.ConnectionConstructor\032\017." +
-      "api.Connection\"\000\022D\n\021CreateConnections\022\033." +
-      "api.ConnectionConstructors\032\020.api.Connect" +
-      "ions\"\000\022@\n\020SearchAndConnect\022\030.api.SearchC" +
-      "onnectFilter\032\020.api.Connections\"\000\022D\n\022Sear" +
-      "chAndConnectMe\022\032.api.SearchConnectMeFilt" +
-      "er\032\020.api.Connections\"\000\022,\n\rGetConnection\022" +
-      "\010.api.Ref\032\017.api.Connection\"\000\0224\n\021SearchCo" +
-      "nnections\022\013.api.Filter\032\020.api.Connections" +
-      "\"\000\022.\n\016EditConnection\022\t.api.Edit\032\017.api.Co" +
-      "nnection\"\000\0226\n\017EditConnections\022\017.api.Edit" +
-      "Filter\032\020.api.Connections\"\000\0223\n\rDelConnect" +
-      "ion\022\010.api.Ref\032\026.google.protobuf.Empty\"\000\022" +
-      "7\n\016DelConnections\022\013.api.Filter\032\026.google." +
-      "protobuf.Empty\"\000\0229\n\017ConnectionsFrom\022\022.ap" +
-      "i.ConnectFilter\032\020.api.Connections\"\000\0227\n\rC" +
-      "onnectionsTo\022\022.api.ConnectFilter\032\020.api.C" +
-      "onnections\"\000\022.\n\rAggregateDocs\022\016.api.AggF" +
-      "ilter\032\013.api.Number\"\000\0225\n\024AggregateConnect" +
-      "ions\022\016.api.AggFilter\032\013.api.Number\"\000\022;\n\tB" +
-      "roadcast\022\024.api.OutboundMessage\032\026.google." +
-      "protobuf.Empty\"\000\022-\n\006Stream\022\021.api.StreamF" +
-      "ilter\032\014.api.Message\"\0000\001\022:\n\023PushDocConstr" +
-      "uctors\022\023.api.DocConstructor\032\010.api.Doc\"\000(" +
-      "\0010\001\022O\n\032PushConnectionConstructors\022\032.api." +
-      "ConnectionConstructor\032\017.api.Connection\"\000" +
-      "(\0010\001\0220\n\010SeedDocs\022\010.api.Doc\032\026.google.prot" +
-      "obuf.Empty\"\000(\001\022>\n\017SeedConnections\022\017.api." +
-      "Connection\032\026.google.protobuf.Empty\"\000(\001B\007" +
-      "Z\005apipbb\006proto3"
+      "r\"\244\001\n\nConstraint\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^." +
+      "{1,225}$\022\037\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
+      "$\022$\n\nexpression\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022" +
+      "\023\n\013target_docs\030\004 \001(\010\022\032\n\022target_connectio" +
+      "ns\030\005 \001(\010\"3\n\013Constraints\022$\n\013constraints\030\001" +
+      " \003(\0132\017.api.Constraint\"\221\001\n\005Index\022\036\n\004name\030" +
+      "\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\037\n\005gtype\030\003 \001(\tB\020" +
+      "\342\337\037\014\n\n^.{1,225}$\022$\n\nexpression\030\004 \001(\tB\020\342\337" +
+      "\037\014\n\n^.{1,225}$\022\014\n\004docs\030\006 \001(\010\022\023\n\013connecti" +
+      "ons\030\007 \001(\010\"&\n\007Indexes\022\033\n\007indexes\030\001 \003(\0132\n." +
+      "api.Index\"\304\001\n\007Trigger\022\036\n\004name\030\001 \001(\tB\020\342\337\037" +
+      "\014\n\n^.{1,225}$\022\037\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1" +
+      ",225}$\022$\n\nexpression\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
+      "25}$\022!\n\007trigger\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022" +
+      "\023\n\013target_docs\030\005 \001(\010\022\032\n\022target_connectio" +
+      "ns\030\006 \001(\010\"*\n\010Triggers\022\036\n\010triggers\030\001 \003(\0132\014" +
+      ".api.Trigger\"E\n\014StreamFilter\022!\n\007channel\030" +
+      "\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\022\n\nexpression\030\002 " +
+      "\001(\t\"G\n\005Graph\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022%\n" +
+      "\013connections\030\002 \001(\0132\020.api.Connections\"\317\003\n" +
+      "\005Flags\022\031\n\021open_id_discovery\030\001 \001(\t\022\024\n\014sto" +
+      "rage_path\030\002 \001(\t\022\017\n\007metrics\030\003 \001(\010\022\025\n\rallo" +
+      "w_headers\030\005 \003(\t\022\025\n\rallow_methods\030\006 \003(\t\022\025" +
+      "\n\rallow_origins\030\007 \003(\t\022\022\n\nroot_users\030\010 \003(" +
+      "\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007tls_key\030\n \001(\t\022\034\n\024" +
+      "playground_client_id\030\013 \001(\t\022 \n\030playground" +
+      "_client_secret\030\014 \001(\t\022\033\n\023playground_redir" +
+      "ect\030\r \001(\t\022#\n\033require_request_authorizers" +
+      "\030\017 \001(\010\022$\n\034require_response_authorizers\030\020" +
+      " \001(\010\022\021\n\tjoin_raft\030\021 \001(\t\022\024\n\014raft_peer_id\030" +
+      "\022 \001(\t\022\023\n\013listen_port\030\023 \001(\003\022\023\n\013raft_secre" +
+      "t\030\024 \001(\t\022\r\n\005debug\030\025 \001(\010\"\030\n\007Boolean\022\r\n\005val" +
+      "ue\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014Ex" +
+      "istsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,22" +
+      "5}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
+      "$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005inde" +
+      "x\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006" +
+      "\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.google.prot" +
+      "obuf.Struct\"V\n\nEditFilter\022\033\n\006filter\030\001 \001(" +
+      "\0132\013.api.Filter\022+\n\nattributes\030\002 \001(\0132\027.goo" +
+      "gle.protobuf.Struct\"\027\n\004Pong\022\017\n\007message\030\001" +
+      " \001(\t\"c\n\017OutboundMessage\022!\n\007channel\030\001 \001(\t" +
+      "B\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.googl" +
+      "e.protobuf.StructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!\n" +
+      "\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data" +
+      "\030\002 \001(\0132\027.google.protobuf.StructB\006\342\337\037\002 \001\022" +
+      "\036\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttimes" +
+      "tamp\030\004 \001(\0132\032.google.protobuf.TimestampB\006" +
+      "\342\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}$" +
+      "\"\303\001\n\006Schema\022\030\n\020connection_types\030\001 \003(\t\022\021\n" +
+      "\tdoc_types\030\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020." +
+      "api.Authorizers\022%\n\013constraints\030\004 \001(\0132\020.a" +
+      "pi.Constraints\022\035\n\007indexes\030\005 \001(\0132\014.api.In" +
+      "dexes\022\037\n\010triggers\030\006 \001(\0132\r.api.Triggers\" " +
+      "\n\nExprFilter\022\022\n\nexpression\030\001 \001(\t\"\374\002\n\013Raf" +
+      "tCommand\022\026\n\004user\030\001 \001(\0132\010.api.Doc\022\016\n\006meth" +
+      "od\030\002 \001(\t\022\032\n\010set_docs\030\003 \003(\0132\010.api.Doc\022(\n\017" +
+      "set_connections\030\004 \003(\0132\017.api.Connection\022\032" +
+      "\n\010del_docs\030\005 \003(\0132\010.api.Ref\022!\n\017del_connec" +
+      "tions\030\006 \003(\0132\010.api.Ref\022!\n\013set_indexes\030\007 \001" +
+      "(\0132\014.api.Indexes\022)\n\017set_authorizers\030\010 \001(" +
+      "\0132\020.api.Authorizers\022)\n\017set_constraints\030\t" +
+      " \001(\0132\020.api.Constraints\022\"\n\014send_message\030\n" +
+      " \001(\0132\014.api.Message\022#\n\014set_triggers\030\013 \001(\013" +
+      "2\r.api.Triggers\"%\n\004Peer\022\017\n\007node_id\030\001 \001(\t" +
+      "\022\014\n\004addr\030\002 \001(\t\"\262\001\n\tRaftState\022\016\n\006leader\030\001" +
+      " \001(\t\022#\n\nmembership\030\002 \001(\0162\017.api.Membershi" +
+      "p\022\030\n\005peers\030\003 \003(\0132\t.api.Peer\022(\n\005stats\030\004 \003" +
+      "(\0132\031.api.RaftState.StatsEntry\032,\n\nStatsEn" +
+      "try\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001*\035\n\tA" +
+      "lgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022" +
+      "\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n" +
+      "\003MIN\020\004\022\010\n\004PROD\020\005*P\n\nMembership\022\013\n\007UNKNOW" +
+      "N\020\000\022\014\n\010FOLLOWER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n\006LEAD" +
+      "ER\020\003\022\014\n\010SHUTDOWN\020\0042\250\001\n\013RaftService\022+\n\004Pi" +
+      "ng\022\026.google.protobuf.Empty\032\t.api.Pong\"\000\022" +
+      "2\n\013JoinCluster\022\t.api.Peer\032\026.google.proto" +
+      "buf.Empty\"\000\0228\n\014ClusterState\022\026.google.pro" +
+      "tobuf.Empty\032\016.api.RaftState\"\0002\337\020\n\017Databa" +
+      "seService\0222\n\tGetSchema\022\026.google.protobuf" +
+      ".Empty\032\013.api.Schema\"\000\022<\n\016SetAuthorizers\022" +
+      "\020.api.Authorizers\032\026.google.protobuf.Empt" +
+      "y\"\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.google" +
+      ".protobuf.Empty\"\000\022<\n\016SetConstraints\022\020.ap" +
+      "i.Constraints\032\026.google.protobuf.Empty\"\000\022" +
+      "6\n\013SetTriggers\022\r.api.Triggers\032\026.google.p" +
+      "rotobuf.Empty\"\000\022(\n\002Me\022\026.google.protobuf." +
+      "Empty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022\023.api.Doc" +
+      "Constructor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024." +
+      "api.DocConstructors\032\t.api.Docs\"\000\022\036\n\006GetD" +
+      "oc\022\010.api.Ref\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013" +
+      ".api.Filter\032\t.api.Docs\"\000\0222\n\010Traverse\022\023.a" +
+      "pi.TraverseFilter\032\017.api.Traversals\"\000\0226\n\n" +
+      "TraverseMe\022\025.api.TraverseMeFilter\032\017.api." +
+      "Traversals\"\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api" +
+      ".Doc\"\000\022(\n\010EditDocs\022\017.api.EditFilter\032\t.ap" +
+      "i.Docs\"\000\022,\n\006DelDoc\022\010.api.Ref\032\026.google.pr" +
+      "otobuf.Empty\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026" +
+      ".google.protobuf.Empty\"\000\022.\n\tExistsDoc\022\021." +
+      "api.ExistsFilter\032\014.api.Boolean\"\000\0225\n\020Exis" +
+      "tsConnection\022\021.api.ExistsFilter\032\014.api.Bo" +
+      "olean\"\000\022\"\n\006HasDoc\022\010.api.Ref\032\014.api.Boolea" +
+      "n\"\000\022)\n\rHasConnection\022\010.api.Ref\032\014.api.Boo" +
+      "lean\"\000\022A\n\020CreateConnection\022\032.api.Connect" +
+      "ionConstructor\032\017.api.Connection\"\000\022D\n\021Cre" +
+      "ateConnections\022\033.api.ConnectionConstruct" +
+      "ors\032\020.api.Connections\"\000\022@\n\020SearchAndConn" +
+      "ect\022\030.api.SearchConnectFilter\032\020.api.Conn" +
+      "ections\"\000\022D\n\022SearchAndConnectMe\022\032.api.Se" +
+      "archConnectMeFilter\032\020.api.Connections\"\000\022" +
+      ",\n\rGetConnection\022\010.api.Ref\032\017.api.Connect" +
+      "ion\"\000\0224\n\021SearchConnections\022\013.api.Filter\032" +
+      "\020.api.Connections\"\000\022.\n\016EditConnection\022\t." +
+      "api.Edit\032\017.api.Connection\"\000\0226\n\017EditConne" +
+      "ctions\022\017.api.EditFilter\032\020.api.Connection" +
+      "s\"\000\0223\n\rDelConnection\022\010.api.Ref\032\026.google." +
+      "protobuf.Empty\"\000\0227\n\016DelConnections\022\013.api" +
+      ".Filter\032\026.google.protobuf.Empty\"\000\0229\n\017Con" +
+      "nectionsFrom\022\022.api.ConnectFilter\032\020.api.C" +
+      "onnections\"\000\0227\n\rConnectionsTo\022\022.api.Conn" +
+      "ectFilter\032\020.api.Connections\"\000\022.\n\rAggrega" +
+      "teDocs\022\016.api.AggFilter\032\013.api.Number\"\000\0225\n" +
+      "\024AggregateConnections\022\016.api.AggFilter\032\013." +
+      "api.Number\"\000\022;\n\tBroadcast\022\024.api.Outbound" +
+      "Message\032\026.google.protobuf.Empty\"\000\022-\n\006Str" +
+      "eam\022\021.api.StreamFilter\032\014.api.Message\"\0000\001" +
+      "\022:\n\023PushDocConstructors\022\023.api.DocConstru" +
+      "ctor\032\010.api.Doc\"\000(\0010\001\022O\n\032PushConnectionCo" +
+      "nstructors\022\032.api.ConnectionConstructor\032\017" +
+      ".api.Connection\"\000(\0010\001\0220\n\010SeedDocs\022\010.api." +
+      "Doc\032\026.google.protobuf.Empty\"\000(\001\022>\n\017SeedC" +
+      "onnections\022\017.api.Connection\032\026.google.pro" +
+      "tobuf.Empty\"\000(\001B\007Z\005apipbb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -52076,18 +52075,18 @@ public final class Graphik {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Authorizers_descriptor,
         new java.lang.String[] { "Authorizers", });
-    internal_static_api_TypeValidator_descriptor =
+    internal_static_api_Constraint_descriptor =
       getDescriptor().getMessageTypes().get(24);
-    internal_static_api_TypeValidator_fieldAccessorTable = new
+    internal_static_api_Constraint_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_api_TypeValidator_descriptor,
+        internal_static_api_Constraint_descriptor,
         new java.lang.String[] { "Name", "Gtype", "Expression", "TargetDocs", "TargetConnections", });
-    internal_static_api_TypeValidators_descriptor =
+    internal_static_api_Constraints_descriptor =
       getDescriptor().getMessageTypes().get(25);
-    internal_static_api_TypeValidators_fieldAccessorTable = new
+    internal_static_api_Constraints_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_api_TypeValidators_descriptor,
-        new java.lang.String[] { "Validators", });
+        internal_static_api_Constraints_descriptor,
+        new java.lang.String[] { "Constraints", });
     internal_static_api_Index_descriptor =
       getDescriptor().getMessageTypes().get(26);
     internal_static_api_Index_fieldAccessorTable = new
@@ -52183,7 +52182,7 @@ public final class Graphik {
     internal_static_api_Schema_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Schema_descriptor,
-        new java.lang.String[] { "ConnectionTypes", "DocTypes", "Authorizers", "Validators", "Indexes", "Triggers", });
+        new java.lang.String[] { "ConnectionTypes", "DocTypes", "Authorizers", "Constraints", "Indexes", "Triggers", });
     internal_static_api_ExprFilter_descriptor =
       getDescriptor().getMessageTypes().get(42);
     internal_static_api_ExprFilter_fieldAccessorTable = new
@@ -52195,7 +52194,7 @@ public final class Graphik {
     internal_static_api_RaftCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_RaftCommand_descriptor,
-        new java.lang.String[] { "User", "Method", "SetDocs", "SetConnections", "DelDocs", "DelConnections", "SetIndexes", "SetAuthorizers", "SetTypeValidators", "SendMessage", "SetTriggers", });
+        new java.lang.String[] { "User", "Method", "SetDocs", "SetConnections", "DelDocs", "DelConnections", "SetIndexes", "SetAuthorizers", "SetConstraints", "SendMessage", "SetTriggers", });
     internal_static_api_Peer_descriptor =
       getDescriptor().getMessageTypes().get(44);
     internal_static_api_Peer_fieldAccessorTable = new

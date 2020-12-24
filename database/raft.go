@@ -49,9 +49,9 @@ func (g *Graph) fsm() *fsm.FSM {
 						}
 					}
 				}
-				if cmd.GetSetTypeValidators() != nil {
-					for _, a := range cmd.GetSetTypeValidators().GetValidators() {
-						_, err := g.setTypedValidator(ctx, tx, a)
+				if cmd.GetSetConstraints() != nil {
+					for _, a := range cmd.GetSetConstraints().GetConstraints() {
+						_, err := g.setConstraint(ctx, tx, a)
 						if err != nil {
 							return errors.Wrap(err, "raft: setTypedValidator")
 						}
@@ -112,8 +112,8 @@ func (g *Graph) fsm() *fsm.FSM {
 					return err
 				}
 			}
-			if cmd.SetTypeValidators != nil {
-				if err := g.cacheTypeValidators(); err != nil {
+			if cmd.SetConstraints != nil {
+				if err := g.cacheConstraints(); err != nil {
 					return err
 				}
 			}

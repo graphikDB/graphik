@@ -223,6 +223,14 @@
                 </li>
               
                 <li>
+                  <a href="#api.Constraint"><span class="badge">M</span>Constraint</a>
+                </li>
+              
+                <li>
+                  <a href="#api.Constraints"><span class="badge">M</span>Constraints</a>
+                </li>
+              
+                <li>
                   <a href="#api.Doc"><span class="badge">M</span>Doc</a>
                 </li>
               
@@ -360,14 +368,6 @@
               
                 <li>
                   <a href="#api.Triggers"><span class="badge">M</span>Triggers</a>
-                </li>
-              
-                <li>
-                  <a href="#api.TypeValidator"><span class="badge">M</span>TypeValidator</a>
-                </li>
-              
-                <li>
-                  <a href="#api.TypeValidators"><span class="badge">M</span>TypeValidators</a>
                 </li>
               
               
@@ -1102,6 +1102,131 @@
                   <td>seek_next</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="api.Constraint">Constraint</h3>
+        <p>Constraint a graph primitive used to validate custom doc/connection constraints</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target_docs</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if target_docs is true, this validator will be applied to documents. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>target_connections</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>if target_connections is true, this validator will be applied to connections. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+            
+            
+            <h4>Validated Fields</h4>
+            <table>
+              <thead>
+                <tr>
+                  <td>Field</td>
+                  <td>Validations</td>
+                </tr>
+              </thead>
+              <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>gtype</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+                <tr>
+                  <td>expression</td>
+                  <td>
+                    <ul>
+                    
+                      <li>regex: ^.{1,225}$</li>
+                    
+                    </ul>
+                  </td>
+                </tr>
+              
+              </tbody>
+            </table>
+            
+          
+
+        
+      
+        <h3 id="api.Constraints">Constraints</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>constraints</td>
+                  <td><a href="#api.Constraint">Constraint</a></td>
+                  <td>repeated</td>
                   <td><p> </p></td>
                 </tr>
               
@@ -2346,8 +2471,8 @@
                 </tr>
               
                 <tr>
-                  <td>set_type_validators</td>
-                  <td><a href="#api.TypeValidators">TypeValidators</a></td>
+                  <td>set_constraints</td>
+                  <td><a href="#api.Constraints">Constraints</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -2632,8 +2757,8 @@
                 </tr>
               
                 <tr>
-                  <td>validators</td>
-                  <td><a href="#api.TypeValidators">TypeValidators</a></td>
+                  <td>constraints</td>
+                  <td><a href="#api.Constraints">Constraints</a></td>
                   <td></td>
                   <td><p> </p></td>
                 </tr>
@@ -3337,131 +3462,6 @@
 
         
       
-        <h3 id="api.TypeValidator">TypeValidator</h3>
-        <p>TypeValidator a graph primitive used to validate custom doc/connection constraints</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>name</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>gtype</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>expression</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>target_docs</td>
-                  <td><a href="#bool">bool</a></td>
-                  <td></td>
-                  <td><p>if target_docs is true, this validator will be applied to documents. </p></td>
-                </tr>
-              
-                <tr>
-                  <td>target_connections</td>
-                  <td><a href="#bool">bool</a></td>
-                  <td></td>
-                  <td><p>if target_connections is true, this validator will be applied to connections. </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-            
-            
-            <h4>Validated Fields</h4>
-            <table>
-              <thead>
-                <tr>
-                  <td>Field</td>
-                  <td>Validations</td>
-                </tr>
-              </thead>
-              <tbody>
-              
-                <tr>
-                  <td>name</td>
-                  <td>
-                    <ul>
-                    
-                      <li>regex: ^.{1,225}$</li>
-                    
-                    </ul>
-                  </td>
-                </tr>
-              
-                <tr>
-                  <td>gtype</td>
-                  <td>
-                    <ul>
-                    
-                      <li>regex: ^.{1,225}$</li>
-                    
-                    </ul>
-                  </td>
-                </tr>
-              
-                <tr>
-                  <td>expression</td>
-                  <td>
-                    <ul>
-                    
-                      <li>regex: ^.{1,225}$</li>
-                    
-                    </ul>
-                  </td>
-                </tr>
-              
-              </tbody>
-            </table>
-            
-          
-
-        
-      
-        <h3 id="api.TypeValidators">TypeValidators</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>validators</td>
-                  <td><a href="#api.TypeValidator">TypeValidator</a></td>
-                  <td>repeated</td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
 
       
         <h3 id="api.Aggregate">Aggregate</h3>
@@ -3609,10 +3609,10 @@
               </tr>
             
               <tr>
-                <td>SetTypeValidators</td>
-                <td><a href="#api.TypeValidators">TypeValidators</a></td>
+                <td>SetConstraints</td>
+                <td><a href="#api.Constraints">Constraints</a></td>
                 <td><a href="#google.protobuf.Empty">.google.protobuf.Empty</a></td>
-                <td><p>SetTypeValidators sets all of the type validators in the graph database</p></td>
+                <td><p>SetConstraints sets all of the constraints in the graph database</p></td>
               </tr>
             
               <tr>

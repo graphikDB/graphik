@@ -80,6 +80,30 @@ type Connections struct {
 	SeekNext    *string       `json:"seek_next"`
 }
 
+type Constraint struct {
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
+}
+
+type ConstraintInput struct {
+	Name              string `json:"name"`
+	Gtype             string `json:"gtype"`
+	Expression        string `json:"expression"`
+	TargetDocs        bool   `json:"target_docs"`
+	TargetConnections bool   `json:"target_connections"`
+}
+
+type Constraints struct {
+	Constraints []*Constraint `json:"constraints"`
+}
+
+type ConstraintsInput struct {
+	Constraints []*ConstraintInput `json:"constraints"`
+}
+
 type Doc struct {
 	Ref        *Ref                   `json:"ref"`
 	Attributes map[string]interface{} `json:"attributes"`
@@ -205,12 +229,12 @@ type Refs struct {
 }
 
 type Schema struct {
-	ConnectionTypes []string        `json:"connection_types"`
-	DocTypes        []string        `json:"doc_types"`
-	Authorizers     *Authorizers    `json:"authorizers"`
-	Validators      *TypeValidators `json:"validators"`
-	Indexes         *Indexes        `json:"indexes"`
-	Triggers        *Triggers       `json:"triggers"`
+	ConnectionTypes []string     `json:"connection_types"`
+	DocTypes        []string     `json:"doc_types"`
+	Authorizers     *Authorizers `json:"authorizers"`
+	Constraints     *Constraints `json:"constraints"`
+	Indexes         *Indexes     `json:"indexes"`
+	Triggers        *Triggers    `json:"triggers"`
 }
 
 type SearchConnectFilter struct {
@@ -291,30 +315,6 @@ type Triggers struct {
 
 type TriggersInput struct {
 	Triggers []*TriggerInput `json:"triggers"`
-}
-
-type TypeValidator struct {
-	Name              string `json:"name"`
-	Gtype             string `json:"gtype"`
-	Expression        string `json:"expression"`
-	TargetDocs        bool   `json:"target_docs"`
-	TargetConnections bool   `json:"target_connections"`
-}
-
-type TypeValidatorInput struct {
-	Name              string `json:"name"`
-	Gtype             string `json:"gtype"`
-	Expression        string `json:"expression"`
-	TargetDocs        bool   `json:"target_docs"`
-	TargetConnections bool   `json:"target_connections"`
-}
-
-type TypeValidators struct {
-	Validators []*TypeValidator `json:"validators"`
-}
-
-type TypeValidatorsInput struct {
-	Validators []*TypeValidatorInput `json:"validators"`
 }
 
 type Aggregate string

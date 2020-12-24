@@ -26,7 +26,7 @@ type authorizer struct {
 }
 
 type typeValidator struct {
-	validator *apipb.TypeValidator
+	validator *apipb.Constraint
 	decision  *trigger.Decision
 }
 
@@ -99,7 +99,7 @@ func (g *Graph) rangeTriggers(fn func(a *triggerCache) bool) {
 	})
 }
 
-func (g *Graph) rangeTypeValidators(fn func(a *typeValidator) bool) {
+func (g *Graph) rangeConstraints(fn func(a *typeValidator) bool) {
 	g.typeValidators.Range(func(key, value interface{}) bool {
 		return fn(value.(*typeValidator))
 	})
@@ -163,13 +163,13 @@ func (g *Graph) cacheTriggers() error {
 	})
 }
 
-func (g *Graph) cacheTypeValidators() error {
+func (g *Graph) cacheConstraints() error {
 	return g.db.View(func(tx *bbolt.Tx) error {
-		return tx.Bucket(dbTypeValidators).ForEach(func(k, v []byte) error {
+		return tx.Bucket(dbConstraints).ForEach(func(k, v []byte) error {
 			if k == nil || v == nil {
 				return nil
 			}
-			var i apipb.TypeValidator
+			var i apipb.Constraint
 			var err error
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
@@ -268,14 +268,14 @@ func (g *Graph) setAuthorizer(ctx context.Context, tx *bbolt.Tx, i *apipb.Author
 	return i, nil
 }
 
-func (g *Graph) setTypedValidator(ctx context.Context, tx *bbolt.Tx, i *apipb.TypeValidator) (*apipb.TypeValidator, error) {
+func (g *Graph) setConstraint(ctx context.Context, tx *bbolt.Tx, i *apipb.Constraint) (*apipb.Constraint, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	validatorBucket := tx.Bucket(dbTypeValidators)
+	validatorBucket := tx.Bucket(dbConstraints)
 	val := validatorBucket.Get([]byte(i.GetName()))
 	if val != nil && len(val) > 0 {
-		var current = &apipb.TypeValidator{}
+		var current = &apipb.Constraint{}
 		err := proto.Unmarshal(val, current)
 		if err != nil {
 			return nil, err
@@ -403,7 +403,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 	}
 	docMap := doc.AsMap()
 	var validationErr error
-	g.rangeTypeValidators(func(v *typeValidator) bool {
+	g.rangeConstraints(func(v *typeValidator) bool {
 		if v.validator.GetTargetDocs() && (v.validator.GetGtype() == apipb.Any || v.validator.GetGtype() == doc.GetRef().GetGtype()) {
 			err := v.decision.Eval(docMap)
 			if err != nil {
@@ -494,7 +494,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 	}
 	connMap := connection.AsMap()
 	var validationErr error
-	g.rangeTypeValidators(func(v *typeValidator) bool {
+	g.rangeConstraints(func(v *typeValidator) bool {
 		if v.validator.GetTargetConnections() && (v.validator.GetGtype() == apipb.Any || v.validator.GetGtype() == connection.GetRef().GetGtype()) {
 			err := v.decision.Eval(connMap)
 			if err != nil {

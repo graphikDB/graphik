@@ -46,9 +46,9 @@ class RaftCommand extends \Google\Protobuf\Internal\Message
      */
     private $set_authorizers = null;
     /**
-     * Generated from protobuf field <code>.api.TypeValidators set_type_validators = 9;</code>
+     * Generated from protobuf field <code>.api.Constraints set_constraints = 9;</code>
      */
-    private $set_type_validators = null;
+    private $set_constraints = null;
     /**
      * Generated from protobuf field <code>.api.Message send_message = 10;</code>
      */
@@ -72,7 +72,7 @@ class RaftCommand extends \Google\Protobuf\Internal\Message
      *     @type \Api\Ref[]|\Google\Protobuf\Internal\RepeatedField $del_connections
      *     @type \Api\Indexes $set_indexes
      *     @type \Api\Authorizers $set_authorizers
-     *     @type \Api\TypeValidators $set_type_validators
+     *     @type \Api\Constraints $set_constraints
      *     @type \Api\Message $send_message
      *     @type \Api\Triggers $set_triggers
      * }
@@ -259,23 +259,23 @@ class RaftCommand extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.api.TypeValidators set_type_validators = 9;</code>
-     * @return \Api\TypeValidators
+     * Generated from protobuf field <code>.api.Constraints set_constraints = 9;</code>
+     * @return \Api\Constraints
      */
-    public function getSetTypeValidators()
+    public function getSetConstraints()
     {
-        return $this->set_type_validators;
+        return $this->set_constraints;
     }
 
     /**
-     * Generated from protobuf field <code>.api.TypeValidators set_type_validators = 9;</code>
-     * @param \Api\TypeValidators $var
+     * Generated from protobuf field <code>.api.Constraints set_constraints = 9;</code>
+     * @param \Api\Constraints $var
      * @return $this
      */
-    public function setSetTypeValidators($var)
+    public function setSetConstraints($var)
     {
-        GPBUtil::checkMessage($var, \Api\TypeValidators::class);
-        $this->set_type_validators = $var;
+        GPBUtil::checkMessage($var, \Api\Constraints::class);
+        $this->set_constraints = $var;
 
         return $this;
     }

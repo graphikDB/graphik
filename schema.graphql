@@ -90,38 +90,38 @@ type Refs {
   refs: [Ref!]
 }
 
-# TypeValidator a graph primitive used to validate custom doc/connection constraints
-type TypeValidator {
-  # name is the unique name of the type validator
+# Constraint a graph primitive used to validate custom doc/connection constraints
+type Constraint {
+  # name is the unique name of the constraint
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if target_docs is true, this validator will be applied to documents.
+  # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
-  # if target_connections is true, this validator will be applied to connections.
+  # if target_connections is true, this constraint will be applied to connections.
   target_connections: Boolean!
 }
 
-# TypeValidators is an array of TypeValidator
-type TypeValidators {
-  validators: [TypeValidator!]
+# Constraints is an array of Constraint
+type Constraints {
+  constraints: [Constraint!]
 }
 
 # triggers may be used to automatically mutate the attributes of documents/connections before they are commited to the database
 type Trigger {
-  # name is the unique name of the type validator
+  # name is the unique name of the constraint
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
   # trigger is the map CEL expression that mutates the doc/connection before it is stored
   trigger: String!
-  # if target_docs is true, this validator will be applied to documents.
+  # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
-  # if target_connections is true, this validator will be applied to connections.
+  # if target_connections is true, this constraint will be applied to connections.
   target_connections: Boolean!
 }
 
@@ -212,8 +212,8 @@ type Schema {
   doc_types: [String!]
   # authorizers are all of registered authorizers in the graph
   authorizers: Authorizers
-  # validators are all of registered validators in the graph
-  validators: TypeValidators
+  # constraints are all of registered constraints in the graph
+  constraints: Constraints
   # indexes are all of the registered indexes in the graph
   indexes: Indexes
   # triggers are all of the registered triggers in the graph
@@ -444,7 +444,7 @@ input ExprFilter {
 input IndexInput {
   # name is the unique name of the index in the graph
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
@@ -462,17 +462,17 @@ input IndexesInput {
 
 # TriggerInput is used to construct Trigger
 input TriggerInput {
-  # name is the unique name of the type validator
+  # name is the unique name of the constraint
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
   # trigger is the map CEL expression that mutates the doc/connection before it is stored
   trigger: String!
-  # if target_docs is true, this validator will be applied to documents.
+  # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
-  # if target_connections is true, this validator will be applied to connections.
+  # if target_connections is true, this constraint will be applied to connections.
   target_connections: Boolean!
 }
 
@@ -500,23 +500,23 @@ input AuthorizersInput {
   authorizers: [AuthorizerInput!]
 }
 
-# TypeValidatorInput is used to construct a new type validator
-input TypeValidatorInput {
-  # name is the unique name of the type validator
+# ConstraintInput is used to construct a new constraint
+input ConstraintInput {
+  # name is the unique name of the constraint
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if target_docs is true, this validator will be applied to documents.
+  # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
-  # if target_connections is true, this validator will be applied to connections.
+  # if target_connections is true, this constraint will be applied to connections.
   target_connections: Boolean!
 }
 
-# TypeValidatorsInput is an array of TypeValidatorInput
-input TypeValidatorsInput {
-  validators: [TypeValidatorInput!]
+# ConstraintsInput is an array of ConstraintInput
+input ConstraintsInput {
+  constraints: [ConstraintInput!]
 }
 
 # Exists is a filter used to determine whether a doc/connection exists in the graph
@@ -564,8 +564,8 @@ type Mutation {
   setIndexes(input: IndexesInput!): Empty
   # setAuthorizers sets all of the authorizers in the graph
   setAuthorizers(input: AuthorizersInput!): Empty
-  # setTypeValidators sets all of the type validators in the graph
-  setTypeValidators(input: TypeValidatorsInput!): Empty
+  # setConstraints sets all of the constraints in the graph
+  setConstraints(input: ConstraintsInput!): Empty
   # v sets all of the triggers in the graph
   setTriggers(input: TriggersInput!): Empty
   # searchAndConnect searches for documents and forms connections based on whether they pass a filter
@@ -575,7 +575,7 @@ type Mutation {
 }
 
 type Query {
-  # getSchema gets information about node/connection types, type-validators, indexes, and authorizers
+  # getSchema gets information about node/connection types, type-constraints, indexes, and authorizers
   getSchema(where: Empty): Schema!
   # me returns a Doc of the currently logged in user
   me(where: Empty): Doc!

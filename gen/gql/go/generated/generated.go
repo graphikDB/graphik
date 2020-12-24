@@ -79,6 +79,18 @@ type ComplexityRoot struct {
 		SeekNext    func(childComplexity int) int
 	}
 
+	Constraint struct {
+		Expression        func(childComplexity int) int
+		Gtype             func(childComplexity int) int
+		Name              func(childComplexity int) int
+		TargetConnections func(childComplexity int) int
+		TargetDocs        func(childComplexity int) int
+	}
+
+	Constraints struct {
+		Constraints func(childComplexity int) int
+	}
+
 	Doc struct {
 		Attributes func(childComplexity int) int
 		Ref        func(childComplexity int) int
@@ -126,9 +138,9 @@ type ComplexityRoot struct {
 		SearchAndConnect   func(childComplexity int, input model.SearchConnectFilter) int
 		SearchAndConnectMe func(childComplexity int, input model.SearchConnectMeFilter) int
 		SetAuthorizers     func(childComplexity int, input model.AuthorizersInput) int
+		SetConstraints     func(childComplexity int, input model.ConstraintsInput) int
 		SetIndexes         func(childComplexity int, input model.IndexesInput) int
 		SetTriggers        func(childComplexity int, input model.TriggersInput) int
-		SetTypeValidators  func(childComplexity int, input model.TypeValidatorsInput) int
 	}
 
 	Peer struct {
@@ -174,10 +186,10 @@ type ComplexityRoot struct {
 	Schema struct {
 		Authorizers     func(childComplexity int) int
 		ConnectionTypes func(childComplexity int) int
+		Constraints     func(childComplexity int) int
 		DocTypes        func(childComplexity int) int
 		Indexes         func(childComplexity int) int
 		Triggers        func(childComplexity int) int
-		Validators      func(childComplexity int) int
 	}
 
 	Subscription struct {
@@ -207,18 +219,6 @@ type ComplexityRoot struct {
 	Triggers struct {
 		Triggers func(childComplexity int) int
 	}
-
-	TypeValidator struct {
-		Expression        func(childComplexity int) int
-		Gtype             func(childComplexity int) int
-		Name              func(childComplexity int) int
-		TargetConnections func(childComplexity int) int
-		TargetDocs        func(childComplexity int) int
-	}
-
-	TypeValidators struct {
-		Validators func(childComplexity int) int
-	}
 }
 
 type MutationResolver interface {
@@ -237,7 +237,7 @@ type MutationResolver interface {
 	Broadcast(ctx context.Context, input model.OutboundMessage) (*emptypb.Empty, error)
 	SetIndexes(ctx context.Context, input model.IndexesInput) (*emptypb.Empty, error)
 	SetAuthorizers(ctx context.Context, input model.AuthorizersInput) (*emptypb.Empty, error)
-	SetTypeValidators(ctx context.Context, input model.TypeValidatorsInput) (*emptypb.Empty, error)
+	SetConstraints(ctx context.Context, input model.ConstraintsInput) (*emptypb.Empty, error)
 	SetTriggers(ctx context.Context, input model.TriggersInput) (*emptypb.Empty, error)
 	SearchAndConnect(ctx context.Context, input model.SearchConnectFilter) (*model.Connections, error)
 	SearchAndConnectMe(ctx context.Context, input model.SearchConnectMeFilter) (*model.Connections, error)
@@ -390,6 +390,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Connections.SeekNext(childComplexity), true
+
+	case "Constraint.expression":
+		if e.complexity.Constraint.Expression == nil {
+			break
+		}
+
+		return e.complexity.Constraint.Expression(childComplexity), true
+
+	case "Constraint.gtype":
+		if e.complexity.Constraint.Gtype == nil {
+			break
+		}
+
+		return e.complexity.Constraint.Gtype(childComplexity), true
+
+	case "Constraint.name":
+		if e.complexity.Constraint.Name == nil {
+			break
+		}
+
+		return e.complexity.Constraint.Name(childComplexity), true
+
+	case "Constraint.target_connections":
+		if e.complexity.Constraint.TargetConnections == nil {
+			break
+		}
+
+		return e.complexity.Constraint.TargetConnections(childComplexity), true
+
+	case "Constraint.target_docs":
+		if e.complexity.Constraint.TargetDocs == nil {
+			break
+		}
+
+		return e.complexity.Constraint.TargetDocs(childComplexity), true
+
+	case "Constraints.constraints":
+		if e.complexity.Constraints.Constraints == nil {
+			break
+		}
+
+		return e.complexity.Constraints.Constraints(childComplexity), true
 
 	case "Doc.attributes":
 		if e.complexity.Doc.Attributes == nil {
@@ -688,6 +730,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.SetAuthorizers(childComplexity, args["input"].(model.AuthorizersInput)), true
 
+	case "Mutation.setConstraints":
+		if e.complexity.Mutation.SetConstraints == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setConstraints_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetConstraints(childComplexity, args["input"].(model.ConstraintsInput)), true
+
 	case "Mutation.setIndexes":
 		if e.complexity.Mutation.SetIndexes == nil {
 			break
@@ -711,18 +765,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.SetTriggers(childComplexity, args["input"].(model.TriggersInput)), true
-
-	case "Mutation.setTypeValidators":
-		if e.complexity.Mutation.SetTypeValidators == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_setTypeValidators_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.SetTypeValidators(childComplexity, args["input"].(model.TypeValidatorsInput)), true
 
 	case "Peer.addr":
 		if e.complexity.Peer.Addr == nil {
@@ -993,6 +1035,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Schema.ConnectionTypes(childComplexity), true
 
+	case "Schema.constraints":
+		if e.complexity.Schema.Constraints == nil {
+			break
+		}
+
+		return e.complexity.Schema.Constraints(childComplexity), true
+
 	case "Schema.doc_types":
 		if e.complexity.Schema.DocTypes == nil {
 			break
@@ -1013,13 +1062,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Schema.Triggers(childComplexity), true
-
-	case "Schema.validators":
-		if e.complexity.Schema.Validators == nil {
-			break
-		}
-
-		return e.complexity.Schema.Validators(childComplexity), true
 
 	case "Subscription.stream":
 		if e.complexity.Subscription.Stream == nil {
@@ -1116,48 +1158,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Triggers.Triggers(childComplexity), true
-
-	case "TypeValidator.expression":
-		if e.complexity.TypeValidator.Expression == nil {
-			break
-		}
-
-		return e.complexity.TypeValidator.Expression(childComplexity), true
-
-	case "TypeValidator.gtype":
-		if e.complexity.TypeValidator.Gtype == nil {
-			break
-		}
-
-		return e.complexity.TypeValidator.Gtype(childComplexity), true
-
-	case "TypeValidator.name":
-		if e.complexity.TypeValidator.Name == nil {
-			break
-		}
-
-		return e.complexity.TypeValidator.Name(childComplexity), true
-
-	case "TypeValidator.target_connections":
-		if e.complexity.TypeValidator.TargetConnections == nil {
-			break
-		}
-
-		return e.complexity.TypeValidator.TargetConnections(childComplexity), true
-
-	case "TypeValidator.target_docs":
-		if e.complexity.TypeValidator.TargetDocs == nil {
-			break
-		}
-
-		return e.complexity.TypeValidator.TargetDocs(childComplexity), true
-
-	case "TypeValidators.validators":
-		if e.complexity.TypeValidators.Validators == nil {
-			break
-		}
-
-		return e.complexity.TypeValidators.Validators(childComplexity), true
 
 	}
 	return 0, false
@@ -1332,38 +1332,38 @@ type Refs {
   refs: [Ref!]
 }
 
-# TypeValidator a graph primitive used to validate custom doc/connection constraints
-type TypeValidator {
-  # name is the unique name of the type validator
+# Constraint a graph primitive used to validate custom doc/connection constraints
+type Constraint {
+  # name is the unique name of the constraint
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if target_docs is true, this validator will be applied to documents.
+  # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
-  # if target_connections is true, this validator will be applied to connections.
+  # if target_connections is true, this constraint will be applied to connections.
   target_connections: Boolean!
 }
 
-# TypeValidators is an array of TypeValidator
-type TypeValidators {
-  validators: [TypeValidator!]
+# Constraints is an array of Constraint
+type Constraints {
+  constraints: [Constraint!]
 }
 
 # triggers may be used to automatically mutate the attributes of documents/connections before they are commited to the database
 type Trigger {
-  # name is the unique name of the type validator
+  # name is the unique name of the constraint
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
   # trigger is the map CEL expression that mutates the doc/connection before it is stored
   trigger: String!
-  # if target_docs is true, this validator will be applied to documents.
+  # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
-  # if target_connections is true, this validator will be applied to connections.
+  # if target_connections is true, this constraint will be applied to connections.
   target_connections: Boolean!
 }
 
@@ -1454,8 +1454,8 @@ type Schema {
   doc_types: [String!]
   # authorizers are all of registered authorizers in the graph
   authorizers: Authorizers
-  # validators are all of registered validators in the graph
-  validators: TypeValidators
+  # constraints are all of registered constraints in the graph
+  constraints: Constraints
   # indexes are all of the registered indexes in the graph
   indexes: Indexes
   # triggers are all of the registered triggers in the graph
@@ -1686,7 +1686,7 @@ input ExprFilter {
 input IndexInput {
   # name is the unique name of the index in the graph
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
@@ -1704,17 +1704,17 @@ input IndexesInput {
 
 # TriggerInput is used to construct Trigger
 input TriggerInput {
-  # name is the unique name of the type validator
+  # name is the unique name of the constraint
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
   # trigger is the map CEL expression that mutates the doc/connection before it is stored
   trigger: String!
-  # if target_docs is true, this validator will be applied to documents.
+  # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
-  # if target_connections is true, this validator will be applied to connections.
+  # if target_connections is true, this constraint will be applied to connections.
   target_connections: Boolean!
 }
 
@@ -1742,23 +1742,23 @@ input AuthorizersInput {
   authorizers: [AuthorizerInput!]
 }
 
-# TypeValidatorInput is used to construct a new type validator
-input TypeValidatorInput {
-  # name is the unique name of the type validator
+# ConstraintInput is used to construct a new constraint
+input ConstraintInput {
+  # name is the unique name of the constraint
   name: String!
-  # gtype is the type of object the validator will be applied to (ex: user)
+  # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
   # expression is a boolean CEL expression used to evaluate the doc/connection
   expression: String!
-  # if target_docs is true, this validator will be applied to documents.
+  # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
-  # if target_connections is true, this validator will be applied to connections.
+  # if target_connections is true, this constraint will be applied to connections.
   target_connections: Boolean!
 }
 
-# TypeValidatorsInput is an array of TypeValidatorInput
-input TypeValidatorsInput {
-  validators: [TypeValidatorInput!]
+# ConstraintsInput is an array of ConstraintInput
+input ConstraintsInput {
+  constraints: [ConstraintInput!]
 }
 
 # Exists is a filter used to determine whether a doc/connection exists in the graph
@@ -1806,8 +1806,8 @@ type Mutation {
   setIndexes(input: IndexesInput!): Empty
   # setAuthorizers sets all of the authorizers in the graph
   setAuthorizers(input: AuthorizersInput!): Empty
-  # setTypeValidators sets all of the type validators in the graph
-  setTypeValidators(input: TypeValidatorsInput!): Empty
+  # setConstraints sets all of the constraints in the graph
+  setConstraints(input: ConstraintsInput!): Empty
   # v sets all of the triggers in the graph
   setTriggers(input: TriggersInput!): Empty
   # searchAndConnect searches for documents and forms connections based on whether they pass a filter
@@ -1817,7 +1817,7 @@ type Mutation {
 }
 
 type Query {
-  # getSchema gets information about node/connection types, type-validators, indexes, and authorizers
+  # getSchema gets information about node/connection types, type-constraints, indexes, and authorizers
   getSchema(where: Empty): Schema!
   # me returns a Doc of the currently logged in user
   me(where: Empty): Doc!
@@ -2102,6 +2102,21 @@ func (ec *executionContext) field_Mutation_setAuthorizers_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_setConstraints_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.ConstraintsInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNConstraintsInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraintsInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_setIndexes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2124,21 +2139,6 @@ func (ec *executionContext) field_Mutation_setTriggers_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNTriggersInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTriggersInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_setTypeValidators_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.TypeValidatorsInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNTypeValidatorsInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorsInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3001,6 +3001,213 @@ func (ec *executionContext) _Connections_seek_next(ctx context.Context, field gr
 	res := resTmp.(*string)
 	fc.Result = res
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Constraint_name(ctx context.Context, field graphql.CollectedField, obj *model.Constraint) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Constraint",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Constraint_gtype(ctx context.Context, field graphql.CollectedField, obj *model.Constraint) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Constraint",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gtype, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Constraint_expression(ctx context.Context, field graphql.CollectedField, obj *model.Constraint) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Constraint",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Expression, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Constraint_target_docs(ctx context.Context, field graphql.CollectedField, obj *model.Constraint) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Constraint",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TargetDocs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Constraint_target_connections(ctx context.Context, field graphql.CollectedField, obj *model.Constraint) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Constraint",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TargetConnections, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Constraints_constraints(ctx context.Context, field graphql.CollectedField, obj *model.Constraints) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Constraints",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Constraints, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Constraint)
+	fc.Result = res
+	return ec.marshalOConstraint2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraintᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Doc_ref(ctx context.Context, field graphql.CollectedField, obj *model.Doc) (ret graphql.Marshaler) {
@@ -4125,7 +4332,7 @@ func (ec *executionContext) _Mutation_setAuthorizers(ctx context.Context, field 
 	return ec.marshalOEmpty2ᚖgoogleᚗgolangᚗorgᚋprotobufᚋtypesᚋknownᚋemptypbᚐEmpty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_setTypeValidators(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_setConstraints(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4142,7 +4349,7 @@ func (ec *executionContext) _Mutation_setTypeValidators(ctx context.Context, fie
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_setTypeValidators_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_setConstraints_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -4150,7 +4357,7 @@ func (ec *executionContext) _Mutation_setTypeValidators(ctx context.Context, fie
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().SetTypeValidators(rctx, args["input"].(model.TypeValidatorsInput))
+		return ec.resolvers.Mutation().SetConstraints(rctx, args["input"].(model.ConstraintsInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5435,7 +5642,7 @@ func (ec *executionContext) _Schema_authorizers(ctx context.Context, field graph
 	return ec.marshalOAuthorizers2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐAuthorizers(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Schema_validators(ctx context.Context, field graphql.CollectedField, obj *model.Schema) (ret graphql.Marshaler) {
+func (ec *executionContext) _Schema_constraints(ctx context.Context, field graphql.CollectedField, obj *model.Schema) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5453,7 +5660,7 @@ func (ec *executionContext) _Schema_validators(ctx context.Context, field graphq
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Validators, nil
+		return obj.Constraints, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5462,9 +5669,9 @@ func (ec *executionContext) _Schema_validators(ctx context.Context, field graphq
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*model.TypeValidators)
+	res := resTmp.(*model.Constraints)
 	fc.Result = res
-	return ec.marshalOTypeValidators2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidators(ctx, field.Selections, res)
+	return ec.marshalOConstraints2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraints(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Schema_indexes(ctx context.Context, field graphql.CollectedField, obj *model.Schema) (ret graphql.Marshaler) {
@@ -5992,213 +6199,6 @@ func (ec *executionContext) _Triggers_triggers(ctx context.Context, field graphq
 	res := resTmp.([]*model.Trigger)
 	fc.Result = res
 	return ec.marshalOTrigger2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTriggerᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TypeValidator_name(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TypeValidator",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TypeValidator_gtype(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TypeValidator",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Gtype, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TypeValidator_expression(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TypeValidator",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Expression, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TypeValidator_target_docs(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TypeValidator",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TargetDocs, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TypeValidator_target_connections(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidator) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TypeValidator",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TargetConnections, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _TypeValidators_validators(ctx context.Context, field graphql.CollectedField, obj *model.TypeValidators) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "TypeValidators",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Validators, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.TypeValidator)
-	fc.Result = res
-	return ec.marshalOTypeValidator2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -7536,6 +7536,78 @@ func (ec *executionContext) unmarshalInputConnectionConstructors(ctx context.Con
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputConstraintInput(ctx context.Context, obj interface{}) (model.ConstraintInput, error) {
+	var it model.ConstraintInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gtype":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
+			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "expression":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
+			it.Expression, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "target_docs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_docs"))
+			it.TargetDocs, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "target_connections":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_connections"))
+			it.TargetConnections, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputConstraintsInput(ctx context.Context, obj interface{}) (model.ConstraintsInput, error) {
+	var it model.ConstraintsInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "constraints":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("constraints"))
+			it.Constraints, err = ec.unmarshalOConstraintInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraintInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputDocConstructor(ctx context.Context, obj interface{}) (model.DocConstructor, error) {
 	var it model.DocConstructor
 	var asMap = obj.(map[string]interface{})
@@ -8328,78 +8400,6 @@ func (ec *executionContext) unmarshalInputTriggersInput(ctx context.Context, obj
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputTypeValidatorInput(ctx context.Context, obj interface{}) (model.TypeValidatorInput, error) {
-	var it model.TypeValidatorInput
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "name":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "gtype":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gtype"))
-			it.Gtype, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "expression":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
-			it.Expression, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "target_docs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_docs"))
-			it.TargetDocs, err = ec.unmarshalNBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "target_connections":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("target_connections"))
-			it.TargetConnections, err = ec.unmarshalNBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputTypeValidatorsInput(ctx context.Context, obj interface{}) (model.TypeValidatorsInput, error) {
-	var it model.TypeValidatorsInput
-	var asMap = obj.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "validators":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("validators"))
-			it.Validators, err = ec.unmarshalOTypeValidatorInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -8575,6 +8575,77 @@ func (ec *executionContext) _Connections(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = ec._Connections_connections(ctx, field, obj)
 		case "seek_next":
 			out.Values[i] = ec._Connections_seek_next(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var constraintImplementors = []string{"Constraint"}
+
+func (ec *executionContext) _Constraint(ctx context.Context, sel ast.SelectionSet, obj *model.Constraint) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, constraintImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Constraint")
+		case "name":
+			out.Values[i] = ec._Constraint_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "gtype":
+			out.Values[i] = ec._Constraint_gtype(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "expression":
+			out.Values[i] = ec._Constraint_expression(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "target_docs":
+			out.Values[i] = ec._Constraint_target_docs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "target_connections":
+			out.Values[i] = ec._Constraint_target_connections(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var constraintsImplementors = []string{"Constraints"}
+
+func (ec *executionContext) _Constraints(ctx context.Context, sel ast.SelectionSet, obj *model.Constraints) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, constraintsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Constraints")
+		case "constraints":
+			out.Values[i] = ec._Constraints_constraints(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8828,8 +8899,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_setIndexes(ctx, field)
 		case "setAuthorizers":
 			out.Values[i] = ec._Mutation_setAuthorizers(ctx, field)
-		case "setTypeValidators":
-			out.Values[i] = ec._Mutation_setTypeValidators(ctx, field)
+		case "setConstraints":
+			out.Values[i] = ec._Mutation_setConstraints(ctx, field)
 		case "setTriggers":
 			out.Values[i] = ec._Mutation_setTriggers(ctx, field)
 		case "searchAndConnect":
@@ -9251,8 +9322,8 @@ func (ec *executionContext) _Schema(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = ec._Schema_doc_types(ctx, field, obj)
 		case "authorizers":
 			out.Values[i] = ec._Schema_authorizers(ctx, field, obj)
-		case "validators":
-			out.Values[i] = ec._Schema_validators(ctx, field, obj)
+		case "constraints":
+			out.Values[i] = ec._Schema_constraints(ctx, field, obj)
 		case "indexes":
 			out.Values[i] = ec._Schema_indexes(ctx, field, obj)
 		case "triggers":
@@ -9416,77 +9487,6 @@ func (ec *executionContext) _Triggers(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = graphql.MarshalString("Triggers")
 		case "triggers":
 			out.Values[i] = ec._Triggers_triggers(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var typeValidatorImplementors = []string{"TypeValidator"}
-
-func (ec *executionContext) _TypeValidator(ctx context.Context, sel ast.SelectionSet, obj *model.TypeValidator) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, typeValidatorImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("TypeValidator")
-		case "name":
-			out.Values[i] = ec._TypeValidator_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "gtype":
-			out.Values[i] = ec._TypeValidator_gtype(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "expression":
-			out.Values[i] = ec._TypeValidator_expression(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "target_docs":
-			out.Values[i] = ec._TypeValidator_target_docs(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "target_connections":
-			out.Values[i] = ec._TypeValidator_target_connections(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var typeValidatorsImplementors = []string{"TypeValidators"}
-
-func (ec *executionContext) _TypeValidators(ctx context.Context, sel ast.SelectionSet, obj *model.TypeValidators) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, typeValidatorsImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("TypeValidators")
-		case "validators":
-			out.Values[i] = ec._TypeValidators_validators(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9862,6 +9862,26 @@ func (ec *executionContext) marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgr
 	return ec._Connections(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNConstraint2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraint(ctx context.Context, sel ast.SelectionSet, v *model.Constraint) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Constraint(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNConstraintInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraintInput(ctx context.Context, v interface{}) (*model.ConstraintInput, error) {
+	res, err := ec.unmarshalInputConstraintInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNConstraintsInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraintsInput(ctx context.Context, v interface{}) (model.ConstraintsInput, error) {
+	res, err := ec.unmarshalInputConstraintsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNDoc2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx context.Context, sel ast.SelectionSet, v model.Doc) graphql.Marshaler {
 	return ec._Doc(ctx, sel, &v)
 }
@@ -10196,26 +10216,6 @@ func (ec *executionContext) unmarshalNTriggerInput2ᚖgithubᚗcomᚋgraphikDB�
 
 func (ec *executionContext) unmarshalNTriggersInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTriggersInput(ctx context.Context, v interface{}) (model.TriggersInput, error) {
 	res, err := ec.unmarshalInputTriggersInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTypeValidator2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidator(ctx context.Context, sel ast.SelectionSet, v *model.TypeValidator) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._TypeValidator(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNTypeValidatorInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInput(ctx context.Context, v interface{}) (*model.TypeValidatorInput, error) {
-	res, err := ec.unmarshalInputTypeValidatorInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNTypeValidatorsInput2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorsInput(ctx context.Context, v interface{}) (model.TypeValidatorsInput, error) {
-	res, err := ec.unmarshalInputTypeValidatorsInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -10597,6 +10597,77 @@ func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋgraphikDBᚋ
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalOConstraint2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraintᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Constraint) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNConstraint2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraint(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) unmarshalOConstraintInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraintInputᚄ(ctx context.Context, v interface{}) ([]*model.ConstraintInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.ConstraintInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNConstraintInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraintInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOConstraints2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConstraints(ctx context.Context, sel ast.SelectionSet, v *model.Constraints) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Constraints(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalODoc2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Doc) graphql.Marshaler {
@@ -10989,77 +11060,6 @@ func (ec *executionContext) marshalOTriggers2ᚖgithubᚗcomᚋgraphikDBᚋgraph
 		return graphql.Null
 	}
 	return ec._Triggers(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOTypeValidator2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TypeValidator) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNTypeValidator2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidator(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) unmarshalOTypeValidatorInput2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInputᚄ(ctx context.Context, v interface{}) ([]*model.TypeValidatorInput, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]*model.TypeValidatorInput, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNTypeValidatorInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidatorInput(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOTypeValidators2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTypeValidators(ctx context.Context, sel ast.SelectionSet, v *model.TypeValidators) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._TypeValidators(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

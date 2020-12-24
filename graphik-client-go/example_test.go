@@ -97,9 +97,9 @@ func ExampleClient_SetAuthorizers() {
 	// Output: testing-request
 }
 
-func ExampleClient_SetTypeValidators() {
-	err := client.SetTypeValidators(context.Background(), &apipb2.TypeValidators{
-		Validators: []*apipb2.TypeValidator{
+func ExampleClient_SetConstraints() {
+	err := client.SetConstraints(context.Background(), &apipb2.Constraints{
+		Constraints: []*apipb2.Constraint{
 			{
 				Name:              "testing",
 				Gtype:             "dog",
@@ -119,7 +119,7 @@ func ExampleClient_SetTypeValidators() {
 		return
 	}
 	var validators []string
-	for _, a := range schema.GetValidators().GetValidators() {
+	for _, a := range schema.GetConstraints().GetConstraints() {
 		validators = append(validators, a.Name)
 	}
 	fmt.Printf("%s", strings.Join(validators, ","))

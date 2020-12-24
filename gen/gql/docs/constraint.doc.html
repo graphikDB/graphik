@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>TypeValidator</title>
+    <title>Constraint</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -140,6 +140,16 @@
                 Connections
             </a>
         </li>
+        <li class="slds-is-active" title="Constraint">
+            <a href="constraint.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Constraint
+            </a>
+        </li>
+        <li  title="Constraints">
+            <a href="constraints.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Constraints
+            </a>
+        </li>
         <li  title="Doc">
             <a href="doc.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Doc
@@ -210,16 +220,6 @@
                 Triggers
             </a>
         </li>
-        <li class="slds-is-active" title="TypeValidator">
-            <a href="typevalidator.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TypeValidator
-            </a>
-        </li>
-        <li  title="TypeValidators">
-            <a href="typevalidators.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TypeValidators
-            </a>
-        </li>
         <li  title="__Directive">
             <a href="directive.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 __Directive
@@ -283,6 +283,16 @@
         <li  title="ConnectionConstructors">
             <a href="connectionconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 ConnectionConstructors
+            </a>
+        </li>
+        <li  title="ConstraintInput">
+            <a href="constraintinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConstraintInput
+            </a>
+        </li>
+        <li  title="ConstraintsInput">
+            <a href="constraintsinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConstraintsInput
             </a>
         </li>
         <li  title="DocConstructor">
@@ -385,16 +395,6 @@
                 TriggersInput
             </a>
         </li>
-        <li  title="TypeValidatorInput">
-            <a href="typevalidatorinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TypeValidatorInput
-            </a>
-        </li>
-        <li  title="TypeValidatorsInput">
-            <a href="typevalidatorsinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TypeValidatorsInput
-            </a>
-        </li>
     </ul>
 </div>
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
@@ -431,8 +431,8 @@
     </div>
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
-        <h1 class="slds-text-heading--large">TypeValidator</h1>
-        <div class="slds-text-body--regular"><p>TypeValidator a graph primitive used to validate custom doc/connection constraints</p>
+        <h1 class="slds-text-heading--large">Constraint</h1>
+        <div class="slds-text-body--regular"><p>Constraint a graph primitive used to validate custom doc/connection constraints</p>
 </div>
     </div>
 </section>
@@ -444,7 +444,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">TypeValidator</span> {</li><li></li><li><span class="tab"><span class="comment line">#   name is the unique name of the type validator</span></span></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   gtype is the type of object the validator will be applied to (ex: user)</span></span></li><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   expression is a boolean CEL expression used to evaluate the doc/connection</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   if target_docs is true, this validator will be applied to documents.</span></span></li><li><span class="tab"><span class="meta">target_docs</span>: <a class="support type" href="boolean.doc.html">Boolean</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   if target_connections is true, this validator will be applied to connections.</span></span></li><li><span class="tab"><span class="meta">target_connections</span>: <a class="support type" href="boolean.doc.html">Boolean</a>! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">Constraint</span> {</li><li></li><li><span class="tab"><span class="comment line">#   name is the unique name of the constraint</span></span></li><li><span class="tab"><span class="meta">name</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   gtype is the type of object the constraint will be applied to (ex: user)</span></span></li><li><span class="tab"><span class="meta">gtype</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   expression is a boolean CEL expression used to evaluate the doc/connection</span></span></li><li><span class="tab"><span class="meta">expression</span>: <a class="support type" href="string.doc.html">String</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   if target_docs is true, this constraint will be applied to documents.</span></span></li><li><span class="tab"><span class="meta">target_docs</span>: <a class="support type" href="boolean.doc.html">Boolean</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   if target_connections is true, this constraint will be applied to connections.</span></span></li><li><span class="tab"><span class="meta">target_connections</span>: <a class="support type" href="boolean.doc.html">Boolean</a>! </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -455,7 +455,7 @@
             </a>
             Require by
         </h2>
-        <ul class="require-by"><li><a href="typevalidators.doc.html" title="TypeValidators - TypeValidators is an array of TypeValidator">TypeValidators<em>TypeValidators is an array of TypeValidator</em></a><li></ul>
+        <ul class="require-by"><li><a href="constraints.doc.html" title="Constraints - Constraints is an array of Constraint">Constraints<em>Constraints is an array of Constraint</em></a><li></ul>
     </div>
 </section>
 <footer>

@@ -143,15 +143,15 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.Authorizers" do
     repeated :authorizers, :message, 1, "api.Authorizer"
   end
-  add_message "api.TypeValidator" do
+  add_message "api.Constraint" do
     optional :name, :string, 1
     optional :gtype, :string, 2
     optional :expression, :string, 3
     optional :target_docs, :bool, 4
     optional :target_connections, :bool, 5
   end
-  add_message "api.TypeValidators" do
-    repeated :validators, :message, 1, "api.TypeValidator"
+  add_message "api.Constraints" do
+    repeated :constraints, :message, 1, "api.Constraint"
   end
   add_message "api.Index" do
     optional :name, :string, 1
@@ -242,7 +242,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     repeated :connection_types, :string, 1
     repeated :doc_types, :string, 2
     optional :authorizers, :message, 3, "api.Authorizers"
-    optional :validators, :message, 4, "api.TypeValidators"
+    optional :constraints, :message, 4, "api.Constraints"
     optional :indexes, :message, 5, "api.Indexes"
     optional :triggers, :message, 6, "api.Triggers"
   end
@@ -258,7 +258,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     repeated :del_connections, :message, 6, "api.Ref"
     optional :set_indexes, :message, 7, "api.Indexes"
     optional :set_authorizers, :message, 8, "api.Authorizers"
-    optional :set_type_validators, :message, 9, "api.TypeValidators"
+    optional :set_constraints, :message, 9, "api.Constraints"
     optional :send_message, :message, 10, "api.Message"
     optional :set_triggers, :message, 11, "api.Triggers"
   end
@@ -318,8 +318,8 @@ module Api
   AuthTarget = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.AuthTarget").msgclass
   Authorizer = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Authorizer").msgclass
   Authorizers = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Authorizers").msgclass
-  TypeValidator = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TypeValidator").msgclass
-  TypeValidators = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.TypeValidators").msgclass
+  Constraint = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Constraint").msgclass
+  Constraints = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Constraints").msgclass
   Index = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Index").msgclass
   Indexes = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Indexes").msgclass
   Trigger = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Trigger").msgclass

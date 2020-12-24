@@ -25,8 +25,8 @@ service DatabaseService {
   rpc SetAuthorizers(Authorizers) returns(google.protobuf.Empty){}
   // SetIndexes sets all of the indexes in the graph database
   rpc SetIndexes(Indexes) returns(google.protobuf.Empty){}
-  // SetTypeValidators sets all of the type validators in the graph database
-  rpc SetTypeValidators(TypeValidators) returns(google.protobuf.Empty){}
+  // SetConstraints sets all of the constraints in the graph database
+  rpc SetConstraints(Constraints) returns(google.protobuf.Empty){}
   // SetTriggers sets all of the triggers in the graph database
   rpc SetTriggers(Triggers) returns(google.protobuf.Empty){}
   // Me returns a Doc of the currently logged in user
@@ -357,8 +357,8 @@ message Authorizers {
   repeated Authorizer authorizers =1;
 }
 
-// TypeValidator a graph primitive used to validate custom doc/connection constraints
-message TypeValidator {
+// Constraint a graph primitive used to validate custom doc/connection constraints
+message Constraint {
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   string gtype =2[(validator.field) = {regex : "^.{1,225}$"}];
   string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
@@ -368,8 +368,8 @@ message TypeValidator {
   bool target_connections =5;
 }
 
-message TypeValidators {
-  repeated TypeValidator validators =1;
+message Constraints {
+  repeated Constraint constraints =1;
 }
 
 // Index is a secondary index
@@ -528,7 +528,7 @@ message Schema {
   // doc_types are the types of docs in the graph
   repeated string doc_types =2;
   Authorizers authorizers =3;
-  TypeValidators validators =4;
+  Constraints constraints =4;
   Indexes indexes =5;
   Triggers triggers =6;
 }
@@ -547,7 +547,7 @@ message RaftCommand {
   repeated Ref del_connections =6;
   Indexes set_indexes =7;
   Authorizers set_authorizers =8;
-  TypeValidators set_type_validators =9;
+  Constraints set_constraints =9;
   Message send_message=10;
   Triggers set_triggers =11;
 }

@@ -132,7 +132,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 		if err != nil {
 			return errors.Wrap(err, "failed to create authorizers bucket")
 		}
-		_, err = tx.CreateBucketIfNotExists(dbTypeValidators)
+		_, err = tx.CreateBucketIfNotExists(dbConstraints)
 		if err != nil {
 			return errors.Wrap(err, "failed to create type validators bucket")
 		}
@@ -162,7 +162,7 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 	if err := g.cacheAuthorizers(); err != nil {
 		return nil, err
 	}
-	if err := g.cacheTypeValidators(); err != nil {
+	if err := g.cacheConstraints(); err != nil {
 		return nil, err
 	}
 	if err := g.cacheTriggers(); err != nil {
@@ -253,6 +253,18 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 	if err != nil {
 		return nil, err
 	}
+	if err := g.cacheIndexes(); err != nil {
+		return nil, err
+	}
+	if err := g.cacheAuthorizers(); err != nil {
+		return nil, err
+	}
+	if err := g.cacheConstraints(); err != nil {
+		return nil, err
+	}
+	if err := g.cacheTriggers(); err != nil {
+		return nil, err
+	}
 	var indexes []*apipb.Index
 	g.rangeIndexes(func(index *index) bool {
 		indexes = append(indexes, index.index)
@@ -269,8 +281,8 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 	sort.Slice(authorizers, func(i, j int) bool {
 		return authorizers[i].Name < authorizers[j].Name
 	})
-	var typeValidators []*apipb.TypeValidator
-	g.rangeTypeValidators(func(v *typeValidator) bool {
+	var typeValidators []*apipb.Constraint
+	g.rangeConstraints(func(v *typeValidator) bool {
 		typeValidators = append(typeValidators, v.validator)
 		return true
 	})
@@ -293,7 +305,7 @@ func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, e
 		ConnectionTypes: e,
 		DocTypes:        n,
 		Authorizers:     &apipb.Authorizers{Authorizers: authorizers},
-		Validators:      &apipb.TypeValidators{Validators: typeValidators},
+		Constraints:     &apipb.Constraints{Constraints: typeValidators},
 		Indexes:         &apipb.Indexes{Indexes: indexes},
 		Triggers:        &apipb.Triggers{Triggers: triggers},
 	}, nil
@@ -389,7 +401,7 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 	return &empty.Empty{}, nil
 }
 
-func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators) (*empty.Empty, error) {
+func (g *Graph) SetConstraints(ctx context.Context, as *apipb.Constraints) (*empty.Empty, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, status.Error(codes.Canceled, err.Error())
 	}
@@ -398,21 +410,21 @@ func (g *Graph) SetTypeValidators(ctx context.Context, as *apipb.TypeValidators)
 		if err != nil {
 			return nil, err
 		}
-		return &empty.Empty{}, client.SetTypeValidators(invertContext(ctx), as)
+		return &empty.Empty{}, client.SetConstraints(invertContext(ctx), as)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
 		return nil, status.Error(codes.Unauthenticated, "failed to get user")
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
-		SetTypeValidators: as,
-		User:              user,
-		Method:            g.getMethod(ctx),
+		SetConstraints: as,
+		User:           user,
+		Method:         g.getMethod(ctx),
 	})
 	if err != nil {
 		return nil, err
 	}
-	if err := g.cacheTypeValidators(); err != nil {
+	if err := g.cacheConstraints(); err != nil {
 		return nil, err
 	}
 	return &empty.Empty{}, nil

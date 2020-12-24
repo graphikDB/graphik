@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>TypeValidators</title>
+    <title>Constraints</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -140,6 +140,16 @@
                 Connections
             </a>
         </li>
+        <li  title="Constraint">
+            <a href="constraint.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Constraint
+            </a>
+        </li>
+        <li class="slds-is-active" title="Constraints">
+            <a href="constraints.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Constraints
+            </a>
+        </li>
         <li  title="Doc">
             <a href="doc.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Doc
@@ -210,16 +220,6 @@
                 Triggers
             </a>
         </li>
-        <li  title="TypeValidator">
-            <a href="typevalidator.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TypeValidator
-            </a>
-        </li>
-        <li class="slds-is-active" title="TypeValidators">
-            <a href="typevalidators.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TypeValidators
-            </a>
-        </li>
         <li  title="__Directive">
             <a href="directive.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 __Directive
@@ -283,6 +283,16 @@
         <li  title="ConnectionConstructors">
             <a href="connectionconstructors.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 ConnectionConstructors
+            </a>
+        </li>
+        <li  title="ConstraintInput">
+            <a href="constraintinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConstraintInput
+            </a>
+        </li>
+        <li  title="ConstraintsInput">
+            <a href="constraintsinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ConstraintsInput
             </a>
         </li>
         <li  title="DocConstructor">
@@ -385,16 +395,6 @@
                 TriggersInput
             </a>
         </li>
-        <li  title="TypeValidatorInput">
-            <a href="typevalidatorinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TypeValidatorInput
-            </a>
-        </li>
-        <li  title="TypeValidatorsInput">
-            <a href="typevalidatorsinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
-                TypeValidatorsInput
-            </a>
-        </li>
     </ul>
 </div>
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
@@ -431,8 +431,8 @@
     </div>
     <div class="container">
         <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
-        <h1 class="slds-text-heading--large">TypeValidators</h1>
-        <div class="slds-text-body--regular"><p>TypeValidators is an array of TypeValidator</p>
+        <h1 class="slds-text-heading--large">Constraints</h1>
+        <div class="slds-text-body--regular"><p>Constraints is an array of Constraint</p>
 </div>
     </div>
 </section>
@@ -444,7 +444,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">TypeValidators</span> {</li><li></li><li><span class="tab"><span class="meta">validators</span>: [<a class="support type" href="typevalidator.doc.html">TypeValidator</a>!] </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">type</span> <span class="identifier">Constraints</span> {</li><li></li><li><span class="tab"><span class="meta">constraints</span>: [<a class="support type" href="constraint.doc.html">Constraint</a>!] </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

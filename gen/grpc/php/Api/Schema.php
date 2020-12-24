@@ -32,9 +32,9 @@ class Schema extends \Google\Protobuf\Internal\Message
      */
     private $authorizers = null;
     /**
-     * Generated from protobuf field <code>.api.TypeValidators validators = 4;</code>
+     * Generated from protobuf field <code>.api.Constraints constraints = 4;</code>
      */
-    private $validators = null;
+    private $constraints = null;
     /**
      * Generated from protobuf field <code>.api.Indexes indexes = 5;</code>
      */
@@ -55,7 +55,7 @@ class Schema extends \Google\Protobuf\Internal\Message
      *     @type string[]|\Google\Protobuf\Internal\RepeatedField $doc_types
      *           doc_types are the types of docs in the graph
      *     @type \Api\Authorizers $authorizers
-     *     @type \Api\TypeValidators $validators
+     *     @type \Api\Constraints $constraints
      *     @type \Api\Indexes $indexes
      *     @type \Api\Triggers $triggers
      * }
@@ -140,23 +140,23 @@ class Schema extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>.api.TypeValidators validators = 4;</code>
-     * @return \Api\TypeValidators
+     * Generated from protobuf field <code>.api.Constraints constraints = 4;</code>
+     * @return \Api\Constraints
      */
-    public function getValidators()
+    public function getConstraints()
     {
-        return $this->validators;
+        return $this->constraints;
     }
 
     /**
-     * Generated from protobuf field <code>.api.TypeValidators validators = 4;</code>
-     * @param \Api\TypeValidators $var
+     * Generated from protobuf field <code>.api.Constraints constraints = 4;</code>
+     * @param \Api\Constraints $var
      * @return $this
      */
-    public function setValidators($var)
+    public function setConstraints($var)
     {
-        GPBUtil::checkMessage($var, \Api\TypeValidators::class);
-        $this->validators = $var;
+        GPBUtil::checkMessage($var, \Api\Constraints::class);
+        $this->constraints = $var;
 
         return $this;
     }
