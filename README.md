@@ -147,8 +147,13 @@ This is bad for the following reasons:
 - [x] [Pprof Metrics](https://blog.golang.org/pprof)
 - [x] Safe to Deploy Publicly(with authorizers/tls/validators/cors)
 - [x] Read-Optimized
-- [x] Full Text Search(CEL)
-- [x] Regular Expressions(CEL)
+- [x] Full Text Search Expression Macros/Functions(`startsWith, endsWith, contains`)
+- [x] RegularExp Expression Macros/Functions(`matches`)
+- [x] Geographic Expression Macros/Functions(`geoDistance`)
+- [x] Cryptographic Expression Macros/Functions(`encrypt, decrypt, sha1, sha256, sha3`)
+- [x] JWT Expression Macros/Functions(`parseClaims`)
+- [x] Collection Expression Macros/Functions(`parseClaims`)
+- [x] String Manipulation Expression Macros/Functions(`replace, join, titleCase, lowerCase, upperCase, trimSpace, trimPrefix, trimSuffix, split, render`)
 - [x] Client to Server streaming(gRPC only)
 
 ## Key Dependencies
