@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/graphikDB/generic v0.0.1
 	github.com/graphikDB/raft v0.0.0
-	github.com/graphikDB/trigger v0.0.10
+	github.com/graphikDB/trigger v0.0.13
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/hashicorp/raft v1.2.0

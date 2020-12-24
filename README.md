@@ -6,7 +6,7 @@ https://graphikdb.github.io/graphik/
 
 `git clone git@github.com:graphikDB/graphik.git`
     
-`docker pull graphikdb/graphik:v0.11.5`
+`docker pull graphikdb/graphik:v0.11.6`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -151,9 +151,10 @@ This is bad for the following reasons:
 - [x] RegularExp Expression Macros/Functions(`matches`)
 - [x] Geographic Expression Macros/Functions(`geoDistance`)
 - [x] Cryptographic Expression Macros/Functions(`encrypt, decrypt, sha1, sha256, sha3`)
-- [x] JWT Expression Macros/Functions(`parseClaims`)
-- [x] Collection Expression Macros/Functions(`parseClaims`)
-- [x] String Manipulation Expression Macros/Functions(`replace, join, titleCase, lowerCase, upperCase, trimSpace, trimPrefix, trimSuffix, split, render`)
+- [x] JWT Expression Macros/Functions(`parseClaims, parseHeader, parseSignature`)
+- [x] Collection Expression Macros/Functions(`parseClaims, parseHeader, parseSignature`)
+- [x] String Manipulation Expression Macros/Functions(`replace, join, titleCase, lowerCase, upperCase, trimSpace, trimPrefix, trimSuffix, render`)
+- [x] URL Introspection Expression Macros/Functions(`parseHost, parseScheme, parseQuery, parsePath`)
 - [x] Client to Server streaming(gRPC only)
 
 ## Key Dependencies
@@ -901,7 +902,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v0.11.5
+        image: graphikdb/graphik:v0.11.6
         env_file:
           - .env
         ports:
