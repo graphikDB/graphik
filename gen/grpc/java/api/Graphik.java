@@ -51852,7 +51852,7 @@ public final class Graphik {
       "ng\022\026.google.protobuf.Empty\032\t.api.Pong\"\000\022" +
       "2\n\013JoinCluster\022\t.api.Peer\032\026.google.proto" +
       "buf.Empty\"\000\0228\n\014ClusterState\022\026.google.pro" +
-      "tobuf.Empty\032\016.api.RaftState\"\0002\337\020\n\017Databa" +
+      "tobuf.Empty\032\016.api.RaftState\"\0002\217\022\n\017Databa" +
       "seService\0222\n\tGetSchema\022\026.google.protobuf" +
       ".Empty\032\013.api.Schema\"\000\022<\n\016SetAuthorizers\022" +
       "\020.api.Authorizers\032\026.google.protobuf.Empt" +
@@ -51863,50 +51863,55 @@ public final class Graphik {
       "rotobuf.Empty\"\000\022(\n\002Me\022\026.google.protobuf." +
       "Empty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022\023.api.Doc" +
       "Constructor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024." +
-      "api.DocConstructors\032\t.api.Docs\"\000\022\036\n\006GetD" +
-      "oc\022\010.api.Ref\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013" +
-      ".api.Filter\032\t.api.Docs\"\000\0222\n\010Traverse\022\023.a" +
-      "pi.TraverseFilter\032\017.api.Traversals\"\000\0226\n\n" +
-      "TraverseMe\022\025.api.TraverseMeFilter\032\017.api." +
-      "Traversals\"\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api" +
-      ".Doc\"\000\022(\n\010EditDocs\022\017.api.EditFilter\032\t.ap" +
-      "i.Docs\"\000\022,\n\006DelDoc\022\010.api.Ref\032\026.google.pr" +
-      "otobuf.Empty\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026" +
-      ".google.protobuf.Empty\"\000\022.\n\tExistsDoc\022\021." +
-      "api.ExistsFilter\032\014.api.Boolean\"\000\0225\n\020Exis" +
-      "tsConnection\022\021.api.ExistsFilter\032\014.api.Bo" +
-      "olean\"\000\022\"\n\006HasDoc\022\010.api.Ref\032\014.api.Boolea" +
-      "n\"\000\022)\n\rHasConnection\022\010.api.Ref\032\014.api.Boo" +
-      "lean\"\000\022A\n\020CreateConnection\022\032.api.Connect" +
-      "ionConstructor\032\017.api.Connection\"\000\022D\n\021Cre" +
-      "ateConnections\022\033.api.ConnectionConstruct" +
-      "ors\032\020.api.Connections\"\000\022@\n\020SearchAndConn" +
-      "ect\022\030.api.SearchConnectFilter\032\020.api.Conn" +
-      "ections\"\000\022D\n\022SearchAndConnectMe\022\032.api.Se" +
-      "archConnectMeFilter\032\020.api.Connections\"\000\022" +
-      ",\n\rGetConnection\022\010.api.Ref\032\017.api.Connect" +
-      "ion\"\000\0224\n\021SearchConnections\022\013.api.Filter\032" +
-      "\020.api.Connections\"\000\022.\n\016EditConnection\022\t." +
-      "api.Edit\032\017.api.Connection\"\000\0226\n\017EditConne" +
-      "ctions\022\017.api.EditFilter\032\020.api.Connection" +
-      "s\"\000\0223\n\rDelConnection\022\010.api.Ref\032\026.google." +
-      "protobuf.Empty\"\000\0227\n\016DelConnections\022\013.api" +
-      ".Filter\032\026.google.protobuf.Empty\"\000\0229\n\017Con" +
-      "nectionsFrom\022\022.api.ConnectFilter\032\020.api.C" +
-      "onnections\"\000\0227\n\rConnectionsTo\022\022.api.Conn" +
-      "ectFilter\032\020.api.Connections\"\000\022.\n\rAggrega" +
-      "teDocs\022\016.api.AggFilter\032\013.api.Number\"\000\0225\n" +
-      "\024AggregateConnections\022\016.api.AggFilter\032\013." +
-      "api.Number\"\000\022;\n\tBroadcast\022\024.api.Outbound" +
-      "Message\032\026.google.protobuf.Empty\"\000\022-\n\006Str" +
-      "eam\022\021.api.StreamFilter\032\014.api.Message\"\0000\001" +
-      "\022:\n\023PushDocConstructors\022\023.api.DocConstru" +
-      "ctor\032\010.api.Doc\"\000(\0010\001\022O\n\032PushConnectionCo" +
-      "nstructors\022\032.api.ConnectionConstructor\032\017" +
-      ".api.Connection\"\000(\0010\001\0220\n\010SeedDocs\022\010.api." +
-      "Doc\032\026.google.protobuf.Empty\"\000(\001\022>\n\017SeedC" +
-      "onnections\022\017.api.Connection\032\026.google.pro" +
-      "tobuf.Empty\"\000(\001B\007Z\005apipbb\006proto3"
+      "api.DocConstructors\032\t.api.Docs\"\000\022\036\n\006PutD" +
+      "oc\022\010.api.Doc\032\010.api.Doc\"\000\022!\n\007PutDocs\022\t.ap" +
+      "i.Docs\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032" +
+      "\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Filter\032\t" +
+      ".api.Docs\"\000\0222\n\010Traverse\022\023.api.TraverseFi" +
+      "lter\032\017.api.Traversals\"\000\0226\n\nTraverseMe\022\025." +
+      "api.TraverseMeFilter\032\017.api.Traversals\"\000\022" +
+      " \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(\n\010Edi" +
+      "tDocs\022\017.api.EditFilter\032\t.api.Docs\"\000\022,\n\006D" +
+      "elDoc\022\010.api.Ref\032\026.google.protobuf.Empty\"" +
+      "\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google.proto" +
+      "buf.Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsFil" +
+      "ter\032\014.api.Boolean\"\000\0225\n\020ExistsConnection\022" +
+      "\021.api.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006Ha" +
+      "sDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasCon" +
+      "nection\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020Cre" +
+      "ateConnection\022\032.api.ConnectionConstructo" +
+      "r\032\017.api.Connection\"\000\022D\n\021CreateConnection" +
+      "s\022\033.api.ConnectionConstructors\032\020.api.Con" +
+      "nections\"\000\0223\n\rPutConnection\022\017.api.Connec" +
+      "tion\032\017.api.Connection\"\000\0226\n\016PutConnection" +
+      "s\022\020.api.Connections\032\020.api.Connections\"\000\022" +
+      "@\n\020SearchAndConnect\022\030.api.SearchConnectF" +
+      "ilter\032\020.api.Connections\"\000\022D\n\022SearchAndCo" +
+      "nnectMe\022\032.api.SearchConnectMeFilter\032\020.ap" +
+      "i.Connections\"\000\022,\n\rGetConnection\022\010.api.R" +
+      "ef\032\017.api.Connection\"\000\0224\n\021SearchConnectio" +
+      "ns\022\013.api.Filter\032\020.api.Connections\"\000\022.\n\016E" +
+      "ditConnection\022\t.api.Edit\032\017.api.Connectio" +
+      "n\"\000\0226\n\017EditConnections\022\017.api.EditFilter\032" +
+      "\020.api.Connections\"\000\0223\n\rDelConnection\022\010.a" +
+      "pi.Ref\032\026.google.protobuf.Empty\"\000\0227\n\016DelC" +
+      "onnections\022\013.api.Filter\032\026.google.protobu" +
+      "f.Empty\"\000\0229\n\017ConnectionsFrom\022\022.api.Conne" +
+      "ctFilter\032\020.api.Connections\"\000\0227\n\rConnecti" +
+      "onsTo\022\022.api.ConnectFilter\032\020.api.Connecti" +
+      "ons\"\000\022.\n\rAggregateDocs\022\016.api.AggFilter\032\013" +
+      ".api.Number\"\000\0225\n\024AggregateConnections\022\016." +
+      "api.AggFilter\032\013.api.Number\"\000\022;\n\tBroadcas" +
+      "t\022\024.api.OutboundMessage\032\026.google.protobu" +
+      "f.Empty\"\000\022-\n\006Stream\022\021.api.StreamFilter\032\014" +
+      ".api.Message\"\0000\001\022:\n\023PushDocConstructors\022" +
+      "\023.api.DocConstructor\032\010.api.Doc\"\000(\0010\001\022O\n\032" +
+      "PushConnectionConstructors\022\032.api.Connect" +
+      "ionConstructor\032\017.api.Connection\"\000(\0010\001\0220\n" +
+      "\010SeedDocs\022\010.api.Doc\032\026.google.protobuf.Em" +
+      "pty\"\000(\001\022>\n\017SeedConnections\022\017.api.Connect" +
+      "ion\032\026.google.protobuf.Empty\"\000(\001B\007Z\005apipb" +
+      "b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

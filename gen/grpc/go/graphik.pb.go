@@ -4007,7 +4007,7 @@ var file_graphik_proto_rawDesc = []byte{
 	0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x16, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d,
 	0x70, 0x74, 0x79, 0x1a, 0x0e, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x52, 0x61, 0x66, 0x74, 0x53, 0x74,
-	0x61, 0x74, 0x65, 0x22, 0x00, 0x32, 0xdf, 0x10, 0x0a, 0x0f, 0x44, 0x61, 0x74, 0x61, 0x62, 0x61,
+	0x61, 0x74, 0x65, 0x22, 0x00, 0x32, 0x8f, 0x12, 0x0a, 0x0f, 0x44, 0x61, 0x74, 0x61, 0x62, 0x61,
 	0x73, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x32, 0x0a, 0x09, 0x47, 0x65, 0x74,
 	0x53, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x12, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x0b,
@@ -4035,47 +4035,58 @@ var file_graphik_proto_rawDesc = []byte{
 	0x2f, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x14, 0x2e,
 	0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x6f, 0x72, 0x73, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x73, 0x22, 0x00,
-	0x12, 0x1e, 0x0a, 0x06, 0x47, 0x65, 0x74, 0x44, 0x6f, 0x63, 0x12, 0x08, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x52, 0x65, 0x66, 0x1a, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x22, 0x00,
-	0x12, 0x26, 0x0a, 0x0a, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x0b,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x09, 0x2e, 0x61, 0x70,
-	0x69, 0x2e, 0x44, 0x6f, 0x63, 0x73, 0x22, 0x00, 0x12, 0x32, 0x0a, 0x08, 0x54, 0x72, 0x61, 0x76,
-	0x65, 0x72, 0x73, 0x65, 0x12, 0x13, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x54, 0x72, 0x61, 0x76, 0x65,
-	0x72, 0x73, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x54, 0x72, 0x61, 0x76, 0x65, 0x72, 0x73, 0x61, 0x6c, 0x73, 0x22, 0x00, 0x12, 0x36, 0x0a, 0x0a,
-	0x54, 0x72, 0x61, 0x76, 0x65, 0x72, 0x73, 0x65, 0x4d, 0x65, 0x12, 0x15, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x54, 0x72, 0x61, 0x76, 0x65, 0x72, 0x73, 0x65, 0x4d, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65,
-	0x72, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x54, 0x72, 0x61, 0x76, 0x65, 0x72, 0x73, 0x61,
-	0x6c, 0x73, 0x22, 0x00, 0x12, 0x20, 0x0a, 0x07, 0x45, 0x64, 0x69, 0x74, 0x44, 0x6f, 0x63, 0x12,
-	0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x69, 0x74, 0x1a, 0x08, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x44, 0x6f, 0x63, 0x22, 0x00, 0x12, 0x28, 0x0a, 0x08, 0x45, 0x64, 0x69, 0x74, 0x44, 0x6f,
-	0x63, 0x73, 0x12, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x69, 0x74, 0x46, 0x69, 0x6c,
-	0x74, 0x65, 0x72, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x73, 0x22, 0x00,
-	0x12, 0x2c, 0x0a, 0x06, 0x44, 0x65, 0x6c, 0x44, 0x6f, 0x63, 0x12, 0x08, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x52, 0x65, 0x66, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12, 0x30,
-	0x0a, 0x07, 0x44, 0x65, 0x6c, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e,
-	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00,
-	0x12, 0x2e, 0x0a, 0x09, 0x45, 0x78, 0x69, 0x73, 0x74, 0x73, 0x44, 0x6f, 0x63, 0x12, 0x11, 0x2e,
-	0x61, 0x70, 0x69, 0x2e, 0x45, 0x78, 0x69, 0x73, 0x74, 0x73, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72,
-	0x1a, 0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61, 0x6e, 0x22, 0x00,
-	0x12, 0x35, 0x0a, 0x10, 0x45, 0x78, 0x69, 0x73, 0x74, 0x73, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x78, 0x69, 0x73, 0x74,
-	0x73, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x42, 0x6f,
-	0x6f, 0x6c, 0x65, 0x61, 0x6e, 0x22, 0x00, 0x12, 0x22, 0x0a, 0x06, 0x48, 0x61, 0x73, 0x44, 0x6f,
-	0x63, 0x12, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x66, 0x1a, 0x0c, 0x2e, 0x61, 0x70,
-	0x69, 0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61, 0x6e, 0x22, 0x00, 0x12, 0x29, 0x0a, 0x0d, 0x48,
-	0x61, 0x73, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x08, 0x2e, 0x61,
-	0x70, 0x69, 0x2e, 0x52, 0x65, 0x66, 0x1a, 0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x42, 0x6f, 0x6f,
-	0x6c, 0x65, 0x61, 0x6e, 0x22, 0x00, 0x12, 0x41, 0x0a, 0x10, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x2e, 0x61, 0x70, 0x69,
-	0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e,
-	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x00, 0x12, 0x44, 0x0a, 0x11, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1b,
-	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43,
-	0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x1a, 0x10, 0x2e, 0x61, 0x70,
+	0x12, 0x1e, 0x0a, 0x06, 0x50, 0x75, 0x74, 0x44, 0x6f, 0x63, 0x12, 0x08, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x44, 0x6f, 0x63, 0x1a, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x22, 0x00,
+	0x12, 0x21, 0x0a, 0x07, 0x50, 0x75, 0x74, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x09, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x44, 0x6f, 0x63, 0x73, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63,
+	0x73, 0x22, 0x00, 0x12, 0x1e, 0x0a, 0x06, 0x47, 0x65, 0x74, 0x44, 0x6f, 0x63, 0x12, 0x08, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x66, 0x1a, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f,
+	0x63, 0x22, 0x00, 0x12, 0x26, 0x0a, 0x0a, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x44, 0x6f, 0x63,
+	0x73, 0x12, 0x0b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x09,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x73, 0x22, 0x00, 0x12, 0x32, 0x0a, 0x08, 0x54,
+	0x72, 0x61, 0x76, 0x65, 0x72, 0x73, 0x65, 0x12, 0x13, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x54, 0x72,
+	0x61, 0x76, 0x65, 0x72, 0x73, 0x65, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0f, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x54, 0x72, 0x61, 0x76, 0x65, 0x72, 0x73, 0x61, 0x6c, 0x73, 0x22, 0x00, 0x12,
+	0x36, 0x0a, 0x0a, 0x54, 0x72, 0x61, 0x76, 0x65, 0x72, 0x73, 0x65, 0x4d, 0x65, 0x12, 0x15, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x54, 0x72, 0x61, 0x76, 0x65, 0x72, 0x73, 0x65, 0x4d, 0x65, 0x46, 0x69,
+	0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x54, 0x72, 0x61, 0x76, 0x65,
+	0x72, 0x73, 0x61, 0x6c, 0x73, 0x22, 0x00, 0x12, 0x20, 0x0a, 0x07, 0x45, 0x64, 0x69, 0x74, 0x44,
+	0x6f, 0x63, 0x12, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x69, 0x74, 0x1a, 0x08, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63, 0x22, 0x00, 0x12, 0x28, 0x0a, 0x08, 0x45, 0x64, 0x69,
+	0x74, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x64, 0x69, 0x74,
+	0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x09, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x44, 0x6f, 0x63,
+	0x73, 0x22, 0x00, 0x12, 0x2c, 0x0a, 0x06, 0x44, 0x65, 0x6c, 0x44, 0x6f, 0x63, 0x12, 0x08, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x66, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22,
+	0x00, 0x12, 0x30, 0x0a, 0x07, 0x44, 0x65, 0x6c, 0x44, 0x6f, 0x63, 0x73, 0x12, 0x0b, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74,
+	0x79, 0x22, 0x00, 0x12, 0x2e, 0x0a, 0x09, 0x45, 0x78, 0x69, 0x73, 0x74, 0x73, 0x44, 0x6f, 0x63,
+	0x12, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x78, 0x69, 0x73, 0x74, 0x73, 0x46, 0x69, 0x6c,
+	0x74, 0x65, 0x72, 0x1a, 0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61,
+	0x6e, 0x22, 0x00, 0x12, 0x35, 0x0a, 0x10, 0x45, 0x78, 0x69, 0x73, 0x74, 0x73, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x45, 0x78,
+	0x69, 0x73, 0x74, 0x73, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x1a, 0x0c, 0x2e, 0x61, 0x70, 0x69,
+	0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61, 0x6e, 0x22, 0x00, 0x12, 0x22, 0x0a, 0x06, 0x48, 0x61,
+	0x73, 0x44, 0x6f, 0x63, 0x12, 0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x66, 0x1a, 0x0c,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61, 0x6e, 0x22, 0x00, 0x12, 0x29,
+	0x0a, 0x0d, 0x48, 0x61, 0x73, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x08, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x52, 0x65, 0x66, 0x1a, 0x0c, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x42, 0x6f, 0x6f, 0x6c, 0x65, 0x61, 0x6e, 0x22, 0x00, 0x12, 0x41, 0x0a, 0x10, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x2e,
+	0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f,
+	0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x00, 0x12, 0x44, 0x0a, 0x11,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x12, 0x1b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x6f, 0x72, 0x73, 0x1a, 0x10,
+	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x22, 0x00, 0x12, 0x33, 0x0a, 0x0d, 0x50, 0x75, 0x74, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x12, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x0f, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x00, 0x12, 0x36, 0x0a, 0x0e, 0x50, 0x75, 0x74, 0x43, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x10, 0x2e, 0x61, 0x70, 0x69, 0x2e,
+	0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x1a, 0x10, 0x2e, 0x61, 0x70,
 	0x69, 0x2e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x00, 0x12,
 	0x40, 0x0a, 0x10, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x41, 0x6e, 0x64, 0x43, 0x6f, 0x6e, 0x6e,
 	0x65, 0x63, 0x74, 0x12, 0x18, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68,
@@ -4292,83 +4303,91 @@ var file_graphik_proto_depIdxs = []int32{
 	53,  // 73: api.DatabaseService.Me:input_type -> google.protobuf.Empty
 	7,   // 74: api.DatabaseService.CreateDoc:input_type -> api.DocConstructor
 	8,   // 75: api.DatabaseService.CreateDocs:input_type -> api.DocConstructors
-	3,   // 76: api.DatabaseService.GetDoc:input_type -> api.Ref
-	19,  // 77: api.DatabaseService.SearchDocs:input_type -> api.Filter
-	21,  // 78: api.DatabaseService.Traverse:input_type -> api.TraverseFilter
-	22,  // 79: api.DatabaseService.TraverseMe:input_type -> api.TraverseMeFilter
-	39,  // 80: api.DatabaseService.EditDoc:input_type -> api.Edit
-	40,  // 81: api.DatabaseService.EditDocs:input_type -> api.EditFilter
-	3,   // 82: api.DatabaseService.DelDoc:input_type -> api.Ref
-	19,  // 83: api.DatabaseService.DelDocs:input_type -> api.Filter
-	38,  // 84: api.DatabaseService.ExistsDoc:input_type -> api.ExistsFilter
-	38,  // 85: api.DatabaseService.ExistsConnection:input_type -> api.ExistsFilter
-	3,   // 86: api.DatabaseService.HasDoc:input_type -> api.Ref
-	3,   // 87: api.DatabaseService.HasConnection:input_type -> api.Ref
-	13,  // 88: api.DatabaseService.CreateConnection:input_type -> api.ConnectionConstructor
-	16,  // 89: api.DatabaseService.CreateConnections:input_type -> api.ConnectionConstructors
-	14,  // 90: api.DatabaseService.SearchAndConnect:input_type -> api.SearchConnectFilter
-	15,  // 91: api.DatabaseService.SearchAndConnectMe:input_type -> api.SearchConnectMeFilter
-	3,   // 92: api.DatabaseService.GetConnection:input_type -> api.Ref
-	19,  // 93: api.DatabaseService.SearchConnections:input_type -> api.Filter
-	39,  // 94: api.DatabaseService.EditConnection:input_type -> api.Edit
-	40,  // 95: api.DatabaseService.EditConnections:input_type -> api.EditFilter
-	3,   // 96: api.DatabaseService.DelConnection:input_type -> api.Ref
-	19,  // 97: api.DatabaseService.DelConnections:input_type -> api.Filter
-	18,  // 98: api.DatabaseService.ConnectionsFrom:input_type -> api.ConnectFilter
-	18,  // 99: api.DatabaseService.ConnectionsTo:input_type -> api.ConnectFilter
-	20,  // 100: api.DatabaseService.AggregateDocs:input_type -> api.AggFilter
-	20,  // 101: api.DatabaseService.AggregateConnections:input_type -> api.AggFilter
-	42,  // 102: api.DatabaseService.Broadcast:input_type -> api.OutboundMessage
-	33,  // 103: api.DatabaseService.Stream:input_type -> api.StreamFilter
-	7,   // 104: api.DatabaseService.PushDocConstructors:input_type -> api.DocConstructor
-	13,  // 105: api.DatabaseService.PushConnectionConstructors:input_type -> api.ConnectionConstructor
-	6,   // 106: api.DatabaseService.SeedDocs:input_type -> api.Doc
-	12,  // 107: api.DatabaseService.SeedConnections:input_type -> api.Connection
-	41,  // 108: api.RaftService.Ping:output_type -> api.Pong
-	53,  // 109: api.RaftService.JoinCluster:output_type -> google.protobuf.Empty
-	48,  // 110: api.RaftService.ClusterState:output_type -> api.RaftState
-	44,  // 111: api.DatabaseService.GetSchema:output_type -> api.Schema
-	53,  // 112: api.DatabaseService.SetAuthorizers:output_type -> google.protobuf.Empty
-	53,  // 113: api.DatabaseService.SetIndexes:output_type -> google.protobuf.Empty
-	53,  // 114: api.DatabaseService.SetConstraints:output_type -> google.protobuf.Empty
-	53,  // 115: api.DatabaseService.SetTriggers:output_type -> google.protobuf.Empty
-	6,   // 116: api.DatabaseService.Me:output_type -> api.Doc
-	6,   // 117: api.DatabaseService.CreateDoc:output_type -> api.Doc
-	11,  // 118: api.DatabaseService.CreateDocs:output_type -> api.Docs
-	6,   // 119: api.DatabaseService.GetDoc:output_type -> api.Doc
-	11,  // 120: api.DatabaseService.SearchDocs:output_type -> api.Docs
-	10,  // 121: api.DatabaseService.Traverse:output_type -> api.Traversals
-	10,  // 122: api.DatabaseService.TraverseMe:output_type -> api.Traversals
-	6,   // 123: api.DatabaseService.EditDoc:output_type -> api.Doc
-	11,  // 124: api.DatabaseService.EditDocs:output_type -> api.Docs
-	53,  // 125: api.DatabaseService.DelDoc:output_type -> google.protobuf.Empty
-	53,  // 126: api.DatabaseService.DelDocs:output_type -> google.protobuf.Empty
-	36,  // 127: api.DatabaseService.ExistsDoc:output_type -> api.Boolean
-	36,  // 128: api.DatabaseService.ExistsConnection:output_type -> api.Boolean
-	36,  // 129: api.DatabaseService.HasDoc:output_type -> api.Boolean
-	36,  // 130: api.DatabaseService.HasConnection:output_type -> api.Boolean
-	12,  // 131: api.DatabaseService.CreateConnection:output_type -> api.Connection
-	17,  // 132: api.DatabaseService.CreateConnections:output_type -> api.Connections
-	17,  // 133: api.DatabaseService.SearchAndConnect:output_type -> api.Connections
-	17,  // 134: api.DatabaseService.SearchAndConnectMe:output_type -> api.Connections
-	12,  // 135: api.DatabaseService.GetConnection:output_type -> api.Connection
-	17,  // 136: api.DatabaseService.SearchConnections:output_type -> api.Connections
-	12,  // 137: api.DatabaseService.EditConnection:output_type -> api.Connection
-	17,  // 138: api.DatabaseService.EditConnections:output_type -> api.Connections
-	53,  // 139: api.DatabaseService.DelConnection:output_type -> google.protobuf.Empty
-	53,  // 140: api.DatabaseService.DelConnections:output_type -> google.protobuf.Empty
-	17,  // 141: api.DatabaseService.ConnectionsFrom:output_type -> api.Connections
-	17,  // 142: api.DatabaseService.ConnectionsTo:output_type -> api.Connections
-	37,  // 143: api.DatabaseService.AggregateDocs:output_type -> api.Number
-	37,  // 144: api.DatabaseService.AggregateConnections:output_type -> api.Number
-	53,  // 145: api.DatabaseService.Broadcast:output_type -> google.protobuf.Empty
-	43,  // 146: api.DatabaseService.Stream:output_type -> api.Message
-	6,   // 147: api.DatabaseService.PushDocConstructors:output_type -> api.Doc
-	12,  // 148: api.DatabaseService.PushConnectionConstructors:output_type -> api.Connection
-	53,  // 149: api.DatabaseService.SeedDocs:output_type -> google.protobuf.Empty
-	53,  // 150: api.DatabaseService.SeedConnections:output_type -> google.protobuf.Empty
-	108, // [108:151] is the sub-list for method output_type
-	65,  // [65:108] is the sub-list for method input_type
+	6,   // 76: api.DatabaseService.PutDoc:input_type -> api.Doc
+	11,  // 77: api.DatabaseService.PutDocs:input_type -> api.Docs
+	3,   // 78: api.DatabaseService.GetDoc:input_type -> api.Ref
+	19,  // 79: api.DatabaseService.SearchDocs:input_type -> api.Filter
+	21,  // 80: api.DatabaseService.Traverse:input_type -> api.TraverseFilter
+	22,  // 81: api.DatabaseService.TraverseMe:input_type -> api.TraverseMeFilter
+	39,  // 82: api.DatabaseService.EditDoc:input_type -> api.Edit
+	40,  // 83: api.DatabaseService.EditDocs:input_type -> api.EditFilter
+	3,   // 84: api.DatabaseService.DelDoc:input_type -> api.Ref
+	19,  // 85: api.DatabaseService.DelDocs:input_type -> api.Filter
+	38,  // 86: api.DatabaseService.ExistsDoc:input_type -> api.ExistsFilter
+	38,  // 87: api.DatabaseService.ExistsConnection:input_type -> api.ExistsFilter
+	3,   // 88: api.DatabaseService.HasDoc:input_type -> api.Ref
+	3,   // 89: api.DatabaseService.HasConnection:input_type -> api.Ref
+	13,  // 90: api.DatabaseService.CreateConnection:input_type -> api.ConnectionConstructor
+	16,  // 91: api.DatabaseService.CreateConnections:input_type -> api.ConnectionConstructors
+	12,  // 92: api.DatabaseService.PutConnection:input_type -> api.Connection
+	17,  // 93: api.DatabaseService.PutConnections:input_type -> api.Connections
+	14,  // 94: api.DatabaseService.SearchAndConnect:input_type -> api.SearchConnectFilter
+	15,  // 95: api.DatabaseService.SearchAndConnectMe:input_type -> api.SearchConnectMeFilter
+	3,   // 96: api.DatabaseService.GetConnection:input_type -> api.Ref
+	19,  // 97: api.DatabaseService.SearchConnections:input_type -> api.Filter
+	39,  // 98: api.DatabaseService.EditConnection:input_type -> api.Edit
+	40,  // 99: api.DatabaseService.EditConnections:input_type -> api.EditFilter
+	3,   // 100: api.DatabaseService.DelConnection:input_type -> api.Ref
+	19,  // 101: api.DatabaseService.DelConnections:input_type -> api.Filter
+	18,  // 102: api.DatabaseService.ConnectionsFrom:input_type -> api.ConnectFilter
+	18,  // 103: api.DatabaseService.ConnectionsTo:input_type -> api.ConnectFilter
+	20,  // 104: api.DatabaseService.AggregateDocs:input_type -> api.AggFilter
+	20,  // 105: api.DatabaseService.AggregateConnections:input_type -> api.AggFilter
+	42,  // 106: api.DatabaseService.Broadcast:input_type -> api.OutboundMessage
+	33,  // 107: api.DatabaseService.Stream:input_type -> api.StreamFilter
+	7,   // 108: api.DatabaseService.PushDocConstructors:input_type -> api.DocConstructor
+	13,  // 109: api.DatabaseService.PushConnectionConstructors:input_type -> api.ConnectionConstructor
+	6,   // 110: api.DatabaseService.SeedDocs:input_type -> api.Doc
+	12,  // 111: api.DatabaseService.SeedConnections:input_type -> api.Connection
+	41,  // 112: api.RaftService.Ping:output_type -> api.Pong
+	53,  // 113: api.RaftService.JoinCluster:output_type -> google.protobuf.Empty
+	48,  // 114: api.RaftService.ClusterState:output_type -> api.RaftState
+	44,  // 115: api.DatabaseService.GetSchema:output_type -> api.Schema
+	53,  // 116: api.DatabaseService.SetAuthorizers:output_type -> google.protobuf.Empty
+	53,  // 117: api.DatabaseService.SetIndexes:output_type -> google.protobuf.Empty
+	53,  // 118: api.DatabaseService.SetConstraints:output_type -> google.protobuf.Empty
+	53,  // 119: api.DatabaseService.SetTriggers:output_type -> google.protobuf.Empty
+	6,   // 120: api.DatabaseService.Me:output_type -> api.Doc
+	6,   // 121: api.DatabaseService.CreateDoc:output_type -> api.Doc
+	11,  // 122: api.DatabaseService.CreateDocs:output_type -> api.Docs
+	6,   // 123: api.DatabaseService.PutDoc:output_type -> api.Doc
+	11,  // 124: api.DatabaseService.PutDocs:output_type -> api.Docs
+	6,   // 125: api.DatabaseService.GetDoc:output_type -> api.Doc
+	11,  // 126: api.DatabaseService.SearchDocs:output_type -> api.Docs
+	10,  // 127: api.DatabaseService.Traverse:output_type -> api.Traversals
+	10,  // 128: api.DatabaseService.TraverseMe:output_type -> api.Traversals
+	6,   // 129: api.DatabaseService.EditDoc:output_type -> api.Doc
+	11,  // 130: api.DatabaseService.EditDocs:output_type -> api.Docs
+	53,  // 131: api.DatabaseService.DelDoc:output_type -> google.protobuf.Empty
+	53,  // 132: api.DatabaseService.DelDocs:output_type -> google.protobuf.Empty
+	36,  // 133: api.DatabaseService.ExistsDoc:output_type -> api.Boolean
+	36,  // 134: api.DatabaseService.ExistsConnection:output_type -> api.Boolean
+	36,  // 135: api.DatabaseService.HasDoc:output_type -> api.Boolean
+	36,  // 136: api.DatabaseService.HasConnection:output_type -> api.Boolean
+	12,  // 137: api.DatabaseService.CreateConnection:output_type -> api.Connection
+	17,  // 138: api.DatabaseService.CreateConnections:output_type -> api.Connections
+	12,  // 139: api.DatabaseService.PutConnection:output_type -> api.Connection
+	17,  // 140: api.DatabaseService.PutConnections:output_type -> api.Connections
+	17,  // 141: api.DatabaseService.SearchAndConnect:output_type -> api.Connections
+	17,  // 142: api.DatabaseService.SearchAndConnectMe:output_type -> api.Connections
+	12,  // 143: api.DatabaseService.GetConnection:output_type -> api.Connection
+	17,  // 144: api.DatabaseService.SearchConnections:output_type -> api.Connections
+	12,  // 145: api.DatabaseService.EditConnection:output_type -> api.Connection
+	17,  // 146: api.DatabaseService.EditConnections:output_type -> api.Connections
+	53,  // 147: api.DatabaseService.DelConnection:output_type -> google.protobuf.Empty
+	53,  // 148: api.DatabaseService.DelConnections:output_type -> google.protobuf.Empty
+	17,  // 149: api.DatabaseService.ConnectionsFrom:output_type -> api.Connections
+	17,  // 150: api.DatabaseService.ConnectionsTo:output_type -> api.Connections
+	37,  // 151: api.DatabaseService.AggregateDocs:output_type -> api.Number
+	37,  // 152: api.DatabaseService.AggregateConnections:output_type -> api.Number
+	53,  // 153: api.DatabaseService.Broadcast:output_type -> google.protobuf.Empty
+	43,  // 154: api.DatabaseService.Stream:output_type -> api.Message
+	6,   // 155: api.DatabaseService.PushDocConstructors:output_type -> api.Doc
+	12,  // 156: api.DatabaseService.PushConnectionConstructors:output_type -> api.Connection
+	53,  // 157: api.DatabaseService.SeedDocs:output_type -> google.protobuf.Empty
+	53,  // 158: api.DatabaseService.SeedConnections:output_type -> google.protobuf.Empty
+	112, // [112:159] is the sub-list for method output_type
+	65,  // [65:112] is the sub-list for method input_type
 	65,  // [65:65] is the sub-list for extension type_name
 	65,  // [65:65] is the sub-list for extension extendee
 	0,   // [0:65] is the sub-list for field type_name
@@ -5128,6 +5147,10 @@ type DatabaseServiceClient interface {
 	CreateDoc(ctx context.Context, in *DocConstructor, opts ...grpc.CallOption) (*Doc, error)
 	// CreateDocs creates a batch of docs in the graph
 	CreateDocs(ctx context.Context, in *DocConstructors, opts ...grpc.CallOption) (*Docs, error)
+	// PutDoc create-or-replaces a Doc in the graph
+	PutDoc(ctx context.Context, in *Doc, opts ...grpc.CallOption) (*Doc, error)
+	// PutDocs puts a batch of docs in the graph
+	PutDocs(ctx context.Context, in *Docs, opts ...grpc.CallOption) (*Docs, error)
 	// GetDoc gets a single doc in the graph
 	GetDoc(ctx context.Context, in *Ref, opts ...grpc.CallOption) (*Doc, error)
 	// SearchDocs searches the graph for docs
@@ -5156,6 +5179,10 @@ type DatabaseServiceClient interface {
 	CreateConnection(ctx context.Context, in *ConnectionConstructor, opts ...grpc.CallOption) (*Connection, error)
 	// CreateConnections creates a batch of connections in the graph
 	CreateConnections(ctx context.Context, in *ConnectionConstructors, opts ...grpc.CallOption) (*Connections, error)
+	// PutConnection create-or-replaces a Connection in the graph
+	PutConnection(ctx context.Context, in *Connection, opts ...grpc.CallOption) (*Connection, error)
+	// PutConnections puts a batch of connections in the graph
+	PutConnections(ctx context.Context, in *Connections, opts ...grpc.CallOption) (*Connections, error)
 	// searches for documents and forms connections based on whether they pass a filter
 	SearchAndConnect(ctx context.Context, in *SearchConnectFilter, opts ...grpc.CallOption) (*Connections, error)
 	// SearchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
@@ -5265,6 +5292,24 @@ func (c *databaseServiceClient) CreateDoc(ctx context.Context, in *DocConstructo
 func (c *databaseServiceClient) CreateDocs(ctx context.Context, in *DocConstructors, opts ...grpc.CallOption) (*Docs, error) {
 	out := new(Docs)
 	err := c.cc.Invoke(ctx, "/api.DatabaseService/CreateDocs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseServiceClient) PutDoc(ctx context.Context, in *Doc, opts ...grpc.CallOption) (*Doc, error) {
+	out := new(Doc)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/PutDoc", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseServiceClient) PutDocs(ctx context.Context, in *Docs, opts ...grpc.CallOption) (*Docs, error) {
+	out := new(Docs)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/PutDocs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -5391,6 +5436,24 @@ func (c *databaseServiceClient) CreateConnection(ctx context.Context, in *Connec
 func (c *databaseServiceClient) CreateConnections(ctx context.Context, in *ConnectionConstructors, opts ...grpc.CallOption) (*Connections, error) {
 	out := new(Connections)
 	err := c.cc.Invoke(ctx, "/api.DatabaseService/CreateConnections", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseServiceClient) PutConnection(ctx context.Context, in *Connection, opts ...grpc.CallOption) (*Connection, error) {
+	out := new(Connection)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/PutConnection", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseServiceClient) PutConnections(ctx context.Context, in *Connections, opts ...grpc.CallOption) (*Connections, error) {
+	out := new(Connections)
+	err := c.cc.Invoke(ctx, "/api.DatabaseService/PutConnections", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -5694,6 +5757,10 @@ type DatabaseServiceServer interface {
 	CreateDoc(context.Context, *DocConstructor) (*Doc, error)
 	// CreateDocs creates a batch of docs in the graph
 	CreateDocs(context.Context, *DocConstructors) (*Docs, error)
+	// PutDoc create-or-replaces a Doc in the graph
+	PutDoc(context.Context, *Doc) (*Doc, error)
+	// PutDocs puts a batch of docs in the graph
+	PutDocs(context.Context, *Docs) (*Docs, error)
 	// GetDoc gets a single doc in the graph
 	GetDoc(context.Context, *Ref) (*Doc, error)
 	// SearchDocs searches the graph for docs
@@ -5722,6 +5789,10 @@ type DatabaseServiceServer interface {
 	CreateConnection(context.Context, *ConnectionConstructor) (*Connection, error)
 	// CreateConnections creates a batch of connections in the graph
 	CreateConnections(context.Context, *ConnectionConstructors) (*Connections, error)
+	// PutConnection create-or-replaces a Connection in the graph
+	PutConnection(context.Context, *Connection) (*Connection, error)
+	// PutConnections puts a batch of connections in the graph
+	PutConnections(context.Context, *Connections) (*Connections, error)
 	// searches for documents and forms connections based on whether they pass a filter
 	SearchAndConnect(context.Context, *SearchConnectFilter) (*Connections, error)
 	// SearchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter
@@ -5785,6 +5856,12 @@ func (*UnimplementedDatabaseServiceServer) CreateDoc(context.Context, *DocConstr
 func (*UnimplementedDatabaseServiceServer) CreateDocs(context.Context, *DocConstructors) (*Docs, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDocs not implemented")
 }
+func (*UnimplementedDatabaseServiceServer) PutDoc(context.Context, *Doc) (*Doc, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PutDoc not implemented")
+}
+func (*UnimplementedDatabaseServiceServer) PutDocs(context.Context, *Docs) (*Docs, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PutDocs not implemented")
+}
 func (*UnimplementedDatabaseServiceServer) GetDoc(context.Context, *Ref) (*Doc, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDoc not implemented")
 }
@@ -5826,6 +5903,12 @@ func (*UnimplementedDatabaseServiceServer) CreateConnection(context.Context, *Co
 }
 func (*UnimplementedDatabaseServiceServer) CreateConnections(context.Context, *ConnectionConstructors) (*Connections, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateConnections not implemented")
+}
+func (*UnimplementedDatabaseServiceServer) PutConnection(context.Context, *Connection) (*Connection, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PutConnection not implemented")
+}
+func (*UnimplementedDatabaseServiceServer) PutConnections(context.Context, *Connections) (*Connections, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PutConnections not implemented")
 }
 func (*UnimplementedDatabaseServiceServer) SearchAndConnect(context.Context, *SearchConnectFilter) (*Connections, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchAndConnect not implemented")
@@ -6026,6 +6109,42 @@ func _DatabaseService_CreateDocs_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatabaseServiceServer).CreateDocs(ctx, req.(*DocConstructors))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseService_PutDoc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Doc)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).PutDoc(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DatabaseService/PutDoc",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).PutDoc(ctx, req.(*Doc))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseService_PutDocs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Docs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).PutDocs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DatabaseService/PutDocs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).PutDocs(ctx, req.(*Docs))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6278,6 +6397,42 @@ func _DatabaseService_CreateConnections_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatabaseServiceServer).CreateConnections(ctx, req.(*ConnectionConstructors))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseService_PutConnection_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Connection)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).PutConnection(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DatabaseService/PutConnection",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).PutConnection(ctx, req.(*Connection))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseService_PutConnections_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Connections)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseServiceServer).PutConnections(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.DatabaseService/PutConnections",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseServiceServer).PutConnections(ctx, req.(*Connections))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -6678,6 +6833,14 @@ var _DatabaseService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _DatabaseService_CreateDocs_Handler,
 		},
 		{
+			MethodName: "PutDoc",
+			Handler:    _DatabaseService_PutDoc_Handler,
+		},
+		{
+			MethodName: "PutDocs",
+			Handler:    _DatabaseService_PutDocs_Handler,
+		},
+		{
 			MethodName: "GetDoc",
 			Handler:    _DatabaseService_GetDoc_Handler,
 		},
@@ -6732,6 +6895,14 @@ var _DatabaseService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateConnections",
 			Handler:    _DatabaseService_CreateConnections_Handler,
+		},
+		{
+			MethodName: "PutConnection",
+			Handler:    _DatabaseService_PutConnection_Handler,
+		},
+		{
+			MethodName: "PutConnections",
+			Handler:    _DatabaseService_PutConnections_Handler,
 		},
 		{
 			MethodName: "SearchAndConnect",

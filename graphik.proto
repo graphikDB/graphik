@@ -35,6 +35,10 @@ service DatabaseService {
   rpc CreateDoc(DocConstructor) returns(Doc){}
   // CreateDocs creates a batch of docs in the graph
   rpc CreateDocs(DocConstructors) returns(Docs){}
+  // PutDoc create-or-replaces a Doc in the graph
+  rpc PutDoc(Doc) returns(Doc){}
+  // PutDocs puts a batch of docs in the graph
+  rpc PutDocs(Docs) returns(Docs){}
   // GetDoc gets a single doc in the graph
   rpc GetDoc(Ref) returns(Doc){}
   // SearchDocs searches the graph for docs
@@ -63,6 +67,10 @@ service DatabaseService {
   rpc CreateConnection(ConnectionConstructor) returns(Connection){}
   // CreateConnections creates a batch of connections in the graph
   rpc CreateConnections(ConnectionConstructors) returns(Connections){}
+  // PutConnection create-or-replaces a Connection in the graph
+  rpc PutConnection(Connection) returns(Connection){}
+  // PutConnections puts a batch of connections in the graph
+  rpc PutConnections(Connections) returns(Connections){}
   // searches for documents and forms connections based on whether they pass a filter
   rpc SearchAndConnect(SearchConnectFilter) returns(Connections){}
   // SearchAndConnectMe searches for documents and forms connections from the origin user to the document based on whether they pass a filter

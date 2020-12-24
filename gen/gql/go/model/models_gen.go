@@ -202,6 +202,27 @@ type PeerInput struct {
 	Addr   string `json:"addr"`
 }
 
+type PutConnection struct {
+	Ref        *RefInput              `json:"ref"`
+	Attributes map[string]interface{} `json:"attributes"`
+	Directed   bool                   `json:"directed"`
+	From       *RefInput              `json:"from"`
+	To         *RefInput              `json:"to"`
+}
+
+type PutConnections struct {
+	Connections []*PutConnection `json:"connections"`
+}
+
+type PutDoc struct {
+	Ref        *RefInput              `json:"ref"`
+	Attributes map[string]interface{} `json:"attributes"`
+}
+
+type PutDocs struct {
+	Docs []*PutDoc `json:"docs"`
+}
+
 type RaftState struct {
 	Leader     string                 `json:"leader"`
 	Membership Membership             `json:"membership"`

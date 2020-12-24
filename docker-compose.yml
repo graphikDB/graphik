@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   graphik:
-    image: graphikdb/graphik:v0.12.0
+    image: graphikdb/graphik:v0.12.1
     env_file:
       - .env
     ports:

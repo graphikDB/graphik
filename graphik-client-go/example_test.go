@@ -238,6 +238,30 @@ func ExampleClient_SearchDocs() {
 	// Output: Charlie
 }
 
+
+func ExampleClient_PutDoc() {
+	note33, err := client.PutDoc(context.Background(), &apipb2.Doc{
+		Ref:        &apipb2.Ref{
+			Gtype: "note",
+			Gid:   "note33",
+		},
+		Attributes: apipb2.NewStruct(map[string]interface{}{
+			"title": "this is a note",
+		}),
+	})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	has, err := client.HasDoc(context.Background(), note33.Ref)
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	fmt.Println(has.Value)
+	// Output: true
+}
+
 func ExampleClient_CreateConnection() {
 	dogs, err := client.SearchDocs(context.Background(), &apipb2.Filter{
 		Gtype:      "dog",
@@ -401,7 +425,7 @@ func ExampleClient_GetSchema() {
 		authorizers = append(authorizers, a.Name)
 	}
 	fmt.Printf("authorizers: %s", strings.Join(authorizers, ","))
-	// Output: doc types: dog,human,user
+	// Output: doc types: dog,human,note,user
 	//connection types: created,created_by,edited,edited_by,owner
 	//authorizers: testing-request
 }

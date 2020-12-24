@@ -135,6 +135,10 @@ type ComplexityRoot struct {
 		EditConnections    func(childComplexity int, input model.EditFilter) int
 		EditDoc            func(childComplexity int, input model.Edit) int
 		EditDocs           func(childComplexity int, input model.EditFilter) int
+		PutConnection      func(childComplexity int, input *model.PutConnection) int
+		PutConnections     func(childComplexity int, input *model.PutConnections) int
+		PutDoc             func(childComplexity int, input *model.PutDoc) int
+		PutDocs            func(childComplexity int, input *model.PutDocs) int
 		SearchAndConnect   func(childComplexity int, input model.SearchConnectFilter) int
 		SearchAndConnectMe func(childComplexity int, input model.SearchConnectMeFilter) int
 		SetAuthorizers     func(childComplexity int, input model.AuthorizersInput) int
@@ -224,12 +228,16 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateDoc(ctx context.Context, input model.DocConstructor) (*model.Doc, error)
 	CreateDocs(ctx context.Context, input model.DocConstructors) (*model.Docs, error)
+	PutDoc(ctx context.Context, input *model.PutDoc) (*model.Doc, error)
+	PutDocs(ctx context.Context, input *model.PutDocs) (*model.Docs, error)
 	EditDoc(ctx context.Context, input model.Edit) (*model.Doc, error)
 	EditDocs(ctx context.Context, input model.EditFilter) (*model.Docs, error)
 	DelDoc(ctx context.Context, input model.RefInput) (*emptypb.Empty, error)
 	DelDocs(ctx context.Context, input model.Filter) (*emptypb.Empty, error)
 	CreateConnection(ctx context.Context, input model.ConnectionConstructor) (*model.Connection, error)
 	CreateConnections(ctx context.Context, input model.ConnectionConstructors) (*model.Connections, error)
+	PutConnection(ctx context.Context, input *model.PutConnection) (*model.Connection, error)
+	PutConnections(ctx context.Context, input *model.PutConnections) (*model.Connections, error)
 	EditConnection(ctx context.Context, input model.Edit) (*model.Connection, error)
 	EditConnections(ctx context.Context, input model.EditFilter) (*model.Connections, error)
 	DelConnection(ctx context.Context, input model.RefInput) (*emptypb.Empty, error)
@@ -693,6 +701,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.EditDocs(childComplexity, args["input"].(model.EditFilter)), true
+
+	case "Mutation.putConnection":
+		if e.complexity.Mutation.PutConnection == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_putConnection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.PutConnection(childComplexity, args["input"].(*model.PutConnection)), true
+
+	case "Mutation.putConnections":
+		if e.complexity.Mutation.PutConnections == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_putConnections_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.PutConnections(childComplexity, args["input"].(*model.PutConnections)), true
+
+	case "Mutation.putDoc":
+		if e.complexity.Mutation.PutDoc == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_putDoc_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.PutDoc(childComplexity, args["input"].(*model.PutDoc)), true
+
+	case "Mutation.putDocs":
+		if e.complexity.Mutation.PutDocs == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_putDocs_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.PutDocs(childComplexity, args["input"].(*model.PutDocs)), true
 
 	case "Mutation.searchAndConnect":
 		if e.complexity.Mutation.SearchAndConnect == nil {
@@ -1775,11 +1831,45 @@ input ExistsFilter {
   index: String
 }
 
+input PutDoc {
+  # ref is the ref to the doc
+  ref: RefInput!
+  # k/v pairs
+  attributes: Map
+}
+
+input PutDocs {
+  # docs is an array of docs
+  docs: [PutDoc!]
+}
+
+input PutConnection {
+  # ref is the ref to the connection
+  ref: RefInput!
+  # k/v pairs
+  attributes: Map
+  # directed is false if the connection is bi-directional
+  directed: Boolean!
+  # from is the doc ref that is the source of the connection
+  from: RefInput!
+  # to is the doc ref that is the destination of the connection
+  to: RefInput!
+}
+
+input PutConnections {
+  # connections is an array of connections
+  connections: [PutConnection!]
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
   # createDocs creates 1-many documents in the graph
   createDocs(input: DocConstructors!): Docs!
+  # putDoc create-or-replaces a Doc in the graph
+  putDoc(input: PutDoc): Doc!
+  # putDocs puts a batch of docs in the graph
+  putDocs(input: PutDocs): Docs!
   # editDoc edites a single doc in the graph
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
@@ -1792,6 +1882,10 @@ type Mutation {
   createConnection(input: ConnectionConstructor!): Connection!
   # createConnections creates 1-many connections in the graph
   createConnections(input: ConnectionConstructors!): Connections!
+  # putConnection create-or-replaces a Connection in the graph
+  putConnection(input: PutConnection): Connection!
+  # putConnections puts a batch of connections in the graph
+  putConnections(input: PutConnections): Connections!
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph
@@ -2049,6 +2143,66 @@ func (ec *executionContext) field_Mutation_editDocs_args(ctx context.Context, ra
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNEditFilter2githubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐEditFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_putConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.PutConnection
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOPutConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutConnection(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_putConnections_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.PutConnections
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOPutConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutConnections(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_putDoc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.PutDoc
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOPutDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutDoc(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_putDocs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.PutDocs
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOPutDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutDocs(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3807,6 +3961,90 @@ func (ec *executionContext) _Mutation_createDocs(ctx context.Context, field grap
 	return ec.marshalNDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_putDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_putDoc_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().PutDoc(rctx, args["input"].(*model.PutDoc))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Doc)
+	fc.Result = res
+	return ec.marshalNDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDoc(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_putDocs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_putDocs_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().PutDocs(rctx, args["input"].(*model.PutDocs))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Docs)
+	fc.Result = res
+	return ec.marshalNDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐDocs(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_editDoc(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4037,6 +4275,90 @@ func (ec *executionContext) _Mutation_createConnections(ctx context.Context, fie
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateConnections(rctx, args["input"].(model.ConnectionConstructors))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Connections)
+	fc.Result = res
+	return ec.marshalNConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnections(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_putConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_putConnection_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().PutConnection(rctx, args["input"].(*model.PutConnection))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Connection)
+	fc.Result = res
+	return ec.marshalNConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_putConnections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_putConnections_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().PutConnections(rctx, args["input"].(*model.PutConnections))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7980,6 +8302,126 @@ func (ec *executionContext) unmarshalInputPeerInput(ctx context.Context, obj int
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPutConnection(ctx context.Context, obj interface{}) (model.PutConnection, error) {
+	var it model.PutConnection
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "ref":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
+			it.Ref, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "attributes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+			it.Attributes, err = ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "directed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("directed"))
+			it.Directed, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "from":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+			it.From, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "to":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+			it.To, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPutConnections(ctx context.Context, obj interface{}) (model.PutConnections, error) {
+	var it model.PutConnections
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "connections":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connections"))
+			it.Connections, err = ec.unmarshalOPutConnection2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutConnectionᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPutDoc(ctx context.Context, obj interface{}) (model.PutDoc, error) {
+	var it model.PutDoc
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "ref":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
+			it.Ref, err = ec.unmarshalNRefInput2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "attributes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attributes"))
+			it.Attributes, err = ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPutDocs(ctx context.Context, obj interface{}) (model.PutDocs, error) {
+	var it model.PutDocs
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "docs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("docs"))
+			it.Docs, err = ec.unmarshalOPutDoc2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutDocᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputRefConstructor(ctx context.Context, obj interface{}) (model.RefConstructor, error) {
 	var it model.RefConstructor
 	var asMap = obj.(map[string]interface{})
@@ -8855,6 +9297,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "putDoc":
+			out.Values[i] = ec._Mutation_putDoc(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "putDocs":
+			out.Values[i] = ec._Mutation_putDocs(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "editDoc":
 			out.Values[i] = ec._Mutation_editDoc(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -8876,6 +9328,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "createConnections":
 			out.Values[i] = ec._Mutation_createConnections(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "putConnection":
+			out.Values[i] = ec._Mutation_putConnection(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "putConnections":
+			out.Values[i] = ec._Mutation_putConnections(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -10081,6 +10543,16 @@ func (ec *executionContext) marshalNPeer2ᚖgithubᚗcomᚋgraphikDBᚋgraphik�
 	return ec._Peer(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNPutConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutConnection(ctx context.Context, v interface{}) (*model.PutConnection, error) {
+	res, err := ec.unmarshalInputPutConnection(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNPutDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutDoc(ctx context.Context, v interface{}) (*model.PutDoc, error) {
+	res, err := ec.unmarshalInputPutDoc(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNRef2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRef(ctx context.Context, sel ast.SelectionSet, v *model.Ref) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -10849,6 +11321,86 @@ func (ec *executionContext) marshalOPeer2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphi
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalOPutConnection2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutConnectionᚄ(ctx context.Context, v interface{}) ([]*model.PutConnection, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.PutConnection, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNPutConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutConnection(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOPutConnection2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutConnection(ctx context.Context, v interface{}) (*model.PutConnection, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPutConnection(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOPutConnections2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutConnections(ctx context.Context, v interface{}) (*model.PutConnections, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPutConnections(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOPutDoc2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutDocᚄ(ctx context.Context, v interface{}) ([]*model.PutDoc, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.PutDoc, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNPutDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutDoc(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOPutDoc2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutDoc(ctx context.Context, v interface{}) (*model.PutDoc, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPutDoc(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOPutDocs2ᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐPutDocs(ctx context.Context, v interface{}) (*model.PutDocs, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPutDocs(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalORef2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐRefᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Ref) graphql.Marshaler {

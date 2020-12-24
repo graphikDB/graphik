@@ -533,11 +533,45 @@ input ExistsFilter {
   index: String
 }
 
+input PutDoc {
+  # ref is the ref to the doc
+  ref: RefInput!
+  # k/v pairs
+  attributes: Map
+}
+
+input PutDocs {
+  # docs is an array of docs
+  docs: [PutDoc!]
+}
+
+input PutConnection {
+  # ref is the ref to the connection
+  ref: RefInput!
+  # k/v pairs
+  attributes: Map
+  # directed is false if the connection is bi-directional
+  directed: Boolean!
+  # from is the doc ref that is the source of the connection
+  from: RefInput!
+  # to is the doc ref that is the destination of the connection
+  to: RefInput!
+}
+
+input PutConnections {
+  # connections is an array of connections
+  connections: [PutConnection!]
+}
+
 type Mutation {
   # createDoc creates a single doc in the graph
   createDoc(input: DocConstructor!): Doc!
   # createDocs creates 1-many documents in the graph
   createDocs(input: DocConstructors!): Docs!
+  # putDoc create-or-replaces a Doc in the graph
+  putDoc(input: PutDoc): Doc!
+  # putDocs puts a batch of docs in the graph
+  putDocs(input: PutDocs): Docs!
   # editDoc edites a single doc in the graph
   editDoc(input: Edit!): Doc!
   # editDocs edites 0-many docs in the graph
@@ -550,6 +584,10 @@ type Mutation {
   createConnection(input: ConnectionConstructor!): Connection!
   # createConnections creates 1-many connections in the graph
   createConnections(input: ConnectionConstructors!): Connections!
+  # putConnection create-or-replaces a Connection in the graph
+  putConnection(input: PutConnection): Connection!
+  # putConnections puts a batch of connections in the graph
+  putConnections(input: PutConnections): Connections!
   # editConnection edites a single connection in the graph
   editConnection(input: Edit!): Connection!
   # editConnections edites 0-many connections in the graph

@@ -456,3 +456,23 @@ func (c *Client) ClusterState(ctx context.Context, _ *empty.Empty, opts ...grpc.
 func (c *Client) Ping(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*apipb.Pong, error) {
 	return c.raft.Ping(ctx, in, opts...)
 }
+
+// PutDocs puts a batch of docs in the graph
+func (c *Client) PutDoc(ctx context.Context, in *apipb.Doc, opts ...grpc.CallOption) (*apipb.Doc, error) {
+	return c.graph.PutDoc(ctx, in, opts...)
+}
+
+// PutDoc creates a Doc if it doesnt exist already, otherwise it replaces it
+func (c *Client) PutDocs(ctx context.Context, in *apipb.Docs, opts ...grpc.CallOption) (*apipb.Docs, error) {
+	return c.graph.PutDocs(ctx, in, opts...)
+}
+
+// PutConnection create-or-replaces a Connection in the graph
+func (c *Client) PutConnection(ctx context.Context, in *apipb.Connection, opts ...grpc.CallOption) (*apipb.Connection, error) {
+	return c.graph.PutConnection(ctx, in, opts...)
+}
+
+// PutConnections puts a batch of connections in the graph
+func (c *Client) PutConnections(ctx context.Context, in *apipb.Connections, opts ...grpc.CallOption) (*apipb.Connections, error) {
+	return c.graph.PutConnections(ctx, in, opts...)
+}

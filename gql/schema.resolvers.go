@@ -44,6 +44,51 @@ func (r *mutationResolver) CreateDocs(ctx context.Context, input model.DocConstr
 	return gqlDocs(docs), nil
 }
 
+func (r *mutationResolver) PutDoc(ctx context.Context, input *model.PutDoc) (*model.Doc, error) {
+	res, err := r.client.PutDoc(ctx, &apipb.Doc{
+		Ref: &apipb.Ref{
+			Gtype: input.Ref.Gtype,
+			Gid:   input.Ref.Gid,
+		},
+		Attributes: apipb.NewStruct(input.Attributes),
+	})
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlDoc(res), nil
+}
+
+func (r *mutationResolver) PutDocs(ctx context.Context, input *model.PutDocs) (*model.Docs, error) {
+	var docs = &apipb.Docs{}
+	var err error
+	for _, d := range input.Docs {
+		docs.Docs = append(docs.Docs, &apipb.Doc{
+			Ref: &apipb.Ref{
+				Gtype: d.Ref.Gtype,
+				Gid:   d.Ref.Gid,
+			},
+			Attributes: apipb.NewStruct(d.Attributes),
+		})
+	}
+	docs, err = r.client.PutDocs(ctx, docs)
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlDocs(docs), nil
+}
+
 func (r *mutationResolver) EditDoc(ctx context.Context, input model.Edit) (*model.Doc, error) {
 	res, err := r.client.EditDoc(ctx, protoEdit(input))
 	if err != nil {
@@ -116,6 +161,69 @@ func (r *mutationResolver) CreateConnection(ctx context.Context, input model.Con
 
 func (r *mutationResolver) CreateConnections(ctx context.Context, input model.ConnectionConstructors) (*model.Connections, error) {
 	connections, err := r.client.CreateConnections(ctx, protoConnectionCs(input))
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlConnections(connections), nil
+}
+
+func (r *mutationResolver) PutConnection(ctx context.Context, input *model.PutConnection) (*model.Connection, error) {
+	res, err := r.client.PutConnection(ctx, protoConnection(&model.Connection{
+		Ref: &model.Ref{
+			Gtype: input.Ref.Gtype,
+			Gid:   input.Ref.Gid,
+		},
+		Attributes: input.Attributes,
+		Directed:   input.Directed,
+		From: &model.Ref{
+			Gtype: input.From.Gtype,
+			Gid:   input.From.Gid,
+		},
+		To: &model.Ref{
+			Gtype: input.To.Gtype,
+			Gid:   input.To.Gid,
+		},
+	}))
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlConnection(res), nil
+}
+
+func (r *mutationResolver) PutConnections(ctx context.Context, input *model.PutConnections) (*model.Connections, error) {
+	var connections = &apipb.Connections{}
+	var err error
+	for _, d := range input.Connections {
+		connections.Connections = append(connections.Connections, &apipb.Connection{
+			Ref: &apipb.Ref{
+				Gtype: d.Ref.Gtype,
+				Gid:   d.Ref.Gid,
+			},
+			Attributes: apipb.NewStruct(d.Attributes),
+			Directed:   d.Directed,
+			From: &apipb.Ref{
+				Gtype: d.From.Gtype,
+				Gid:   d.From.Gid,
+			},
+			To: &apipb.Ref{
+				Gtype: d.To.Gtype,
+				Gid:   d.To.Gid,
+			},
+		})
+	}
+	connections, err = r.client.PutConnections(ctx, connections)
 	if err != nil {
 		return nil, &gqlerror.Error{
 			Message: err.Error(),

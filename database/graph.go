@@ -541,6 +541,147 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 	return docs, nil
 }
 
+func (g *Graph) PutDoc(ctx context.Context, doc *apipb.Doc) (*apipb.Doc, error) {
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.PutDoc(invertContext(ctx), doc)
+	}
+	docs, err := g.PutDocs(ctx, &apipb.Docs{Docs: []*apipb.Doc{doc}})
+	if err != nil {
+		return nil, err
+	}
+	if len(docs.GetDocs()) == 0 {
+		return nil, status.Error(codes.Internal, "zero docs modified")
+	}
+	return docs.GetDocs()[0], nil
+}
+
+func (g *Graph) PutDocs(ctx context.Context, docs *apipb.Docs) (*apipb.Docs, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, status.Error(codes.Canceled, err.Error())
+	}
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.PutDocs(invertContext(ctx), docs)
+	}
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+	}
+
+	var (
+		method         = g.getMethod(ctx)
+		setDocs        []*apipb.Doc
+		setConnections []*apipb.Connection
+		err            error
+	)
+
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		for _, doc := range docs.GetDocs() {
+			if doc.GetRef().Gid == "" {
+				doc.Ref.Gid = ksuid.New().String()
+			}
+			path := &apipb.Ref{
+				Gtype: doc.GetRef().GetGtype(),
+				Gid:   doc.GetRef().GetGid(),
+			}
+			var exists = false
+			if doc, err := g.getDoc(ctx, tx, path); err == nil || doc != nil {
+				exists = true
+			}
+			g.rangeTriggers(func(a *triggerCache) bool {
+				if a.trigger.GetTargetDocs() && (doc.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
+					data, err := a.evalTrigger.Trigger(doc.AsMap())
+					if err == nil {
+						for k, v := range data {
+							val, _ := structpb.NewValue(v)
+							doc.GetAttributes().GetFields()[k] = val
+						}
+					}
+				}
+				return true
+			})
+			setDocs = append(setDocs, doc)
+			if doc.GetRef().GetGid() != user.GetRef().GetGid() && doc.GetRef().GetGtype() != user.GetRef().GetGtype() {
+				id := helpers.Hash([]byte(fmt.Sprintf("%s-%s", user.GetRef().String(), doc.GetRef().String())))
+				if !exists {
+					createdRef := &apipb.Ref{Gid: id, Gtype: "created"}
+					if !g.hasConnectionFrom(user.GetRef(), createdRef) {
+						setConnections = append(setConnections, &apipb.Connection{
+							Ref:        createdRef,
+							Attributes: apipb.NewStruct(map[string]interface{}{}),
+							Directed:   true,
+							From:       user.GetRef(),
+							To:         doc.GetRef(),
+						})
+					}
+					createdByRef := &apipb.Ref{Gtype: "created_by", Gid: id}
+					if !g.hasConnectionFrom(doc.GetRef(), createdByRef) {
+						setConnections = append(setConnections, &apipb.Connection{
+							Ref:        createdByRef,
+							Attributes: apipb.NewStruct(map[string]interface{}{}),
+							Directed:   true,
+							From:       doc.GetRef(),
+							To:         user.GetRef(),
+						})
+						if err != nil {
+							return err
+						}
+					}
+				} else {
+					editedRef := &apipb.Ref{Gid: id, Gtype: "edited"}
+					if !g.hasConnectionFrom(user.GetRef(), editedRef) {
+						setConnections = append(setConnections, &apipb.Connection{
+							Ref:        editedRef,
+							Attributes: apipb.NewStruct(map[string]interface{}{}),
+							Directed:   true,
+							From:       user.GetRef(),
+							To:         doc.GetRef(),
+						})
+					}
+					editedByRef := &apipb.Ref{Gtype: "edited_by", Gid: id}
+					if !g.hasConnectionFrom(doc.GetRef(), editedByRef) {
+						setConnections = append(setConnections, &apipb.Connection{
+							Ref:        editedByRef,
+							Attributes: apipb.NewStruct(map[string]interface{}{}),
+							Directed:   true,
+							To:         user.GetRef(),
+							From:       doc.GetRef(),
+						})
+						if err != nil {
+							return err
+						}
+					}
+				}
+			}
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	cmd, err := g.applyCommand(&apipb.RaftCommand{
+		User:           user,
+		Method:         method,
+		SetDocs:        setDocs,
+		SetConnections: setConnections,
+	})
+	if err != nil {
+		return nil, err
+	}
+	docs = &apipb.Docs{
+		Docs:     cmd.SetDocs,
+		SeekNext: "",
+	}
+	docs.Sort("")
+	return docs, nil
+}
+
 func (g *Graph) CreateConnection(ctx context.Context, constructor *apipb.ConnectionConstructor) (*apipb.Connection, error) {
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
@@ -617,6 +758,78 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 
 	cmd, err := g.applyCommand(&apipb.RaftCommand{
 		SetConnections: connections,
+		User:           user,
+		Method:         g.getMethod(ctx),
+	})
+	if err != nil {
+		return nil, err
+	}
+	connectionss := &apipb.Connections{
+		Connections: cmd.SetConnections,
+		SeekNext:    "",
+	}
+	connectionss.Sort("")
+	return connectionss, nil
+}
+
+func (g *Graph) PutConnection(ctx context.Context, connection *apipb.Connection) (*apipb.Connection, error) {
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.PutConnection(invertContext(ctx), connection)
+	}
+	connections, err := g.PutConnections(ctx, &apipb.Connections{Connections: []*apipb.Connection{connection}})
+	if err != nil {
+		return nil, err
+	}
+	if len(connections.GetConnections()) == 0 {
+		return nil, status.Error(codes.Unknown, "zero connections modified")
+	}
+	return connections.GetConnections()[0], nil
+}
+
+func (g *Graph) PutConnections(ctx context.Context, connections *apipb.Connections) (*apipb.Connections, error) {
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.PutConnections(invertContext(ctx), connections)
+	}
+	user := g.getIdentity(ctx)
+	if user == nil {
+		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+	}
+	var err error
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	var setConnections []*apipb.Connection
+	if err := g.db.View(func(tx *bbolt.Tx) error {
+		for _, connection := range connections.GetConnections() {
+			g.rangeTriggers(func(a *triggerCache) bool {
+				if a.trigger.GetTargetConnections() && (connection.GetRef().GetGtype() == a.trigger.GetGtype() || a.trigger.GetGtype() == apipb.Any) {
+					data, err := a.evalTrigger.Trigger(connection.AsMap())
+					if err == nil {
+						for k, v := range data {
+							val, _ := structpb.NewValue(v)
+							connection.GetAttributes().GetFields()[k] = val
+						}
+					}
+				}
+				return true
+			})
+			setConnections = append(setConnections, connection)
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	cmd, err := g.applyCommand(&apipb.RaftCommand{
+		SetConnections: setConnections,
 		User:           user,
 		Method:         g.getMethod(ctx),
 	})
@@ -799,6 +1012,13 @@ func (g *Graph) GetDoc(ctx context.Context, path *apipb.Ref) (*apipb.Doc, error)
 }
 
 func (g *Graph) CreateDoc(ctx context.Context, constructor *apipb.DocConstructor) (*apipb.Doc, error) {
+	if g.raft.State() != raft2.Leader {
+		client, err := g.leaderClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return client.CreateDoc(invertContext(ctx), constructor)
+	}
 	docs, err := g.CreateDocs(ctx, &apipb.DocConstructors{Docs: []*apipb.DocConstructor{constructor}})
 	if err != nil {
 		return nil, err

@@ -57,3 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.12.0] - 2020-12-23
 - refactor every instance of `TypeValidator` to `constraint` - better naming convention
+
+## [0.12.1] - 2020-12-23
+- PutDoc, PutDocs, PutConnection, PutConnections for full create-or-replace functionality
