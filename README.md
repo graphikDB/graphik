@@ -1,4 +1,4 @@
-![graphik](assets/graphikDB%20Logo-D.jpg)
+![graphik](assets/graphik-logo.jpg)
 
 
 https://graphikdb.github.io/graphik/
