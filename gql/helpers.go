@@ -225,8 +225,8 @@ func gqlIndex(val *apipb.Index) *model.Index {
 		Name:              val.GetName(),
 		Gtype:             val.GetGtype(),
 		Expression:        val.GetExpression(),
-		TargetConnections: val.GetConnections(),
-		TargetDocs:        val.GetDocs(),
+		TargetConnections: val.GetTargetConnections(),
+		TargetDocs:        val.GetTargetDocs(),
 	}
 }
 
@@ -436,11 +436,11 @@ func gqlRefs(ps *apipb.Refs) *model.Refs {
 
 func protoIndex(index *model.IndexInput) *apipb.Index {
 	return &apipb.Index{
-		Name:        index.Name,
-		Gtype:       index.Gtype,
-		Expression:  index.Expression,
-		Docs:        index.TargetDocs,
-		Connections: index.TargetConnections,
+		Name:              index.Name,
+		Gtype:             index.Gtype,
+		Expression:        index.Expression,
+		TargetDocs:        index.TargetDocs,
+		TargetConnections: index.TargetConnections,
 	}
 }
 

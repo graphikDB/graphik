@@ -4941,8 +4941,8 @@ proto.api.IndexConstructor.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     gtype: jspb.Message.getFieldWithDefault(msg, 3, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    docs: jspb.Message.getFieldWithDefault(msg, 6, false),
-    connections: jspb.Message.getFieldWithDefault(msg, 7, false)
+    targetDocs: jspb.Message.getFieldWithDefault(msg, 6, false),
+    targetConnections: jspb.Message.getFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -4993,11 +4993,11 @@ proto.api.IndexConstructor.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setDocs(value);
+      msg.setTargetDocs(value);
       break;
     case 7:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setConnections(value);
+      msg.setTargetConnections(value);
       break;
     default:
       reader.skipField();
@@ -5049,14 +5049,14 @@ proto.api.IndexConstructor.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getDocs();
+  f = message.getTargetDocs();
   if (f) {
     writer.writeBool(
       6,
       f
     );
   }
-  f = message.getConnections();
+  f = message.getTargetConnections();
   if (f) {
     writer.writeBool(
       7,
@@ -5112,35 +5112,35 @@ proto.api.IndexConstructor.prototype.setExpression = function(value) {
 
 
 /**
- * optional bool docs = 6;
+ * optional bool target_docs = 6;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.api.IndexConstructor.prototype.getDocs = function() {
+proto.api.IndexConstructor.prototype.getTargetDocs = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 6, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.IndexConstructor.prototype.setDocs = function(value) {
+proto.api.IndexConstructor.prototype.setTargetDocs = function(value) {
   jspb.Message.setProto3BooleanField(this, 6, value);
 };
 
 
 /**
- * optional bool connections = 7;
+ * optional bool target_connections = 7;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.api.IndexConstructor.prototype.getConnections = function() {
+proto.api.IndexConstructor.prototype.getTargetConnections = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 7, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.IndexConstructor.prototype.setConnections = function(value) {
+proto.api.IndexConstructor.prototype.setTargetConnections = function(value) {
   jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
@@ -6271,8 +6271,8 @@ proto.api.Index.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     gtype: jspb.Message.getFieldWithDefault(msg, 3, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    docs: jspb.Message.getFieldWithDefault(msg, 6, false),
-    connections: jspb.Message.getFieldWithDefault(msg, 7, false)
+    targetDocs: jspb.Message.getFieldWithDefault(msg, 5, false),
+    targetConnections: jspb.Message.getFieldWithDefault(msg, 6, false)
   };
 
   if (includeInstance) {
@@ -6321,13 +6321,13 @@ proto.api.Index.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setExpression(value);
       break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setTargetDocs(value);
+      break;
     case 6:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setDocs(value);
-      break;
-    case 7:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setConnections(value);
+      msg.setTargetConnections(value);
       break;
     default:
       reader.skipField();
@@ -6379,17 +6379,17 @@ proto.api.Index.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getDocs();
+  f = message.getTargetDocs();
   if (f) {
     writer.writeBool(
-      6,
+      5,
       f
     );
   }
-  f = message.getConnections();
+  f = message.getTargetConnections();
   if (f) {
     writer.writeBool(
-      7,
+      6,
       f
     );
   }
@@ -6442,36 +6442,36 @@ proto.api.Index.prototype.setExpression = function(value) {
 
 
 /**
- * optional bool docs = 6;
+ * optional bool target_docs = 5;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.api.Index.prototype.getDocs = function() {
+proto.api.Index.prototype.getTargetDocs = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 5, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Index.prototype.setTargetDocs = function(value) {
+  jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+
+/**
+ * optional bool target_connections = 6;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Index.prototype.getTargetConnections = function() {
   return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 6, false));
 };
 
 
 /** @param {boolean} value */
-proto.api.Index.prototype.setDocs = function(value) {
+proto.api.Index.prototype.setTargetConnections = function(value) {
   jspb.Message.setProto3BooleanField(this, 6, value);
-};
-
-
-/**
- * optional bool connections = 7;
- * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
- * You should avoid comparisons like {@code val === true/false} in those cases.
- * @return {boolean}
- */
-proto.api.Index.prototype.getConnections = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 7, false));
-};
-
-
-/** @param {boolean} value */
-proto.api.Index.prototype.setConnections = function(value) {
-  jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 

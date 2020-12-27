@@ -34,17 +34,17 @@ class IndexConstructor extends \Google\Protobuf\Internal\Message
      */
     private $expression = '';
     /**
-     * if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both.
+     * if target_docs is true, this index will be applied to documents.
      *
-     * Generated from protobuf field <code>bool docs = 6;</code>
+     * Generated from protobuf field <code>bool target_docs = 6;</code>
      */
-    private $docs = false;
+    private $target_docs = false;
     /**
-     * if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both.
+     * if target_connections is true, this index will be applied to connections.
      *
-     * Generated from protobuf field <code>bool connections = 7;</code>
+     * Generated from protobuf field <code>bool target_connections = 7;</code>
      */
-    private $connections = false;
+    private $target_connections = false;
 
     /**
      * Constructor.
@@ -58,10 +58,10 @@ class IndexConstructor extends \Google\Protobuf\Internal\Message
      *           gtype is the doc/connection type to be filtered
      *     @type string $expression
      *           expression is a CEL expression used to filter connections/modes
-     *     @type bool $docs
-     *           if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both.
-     *     @type bool $connections
-     *           if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both.
+     *     @type bool $target_docs
+     *           if target_docs is true, this index will be applied to documents.
+     *     @type bool $target_connections
+     *           if target_connections is true, this index will be applied to connections.
      * }
      */
     public function __construct($data = NULL) {
@@ -148,53 +148,53 @@ class IndexConstructor extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both.
+     * if target_docs is true, this index will be applied to documents.
      *
-     * Generated from protobuf field <code>bool docs = 6;</code>
+     * Generated from protobuf field <code>bool target_docs = 6;</code>
      * @return bool
      */
-    public function getDocs()
+    public function getTargetDocs()
     {
-        return $this->docs;
+        return $this->target_docs;
     }
 
     /**
-     * if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both.
+     * if target_docs is true, this index will be applied to documents.
      *
-     * Generated from protobuf field <code>bool docs = 6;</code>
+     * Generated from protobuf field <code>bool target_docs = 6;</code>
      * @param bool $var
      * @return $this
      */
-    public function setDocs($var)
+    public function setTargetDocs($var)
     {
         GPBUtil::checkBool($var);
-        $this->docs = $var;
+        $this->target_docs = $var;
 
         return $this;
     }
 
     /**
-     * if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both.
+     * if target_connections is true, this index will be applied to connections.
      *
-     * Generated from protobuf field <code>bool connections = 7;</code>
+     * Generated from protobuf field <code>bool target_connections = 7;</code>
      * @return bool
      */
-    public function getConnections()
+    public function getTargetConnections()
     {
-        return $this->connections;
+        return $this->target_connections;
     }
 
     /**
-     * if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both.
+     * if target_connections is true, this index will be applied to connections.
      *
-     * Generated from protobuf field <code>bool connections = 7;</code>
+     * Generated from protobuf field <code>bool target_connections = 7;</code>
      * @param bool $var
      * @return $this
      */
-    public function setConnections($var)
+    public function setTargetConnections($var)
     {
         GPBUtil::checkBool($var);
-        $this->connections = $var;
+        $this->target_connections = $var;
 
         return $this;
     }

@@ -202,8 +202,8 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 		if err != nil {
 			return nil, err
 		}
-		current.Connections = i.Connections
-		current.Docs = i.Docs
+		current.TargetConnections = i.TargetConnections
+		current.TargetDocs = i.TargetDocs
 		current.Gtype = i.Gtype
 		current.Expression = i.Expression
 		bits, err := proto.Marshal(current)
@@ -223,10 +223,10 @@ func (g *Graph) setIndex(ctx context.Context, tx *bbolt.Tx, i *apipb.Index) (*ap
 	if err := indexBucket.Put([]byte(i.GetName()), bits); err != nil {
 		return nil, err
 	}
-	if i.Connections {
+	if i.TargetConnections {
 		tx.Bucket(dbIndexConnections).CreateBucketIfNotExists([]byte(i.GetName()))
 	}
-	if i.Docs {
+	if i.TargetDocs {
 		tx.Bucket(dbIndexDocs).CreateBucketIfNotExists([]byte(i.GetName()))
 	}
 	return i, nil
@@ -432,7 +432,7 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 		return nil, err
 	}
 	g.rangeIndexes(func(i *index) bool {
-		if i.index.GetDocs() && i.index.GetGtype() == doc.GetRef().GetGtype() {
+		if i.index.GetTargetDocs() && i.index.GetGtype() == doc.GetRef().GetGtype() {
 			if err := i.decision.Eval(docMap); err == nil {
 				err = g.setIndexedDoc(ctx, tx, i.index.Name, []byte(doc.GetRef().GetGid()), bits)
 				if err != nil {
@@ -538,7 +538,7 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 		g.connectionsFrom[connection.GetTo().String()][refstr] = struct{}{}
 	}
 	g.rangeIndexes(func(i *index) bool {
-		if i.index.Connections && i.index.GetGtype() == connection.GetRef().GetGtype() {
+		if i.index.GetTargetConnections() && i.index.GetGtype() == connection.GetRef().GetGtype() {
 			if err := i.decision.Eval(connMap); err == nil {
 				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), []byte(connection.GetRef().GetGid()), bits)
 				if err != nil {
@@ -764,7 +764,7 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) error
 		return true
 	})
 	g.rangeIndexes(func(index *index) bool {
-		if index.index.Docs && index.index.GetGtype() == doc.GetRef().GetGtype() {
+		if index.index.GetTargetDocs() && index.index.GetGtype() == doc.GetRef().GetGtype() {
 			g.delIndexedDoc(ctx, tx, []byte(index.index.Name), []byte(path.GetGid()))
 		}
 		return true
@@ -798,7 +798,7 @@ func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref
 	}
 	g.mu.Unlock()
 	g.rangeIndexes(func(index *index) bool {
-		if index.index.Connections && index.index.GetGtype() == path.GetGtype() {
+		if index.index.GetTargetConnections() && index.index.GetGtype() == path.GetGtype() {
 			g.delIndexedConnection(ctx, tx, []byte(index.index.Name), []byte(path.GetGid()))
 		}
 		return true

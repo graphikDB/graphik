@@ -330,10 +330,10 @@ message IndexConstructor {
   string gtype =3 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is a CEL expression used to filter connections/modes
   string expression =4[(validator.field) = {regex : "^.{1,225}$"}];
-  // if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both.
-  bool docs =6;
-  // if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both.
-  bool connections =7;
+  // if target_docs is true, this index will be applied to documents.
+  bool target_docs =6;
+  // if target_connections is true, this index will be applied to connections.
+  bool target_connections =7;
 }
 
 // AuthTarget is the payload/input to Authorizer expressions
@@ -387,10 +387,10 @@ message Index {
   string gtype =3 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is a CEL expression used to filter connections/modes
   string expression =4[(validator.field) = {regex : "^.{1,225}$"}];
-  // if docs is true, this index will be applied to documents. Either docs or connections may be true, but not both.
-  bool docs =6;
-  // if docs is true, this index will be applied to connections. Either docs or connections may be true, but not both.
-  bool connections =7;
+  // if target_docs is true, this index will be applied to documents.
+  bool target_docs =5;
+  // if target_connections is true, this index will be applied to connections.
+  bool target_connections =6;
 }
 
 // Indexes is an array of Index

@@ -125,8 +125,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :name, :string, 1
     optional :gtype, :string, 3
     optional :expression, :string, 4
-    optional :docs, :bool, 6
-    optional :connections, :bool, 7
+    optional :target_docs, :bool, 6
+    optional :target_connections, :bool, 7
   end
   add_message "api.AuthTarget" do
     optional :user, :message, 1, "api.Doc"
@@ -157,8 +157,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :name, :string, 1
     optional :gtype, :string, 3
     optional :expression, :string, 4
-    optional :docs, :bool, 6
-    optional :connections, :bool, 7
+    optional :target_docs, :bool, 5
+    optional :target_connections, :bool, 6
   end
   add_message "api.Indexes" do
     repeated :indexes, :message, 1, "api.Index"

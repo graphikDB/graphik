@@ -130,11 +130,11 @@ func ExampleClient_SetIndexes() {
 	err := client.SetIndexes(context.Background(), &apipb2.Indexes{
 		Indexes: []*apipb2.Index{
 			{
-				Name:        "testing",
-				Gtype:       "owner",
-				Expression:  `this.attributes.primary_owner`,
-				Docs:        false,
-				Connections: true,
+				Name:              "testing",
+				Gtype:             "owner",
+				Expression:        `this.attributes.primary_owner`,
+				TargetDocs:        false,
+				TargetConnections: true,
 			},
 		},
 	})
@@ -238,10 +238,9 @@ func ExampleClient_SearchDocs() {
 	// Output: Charlie
 }
 
-
 func ExampleClient_PutDoc() {
 	note33, err := client.PutDoc(context.Background(), &apipb2.Doc{
-		Ref:        &apipb2.Ref{
+		Ref: &apipb2.Ref{
 			Gtype: "note",
 			Gid:   "note33",
 		},
