@@ -13,6 +13,9 @@ const (
 )
 
 func NewStruct(data map[string]interface{}) *structpb.Struct {
+	if data == nil {
+		data = map[string]interface{}{}
+	}
 	x, _ := structpb.NewStruct(data)
 	return x
 }

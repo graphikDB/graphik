@@ -385,6 +385,11 @@ func (c *Client) Traverse(ctx context.Context, in *apipb.TraverseFilter, opts ..
 	return c.graph.Traverse(ctx, in, opts...)
 }
 
+// TraverseMe executes a graph traversal searching for docs related to the currently logged in user
+func (c *Client) TraverseMe(ctx context.Context, in *apipb.TraverseMeFilter, opts ...grpc.CallOption) (*apipb.Traversals, error) {
+	return c.graph.TraverseMe(ctx, in, opts...)
+}
+
 // DelDoc deletes a doc by reference
 func (c *Client) DelDoc(ctx context.Context, in *apipb.Ref, opts ...grpc.CallOption) error {
 	_, err := c.graph.DelDoc(ctx, in, opts...)
