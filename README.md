@@ -162,6 +162,8 @@ This is bad for the following reasons:
 - [x] String Manipulation Expression Macros/Functions(`replace, join, titleCase, lowerCase, upperCase, trimSpace, trimPrefix, trimSuffix, render`)
 - [x] URL Introspection Expression Macros/Functions(`parseHost, parseScheme, parseQuery, parsePath`)
 - [x] Client to Server streaming(gRPC only)
+- [x] [Terraform Provider](https://github.com/graphikDB/terraform-provider-graphik) for Schema Operations & Change Automation
+- [x] [Command Line Interface](https://github.com/graphikDB/graphikctl)
 
 ## Key Dependencies
 
