@@ -233,7 +233,7 @@ func (g *Graph) leaderClient(ctx context.Context) (*graphik.Client, error) {
 func (g *Graph) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	return &apipb.Pong{
 		Message: "PONG",
@@ -243,27 +243,27 @@ func (g *Graph) Ping(ctx context.Context, e *empty.Empty) (*apipb.Pong, error) {
 func (g *Graph) GetSchema(ctx context.Context, _ *empty.Empty) (*apipb.Schema, error) {
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	e, err := g.ConnectionTypes(ctx)
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	n, err := g.DocTypes(ctx)
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := g.cacheIndexes(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := g.cacheAuthorizers(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := g.cacheConstraints(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := g.cacheTriggers(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	var indexes []*apipb.Index
 	g.rangeIndexes(func(index *index) bool {
@@ -318,14 +318,14 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.E
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 
 		return &empty.Empty{}, client.SetIndexes(invertContext(ctx), index2)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
 		SetIndexes: index2,
@@ -333,10 +333,10 @@ func (g *Graph) SetIndexes(ctx context.Context, index2 *apipb.Indexes) (*empty.E
 		Method:     g.getMethod(ctx),
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := g.cacheIndexes(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return &empty.Empty{}, nil
 }
@@ -348,13 +348,13 @@ func (g *Graph) SetTriggers(ctx context.Context, triggers *apipb.Triggers) (*emp
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, client.SetTriggers(invertContext(ctx), triggers)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
 		SetTriggers: triggers,
@@ -362,10 +362,10 @@ func (g *Graph) SetTriggers(ctx context.Context, triggers *apipb.Triggers) (*emp
 		Method:      g.getMethod(ctx),
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := g.cacheTriggers(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 
 	return &empty.Empty{}, nil
@@ -378,13 +378,13 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, client.SetAuthorizers(invertContext(ctx), as)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
 		SetAuthorizers: as,
@@ -392,10 +392,10 @@ func (g *Graph) SetAuthorizers(ctx context.Context, as *apipb.Authorizers) (*emp
 		Method:         g.getMethod(ctx),
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := g.cacheAuthorizers(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 
 	return &empty.Empty{}, nil
@@ -408,13 +408,13 @@ func (g *Graph) SetConstraints(ctx context.Context, as *apipb.Constraints) (*emp
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, client.SetConstraints(invertContext(ctx), as)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
 		SetConstraints: as,
@@ -422,10 +422,10 @@ func (g *Graph) SetConstraints(ctx context.Context, as *apipb.Constraints) (*emp
 		Method:         g.getMethod(ctx),
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := g.cacheConstraints(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return &empty.Empty{}, nil
 }
@@ -436,7 +436,7 @@ func (g *Graph) Me(ctx context.Context, _ *empty.Empty) (*apipb.Doc, error) {
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	return g.GetDoc(ctx, user.GetRef())
 }
@@ -448,13 +448,13 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.CreateDocs(invertContext(ctx), constructors)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 
 	var (
@@ -522,7 +522,7 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	cmd, err := g.applyCommand(&apipb.RaftCommand{
 		User:           user,
@@ -531,7 +531,7 @@ func (g *Graph) CreateDocs(ctx context.Context, constructors *apipb.DocConstruct
 		SetConnections: setConnections,
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	docs := &apipb.Docs{
 		Docs:     cmd.SetDocs,
@@ -545,13 +545,13 @@ func (g *Graph) PutDoc(ctx context.Context, doc *apipb.Doc) (*apipb.Doc, error) 
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.PutDoc(invertContext(ctx), doc)
 	}
 	docs, err := g.PutDocs(ctx, &apipb.Docs{Docs: []*apipb.Doc{doc}})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if len(docs.GetDocs()) == 0 {
 		return nil, status.Error(codes.Internal, "zero docs modified")
@@ -566,13 +566,13 @@ func (g *Graph) PutDocs(ctx context.Context, docs *apipb.Docs) (*apipb.Docs, err
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.PutDocs(invertContext(ctx), docs)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 
 	var (
@@ -663,7 +663,7 @@ func (g *Graph) PutDocs(ctx context.Context, docs *apipb.Docs) (*apipb.Docs, err
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	cmd, err := g.applyCommand(&apipb.RaftCommand{
 		User:           user,
@@ -672,7 +672,7 @@ func (g *Graph) PutDocs(ctx context.Context, docs *apipb.Docs) (*apipb.Docs, err
 		SetConnections: setConnections,
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	docs = &apipb.Docs{
 		Docs:     cmd.SetDocs,
@@ -686,17 +686,17 @@ func (g *Graph) CreateConnection(ctx context.Context, constructor *apipb.Connect
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.CreateConnection(invertContext(ctx), constructor)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	connections, err := g.CreateConnections(ctx, &apipb.ConnectionConstructors{Connections: []*apipb.ConnectionConstructor{constructor}})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return connections.GetConnections()[0], nil
 }
@@ -705,17 +705,17 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.CreateConnections(invertContext(ctx), constructors)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	var err error
 	if err := ctx.Err(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	var connections []*apipb.Connection
 	if err := g.db.View(func(tx *bbolt.Tx) error {
@@ -753,7 +753,7 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 
 	cmd, err := g.applyCommand(&apipb.RaftCommand{
@@ -762,7 +762,7 @@ func (g *Graph) CreateConnections(ctx context.Context, constructors *apipb.Conne
 		Method:         g.getMethod(ctx),
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	connectionss := &apipb.Connections{
 		Connections: cmd.SetConnections,
@@ -776,13 +776,13 @@ func (g *Graph) PutConnection(ctx context.Context, connection *apipb.Connection)
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.PutConnection(invertContext(ctx), connection)
 	}
 	connections, err := g.PutConnections(ctx, &apipb.Connections{Connections: []*apipb.Connection{connection}})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if len(connections.GetConnections()) == 0 {
 		return nil, status.Error(codes.Unknown, "zero connections modified")
@@ -794,17 +794,17 @@ func (g *Graph) PutConnections(ctx context.Context, connections *apipb.Connectio
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.PutConnections(invertContext(ctx), connections)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	var err error
 	if err := ctx.Err(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	var setConnections []*apipb.Connection
 	if err := g.db.View(func(tx *bbolt.Tx) error {
@@ -825,7 +825,7 @@ func (g *Graph) PutConnections(ctx context.Context, connections *apipb.Connectio
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 
 	cmd, err := g.applyCommand(&apipb.RaftCommand{
@@ -834,7 +834,7 @@ func (g *Graph) PutConnections(ctx context.Context, connections *apipb.Connectio
 		Method:         g.getMethod(ctx),
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	connectionss := &apipb.Connections{
 		Connections: cmd.SetConnections,
@@ -848,16 +848,16 @@ func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		if err := client.Broadcast(invertContext(ctx), message); err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, nil
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	if message.GetChannel() == changeChannel {
 		return nil, status.Error(codes.PermissionDenied, "forbidden from publishing to the changes channel")
@@ -950,7 +950,7 @@ func (g *Graph) GetConnection(ctx context.Context, path *apipb.Ref) (*apipb.Conn
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	var (
 		connection *apipb.Connection
@@ -963,7 +963,7 @@ func (g *Graph) GetConnection(ctx context.Context, path *apipb.Ref) (*apipb.Conn
 		}
 		return nil
 	}); err != nil && err != DONE {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return connection, err
 }
@@ -971,14 +971,14 @@ func (g *Graph) GetConnection(ctx context.Context, path *apipb.Ref) (*apipb.Conn
 func (n *Graph) AllDocs(ctx context.Context) (*apipb.Docs, error) {
 	user := n.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	var docs []*apipb.Doc
 	if err := n.rangeDocs(ctx, apipb.Any, func(doc *apipb.Doc) bool {
 		docs = append(docs, doc)
 		return true
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	toReturn := &apipb.Docs{
 		Docs: docs,
@@ -993,7 +993,7 @@ func (g *Graph) GetDoc(ctx context.Context, path *apipb.Ref) (*apipb.Doc, error)
 	}
 	user := g.getIdentity(ctx)
 	if user == nil {
-		return nil, status.Error(codes.Unauthenticated, "failed to get user")
+		return nil, prepareError(ErrFailedToGetUser)
 	}
 	var (
 		doc *apipb.Doc
@@ -1006,7 +1006,7 @@ func (g *Graph) GetDoc(ctx context.Context, path *apipb.Ref) (*apipb.Doc, error)
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return doc, nil
 }
@@ -1015,13 +1015,13 @@ func (g *Graph) CreateDoc(ctx context.Context, constructor *apipb.DocConstructor
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.CreateDoc(invertContext(ctx), constructor)
 	}
 	docs, err := g.CreateDocs(ctx, &apipb.DocConstructors{Docs: []*apipb.DocConstructor{constructor}})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return docs.GetDocs()[0], nil
 }
@@ -1030,7 +1030,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 	if n.raft.State() != raft2.Leader {
 		client, err := n.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.EditDoc(invertContext(ctx), value)
 	}
@@ -1088,7 +1088,7 @@ func (n *Graph) EditDoc(ctx context.Context, value *apipb.Edit) (*apipb.Doc, err
 
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	_, err = n.applyCommand(&apipb.RaftCommand{
 		SetDocs:        []*apipb.Doc{setDoc},
@@ -1103,7 +1103,7 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 	if n.raft.State() != raft2.Leader {
 		client, err := n.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.EditDocs(invertContext(ctx), patch)
 	}
@@ -1112,7 +1112,7 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 	var setConnections []*apipb.Connection
 	before, err := n.SearchDocs(ctx, patch.GetFilter())
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	for _, setDoc := range before.GetDocs() {
 		for k, v := range patch.GetAttributes().GetFields() {
@@ -1162,7 +1162,7 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 		Method:         n.getMethod(ctx),
 	})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	docss := &apipb.Docs{Docs: cmd.SetDocs}
 	docss.Sort("")
@@ -1171,7 +1171,7 @@ func (n *Graph) EditDocs(ctx context.Context, patch *apipb.EditFilter) (*apipb.D
 
 func (g *Graph) ConnectionTypes(ctx context.Context) ([]string, error) {
 	if err := ctx.Err(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	var types []string
 	if err := g.db.View(func(tx *bbolt.Tx) error {
@@ -1180,7 +1180,7 @@ func (g *Graph) ConnectionTypes(ctx context.Context) ([]string, error) {
 			return nil
 		})
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	sort.Strings(types)
 	return types, nil
@@ -1188,7 +1188,7 @@ func (g *Graph) ConnectionTypes(ctx context.Context) ([]string, error) {
 
 func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 	if err := ctx.Err(); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	var types []string
 	if err := g.db.View(func(tx *bbolt.Tx) error {
@@ -1197,7 +1197,7 @@ func (g *Graph) DocTypes(ctx context.Context) ([]string, error) {
 			return nil
 		})
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	sort.Strings(types)
 	return types, nil
@@ -1212,7 +1212,7 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectFilter
 	if filter.GetExpression() != "" {
 		decision, err = trigger.NewDecision(filter.GetExpression())
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 	}
 	var connections []*apipb.Connection
@@ -1236,7 +1236,7 @@ func (g *Graph) ConnectionsFrom(ctx context.Context, filter *apipb.ConnectFilter
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 
 	toReturn := &apipb.Connections{
@@ -1253,7 +1253,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 	if filter.GetExpression() != "" {
 		decision, err = trigger.NewDecision(filter.GetExpression())
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 	}
 	seek, err := n.rangeSeekDocs(ctx, filter.Gtype, filter.GetSeek(), filter.GetIndex(), filter.GetReverse(), func(doc *apipb.Doc) bool {
@@ -1270,7 +1270,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 		if err == ErrNotFound {
 			return nil, status.Error(codes.NotFound, err.Error())
 		}
-		return nil, err
+		return nil, prepareError(err)
 	}
 	toReturn := &apipb.Docs{
 		Docs:     docs,
@@ -1283,7 +1283,7 @@ func (n *Graph) SearchDocs(ctx context.Context, filter *apipb.Filter) (*apipb.Do
 func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.AggFilter) (*apipb.Number, error) {
 	docs, err := n.SearchDocs(ctx, filter.GetFilter())
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return &apipb.Number{Value: docs.Aggregate(filter.GetAggregate(), filter.GetField())}, nil
 }
@@ -1291,7 +1291,7 @@ func (n *Graph) AggregateDocs(ctx context.Context, filter *apipb.AggFilter) (*ap
 func (n *Graph) AggregateConnections(ctx context.Context, filter *apipb.AggFilter) (*apipb.Number, error) {
 	connections, err := n.SearchConnections(ctx, filter.GetFilter())
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return &apipb.Number{Value: connections.Aggregate(filter.GetAggregate(), filter.GetField())}, nil
 }
@@ -1342,7 +1342,7 @@ func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectFilter) 
 	if filter.GetExpression() != "" {
 		decision, err = trigger.NewDecision(filter.GetExpression())
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 	}
 	var connections []*apipb.Connection
@@ -1366,7 +1366,7 @@ func (g *Graph) ConnectionsTo(ctx context.Context, filter *apipb.ConnectFilter) 
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 
 	toReturn := &apipb.Connections{
@@ -1382,7 +1382,7 @@ func (n *Graph) AllConnections(ctx context.Context) (*apipb.Connections, error) 
 		connections = append(connections, connection)
 		return true
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	toReturn := &apipb.Connections{
 		Connections: connections,
@@ -1395,7 +1395,7 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 	if n.raft.State() != raft2.Leader {
 		client, err := n.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.EditConnection(invertContext(ctx), value)
 	}
@@ -1423,11 +1423,11 @@ func (n *Graph) EditConnection(ctx context.Context, value *apipb.Edit) (*apipb.C
 		})
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	_, err = n.applyCommand(&apipb.RaftCommand{SetConnections: []*apipb.Connection{setConnection}})
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	return setConnection, nil
 }
@@ -1436,14 +1436,14 @@ func (n *Graph) EditConnections(ctx context.Context, patch *apipb.EditFilter) (*
 	if n.raft.State() != raft2.Leader {
 		client, err := n.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.EditConnections(invertContext(ctx), patch)
 	}
 	var setConnections []*apipb.Connection
 	before, err := n.SearchConnections(ctx, patch.GetFilter())
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if err := n.db.View(func(tx *bbolt.Tx) error {
 		for _, connection := range before.GetConnections() {
@@ -1517,7 +1517,7 @@ func (g *Graph) DelDoc(ctx context.Context, path *apipb.Ref) (*empty.Empty, erro
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, client.DelDoc(invertContext(ctx), path)
 	}
@@ -1536,13 +1536,13 @@ func (g *Graph) DelDocs(ctx context.Context, filter *apipb.Filter) (*empty.Empty
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, client.DelDocs(invertContext(ctx), filter)
 	}
 	before, err := g.SearchDocs(ctx, filter)
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if len(before.GetDocs()) == 0 {
 		return nil, ErrNotFound
@@ -1563,7 +1563,7 @@ func (g *Graph) DelConnection(ctx context.Context, path *apipb.Ref) (*empty.Empt
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, client.DelConnection(invertContext(ctx), path)
 	}
@@ -1582,13 +1582,13 @@ func (g *Graph) DelConnections(ctx context.Context, filter *apipb.Filter) (*empt
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, client.DelConnections(invertContext(ctx), filter)
 	}
 	before, err := g.SearchConnections(ctx, filter)
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if len(before.GetConnections()) == 0 {
 		return nil, ErrNotFound
@@ -1725,13 +1725,13 @@ func (g *Graph) SearchAndConnect(ctx context.Context, filter *apipb.SearchConnec
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.SearchAndConnect(invertContext(ctx), filter)
 	}
 	docs, err := g.SearchDocs(ctx, filter.GetFilter())
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	var connections []*apipb.ConnectionConstructor
 	for _, doc := range docs.GetDocs() {
@@ -1752,14 +1752,14 @@ func (g *Graph) SearchAndConnectMe(ctx context.Context, filter *apipb.SearchConn
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return client.SearchAndConnectMe(invertContext(ctx), filter)
 	}
 	user := g.getIdentity(ctx)
 	docs, err := g.SearchDocs(ctx, filter.GetFilter())
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	var connections []*apipb.ConnectionConstructor
 	for _, doc := range docs.GetDocs() {
@@ -1829,7 +1829,7 @@ func (g *Graph) ExistsConnection(ctx context.Context, has *apipb.ExistsFilter) (
 func (g *Graph) HasDoc(ctx context.Context, ref *apipb.Ref) (*apipb.Boolean, error) {
 	doc, err := g.GetDoc(ctx, ref)
 	if err != nil && err != ErrNotFound {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if doc != nil {
 		return &apipb.Boolean{Value: true}, nil
@@ -1840,7 +1840,7 @@ func (g *Graph) HasDoc(ctx context.Context, ref *apipb.Ref) (*apipb.Boolean, err
 func (g *Graph) HasConnection(ctx context.Context, ref *apipb.Ref) (*apipb.Boolean, error) {
 	c, err := g.GetConnection(ctx, ref)
 	if err != nil && err != ErrNotFound {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	if c != nil {
 		return &apipb.Boolean{Value: true}, nil
@@ -1852,7 +1852,7 @@ func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty
 	if g.raft.State() != raft2.Leader {
 		client, err := g.leaderClient(ctx)
 		if err != nil {
-			return nil, err
+			return nil, prepareError(err)
 		}
 		return &empty.Empty{}, client.JoinCluster(invertContext(ctx), peer)
 	}
@@ -1879,7 +1879,7 @@ func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty
 func (g *Graph) ClusterState(ctx context.Context, _ *empty.Empty) (*apipb.RaftState, error) {
 	servers, err := g.raft.Servers()
 	if err != nil {
-		return nil, err
+		return nil, prepareError(err)
 	}
 	var peers []*apipb.Peer
 	for _, s := range servers {

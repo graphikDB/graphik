@@ -32,4 +32,5 @@ var (
 	ErrNotFound             = errors.New("not found")
 	ErrAlreadyExists        = errors.New("already exists")
 	ErrUnsupportedAlgorithm = errors.New("unsupported algorithm")
+	ErrFailedToGetUser      = errors.New("failed to get user")
 )
