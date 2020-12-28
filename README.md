@@ -13,47 +13,52 @@ Graphik is a Backend as a Service implemented as an identity-aware, permissioned
 
 Support: support@graphikdb.io
 
-  * [Problem Statement](#problem-statement)
-      - [Traditional relational databases are powerful but come with a number of issues that interfere with agile development methodologies:](#traditional-relational-databases-are-powerful-but-come-with-a-number-of-issues-that-interfere-with-agile-development-methodologies-)
-      - [Traditional non-relational databases are non-relational](#traditional-non-relational-databases-are-non-relational)
-      - [Traditional non-relational databases often don't have a declarative query language](#traditional-non-relational-databases-often-don-t-have-a-declarative-query-language)
-      - [Traditional non-relational databases often don't support custom constraints](#traditional-non-relational-databases-often-don-t-support-custom-constraints)
-      - [No awareness of origin/end user accessing the records(only the API/dba making the request)](#no-awareness-of-origin-end-user-accessing-the-records-only-the-api-dba-making-the-request-)
-    + [Solution](#solution)
-  * [Features](#features)
-  * [Key Dependencies](#key-dependencies)
-  * [Flags](#flags)
-  * [gRPC Client SDKs](#grpc-client-sdks)
-  * [Implemenation Details](#implemenation-details)
-    + [Primitives](#primitives)
-    + [Identity Graph](#identity-graph)
-    + [Login/Authorization/Authorizers](#login-authorization-authorizers)
-      - [Authorizers Examples](#authorizers-examples)
-    + [Secondary Indexes](#secondary-indexes)
-      - [Secondary Index Examples](#secondary-index-examples)
-    + [Constraints](#constraints)
-      - [Constraint Examples](#type-validator-examples)
-    + [Triggers](#triggers)
-      - [Trigger Examples](#trigger-examples)
-    + [GraphQL vs gRPC API](#graphql-vs-grpc-api)
-    + [Streaming/PubSub](#streaming-pubsub)
-    + [Graphik Playground](#graphik-playground)
-    + [Additional Details](#additional-details)
-  * [Sample GraphQL Queries](#sample-graphql-queries)
-    + [Get Currently Logged In User(me)](#get-currently-logged-in-user-me-)
-    + [Get the Graph Schema](#get-the-graph-schema)
-    + [Set a Request Authorizer](#set-a-request-authorizer)
-    + [Create a Document](#create-a-document)
-    + [Traverse Documents](#traverse-documents)
-    + [Traverse Documents Related to Logged In User](#traverse-documents-related-to-logged-in-user)
-    + [Change Streaming](#change-streaming)
-    + [Broadcasting a Message](#broadcasting-a-message)
-    + [Filtered Streaming](#filtered-streaming)
-  * [Deployment](#deployment)
-    + [Docker-Compose](#docker-compose)
-    + [Kubernetes](#kubernetes)
-  * [OIDC Metadata Urls](#oidc-metadata-urls)
-  * [Glossary](#glossary)
+- [Problem Statement](#problem-statement)
+    + [Traditional relational databases are powerful but come with a number of issues that interfere with agile development methodologies:](#traditional-relational-databases-are-powerful-but-come-with-a-number-of-issues-that-interfere-with-agile-development-methodologies-)
+    + [Traditional non-relational databases are non-relational](#traditional-non-relational-databases-are-non-relational)
+    + [Traditional non-relational databases often don't have a declarative query language](#traditional-non-relational-databases-often-don-t-have-a-declarative-query-language)
+    + [Traditional non-relational databases often don't support custom constraints](#traditional-non-relational-databases-often-don-t-support-custom-constraints)
+    + [No awareness of origin/end user accessing the records(only the API/dba making the request)](#no-awareness-of-origin-end-user-accessing-the-records-only-the-api-dba-making-the-request-)
+  * [Solution](#solution)
+- [Features](#features)
+- [Key Dependencies](#key-dependencies)
+- [Flags](#flags)
+- [gRPC Client SDKs](#grpc-client-sdks)
+- [Implemenation Details](#implemenation-details)
+  * [Primitives](#primitives)
+  * [Identity Graph](#identity-graph)
+  * [Login/Authorization/Authorizers](#login-authorization-authorizers)
+    + [Authorizers Examples](#authorizers-examples)
+  * [Secondary Indexes](#secondary-indexes)
+    + [Secondary Index Examples](#secondary-index-examples)
+  * [Constraints](#constraints)
+    + [Constraint Examples](#constraint-examples)
+  * [Triggers](#triggers)
+    + [Trigger Examples](#trigger-examples)
+  * [GraphQL vs gRPC API](#graphql-vs-grpc-api)
+  * [Streaming/PubSub](#streaming-pubsub)
+  * [Graphik Playground](#graphik-playground)
+  * [Additional Details](#additional-details)
+- [Sample GraphQL Queries](#sample-graphql-queries)
+  * [Get Currently Logged In User(me)](#get-currently-logged-in-user-me-)
+  * [Get the Graph Schema](#get-the-graph-schema)
+  * [Set a Request Authorizer](#set-a-request-authorizer)
+  * [Create a Document](#create-a-document)
+  * [Traverse Documents](#traverse-documents)
+  * [Traverse Documents Related to Logged In User](#traverse-documents-related-to-logged-in-user)
+  * [Change Streaming](#change-streaming)
+  * [Broadcasting a Message](#broadcasting-a-message)
+  * [Filtered Streaming](#filtered-streaming)
+- [Deployment](#deployment)
+  * [Docker-Compose](#docker-compose)
+  * [Kubernetes](#kubernetes)
+  * [Mac/OSX (Homebrew)](#mac-osx--homebrew-)
+- [Open ID Connect Providers](#open-id-connect-providers)
+  * [Google](#google)
+  * [Microsoft](#microsoft)
+  * [Okta](#okta)
+  * [Auth0](#auth0)
+- [Glossary](#glossary)
 
 ## Problem Statement
 
@@ -935,12 +940,31 @@ to shutdown:
  
  Coming Soon
  
-## OIDC Metadata Urls
+ ### Mac/OSX (Homebrew)
+ 
+    brew tap graphik/tools git@github.com:graphikDB/graphik-homebrew.git
+    
+    brew install graphik
+    
+    brew install graphikctl
+ 
+## Open ID Connect Providers
 
-- Google: https://accounts.google.com/.well-known/openid-configuration
-- Microsoft: [See More](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc)
-- Auth0: https://${YOUR_DOMAIN}/.well-known/openid-configuration [See More](https://auth0.com/docs/protocols/configure-applications-with-oidc-discovery)
-- Okta: https://${yourOktaOrg}/.well-known/openid-configuration [See More](https://developer.okta.com/docs/concepts/auth-servers/)
+### Google
+
+- metadata uri: https://accounts.google.com/.well-known/openid-configuration
+
+### Microsoft
+
+- metadata uri: [See More](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc)
+
+### Okta
+
+- metadata uri: https://${yourOktaOrg}/.well-known/openid-configuration [See More](https://developer.okta.com/docs/concepts/auth-servers/)
+
+### Auth0
+
+- metadata uri: https://${YOUR_DOMAIN}/.well-known/openid-configuration [See More](https://auth0.com/docs/protocols/configure-applications-with-oidc-discovery)
 
 
 ## Glossary
