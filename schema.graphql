@@ -408,7 +408,7 @@ input StreamFilter {
   channel: String!
   # expression is a CEL expression used to filter messages
   expression: String
-  # rewind time by a specified duration to capture messages from history
+  # rewind time by a specified duration(ex: 5m) to capture historical messages
   rewind: String
 }
 
