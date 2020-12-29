@@ -103,6 +103,10 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>bool debug = 21;</code>
      */
     private $debug = false;
+    /**
+     * Generated from protobuf field <code>string environment = 22;</code>
+     */
+    private $environment = '';
 
     /**
      * Constructor.
@@ -136,6 +140,7 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type int|string $listen_port
      *     @type string $raft_secret
      *     @type bool $debug
+     *     @type string $environment
      * }
      */
     public function __construct($data = NULL) {
@@ -585,6 +590,28 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkBool($var);
         $this->debug = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string environment = 22;</code>
+     * @return string
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * Generated from protobuf field <code>string environment = 22;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setEnvironment($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->environment = $var;
 
         return $this;
     }

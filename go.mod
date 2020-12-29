@@ -13,9 +13,11 @@ require (
 	github.com/graphikDB/trigger v0.0.13
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
+	github.com/hashicorp/go-multierror v1.0.0 // indirect
 	github.com/hashicorp/raft v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/lestrrat-go/jwx v1.0.5
+	github.com/mitchellh/go-homedir v1.0.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.8.0
@@ -32,4 +34,7 @@ require (
 	google.golang.org/grpc v1.33.2
 	google.golang.org/grpc/examples v0.0.0-20201123174403-6d0f0110bf69 // indirect
 	google.golang.org/protobuf v1.25.0
+	k8s.io/api v0.19.0
+	k8s.io/apimachinery v0.19.0
+	k8s.io/client-go v0.19.0
 )

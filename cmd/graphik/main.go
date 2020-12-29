@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/autom8ter/machine"
 	"github.com/graphikDB/graphik/database"
+	"github.com/graphikDB/graphik/discover/k8s"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/gql"
 	"github.com/graphikDB/graphik/helpers"
@@ -16,6 +17,7 @@ import (
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/joho/godotenv"
+	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/cors"
 	"github.com/soheilhy/cmux"
@@ -60,8 +62,14 @@ func init() {
 	pflag.CommandLine.StringVar(&global.PlaygroundClientId, "playground-client-id", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_ID", ""), "playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)")
 	pflag.CommandLine.StringVar(&global.PlaygroundClientSecret, "playground-client-secret", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_SECRET", ""), "playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)")
 	pflag.CommandLine.StringVar(&global.PlaygroundRedirect, "playground-redirect", helpers.EnvOr("GRAPHIK_PLAYGROUND_REDIRECT", ""), "playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT)")
+	pflag.CommandLine.StringVar(&global.Environment, "environment", helpers.EnvOr("GRAPHIK_ENVIRONMENT", ""), "deployment environment (k8s) (env: GRAPHIK_ENVIRONMENT)")
 	pflag.Parse()
 }
+
+const (
+	k8sEnv    = "k8s"
+	leaderPod = "graphik-0"
+)
 
 func main() {
 	run(context.Background(), global)
@@ -153,6 +161,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	}), config, lgger)
 	mux := http.NewServeMux()
 	mux.Handle("/", resolver.QueryHandler())
+
 	if config != nil {
 		mux.Handle("/playground", resolver.Playground())
 		mux.Handle("/playground/callback", resolver.PlaygroundCallback("/playground"))
@@ -213,6 +222,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	apipb.RegisterDatabaseServiceServer(gserver, g)
 	apipb.RegisterRaftServiceServer(gserver, g)
 	reflection.Register(gserver)
+
 	grpc_prometheus.Register(gserver)
 	m.Go(func(routine machine.Routine) {
 		gmatcher := cm.Match(cmux.HTTP2())
@@ -227,25 +237,53 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			lgger.Error("listener mux error", zap.Error(err))
 		}
 	})
-	if global.JoinRaft != "" {
-		leaderConn, err := grpc.DialContext(ctx, global.JoinRaft, grpc.WithInsecure())
-		if err != nil {
-			lgger.Error("failed to setup graphql endpoint", zap.Error(err))
+
+	if global.Environment != "" {
+		switch global.Environment {
+		case k8sEnv:
+			var (
+				podname   = os.Getenv("POD_NAME")
+				namespace = os.Getenv("POD_NAMESPACE")
+				podIp     = os.Getenv("POD_IP")
+			)
+			if podname == "" {
+				lgger.Error("expected POD_NAME environmental variable set in k8s environment")
+				return
+			}
+			if podIp == "" {
+				lgger.Error("expected POD_IP environmental variable set in k8s environment")
+				return
+			}
+			lgger.Info("joining k8s raft cluster",
+				zap.String("pod_name", podname),
+				zap.String("pod_namespace", namespace),
+			)
+			if podname != leaderPod {
+				pvider, err := k8s.NewInClusterProvider(namespace)
+				if err != nil {
+					lgger.Error(err.Error())
+					return
+				}
+				pods, err := pvider.Pods(ctx)
+				if err != nil {
+					lgger.Error(err.Error())
+					return
+				}
+
+				if err := join(ctx, pods[leaderPod], fmt.Sprintf("%s:%v", podIp, global.ListenPort-10), g, lgger); err != nil {
+					lgger.Error(err.Error())
+					return
+				}
+			}
+		default:
+			lgger.Error("unsupported environment", zap.String("env", global.Environment))
 			return
 		}
-		defer leaderConn.Close()
-		rclient := apipb.NewRaftServiceClient(leaderConn)
-		for x := 0; x < 5; x++ {
-			_, err := rclient.JoinCluster(metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", global.RaftSecret), &apipb.Peer{
-				NodeId: g.Raft().PeerID(),
-				Addr:   fmt.Sprintf("localhost:%v", global.ListenPort-10),
-			})
-			if err != nil {
-				lgger.Error("failed to join cluster - retrying", zap.Error(err), zap.Int("attempt", x+1))
-				continue
-			} else {
-				break
-			}
+	} else if global.JoinRaft != "" {
+		lgger.Info("joining raft cluster")
+		if err := join(ctx, global.JoinRaft, fmt.Sprintf("localhost:%v", global.ListenPort-10), g, lgger); err != nil {
+			lgger.Error(err.Error())
+			return
 		}
 	}
 	select {
@@ -280,4 +318,26 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	}
 	m.Wait()
 	lgger.Info("shutdown successful")
+}
+
+func join(ctx context.Context, joinAddr string, localAddr string, g *database.Graph, lgger *logger.Logger) error {
+	leaderConn, err := grpc.DialContext(ctx, joinAddr, grpc.WithInsecure())
+	if err != nil {
+		return errors.Wrap(err, "failed to join raft")
+	}
+	defer leaderConn.Close()
+	rclient := apipb.NewRaftServiceClient(leaderConn)
+	for x := 0; x < 5; x++ {
+		_, err := rclient.JoinCluster(metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", global.RaftSecret), &apipb.Peer{
+			NodeId: g.Raft().PeerID(),
+			Addr:   localAddr,
+		})
+		if err != nil {
+			lgger.Error("failed to join cluster - retrying", zap.Error(err), zap.Int("attempt", x+1))
+			continue
+		} else {
+			break
+		}
+	}
+	return nil
 }
