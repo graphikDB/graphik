@@ -274,9 +274,10 @@ type SearchConnectMeFilter struct {
 }
 
 type StreamFilter struct {
-	Channel    string  `json:"channel"`
-	Expression *string `json:"expression"`
-	Rewind     *string `json:"rewind"`
+	Channel    string     `json:"channel"`
+	Expression *string    `json:"expression"`
+	Min        *time.Time `json:"min"`
+	Max        *time.Time `json:"max"`
 }
 
 type Traversal struct {

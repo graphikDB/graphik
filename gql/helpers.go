@@ -3,6 +3,7 @@ package gql
 import (
 	"github.com/graphikDB/graphik/gen/gql/go/model"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func protoExists(has model.ExistsFilter) *apipb.ExistsFilter {
@@ -320,8 +321,11 @@ func protoStreamFilter(filter model.StreamFilter) *apipb.StreamFilter {
 	if filter.Expression != nil {
 		c.Expression = *filter.Expression
 	}
-	if filter.Rewind != nil {
-		c.Rewind = *filter.Rewind
+	if filter.Min != nil {
+		c.Min = timestamppb.New(*filter.Min)
+	}
+	if filter.Max != nil {
+		c.Max = timestamppb.New(*filter.Max)
 	}
 	return c
 }

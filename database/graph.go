@@ -895,11 +895,22 @@ func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (
 }
 
 func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_StreamServer) error {
+
+	ctx, cancel := context.WithCancel(server.Context())
+	defer cancel()
 	var filterFunc func(msg interface{}) bool
+	var err error
 	if filter.Expression == "" {
 		filterFunc = func(msg interface{}) bool {
-			_, ok := msg.(*apipb.Message)
+			val, ok := msg.(*apipb.Message)
 			if !ok {
+				return false
+			}
+			if filter.GetMin() != nil && filter.GetMin().AsTime().After(val.Timestamp.AsTime()) {
+				return false
+			}
+			if filter.GetMax() != nil && filter.GetMax().AsTime().Before(time.Now()) {
+				cancel()
 				return false
 			}
 			return true
@@ -912,12 +923,19 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 		filterFunc = func(msg interface{}) bool {
 			val, ok := msg.(*apipb.Message)
 			if !ok {
-				g.logger.Error("invalid message type received during subscription")
+				g.logger.Error("invalid message type received during stream")
+				return false
+			}
+			if filter.GetMin() != nil && filter.GetMin().AsTime().After(val.Timestamp.AsTime()) {
+				return false
+			}
+			if filter.GetMax() != nil && filter.GetMax().AsTime().Before(time.Now()) {
+				cancel()
 				return false
 			}
 			if err := decision.Eval(val.AsMap()); err != nil {
 				if err != trigger.ErrDecisionDenied {
-					g.logger.Error("subscription filter failure", zap.Error(err))
+					g.logger.Error("stream filter failure", zap.Error(err))
 				}
 				return false
 			}
@@ -927,11 +945,7 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 			return true
 		}
 	}
-	if filter.GetRewind() != "" {
-		dur, err := time.ParseDuration(filter.GetRewind())
-		if err != nil {
-			return status.Error(codes.InvalidArgument, err.Error())
-		}
+	if filter.GetMin() != nil {
 		if err := g.pubsub.View(func(tx *bbolt.Tx) error {
 			msgsBucket := tx.Bucket(dbMessages)
 			bucket := msgsBucket.Bucket([]byte(filter.Channel))
@@ -942,9 +956,13 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 				}
 			}
 			c := bucket.Cursor()
-
-			min := helpers.Uint64ToBytes(uint64(time.Now().Truncate(dur).UnixNano()))
-			max := helpers.Uint64ToBytes(uint64(time.Now().UnixNano()))
+			var (
+				min = helpers.Uint64ToBytes(uint64(filter.GetMin().AsTime().UnixNano()))
+				max = helpers.Uint64ToBytes(uint64(time.Now().UnixNano()))
+			)
+			if filter.GetMax() != nil && filter.GetMax().AsTime().Before(time.Now()) {
+				max = helpers.Uint64ToBytes(uint64(filter.GetMax().AsTime().UnixNano()))
+			}
 			for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
 				var msg = &apipb.Message{}
 				if err := proto.Unmarshal(v, msg); err != nil {
@@ -962,13 +980,13 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 		}
 	}
 
-	if err := g.machine.PubSub().SubscribeFilter(server.Context(), filter.GetChannel(), filterFunc, func(msg interface{}) {
+	if err := g.machine.PubSub().SubscribeFilter(ctx, filter.GetChannel(), filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
-			g.logger.Error("failed to send subscription", zap.Error(err))
+			g.logger.Error("failed to send message", zap.Error(err))
 			return
 		}
 		if err := server.Send(msg.(*apipb.Message)); err != nil {
-			g.logger.Error("failed to send subscription", zap.Error(err))
+			g.logger.Error("failed to send message", zap.Error(err))
 			return
 		}
 	}); err != nil {

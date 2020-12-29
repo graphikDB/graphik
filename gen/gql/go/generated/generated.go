@@ -1706,8 +1706,10 @@ input StreamFilter {
   channel: String!
   # expression is a CEL expression used to filter messages
   expression: String
-  # rewind time by a specified duration to capture messages from history
-  rewind: String
+  # minimum message timestamp to stream (optional)
+  min: Time
+  # maximum message timestamp to stream (optional)
+  max: Time
 }
 
 # Edit edites the attributes of a Doc or Connection
@@ -8598,11 +8600,19 @@ func (ec *executionContext) unmarshalInputStreamFilter(ctx context.Context, obj 
 			if err != nil {
 				return it, err
 			}
-		case "rewind":
+		case "min":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rewind"))
-			it.Rewind, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("min"))
+			it.Min, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "max":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max"))
+			it.Max, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11511,6 +11521,21 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	return graphql.MarshalString(*v)
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalTime(*v)
 }
 
 func (ec *executionContext) marshalOTraversal2ᚕᚖgithubᚗcomᚋgraphikDBᚋgraphikᚋgenᚋgqlᚋgoᚋmodelᚐTraversalᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Traversal) graphql.Marshaler {

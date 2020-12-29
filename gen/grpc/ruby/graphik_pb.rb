@@ -177,7 +177,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.StreamFilter" do
     optional :channel, :string, 1
     optional :expression, :string, 2
-    optional :rewind, :string, 3
+    optional :min, :message, 3, "google.protobuf.Timestamp"
+    optional :max, :message, 4, "google.protobuf.Timestamp"
   end
   add_message "api.Graph" do
     optional :docs, :message, 1, "api.Docs"

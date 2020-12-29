@@ -408,8 +408,10 @@ input StreamFilter {
   channel: String!
   # expression is a CEL expression used to filter messages
   expression: String
-  # rewind time by a specified duration(ex: 5m) to capture historical messages
-  rewind: String
+  # minimum message timestamp to stream (optional)
+  min: Time
+  # maximum message timestamp to stream (optional)
+  max: Time
 }
 
 # Edit edites the attributes of a Doc or Connection

@@ -425,8 +425,10 @@ message StreamFilter {
   string channel =1 [(validator.field) = {regex : "^.{1,225}$"}];
   // expression is CEL expression used to filter messages
   string expression =2;
-
-  string rewind =3;
+  // minimum message timestamp to stream (optional)
+  google.protobuf.Timestamp min =3;
+  // maximum message timestamp to stream (optional)
+  google.protobuf.Timestamp max =4;
 }
 
 // Graph is an array of docs and connections

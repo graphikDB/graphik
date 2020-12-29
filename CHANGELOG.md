@@ -63,3 +63,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.13.2] - 2020-12-28
 - Add "rewind" feature to stream method to capture historical messages
+
+## [1.0.0] - 2020-12-28
+- switch from "rewind" to min/max timestamps on stream method to capture historical messages within a time range(optional)

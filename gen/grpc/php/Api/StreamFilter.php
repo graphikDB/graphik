@@ -28,9 +28,17 @@ class StreamFilter extends \Google\Protobuf\Internal\Message
      */
     private $expression = '';
     /**
-     * Generated from protobuf field <code>string rewind = 3;</code>
+     * minimum message timestamp to stream (optional)
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp min = 3;</code>
      */
-    private $rewind = '';
+    private $min = null;
+    /**
+     * maximum message timestamp to stream (optional)
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp max = 4;</code>
+     */
+    private $max = null;
 
     /**
      * Constructor.
@@ -42,7 +50,10 @@ class StreamFilter extends \Google\Protobuf\Internal\Message
      *           channel is the target channel to filter from
      *     @type string $expression
      *           expression is CEL expression used to filter messages
-     *     @type string $rewind
+     *     @type \Google\Protobuf\Timestamp $min
+     *           minimum message timestamp to stream (optional)
+     *     @type \Google\Protobuf\Timestamp $max
+     *           maximum message timestamp to stream (optional)
      * }
      */
     public function __construct($data = NULL) {
@@ -103,23 +114,53 @@ class StreamFilter extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Generated from protobuf field <code>string rewind = 3;</code>
-     * @return string
+     * minimum message timestamp to stream (optional)
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp min = 3;</code>
+     * @return \Google\Protobuf\Timestamp
      */
-    public function getRewind()
+    public function getMin()
     {
-        return $this->rewind;
+        return $this->min;
     }
 
     /**
-     * Generated from protobuf field <code>string rewind = 3;</code>
-     * @param string $var
+     * minimum message timestamp to stream (optional)
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp min = 3;</code>
+     * @param \Google\Protobuf\Timestamp $var
      * @return $this
      */
-    public function setRewind($var)
+    public function setMin($var)
     {
-        GPBUtil::checkString($var, True);
-        $this->rewind = $var;
+        GPBUtil::checkMessage($var, \Google\Protobuf\Timestamp::class);
+        $this->min = $var;
+
+        return $this;
+    }
+
+    /**
+     * maximum message timestamp to stream (optional)
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp max = 4;</code>
+     * @return \Google\Protobuf\Timestamp
+     */
+    public function getMax()
+    {
+        return $this->max;
+    }
+
+    /**
+     * maximum message timestamp to stream (optional)
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp max = 4;</code>
+     * @param \Google\Protobuf\Timestamp $var
+     * @return $this
+     */
+    public function setMax($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Protobuf\Timestamp::class);
+        $this->max = $var;
 
         return $this;
     }

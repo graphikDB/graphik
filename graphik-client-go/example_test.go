@@ -8,6 +8,7 @@ import (
 	apipb2 "github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/graphik-client-go"
 	"golang.org/x/oauth2/google"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"strings"
 	"time"
 )
@@ -383,7 +384,10 @@ func ExampleClient_Stream() {
 	m.Go(func(routine machine.Routine) {
 		err := client.Stream(context.Background(), &apipb2.StreamFilter{
 			Channel: "testing",
-			Rewind:  "5m",
+			// subscribe from 5 minutes in the past(optional)
+			Min: timestamppb.New(time.Now().Truncate(5 * time.Minute)),
+			// subscribe until 5 minutes into the future(optional)
+			Max: timestamppb.New(time.Now().Add(5 * time.Minute)),
 			//Expression: `this.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {
 			if msg.Data.GetFields()["text"] != nil && msg.Data.GetFields()["text"].GetStringValue() == "hello world" {

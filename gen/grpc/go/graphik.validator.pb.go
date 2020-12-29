@@ -501,6 +501,16 @@ func (this *StreamFilter) Validate() error {
 	if !_regex_StreamFilter_Channel.MatchString(this.Channel) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Channel", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Channel))
 	}
+	if this.Min != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Min); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Min", err)
+		}
+	}
+	if this.Max != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Max); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Max", err)
+		}
+	}
 	return nil
 }
 func (this *Graph) Validate() error {

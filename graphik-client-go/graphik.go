@@ -15,6 +15,7 @@ import (
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"io"
 	"time"
 )
 
@@ -252,6 +253,9 @@ func (c *Client) Stream(ctx context.Context, in *apipb.StreamFilter, handler fun
 		default:
 			msg, err := stream.Recv()
 			if err != nil {
+				if err == io.EOF {
+					return nil
+				}
 				return errors.Wrap(err, "failed to receive message")
 			}
 			if !handler(msg) {

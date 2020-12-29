@@ -7141,7 +7141,8 @@ proto.api.StreamFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     channel: jspb.Message.getFieldWithDefault(msg, 1, ""),
     expression: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    rewind: jspb.Message.getFieldWithDefault(msg, 3, "")
+    min: (f = msg.getMin()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
+    max: (f = msg.getMax()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -7187,8 +7188,14 @@ proto.api.StreamFilter.deserializeBinaryFromReader = function(msg, reader) {
       msg.setExpression(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setRewind(value);
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setMin(value);
+      break;
+    case 4:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setMax(value);
       break;
     default:
       reader.skipField();
@@ -7233,11 +7240,20 @@ proto.api.StreamFilter.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getRewind();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getMin();
+  if (f != null) {
+    writer.writeMessage(
       3,
-      f
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+    );
+  }
+  f = message.getMax();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
@@ -7274,17 +7290,62 @@ proto.api.StreamFilter.prototype.setExpression = function(value) {
 
 
 /**
- * optional string rewind = 3;
- * @return {string}
+ * optional google.protobuf.Timestamp min = 3;
+ * @return {?proto.google.protobuf.Timestamp}
  */
-proto.api.StreamFilter.prototype.getRewind = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.api.StreamFilter.prototype.getMin = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 3));
 };
 
 
-/** @param {string} value */
-proto.api.StreamFilter.prototype.setRewind = function(value) {
-  jspb.Message.setProto3StringField(this, 3, value);
+/** @param {?proto.google.protobuf.Timestamp|undefined} value */
+proto.api.StreamFilter.prototype.setMin = function(value) {
+  jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+proto.api.StreamFilter.prototype.clearMin = function() {
+  this.setMin(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.api.StreamFilter.prototype.hasMin = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional google.protobuf.Timestamp max = 4;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.api.StreamFilter.prototype.getMax = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 4));
+};
+
+
+/** @param {?proto.google.protobuf.Timestamp|undefined} value */
+proto.api.StreamFilter.prototype.setMax = function(value) {
+  jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+proto.api.StreamFilter.prototype.clearMax = function() {
+  this.setMax(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.api.StreamFilter.prototype.hasMax = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 
