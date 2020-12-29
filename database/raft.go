@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/raft/fsm"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
@@ -128,6 +129,26 @@ func (g *Graph) fsm() *fsm.FSM {
 				}
 			}
 			if cmd.GetSendMessage() != nil {
+				if err := g.pubsub.Update(func(tx *bbolt.Tx) error {
+					msgsBucket := tx.Bucket(dbMessages)
+					bucket := msgsBucket.Bucket([]byte(cmd.SendMessage.Channel))
+					if bucket == nil {
+						bucket, err = msgsBucket.CreateBucketIfNotExists([]byte(cmd.SendMessage.Channel))
+						if err != nil {
+							return err
+						}
+					}
+					bits, err := proto.Marshal(cmd.SendMessage)
+					if err != nil {
+						return err
+					}
+					if err := bucket.Put(helpers.Uint64ToBytes(uint64(cmd.SendMessage.Timestamp.AsTime().UnixNano())), bits); err != nil {
+						return err
+					}
+					return nil
+				}); err != nil {
+					return err
+				}
 				if err := g.machine.PubSub().Publish(cmd.SendMessage.Channel, cmd.SendMessage); err != nil {
 					return status.Error(codes.Internal, err.Error())
 				}

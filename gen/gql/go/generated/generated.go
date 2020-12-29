@@ -1706,6 +1706,8 @@ input StreamFilter {
   channel: String!
   # expression is a CEL expression used to filter messages
   expression: String
+  # rewind time by a specified duration to capture messages from history
+  rewind: String
 }
 
 # Edit edites the attributes of a Doc or Connection
@@ -8593,6 +8595,14 @@ func (ec *executionContext) unmarshalInputStreamFilter(ctx context.Context, obj 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
 			it.Expression, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "rewind":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rewind"))
+			it.Rewind, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}

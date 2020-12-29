@@ -7140,7 +7140,8 @@ proto.api.StreamFilter.prototype.toObject = function(opt_includeInstance) {
 proto.api.StreamFilter.toObject = function(includeInstance, msg) {
   var f, obj = {
     channel: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    expression: jspb.Message.getFieldWithDefault(msg, 2, "")
+    expression: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    rewind: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -7185,6 +7186,10 @@ proto.api.StreamFilter.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setExpression(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRewind(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7228,6 +7233,13 @@ proto.api.StreamFilter.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getRewind();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -7258,6 +7270,21 @@ proto.api.StreamFilter.prototype.getExpression = function() {
 /** @param {string} value */
 proto.api.StreamFilter.prototype.setExpression = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string rewind = 3;
+ * @return {string}
+ */
+proto.api.StreamFilter.prototype.getRewind = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.api.StreamFilter.prototype.setRewind = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 

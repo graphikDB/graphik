@@ -383,6 +383,7 @@ func ExampleClient_Stream() {
 	m.Go(func(routine machine.Routine) {
 		err := client.Stream(context.Background(), &apipb2.StreamFilter{
 			Channel: "testing",
+			Rewind: "5m",
 			//Expression: `this.data.text.contains("hello")`,
 		}, func(msg *apipb2.Message) bool {
 			if msg.Data.GetFields()["text"] != nil && msg.Data.GetFields()["text"].GetStringValue() == "hello world" {

@@ -60,3 +60,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.12.1] - 2020-12-23
 - PutDoc, PutDocs, PutConnection, PutConnections for full create-or-replace functionality
+
+## [0.13.2] - 2020-12-28
+- Add "rewind" feature to all stream method to capture historical messages

@@ -28,6 +28,7 @@ var (
 	dbConstraints      = []byte("constraints")
 	dbIndexDocs        = []byte("indexedDocs")
 	dbIndexConnections = []byte("indexedConnections")
+	dbMessages         = []byte("messages")
 	// An error indicating a given key does not exist
 	ErrNotFound             = errors.New("not found")
 	ErrAlreadyExists        = errors.New("already exists")

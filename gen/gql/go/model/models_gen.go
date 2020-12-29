@@ -276,6 +276,7 @@ type SearchConnectMeFilter struct {
 type StreamFilter struct {
 	Channel    string  `json:"channel"`
 	Expression *string `json:"expression"`
+	Rewind     *string `json:"rewind"`
 }
 
 type Traversal struct {

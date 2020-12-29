@@ -177,6 +177,7 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.StreamFilter" do
     optional :channel, :string, 1
     optional :expression, :string, 2
+    optional :rewind, :string, 3
   end
   add_message "api.Graph" do
     optional :docs, :message, 1, "api.Docs"

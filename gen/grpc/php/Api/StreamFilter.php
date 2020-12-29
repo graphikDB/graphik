@@ -27,6 +27,10 @@ class StreamFilter extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string expression = 2;</code>
      */
     private $expression = '';
+    /**
+     * Generated from protobuf field <code>string rewind = 3;</code>
+     */
+    private $rewind = '';
 
     /**
      * Constructor.
@@ -38,6 +42,7 @@ class StreamFilter extends \Google\Protobuf\Internal\Message
      *           channel is the target channel to filter from
      *     @type string $expression
      *           expression is CEL expression used to filter messages
+     *     @type string $rewind
      * }
      */
     public function __construct($data = NULL) {
@@ -93,6 +98,28 @@ class StreamFilter extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->expression = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string rewind = 3;</code>
+     * @return string
+     */
+    public function getRewind()
+    {
+        return $this->rewind;
+    }
+
+    /**
+     * Generated from protobuf field <code>string rewind = 3;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRewind($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->rewind = $var;
 
         return $this;
     }

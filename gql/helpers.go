@@ -320,6 +320,9 @@ func protoStreamFilter(filter model.StreamFilter) *apipb.StreamFilter {
 	if filter.Expression != nil {
 		c.Expression = *filter.Expression
 	}
+	if filter.Rewind != nil {
+		c.Rewind = *filter.Rewind
+	}
 	return c
 }
 

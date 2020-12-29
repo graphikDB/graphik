@@ -1,6 +1,7 @@
 package database
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -23,6 +24,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io/ioutil"
@@ -39,11 +41,11 @@ import (
 type Graph struct {
 	// db is the underlying handle to the db.
 	db              *bbolt.DB
+	pubsub          *bbolt.DB
 	jwksMu          sync.RWMutex
 	jwksSet         *jwk.Set
 	jwtCache        *generic.Cache
 	openID          *openIDConnect
-	path            string
 	mu              sync.RWMutex
 	connectionsTo   map[string]map[string]struct{}
 	connectionsFrom map[string]map[string]struct{}
@@ -63,8 +65,11 @@ type Graph struct {
 // NewGraph takes a file path and returns a connected Raft backend.
 func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Graph, error) {
 	os.MkdirAll(flgs.StoragePath, 0700)
-	path := filepath.Join(flgs.StoragePath, "graph.db")
-	handle, err := bbolt.Open(path, dbFileMode, nil)
+	graphDB, err := bbolt.Open(filepath.Join(flgs.StoragePath, "graph.db"), dbFileMode, nil)
+	if err != nil {
+		return nil, err
+	}
+	pubsubDB, err := bbolt.Open(filepath.Join(flgs.StoragePath, "pubsub.db"), dbFileMode, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -72,12 +77,12 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 	var closers []func()
 	m := machine.New(ctx, machine.WithMaxRoutines(100000))
 	g := &Graph{
-		db:              handle,
+		db:              graphDB,
 		jwksMu:          sync.RWMutex{},
 		jwksSet:         nil,
 		jwtCache:        generic.NewCache(5 * time.Minute),
 		openID:          nil,
-		path:            path,
+		pubsub:          pubsubDB,
 		mu:              sync.RWMutex{},
 		connectionsTo:   map[string]map[string]struct{}{},
 		connectionsFrom: map[string]map[string]struct{}{},
@@ -153,6 +158,16 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 	if err != nil {
 		return nil, err
 	}
+	if err := pubsubDB.Update(func(tx *bbolt.Tx) error {
+		_, err = tx.CreateBucketIfNotExists(dbMessages)
+		if err != nil {
+			return errors.Wrap(err, "failed to create messages bucket")
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
 	if err := g.cacheConnectionRefs(); err != nil {
 		return nil, err
 	}
@@ -860,7 +875,7 @@ func (g *Graph) Broadcast(ctx context.Context, message *apipb.OutboundMessage) (
 		return nil, prepareError(ErrFailedToGetUser)
 	}
 	if message.GetChannel() == changeChannel {
-		return nil, status.Error(codes.PermissionDenied, "forbidden from publishing to the changes channel")
+		return nil, status.Error(codes.PermissionDenied, "forbidden from broadcasting to the state channel")
 	}
 	_, err := g.applyCommand(&apipb.RaftCommand{
 		User:   user,
@@ -912,6 +927,41 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 			return true
 		}
 	}
+	if filter.GetRewind() != "" {
+		dur, err := time.ParseDuration(filter.GetRewind())
+		if err != nil {
+			return status.Error(codes.InvalidArgument, err.Error())
+		}
+		if err := g.pubsub.View(func(tx *bbolt.Tx) error {
+			msgsBucket := tx.Bucket(dbMessages)
+			bucket := msgsBucket.Bucket([]byte(filter.Channel))
+			if bucket == nil {
+				bucket, err = msgsBucket.CreateBucketIfNotExists([]byte(filter.Channel))
+				if err != nil {
+					return err
+				}
+			}
+			c := bucket.Cursor()
+
+			min := helpers.Uint64ToBytes(uint64(time.Now().Truncate(dur).UnixNano()))
+			max := helpers.Uint64ToBytes(uint64(time.Now().UnixNano()))
+			for k, v := c.Seek(min); k != nil && bytes.Compare(k, max) <= 0; k, v = c.Next() {
+				var msg = &apipb.Message{}
+				if err := proto.Unmarshal(v, msg); err != nil {
+					return errors.Wrap(err, "failed to unmarshal message")
+				}
+				if filterFunc(msg) {
+					if err := server.Send(msg); err != nil {
+						return err
+					}
+				}
+			}
+			return nil
+		}); err != nil {
+			return prepareError(err)
+		}
+	}
+
 	if err := g.machine.PubSub().SubscribeFilter(server.Context(), filter.GetChannel(), filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
 			g.logger.Error("failed to send subscription", zap.Error(err))
@@ -939,7 +989,10 @@ func (b *Graph) Close() {
 		}
 		b.machine.Wait()
 		if err := b.db.Close(); err != nil {
-			b.logger.Error("failed to close db", zap.Error(err))
+			b.logger.Error("failed to close graph db", zap.Error(err))
+		}
+		if err := b.pubsub.Close(); err != nil {
+			b.logger.Error("failed to close pubsub db", zap.Error(err))
 		}
 	})
 }
