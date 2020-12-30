@@ -75,11 +75,11 @@ func (p *Provider) loopPods(pods *v1.PodList, addrs map[string]string) {
 		if pod.Status.Phase != v1.PodRunning {
 			continue
 		}
-		for _, condition := range pod.Status.Conditions {
-			if condition.Type == v1.PodReady && condition.Status != v1.ConditionTrue {
-				p.loopPods(pods, addrs)
-			}
-		}
+		//for _, condition := range pod.Status.Conditions {
+		//	if condition.Type == v1.PodReady && condition.Status != v1.ConditionTrue {
+		//		p.loopPods(pods, addrs)
+		//	}
+		//}
 		addr := pod.Status.PodIP
 		if addr == "" {
 			continue

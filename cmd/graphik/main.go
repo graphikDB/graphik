@@ -90,7 +90,54 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
+	var localRaftAddr = fmt.Sprintf("localhost:%v", global.ListenPort-10)
+	if global.Environment != "" {
+		switch global.Environment {
+		case k8sEnv:
+			var (
+				podname   = os.Getenv("POD_NAME")
+				namespace = os.Getenv("POD_NAMESPACE")
+				podIp     = os.Getenv("POD_IP")
+			)
+			if podname == "" {
+				lgger.Error("expected POD_NAME environmental variable set in k8s environment")
+				return
+			}
+			if podIp == "" {
+				lgger.Error("expected POD_IP environmental variable set in k8s environment")
+				return
+			}
+			prvider, err := k8s.NewInClusterProvider(namespace)
+			if err != nil {
+				lgger.Error("failed to get incluster k8s provider", zap.Error(err))
+				return
+			}
+			pods, err := prvider.Pods(ctx)
+			if err != nil {
+				lgger.Error("failed to get pods", zap.Error(err))
+				return
+			}
+			leaderIp := pods[leaderPod]
+			lgger.Info("joining k8s cluster",
+				zap.String("namespace", namespace),
+				zap.String("podip", podIp),
+				zap.String("podname", podname),
+				zap.String("leaderIp", leaderIp),
+				zap.Any("discovery", pods),
+			)
+			global.RaftPeerId = podname
+			global.RaftAdvertise = fmt.Sprintf("%s:%v", podIp, global.ListenPort-10)
+			if podname != leaderPod {
+				global.JoinRaft = fmt.Sprintf("%s:%v", leaderIp, global.ListenPort)
+				localRaftAddr = fmt.Sprintf("%s:%v", podIp, global.ListenPort-10)
+			}
+		default:
+			lgger.Error("unsupported environment", zap.String("env", global.Environment))
+			return
+		}
+	}
 	m := machine.New(ctx)
+
 	g, err := database.NewGraph(ctx, cfg, lgger)
 	if err != nil {
 		lgger.Error("failed to create graph", zap.Error(err))
@@ -238,52 +285,13 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		}
 	})
 
-	if global.Environment != "" {
-		switch global.Environment {
-		case k8sEnv:
-			var (
-				podname   = os.Getenv("POD_NAME")
-				namespace = os.Getenv("POD_NAMESPACE")
-				podIp     = os.Getenv("POD_IP")
-			)
-			if podname == "" {
-				lgger.Error("expected POD_NAME environmental variable set in k8s environment")
-				return
-			}
-			if podIp == "" {
-				lgger.Error("expected POD_IP environmental variable set in k8s environment")
-				return
-			}
-			lgger.Info("joining k8s raft cluster",
-				zap.String("pod_name", podname),
-				zap.String("pod_namespace", namespace),
-			)
-			if podname != leaderPod {
-				pvider, err := k8s.NewInClusterProvider(namespace)
-				if err != nil {
-					lgger.Error(err.Error())
-					return
-				}
-				pods, err := pvider.Pods(ctx)
-				if err != nil {
-					lgger.Error(err.Error())
-					return
-				}
-
-				if err := join(ctx, pods[leaderPod], fmt.Sprintf("%s:%v", podIp, global.ListenPort-10), g, lgger); err != nil {
-					lgger.Error(err.Error())
-					return
-				}
-			}
-		default:
-			lgger.Error("unsupported environment", zap.String("env", global.Environment))
-			return
-		}
-	} else if global.JoinRaft != "" {
-		lgger.Info("joining raft cluster")
-		if err := join(ctx, global.JoinRaft, fmt.Sprintf("localhost:%v", global.ListenPort-10), g, lgger); err != nil {
+	if global.JoinRaft != "" {
+		lgger.Info("joining raft cluster",
+			zap.String("joinAddr", global.JoinRaft),
+			zap.String("localAddr", localRaftAddr),
+		)
+		if err := join(ctx, global.JoinRaft, localRaftAddr, g, lgger); err != nil {
 			lgger.Error(err.Error())
-			return
 		}
 	}
 	select {
@@ -333,7 +341,11 @@ func join(ctx context.Context, joinAddr string, localAddr string, g *database.Gr
 			Addr:   localAddr,
 		})
 		if err != nil {
-			lgger.Error("failed to join cluster - retrying", zap.Error(err), zap.Int("attempt", x+1))
+			lgger.Error("failed to join cluster - retrying", zap.Error(err),
+				zap.Int("attempt", x+1),
+				zap.String("joinAddr", joinAddr),
+				zap.String("localAddr", localAddr),
+			)
 			continue
 		} else {
 			break

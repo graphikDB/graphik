@@ -195,14 +195,23 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 			g.jwksMu.Unlock()
 		}
 	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-	rft, err := raft.NewRaft(
-		g.fsm(),
+	var opts = []raft.Opt{
 		raft.WithIsLeader(flgs.JoinRaft == ""),
-		raft.WithListenPort(int(flgs.ListenPort)-10),
+		raft.WithListenPort(int(flgs.ListenPort) - 10),
 		raft.WithPeerID(flgs.RaftPeerId),
 		raft.WithRaftDir(fmt.Sprintf("%s/raft", flgs.StoragePath)),
 		raft.WithRestoreSnapshotOnRestart(false),
-	)
+		raft.WithElectionTimeout(10 *time.Second),
+		raft.WithHeartbeatTimeout(5 *time.Second),
+	}
+	if flgs.RaftAdvertise != "" {
+		addr, err := net.ResolveTCPAddr("tcp", flgs.RaftAdvertise)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse raft advertise address")
+		}
+		opts = append(opts, raft.WithAdvertiseAddr(addr))
+	}
+	rft, err := raft.NewRaft(g.fsm(), opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -214,14 +223,31 @@ func (g *Graph) implements() apipb.DatabaseServiceServer {
 	return g
 }
 
+func (g *Graph) leaderAddr() (string, error) {
+	leader := g.raft.LeaderAddr()
+	host, port, err := net.SplitHostPort(leader)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to parse leader host-port : %s - %v", host, port)
+	}
+	portNum, err := strconv.Atoi(port)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to parse leader port")
+	}
+	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum+10))
+	return addr, nil
+}
+
 func (g *Graph) leaderClient(ctx context.Context) (*graphik.Client, error) {
 	leader := g.raft.LeaderAddr()
+	if leader == "" {
+		return nil, errors.New("empty leader address")
+	}
 	if client, ok := g.peers[leader]; ok {
 		return client, nil
 	}
 	host, port, err := net.SplitHostPort(leader)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse leader host-port")
+		return nil, errors.Wrapf(err, "failed to parse leader host-port : %s - %v", host, port)
 	}
 	portNum, err := strconv.Atoi(port)
 	if err != nil {
@@ -1920,12 +1946,12 @@ func (g *Graph) HasConnection(ctx context.Context, ref *apipb.Ref) (*apipb.Boole
 }
 
 func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty, error) {
+	g.raft.State()
 	if g.raft.State() != raft2.Leader {
-		client, err := g.leaderClient(ctx)
-		if err != nil {
-			return nil, prepareError(err)
+		client, _ := g.leaderClient(ctx)
+		if client != nil {
+			return &empty.Empty{}, client.JoinCluster(invertContext(ctx), peer)
 		}
-		return &empty.Empty{}, client.JoinCluster(invertContext(ctx), peer)
 	}
 	if g.flgs.RaftSecret != "" {
 		md, ok := metadata.FromIncomingContext(ctx)

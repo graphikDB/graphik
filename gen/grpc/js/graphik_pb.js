@@ -7625,7 +7625,8 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     listenPort: jspb.Message.getFieldWithDefault(msg, 19, 0),
     raftSecret: jspb.Message.getFieldWithDefault(msg, 20, ""),
     debug: jspb.Message.getFieldWithDefault(msg, 21, false),
-    environment: jspb.Message.getFieldWithDefault(msg, 22, "")
+    environment: jspb.Message.getFieldWithDefault(msg, 22, ""),
+    raftAdvertise: jspb.Message.getFieldWithDefault(msg, 23, "")
   };
 
   if (includeInstance) {
@@ -7741,6 +7742,10 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 22:
       var value = /** @type {string} */ (reader.readString());
       msg.setEnvironment(value);
+      break;
+    case 23:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRaftAdvertise(value);
       break;
     default:
       reader.skipField();
@@ -7908,6 +7913,13 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       22,
+      f
+    );
+  }
+  f = message.getRaftAdvertise();
+  if (f.length > 0) {
+    writer.writeString(
+      23,
       f
     );
   }
@@ -8275,6 +8287,21 @@ proto.api.Flags.prototype.getEnvironment = function() {
 /** @param {string} value */
 proto.api.Flags.prototype.setEnvironment = function(value) {
   jspb.Message.setProto3StringField(this, 22, value);
+};
+
+
+/**
+ * optional string raft_advertise = 23;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getRaftAdvertise = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setRaftAdvertise = function(value) {
+  jspb.Message.setProto3StringField(this, 23, value);
 };
 
 

@@ -107,6 +107,10 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string environment = 22;</code>
      */
     private $environment = '';
+    /**
+     * Generated from protobuf field <code>string raft_advertise = 23;</code>
+     */
+    private $raft_advertise = '';
 
     /**
      * Constructor.
@@ -141,6 +145,7 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $raft_secret
      *     @type bool $debug
      *     @type string $environment
+     *     @type string $raft_advertise
      * }
      */
     public function __construct($data = NULL) {
@@ -612,6 +617,28 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->environment = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_advertise = 23;</code>
+     * @return string
+     */
+    public function getRaftAdvertise()
+    {
+        return $this->raft_advertise;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_advertise = 23;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRaftAdvertise($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->raft_advertise = $var;
 
         return $this;
     }
