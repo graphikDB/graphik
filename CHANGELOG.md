@@ -67,5 +67,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2020-12-28
 - switch from "rewind" to min/max timestamps on stream method to capture historical messages within a time range(optional)
 
-## [1.0.1] - 2020-12-29
-- 
+## [1.1.0] - 2020-12-30
+- server raft on same port as metrics server - 7821 by default

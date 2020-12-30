@@ -436,14 +436,14 @@ func (g *Graph) setDoc(ctx context.Context, tx *bbolt.Tx, doc *apipb.Doc) (*apip
 			if err := i.decision.Eval(docMap); err == nil {
 				err = g.setIndexedDoc(ctx, tx, i.index.Name, []byte(doc.GetRef().GetGid()), bits)
 				if err != nil {
-					g.logger.Error("failed to save index", zap.Error(err))
+					g.options.logger.Error("failed to save index", zap.Error(err))
 					return true
 				}
 			}
 		}
 		return true
 	})
-	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Message{
+	if err := g.options.machine.PubSub().Publish(changeChannel, &apipb.Message{
 		Channel:   changeChannel,
 		Data:      apipb.NewStruct(doc.AsMap()),
 		User:      g.getIdentity(ctx).GetRef(),
@@ -542,14 +542,14 @@ func (g *Graph) setConnection(ctx context.Context, tx *bbolt.Tx, connection *api
 			if err := i.decision.Eval(connMap); err == nil {
 				err = g.setIndexedConnection(ctx, tx, []byte(i.index.Name), []byte(connection.GetRef().GetGid()), bits)
 				if err != nil {
-					g.logger.Error("failed to save index", zap.Error(err))
+					g.options.logger.Error("failed to save index", zap.Error(err))
 					return true
 				}
 			}
 		}
 		return true
 	})
-	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Message{
+	if err := g.options.machine.PubSub().Publish(changeChannel, &apipb.Message{
 		Channel:   changeChannel,
 		Data:      apipb.NewStruct(connection.AsMap()),
 		User:      g.getIdentity(ctx).GetRef(),
@@ -769,7 +769,7 @@ func (g *Graph) delDoc(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref) error
 		}
 		return true
 	})
-	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Message{
+	if err := g.options.machine.PubSub().Publish(changeChannel, &apipb.Message{
 		Channel:   changeChannel,
 		Data:      apipb.NewStruct(path.AsMap()),
 		User:      g.getIdentity(ctx).GetRef(),
@@ -806,7 +806,7 @@ func (g *Graph) delConnection(ctx context.Context, tx *bbolt.Tx, path *apipb.Ref
 	if err := tx.Bucket(dbConnections).Bucket([]byte(connection.GetRef().GetGtype())).Delete([]byte(connection.GetRef().GetGid())); err != nil {
 		return err
 	}
-	if err := g.machine.PubSub().Publish(changeChannel, &apipb.Message{
+	if err := g.options.machine.PubSub().Publish(changeChannel, &apipb.Message{
 		Channel:   changeChannel,
 		Data:      apipb.NewStruct(path.AsMap()),
 		User:      g.getIdentity(ctx).GetRef(),

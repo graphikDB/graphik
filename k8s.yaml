@@ -90,13 +90,13 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
           #image: graphikdb/graphik:v1.0.0
-          image: graphikdb/graphik:testing
+          image: graphikdb/graphik:testing1
           imagePullPolicy: Always
           ports:
             - containerPort: 7820
               name: api
               protocol: TCP
-            - containerPort: 7810
+            - containerPort: 7821
               name: raft
               protocol: TCP
           volumeMounts:

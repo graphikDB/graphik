@@ -8,13 +8,13 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/websocket v1.4.2
 	github.com/graphikDB/generic v0.0.1
-	github.com/graphikDB/raft v0.0.7
+	github.com/graphikDB/raft v0.0.9
 	github.com/graphikDB/trigger v0.0.13
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/hashicorp/raft v1.2.0
 	github.com/joho/godotenv v1.3.0
-	github.com/lestrrat-go/jwx v1.0.5
+	github.com/lestrrat-go/jwx v1.0.5 // indirect
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/mwitkow/go-proto-validators v0.3.2
 	github.com/pkg/errors v0.9.1
