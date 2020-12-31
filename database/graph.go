@@ -66,8 +66,8 @@ func NewGraph(openID string, opts ...Opt) (*Graph, error) {
 	}
 	host, _ := os.Hostname()
 	path := fmt.Sprintf("%s/%s", options.storagePath, host)
+	options.logger.Debug("creating graph storage", zap.String("path", path))
 	os.MkdirAll(path, 0700)
-
 	graphDB, err := bbolt.Open(filepath.Join(path, "graph.db"), dbFileMode, nil)
 	if err != nil {
 		return nil, err

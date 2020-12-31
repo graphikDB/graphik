@@ -208,8 +208,10 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			lgger.Error("listener mux error", zap.Error(err))
 		}
 	})
+	lgger.Debug("creating graph")
 	g, err := database.NewGraph(
 		global.OpenIdDiscovery,
+		database.WithStoragePath(global.StoragePath),
 		database.WithRaftSecret(global.RaftSecret),
 		database.WithLogger(lgger),
 		database.WithMachine(m),
@@ -222,6 +224,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		return
 	}
 	defer g.Close()
+	lgger.Debug("creating api tcp listener")
 
 	apiLis, err = net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort))
 	if err != nil {
@@ -232,7 +235,6 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		apiLis = tls.NewListener(apiLis, tlsConfig)
 	}
 	defer apiLis.Close()
-
 	ropts := []raft.Opt{
 		raft.WithIsLeader(global.JoinRaft == ""),
 		raft.WithRaftDir(fmt.Sprintf("%s/raft", global.StoragePath)),
@@ -255,10 +257,12 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			lgger.Error("failed to create raft", zap.Error(err))
 			return
 		}
+		lgger.Debug("successfully setup raft")
 		g.SetRaft(rft)
 	}
 	var config *oauth2.Config
 	if global.PlaygroundClientId != "" {
+		lgger.Debug("graphik playground enabled")
 		resp, err := http.DefaultClient.Get(global.OpenIdDiscovery)
 		if err != nil {
 			lgger.Error("failed to get oidc", zap.Error(err))
