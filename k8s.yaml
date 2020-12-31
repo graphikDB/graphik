@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: graphik
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-reader
+  namespace: graphik
+rules:
+  - apiGroups: [""] # "" indicates the core API group
+    resources: ["pods"]
+    verbs: ["get", "watch", "list"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-reader-binding
+  namespace: graphik
+subjects:
+  # Google Cloud user account
+  #  - kind: User
+  #    name: janedoe@example.com
+  # Kubernetes service account
+  - kind: ServiceAccount
+    name: default
+#  # IAM service account
+#  - kind: User
+#    name: test-account@test-project-123456.google.com.iam.gserviceaccount.com
+#  # Google Group
+#  - kind: Group
+#    name: accounting-group@example.com
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphik
+  namespace: graphik
+  labels:
+    app: graphik
+spec:
+  ports:
+  - port: 7820
+    name: api
+  - port: 7821
+    name: admin
+  clusterIP: None
+  selector:
+    app: graphik
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: graphik
+  namespace: graphik
+spec:
+  serviceName: graphik
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphik
+  template:
+    metadata:
+      labels:
+        app: graphik
+    spec:
+      containers:
+        - name: graphik
+          env:
+            - name: GRAPHIK_OPEN_ID
+              value: https://accounts.google.com/.well-known/openid-configuration
+            - name: GRAPHIK_ROOT_USERS
+              value: coleman.word@graphikdb.io
+            - name: GRAPHIK_ENVIRONMENT
+              value: k8s
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          #image: graphikdb/graphik:v1.0.0
+          image: graphikdb/graphik:testing
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 7821
+          - containerPort: 7820
+          volumeMounts:
+            - name: database-storage
+              mountPath: /tmp/graphik
+  volumeClaimTemplates:
+    - metadata:
+        name: database-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi

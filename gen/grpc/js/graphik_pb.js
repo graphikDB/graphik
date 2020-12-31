@@ -7608,7 +7608,6 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
   var f, obj = {
     openIdDiscovery: jspb.Message.getFieldWithDefault(msg, 1, ""),
     storagePath: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    metrics: jspb.Message.getFieldWithDefault(msg, 3, false),
     allowHeadersList: jspb.Message.getRepeatedField(msg, 5),
     allowMethodsList: jspb.Message.getRepeatedField(msg, 6),
     allowOriginsList: jspb.Message.getRepeatedField(msg, 7),
@@ -7624,7 +7623,9 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     raftPeerId: jspb.Message.getFieldWithDefault(msg, 18, ""),
     listenPort: jspb.Message.getFieldWithDefault(msg, 19, 0),
     raftSecret: jspb.Message.getFieldWithDefault(msg, 20, ""),
-    debug: jspb.Message.getFieldWithDefault(msg, 21, false)
+    debug: jspb.Message.getFieldWithDefault(msg, 21, false),
+    environment: jspb.Message.getFieldWithDefault(msg, 22, ""),
+    raftAdvertise: jspb.Message.getFieldWithDefault(msg, 23, "")
   };
 
   if (includeInstance) {
@@ -7668,10 +7669,6 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setStoragePath(value);
-      break;
-    case 3:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setMetrics(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
@@ -7737,6 +7734,14 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setDebug(value);
       break;
+    case 22:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEnvironment(value);
+      break;
+    case 23:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRaftAdvertise(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7777,13 +7782,6 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       2,
-      f
-    );
-  }
-  f = message.getMetrics();
-  if (f) {
-    writer.writeBool(
-      3,
       f
     );
   }
@@ -7899,6 +7897,20 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getEnvironment();
+  if (f.length > 0) {
+    writer.writeString(
+      22,
+      f
+    );
+  }
+  f = message.getRaftAdvertise();
+  if (f.length > 0) {
+    writer.writeString(
+      23,
+      f
+    );
+  }
 };
 
 
@@ -7929,23 +7941,6 @@ proto.api.Flags.prototype.getStoragePath = function() {
 /** @param {string} value */
 proto.api.Flags.prototype.setStoragePath = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional bool metrics = 3;
- * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
- * You should avoid comparisons like {@code val === true/false} in those cases.
- * @return {boolean}
- */
-proto.api.Flags.prototype.getMetrics = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 3, false));
-};
-
-
-/** @param {boolean} value */
-proto.api.Flags.prototype.setMetrics = function(value) {
-  jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -8248,6 +8243,36 @@ proto.api.Flags.prototype.getDebug = function() {
 /** @param {boolean} value */
 proto.api.Flags.prototype.setDebug = function(value) {
   jspb.Message.setProto3BooleanField(this, 21, value);
+};
+
+
+/**
+ * optional string environment = 22;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getEnvironment = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setEnvironment = function(value) {
+  jspb.Message.setProto3StringField(this, 22, value);
+};
+
+
+/**
+ * optional string raft_advertise = 23;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getRaftAdvertise = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setRaftAdvertise = function(value) {
+  jspb.Message.setProto3StringField(this, 23, value);
 };
 
 

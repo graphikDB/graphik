@@ -187,7 +187,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.Flags" do
     optional :open_id_discovery, :string, 1
     optional :storage_path, :string, 2
-    optional :metrics, :bool, 3
     repeated :allow_headers, :string, 5
     repeated :allow_methods, :string, 6
     repeated :allow_origins, :string, 7
@@ -204,6 +203,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :listen_port, :int64, 19
     optional :raft_secret, :string, 20
     optional :debug, :bool, 21
+    optional :environment, :string, 22
+    optional :raft_advertise, :string, 23
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1

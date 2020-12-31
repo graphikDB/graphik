@@ -1,4 +1,4 @@
-version := "1.0.0"
+version := "1.1.0"
 
 .DEFAULT_GOAL := help
 
@@ -17,7 +17,8 @@ run-follower:
 	--open-id https://accounts.google.com/.well-known/openid-configuration \
 	--listen-port 8080 \
 	--join-raft localhost:7820 \
-	--storage /tmp/graphik2
+	--storage /tmp/graphik2 \
+	--debug
 
 gen: proto gql
 

@@ -5,17 +5,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/autom8ter/machine"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/graphikDB/generic"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/graphik-client-go"
 	"github.com/graphikDB/graphik/helpers"
-	"github.com/graphikDB/graphik/logger"
-	"github.com/graphikDB/raft"
+	"github.com/graphikDB/graphik/raft"
 	"github.com/graphikDB/trigger"
 	raft2 "github.com/hashicorp/raft"
-	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
 	"github.com/segmentio/ksuid"
 	"go.etcd.io/bbolt"
@@ -42,63 +39,64 @@ type Graph struct {
 	// db is the underlying handle to the db.
 	db              *bbolt.DB
 	pubsub          *bbolt.DB
-	jwksMu          sync.RWMutex
-	jwksSet         *jwk.Set
 	jwtCache        *generic.Cache
 	openID          *openIDConnect
 	mu              sync.RWMutex
 	connectionsTo   map[string]map[string]struct{}
 	connectionsFrom map[string]map[string]struct{}
-	machine         *machine.Machine
 	closers         []func()
 	closeOnce       sync.Once
 	indexes         *generic.Cache
 	authorizers     *generic.Cache
 	triggers        *generic.Cache
 	typeValidators  *generic.Cache
-	flgs            *apipb.Flags
 	raft            *raft.Raft
 	peers           map[string]*graphik.Client
-	logger          *logger.Logger
+	options         *Options
 }
 
 // NewGraph takes a file path and returns a connected Raft backend.
-func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Graph, error) {
-	os.MkdirAll(flgs.StoragePath, 0700)
-	graphDB, err := bbolt.Open(filepath.Join(flgs.StoragePath, "graph.db"), dbFileMode, nil)
+func NewGraph(openID string, opts ...Opt) (*Graph, error) {
+	options := &Options{}
+	for _, o := range opts {
+		o(options)
+	}
+	if err := options.SetDefaults(); err != nil {
+		return nil, err
+	}
+	host, _ := os.Hostname()
+	path := fmt.Sprintf("%s/%s", options.storagePath, host)
+	os.MkdirAll(path, 0700)
+
+	graphDB, err := bbolt.Open(filepath.Join(path, "graph.db"), dbFileMode, nil)
 	if err != nil {
 		return nil, err
 	}
-	pubsubDB, err := bbolt.Open(filepath.Join(flgs.StoragePath, "pubsub.db"), dbFileMode, nil)
+	pubsubDB, err := bbolt.Open(filepath.Join(path, "pubsub.db"), dbFileMode, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var closers []func()
-	m := machine.New(ctx, machine.WithMaxRoutines(100000))
 	g := &Graph{
 		db:              graphDB,
-		jwksMu:          sync.RWMutex{},
-		jwksSet:         nil,
+		pubsub:          pubsubDB,
 		jwtCache:        generic.NewCache(5 * time.Minute),
 		openID:          nil,
-		pubsub:          pubsubDB,
 		mu:              sync.RWMutex{},
 		connectionsTo:   map[string]map[string]struct{}{},
 		connectionsFrom: map[string]map[string]struct{}{},
-		machine:         m,
 		closers:         closers,
 		closeOnce:       sync.Once{},
 		indexes:         generic.NewCache(0),
 		authorizers:     generic.NewCache(0),
-		typeValidators:  generic.NewCache(0),
 		triggers:        generic.NewCache(0),
-		flgs:            flgs,
+		typeValidators:  generic.NewCache(0),
 		peers:           map[string]*graphik.Client{},
-		logger:          lgger,
+		options:         options,
 	}
-	if flgs.OpenIdDiscovery != "" {
-		resp, err := http.DefaultClient.Get(flgs.OpenIdDiscovery)
+	if openID != "" {
+		resp, err := http.DefaultClient.Get(openID)
 		if err != nil {
 			return nil, err
 		}
@@ -112,11 +110,6 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 			return nil, err
 		}
 		g.openID = &openID
-		set, err := jwk.Fetch(openID.JwksURI)
-		if err != nil {
-			return nil, err
-		}
-		g.jwksSet = set
 	}
 
 	err = g.db.Update(func(tx *bbolt.Tx) error {
@@ -183,52 +176,50 @@ func NewGraph(ctx context.Context, flgs *apipb.Flags, lgger *logger.Logger) (*Gr
 	if err := g.cacheTriggers(); err != nil {
 		return nil, err
 	}
-	g.machine.Go(func(routine machine.Routine) {
-		if g.openID != nil {
-			set, err := jwk.Fetch(g.openID.JwksURI)
-			if err != nil {
-				g.logger.Error("failed to fetch jwks", zap.Error(err))
-				return
-			}
-			g.jwksMu.Lock()
-			g.jwksSet = set
-			g.jwksMu.Unlock()
-		}
-	}, machine.GoWithMiddlewares(machine.Cron(time.NewTicker(1*time.Minute))))
-	rft, err := raft.NewRaft(
-		g.fsm(),
-		raft.WithIsLeader(flgs.JoinRaft == ""),
-		raft.WithListenPort(int(flgs.ListenPort)-10),
-		raft.WithPeerID(flgs.RaftPeerId),
-		raft.WithRaftDir(fmt.Sprintf("%s/raft", flgs.StoragePath)),
-		raft.WithRestoreSnapshotOnRestart(false),
-	)
-	if err != nil {
-		return nil, err
-	}
-	g.raft = rft
 	return g, nil
+}
+
+func (g *Graph) SetRaft(raft *raft.Raft) {
+	g.raft = raft
 }
 
 func (g *Graph) implements() apipb.DatabaseServiceServer {
 	return g
 }
 
+func (g *Graph) leaderAddr() (string, error) {
+	leader := g.raft.LeaderAddr()
+	host, port, err := net.SplitHostPort(leader)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to parse leader host-port : %s - %v", host, port)
+	}
+	portNum, err := strconv.Atoi(port)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to parse leader port")
+	}
+	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum+10))
+	return addr, nil
+}
+
 func (g *Graph) leaderClient(ctx context.Context) (*graphik.Client, error) {
 	leader := g.raft.LeaderAddr()
+	if leader == "" {
+		return nil, errors.New("empty leader address")
+	}
+
 	if client, ok := g.peers[leader]; ok {
 		return client, nil
 	}
 	host, port, err := net.SplitHostPort(leader)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse leader host-port")
+		return nil, errors.Wrapf(err, "failed to parse leader host-port : %s - %v", host, port)
 	}
 	portNum, err := strconv.Atoi(port)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse leader port")
 	}
 	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum+10))
-	g.logger.Info("adding peer client", zap.String("addr", addr))
+	g.options.logger.Info("adding peer client", zap.String("addr", addr))
 	client, err := graphik.NewClient(
 		ctx,
 		addr,
@@ -236,7 +227,7 @@ func (g *Graph) leaderClient(ctx context.Context) (*graphik.Client, error) {
 			AccessToken: g.getToken(ctx),
 		})),
 		graphik.WithRetry(5),
-		graphik.WithRaftSecret(g.flgs.RaftSecret),
+		graphik.WithRaftSecret(g.options.raftSecret),
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to contact leader")
@@ -923,7 +914,7 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 		filterFunc = func(msg interface{}) bool {
 			val, ok := msg.(*apipb.Message)
 			if !ok {
-				g.logger.Error("invalid message type received during stream")
+				g.options.logger.Error("invalid message type received during stream")
 				return false
 			}
 			if filter.GetMin() != nil && filter.GetMin().AsTime().After(val.Timestamp.AsTime()) {
@@ -935,7 +926,7 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 			}
 			if err := decision.Eval(val.AsMap()); err != nil {
 				if err != trigger.ErrDecisionDenied {
-					g.logger.Error("stream filter failure", zap.Error(err))
+					g.options.logger.Error("stream filter failure", zap.Error(err))
 				}
 				return false
 			}
@@ -980,13 +971,13 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 		}
 	}
 
-	if err := g.machine.PubSub().SubscribeFilter(ctx, filter.GetChannel(), filterFunc, func(msg interface{}) {
+	if err := g.options.machine.PubSub().SubscribeFilter(ctx, filter.GetChannel(), filterFunc, func(msg interface{}) {
 		if err, ok := msg.(error); ok && err != nil {
-			g.logger.Error("failed to send message", zap.Error(err))
+			g.options.logger.Error("failed to send message", zap.Error(err))
 			return
 		}
 		if err := server.Send(msg.(*apipb.Message)); err != nil {
-			g.logger.Error("failed to send message", zap.Error(err))
+			g.options.logger.Error("failed to send message", zap.Error(err))
 			return
 		}
 	}); err != nil {
@@ -998,19 +989,21 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 // Close is used to gracefully close the Database.
 func (b *Graph) Close() {
 	b.closeOnce.Do(func() {
-		if err := b.raft.Close(); err != nil {
-			b.logger.Error("failed to shutdown raft", zap.Error(err))
+		if b.raft != nil {
+			if err := b.raft.Close(); err != nil {
+				b.options.logger.Error("failed to shutdown raft", zap.Error(err))
+			}
 		}
-		b.machine.Close()
+		b.options.machine.Close()
 		for _, closer := range b.closers {
 			closer()
 		}
-		b.machine.Wait()
+		b.options.machine.Wait()
 		if err := b.db.Close(); err != nil {
-			b.logger.Error("failed to close graph db", zap.Error(err))
+			b.options.logger.Error("failed to close graph db", zap.Error(err))
 		}
 		if err := b.pubsub.Close(); err != nil {
-			b.logger.Error("failed to close pubsub db", zap.Error(err))
+			b.options.logger.Error("failed to close pubsub db", zap.Error(err))
 		}
 	})
 }
@@ -1921,13 +1914,12 @@ func (g *Graph) HasConnection(ctx context.Context, ref *apipb.Ref) (*apipb.Boole
 
 func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty, error) {
 	if g.raft.State() != raft2.Leader {
-		client, err := g.leaderClient(ctx)
-		if err != nil {
-			return nil, prepareError(err)
+		client, _ := g.leaderClient(ctx)
+		if client != nil {
+			return &empty.Empty{}, client.JoinCluster(invertContext(ctx), peer)
 		}
-		return &empty.Empty{}, client.JoinCluster(invertContext(ctx), peer)
 	}
-	if g.flgs.RaftSecret != "" {
+	if g.options.raftSecret != "" {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, status.Error(codes.InvalidArgument, "empty metadata")
@@ -1936,13 +1928,12 @@ func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty
 		if len(val) == 0 {
 			return nil, status.Error(codes.Unauthenticated, "empty raft cluster secret")
 		}
-		if val[0] != g.flgs.RaftSecret {
+		if val[0] != g.options.raftSecret {
 			return nil, status.Error(codes.PermissionDenied, "invalid raft cluster secret")
 		}
 	}
-
 	if err := g.raft.Join(peer.GetNodeId(), peer.GetAddr()); err != nil {
-		return nil, status.Error(codes.Unknown, fmt.Sprintf("nodeID = %s target = %s error = %s", peer.GetNodeId(), peer.GetAddr(), err.Error()))
+		return nil, status.Error(codes.Unknown, fmt.Sprintf("failed to join cluster %s %s %s", peer.GetNodeId(), peer.GetAddr(), err.Error()))
 	}
 	return &empty.Empty{}, nil
 }
@@ -1965,6 +1956,10 @@ func (g *Graph) ClusterState(ctx context.Context, _ *empty.Empty) (*apipb.RaftSt
 		Peers:      peers,
 		Membership: toMembership(g.raft.State()),
 	}, nil
+}
+
+func (g *Graph) RaftSecret() string {
+	return g.options.raftSecret
 }
 
 func (g *Graph) Raft() *raft.Raft {

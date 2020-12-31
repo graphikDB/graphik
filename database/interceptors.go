@@ -9,8 +9,6 @@ import (
 	"github.com/graphikDB/graphik/helpers"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"github.com/lestrrat-go/jwx/jwa"
-	"github.com/lestrrat-go/jwx/jws"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
 	"google.golang.org/grpc"
@@ -220,54 +218,6 @@ func (r *Graph) getToken(ctx context.Context) string {
 	return ""
 }
 
-func (g *Graph) verifyJWT(token string) (map[string]interface{}, error) {
-	message, err := jws.ParseString(token)
-	if err != nil {
-		return nil, err
-	}
-	g.jwksMu.RLock()
-	defer g.jwksMu.RUnlock()
-	if g.jwksSet == nil {
-		data := map[string]interface{}{}
-		if err := json.Unmarshal(message.Payload(), &data); err != nil {
-			return nil, err
-		}
-		return data, nil
-	}
-	if len(message.Signatures()) == 0 {
-		return nil, fmt.Errorf("zero jws signatures")
-	}
-	kid, ok := message.Signatures()[0].ProtectedHeaders().Get("kid")
-	if !ok {
-		return nil, fmt.Errorf("jws kid not found")
-	}
-	algI, ok := message.Signatures()[0].ProtectedHeaders().Get("alg")
-	if !ok {
-		return nil, fmt.Errorf("jw alg not found")
-	}
-	alg, ok := algI.(jwa.SignatureAlgorithm)
-	if !ok {
-		return nil, fmt.Errorf("alg type cast error")
-	}
-	keys := g.jwksSet.LookupKeyID(kid.(string))
-	if len(keys) == 0 {
-		return nil, errors.Errorf("failed to lookup kid: %s - zero keys", kid.(string))
-	}
-	var key interface{}
-	if err := keys[0].Raw(&key); err != nil {
-		return nil, err
-	}
-	payload, err := jws.Verify([]byte(token), alg, key)
-	if err != nil {
-		return nil, err
-	}
-	data := map[string]interface{}{}
-	if err := json.Unmarshal(payload, &data); err != nil {
-		return nil, err
-	}
-	return data, nil
-}
-
 func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}, payload map[string]interface{}) (context.Context, error) {
 	ctx = g.methodToContext(ctx, method)
 	ctx, user, err := g.userToContext(ctx, payload)
@@ -284,7 +234,7 @@ func (g *Graph) checkRequest(ctx context.Context, method string, req interface{}
 		}
 		return true
 	})
-	if g.flgs.RequireResponseAuthorizers && len(authorizers) == 0 {
+	if g.options.requireResponseAuthorizers && len(authorizers) == 0 {
 		return nil, status.Errorf(
 			codes.PermissionDenied,
 			"zero registered request authorizers found for invoked gRPC method %s", method)
@@ -347,7 +297,7 @@ func (g *Graph) checkResponse(ctx context.Context, method string, response inter
 		}
 		return true
 	})
-	if g.flgs.RequireResponseAuthorizers && len(authorizers) == 0 {
+	if g.options.requireResponseAuthorizers && len(authorizers) == 0 {
 		return status.Errorf(
 			codes.PermissionDenied,
 			"zero registered response authorizers found for invoked gRPC method %s", method)
@@ -398,5 +348,5 @@ func (g *Graph) isGraphikAdmin(user *apipb.Doc) bool {
 	if user.GetAttributes().GetFields() == nil {
 		return false
 	}
-	return helpers.ContainsString(user.GetAttributes().GetFields()["email"].GetStringValue(), g.flgs.RootUsers)
+	return helpers.ContainsString(user.GetAttributes().GetFields()["email"].GetStringValue(), g.options.rootUsers)
 }

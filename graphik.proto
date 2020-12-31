@@ -444,8 +444,6 @@ message Flags {
   string open_id_discovery =1;
   // persistant storage ref (env: GRAPHIK_STORAGE_PATH)
   string storage_path =2;
-  // enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
-  bool metrics =3;
   // cors allow headers (env: GRAPHIK_ALLOW_HEADERS)
   repeated string allow_headers =5;
   // cors allow methods (env: GRAPHIK_ALLOW_METHODS)
@@ -466,6 +464,8 @@ message Flags {
   int64 listen_port =19;
   string raft_secret =20;
   bool  debug = 21;
+  string environment =22;
+  string raft_advertise =23;
 }
 
 // Boolean is a simple boolean value

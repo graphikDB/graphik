@@ -6,7 +6,6 @@ import (
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/trigger"
 	"go.etcd.io/bbolt"
-	"go.uber.org/zap"
 	"time"
 )
 
@@ -113,13 +112,8 @@ func (d *traversal) dfsFrom(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc
 			}
 		}
 		if _, ok := d.visited[e.GetTo().String()]; !ok {
-			to, err := d.g.getDoc(ctx, tx, e.GetTo())
-			if err != nil {
-				if err == ErrNotFound {
-					d.g.logger.Error("dfs getDoc failure(to)", zap.Error(err), zap.String("path", refString(e.GetTo())))
-					return true
-				}
-				d.g.logger.Error("dfs getDoc failure(to)", zap.Error(err))
+			to, _ := d.g.getDoc(ctx, tx, e.GetTo())
+			if to == nil {
 				return true
 			}
 			if docProgram == nil {
@@ -161,13 +155,8 @@ func (d *traversal) dfsTo(ctx context.Context, tx *bbolt.Tx, popped *apipb.Doc, 
 			}
 		}
 		if _, ok := d.visited[e.GetFrom().String()]; !ok {
-			from, err := d.g.getDoc(ctx, tx, e.GetFrom())
-			if err != nil {
-				if err == ErrNotFound {
-					d.g.logger.Error("dfs getDoc failure(from)", zap.Error(err), zap.String("path", refString(e.GetFrom())))
-					return true
-				}
-				d.g.logger.Error("dfs getDoc failure(from)", zap.Error(err))
+			from, _ := d.g.getDoc(ctx, tx, e.GetFrom())
+			if from == nil {
 				return true
 			}
 			if docProgram == nil {
@@ -256,13 +245,8 @@ func (d *traversal) bfsTo(ctx context.Context, tx *bbolt.Tx, dequeued *apipb.Doc
 			}
 		}
 		if _, ok := d.visited[e.GetFrom().String()]; !ok {
-			from, err := d.g.getDoc(ctx, tx, e.GetFrom())
-			if err != nil {
-				if err == ErrNotFound {
-					d.g.logger.Error("bfs getDoc failure(from)", zap.Error(err), zap.String("path", refString(e.GetFrom())))
-					return true
-				}
-				d.g.logger.Error("bfs getDoc failure(from)", zap.Error(err))
+			from, _ := d.g.getDoc(ctx, tx, e.GetFrom())
+			if from == nil {
 				return true
 			}
 			if docProgram == nil {
@@ -305,13 +289,8 @@ func (d *traversal) bfsFrom(ctx context.Context, tx *bbolt.Tx, dequeue *apipb.Do
 			}
 		}
 		if _, ok := d.visited[e.To.String()]; !ok {
-			to, err := d.g.getDoc(ctx, tx, e.GetTo())
-			if err != nil {
-				if err == ErrNotFound {
-					d.g.logger.Error("bfs getDoc failure(to)", zap.Error(err), zap.String("path", refString(e.GetTo())))
-					return true
-				}
-				d.g.logger.Error("bfs getDoc failure(to)", zap.Error(err))
+			to, _ := d.g.getDoc(ctx, tx, e.GetTo())
+			if to == nil {
 				return true
 			}
 			if docProgram == nil {

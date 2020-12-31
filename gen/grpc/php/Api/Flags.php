@@ -26,12 +26,6 @@ class Flags extends \Google\Protobuf\Internal\Message
      */
     private $storage_path = '';
     /**
-     * enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
-     *
-     * Generated from protobuf field <code>bool metrics = 3;</code>
-     */
-    private $metrics = false;
-    /**
      * cors allow headers (env: GRAPHIK_ALLOW_HEADERS)
      *
      * Generated from protobuf field <code>repeated string allow_headers = 5;</code>
@@ -103,6 +97,14 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>bool debug = 21;</code>
      */
     private $debug = false;
+    /**
+     * Generated from protobuf field <code>string environment = 22;</code>
+     */
+    private $environment = '';
+    /**
+     * Generated from protobuf field <code>string raft_advertise = 23;</code>
+     */
+    private $raft_advertise = '';
 
     /**
      * Constructor.
@@ -114,8 +116,6 @@ class Flags extends \Google\Protobuf\Internal\Message
      *           open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
      *     @type string $storage_path
      *           persistant storage ref (env: GRAPHIK_STORAGE_PATH)
-     *     @type bool $metrics
-     *           enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
      *     @type string[]|\Google\Protobuf\Internal\RepeatedField $allow_headers
      *           cors allow headers (env: GRAPHIK_ALLOW_HEADERS)
      *     @type string[]|\Google\Protobuf\Internal\RepeatedField $allow_methods
@@ -136,6 +136,8 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type int|string $listen_port
      *     @type string $raft_secret
      *     @type bool $debug
+     *     @type string $environment
+     *     @type string $raft_advertise
      * }
      */
     public function __construct($data = NULL) {
@@ -191,32 +193,6 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->storage_path = $var;
-
-        return $this;
-    }
-
-    /**
-     * enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
-     *
-     * Generated from protobuf field <code>bool metrics = 3;</code>
-     * @return bool
-     */
-    public function getMetrics()
-    {
-        return $this->metrics;
-    }
-
-    /**
-     * enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
-     *
-     * Generated from protobuf field <code>bool metrics = 3;</code>
-     * @param bool $var
-     * @return $this
-     */
-    public function setMetrics($var)
-    {
-        GPBUtil::checkBool($var);
-        $this->metrics = $var;
 
         return $this;
     }
@@ -585,6 +561,50 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkBool($var);
         $this->debug = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string environment = 22;</code>
+     * @return string
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * Generated from protobuf field <code>string environment = 22;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setEnvironment($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->environment = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_advertise = 23;</code>
+     * @return string
+     */
+    public function getRaftAdvertise()
+    {
+        return $this->raft_advertise;
+    }
+
+    /**
+     * Generated from protobuf field <code>string raft_advertise = 23;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRaftAdvertise($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->raft_advertise = $var;
 
         return $this;
     }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/helpers"
-	"github.com/graphikDB/raft/fsm"
+	"github.com/graphikDB/graphik/raft/fsm"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"
@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-func (g *Graph) fsm() *fsm.FSM {
+func (g *Graph) RaftFSM() *fsm.FSM {
 	return &fsm.FSM{
 		ApplyFunc: func(log *raft.Log) interface{} {
 			start := time.Now()
@@ -27,7 +27,7 @@ func (g *Graph) fsm() *fsm.FSM {
 				return err
 			}
 			defer func() {
-				g.logger.Debug("applied raft log",
+				g.options.logger.Debug("applied raft log",
 					zap.Duration("dur", time.Since(start)),
 					zap.String("method", cmd.Method),
 					zap.String("user", cmd.User.GetRef().GetGid()),
@@ -149,18 +149,18 @@ func (g *Graph) fsm() *fsm.FSM {
 				}); err != nil {
 					return err
 				}
-				if err := g.machine.PubSub().Publish(cmd.SendMessage.Channel, cmd.SendMessage); err != nil {
+				if err := g.options.machine.PubSub().Publish(cmd.SendMessage.Channel, cmd.SendMessage); err != nil {
 					return status.Error(codes.Internal, err.Error())
 				}
 			}
 			return cmd
 		},
 		SnapshotFunc: func() (*fsm.Snapshot, error) {
-			g.logger.Info("raft: snapshot unimplemented")
+			g.options.logger.Info("raft: snapshot unimplemented")
 			return nil, fmt.Errorf("raft: snapshot unimplemented")
 		},
 		RestoreFunc: func(closer io.ReadCloser) error {
-			g.logger.Info("raft: restore unimplemented")
+			g.options.logger.Info("raft: restore unimplemented")
 			return fmt.Errorf("raft: restore unimplemented")
 		},
 	}
