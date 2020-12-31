@@ -18,6 +18,7 @@ run-follower:
 	--listen-port 8080 \
 	--join-raft localhost:7820 \
 	--storage /tmp/graphik2 \
+	--raft-peer-id node2 \
 	--debug
 
 gen: proto gql

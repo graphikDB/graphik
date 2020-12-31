@@ -25,20 +25,8 @@ func (o *Options) setDefaults() {
 	if o.maxPool <= 0 {
 		o.maxPool = 5
 	}
-	if o.timeout == 0 {
+	if o.timeout <= 0 {
 		o.timeout = 5 * time.Second
-	}
-	if o.commitTimeout == 0 {
-		o.commitTimeout = 1 * time.Second
-	}
-	if o.electionTimeout == 0 {
-		o.electionTimeout = 5 * time.Second
-	}
-	if o.heartbeatTimeout == 0 {
-		o.heartbeatTimeout = 5 * time.Second
-	}
-	if o.leaseTimeout == 0 {
-		o.leaseTimeout = 5 * time.Second
 	}
 	if o.retainSnapshots == 0 {
 		o.retainSnapshots = 1

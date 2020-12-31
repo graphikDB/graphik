@@ -20,11 +20,14 @@ import (
 func (g *Graph) RaftFSM() *fsm.FSM {
 	return &fsm.FSM{
 		ApplyFunc: func(log *raft.Log) interface{} {
+			if log == nil {
+				return errors.New("empty raft log")
+			}
 			start := time.Now()
 			var cmd = &apipb.RaftCommand{}
 
 			if err := proto.Unmarshal(log.Data, cmd); err != nil {
-				return err
+				return errors.Wrap(err, "failed to decode log")
 			}
 			defer func() {
 				g.options.logger.Debug("applied raft log",

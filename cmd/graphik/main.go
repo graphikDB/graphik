@@ -226,15 +226,6 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	defer g.Close()
 	lgger.Debug("creating api tcp listener")
 
-	apiLis, err = net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort))
-	if err != nil {
-		lgger.Error("failed to create api server listener", zap.Error(err))
-		return
-	}
-	if tlsConfig != nil {
-		apiLis = tls.NewListener(apiLis, tlsConfig)
-	}
-	defer apiLis.Close()
 	ropts := []raft.Opt{
 		raft.WithIsLeader(global.JoinRaft == ""),
 		raft.WithRaftDir(fmt.Sprintf("%s/raft", global.StoragePath)),
@@ -252,6 +243,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		ropts = append(ropts, raft.WithAdvertiseAddr(advertise))
 	}
 	{
+		lgger.Debug("setting up raft")
 		rft, err := raft.NewRaft(g.RaftFSM(), raftLis, ropts...)
 		if err != nil {
 			lgger.Error("failed to create raft", zap.Error(err))
@@ -313,6 +305,15 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		Handler: mux,
 	}
 
+	apiLis, err = net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort))
+	if err != nil {
+		lgger.Error("failed to create api server listener", zap.Error(err))
+		return
+	}
+	if tlsConfig != nil {
+		apiLis = tls.NewListener(apiLis, tlsConfig)
+	}
+	defer apiLis.Close()
 	apiMux := cmux.New(apiLis)
 	m.Go(func(routine machine.Routine) {
 		hmatcher := apiMux.Match(cmux.HTTP1())

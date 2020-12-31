@@ -5,9 +5,8 @@ import (
 	"encoding/gob"
 	"errors"
 	"github.com/graphikDB/graphik/helpers"
-	"go.etcd.io/bbolt"
-
 	"github.com/hashicorp/raft"
+	"go.etcd.io/bbolt"
 )
 
 func init() {
@@ -112,8 +111,8 @@ func (b *Storage) StoreLog(log *raft.Log) error {
 
 func (b *Storage) StoreLogs(logs []*raft.Log) error {
 	return b.db.Update(func(tx *bbolt.Tx) error {
-		buf := bytes.NewBuffer(nil)
 		for _, log := range logs {
+			buf := bytes.NewBuffer(nil)
 			key := helpers.Uint64ToBytes(log.Index)
 			if err := gob.NewEncoder(buf).Encode(log); err != nil {
 				return err
@@ -122,7 +121,6 @@ func (b *Storage) StoreLogs(logs []*raft.Log) error {
 			if err := bucket.Put(key, buf.Bytes()); err != nil {
 				return err
 			}
-			buf.Reset()
 		}
 		return nil
 	})
@@ -166,7 +164,7 @@ func (b *Storage) Get(k []byte) ([]byte, error) {
 	if val == nil {
 		return nil, ErrKeyNotFound
 	}
-	return append([]byte(nil), val...), nil
+	return val, nil
 }
 
 func (b *Storage) SetUint64(key []byte, val uint64) error {

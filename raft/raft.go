@@ -30,7 +30,7 @@ func NewRaft(fsm *fsm.FSM, lis net.Listener, opts ...Opt) (*Raft, error) {
 	}
 	options.setDefaults()
 	config := raft.DefaultConfig()
-	config.NoSnapshotRestoreOnStart = options.restoreSnapshotOnRestart
+	config.NoSnapshotRestoreOnStart = !options.restoreSnapshotOnRestart
 	config.LocalID = raft.ServerID(options.peerID)
 	if options.leaseTimeout != 0 {
 		config.LeaderLeaseTimeout = options.leaseTimeout
@@ -46,19 +46,23 @@ func NewRaft(fsm *fsm.FSM, lis net.Listener, opts ...Opt) (*Raft, error) {
 	}
 	host, _ := os.Hostname()
 	path := fmt.Sprintf("%s/%s", options.raftDir, host)
+	os.MkdirAll(path, 0700)
 	transport := transport2.NewNetworkTransport(lis, options.advertise, options.maxPool, options.timeout, os.Stderr)
 	snapshots, err := raft.NewFileSnapshotStore(path, options.retainSnapshots, os.Stderr)
 	if err != nil {
 		return nil, err
 	}
+
 	strg, err := storage.NewStorage(filepath.Join(path, "raft.db"))
 	if err != nil {
 		return nil, err
 	}
+
 	ra, err := raft.NewRaft(config, fsm, strg, strg, snapshots, transport)
 	if err != nil {
 		return nil, err
 	}
+
 	if options.isLeader {
 		configuration := raft.Configuration{
 			Servers: []raft.Server{
