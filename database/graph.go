@@ -197,7 +197,7 @@ func (g *Graph) leaderAddr() (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "failed to parse leader port")
 	}
-	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum+10))
+	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum-1))
 	return addr, nil
 }
 
@@ -218,7 +218,7 @@ func (g *Graph) leaderClient(ctx context.Context) (*graphik.Client, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse leader port")
 	}
-	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum+10))
+	addr := net.JoinHostPort(host, fmt.Sprintf("%v", portNum-1))
 	g.options.logger.Info("adding peer client", zap.String("addr", addr))
 	client, err := graphik.NewClient(
 		ctx,
@@ -989,16 +989,9 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 // Close is used to gracefully close the Database.
 func (b *Graph) Close() {
 	b.closeOnce.Do(func() {
-		if b.raft != nil {
-			if err := b.raft.Close(); err != nil {
-				b.options.logger.Error("failed to shutdown raft", zap.Error(err))
-			}
-		}
-		b.options.machine.Close()
 		for _, closer := range b.closers {
 			closer()
 		}
-		b.options.machine.Wait()
 		if err := b.db.Close(); err != nil {
 			b.options.logger.Error("failed to close graph db", zap.Error(err))
 		}

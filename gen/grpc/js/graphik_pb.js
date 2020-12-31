@@ -7625,7 +7625,8 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     raftSecret: jspb.Message.getFieldWithDefault(msg, 20, ""),
     debug: jspb.Message.getFieldWithDefault(msg, 21, false),
     environment: jspb.Message.getFieldWithDefault(msg, 22, ""),
-    raftAdvertise: jspb.Message.getFieldWithDefault(msg, 23, "")
+    raftAdvertise: jspb.Message.getFieldWithDefault(msg, 23, ""),
+    raftMaxPool: jspb.Message.getFieldWithDefault(msg, 24, 0)
   };
 
   if (includeInstance) {
@@ -7741,6 +7742,10 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 23:
       var value = /** @type {string} */ (reader.readString());
       msg.setRaftAdvertise(value);
+      break;
+    case 24:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setRaftMaxPool(value);
       break;
     default:
       reader.skipField();
@@ -7908,6 +7913,13 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       23,
+      f
+    );
+  }
+  f = message.getRaftMaxPool();
+  if (f !== 0) {
+    writer.writeInt64(
+      24,
       f
     );
   }
@@ -8273,6 +8285,21 @@ proto.api.Flags.prototype.getRaftAdvertise = function() {
 /** @param {string} value */
 proto.api.Flags.prototype.setRaftAdvertise = function(value) {
   jspb.Message.setProto3StringField(this, 23, value);
+};
+
+
+/**
+ * optional int64 raft_max_pool = 24;
+ * @return {number}
+ */
+proto.api.Flags.prototype.getRaftMaxPool = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 24, 0));
+};
+
+
+/** @param {number} value */
+proto.api.Flags.prototype.setRaftMaxPool = function(value) {
+  jspb.Message.setProto3IntField(this, 24, value);
 };
 
 

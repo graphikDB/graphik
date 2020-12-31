@@ -105,6 +105,10 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string raft_advertise = 23;</code>
      */
     private $raft_advertise = '';
+    /**
+     * Generated from protobuf field <code>int64 raft_max_pool = 24;</code>
+     */
+    private $raft_max_pool = 0;
 
     /**
      * Constructor.
@@ -138,6 +142,7 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type bool $debug
      *     @type string $environment
      *     @type string $raft_advertise
+     *     @type int|string $raft_max_pool
      * }
      */
     public function __construct($data = NULL) {
@@ -605,6 +610,28 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->raft_advertise = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>int64 raft_max_pool = 24;</code>
+     * @return int|string
+     */
+    public function getRaftMaxPool()
+    {
+        return $this->raft_max_pool;
+    }
+
+    /**
+     * Generated from protobuf field <code>int64 raft_max_pool = 24;</code>
+     * @param int|string $var
+     * @return $this
+     */
+    public function setRaftMaxPool($var)
+    {
+        GPBUtil::checkInt64($var);
+        $this->raft_max_pool = $var;
 
         return $this;
     }

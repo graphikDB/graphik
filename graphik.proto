@@ -466,6 +466,7 @@ message Flags {
   bool  debug = 21;
   string environment =22;
   string raft_advertise =23;
+  int64 raft_max_pool =24;
 }
 
 // Boolean is a simple boolean value
