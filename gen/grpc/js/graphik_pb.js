@@ -7626,7 +7626,9 @@ proto.api.Flags.toObject = function(includeInstance, msg) {
     debug: jspb.Message.getFieldWithDefault(msg, 21, false),
     environment: jspb.Message.getFieldWithDefault(msg, 22, ""),
     raftAdvertise: jspb.Message.getFieldWithDefault(msg, 23, ""),
-    raftMaxPool: jspb.Message.getFieldWithDefault(msg, 24, 0)
+    raftMaxPool: jspb.Message.getFieldWithDefault(msg, 24, 0),
+    mutualTls: jspb.Message.getFieldWithDefault(msg, 25, false),
+    caCert: jspb.Message.getFieldWithDefault(msg, 26, "")
   };
 
   if (includeInstance) {
@@ -7746,6 +7748,14 @@ proto.api.Flags.deserializeBinaryFromReader = function(msg, reader) {
     case 24:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setRaftMaxPool(value);
+      break;
+    case 25:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setMutualTls(value);
+      break;
+    case 26:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCaCert(value);
       break;
     default:
       reader.skipField();
@@ -7920,6 +7930,20 @@ proto.api.Flags.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt64(
       24,
+      f
+    );
+  }
+  f = message.getMutualTls();
+  if (f) {
+    writer.writeBool(
+      25,
+      f
+    );
+  }
+  f = message.getCaCert();
+  if (f.length > 0) {
+    writer.writeString(
+      26,
       f
     );
   }
@@ -8300,6 +8324,38 @@ proto.api.Flags.prototype.getRaftMaxPool = function() {
 /** @param {number} value */
 proto.api.Flags.prototype.setRaftMaxPool = function(value) {
   jspb.Message.setProto3IntField(this, 24, value);
+};
+
+
+/**
+ * optional bool mutual_tls = 25;
+ * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
+ * You should avoid comparisons like {@code val === true/false} in those cases.
+ * @return {boolean}
+ */
+proto.api.Flags.prototype.getMutualTls = function() {
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 25, false));
+};
+
+
+/** @param {boolean} value */
+proto.api.Flags.prototype.setMutualTls = function(value) {
+  jspb.Message.setProto3BooleanField(this, 25, value);
+};
+
+
+/**
+ * optional string ca_cert = 26;
+ * @return {string}
+ */
+proto.api.Flags.prototype.getCaCert = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 26, ""));
+};
+
+
+/** @param {string} value */
+proto.api.Flags.prototype.setCaCert = function(value) {
+  jspb.Message.setProto3StringField(this, 26, value);
 };
 
 

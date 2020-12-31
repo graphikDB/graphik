@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"github.com/autom8ter/machine"
@@ -64,6 +65,8 @@ func init() {
 	pflag.CommandLine.StringVar(&global.PlaygroundRedirect, "playground-redirect", helpers.EnvOr("GRAPHIK_PLAYGROUND_REDIRECT", ""), "playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT)")
 	pflag.CommandLine.StringVar(&global.Environment, "environment", helpers.EnvOr("GRAPHIK_ENVIRONMENT", ""), "deployment environment (k8s) (env: GRAPHIK_ENVIRONMENT)")
 	pflag.CommandLine.Int64Var(&global.RaftMaxPool, "raft-max-pool", int64(helpers.IntEnvOr("GRAPHIK_RAFT_MAX_POOL", 5)), "max nodes in pool (env: GRAPHIK_RAFT_MAX_POOL)")
+	pflag.CommandLine.BoolVar(&global.MutualTls, "mutual-tls", helpers.BoolEnvOr("GRAPHIK_MUTUAL_TLS", false), "require mutual tls (env: GRAPHIK_MUTUAL_TLS)")
+	pflag.CommandLine.StringVar(&global.CaCert, "ca-cert", helpers.EnvOr("GRAPHIK_CA_CERT", ""), "client CA certificate path for establishing mtls (env: GRAPHIK_CA_CERT)")
 	pflag.Parse()
 }
 
@@ -110,7 +113,26 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 				zap.Error(err))
 			return
 		}
-		tlsConfig = &tls.Config{Certificates: []tls.Certificate{cer}}
+		tlsConfig = &tls.Config{
+			Certificates: []tls.Certificate{cer},
+		}
+		if global.MutualTls {
+			lgger.Debug("mtls enabled")
+			lgger.Debug("loading client CA certificates")
+			pemClientCA, err := ioutil.ReadFile(global.CaCert)
+			if err != nil {
+				lgger.Error("failed to load client CA certificate", zap.Error(err))
+				return
+			}
+
+			certPool := x509.NewCertPool()
+			if !certPool.AppendCertsFromPEM(pemClientCA) {
+				lgger.Error("failed to add client CA certificate")
+				return
+			}
+			tlsConfig.ClientCAs = certPool
+			tlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
+		}
 	}
 	if global.Environment != "" {
 		switch global.Environment {

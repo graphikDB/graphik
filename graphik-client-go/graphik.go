@@ -2,6 +2,8 @@ package graphik
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/graphikDB/graphik/gen/grpc/go"
@@ -14,8 +16,10 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"io"
+	"io/ioutil"
 	"time"
 )
 
@@ -26,6 +30,7 @@ type Options struct {
 	metrics     bool
 	logging     bool
 	logPayload  bool
+	creds       credentials.TransportCredentials
 }
 
 type Opt func(o *Options)
@@ -33,6 +38,12 @@ type Opt func(o *Options)
 func WithRaftSecret(raftSecret string) Opt {
 	return func(o *Options) {
 		o.raftSecret = raftSecret
+	}
+}
+
+func WithTransportCreds(creds credentials.TransportCredentials) Opt {
+	return func(o *Options) {
+		o.creds = creds
 	}
 }
 
@@ -85,14 +96,18 @@ func NewClient(ctx context.Context, target string, opts ...Opt) (*Client, error)
 	if target == "" {
 		return nil, errors.New("empty target")
 	}
-	dialopts := []grpc.DialOption{grpc.WithInsecure()}
+	dialopts := []grpc.DialOption{}
 	var uinterceptors []grpc.UnaryClientInterceptor
 	var sinterceptors []grpc.StreamClientInterceptor
 	options := &Options{}
 	for _, o := range opts {
 		o(options)
 	}
-
+	if options.creds == nil {
+		dialopts = append(dialopts, grpc.WithInsecure())
+	} else {
+		dialopts = append(dialopts, grpc.WithTransportCredentials(options.creds))
+	}
 	uinterceptors = append(uinterceptors, grpc_validator.UnaryClientInterceptor())
 
 	if options.metrics {
@@ -484,4 +499,20 @@ func (c *Client) PutConnection(ctx context.Context, in *apipb.Connection, opts .
 // PutConnections puts a batch of connections in the graph
 func (c *Client) PutConnections(ctx context.Context, in *apipb.Connections, opts ...grpc.CallOption) (*apipb.Connections, error) {
 	return c.graph.PutConnections(ctx, in, opts...)
+}
+
+// LoadTransportCredentials loads the transport credentials from the given CA certificate
+func LoadTransportCredentials(caCertificateFile string) (credentials.TransportCredentials, error) {
+	pemServerCA, err := ioutil.ReadFile(caCertificateFile)
+	if err != nil {
+		return nil, err
+	}
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add server CA's certificate")
+	}
+	config := &tls.Config{
+		RootCAs: certPool,
+	}
+	return credentials.NewTLS(config), nil
 }

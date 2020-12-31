@@ -70,3 +70,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2020-12-30
 - server raft on same port as metrics server - 7821 by default
 - add k8s manifest
+## [1.1.2] - 2020-12-31
+- mutual tls options client/server side

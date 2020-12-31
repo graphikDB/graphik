@@ -467,6 +467,8 @@ message Flags {
   string environment =22;
   string raft_advertise =23;
   int64 raft_max_pool =24;
+  bool mutual_tls =25;
+  string ca_cert =26;
 }
 
 // Boolean is a simple boolean value

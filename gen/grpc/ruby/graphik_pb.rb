@@ -206,6 +206,8 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :environment, :string, 22
     optional :raft_advertise, :string, 23
     optional :raft_max_pool, :int64, 24
+    optional :mutual_tls, :bool, 25
+    optional :ca_cert, :string, 26
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1

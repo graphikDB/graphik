@@ -109,6 +109,14 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>int64 raft_max_pool = 24;</code>
      */
     private $raft_max_pool = 0;
+    /**
+     * Generated from protobuf field <code>bool mutual_tls = 25;</code>
+     */
+    private $mutual_tls = false;
+    /**
+     * Generated from protobuf field <code>string ca_cert = 26;</code>
+     */
+    private $ca_cert = '';
 
     /**
      * Constructor.
@@ -143,6 +151,8 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type string $environment
      *     @type string $raft_advertise
      *     @type int|string $raft_max_pool
+     *     @type bool $mutual_tls
+     *     @type string $ca_cert
      * }
      */
     public function __construct($data = NULL) {
@@ -632,6 +642,50 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt64($var);
         $this->raft_max_pool = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool mutual_tls = 25;</code>
+     * @return bool
+     */
+    public function getMutualTls()
+    {
+        return $this->mutual_tls;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool mutual_tls = 25;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setMutualTls($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->mutual_tls = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>string ca_cert = 26;</code>
+     * @return string
+     */
+    public function getCaCert()
+    {
+        return $this->ca_cert;
+    }
+
+    /**
+     * Generated from protobuf field <code>string ca_cert = 26;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setCaCert($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->ca_cert = $var;
 
         return $this;
     }
