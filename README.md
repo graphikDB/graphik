@@ -164,6 +164,7 @@ This is bad for the following reasons:
 - [x] Client to Server streaming(gRPC only)
 - [x] [Terraform Provider](https://github.com/graphikDB/terraform-provider-graphik) for Schema Operations & Change Automation
 - [x] [Command Line Interface](https://github.com/graphikDB/graphikctl)
+- [x] [Multi-Node Kubernetes Manifest](./k8s.yaml)
 
 ## Key Dependencies
 
@@ -938,9 +939,21 @@ to shutdown:
     
     docker-compose -f docker-compose.yml down --remove-orphans
     
- ### Kubernetes
+ ### Kubernetes(Multi-Node)
  
- Coming Soon
+Given a running Kubernetes cluster, run:
+
+```yaml
+curl https://raw.githubusercontent.com/graphikDB/graphik/master/k8s.yaml >> k8s.yaml && \
+  kubectl apply -f k8s.yaml
+
+```
+
+to view pods as they spin up, run:
+
+    kubectl get pods -n graphik -w
+
+graphik plugs into kubernetes service discovery 
  
  ### Mac/OSX (Homebrew)
  
