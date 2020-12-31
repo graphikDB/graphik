@@ -165,6 +165,7 @@ This is bad for the following reasons:
 - [x] [Terraform Provider](https://github.com/graphikDB/terraform-provider-graphik) for Schema Operations & Change Automation
 - [x] [Command Line Interface](https://github.com/graphikDB/graphikctl)
 - [x] [Multi-Node Kubernetes Manifest](./k8s.yaml)
+- [x] Mutual TLS(optional)
 
 ## Key Dependencies
 
