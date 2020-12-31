@@ -12,7 +12,7 @@ import (
 	"github.com/graphikDB/graphik/gql"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
-	"github.com/graphikDB/raft"
+	"github.com/graphikDB/graphik/raft"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
@@ -51,7 +51,6 @@ func init() {
 	pflag.CommandLine.Int64Var(&global.ListenPort, "listen-port", int64(helpers.IntEnvOr("GRAPHIK_LISTEN_PORT", 7820)), "serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT)")
 	pflag.CommandLine.StringVar(&global.StoragePath, "storage", helpers.EnvOr("GRAPHIK_STORAGE_PATH", "/tmp/graphik"), "persistant storage path (env: GRAPHIK_STORAGE_PATH)")
 	pflag.CommandLine.StringVar(&global.OpenIdDiscovery, "open-id", helpers.EnvOr("GRAPHIK_OPEN_ID", ""), "open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) (required)")
-	pflag.CommandLine.BoolVar(&global.Metrics, "metrics", helpers.BoolEnvOr("GRAPHIK_METRICS", true), "enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)")
 	pflag.CommandLine.StringSliceVar(&global.AllowHeaders, "allow-headers", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_HEADERS", []string{"*"}), "cors allow headers (env: GRAPHIK_ALLOW_HEADERS)")
 	pflag.CommandLine.StringSliceVar(&global.AllowOrigins, "allow-origins", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_ORIGINS", []string{"*"}), "cors allow origins (env: GRAPHIK_ALLOW_ORIGINS)")
 	pflag.CommandLine.StringSliceVar(&global.AllowMethods, "allow-methods", helpers.StringSliceEnvOr("GRAPHIK_ALLOW_METHODS", []string{"HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"}), "cors allow methods (env: GRAPHIK_ALLOW_METHODS)")
@@ -77,7 +76,7 @@ func main() {
 }
 
 func run(ctx context.Context, cfg *apipb.Flags) {
-	lgger := logger.New(cfg.Debug)
+	var lgger = logger.New(cfg.Debug)
 	if cfg.OpenIdDiscovery == "" {
 		lgger.Error("empty open-id connect discovery --open-id", zap.String("usage", pflag.CommandLine.Lookup("open-id").Usage))
 		return
@@ -86,12 +85,28 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		lgger.Error("zero root users", zap.String("usage", pflag.CommandLine.Lookup("root-users").Usage))
 		return
 	}
+	var (
+		localRaftAddr = fmt.Sprintf("localhost:%v", global.ListenPort+1)
+		adminLis      net.Listener
+		m             = machine.New(ctx)
+		err           error
+		tlsConfig     *tls.Config
+		interrupt     = make(chan os.Signal, 1)
+		apiLis        net.Listener
+		advertise     net.Addr
+	)
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
-	var localRaftAddr = fmt.Sprintf("localhost:%v", global.ListenPort+1)
+	if global.TlsCert != "" && global.TlsKey != "" {
+		cer, err := tls.LoadX509KeyPair(global.TlsCert, global.TlsKey)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		tlsConfig = &tls.Config{Certificates: []tls.Certificate{cer}}
+	}
 	if global.Environment != "" {
 		switch global.Environment {
 		case k8sEnv:
@@ -119,7 +134,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 				return
 			}
 			leaderIp := pods[leaderPod]
-			lgger.Info("joining k8s cluster",
+			lgger.Info("registered k8s environment",
 				zap.String("namespace", namespace),
 				zap.String("podip", podIp),
 				zap.String("podname", podname),
@@ -127,23 +142,39 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 				zap.Any("discovery", pods),
 			)
 			global.RaftPeerId = podname
-			global.RaftAdvertise = fmt.Sprintf("%s:%v", podIp, global.ListenPort+1)
+
+			advertise := fmt.Sprintf("%s.graphik.graphik.svc.cluster.local:%v", podname, global.ListenPort+1)
+			addr, err := net.ResolveTCPAddr("tcp", advertise)
+			if err != nil {
+				lgger.Error("failed to parse local ip address", zap.String("address", advertise), zap.Error(err))
+				return
+			}
+			global.RaftAdvertise = addr.String()
 			if podname != leaderPod {
 				global.JoinRaft = fmt.Sprintf("%s:%v", leaderIp, global.ListenPort)
-				localRaftAddr = fmt.Sprintf("%s:%v", podIp, global.ListenPort+1)
+				localRaftAddr = addr.String()
 			}
 		default:
 			lgger.Error("unsupported environment", zap.String("env", global.Environment))
 			return
 		}
 	}
-	m := machine.New(ctx)
-
-	adminLis, err := net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort+1))
-	if err != nil {
-		lgger.Error("metrics server failure", zap.Error(err))
-		return
+	{
+		addr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf(":%v", global.ListenPort+1))
+		if err != nil {
+			lgger.Error("failed to create listener", zap.Error(err))
+			return
+		}
+		adminLis, err = net.ListenTCP("tcp", addr)
+		if err != nil {
+			lgger.Error("failed to create listener", zap.Error(err))
+			return
+		}
+		if tlsConfig != nil {
+			adminLis = tls.NewListener(adminLis, tlsConfig)
+		}
 	}
+
 	adminMux := cmux.New(adminLis)
 	defer adminLis.Close()
 	raftLis := adminMux.Match(cmux.Any())
@@ -152,6 +183,9 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	var metricServer *http.Server
 	{
 		router := http.NewServeMux()
+		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
 		router.Handle("/metrics", promhttp.Handler())
 		router.HandleFunc("/debug/pprof/", pprof.Index)
 		router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
@@ -160,10 +194,10 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 		metricServer = &http.Server{Handler: router}
 	}
-
+	hmatcher := adminMux.Match(cmux.HTTP1())
+	defer hmatcher.Close()
 	m.Go(func(routine machine.Routine) {
-		hmatcher := adminMux.Match(cmux.HTTP1())
-		defer hmatcher.Close()
+
 		lgger.Info("starting metrics/admin server", zap.String("address", hmatcher.Addr().String()))
 		if err := metricServer.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
 			lgger.Error("metrics server failure", zap.Error(err))
@@ -188,33 +222,16 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		return
 	}
 	defer g.Close()
-	var (
-		lis       net.Listener
-		advertise net.Addr
-	)
-	var tlsConfig *tls.Config
-	if global.TlsCert != "" && global.TlsKey != "" {
-		cer, err := tls.LoadX509KeyPair(global.TlsCert, global.TlsKey)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		tlsConfig = &tls.Config{Certificates: []tls.Certificate{cer}}
+
+	apiLis, err = net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort))
+	if err != nil {
+		lgger.Error("failed to create api server listener", zap.Error(err))
+		return
 	}
 	if tlsConfig != nil {
-		lis, err = tls.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort), tlsConfig)
-		if err != nil {
-			lgger.Error("failed to create tls server listener", zap.Error(err))
-			return
-		}
-	} else {
-		lis, err = net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort))
-		if err != nil {
-			lgger.Error("failed to create server listener", zap.Error(err))
-			return
-		}
+		apiLis = tls.NewListener(apiLis, tlsConfig)
 	}
-	defer lis.Close()
+	defer apiLis.Close()
 
 	ropts := []raft.Opt{
 		raft.WithIsLeader(global.JoinRaft == ""),
@@ -222,6 +239,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		raft.WithPeerID(global.RaftPeerId),
 		raft.WithMaxPool(5),
 		raft.WithRestoreSnapshotOnRestart(false),
+		raft.WithTimeout(3 * time.Second),
 	}
 	if global.RaftAdvertise != "" {
 		advertise, err = net.ResolveTCPAddr("tcp", global.RaftAdvertise)
@@ -231,7 +249,14 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		}
 		ropts = append(ropts, raft.WithAdvertiseAddr(advertise))
 	}
-
+	{
+		rft, err := raft.NewRaft(g.RaftFSM(), raftLis, ropts...)
+		if err != nil {
+			lgger.Error("failed to create raft", zap.Error(err))
+			return
+		}
+		g.SetRaft(rft)
+	}
 	var config *oauth2.Config
 	if global.PlaygroundClientId != "" {
 		resp, err := http.DefaultClient.Get(global.OpenIdDiscovery)
@@ -283,16 +308,8 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	httpServer := &http.Server{
 		Handler: mux,
 	}
-	{
-		rft, err := raft.NewRaft(g.RaftFSM(), raftLis, ropts...)
-		if err != nil {
-			lgger.Error("failed to create raft", zap.Error(err))
-			return
-		}
-		g.SetRaft(rft)
-	}
-	apiMux := cmux.New(lis)
 
+	apiMux := cmux.New(apiLis)
 	m.Go(func(routine machine.Routine) {
 		hmatcher := apiMux.Match(cmux.HTTP1())
 		defer hmatcher.Close()
@@ -324,10 +341,10 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	reflection.Register(gserver)
 
 	grpc_prometheus.Register(gserver)
+	gmatcher := apiMux.Match(cmux.HTTP2())
+	defer gmatcher.Close()
 	m.Go(func(routine machine.Routine) {
-		gmatcher := apiMux.Match(cmux.HTTP2())
-		defer gmatcher.Close()
-		lgger.Info("starting gRPC server", zap.String("address", lis.Addr().String()))
+		lgger.Info("starting gRPC server", zap.String("address", gmatcher.Addr().String()))
 		if err := gserver.Serve(gmatcher); err != nil && err != http.ErrServerClosed && !strings.Contains(err.Error(), "mux: listener closed") {
 			lgger.Error("gRPC server failure", zap.Error(err))
 		}
@@ -343,8 +360,10 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			zap.String("joinAddr", global.JoinRaft),
 			zap.String("localAddr", localRaftAddr),
 		)
+
 		if err := join(ctx, global.JoinRaft, localRaftAddr, g, lgger); err != nil {
-			lgger.Error(err.Error())
+			lgger.Error("failed to join raft", zap.Error(err))
+			cancel()
 		}
 	}
 	select {
@@ -355,15 +374,12 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		m.Cancel()
 		break
 	}
-
 	lgger.Warn("shutdown signal received")
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()
 
 	_ = httpServer.Shutdown(shutdownCtx)
-	if metricServer != nil {
-		_ = metricServer.Shutdown(shutdownCtx)
-	}
+	_ = metricServer.Shutdown(shutdownCtx)
 	stopped := make(chan struct{})
 	go func() {
 		gserver.GracefulStop()
@@ -378,18 +394,29 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		t.Stop()
 	}
 	m.Wait()
+	g.Close()
 	lgger.Info("shutdown successful")
 }
 
-func join(ctx context.Context, joinAddr string, localAddr string, g *database.Graph, lgger *logger.Logger) error {
+func join(ctx context.Context, joinAddr, localAddr string, g *database.Graph, lgger *logger.Logger) error {
+
 	leaderConn, err := grpc.DialContext(ctx, joinAddr, grpc.WithInsecure())
 	if err != nil {
 		return errors.Wrap(err, "failed to join raft")
 	}
 	defer leaderConn.Close()
 	rclient := apipb.NewRaftServiceClient(leaderConn)
-	for x := 0; x < 5; x++ {
-		_, err := rclient.JoinCluster(metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", global.RaftSecret), &apipb.Peer{
+	for x := 0; x < 30; x++ {
+		if err := pingTCP(localAddr); err != nil {
+			lgger.Error("failed to join cluster - retrying", zap.Error(err),
+				zap.Int("attempt", x+1),
+				zap.String("joinAddr", joinAddr),
+				zap.String("localAddr", localAddr),
+			)
+			time.Sleep(1 * time.Second)
+			continue
+		}
+		_, err := rclient.JoinCluster(metadata.AppendToOutgoingContext(ctx, "x-graphik-raft-secret", g.RaftSecret()), &apipb.Peer{
 			NodeId: g.Raft().PeerID(),
 			Addr:   localAddr,
 		})
@@ -399,10 +426,21 @@ func join(ctx context.Context, joinAddr string, localAddr string, g *database.Gr
 				zap.String("joinAddr", joinAddr),
 				zap.String("localAddr", localAddr),
 			)
+			time.Sleep(1 * time.Second)
 			continue
 		} else {
 			break
 		}
 	}
+	return nil
+}
+
+func pingTCP(address string) error {
+	timeout := time.Second
+	conn, err := net.DialTimeout("tcp", address, timeout)
+	if err != nil {
+		return errors.Wrap(err, "tcp ping failure")
+	}
+	defer conn.Close()
 	return nil
 }

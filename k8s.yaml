@@ -46,8 +46,10 @@ metadata:
     app: graphik
 spec:
   ports:
-    - port: 7820
-      name: api
+  - port: 7820
+    name: api
+  - port: 7821
+    name: admin
   clusterIP: None
   selector:
     app: graphik
@@ -58,8 +60,8 @@ metadata:
   name: graphik
   namespace: graphik
 spec:
-  serviceName: "graphik"
-  replicas: 3
+  serviceName: graphik
+  replicas: 1
   selector:
     matchLabels:
       app: graphik
@@ -90,15 +92,11 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
           #image: graphikdb/graphik:v1.0.0
-          image: graphikdb/graphik:testing1
+          image: graphikdb/graphik:testing
           imagePullPolicy: Always
           ports:
-            - containerPort: 7820
-              name: api
-              protocol: TCP
-            - containerPort: 7821
-              name: raft
-              protocol: TCP
+          - containerPort: 7821
+          - containerPort: 7820
           volumeMounts:
             - name: database-storage
               mountPath: /tmp/graphik

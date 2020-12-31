@@ -10,7 +10,7 @@ import (
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/graphik-client-go"
 	"github.com/graphikDB/graphik/helpers"
-	"github.com/graphikDB/raft"
+	"github.com/graphikDB/graphik/raft"
 	"github.com/graphikDB/trigger"
 	raft2 "github.com/hashicorp/raft"
 	"github.com/pkg/errors"
@@ -64,12 +64,15 @@ func NewGraph(openID string, opts ...Opt) (*Graph, error) {
 	if err := options.SetDefaults(); err != nil {
 		return nil, err
 	}
-	os.MkdirAll(options.storagePath, 0700)
-	graphDB, err := bbolt.Open(filepath.Join(options.storagePath, "graph.db"), dbFileMode, nil)
+	host, _ := os.Hostname()
+	path := fmt.Sprintf("%s/%s", options.storagePath, host)
+	os.MkdirAll(path, 0700)
+
+	graphDB, err := bbolt.Open(filepath.Join(path, "graph.db"), dbFileMode, nil)
 	if err != nil {
 		return nil, err
 	}
-	pubsubDB, err := bbolt.Open(filepath.Join(options.storagePath, "pubsub.db"), dbFileMode, nil)
+	pubsubDB, err := bbolt.Open(filepath.Join(path, "pubsub.db"), dbFileMode, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -986,8 +989,10 @@ func (g *Graph) Stream(filter *apipb.StreamFilter, server apipb.DatabaseService_
 // Close is used to gracefully close the Database.
 func (b *Graph) Close() {
 	b.closeOnce.Do(func() {
-		if err := b.raft.Close(); err != nil {
-			b.options.logger.Error("failed to shutdown raft", zap.Error(err))
+		if b.raft != nil {
+			if err := b.raft.Close(); err != nil {
+				b.options.logger.Error("failed to shutdown raft", zap.Error(err))
+			}
 		}
 		b.options.machine.Close()
 		for _, closer := range b.closers {
@@ -1908,7 +1913,6 @@ func (g *Graph) HasConnection(ctx context.Context, ref *apipb.Ref) (*apipb.Boole
 }
 
 func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty, error) {
-	g.raft.State()
 	if g.raft.State() != raft2.Leader {
 		client, _ := g.leaderClient(ctx)
 		if client != nil {
@@ -1928,9 +1932,8 @@ func (g *Graph) JoinCluster(ctx context.Context, peer *apipb.Peer) (*empty.Empty
 			return nil, status.Error(codes.PermissionDenied, "invalid raft cluster secret")
 		}
 	}
-
 	if err := g.raft.Join(peer.GetNodeId(), peer.GetAddr()); err != nil {
-		return nil, status.Error(codes.Unknown, fmt.Sprintf("nodeID = %s target = %s error = %s", peer.GetNodeId(), peer.GetAddr(), err.Error()))
+		return nil, status.Error(codes.Unknown, fmt.Sprintf("failed to join cluster %s %s %s", peer.GetNodeId(), peer.GetAddr(), err.Error()))
 	}
 	return &empty.Empty{}, nil
 }
@@ -1953,6 +1956,10 @@ func (g *Graph) ClusterState(ctx context.Context, _ *empty.Empty) (*apipb.RaftSt
 		Peers:      peers,
 		Membership: toMembership(g.raft.State()),
 	}, nil
+}
+
+func (g *Graph) RaftSecret() string {
+	return g.options.raftSecret
 }
 
 func (g *Graph) Raft() *raft.Raft {

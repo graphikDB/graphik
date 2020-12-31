@@ -5,7 +5,7 @@ import (
 	"fmt"
 	apipb "github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/helpers"
-	"github.com/graphikDB/raft/fsm"
+	"github.com/graphikDB/graphik/raft/fsm"
 	"github.com/hashicorp/raft"
 	"github.com/pkg/errors"
 	"go.etcd.io/bbolt"

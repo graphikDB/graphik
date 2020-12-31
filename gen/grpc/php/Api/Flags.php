@@ -26,12 +26,6 @@ class Flags extends \Google\Protobuf\Internal\Message
      */
     private $storage_path = '';
     /**
-     * enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
-     *
-     * Generated from protobuf field <code>bool metrics = 3;</code>
-     */
-    private $metrics = false;
-    /**
      * cors allow headers (env: GRAPHIK_ALLOW_HEADERS)
      *
      * Generated from protobuf field <code>repeated string allow_headers = 5;</code>
@@ -122,8 +116,6 @@ class Flags extends \Google\Protobuf\Internal\Message
      *           open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)
      *     @type string $storage_path
      *           persistant storage ref (env: GRAPHIK_STORAGE_PATH)
-     *     @type bool $metrics
-     *           enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
      *     @type string[]|\Google\Protobuf\Internal\RepeatedField $allow_headers
      *           cors allow headers (env: GRAPHIK_ALLOW_HEADERS)
      *     @type string[]|\Google\Protobuf\Internal\RepeatedField $allow_methods
@@ -201,32 +193,6 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->storage_path = $var;
-
-        return $this;
-    }
-
-    /**
-     * enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
-     *
-     * Generated from protobuf field <code>bool metrics = 3;</code>
-     * @return bool
-     */
-    public function getMetrics()
-    {
-        return $this->metrics;
-    }
-
-    /**
-     * enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true)
-     *
-     * Generated from protobuf field <code>bool metrics = 3;</code>
-     * @param bool $var
-     * @return $this
-     */
-    public function setMetrics($var)
-    {
-        GPBUtil::checkBool($var);
-        $this->metrics = $var;
 
         return $this;
     }

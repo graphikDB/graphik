@@ -1,4 +1,4 @@
-FROM golang:1.14.2-alpine3.11 as build-env
+FROM golang:1.15.6-alpine3.12 as build-env
 
 RUN mkdir /graphik
 RUN apk --update add ca-certificates
@@ -11,7 +11,10 @@ COPY . .
 RUN go install ./...
 
 FROM alpine
-RUN apk add ca-certificates
+RUN apk add --no-cache ca-certificates
 COPY --from=build-env /go/bin/ /usr/local/bin/
 WORKDIR /workspace
+EXPOSE 7820
+EXPOSE 7821
+
 ENTRYPOINT ["/usr/local/bin/graphik"]
