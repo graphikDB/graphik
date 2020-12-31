@@ -19,6 +19,7 @@ type Options struct {
 	heartbeatTimeout         time.Duration
 	commitTimeout            time.Duration
 	leaseTimeout             time.Duration
+	debug                    bool
 }
 
 func (o *Options) setDefaults() {
@@ -112,5 +113,11 @@ func WithLeaderLeaseTimeout(timeout time.Duration) Opt {
 func WithCommitTimeout(timeout time.Duration) Opt {
 	return func(o *Options) {
 		o.commitTimeout = timeout
+	}
+}
+
+func WithDebug(debug bool) Opt {
+	return func(o *Options) {
+		o.debug = debug
 	}
 }

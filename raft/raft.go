@@ -30,6 +30,10 @@ func NewRaft(fsm *fsm.FSM, lis net.Listener, opts ...Opt) (*Raft, error) {
 	}
 	options.setDefaults()
 	config := raft.DefaultConfig()
+	config.LogLevel = "INFO"
+	if options.debug {
+		config.LogLevel = "DEBUG"
+	}
 	config.NoSnapshotRestoreOnStart = !options.restoreSnapshotOnRestart
 	config.LocalID = raft.ServerID(options.peerID)
 	if options.leaseTimeout != 0 {

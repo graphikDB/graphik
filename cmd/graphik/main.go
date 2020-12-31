@@ -85,6 +85,8 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		lgger.Error("zero root users", zap.String("usage", pflag.CommandLine.Lookup("root-users").Usage))
 		return
 	}
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 	var (
 		localRaftAddr = fmt.Sprintf("localhost:%v", global.ListenPort+1)
 		adminLis      net.Listener
@@ -95,8 +97,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		apiLis        net.Listener
 		advertise     net.Addr
 	)
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	defer m.Close()
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(interrupt)
 	if global.TlsCert != "" && global.TlsKey != "" {
@@ -134,7 +135,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 				return
 			}
 			leaderIp := pods[leaderPod]
-			lgger.Info("registered k8s environment",
+			lgger.Debug("registered k8s environment",
 				zap.String("namespace", namespace),
 				zap.String("podip", podIp),
 				zap.String("podname", podname),
@@ -178,7 +179,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	adminMux := cmux.New(adminLis)
 	defer adminLis.Close()
 	raftLis := adminMux.Match(cmux.Any())
-	lgger.Info("starting raft listener", zap.String("address", raftLis.Addr().String()))
+	lgger.Info("starting raft server", zap.String("address", raftLis.Addr().String()))
 	defer raftLis.Close()
 	var metricServer *http.Server
 	{
@@ -233,6 +234,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		raft.WithMaxPool(5),
 		raft.WithRestoreSnapshotOnRestart(false),
 		raft.WithTimeout(3 * time.Second),
+		raft.WithDebug(global.Debug),
 	}
 	if global.RaftAdvertise != "" {
 		advertise, err = net.ResolveTCPAddr("tcp", global.RaftAdvertise)
@@ -360,17 +362,19 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		}
 	})
 
-	if global.JoinRaft != "" {
-		lgger.Info("joining raft cluster",
-			zap.String("joinAddr", global.JoinRaft),
-			zap.String("localAddr", localRaftAddr),
-		)
+	m.Go(func(routine machine.Routine) {
+		if global.JoinRaft != "" {
+			lgger.Debug("joining raft cluster",
+				zap.String("joinAddr", global.JoinRaft),
+				zap.String("localAddr", localRaftAddr),
+			)
 
-		if err := join(ctx, global.JoinRaft, localRaftAddr, g, lgger); err != nil {
-			lgger.Error("failed to join raft", zap.Error(err))
-			cancel()
+			if err := join(ctx, global.JoinRaft, localRaftAddr, g, lgger); err != nil {
+				lgger.Error("failed to join raft", zap.Error(err))
+				cancel()
+			}
 		}
-	}
+	})
 	select {
 	case <-interrupt:
 		m.Cancel()
@@ -400,7 +404,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	}
 	m.Wait()
 	g.Close()
-	lgger.Info("shutdown successful")
+	lgger.Debug("shutdown successful")
 }
 
 func join(ctx context.Context, joinAddr, localAddr string, g *database.Graph, lgger *logger.Logger) error {
@@ -412,6 +416,9 @@ func join(ctx context.Context, joinAddr, localAddr string, g *database.Graph, lg
 	defer leaderConn.Close()
 	rclient := apipb.NewRaftServiceClient(leaderConn)
 	for x := 0; x < 30; x++ {
+		if ctx.Err() != nil {
+			return nil
+		}
 		if err := pingTCP(localAddr); err != nil {
 			lgger.Error("failed to join cluster - retrying", zap.Error(err),
 				zap.Int("attempt", x+1),
