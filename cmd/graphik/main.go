@@ -200,7 +200,8 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	}
 	defer adminLis.Close()
 	adminMux := cmux.New(adminLis)
-
+	hmatcher := adminMux.Match(cmux.HTTP1(), cmux.HTTP1Fast())
+	defer hmatcher.Close()
 	raftLis := adminMux.Match(cmux.Any())
 	if tlsConfig != nil {
 		raftLis = tls.NewListener(raftLis, tlsConfig)
@@ -221,8 +222,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		router.HandleFunc("/debug/pprof/trace", pprof.Trace)
 		metricServer = &http.Server{Handler: router}
 	}
-	hmatcher := adminMux.Match(cmux.HTTP1())
-	defer hmatcher.Close()
+
 	m.Go(func(routine machine.Routine) {
 		lgger.Info("starting metrics/admin server", zap.String("address", hmatcher.Addr().String()))
 		if err := metricServer.Serve(hmatcher); err != nil && err != http.ErrServerClosed {
