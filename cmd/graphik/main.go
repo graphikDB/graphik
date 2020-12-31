@@ -26,10 +26,10 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"net/http/pprof"
@@ -104,7 +104,10 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	if global.TlsCert != "" && global.TlsKey != "" {
 		cer, err := tls.LoadX509KeyPair(global.TlsCert, global.TlsKey)
 		if err != nil {
-			log.Println(err)
+			lgger.Error("failed to load tls config",
+				zap.String("cert", global.TlsCert),
+				zap.String("key", global.TlsKey),
+				zap.Error(err))
 			return
 		}
 		tlsConfig = &tls.Config{Certificates: []tls.Certificate{cer}}
@@ -172,14 +175,14 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			lgger.Error("failed to create listener", zap.Error(err))
 			return
 		}
-		if tlsConfig != nil {
-			adminLis = tls.NewListener(adminLis, tlsConfig)
-		}
 	}
 	defer adminLis.Close()
 	adminMux := cmux.New(adminLis)
 
 	raftLis := adminMux.Match(cmux.Any())
+	if tlsConfig != nil {
+		raftLis = tls.NewListener(raftLis, tlsConfig)
+	}
 	lgger.Info("starting raft server", zap.String("address", raftLis.Addr().String()))
 	defer raftLis.Close()
 	var metricServer *http.Server
@@ -309,14 +312,14 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	httpServer := &http.Server{
 		Handler: mux,
 	}
+	if tlsConfig != nil {
+		httpServer.TLSConfig = tlsConfig
+	}
 
 	apiLis, err = net.Listen("tcp", fmt.Sprintf(":%v", global.ListenPort))
 	if err != nil {
 		lgger.Error("failed to create api server listener", zap.Error(err))
 		return
-	}
-	if tlsConfig != nil {
-		apiLis = tls.NewListener(apiLis, tlsConfig)
 	}
 	defer apiLis.Close()
 	apiMux := cmux.New(apiLis)
@@ -330,7 +333,7 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			lgger.Error("http server failure", zap.Error(err))
 		}
 	})
-	gserver := grpc.NewServer(
+	gopts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(lgger.Zap()),
@@ -345,7 +348,11 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			g.StreamInterceptor(),
 			grpc_recovery.StreamServerInterceptor(),
 		),
-	)
+	}
+	if tlsConfig != nil {
+		gopts = append(gopts, grpc.Creds(credentials.NewTLS(tlsConfig)))
+	}
+	gserver := grpc.NewServer(gopts...)
 	apipb.RegisterDatabaseServiceServer(gserver, g)
 	apipb.RegisterRaftServiceServer(gserver, g)
 	reflection.Register(gserver)

@@ -7,7 +7,7 @@ https://graphikdb.github.io/graphik/
 
 `git clone git@github.com:graphikDB/graphik.git`
     
-`docker pull graphikdb/graphik:v1.1.0`
+`docker pull graphikdb/graphik:v1.1.1`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -190,14 +190,16 @@ please note that the following flags are required:
       --allow-methods strings             cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
       --allow-origins strings             cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
       --debug                             enable debug logs (env: GRAPHIK_DEBUG)
+      --environment string                deployment environment (k8s) (env: GRAPHIK_ENVIRONMENT)
       --join-raft string                  join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)
       --listen-port int                   serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT) (default 7820)
-      --metrics                           enable prometheus & pprof metrics (emv: GRAPHIK_METRICS = true) (default true)
-      --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID)  (required)
+      --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) (required) 
       --playground-client-id string       playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)
       --playground-client-secret string   playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)
-      --playground-redirect string        playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT) (default "http://localhost:7820/playground/callback")
+      --playground-redirect string        playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT) (default "http://localhost:8080/playground/callback")
+      --raft-max-pool int                 max nodes in pool (env: GRAPHIK_RAFT_MAX_POOL) (default 5)
       --raft-peer-id string               raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)
+      --raft-secret string                raft cluster secret (so only authorized nodes may join cluster) (env: GRAPHIK_RAFT_SECRET)
       --require-request-authorizers       require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)
       --require-response-authorizers      require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)
       --root-users strings                a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)  (required)
@@ -911,7 +913,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v1.1.0
+        image: graphikdb/graphik:v1.1.1
         env_file:
           - .env
         ports:
