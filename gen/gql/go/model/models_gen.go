@@ -317,7 +317,6 @@ type TraverseMeFilter struct {
 type Trigger struct {
 	Name              string `json:"name"`
 	Gtype             string `json:"gtype"`
-	Expression        string `json:"expression"`
 	Trigger           string `json:"trigger"`
 	TargetDocs        bool   `json:"target_docs"`
 	TargetConnections bool   `json:"target_connections"`
@@ -326,7 +325,6 @@ type Trigger struct {
 type TriggerInput struct {
 	Name              string `json:"name"`
 	Gtype             string `json:"gtype"`
-	Expression        string `json:"expression"`
 	Trigger           string `json:"trigger"`
 	TargetDocs        bool   `json:"target_docs"`
 	TargetConnections bool   `json:"target_connections"`

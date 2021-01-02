@@ -30100,25 +30100,7 @@ public final class Graphik {
 
     /**
      * <pre>
-     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-     * </pre>
-     *
-     * <code>string expression = 3 [(.validator.field) = { ... }</code>
-     */
-    java.lang.String getExpression();
-    /**
-     * <pre>
-     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-     * </pre>
-     *
-     * <code>string expression = 3 [(.validator.field) = { ... }</code>
-     */
-    com.google.protobuf.ByteString
-        getExpressionBytes();
-
-    /**
-     * <pre>
-     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
      * </pre>
      *
      * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30126,7 +30108,7 @@ public final class Graphik {
     java.lang.String getTrigger();
     /**
      * <pre>
-     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
      * </pre>
      *
      * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30171,7 +30153,6 @@ public final class Graphik {
     private Trigger() {
       name_ = "";
       gtype_ = "";
-      expression_ = "";
       trigger_ = "";
       targetDocs_ = false;
       targetConnections_ = false;
@@ -30211,12 +30192,6 @@ public final class Graphik {
               java.lang.String s = input.readStringRequireUtf8();
 
               gtype_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              expression_ = s;
               break;
             }
             case 34: {
@@ -30351,53 +30326,11 @@ public final class Graphik {
       }
     }
 
-    public static final int EXPRESSION_FIELD_NUMBER = 3;
-    private volatile java.lang.Object expression_;
-    /**
-     * <pre>
-     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-     * </pre>
-     *
-     * <code>string expression = 3 [(.validator.field) = { ... }</code>
-     */
-    public java.lang.String getExpression() {
-      java.lang.Object ref = expression_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        expression_ = s;
-        return s;
-      }
-    }
-    /**
-     * <pre>
-     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-     * </pre>
-     *
-     * <code>string expression = 3 [(.validator.field) = { ... }</code>
-     */
-    public com.google.protobuf.ByteString
-        getExpressionBytes() {
-      java.lang.Object ref = expression_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        expression_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     public static final int TRIGGER_FIELD_NUMBER = 4;
     private volatile java.lang.Object trigger_;
     /**
      * <pre>
-     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
      * </pre>
      *
      * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30416,7 +30349,7 @@ public final class Graphik {
     }
     /**
      * <pre>
-     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
      * </pre>
      *
      * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30481,9 +30414,6 @@ public final class Graphik {
       if (!getGtypeBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, gtype_);
       }
-      if (!getExpressionBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, expression_);
-      }
       if (!getTriggerBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, trigger_);
       }
@@ -30507,9 +30437,6 @@ public final class Graphik {
       }
       if (!getGtypeBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, gtype_);
-      }
-      if (!getExpressionBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, expression_);
       }
       if (!getTriggerBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, trigger_);
@@ -30542,8 +30469,6 @@ public final class Graphik {
           .equals(other.getName());
       result = result && getGtype()
           .equals(other.getGtype());
-      result = result && getExpression()
-          .equals(other.getExpression());
       result = result && getTrigger()
           .equals(other.getTrigger());
       result = result && (getTargetDocs()
@@ -30565,8 +30490,6 @@ public final class Graphik {
       hash = (53 * hash) + getName().hashCode();
       hash = (37 * hash) + GTYPE_FIELD_NUMBER;
       hash = (53 * hash) + getGtype().hashCode();
-      hash = (37 * hash) + EXPRESSION_FIELD_NUMBER;
-      hash = (53 * hash) + getExpression().hashCode();
       hash = (37 * hash) + TRIGGER_FIELD_NUMBER;
       hash = (53 * hash) + getTrigger().hashCode();
       hash = (37 * hash) + TARGET_DOCS_FIELD_NUMBER;
@@ -30716,8 +30639,6 @@ public final class Graphik {
 
         gtype_ = "";
 
-        expression_ = "";
-
         trigger_ = "";
 
         targetDocs_ = false;
@@ -30752,7 +30673,6 @@ public final class Graphik {
         api.Graphik.Trigger result = new api.Graphik.Trigger(this);
         result.name_ = name_;
         result.gtype_ = gtype_;
-        result.expression_ = expression_;
         result.trigger_ = trigger_;
         result.targetDocs_ = targetDocs_;
         result.targetConnections_ = targetConnections_;
@@ -30810,10 +30730,6 @@ public final class Graphik {
         }
         if (!other.getGtype().isEmpty()) {
           gtype_ = other.gtype_;
-          onChanged();
-        }
-        if (!other.getExpression().isEmpty()) {
-          expression_ = other.expression_;
           onChanged();
         }
         if (!other.getTrigger().isEmpty()) {
@@ -31033,99 +30949,10 @@ public final class Graphik {
         return this;
       }
 
-      private java.lang.Object expression_ = "";
-      /**
-       * <pre>
-       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-       * </pre>
-       *
-       * <code>string expression = 3 [(.validator.field) = { ... }</code>
-       */
-      public java.lang.String getExpression() {
-        java.lang.Object ref = expression_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          expression_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <pre>
-       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-       * </pre>
-       *
-       * <code>string expression = 3 [(.validator.field) = { ... }</code>
-       */
-      public com.google.protobuf.ByteString
-          getExpressionBytes() {
-        java.lang.Object ref = expression_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          expression_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <pre>
-       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-       * </pre>
-       *
-       * <code>string expression = 3 [(.validator.field) = { ... }</code>
-       */
-      public Builder setExpression(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        expression_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-       * </pre>
-       *
-       * <code>string expression = 3 [(.validator.field) = { ... }</code>
-       */
-      public Builder clearExpression() {
-        
-        expression_ = getDefaultInstance().getExpression();
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-       * </pre>
-       *
-       * <code>string expression = 3 [(.validator.field) = { ... }</code>
-       */
-      public Builder setExpressionBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        expression_ = value;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object trigger_ = "";
       /**
        * <pre>
-       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -31144,7 +30971,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -31164,7 +30991,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -31181,7 +31008,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -31194,7 +31021,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * trigger is the map CEL expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -52747,139 +52574,138 @@ public final class Graphik {
       "\005gtype\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpres" +
       "sion\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\023\n\013target_d" +
       "ocs\030\005 \001(\010\022\032\n\022target_connections\030\006 \001(\010\"&\n" +
-      "\007Indexes\022\033\n\007indexes\030\001 \003(\0132\n.api.Index\"\304\001" +
+      "\007Indexes\022\033\n\007indexes\030\001 \003(\0132\n.api.Index\"\236\001" +
       "\n\007Trigger\022\036\n\004name\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
-      "$\022\037\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nex" +
-      "pression\030\003 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022!\n\007trig" +
-      "ger\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\023\n\013target_do" +
-      "cs\030\005 \001(\010\022\032\n\022target_connections\030\006 \001(\010\"*\n\010" +
-      "Triggers\022\036\n\010triggers\030\001 \003(\0132\014.api.Trigger" +
-      "\"\227\001\n\014StreamFilter\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014" +
-      "\n\n^.{1,225}$\022\022\n\nexpression\030\002 \001(\t\022\'\n\003min\030" +
-      "\003 \001(\0132\032.google.protobuf.Timestamp\022\'\n\003max" +
-      "\030\004 \001(\0132\032.google.protobuf.Timestamp\"G\n\005Gr" +
-      "aph\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022%\n\013connecti" +
-      "ons\030\002 \001(\0132\020.api.Connections\"\247\004\n\005Flags\022\031\n" +
-      "\021open_id_discovery\030\001 \001(\t\022\024\n\014storage_path" +
-      "\030\002 \001(\t\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\rallow_m" +
-      "ethods\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(\t\022\022\n\nr" +
-      "oot_users\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007tls" +
-      "_key\030\n \001(\t\022\034\n\024playground_client_id\030\013 \001(\t" +
-      "\022 \n\030playground_client_secret\030\014 \001(\t\022\033\n\023pl" +
-      "ayground_redirect\030\r \001(\t\022#\n\033require_reque" +
-      "st_authorizers\030\017 \001(\010\022$\n\034require_response" +
-      "_authorizers\030\020 \001(\010\022\021\n\tjoin_raft\030\021 \001(\t\022\024\n" +
-      "\014raft_peer_id\030\022 \001(\t\022\023\n\013listen_port\030\023 \001(\003" +
-      "\022\023\n\013raft_secret\030\024 \001(\t\022\r\n\005debug\030\025 \001(\010\022\023\n\013" +
-      "environment\030\026 \001(\t\022\026\n\016raft_advertise\030\027 \001(" +
-      "\t\022\025\n\rraft_max_pool\030\030 \001(\003\022\022\n\nmutual_tls\030\031" +
-      " \001(\010\022\017\n\007ca_cert\030\032 \001(\t\"\030\n\007Boolean\022\r\n\005valu" +
-      "e\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014Exi" +
-      "stsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
-      "}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$" +
-      "\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005index" +
-      "\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006\342" +
-      "\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.google.proto" +
-      "buf.Struct\"V\n\nEditFilter\022\033\n\006filter\030\001 \001(\013" +
-      "2\013.api.Filter\022+\n\nattributes\030\002 \001(\0132\027.goog" +
-      "le.protobuf.Struct\"\027\n\004Pong\022\017\n\007message\030\001 " +
-      "\001(\t\"c\n\017OutboundMessage\022!\n\007channel\030\001 \001(\tB" +
-      "\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.google" +
-      ".protobuf.StructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!\n\007" +
-      "channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030" +
-      "\002 \001(\0132\027.google.protobuf.StructB\006\342\337\037\002 \001\022\036" +
-      "\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttimest" +
-      "amp\030\004 \001(\0132\032.google.protobuf.TimestampB\006\342" +
-      "\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"" +
-      "\303\001\n\006Schema\022\030\n\020connection_types\030\001 \003(\t\022\021\n\t" +
-      "doc_types\030\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020.a" +
-      "pi.Authorizers\022%\n\013constraints\030\004 \001(\0132\020.ap" +
-      "i.Constraints\022\035\n\007indexes\030\005 \001(\0132\014.api.Ind" +
-      "exes\022\037\n\010triggers\030\006 \001(\0132\r.api.Triggers\" \n" +
-      "\nExprFilter\022\022\n\nexpression\030\001 \001(\t\"\374\002\n\013Raft" +
-      "Command\022\026\n\004user\030\001 \001(\0132\010.api.Doc\022\016\n\006metho" +
-      "d\030\002 \001(\t\022\032\n\010set_docs\030\003 \003(\0132\010.api.Doc\022(\n\017s" +
-      "et_connections\030\004 \003(\0132\017.api.Connection\022\032\n" +
-      "\010del_docs\030\005 \003(\0132\010.api.Ref\022!\n\017del_connect" +
-      "ions\030\006 \003(\0132\010.api.Ref\022!\n\013set_indexes\030\007 \001(" +
-      "\0132\014.api.Indexes\022)\n\017set_authorizers\030\010 \001(\013" +
-      "2\020.api.Authorizers\022)\n\017set_constraints\030\t " +
-      "\001(\0132\020.api.Constraints\022\"\n\014send_message\030\n " +
-      "\001(\0132\014.api.Message\022#\n\014set_triggers\030\013 \001(\0132" +
-      "\r.api.Triggers\"%\n\004Peer\022\017\n\007node_id\030\001 \001(\t\022" +
-      "\014\n\004addr\030\002 \001(\t\"\262\001\n\tRaftState\022\016\n\006leader\030\001 " +
-      "\001(\t\022#\n\nmembership\030\002 \001(\0162\017.api.Membership" +
-      "\022\030\n\005peers\030\003 \003(\0132\t.api.Peer\022(\n\005stats\030\004 \003(" +
-      "\0132\031.api.RaftState.StatsEntry\032,\n\nStatsEnt" +
-      "ry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001*\035\n\tAl" +
-      "gorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t" +
-      "\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003" +
-      "MIN\020\004\022\010\n\004PROD\020\005*P\n\nMembership\022\013\n\007UNKNOWN" +
-      "\020\000\022\014\n\010FOLLOWER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n\006LEADE" +
-      "R\020\003\022\014\n\010SHUTDOWN\020\0042\250\001\n\013RaftService\022+\n\004Pin" +
-      "g\022\026.google.protobuf.Empty\032\t.api.Pong\"\000\0222" +
-      "\n\013JoinCluster\022\t.api.Peer\032\026.google.protob" +
-      "uf.Empty\"\000\0228\n\014ClusterState\022\026.google.prot" +
-      "obuf.Empty\032\016.api.RaftState\"\0002\217\022\n\017Databas" +
-      "eService\0222\n\tGetSchema\022\026.google.protobuf." +
-      "Empty\032\013.api.Schema\"\000\022<\n\016SetAuthorizers\022\020" +
-      ".api.Authorizers\032\026.google.protobuf.Empty" +
-      "\"\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.google." +
-      "protobuf.Empty\"\000\022<\n\016SetConstraints\022\020.api" +
-      ".Constraints\032\026.google.protobuf.Empty\"\000\0226" +
-      "\n\013SetTriggers\022\r.api.Triggers\032\026.google.pr" +
-      "otobuf.Empty\"\000\022(\n\002Me\022\026.google.protobuf.E" +
-      "mpty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022\023.api.DocC" +
-      "onstructor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.a" +
-      "pi.DocConstructors\032\t.api.Docs\"\000\022\036\n\006PutDo" +
-      "c\022\010.api.Doc\032\010.api.Doc\"\000\022!\n\007PutDocs\022\t.api" +
-      ".Docs\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010" +
-      ".api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Filter\032\t." +
-      "api.Docs\"\000\0222\n\010Traverse\022\023.api.TraverseFil" +
-      "ter\032\017.api.Traversals\"\000\0226\n\nTraverseMe\022\025.a" +
-      "pi.TraverseMeFilter\032\017.api.Traversals\"\000\022 " +
-      "\n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(\n\010Edit" +
-      "Docs\022\017.api.EditFilter\032\t.api.Docs\"\000\022,\n\006De" +
-      "lDoc\022\010.api.Ref\032\026.google.protobuf.Empty\"\000" +
-      "\0220\n\007DelDocs\022\013.api.Filter\032\026.google.protob" +
-      "uf.Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsFilt" +
-      "er\032\014.api.Boolean\"\000\0225\n\020ExistsConnection\022\021" +
-      ".api.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006Has" +
-      "Doc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasConn" +
-      "ection\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020Crea" +
-      "teConnection\022\032.api.ConnectionConstructor" +
-      "\032\017.api.Connection\"\000\022D\n\021CreateConnections" +
-      "\022\033.api.ConnectionConstructors\032\020.api.Conn" +
-      "ections\"\000\0223\n\rPutConnection\022\017.api.Connect" +
-      "ion\032\017.api.Connection\"\000\0226\n\016PutConnections" +
-      "\022\020.api.Connections\032\020.api.Connections\"\000\022@" +
-      "\n\020SearchAndConnect\022\030.api.SearchConnectFi" +
-      "lter\032\020.api.Connections\"\000\022D\n\022SearchAndCon" +
-      "nectMe\022\032.api.SearchConnectMeFilter\032\020.api" +
-      ".Connections\"\000\022,\n\rGetConnection\022\010.api.Re" +
-      "f\032\017.api.Connection\"\000\0224\n\021SearchConnection" +
-      "s\022\013.api.Filter\032\020.api.Connections\"\000\022.\n\016Ed" +
-      "itConnection\022\t.api.Edit\032\017.api.Connection" +
-      "\"\000\0226\n\017EditConnections\022\017.api.EditFilter\032\020" +
-      ".api.Connections\"\000\0223\n\rDelConnection\022\010.ap" +
-      "i.Ref\032\026.google.protobuf.Empty\"\000\0227\n\016DelCo" +
-      "nnections\022\013.api.Filter\032\026.google.protobuf" +
-      ".Empty\"\000\0229\n\017ConnectionsFrom\022\022.api.Connec" +
-      "tFilter\032\020.api.Connections\"\000\0227\n\rConnectio" +
-      "nsTo\022\022.api.ConnectFilter\032\020.api.Connectio" +
-      "ns\"\000\022.\n\rAggregateDocs\022\016.api.AggFilter\032\013." +
-      "api.Number\"\000\0225\n\024AggregateConnections\022\016.a" +
-      "pi.AggFilter\032\013.api.Number\"\000\022;\n\tBroadcast" +
-      "\022\024.api.OutboundMessage\032\026.google.protobuf" +
-      ".Empty\"\000\022-\n\006Stream\022\021.api.StreamFilter\032\014." +
-      "api.Message\"\0000\001\022:\n\023PushDocConstructors\022\023" +
-      ".api.DocConstructor\032\010.api.Doc\"\000(\0010\001\022O\n\032P" +
-      "ushConnectionConstructors\022\032.api.Connecti" +
-      "onConstructor\032\017.api.Connection\"\000(\0010\001\0220\n\010" +
-      "SeedDocs\022\010.api.Doc\032\026.google.protobuf.Emp" +
-      "ty\"\000(\001\022>\n\017SeedConnections\022\017.api.Connecti" +
-      "on\032\026.google.protobuf.Empty\"\000(\001B\007Z\005apipbb" +
-      "\006proto3"
+      "$\022\037\n\005gtype\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022!\n\007tr" +
+      "igger\030\004 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\023\n\013target_" +
+      "docs\030\005 \001(\010\022\032\n\022target_connections\030\006 \001(\010\"*" +
+      "\n\010Triggers\022\036\n\010triggers\030\001 \003(\0132\014.api.Trigg" +
+      "er\"\227\001\n\014StreamFilter\022!\n\007channel\030\001 \001(\tB\020\342\337" +
+      "\037\014\n\n^.{1,225}$\022\022\n\nexpression\030\002 \001(\t\022\'\n\003mi" +
+      "n\030\003 \001(\0132\032.google.protobuf.Timestamp\022\'\n\003m" +
+      "ax\030\004 \001(\0132\032.google.protobuf.Timestamp\"G\n\005" +
+      "Graph\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022%\n\013connec" +
+      "tions\030\002 \001(\0132\020.api.Connections\"\247\004\n\005Flags\022" +
+      "\031\n\021open_id_discovery\030\001 \001(\t\022\024\n\014storage_pa" +
+      "th\030\002 \001(\t\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\rallow" +
+      "_methods\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(\t\022\022\n" +
+      "\nroot_users\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007t" +
+      "ls_key\030\n \001(\t\022\034\n\024playground_client_id\030\013 \001" +
+      "(\t\022 \n\030playground_client_secret\030\014 \001(\t\022\033\n\023" +
+      "playground_redirect\030\r \001(\t\022#\n\033require_req" +
+      "uest_authorizers\030\017 \001(\010\022$\n\034require_respon" +
+      "se_authorizers\030\020 \001(\010\022\021\n\tjoin_raft\030\021 \001(\t\022" +
+      "\024\n\014raft_peer_id\030\022 \001(\t\022\023\n\013listen_port\030\023 \001" +
+      "(\003\022\023\n\013raft_secret\030\024 \001(\t\022\r\n\005debug\030\025 \001(\010\022\023" +
+      "\n\013environment\030\026 \001(\t\022\026\n\016raft_advertise\030\027 " +
+      "\001(\t\022\025\n\rraft_max_pool\030\030 \001(\003\022\022\n\nmutual_tls" +
+      "\030\031 \001(\010\022\017\n\007ca_cert\030\032 \001(\t\"\030\n\007Boolean\022\r\n\005va" +
+      "lue\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014E" +
+      "xistsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
+      "25}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
+      "}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005ind" +
+      "ex\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB" +
+      "\006\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.google.pro" +
+      "tobuf.Struct\"V\n\nEditFilter\022\033\n\006filter\030\001 \001" +
+      "(\0132\013.api.Filter\022+\n\nattributes\030\002 \001(\0132\027.go" +
+      "ogle.protobuf.Struct\"\027\n\004Pong\022\017\n\007message\030" +
+      "\001 \001(\t\"c\n\017OutboundMessage\022!\n\007channel\030\001 \001(" +
+      "\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.goog" +
+      "le.protobuf.StructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!" +
+      "\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004dat" +
+      "a\030\002 \001(\0132\027.google.protobuf.StructB\006\342\337\037\002 \001" +
+      "\022\036\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttime" +
+      "stamp\030\004 \001(\0132\032.google.protobuf.TimestampB" +
+      "\006\342\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
+      "$\"\303\001\n\006Schema\022\030\n\020connection_types\030\001 \003(\t\022\021" +
+      "\n\tdoc_types\030\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020" +
+      ".api.Authorizers\022%\n\013constraints\030\004 \001(\0132\020." +
+      "api.Constraints\022\035\n\007indexes\030\005 \001(\0132\014.api.I" +
+      "ndexes\022\037\n\010triggers\030\006 \001(\0132\r.api.Triggers\"" +
+      " \n\nExprFilter\022\022\n\nexpression\030\001 \001(\t\"\374\002\n\013Ra" +
+      "ftCommand\022\026\n\004user\030\001 \001(\0132\010.api.Doc\022\016\n\006met" +
+      "hod\030\002 \001(\t\022\032\n\010set_docs\030\003 \003(\0132\010.api.Doc\022(\n" +
+      "\017set_connections\030\004 \003(\0132\017.api.Connection\022" +
+      "\032\n\010del_docs\030\005 \003(\0132\010.api.Ref\022!\n\017del_conne" +
+      "ctions\030\006 \003(\0132\010.api.Ref\022!\n\013set_indexes\030\007 " +
+      "\001(\0132\014.api.Indexes\022)\n\017set_authorizers\030\010 \001" +
+      "(\0132\020.api.Authorizers\022)\n\017set_constraints\030" +
+      "\t \001(\0132\020.api.Constraints\022\"\n\014send_message\030" +
+      "\n \001(\0132\014.api.Message\022#\n\014set_triggers\030\013 \001(" +
+      "\0132\r.api.Triggers\"%\n\004Peer\022\017\n\007node_id\030\001 \001(" +
+      "\t\022\014\n\004addr\030\002 \001(\t\"\262\001\n\tRaftState\022\016\n\006leader\030" +
+      "\001 \001(\t\022#\n\nmembership\030\002 \001(\0162\017.api.Membersh" +
+      "ip\022\030\n\005peers\030\003 \003(\0132\t.api.Peer\022(\n\005stats\030\004 " +
+      "\003(\0132\031.api.RaftState.StatsEntry\032,\n\nStatsE" +
+      "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001*\035\n\t" +
+      "Algorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate" +
+      "\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007" +
+      "\n\003MIN\020\004\022\010\n\004PROD\020\005*P\n\nMembership\022\013\n\007UNKNO" +
+      "WN\020\000\022\014\n\010FOLLOWER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n\006LEA" +
+      "DER\020\003\022\014\n\010SHUTDOWN\020\0042\250\001\n\013RaftService\022+\n\004P" +
+      "ing\022\026.google.protobuf.Empty\032\t.api.Pong\"\000" +
+      "\0222\n\013JoinCluster\022\t.api.Peer\032\026.google.prot" +
+      "obuf.Empty\"\000\0228\n\014ClusterState\022\026.google.pr" +
+      "otobuf.Empty\032\016.api.RaftState\"\0002\217\022\n\017Datab" +
+      "aseService\0222\n\tGetSchema\022\026.google.protobu" +
+      "f.Empty\032\013.api.Schema\"\000\022<\n\016SetAuthorizers" +
+      "\022\020.api.Authorizers\032\026.google.protobuf.Emp" +
+      "ty\"\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.googl" +
+      "e.protobuf.Empty\"\000\022<\n\016SetConstraints\022\020.a" +
+      "pi.Constraints\032\026.google.protobuf.Empty\"\000" +
+      "\0226\n\013SetTriggers\022\r.api.Triggers\032\026.google." +
+      "protobuf.Empty\"\000\022(\n\002Me\022\026.google.protobuf" +
+      ".Empty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022\023.api.Do" +
+      "cConstructor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024" +
+      ".api.DocConstructors\032\t.api.Docs\"\000\022\036\n\006Put" +
+      "Doc\022\010.api.Doc\032\010.api.Doc\"\000\022!\n\007PutDocs\022\t.a" +
+      "pi.Docs\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref" +
+      "\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Filter\032" +
+      "\t.api.Docs\"\000\0222\n\010Traverse\022\023.api.TraverseF" +
+      "ilter\032\017.api.Traversals\"\000\0226\n\nTraverseMe\022\025" +
+      ".api.TraverseMeFilter\032\017.api.Traversals\"\000" +
+      "\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(\n\010Ed" +
+      "itDocs\022\017.api.EditFilter\032\t.api.Docs\"\000\022,\n\006" +
+      "DelDoc\022\010.api.Ref\032\026.google.protobuf.Empty" +
+      "\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google.prot" +
+      "obuf.Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsFi" +
+      "lter\032\014.api.Boolean\"\000\0225\n\020ExistsConnection" +
+      "\022\021.api.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006H" +
+      "asDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasCo" +
+      "nnection\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020Cr" +
+      "eateConnection\022\032.api.ConnectionConstruct" +
+      "or\032\017.api.Connection\"\000\022D\n\021CreateConnectio" +
+      "ns\022\033.api.ConnectionConstructors\032\020.api.Co" +
+      "nnections\"\000\0223\n\rPutConnection\022\017.api.Conne" +
+      "ction\032\017.api.Connection\"\000\0226\n\016PutConnectio" +
+      "ns\022\020.api.Connections\032\020.api.Connections\"\000" +
+      "\022@\n\020SearchAndConnect\022\030.api.SearchConnect" +
+      "Filter\032\020.api.Connections\"\000\022D\n\022SearchAndC" +
+      "onnectMe\022\032.api.SearchConnectMeFilter\032\020.a" +
+      "pi.Connections\"\000\022,\n\rGetConnection\022\010.api." +
+      "Ref\032\017.api.Connection\"\000\0224\n\021SearchConnecti" +
+      "ons\022\013.api.Filter\032\020.api.Connections\"\000\022.\n\016" +
+      "EditConnection\022\t.api.Edit\032\017.api.Connecti" +
+      "on\"\000\0226\n\017EditConnections\022\017.api.EditFilter" +
+      "\032\020.api.Connections\"\000\0223\n\rDelConnection\022\010." +
+      "api.Ref\032\026.google.protobuf.Empty\"\000\0227\n\016Del" +
+      "Connections\022\013.api.Filter\032\026.google.protob" +
+      "uf.Empty\"\000\0229\n\017ConnectionsFrom\022\022.api.Conn" +
+      "ectFilter\032\020.api.Connections\"\000\0227\n\rConnect" +
+      "ionsTo\022\022.api.ConnectFilter\032\020.api.Connect" +
+      "ions\"\000\022.\n\rAggregateDocs\022\016.api.AggFilter\032" +
+      "\013.api.Number\"\000\0225\n\024AggregateConnections\022\016" +
+      ".api.AggFilter\032\013.api.Number\"\000\022;\n\tBroadca" +
+      "st\022\024.api.OutboundMessage\032\026.google.protob" +
+      "uf.Empty\"\000\022-\n\006Stream\022\021.api.StreamFilter\032" +
+      "\014.api.Message\"\0000\001\022:\n\023PushDocConstructors" +
+      "\022\023.api.DocConstructor\032\010.api.Doc\"\000(\0010\001\022O\n" +
+      "\032PushConnectionConstructors\022\032.api.Connec" +
+      "tionConstructor\032\017.api.Connection\"\000(\0010\001\0220" +
+      "\n\010SeedDocs\022\010.api.Doc\032\026.google.protobuf.E" +
+      "mpty\"\000(\001\022>\n\017SeedConnections\022\017.api.Connec" +
+      "tion\032\026.google.protobuf.Empty\"\000(\001B\007Z\005apip" +
+      "bb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -53077,7 +52903,7 @@ public final class Graphik {
     internal_static_api_Trigger_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Trigger_descriptor,
-        new java.lang.String[] { "Name", "Gtype", "Expression", "Trigger", "TargetDocs", "TargetConnections", });
+        new java.lang.String[] { "Name", "Gtype", "Trigger", "TargetDocs", "TargetConnections", });
     internal_static_api_Triggers_descriptor =
       getDescriptor().getMessageTypes().get(29);
     internal_static_api_Triggers_fieldAccessorTable = new

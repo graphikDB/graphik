@@ -259,7 +259,6 @@ func gqlTrigger(val *apipb.Trigger) *model.Trigger {
 	return &model.Trigger{
 		Name:              val.GetName(),
 		Gtype:             val.GetGtype(),
-		Expression:        val.GetExpression(),
 		Trigger:           val.GetTrigger(),
 		TargetDocs:        val.GetTargetDocs(),
 		TargetConnections: val.GetTargetConnections(),
@@ -475,7 +474,6 @@ func protoTrigger(trigger *model.TriggerInput) *apipb.Trigger {
 	return &apipb.Trigger{
 		Name:              trigger.Name,
 		Gtype:             trigger.Gtype,
-		Expression:        trigger.Expression,
 		Trigger:           trigger.Trigger,
 		TargetDocs:        trigger.TargetDocs,
 		TargetConnections: trigger.TargetConnections,

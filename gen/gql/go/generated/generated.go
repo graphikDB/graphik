@@ -212,7 +212,6 @@ type ComplexityRoot struct {
 	}
 
 	Trigger struct {
-		Expression        func(childComplexity int) int
 		Gtype             func(childComplexity int) int
 		Name              func(childComplexity int) int
 		TargetConnections func(childComplexity int) int
@@ -1166,13 +1165,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Traversals.Traversals(childComplexity), true
 
-	case "Trigger.expression":
-		if e.complexity.Trigger.Expression == nil {
-			break
-		}
-
-		return e.complexity.Trigger.Expression(childComplexity), true
-
 	case "Trigger.gtype":
 		if e.complexity.Trigger.Gtype == nil {
 			break
@@ -1413,9 +1405,7 @@ type Trigger {
   name: String!
   # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
-  # expression is a boolean CEL expression used to evaluate the doc/connection
-  expression: String!
-  # trigger is the map CEL expression that mutates the doc/connection before it is stored
+  # trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
   trigger: String!
   # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
@@ -1768,9 +1758,7 @@ input TriggerInput {
   name: String!
   # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
-  # expression is a boolean CEL expression used to evaluate the doc/connection
-  expression: String!
-  # trigger is the map CEL expression that mutates the doc/connection before it is stored
+  # trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
   trigger: String!
   # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
@@ -6355,41 +6343,6 @@ func (ec *executionContext) _Trigger_gtype(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Trigger_expression(ctx context.Context, field graphql.CollectedField, obj *model.Trigger) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Trigger",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Expression, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Trigger_trigger(ctx context.Context, field graphql.CollectedField, obj *model.Trigger) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -8804,14 +8757,6 @@ func (ec *executionContext) unmarshalInputTriggerInput(ctx context.Context, obj 
 			if err != nil {
 				return it, err
 			}
-		case "expression":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("expression"))
-			it.Expression, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "trigger":
 			var err error
 
@@ -9922,11 +9867,6 @@ func (ec *executionContext) _Trigger(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "gtype":
 			out.Values[i] = ec._Trigger_gtype(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "expression":
-			out.Values[i] = ec._Trigger_expression(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

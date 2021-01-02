@@ -466,7 +466,6 @@ func (this *Indexes) Validate() error {
 
 var _regex_Trigger_Name = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Trigger_Gtype = regexp.MustCompile(`^.{1,225}$`)
-var _regex_Trigger_Expression = regexp.MustCompile(`^.{1,225}$`)
 var _regex_Trigger_Trigger = regexp.MustCompile(`^.{1,225}$`)
 
 func (this *Trigger) Validate() error {
@@ -475,9 +474,6 @@ func (this *Trigger) Validate() error {
 	}
 	if !_regex_Trigger_Gtype.MatchString(this.Gtype) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Gtype", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Gtype))
-	}
-	if !_regex_Trigger_Expression.MatchString(this.Expression) {
-		return github_com_mwitkow_go_proto_validators.FieldError("Expression", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Expression))
 	}
 	if !_regex_Trigger_Trigger.MatchString(this.Trigger) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Trigger", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Trigger))

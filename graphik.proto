@@ -404,9 +404,7 @@ message Trigger {
   string name =1[(validator.field) = {regex : "^.{1,225}$"}];
   // gtype is the type of doc/connection will invoke the trigger
   string gtype =2[(validator.field) = {regex : "^.{1,225}$"}];
-  // expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-  string expression =3[(validator.field) = {regex : "^.{1,225}$"}];
-  // trigger is the map CEL expression that mutates the doc/connection before it is stored
+  // trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
   string trigger = 4[(validator.field) = {regex : "^.{1,225}$"}];
   // if target_docs is true, this trigger will be applied to documents.
   bool target_docs =5;

@@ -217,6 +217,8 @@ github.com/graphikDB/generic v0.0.1 h1:0NIlU/Hk50dx+tCh5KgyZ+1l0IWgcOkb32fKX+j7W
 github.com/graphikDB/generic v0.0.1/go.mod h1:3Dji4QoogUaekuR3a+qDFRAmut1CUtsMkhVkW0oGAiw=
 github.com/graphikDB/trigger v0.0.13 h1:GMPOvLWwHQ1i6GOU54iAe6qqNywIi8nZjclwgre/1xk=
 github.com/graphikDB/trigger v0.0.13/go.mod h1:RZn4pNk7i0xbur4PBtRR8L1IJedr1ll/mymrwY2M4dQ=
+github.com/graphikDB/trigger v0.0.14 h1:SuIlgsk7GO2pYYdFWkxxTNX1uZFa6KOUuLm/2yU8EeU=
+github.com/graphikDB/trigger v0.0.14/go.mod h1:RZn4pNk7i0xbur4PBtRR8L1IJedr1ll/mymrwY2M4dQ=
 github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
 github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 h1:FlFbCRLd5Jr4iYXZufAvgWN6Ao0JrI5chLINnUXDDr0=

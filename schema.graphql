@@ -115,9 +115,7 @@ type Trigger {
   name: String!
   # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
-  # expression is a boolean CEL expression used to evaluate the doc/connection
-  expression: String!
-  # trigger is the map CEL expression that mutates the doc/connection before it is stored
+  # trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
   trigger: String!
   # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!
@@ -470,9 +468,7 @@ input TriggerInput {
   name: String!
   # gtype is the type of object the constraint will be applied to (ex: user)
   gtype: String!
-  # expression is a boolean CEL expression used to evaluate the doc/connection
-  expression: String!
-  # trigger is the map CEL expression that mutates the doc/connection before it is stored
+  # trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
   trigger: String!
   # if target_docs is true, this constraint will be applied to documents.
   target_docs: Boolean!

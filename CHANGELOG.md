@@ -72,3 +72,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add k8s manifest
 ## [1.1.2] - 2020-12-31
 - mutual tls options client/server side
+
+## [1.2.0] - 2020-1-1
+- switch to arrow syntax for triggers

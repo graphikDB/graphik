@@ -166,7 +166,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
   add_message "api.Trigger" do
     optional :name, :string, 1
     optional :gtype, :string, 2
-    optional :expression, :string, 3
     optional :trigger, :string, 4
     optional :target_docs, :bool, 5
     optional :target_connections, :bool, 6

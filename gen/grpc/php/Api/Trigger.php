@@ -28,13 +28,7 @@ class Trigger extends \Google\Protobuf\Internal\Message
      */
     private $gtype = '';
     /**
-     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-     *
-     * Generated from protobuf field <code>string expression = 3 [(.validator.field) = {</code>
-     */
-    private $expression = '';
-    /**
-     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
      *
      * Generated from protobuf field <code>string trigger = 4 [(.validator.field) = {</code>
      */
@@ -62,10 +56,8 @@ class Trigger extends \Google\Protobuf\Internal\Message
      *           name is the unique name of the authorizer
      *     @type string $gtype
      *           gtype is the type of doc/connection will invoke the trigger
-     *     @type string $expression
-     *           expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
      *     @type string $trigger
-     *           trigger is the map CEL expression that mutates the doc/connection before it is stored
+     *           trigger is the arrow syntax expression that mutates the doc/connection before it is stored
      *     @type bool $target_docs
      *           if target_docs is true, this trigger will be applied to documents.
      *     @type bool $target_connections
@@ -130,33 +122,7 @@ class Trigger extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-     *
-     * Generated from protobuf field <code>string expression = 3 [(.validator.field) = {</code>
-     * @return string
-     */
-    public function getExpression()
-    {
-        return $this->expression;
-    }
-
-    /**
-     * expression is the boolean CEL expression that evaluates the doc to determine whether the trigger should be executed
-     *
-     * Generated from protobuf field <code>string expression = 3 [(.validator.field) = {</code>
-     * @param string $var
-     * @return $this
-     */
-    public function setExpression($var)
-    {
-        GPBUtil::checkString($var, True);
-        $this->expression = $var;
-
-        return $this;
-    }
-
-    /**
-     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
      *
      * Generated from protobuf field <code>string trigger = 4 [(.validator.field) = {</code>
      * @return string
@@ -167,7 +133,7 @@ class Trigger extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * trigger is the map CEL expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
      *
      * Generated from protobuf field <code>string trigger = 4 [(.validator.field) = {</code>
      * @param string $var

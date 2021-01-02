@@ -143,14 +143,7 @@ func (g *Graph) cacheTriggers() error {
 			if err := proto.Unmarshal(v, &i); err != nil {
 				return err
 			}
-			if i.GetExpression() == "" {
-				return nil
-			}
-			decision, err := trigger.NewDecision(i.GetExpression())
-			if err != nil {
-				return errors.Wrapf(err, "failed to cache trigger decision: %s", i.GetName())
-			}
-			trig, err := trigger.NewTrigger(decision, i.GetTrigger())
+			trig, err := trigger.NewArrowTrigger(i.GetTrigger())
 			if err != nil {
 				return errors.Wrapf(err, "failed to cache trigger expression: %s", i.GetName())
 			}
@@ -316,7 +309,6 @@ func (g *Graph) setTrigger(ctx context.Context, tx *bbolt.Tx, i *apipb.Trigger) 
 		if err != nil {
 			return nil, err
 		}
-		current.Expression = i.Expression
 		current.TargetDocs = i.TargetDocs
 		current.TargetConnections = i.TargetConnections
 		current.Gtype = i.Gtype

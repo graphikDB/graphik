@@ -6692,7 +6692,6 @@ proto.api.Trigger.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     gtype: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    expression: jspb.Message.getFieldWithDefault(msg, 3, ""),
     trigger: jspb.Message.getFieldWithDefault(msg, 4, ""),
     targetDocs: jspb.Message.getFieldWithDefault(msg, 5, false),
     targetConnections: jspb.Message.getFieldWithDefault(msg, 6, false)
@@ -6739,10 +6738,6 @@ proto.api.Trigger.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setGtype(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setExpression(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
@@ -6799,13 +6794,6 @@ proto.api.Trigger.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getExpression();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
   f = message.getTrigger();
   if (f.length > 0) {
     writer.writeString(
@@ -6857,21 +6845,6 @@ proto.api.Trigger.prototype.getGtype = function() {
 /** @param {string} value */
 proto.api.Trigger.prototype.setGtype = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string expression = 3;
- * @return {string}
- */
-proto.api.Trigger.prototype.getExpression = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/** @param {string} value */
-proto.api.Trigger.prototype.setExpression = function(value) {
-  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
