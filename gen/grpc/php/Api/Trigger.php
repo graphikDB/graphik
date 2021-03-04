@@ -28,7 +28,7 @@ class Trigger extends \Google\Protobuf\Internal\Message
      */
     private $gtype = '';
     /**
-     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
      *
      * Generated from protobuf field <code>string trigger = 4 [(.validator.field) = {</code>
      */
@@ -57,7 +57,7 @@ class Trigger extends \Google\Protobuf\Internal\Message
      *     @type string $gtype
      *           gtype is the type of doc/connection will invoke the trigger
      *     @type string $trigger
-     *           trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+     *           trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
      *     @type bool $target_docs
      *           if target_docs is true, this trigger will be applied to documents.
      *     @type bool $target_connections
@@ -122,7 +122,7 @@ class Trigger extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
      *
      * Generated from protobuf field <code>string trigger = 4 [(.validator.field) = {</code>
      * @return string
@@ -133,7 +133,7 @@ class Trigger extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
      *
      * Generated from protobuf field <code>string trigger = 4 [(.validator.field) = {</code>
      * @param string $var

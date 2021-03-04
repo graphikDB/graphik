@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
 	"fmt"
 	"github.com/autom8ter/machine"
 	"github.com/graphikDB/graphik/database"
@@ -21,11 +20,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rs/cors"
 	"github.com/soheilhy/cmux"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
-	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -60,9 +57,6 @@ func init() {
 	pflag.CommandLine.StringVar(&global.TlsKey, "tls-key", helpers.EnvOr("GRAPHIK_TLS_KEY", ""), "path to tls key (env: GRAPHIK_TLS_KEY)")
 	pflag.CommandLine.BoolVar(&global.RequireRequestAuthorizers, "require-request-authorizers", helpers.BoolEnvOr("GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS", false), "require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)")
 	pflag.CommandLine.BoolVar(&global.RequireResponseAuthorizers, "require-response-authorizers", helpers.BoolEnvOr("GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS", false), "require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)")
-	pflag.CommandLine.StringVar(&global.PlaygroundClientId, "playground-client-id", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_ID", ""), "playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)")
-	pflag.CommandLine.StringVar(&global.PlaygroundClientSecret, "playground-client-secret", helpers.EnvOr("GRAPHIK_PLAYGROUND_CLIENT_SECRET", ""), "playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)")
-	pflag.CommandLine.StringVar(&global.PlaygroundRedirect, "playground-redirect", helpers.EnvOr("GRAPHIK_PLAYGROUND_REDIRECT", ""), "playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT)")
 	pflag.CommandLine.StringVar(&global.Environment, "environment", helpers.EnvOr("GRAPHIK_ENVIRONMENT", ""), "deployment environment (k8s) (env: GRAPHIK_ENVIRONMENT)")
 	pflag.CommandLine.Int64Var(&global.RaftMaxPool, "raft-max-pool", int64(helpers.IntEnvOr("GRAPHIK_RAFT_MAX_POOL", 5)), "max nodes in pool (env: GRAPHIK_RAFT_MAX_POOL)")
 	pflag.CommandLine.BoolVar(&global.MutualTls, "mutual-tls", helpers.BoolEnvOr("GRAPHIK_MUTUAL_TLS", false), "require mutual tls (env: GRAPHIK_MUTUAL_TLS)")
@@ -282,36 +276,6 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 	}()
 	lgger.Debug("successfully setup raft")
 	g.SetRaft(rft)
-	var config *oauth2.Config
-	if global.PlaygroundClientId != "" {
-		lgger.Debug("graphik playground enabled")
-		resp, err := http.DefaultClient.Get(global.OpenIdDiscovery)
-		if err != nil {
-			lgger.Error("failed to get oidc", zap.Error(err))
-			return
-		}
-		defer resp.Body.Close()
-		var openID = map[string]interface{}{}
-		bits, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			lgger.Error("failed to get oidc", zap.Error(err))
-			return
-		}
-		if err := json.Unmarshal(bits, &openID); err != nil {
-			lgger.Error("failed to get oidc", zap.Error(err))
-			return
-		}
-		config = &oauth2.Config{
-			ClientID:     global.PlaygroundClientId,
-			ClientSecret: global.PlaygroundClientSecret,
-			Endpoint: oauth2.Endpoint{
-				AuthURL:  openID["authorization_endpoint"].(string),
-				TokenURL: openID["token_endpoint"].(string),
-			},
-			RedirectURL: global.PlaygroundRedirect,
-			Scopes:      []string{"openid", "email", "profile"},
-		}
-	}
 	self := fmt.Sprintf("localhost:%v", global.ListenPort)
 	conn, err := grpc.DialContext(ctx, self, grpc.WithInsecure())
 	if err != nil {
@@ -319,18 +283,10 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		return
 	}
 	defer conn.Close()
-	resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), cors.New(cors.Options{
-		AllowedOrigins: global.AllowOrigins,
-		AllowedMethods: global.AllowMethods,
-		AllowedHeaders: global.AllowHeaders,
-	}), config, lgger)
+	resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), lgger)
 	mux := http.NewServeMux()
 	mux.Handle("/", resolver.QueryHandler())
 
-	if config != nil {
-		mux.Handle("/playground", resolver.Playground())
-		mux.Handle("/playground/callback", resolver.PlaygroundCallback("/playground"))
-	}
 	httpServer := &http.Server{
 		Handler: mux,
 	}

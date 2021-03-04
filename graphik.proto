@@ -452,9 +452,6 @@ message Flags {
   repeated string root_users =8;
   string tls_cert =9;
   string tls_key=10;
-  string playground_client_id =11;
-  string playground_client_secret =12;
-  string playground_redirect =13;
   bool require_request_authorizers =15;
   bool require_response_authorizers =16;
   string join_raft = 17;

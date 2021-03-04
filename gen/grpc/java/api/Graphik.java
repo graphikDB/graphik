@@ -30100,7 +30100,7 @@ public final class Graphik {
 
     /**
      * <pre>
-     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
      * </pre>
      *
      * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30108,7 +30108,7 @@ public final class Graphik {
     java.lang.String getTrigger();
     /**
      * <pre>
-     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
      * </pre>
      *
      * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30330,7 +30330,7 @@ public final class Graphik {
     private volatile java.lang.Object trigger_;
     /**
      * <pre>
-     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
      * </pre>
      *
      * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30349,7 +30349,7 @@ public final class Graphik {
     }
     /**
      * <pre>
-     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+     * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
      * </pre>
      *
      * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30952,7 +30952,7 @@ public final class Graphik {
       private java.lang.Object trigger_ = "";
       /**
        * <pre>
-       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30971,7 +30971,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -30991,7 +30991,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -31008,7 +31008,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -31021,7 +31021,7 @@ public final class Graphik {
       }
       /**
        * <pre>
-       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored
+       * trigger is the arrow syntax expression that mutates the doc/connection before it is stored ref: https://github.com/graphikDB/trigger
        * </pre>
        *
        * <code>string trigger = 4 [(.validator.field) = { ... }</code>
@@ -34361,36 +34361,6 @@ public final class Graphik {
         getTlsKeyBytes();
 
     /**
-     * <code>string playground_client_id = 11;</code>
-     */
-    java.lang.String getPlaygroundClientId();
-    /**
-     * <code>string playground_client_id = 11;</code>
-     */
-    com.google.protobuf.ByteString
-        getPlaygroundClientIdBytes();
-
-    /**
-     * <code>string playground_client_secret = 12;</code>
-     */
-    java.lang.String getPlaygroundClientSecret();
-    /**
-     * <code>string playground_client_secret = 12;</code>
-     */
-    com.google.protobuf.ByteString
-        getPlaygroundClientSecretBytes();
-
-    /**
-     * <code>string playground_redirect = 13;</code>
-     */
-    java.lang.String getPlaygroundRedirect();
-    /**
-     * <code>string playground_redirect = 13;</code>
-     */
-    com.google.protobuf.ByteString
-        getPlaygroundRedirectBytes();
-
-    /**
      * <code>bool require_request_authorizers = 15;</code>
      */
     boolean getRequireRequestAuthorizers();
@@ -34501,9 +34471,6 @@ public final class Graphik {
       rootUsers_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       tlsCert_ = "";
       tlsKey_ = "";
-      playgroundClientId_ = "";
-      playgroundClientSecret_ = "";
-      playgroundRedirect_ = "";
       requireRequestAuthorizers_ = false;
       requireResponseAuthorizers_ = false;
       joinRaft_ = "";
@@ -34600,24 +34567,6 @@ public final class Graphik {
               java.lang.String s = input.readStringRequireUtf8();
 
               tlsKey_ = s;
-              break;
-            }
-            case 90: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              playgroundClientId_ = s;
-              break;
-            }
-            case 98: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              playgroundClientSecret_ = s;
-              break;
-            }
-            case 106: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              playgroundRedirect_ = s;
               break;
             }
             case 120: {
@@ -35063,108 +35012,6 @@ public final class Graphik {
       }
     }
 
-    public static final int PLAYGROUND_CLIENT_ID_FIELD_NUMBER = 11;
-    private volatile java.lang.Object playgroundClientId_;
-    /**
-     * <code>string playground_client_id = 11;</code>
-     */
-    public java.lang.String getPlaygroundClientId() {
-      java.lang.Object ref = playgroundClientId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        playgroundClientId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string playground_client_id = 11;</code>
-     */
-    public com.google.protobuf.ByteString
-        getPlaygroundClientIdBytes() {
-      java.lang.Object ref = playgroundClientId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        playgroundClientId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int PLAYGROUND_CLIENT_SECRET_FIELD_NUMBER = 12;
-    private volatile java.lang.Object playgroundClientSecret_;
-    /**
-     * <code>string playground_client_secret = 12;</code>
-     */
-    public java.lang.String getPlaygroundClientSecret() {
-      java.lang.Object ref = playgroundClientSecret_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        playgroundClientSecret_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string playground_client_secret = 12;</code>
-     */
-    public com.google.protobuf.ByteString
-        getPlaygroundClientSecretBytes() {
-      java.lang.Object ref = playgroundClientSecret_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        playgroundClientSecret_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int PLAYGROUND_REDIRECT_FIELD_NUMBER = 13;
-    private volatile java.lang.Object playgroundRedirect_;
-    /**
-     * <code>string playground_redirect = 13;</code>
-     */
-    public java.lang.String getPlaygroundRedirect() {
-      java.lang.Object ref = playgroundRedirect_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        playgroundRedirect_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string playground_redirect = 13;</code>
-     */
-    public com.google.protobuf.ByteString
-        getPlaygroundRedirectBytes() {
-      java.lang.Object ref = playgroundRedirect_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        playgroundRedirect_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     public static final int REQUIRE_REQUEST_AUTHORIZERS_FIELD_NUMBER = 15;
     private boolean requireRequestAuthorizers_;
     /**
@@ -35461,15 +35308,6 @@ public final class Graphik {
       if (!getTlsKeyBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 10, tlsKey_);
       }
-      if (!getPlaygroundClientIdBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 11, playgroundClientId_);
-      }
-      if (!getPlaygroundClientSecretBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 12, playgroundClientSecret_);
-      }
-      if (!getPlaygroundRedirectBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 13, playgroundRedirect_);
-      }
       if (requireRequestAuthorizers_ != false) {
         output.writeBool(15, requireRequestAuthorizers_);
       }
@@ -35559,15 +35397,6 @@ public final class Graphik {
       if (!getTlsKeyBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, tlsKey_);
       }
-      if (!getPlaygroundClientIdBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, playgroundClientId_);
-      }
-      if (!getPlaygroundClientSecretBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, playgroundClientSecret_);
-      }
-      if (!getPlaygroundRedirectBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(13, playgroundRedirect_);
-      }
       if (requireRequestAuthorizers_ != false) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(15, requireRequestAuthorizers_);
@@ -35642,12 +35471,6 @@ public final class Graphik {
           .equals(other.getTlsCert());
       result = result && getTlsKey()
           .equals(other.getTlsKey());
-      result = result && getPlaygroundClientId()
-          .equals(other.getPlaygroundClientId());
-      result = result && getPlaygroundClientSecret()
-          .equals(other.getPlaygroundClientSecret());
-      result = result && getPlaygroundRedirect()
-          .equals(other.getPlaygroundRedirect());
       result = result && (getRequireRequestAuthorizers()
           == other.getRequireRequestAuthorizers());
       result = result && (getRequireResponseAuthorizers()
@@ -35707,12 +35530,6 @@ public final class Graphik {
       hash = (53 * hash) + getTlsCert().hashCode();
       hash = (37 * hash) + TLS_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getTlsKey().hashCode();
-      hash = (37 * hash) + PLAYGROUND_CLIENT_ID_FIELD_NUMBER;
-      hash = (53 * hash) + getPlaygroundClientId().hashCode();
-      hash = (37 * hash) + PLAYGROUND_CLIENT_SECRET_FIELD_NUMBER;
-      hash = (53 * hash) + getPlaygroundClientSecret().hashCode();
-      hash = (37 * hash) + PLAYGROUND_REDIRECT_FIELD_NUMBER;
-      hash = (53 * hash) + getPlaygroundRedirect().hashCode();
       hash = (37 * hash) + REQUIRE_REQUEST_AUTHORIZERS_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getRequireRequestAuthorizers());
@@ -35892,12 +35709,6 @@ public final class Graphik {
 
         tlsKey_ = "";
 
-        playgroundClientId_ = "";
-
-        playgroundClientSecret_ = "";
-
-        playgroundRedirect_ = "";
-
         requireRequestAuthorizers_ = false;
 
         requireResponseAuthorizers_ = false;
@@ -35974,9 +35785,6 @@ public final class Graphik {
         result.rootUsers_ = rootUsers_;
         result.tlsCert_ = tlsCert_;
         result.tlsKey_ = tlsKey_;
-        result.playgroundClientId_ = playgroundClientId_;
-        result.playgroundClientSecret_ = playgroundClientSecret_;
-        result.playgroundRedirect_ = playgroundRedirect_;
         result.requireRequestAuthorizers_ = requireRequestAuthorizers_;
         result.requireResponseAuthorizers_ = requireResponseAuthorizers_;
         result.joinRaft_ = joinRaft_;
@@ -36092,18 +35900,6 @@ public final class Graphik {
         }
         if (!other.getTlsKey().isEmpty()) {
           tlsKey_ = other.tlsKey_;
-          onChanged();
-        }
-        if (!other.getPlaygroundClientId().isEmpty()) {
-          playgroundClientId_ = other.playgroundClientId_;
-          onChanged();
-        }
-        if (!other.getPlaygroundClientSecret().isEmpty()) {
-          playgroundClientSecret_ = other.playgroundClientSecret_;
-          onChanged();
-        }
-        if (!other.getPlaygroundRedirect().isEmpty()) {
-          playgroundRedirect_ = other.playgroundRedirect_;
           onChanged();
         }
         if (other.getRequireRequestAuthorizers() != false) {
@@ -37010,213 +36806,6 @@ public final class Graphik {
   checkByteStringIsUtf8(value);
         
         tlsKey_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object playgroundClientId_ = "";
-      /**
-       * <code>string playground_client_id = 11;</code>
-       */
-      public java.lang.String getPlaygroundClientId() {
-        java.lang.Object ref = playgroundClientId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          playgroundClientId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string playground_client_id = 11;</code>
-       */
-      public com.google.protobuf.ByteString
-          getPlaygroundClientIdBytes() {
-        java.lang.Object ref = playgroundClientId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          playgroundClientId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string playground_client_id = 11;</code>
-       */
-      public Builder setPlaygroundClientId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        playgroundClientId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string playground_client_id = 11;</code>
-       */
-      public Builder clearPlaygroundClientId() {
-        
-        playgroundClientId_ = getDefaultInstance().getPlaygroundClientId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string playground_client_id = 11;</code>
-       */
-      public Builder setPlaygroundClientIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        playgroundClientId_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object playgroundClientSecret_ = "";
-      /**
-       * <code>string playground_client_secret = 12;</code>
-       */
-      public java.lang.String getPlaygroundClientSecret() {
-        java.lang.Object ref = playgroundClientSecret_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          playgroundClientSecret_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string playground_client_secret = 12;</code>
-       */
-      public com.google.protobuf.ByteString
-          getPlaygroundClientSecretBytes() {
-        java.lang.Object ref = playgroundClientSecret_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          playgroundClientSecret_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string playground_client_secret = 12;</code>
-       */
-      public Builder setPlaygroundClientSecret(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        playgroundClientSecret_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string playground_client_secret = 12;</code>
-       */
-      public Builder clearPlaygroundClientSecret() {
-        
-        playgroundClientSecret_ = getDefaultInstance().getPlaygroundClientSecret();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string playground_client_secret = 12;</code>
-       */
-      public Builder setPlaygroundClientSecretBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        playgroundClientSecret_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object playgroundRedirect_ = "";
-      /**
-       * <code>string playground_redirect = 13;</code>
-       */
-      public java.lang.String getPlaygroundRedirect() {
-        java.lang.Object ref = playgroundRedirect_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          playgroundRedirect_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string playground_redirect = 13;</code>
-       */
-      public com.google.protobuf.ByteString
-          getPlaygroundRedirectBytes() {
-        java.lang.Object ref = playgroundRedirect_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          playgroundRedirect_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string playground_redirect = 13;</code>
-       */
-      public Builder setPlaygroundRedirect(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        playgroundRedirect_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string playground_redirect = 13;</code>
-       */
-      public Builder clearPlaygroundRedirect() {
-        
-        playgroundRedirect_ = getDefaultInstance().getPlaygroundRedirect();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string playground_redirect = 13;</code>
-       */
-      public Builder setPlaygroundRedirectBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        playgroundRedirect_ = value;
         onChanged();
         return this;
       }
@@ -52585,127 +52174,124 @@ public final class Graphik {
       "n\030\003 \001(\0132\032.google.protobuf.Timestamp\022\'\n\003m" +
       "ax\030\004 \001(\0132\032.google.protobuf.Timestamp\"G\n\005" +
       "Graph\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022%\n\013connec" +
-      "tions\030\002 \001(\0132\020.api.Connections\"\247\004\n\005Flags\022" +
+      "tions\030\002 \001(\0132\020.api.Connections\"\312\003\n\005Flags\022" +
       "\031\n\021open_id_discovery\030\001 \001(\t\022\024\n\014storage_pa" +
       "th\030\002 \001(\t\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\rallow" +
       "_methods\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(\t\022\022\n" +
       "\nroot_users\030\010 \003(\t\022\020\n\010tls_cert\030\t \001(\t\022\017\n\007t" +
-      "ls_key\030\n \001(\t\022\034\n\024playground_client_id\030\013 \001" +
-      "(\t\022 \n\030playground_client_secret\030\014 \001(\t\022\033\n\023" +
-      "playground_redirect\030\r \001(\t\022#\n\033require_req" +
-      "uest_authorizers\030\017 \001(\010\022$\n\034require_respon" +
-      "se_authorizers\030\020 \001(\010\022\021\n\tjoin_raft\030\021 \001(\t\022" +
-      "\024\n\014raft_peer_id\030\022 \001(\t\022\023\n\013listen_port\030\023 \001" +
-      "(\003\022\023\n\013raft_secret\030\024 \001(\t\022\r\n\005debug\030\025 \001(\010\022\023" +
-      "\n\013environment\030\026 \001(\t\022\026\n\016raft_advertise\030\027 " +
-      "\001(\t\022\025\n\rraft_max_pool\030\030 \001(\003\022\022\n\nmutual_tls" +
-      "\030\031 \001(\010\022\017\n\007ca_cert\030\032 \001(\t\"\030\n\007Boolean\022\r\n\005va" +
-      "lue\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014E" +
-      "xistsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,2" +
-      "25}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225" +
-      "}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005ind" +
-      "ex\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB" +
-      "\006\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.google.pro" +
-      "tobuf.Struct\"V\n\nEditFilter\022\033\n\006filter\030\001 \001" +
-      "(\0132\013.api.Filter\022+\n\nattributes\030\002 \001(\0132\027.go" +
-      "ogle.protobuf.Struct\"\027\n\004Pong\022\017\n\007message\030" +
-      "\001 \001(\t\"c\n\017OutboundMessage\022!\n\007channel\030\001 \001(" +
-      "\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.goog" +
-      "le.protobuf.StructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!" +
-      "\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004dat" +
-      "a\030\002 \001(\0132\027.google.protobuf.StructB\006\342\337\037\002 \001" +
-      "\022\036\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttime" +
-      "stamp\030\004 \001(\0132\032.google.protobuf.TimestampB" +
-      "\006\342\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}" +
-      "$\"\303\001\n\006Schema\022\030\n\020connection_types\030\001 \003(\t\022\021" +
-      "\n\tdoc_types\030\002 \003(\t\022%\n\013authorizers\030\003 \001(\0132\020" +
-      ".api.Authorizers\022%\n\013constraints\030\004 \001(\0132\020." +
-      "api.Constraints\022\035\n\007indexes\030\005 \001(\0132\014.api.I" +
-      "ndexes\022\037\n\010triggers\030\006 \001(\0132\r.api.Triggers\"" +
-      " \n\nExprFilter\022\022\n\nexpression\030\001 \001(\t\"\374\002\n\013Ra" +
-      "ftCommand\022\026\n\004user\030\001 \001(\0132\010.api.Doc\022\016\n\006met" +
-      "hod\030\002 \001(\t\022\032\n\010set_docs\030\003 \003(\0132\010.api.Doc\022(\n" +
-      "\017set_connections\030\004 \003(\0132\017.api.Connection\022" +
-      "\032\n\010del_docs\030\005 \003(\0132\010.api.Ref\022!\n\017del_conne" +
-      "ctions\030\006 \003(\0132\010.api.Ref\022!\n\013set_indexes\030\007 " +
-      "\001(\0132\014.api.Indexes\022)\n\017set_authorizers\030\010 \001" +
-      "(\0132\020.api.Authorizers\022)\n\017set_constraints\030" +
-      "\t \001(\0132\020.api.Constraints\022\"\n\014send_message\030" +
-      "\n \001(\0132\014.api.Message\022#\n\014set_triggers\030\013 \001(" +
-      "\0132\r.api.Triggers\"%\n\004Peer\022\017\n\007node_id\030\001 \001(" +
-      "\t\022\014\n\004addr\030\002 \001(\t\"\262\001\n\tRaftState\022\016\n\006leader\030" +
-      "\001 \001(\t\022#\n\nmembership\030\002 \001(\0162\017.api.Membersh" +
-      "ip\022\030\n\005peers\030\003 \003(\0132\t.api.Peer\022(\n\005stats\030\004 " +
-      "\003(\0132\031.api.RaftState.StatsEntry\032,\n\nStatsE" +
-      "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001*\035\n\t" +
-      "Algorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate" +
-      "\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007" +
-      "\n\003MIN\020\004\022\010\n\004PROD\020\005*P\n\nMembership\022\013\n\007UNKNO" +
-      "WN\020\000\022\014\n\010FOLLOWER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n\006LEA" +
-      "DER\020\003\022\014\n\010SHUTDOWN\020\0042\250\001\n\013RaftService\022+\n\004P" +
-      "ing\022\026.google.protobuf.Empty\032\t.api.Pong\"\000" +
-      "\0222\n\013JoinCluster\022\t.api.Peer\032\026.google.prot" +
-      "obuf.Empty\"\000\0228\n\014ClusterState\022\026.google.pr" +
-      "otobuf.Empty\032\016.api.RaftState\"\0002\217\022\n\017Datab" +
-      "aseService\0222\n\tGetSchema\022\026.google.protobu" +
-      "f.Empty\032\013.api.Schema\"\000\022<\n\016SetAuthorizers" +
-      "\022\020.api.Authorizers\032\026.google.protobuf.Emp" +
-      "ty\"\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.googl" +
-      "e.protobuf.Empty\"\000\022<\n\016SetConstraints\022\020.a" +
-      "pi.Constraints\032\026.google.protobuf.Empty\"\000" +
-      "\0226\n\013SetTriggers\022\r.api.Triggers\032\026.google." +
-      "protobuf.Empty\"\000\022(\n\002Me\022\026.google.protobuf" +
-      ".Empty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022\023.api.Do" +
-      "cConstructor\032\010.api.Doc\"\000\022/\n\nCreateDocs\022\024" +
-      ".api.DocConstructors\032\t.api.Docs\"\000\022\036\n\006Put" +
-      "Doc\022\010.api.Doc\032\010.api.Doc\"\000\022!\n\007PutDocs\022\t.a" +
-      "pi.Docs\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref" +
-      "\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Filter\032" +
-      "\t.api.Docs\"\000\0222\n\010Traverse\022\023.api.TraverseF" +
-      "ilter\032\017.api.Traversals\"\000\0226\n\nTraverseMe\022\025" +
-      ".api.TraverseMeFilter\032\017.api.Traversals\"\000" +
-      "\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(\n\010Ed" +
-      "itDocs\022\017.api.EditFilter\032\t.api.Docs\"\000\022,\n\006" +
-      "DelDoc\022\010.api.Ref\032\026.google.protobuf.Empty" +
-      "\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google.prot" +
-      "obuf.Empty\"\000\022.\n\tExistsDoc\022\021.api.ExistsFi" +
-      "lter\032\014.api.Boolean\"\000\0225\n\020ExistsConnection" +
-      "\022\021.api.ExistsFilter\032\014.api.Boolean\"\000\022\"\n\006H" +
-      "asDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rHasCo" +
-      "nnection\022\010.api.Ref\032\014.api.Boolean\"\000\022A\n\020Cr" +
-      "eateConnection\022\032.api.ConnectionConstruct" +
-      "or\032\017.api.Connection\"\000\022D\n\021CreateConnectio" +
-      "ns\022\033.api.ConnectionConstructors\032\020.api.Co" +
-      "nnections\"\000\0223\n\rPutConnection\022\017.api.Conne" +
-      "ction\032\017.api.Connection\"\000\0226\n\016PutConnectio" +
-      "ns\022\020.api.Connections\032\020.api.Connections\"\000" +
-      "\022@\n\020SearchAndConnect\022\030.api.SearchConnect" +
-      "Filter\032\020.api.Connections\"\000\022D\n\022SearchAndC" +
-      "onnectMe\022\032.api.SearchConnectMeFilter\032\020.a" +
-      "pi.Connections\"\000\022,\n\rGetConnection\022\010.api." +
-      "Ref\032\017.api.Connection\"\000\0224\n\021SearchConnecti" +
-      "ons\022\013.api.Filter\032\020.api.Connections\"\000\022.\n\016" +
-      "EditConnection\022\t.api.Edit\032\017.api.Connecti" +
-      "on\"\000\0226\n\017EditConnections\022\017.api.EditFilter" +
-      "\032\020.api.Connections\"\000\0223\n\rDelConnection\022\010." +
-      "api.Ref\032\026.google.protobuf.Empty\"\000\0227\n\016Del" +
-      "Connections\022\013.api.Filter\032\026.google.protob" +
-      "uf.Empty\"\000\0229\n\017ConnectionsFrom\022\022.api.Conn" +
-      "ectFilter\032\020.api.Connections\"\000\0227\n\rConnect" +
-      "ionsTo\022\022.api.ConnectFilter\032\020.api.Connect" +
-      "ions\"\000\022.\n\rAggregateDocs\022\016.api.AggFilter\032" +
-      "\013.api.Number\"\000\0225\n\024AggregateConnections\022\016" +
-      ".api.AggFilter\032\013.api.Number\"\000\022;\n\tBroadca" +
-      "st\022\024.api.OutboundMessage\032\026.google.protob" +
-      "uf.Empty\"\000\022-\n\006Stream\022\021.api.StreamFilter\032" +
-      "\014.api.Message\"\0000\001\022:\n\023PushDocConstructors" +
-      "\022\023.api.DocConstructor\032\010.api.Doc\"\000(\0010\001\022O\n" +
-      "\032PushConnectionConstructors\022\032.api.Connec" +
-      "tionConstructor\032\017.api.Connection\"\000(\0010\001\0220" +
-      "\n\010SeedDocs\022\010.api.Doc\032\026.google.protobuf.E" +
-      "mpty\"\000(\001\022>\n\017SeedConnections\022\017.api.Connec" +
-      "tion\032\026.google.protobuf.Empty\"\000(\001B\007Z\005apip" +
-      "bb\006proto3"
+      "ls_key\030\n \001(\t\022#\n\033require_request_authoriz" +
+      "ers\030\017 \001(\010\022$\n\034require_response_authorizer" +
+      "s\030\020 \001(\010\022\021\n\tjoin_raft\030\021 \001(\t\022\024\n\014raft_peer_" +
+      "id\030\022 \001(\t\022\023\n\013listen_port\030\023 \001(\003\022\023\n\013raft_se" +
+      "cret\030\024 \001(\t\022\r\n\005debug\030\025 \001(\010\022\023\n\013environment" +
+      "\030\026 \001(\t\022\026\n\016raft_advertise\030\027 \001(\t\022\025\n\rraft_m" +
+      "ax_pool\030\030 \001(\003\022\022\n\nmutual_tls\030\031 \001(\010\022\017\n\007ca_" +
+      "cert\030\032 \001(\t\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"\027\n\006" +
+      "Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014ExistsFilter\022\037" +
+      "\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpre" +
+      "ssion\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030\003 " +
+      "\001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004E" +
+      "dit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\nat" +
+      "tributes\030\002 \001(\0132\027.google.protobuf.Struct\"" +
+      "V\n\nEditFilter\022\033\n\006filter\030\001 \001(\0132\013.api.Filt" +
+      "er\022+\n\nattributes\030\002 \001(\0132\027.google.protobuf" +
+      ".Struct\"\027\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017Outb" +
+      "oundMessage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1" +
+      ",225}$\022-\n\004data\030\002 \001(\0132\027.google.protobuf.S" +
+      "tructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!\n\007channel\030\001 \001" +
+      "(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.goo" +
+      "gle.protobuf.StructB\006\342\337\037\002 \001\022\036\n\004user\030\003 \001(" +
+      "\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\0132\032" +
+      ".google.protobuf.TimestampB\006\342\337\037\002 \001\022 \n\006me" +
+      "thod\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"\303\001\n\006Schema\022" +
+      "\030\n\020connection_types\030\001 \003(\t\022\021\n\tdoc_types\030\002" +
+      " \003(\t\022%\n\013authorizers\030\003 \001(\0132\020.api.Authoriz" +
+      "ers\022%\n\013constraints\030\004 \001(\0132\020.api.Constrain" +
+      "ts\022\035\n\007indexes\030\005 \001(\0132\014.api.Indexes\022\037\n\010tri" +
+      "ggers\030\006 \001(\0132\r.api.Triggers\" \n\nExprFilter" +
+      "\022\022\n\nexpression\030\001 \001(\t\"\374\002\n\013RaftCommand\022\026\n\004" +
+      "user\030\001 \001(\0132\010.api.Doc\022\016\n\006method\030\002 \001(\t\022\032\n\010" +
+      "set_docs\030\003 \003(\0132\010.api.Doc\022(\n\017set_connecti" +
+      "ons\030\004 \003(\0132\017.api.Connection\022\032\n\010del_docs\030\005" +
+      " \003(\0132\010.api.Ref\022!\n\017del_connections\030\006 \003(\0132" +
+      "\010.api.Ref\022!\n\013set_indexes\030\007 \001(\0132\014.api.Ind" +
+      "exes\022)\n\017set_authorizers\030\010 \001(\0132\020.api.Auth" +
+      "orizers\022)\n\017set_constraints\030\t \001(\0132\020.api.C" +
+      "onstraints\022\"\n\014send_message\030\n \001(\0132\014.api.M" +
+      "essage\022#\n\014set_triggers\030\013 \001(\0132\r.api.Trigg" +
+      "ers\"%\n\004Peer\022\017\n\007node_id\030\001 \001(\t\022\014\n\004addr\030\002 \001" +
+      "(\t\"\262\001\n\tRaftState\022\016\n\006leader\030\001 \001(\t\022#\n\nmemb" +
+      "ership\030\002 \001(\0162\017.api.Membership\022\030\n\005peers\030\003" +
+      " \003(\0132\t.api.Peer\022(\n\005stats\030\004 \003(\0132\031.api.Raf" +
+      "tState.StatsEntry\032,\n\nStatsEntry\022\013\n\003key\030\001" +
+      " \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001*\035\n\tAlgorithm\022\007\n\003" +
+      "BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t\n\005COUNT\020\000\022\007" +
+      "\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PR" +
+      "OD\020\005*P\n\nMembership\022\013\n\007UNKNOWN\020\000\022\014\n\010FOLLO" +
+      "WER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n\006LEADER\020\003\022\014\n\010SHUT" +
+      "DOWN\020\0042\250\001\n\013RaftService\022+\n\004Ping\022\026.google." +
+      "protobuf.Empty\032\t.api.Pong\"\000\0222\n\013JoinClust" +
+      "er\022\t.api.Peer\032\026.google.protobuf.Empty\"\000\022" +
+      "8\n\014ClusterState\022\026.google.protobuf.Empty\032" +
+      "\016.api.RaftState\"\0002\217\022\n\017DatabaseService\0222\n" +
+      "\tGetSchema\022\026.google.protobuf.Empty\032\013.api" +
+      ".Schema\"\000\022<\n\016SetAuthorizers\022\020.api.Author" +
+      "izers\032\026.google.protobuf.Empty\"\000\0224\n\nSetIn" +
+      "dexes\022\014.api.Indexes\032\026.google.protobuf.Em" +
+      "pty\"\000\022<\n\016SetConstraints\022\020.api.Constraint" +
+      "s\032\026.google.protobuf.Empty\"\000\0226\n\013SetTrigge" +
+      "rs\022\r.api.Triggers\032\026.google.protobuf.Empt" +
+      "y\"\000\022(\n\002Me\022\026.google.protobuf.Empty\032\010.api." +
+      "Doc\"\000\022,\n\tCreateDoc\022\023.api.DocConstructor\032" +
+      "\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.api.DocConst" +
+      "ructors\032\t.api.Docs\"\000\022\036\n\006PutDoc\022\010.api.Doc" +
+      "\032\010.api.Doc\"\000\022!\n\007PutDocs\022\t.api.Docs\032\t.api" +
+      ".Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.api.Doc\"\000\022" +
+      "&\n\nSearchDocs\022\013.api.Filter\032\t.api.Docs\"\000\022" +
+      "2\n\010Traverse\022\023.api.TraverseFilter\032\017.api.T" +
+      "raversals\"\000\0226\n\nTraverseMe\022\025.api.Traverse" +
+      "MeFilter\032\017.api.Traversals\"\000\022 \n\007EditDoc\022\t" +
+      ".api.Edit\032\010.api.Doc\"\000\022(\n\010EditDocs\022\017.api." +
+      "EditFilter\032\t.api.Docs\"\000\022,\n\006DelDoc\022\010.api." +
+      "Ref\032\026.google.protobuf.Empty\"\000\0220\n\007DelDocs" +
+      "\022\013.api.Filter\032\026.google.protobuf.Empty\"\000\022" +
+      ".\n\tExistsDoc\022\021.api.ExistsFilter\032\014.api.Bo" +
+      "olean\"\000\0225\n\020ExistsConnection\022\021.api.Exists" +
+      "Filter\032\014.api.Boolean\"\000\022\"\n\006HasDoc\022\010.api.R" +
+      "ef\032\014.api.Boolean\"\000\022)\n\rHasConnection\022\010.ap" +
+      "i.Ref\032\014.api.Boolean\"\000\022A\n\020CreateConnectio" +
+      "n\022\032.api.ConnectionConstructor\032\017.api.Conn" +
+      "ection\"\000\022D\n\021CreateConnections\022\033.api.Conn" +
+      "ectionConstructors\032\020.api.Connections\"\000\0223" +
+      "\n\rPutConnection\022\017.api.Connection\032\017.api.C" +
+      "onnection\"\000\0226\n\016PutConnections\022\020.api.Conn" +
+      "ections\032\020.api.Connections\"\000\022@\n\020SearchAnd" +
+      "Connect\022\030.api.SearchConnectFilter\032\020.api." +
+      "Connections\"\000\022D\n\022SearchAndConnectMe\022\032.ap" +
+      "i.SearchConnectMeFilter\032\020.api.Connection" +
+      "s\"\000\022,\n\rGetConnection\022\010.api.Ref\032\017.api.Con" +
+      "nection\"\000\0224\n\021SearchConnections\022\013.api.Fil" +
+      "ter\032\020.api.Connections\"\000\022.\n\016EditConnectio" +
+      "n\022\t.api.Edit\032\017.api.Connection\"\000\0226\n\017EditC" +
+      "onnections\022\017.api.EditFilter\032\020.api.Connec" +
+      "tions\"\000\0223\n\rDelConnection\022\010.api.Ref\032\026.goo" +
+      "gle.protobuf.Empty\"\000\0227\n\016DelConnections\022\013" +
+      ".api.Filter\032\026.google.protobuf.Empty\"\000\0229\n" +
+      "\017ConnectionsFrom\022\022.api.ConnectFilter\032\020.a" +
+      "pi.Connections\"\000\0227\n\rConnectionsTo\022\022.api." +
+      "ConnectFilter\032\020.api.Connections\"\000\022.\n\rAgg" +
+      "regateDocs\022\016.api.AggFilter\032\013.api.Number\"" +
+      "\000\0225\n\024AggregateConnections\022\016.api.AggFilte" +
+      "r\032\013.api.Number\"\000\022;\n\tBroadcast\022\024.api.Outb" +
+      "oundMessage\032\026.google.protobuf.Empty\"\000\022-\n" +
+      "\006Stream\022\021.api.StreamFilter\032\014.api.Message" +
+      "\"\0000\001\022:\n\023PushDocConstructors\022\023.api.DocCon" +
+      "structor\032\010.api.Doc\"\000(\0010\001\022O\n\032PushConnecti" +
+      "onConstructors\022\032.api.ConnectionConstruct" +
+      "or\032\017.api.Connection\"\000(\0010\001\0220\n\010SeedDocs\022\010." +
+      "api.Doc\032\026.google.protobuf.Empty\"\000(\001\022>\n\017S" +
+      "eedConnections\022\017.api.Connection\032\026.google" +
+      ".protobuf.Empty\"\000(\001B\007Z\005apipbb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -52927,7 +52513,7 @@ public final class Graphik {
     internal_static_api_Flags_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Flags_descriptor,
-        new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "PlaygroundClientId", "PlaygroundClientSecret", "PlaygroundRedirect", "RequireRequestAuthorizers", "RequireResponseAuthorizers", "JoinRaft", "RaftPeerId", "ListenPort", "RaftSecret", "Debug", "Environment", "RaftAdvertise", "RaftMaxPool", "MutualTls", "CaCert", });
+        new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "RequireRequestAuthorizers", "RequireResponseAuthorizers", "JoinRaft", "RaftPeerId", "ListenPort", "RaftSecret", "Debug", "Environment", "RaftAdvertise", "RaftMaxPool", "MutualTls", "CaCert", });
     internal_static_api_Boolean_descriptor =
       getDescriptor().getMessageTypes().get(33);
     internal_static_api_Boolean_fieldAccessorTable = new

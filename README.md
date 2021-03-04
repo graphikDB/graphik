@@ -7,7 +7,7 @@ https://graphikdb.github.io/graphik/
 
 `git clone git@github.com:graphikDB/graphik.git`
     
-`docker pull graphikdb/graphik:v1.2.0`
+`docker pull graphikdb/graphik:v1.3.0`
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -37,7 +37,6 @@ Support: support@graphikdb.io
     + [Trigger Examples](#trigger-examples)
   * [GraphQL vs gRPC API](#graphql-vs-grpc-api)
   * [Streaming/PubSub](#streaming-pubsub)
-  * [Graphik Playground](#graphik-playground)
   * [Additional Details](#additional-details)
 - [Sample GraphQL Queries](#sample-graphql-queries)
   * [Get Currently Logged In User(me)](#get-currently-logged-in-user-me-)
@@ -127,7 +126,6 @@ This is bad for the following reasons:
 - fine-grained authorization model to support requests directly from the origin user/public client(user on browser, ios app, android app, etc)
     - enforce role-based-access-control based on attributes found on the profile of the user manged by the identity provider
 - graphQL API to support a declarative query language for public clients(user on browser, ios app, android app, etc), data analysts, and database administrators
-- graphQL playground for built in, SSO protected user interface for interacting with the database and exploring data outside of software development
 - gRPC API for api -> database requests - gRPC tooling server side is more performant & has better tooling
     - auto-generate client SDK's in most languages (python, javascript, csharp, java, go, etc)
 - database schema operations managed via integration with state of the art change management/automation tooling - [terraform](https://terraform.io)
@@ -195,9 +193,6 @@ please note that the following flags are required:
       --join-raft string                  join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)
       --listen-port int                   serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT) (default 7820)
       --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) (required) 
-      --playground-client-id string       playground oauth client id (env: GRAPHIK_PLAYGROUND_CLIENT_ID)
-      --playground-client-secret string   playground oauth client secret (env: GRAPHIK_PLAYGROUND_CLIENT_SECRET)
-      --playground-redirect string        playground oauth redirect (env: GRAPHIK_PLAYGROUND_REDIRECT) (default "http://localhost:8080/playground/callback")
       --raft-max-pool int                 max nodes in pool (env: GRAPHIK_RAFT_MAX_POOL) (default 5)
       --raft-peer-id string               raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)
       --raft-secret string                raft cluster secret (so only authorized nodes may join cluster) (env: GRAPHIK_RAFT_SECRET)
@@ -217,6 +212,13 @@ please note that the following flags are required:
 - [x] [Java](gen/grpc/java)
 - [x] [C#](gen/grpc/csharp)
 - [x] [Ruby](gen/grpc/ruby)
+
+## User Interface
+
+Please take a look at the following options for stategate user-interface clients:
+
+- [OAuth GraphQL Playground](https://github.com/autom8ter/oauth-graphql-playground): A graphQL IDE that may be used to connect & interact with the full functionality of the stategate graphQL API as an authenticated userth GraphQL Playground: A graphQL IDE that may be used to connect & interact with the full functionality of the stategate graphQL API as an authenticated user
+
 
 ## Implemenation Details
 
@@ -499,16 +501,6 @@ All messages received on this channel include the user that triggered/sent the m
 Messages on channels may be filtered via CEL expressions so that only messages are pushed to clients that they want to receive.
 Messages may be sent directly to channels via the Broadcast() method in gRPC & graphQL.
 All state changes in the graph are sent by graphik to the `state` channel which may be subscribed to just like any other channel.
-
-### Graphik Playground
-
-If the following environmental variables/flags are set, an SSO protected graphQL playground will be served on /playground
-```..env
-GRAPHIK_PLAYGROUND_CLIENT_ID=${client_id} # the oauth2 application/client id
-GRAPHIK_PLAYGROUND_CLIENT_SECRET=${client_secret} # the oauth2 application/client secret
-GRAPHIK_PLAYGROUND_REDIRECT=${playground_redirect} # the oauth2 authorization code redirect: the playground exposes an endpoint to handle this redirect /playground/callback
-```
-![Graphik Playground](assets/graphik-playground.png)
 
 
 ### Additional Details
@@ -895,9 +887,6 @@ subscription {
 Regardless of deployment methodology, please set the following environmental variables or include them in a ${pwd}/.env file
 
 ```
-GRAPHIK_PLAYGROUND_CLIENT_ID=${client_id}
-GRAPHIK_PLAYGROUND_CLIENT_SECRET=${client_secret}
-GRAPHIK_PLAYGROUND_REDIRECT=http://localhost:7820/playground/callback
 GRAPHIK_OPEN_ID=${open_id_connect_metadata_url}
 #GRAPHIK_ALLOW_HEADERS=${cors_headers}
 #GRAPHIK_ALLOW_METHOD=${cors_methos}
@@ -914,7 +903,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v1.2.0
+        image: graphikdb/graphik:v1.3.0
         env_file:
           - .env
         ports:

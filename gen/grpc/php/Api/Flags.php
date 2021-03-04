@@ -58,18 +58,6 @@ class Flags extends \Google\Protobuf\Internal\Message
      */
     private $tls_key = '';
     /**
-     * Generated from protobuf field <code>string playground_client_id = 11;</code>
-     */
-    private $playground_client_id = '';
-    /**
-     * Generated from protobuf field <code>string playground_client_secret = 12;</code>
-     */
-    private $playground_client_secret = '';
-    /**
-     * Generated from protobuf field <code>string playground_redirect = 13;</code>
-     */
-    private $playground_redirect = '';
-    /**
      * Generated from protobuf field <code>bool require_request_authorizers = 15;</code>
      */
     private $require_request_authorizers = false;
@@ -138,9 +126,6 @@ class Flags extends \Google\Protobuf\Internal\Message
      *           root user is a list of email addresses that bypass authorizers. (env: GRAPHIK_ROOT_USERS)
      *     @type string $tls_cert
      *     @type string $tls_key
-     *     @type string $playground_client_id
-     *     @type string $playground_client_secret
-     *     @type string $playground_redirect
      *     @type bool $require_request_authorizers
      *     @type bool $require_response_authorizers
      *     @type string $join_raft
@@ -356,72 +341,6 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->tls_key = $var;
-
-        return $this;
-    }
-
-    /**
-     * Generated from protobuf field <code>string playground_client_id = 11;</code>
-     * @return string
-     */
-    public function getPlaygroundClientId()
-    {
-        return $this->playground_client_id;
-    }
-
-    /**
-     * Generated from protobuf field <code>string playground_client_id = 11;</code>
-     * @param string $var
-     * @return $this
-     */
-    public function setPlaygroundClientId($var)
-    {
-        GPBUtil::checkString($var, True);
-        $this->playground_client_id = $var;
-
-        return $this;
-    }
-
-    /**
-     * Generated from protobuf field <code>string playground_client_secret = 12;</code>
-     * @return string
-     */
-    public function getPlaygroundClientSecret()
-    {
-        return $this->playground_client_secret;
-    }
-
-    /**
-     * Generated from protobuf field <code>string playground_client_secret = 12;</code>
-     * @param string $var
-     * @return $this
-     */
-    public function setPlaygroundClientSecret($var)
-    {
-        GPBUtil::checkString($var, True);
-        $this->playground_client_secret = $var;
-
-        return $this;
-    }
-
-    /**
-     * Generated from protobuf field <code>string playground_redirect = 13;</code>
-     * @return string
-     */
-    public function getPlaygroundRedirect()
-    {
-        return $this->playground_redirect;
-    }
-
-    /**
-     * Generated from protobuf field <code>string playground_redirect = 13;</code>
-     * @param string $var
-     * @return $this
-     */
-    public function setPlaygroundRedirect($var)
-    {
-        GPBUtil::checkString($var, True);
-        $this->playground_redirect = $var;
 
         return $this;
     }

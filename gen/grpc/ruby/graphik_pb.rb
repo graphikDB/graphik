@@ -192,9 +192,6 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     repeated :root_users, :string, 8
     optional :tls_cert, :string, 9
     optional :tls_key, :string, 10
-    optional :playground_client_id, :string, 11
-    optional :playground_client_secret, :string, 12
-    optional :playground_redirect, :string, 13
     optional :require_request_authorizers, :bool, 15
     optional :require_response_authorizers, :bool, 16
     optional :join_raft, :string, 17
