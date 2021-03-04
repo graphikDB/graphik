@@ -481,6 +481,12 @@ mutation {
 }
 ```
 
+## User Interface
+
+Please take a look at the following options for stategate user-interface clients:
+
+- [OAuth GraphQL Playground](https://github.com/autom8ter/oauth-graphql-playground): A graphQL IDE that may be used to connect & interact with the full functionality of the stategate graphQL API as an authenticated user
+
 ### GraphQL vs gRPC API
 
 In my opinion, gRPC is king for svc-svc communication & graphQL is king for developing user interfaces & exploring data.
