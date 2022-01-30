@@ -52,7 +52,7 @@ func (g *Graph) UnaryInterceptor() grpc.UnaryServerInterceptor {
 		ctx = g.methodToContext(ctx, info.FullMethod)
 		userinfoReq, err := http.NewRequest(http.MethodGet, g.openID.UserinfoEndpoint, nil)
 		if err != nil {
-			return nil, status.Errorf(codes.Unauthenticated, "failed to get userinfo: %s", err.Error())
+			return nil, status.Errorf(codes.Unauthenticated, "failed to create user info request: %s", err.Error())
 		}
 		userinfoReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		resp, err := http.DefaultClient.Do(userinfoReq)

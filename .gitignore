@@ -1,5 +1,7 @@
 vendor
 .idea
 .env
+.ui-env
 bin
 graphik-ui/doc_modules
+tmp

@@ -10,6 +10,7 @@ import (
 	"github.com/graphikDB/graphik/discover/k8s"
 	"github.com/graphikDB/graphik/gen/grpc/go"
 	"github.com/graphikDB/graphik/gql"
+	"github.com/graphikDB/graphik/gql/session"
 	"github.com/graphikDB/graphik/helpers"
 	"github.com/graphikDB/graphik/logger"
 	"github.com/graphikDB/graphik/raft"
@@ -23,6 +24,7 @@ import (
 	"github.com/soheilhy/cmux"
 	"github.com/spf13/pflag"
 	"go.uber.org/zap"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -32,13 +34,12 @@ import (
 	"net/http"
 	"net/http/pprof"
 	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 	"time"
 )
 
 var global = &apipb.Flags{}
+var uiGlobal = &apipb.UIFlags{}
 
 func init() {
 	godotenv.Load()
@@ -61,6 +62,17 @@ func init() {
 	pflag.CommandLine.Int64Var(&global.RaftMaxPool, "raft-max-pool", int64(helpers.IntEnvOr("GRAPHIK_RAFT_MAX_POOL", 5)), "max nodes in pool (env: GRAPHIK_RAFT_MAX_POOL)")
 	pflag.CommandLine.BoolVar(&global.MutualTls, "mutual-tls", helpers.BoolEnvOr("GRAPHIK_MUTUAL_TLS", false), "require mutual tls (env: GRAPHIK_MUTUAL_TLS)")
 	pflag.CommandLine.StringVar(&global.CaCert, "ca-cert", helpers.EnvOr("GRAPHIK_CA_CERT", ""), "client CA certificate path for establishing mtls (env: GRAPHIK_CA_CERT)")
+
+	pflag.CommandLine.BoolVar(&global.EnableUi, "enable-ui", helpers.BoolEnvOr("GRAPHIK_ENABLE_UI", true), "enable user interface (env: GRAPHIK_ENABLE_UI)")
+
+	pflag.CommandLine.StringVar(&uiGlobal.OauthClientId, "ui-oauth-client-id", helpers.EnvOr("GRAPHIK_UI_OAUTH_CLIENT_ID", "723941275880-6i69h7d27ngmcnq02p6t8lbbgenm26um.apps.googleusercontent.com"), "user authentication: oauth client id (env: GRAPHIK_UI_OAUTH_CLIENT_ID)")
+	pflag.CommandLine.StringVar(&uiGlobal.OauthClientSecret, "ui-oauth-client-secret", helpers.EnvOr("GRAPHIK_UI_OAUTH_CLIENT_SECRET", "E2ru-iJAxijisJ9RzMbloe4c"), "user authentication: oauth client secret (env: GRAPHIK_UI_OAUTH_CLIENT_SECRET)")
+	pflag.CommandLine.StringVar(&uiGlobal.OauthRedirectUrl, "ui-oauth-redirect-url", helpers.EnvOr("GRAPHIK_UI_OAUTH_REDIRECT_URL", "http://localhost:7820/ui/login"), "user authentication: oauth redirect url (env: GRAPHIK_UI_OAUTH_REDIRECT_URL)")
+	pflag.CommandLine.StringVar(&uiGlobal.OauthAuthorizationUrl, "ui-oauth-authorization-url", helpers.EnvOr("GRAPHIK_UI_OAUTH_AUTHORIZATION_URL", "https://accounts.google.com/o/oauth2/v2/auth"), "user authentication: oauth authorization url (env: GRAPHIK_UI_OAUTH_AUTHORIZATION_URL)")
+	pflag.CommandLine.StringVar(&uiGlobal.OauthTokenUrl, "ui-oauth-token-url", helpers.EnvOr("GRAPHIK_UI_OAUTH_TOKEN_URL", "https://oauth2.googleapis.com/token"), "user authentication: token url (env: GRAPHIK_UI_OAUTH_TOKEN_URL)")
+	pflag.CommandLine.StringSliceVar(&uiGlobal.OauthScopes, "ui-oauth-scopes", strings.Split(helpers.EnvOr("GRAPHIK_UI_OAUTH_SCOPES", "openid,email,profile"), ","), "user authentication: oauth scopes (env: GRAPHIK_UI_OAUTH_SCOPES)")
+	pflag.CommandLine.StringVar(&uiGlobal.SessionSecret, "ui-session-secret", helpers.EnvOr("GRAPHIK_UI_SESSION_SECRET", "change-me-xxxx-xxxx"), "user authentication: session secret (env: GRAPHIK_UI_SESSION_SECRET)")
+
 	pflag.Parse()
 }
 
@@ -91,13 +103,10 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		m             = machine.New(ctx)
 		err           error
 		tlsConfig     *tls.Config
-		interrupt     = make(chan os.Signal, 1)
 		apiLis        net.Listener
 		advertise     net.Addr
 	)
 	defer m.Close()
-	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-	defer signal.Stop(interrupt)
 	if global.TlsCert != "" && global.TlsKey != "" {
 		cer, err := tls.LoadX509KeyPair(global.TlsCert, global.TlsKey)
 		if err != nil {
@@ -283,9 +292,65 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 		return
 	}
 	defer conn.Close()
-	resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), lgger)
+
 	mux := http.NewServeMux()
-	mux.Handle("/", resolver.QueryHandler())
+
+	if global.EnableUi {
+		if uiGlobal.OauthClientId == "" {
+			lgger.Error("ui: validation error - empty oauth client id")
+			return
+		}
+		if uiGlobal.OauthClientSecret == "" {
+			lgger.Error("ui: validation error - empty oauth client secret")
+			return
+		}
+		if uiGlobal.OauthAuthorizationUrl == "" {
+			lgger.Error("ui: validation error - empty oauth authorization url")
+			return
+		}
+		if uiGlobal.OauthTokenUrl == "" {
+			lgger.Error("ui: validation error - empty oauth token url")
+			return
+		}
+		if uiGlobal.OauthRedirectUrl == "" {
+			lgger.Error("ui: validation error - empty oauth redirect url")
+			return
+		}
+		if uiGlobal.SessionSecret == "" {
+			lgger.Error("ui: validation error - empty session secret")
+			return
+		}
+		if len(uiGlobal.OauthScopes) == 0 {
+			lgger.Error("ui: validation error - empty oauth scopes")
+			return
+		}
+		oauthConfig := &oauth2.Config{
+			ClientID:     uiGlobal.OauthClientId,
+			ClientSecret: uiGlobal.OauthClientSecret,
+			Endpoint: oauth2.Endpoint{
+				AuthURL:  uiGlobal.OauthAuthorizationUrl,
+				TokenURL: uiGlobal.OauthTokenUrl,
+			},
+			RedirectURL: uiGlobal.OauthRedirectUrl,
+			Scopes:      uiGlobal.OauthScopes,
+		}
+
+		sessManager, err := session.GetSessionManager(oauthConfig, map[string]string{
+			"name":   "cookies",
+			"secret": uiGlobal.SessionSecret,
+		})
+		if err != nil {
+			lgger.Error("ui: failed to setup session manager")
+			return
+		}
+		resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), lgger, sessManager)
+		mux.Handle("/", resolver.QueryHandler())
+		mux.Handle("/ui", resolver.UIHandler())
+		mux.Handle("/ui/login", resolver.OAuthCallback())
+	} else {
+		resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), lgger, nil)
+		mux.Handle("/", resolver.QueryHandler())
+	}
 
 	httpServer := &http.Server{
 		Handler: mux,
@@ -363,33 +428,33 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			}
 		}
 	})
-	select {
-	case <-interrupt:
-		m.Close()
-		break
-	case <-ctx.Done():
-		m.Close()
-		break
-	}
-	lgger.Warn("shutdown signal received")
-	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer shutdownCancel()
-
-	_ = httpServer.Shutdown(shutdownCtx)
-	_ = metricServer.Shutdown(shutdownCtx)
-	stopped := make(chan struct{})
-	go func() {
-		gserver.GracefulStop()
-		close(stopped)
-	}()
-
-	t := time.NewTimer(10 * time.Second)
-	select {
-	case <-t.C:
-		gserver.Stop()
-	case <-stopped:
-		t.Stop()
-	}
+	//select {
+	//case <-interrupt:
+	//	m.Close()
+	//	break
+	//case <-ctx.Done():
+	//	m.Close()
+	//	break
+	//}
+	//lgger.Warn("shutdown signal received")
+	//shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//defer shutdownCancel()
+	//
+	//_ = httpServer.Shutdown(shutdownCtx)
+	//_ = metricServer.Shutdown(shutdownCtx)
+	//stopped := make(chan struct{})
+	//go func() {
+	//	gserver.GracefulStop()
+	//	close(stopped)
+	//}()
+	//
+	//t := time.NewTimer(10 * time.Second)
+	//select {
+	//case <-t.C:
+	//	gserver.Stop()
+	//case <-stopped:
+	//	t.Stop()
+	//}
 	m.Wait()
 	g.Close()
 	lgger.Debug("shutdown successful")

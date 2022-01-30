@@ -3,6 +3,7 @@ package gql
 import (
 	"context"
 	"encoding/gob"
+	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/apollotracing"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -11,6 +12,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/grpc/go"
+	"github.com/graphikDB/graphik/gql/session"
 	"github.com/graphikDB/graphik/logger"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc/metadata"
@@ -26,14 +28,18 @@ func init() {
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	client apipb.DatabaseServiceClient
-	logger *logger.Logger
+	client  apipb.DatabaseServiceClient
+	logger  *logger.Logger
+	session session.SessionManager
+	uiPath  string
 }
 
-func NewResolver(client apipb.DatabaseServiceClient, logger *logger.Logger) *Resolver {
+func NewResolver(client apipb.DatabaseServiceClient, logger *logger.Logger, session session.SessionManager) *Resolver {
 	return &Resolver{
-		client: client,
-		logger: logger,
+		client:  client,
+		logger:  logger,
+		session: session,
+		uiPath:  "/ui",
 	}
 }
 
@@ -71,6 +77,23 @@ func (r *Resolver) QueryHandler() http.Handler {
 
 func (r *Resolver) authMiddleware(handler http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
+		if r.session != nil && req.Header.Get("Authorization") == "" {
+			authToken, err := r.session.GetToken(req)
+			if err != nil {
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+			if authToken == nil {
+				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				return
+			}
+			if !authToken.Token.Valid() {
+				http.Error(w, "unauthorized - token expired", http.StatusUnauthorized)
+				return
+			}
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", authToken.Token.AccessToken))
+		}
+
 		ctx := req.Context()
 		for k, arr := range req.Header {
 			if len(arr) > 0 {

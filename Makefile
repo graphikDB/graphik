@@ -1,4 +1,4 @@
-version := "1.3.0"
+version := "1.4.0"
 
 .DEFAULT_GOAL := help
 
@@ -44,7 +44,7 @@ docker-push:
 .PHONY: proto
 proto: ## regenerate gRPC code
 	@echo "generating protobuf code..."
-	@docker run -v `pwd`:/defs namely/prototool:latest generate
+	@docker run -v `pwd`:/defs namely/prototool:1.34_3 generate
 	@go fmt ./...
 
 .PHONY: gql

@@ -464,6 +464,18 @@ message Flags {
   int64 raft_max_pool =24;
   bool mutual_tls =25;
   string ca_cert =26;
+  bool enable_ui =27;
+
+}
+
+message UIFlags {
+  string oauth_client_id =1;
+  string oauth_client_secret =2;
+  string oauth_authorization_url =3;
+  string oauth_token_url=4;
+  string oauth_redirect_url =5;
+  repeated string oauth_scopes=6;
+  string session_secret=7;
 }
 
 // Boolean is a simple boolean value

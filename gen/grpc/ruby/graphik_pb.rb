@@ -204,6 +204,16 @@ Google::Protobuf::DescriptorPool.generated_pool.build do
     optional :raft_max_pool, :int64, 24
     optional :mutual_tls, :bool, 25
     optional :ca_cert, :string, 26
+    optional :enable_ui, :bool, 27
+  end
+  add_message "api.UIFlags" do
+    optional :oauth_client_id, :string, 1
+    optional :oauth_client_secret, :string, 2
+    optional :oauth_authorization_url, :string, 3
+    optional :oauth_token_url, :string, 4
+    optional :oauth_redirect_url, :string, 5
+    repeated :oauth_scopes, :string, 6
+    optional :session_secret, :string, 7
   end
   add_message "api.Boolean" do
     optional :value, :bool, 1
@@ -329,6 +339,7 @@ module Api
   StreamFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.StreamFilter").msgclass
   Graph = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Graph").msgclass
   Flags = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Flags").msgclass
+  UIFlags = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.UIFlags").msgclass
   Boolean = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Boolean").msgclass
   Number = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.Number").msgclass
   ExistsFilter = Google::Protobuf::DescriptorPool.generated_pool.lookup("api.ExistsFilter").msgclass

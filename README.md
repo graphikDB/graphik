@@ -5,9 +5,31 @@ https://graphikdb.github.io/graphik/
 
 [![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
 
-`git clone git@github.com:graphikDB/graphik.git`
-    
-`docker pull graphikdb/graphik:v1.3.0`
+## Quick Start
+
+Download sample .env & docker-compose file for configuration:
+```
+curl https://raw.githubusercontent.com/graphikDB/graphik/master/.sample.env >> .env
+curl https://raw.githubusercontent.com/graphikDB/graphik/master/docker-compose.yml >> docker-compose.yml
+
+```
+
+Change `GRAPHIK_ROOT_USERS` in .env to your email address
+
+Start the server:
+```
+  docker-compose -f docker-compose.yml pull
+  docker-compose -f docker-compose.yml up -d
+```
+
+Gisit localhost:7820/ui and login to get started. 
+See [Sample GraphQL Queries](#sample-graphql-queries) for sample graphQL queries.
+
+
+when you're done, you may shutdown the server:
+```
+docker-compose -f docker-compose.yml down --remove-orphans
+```
 
 Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
@@ -134,6 +156,7 @@ This is bad for the following reasons:
 - [x] 100% Go
 - [x] Native gRPC Support
 - [x] GraphQL Support
+- [x] User Interface
 - [x] Native Document & Graph Database
 - [x] [Index-free Adjacency](https://dzone.com/articles/the-secret-sauce-of-graph-databases)
 - [x] Native OAuth/OIDC Support & Single Sign On
@@ -181,27 +204,60 @@ This is bad for the following reasons:
 ## Flags
 
 please note that the following flags are required:
-- --root-users
-- --open-id
+- `--root-users (env: GRAPHIK_ROOT_USERS)`
+- `--open-id (env: GRAPHIK_OPEN_ID)`
 
 ```text
-      --allow-headers strings             cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
-      --allow-methods strings             cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
-      --allow-origins strings             cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
-      --debug                             enable debug logs (env: GRAPHIK_DEBUG)
-      --environment string                deployment environment (k8s) (env: GRAPHIK_ENVIRONMENT)
-      --join-raft string                  join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)
-      --listen-port int                   serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT) (default 7820)
-      --open-id string                    open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) (required) 
-      --raft-max-pool int                 max nodes in pool (env: GRAPHIK_RAFT_MAX_POOL) (default 5)
-      --raft-peer-id string               raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)
-      --raft-secret string                raft cluster secret (so only authorized nodes may join cluster) (env: GRAPHIK_RAFT_SECRET)
-      --require-request-authorizers       require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)
-      --require-response-authorizers      require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)
-      --root-users strings                a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)  (required)
-      --storage string                    persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
-      --tls-cert string                   path to tls certificate (env: GRAPHIK_TLS_CERT)
-      --tls-key string                    path to tls key (env: GRAPHIK_TLS_KEY)
+      --allow-headers strings               cors allow headers (env: GRAPHIK_ALLOW_HEADERS) (default [*])
+      --allow-methods strings               cors allow methods (env: GRAPHIK_ALLOW_METHODS) (default [HEAD,GET,POST,PUT,PATCH,DELETE])
+      --allow-origins strings               cors allow origins (env: GRAPHIK_ALLOW_ORIGINS) (default [*])
+      --ca-cert string                      client CA certificate path for establishing mtls (env: GRAPHIK_CA_CERT)
+      --debug                               enable debug logs (env: GRAPHIK_DEBUG)
+      --enable-ui                           enable user interface (env: GRAPHIK_ENABLE_UI) (default true)
+      --environment string                  deployment environment (k8s) (env: GRAPHIK_ENVIRONMENT)
+      --join-raft string                    join raft cluster at target address (env: GRAPHIK_JOIN_RAFT)
+      --listen-port int                     serve gRPC & graphQL on this port (env: GRAPHIK_LISTEN_PORT) (default 7820)
+      --mutual-tls                          require mutual tls (env: GRAPHIK_MUTUAL_TLS)
+      --open-id string                      open id connect discovery uri ex: https://accounts.google.com/.well-known/openid-configuration (env: GRAPHIK_OPEN_ID) (required) (default "https://accounts.google.com/.well-known/openid-configuration")
+      --raft-max-pool int                   max nodes in pool (env: GRAPHIK_RAFT_MAX_POOL) (default 5)
+      --raft-peer-id string                 raft peer ID - one will be generated if not set (env: GRAPHIK_RAFT_PEER_ID)
+      --raft-secret string                  raft cluster secret (so only authorized nodes may join cluster) (env: GRAPHIK_RAFT_SECRET)
+      --require-request-authorizers         require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_REQUEST_AUTHORIZERS)
+      --require-response-authorizers        require request authorizers for all methods/endpoints (env: GRAPHIK_REQUIRE_RESPONSE_AUTHORIZERS)
+      --root-users strings                  a list of email addresses that bypass registered authorizers (env: GRAPHIK_ROOT_USERS)  (required) (default [coleman.word@graphikdb.io])
+      --storage string                      persistant storage path (env: GRAPHIK_STORAGE_PATH) (default "/tmp/graphik")
+      --tls-cert string                     path to tls certificate (env: GRAPHIK_TLS_CERT)
+      --tls-key string                      path to tls key (env: GRAPHIK_TLS_KEY)
+      --ui-oauth-authorization-url string   user authentication: oauth authorization url (env: GRAPHIK_UI_OAUTH_AUTHORIZATION_URL) (default "https://accounts.google.com/o/oauth2/v2/auth")
+      --ui-oauth-client-id string           user authentication: oauth client id (env: GRAPHIK_UI_OAUTH_CLIENT_ID) (default "723941275880-6i69h7d27ngmcnq02p6t8lbbgenm26um.apps.googleusercontent.com")
+      --ui-oauth-client-secret string       user authentication: oauth client secret (env: GRAPHIK_UI_OAUTH_CLIENT_SECRET) (default "E2ru-iJAxijisJ9RzMbloe4c")
+      --ui-oauth-redirect-url string        user authentication: oauth redirect url (env: GRAPHIK_UI_OAUTH_REDIRECT_URL) (default "http://localhost:7820/ui/login")
+      --ui-oauth-scopes strings             user authentication: oauth scopes (env: GRAPHIK_UI_OAUTH_SCOPES) (default [openid,email,profile])
+      --ui-oauth-token-url string           user authentication: token url (env: GRAPHIK_UI_OAUTH_TOKEN_URL) (default "https://oauth2.googleapis.com/token")
+      --ui-session-secret string            user authentication: session secret (env: GRAPHIK_UI_SESSION_SECRET) (default "change-me-xxxx-xxxx")
+
+```
+
+sample .env file:
+
+```
+# change to a list of root user emails that have full access to all database operations
+GRAPHIK_ROOT_USERS=coleman.word@graphikdb.io
+GRAPHIK_OPEN_ID=https://accounts.google.com/.well-known/openid-configuration
+GRAPHIK_ALLOW_HEADERS=*
+GRAPHIK_ALLOW_METHOD=*
+GRAPHIK_ALLOW_ORIGINS=*
+
+# use for testing only
+GRAPHIK_UI_OAUTH_CLIENT_ID=723941275880-6i69h7d27ngmcnq02p6t8lbbgenm26um.apps.googleusercontent.com
+# use for testing only
+GRAPHIK_UI_CLIENT_SECRET=E2ru-iJAxijisJ9RzMbloe4c
+# change localhost:7820 to your deployed domain name when not running locally
+GRAPHIK_UI_OAUTH_REDIRECT_URL=http://localhost:7820/ui/login
+GRAPHIK_UI_OAUTH_SCOPES=openid,email,profile
+GRAPHIK_UI_OAUTH_AUTHORIZATION_URL=https://accounts.google.com/o/oauth2/v2/auth
+GRAPHIK_UI_OAUTH_TOKEN_URL=https://oauth2.googleapis.com/token
+GRAPHIK_UI_SESSION_SECRET=changeme-xxxxx-xxxx
 ```
 
 ## gRPC Client SDKs
@@ -215,9 +271,20 @@ please note that the following flags are required:
 
 ## User Interface
 
-Please take a look at the following options for stategate user-interface clients:
+The flag --enable-ui controls whether the UI is enabled or not. By default, it is enabled and available at the path `:7820/ui`.
+By default, it is configured to use an oauth client for testing purposes only.
 
-- [OAuth GraphQL Playground](https://github.com/autom8ter/oauth-graphql-playground): A graphQL IDE that may be used to connect & interact with the full functionality of the stategate graphQL API as an authenticated userth GraphQL Playground: A graphQL IDE that may be used to connect & interact with the full functionality of the stategate graphQL API as an authenticated user
+UI related flags:
+```text
+--enable-ui                           enable user interface (env: GRAPHIK_ENABLE_UI) (default true)
+--ui-oauth-authorization-url string   user authentication: oauth authorization url (env: GRAPHIK_UI_OAUTH_AUTHORIZATION_URL) (default "https://accounts.google.com/o/oauth2/v2/auth")
+--ui-oauth-client-id string           user authentication: oauth client id (env: GRAPHIK_UI_OAUTH_CLIENT_ID) (default "723941275880-6i69h7d27ngmcnq02p6t8lbbgenm26um.apps.googleusercontent.com")
+--ui-oauth-client-secret string       user authentication: oauth client secret (env: GRAPHIK_UI_OAUTH_CLIENT_SECRET) (default "E2ru-iJAxijisJ9RzMbloe4c")
+--ui-oauth-redirect-url string        user authentication: oauth redirect url (env: GRAPHIK_UI_OAUTH_REDIRECT_URL) (default "http://localhost:7820/ui/login")
+--ui-oauth-scopes strings             user authentication: oauth scopes (env: GRAPHIK_UI_OAUTH_SCOPES) (default [openid,email,profile])
+--ui-oauth-token-url string           user authentication: token url (env: GRAPHIK_UI_OAUTH_TOKEN_URL) (default "https://oauth2.googleapis.com/token")
+--ui-session-secret string            user authentication: session secret (env: GRAPHIK_UI_SESSION_SECRET) (default "change-me-xxxx-xxxx")
+```
 
 
 ## Implemenation Details
@@ -483,9 +550,9 @@ mutation {
 
 ## User Interface
 
-Please take a look at the following options for stategate user-interface clients:
+Please take a look at the following options for graphik user-interface clients:
 
-- [OAuth GraphQL Playground](https://github.com/autom8ter/oauth-graphql-playground): A graphQL IDE that may be used to connect & interact with the full functionality of the stategate graphQL API as an authenticated user
+- [OAuth GraphQL Playground](https://github.com/autom8ter/oauth-graphql-playground): A graphQL IDE that may be used to connect & interact with the full functionality of the graphik graphQL API as an authenticated user
 
 ### GraphQL vs gRPC API
 
@@ -909,7 +976,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v1.3.0
+        image: graphikdb/graphik:v1.4.0
         env_file:
           - .env
         ports:
@@ -963,6 +1030,8 @@ graphik plugs into kubernetes service discovery
  
 ## Open ID Connect Providers
 
+When using an openid provider other than Google(default configuration), please replace the flag 
+
 ### Google
 
 - metadata uri: https://accounts.google.com/.well-known/openid-configuration
@@ -1009,3 +1078,21 @@ graphik plugs into kubernetes service discovery
 |Role Based Access Control(RBAC)       |Role-based access control (RBAC) is a method of restricting network access based on the roles of individual users within an enterprise. RBAC lets employees have access rights only to the information they need to do their jobs and prevents them from accessing information that doesn't pertain to them.                                                                                                                                                                                             |https://searchsecurity.techtarget.com/definition/role-based-access-control-RBAC#:~:text=Role%2Dbased%20access%20control%20(RBAC)%20is%20a%20method%20of,doesn't%20pertain%20to%20them.           |
 | Index Free Adjacency | Data lookup performance is dependent on the access speed from one particular node to another. Because index-free adjacency enforces the nodes to have direct physical RAM addresses and physically point to other adjacent nodes, it results in a fast retrieval. A native graph system with index-free adjacency does not have to move through any other type of data structures to find links between the nodes. | https://en.wikipedia.org/wiki/Graph_database#Index-free_adjacency
 | Extended Common Expression Language | An extensive decision & trigger framework backed by Google's Common Expression Language | https://github.com/graphikDB/trigger#standard-definitionslibrary
+
+## FAQ
+
+1) How can I login with some type of  local "Root" or "Admin" account without having to use some authenticator service?
+
+It is not possible to use the database without an authenticator service, though, a default authenticator is configured by default for use locally.
+To configure the root/admin user with the default configurator, please utilize the `--root-users` flag or the `GRAPHIK_ROOT_USERS` environmental variable with 
+a list of email addresses that have full access to the database.
+
+
+2) Does GraphikDb have a built-in admin web server UI like RethinkDB, etc. to server some web pages for monitoring the database and cluster.
+
+
+
+3) How well does it cluster?
+
+Clustering is achieved via the raft protocol and is primarily used for redundancy purposes. The raft protocol does not scale particularly well 
+for write operations - it may be replaced with a sharded, eventually-consistent clustering mechanism in order to scale past 10+ instances.

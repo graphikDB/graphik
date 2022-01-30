@@ -91,7 +91,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-          image: graphikdb/graphik:v1.3.0
+          image: graphikdb/graphik:v1.4.0
           imagePullPolicy: Always
           ports:
           - containerPort: 7821

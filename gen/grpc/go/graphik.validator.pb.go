@@ -525,6 +525,9 @@ func (this *Graph) Validate() error {
 func (this *Flags) Validate() error {
 	return nil
 }
+func (this *UIFlags) Validate() error {
+	return nil
+}
 func (this *Boolean) Validate() error {
 	return nil
 }

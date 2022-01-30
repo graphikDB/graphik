@@ -34449,6 +34449,11 @@ public final class Graphik {
      */
     com.google.protobuf.ByteString
         getCaCertBytes();
+
+    /**
+     * <code>bool enable_ui = 27;</code>
+     */
+    boolean getEnableUi();
   }
   /**
    * Protobuf type {@code api.Flags}
@@ -34483,6 +34488,7 @@ public final class Graphik {
       raftMaxPool_ = 0L;
       mutualTls_ = false;
       caCert_ = "";
+      enableUi_ = false;
     }
 
     @java.lang.Override
@@ -34633,6 +34639,11 @@ public final class Graphik {
               java.lang.String s = input.readStringRequireUtf8();
 
               caCert_ = s;
+              break;
+            }
+            case 216: {
+
+              enableUi_ = input.readBool();
               break;
             }
             default: {
@@ -35270,6 +35281,15 @@ public final class Graphik {
       }
     }
 
+    public static final int ENABLE_UI_FIELD_NUMBER = 27;
+    private boolean enableUi_;
+    /**
+     * <code>bool enable_ui = 27;</code>
+     */
+    public boolean getEnableUi() {
+      return enableUi_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -35343,6 +35363,9 @@ public final class Graphik {
       }
       if (!getCaCertBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 26, caCert_);
+      }
+      if (enableUi_ != false) {
+        output.writeBool(27, enableUi_);
       }
       unknownFields.writeTo(output);
     }
@@ -35439,6 +35462,10 @@ public final class Graphik {
       if (!getCaCertBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(26, caCert_);
       }
+      if (enableUi_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(27, enableUi_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -35495,6 +35522,8 @@ public final class Graphik {
           == other.getMutualTls());
       result = result && getCaCert()
           .equals(other.getCaCert());
+      result = result && (getEnableUi()
+          == other.getEnableUi());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -35560,6 +35589,9 @@ public final class Graphik {
           getMutualTls());
       hash = (37 * hash) + CA_CERT_FIELD_NUMBER;
       hash = (53 * hash) + getCaCert().hashCode();
+      hash = (37 * hash) + ENABLE_UI_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getEnableUi());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -35733,6 +35765,8 @@ public final class Graphik {
 
         caCert_ = "";
 
+        enableUi_ = false;
+
         return this;
       }
 
@@ -35797,6 +35831,7 @@ public final class Graphik {
         result.raftMaxPool_ = raftMaxPool_;
         result.mutualTls_ = mutualTls_;
         result.caCert_ = caCert_;
+        result.enableUi_ = enableUi_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -35943,6 +35978,9 @@ public final class Graphik {
         if (!other.getCaCert().isEmpty()) {
           caCert_ = other.caCert_;
           onChanged();
+        }
+        if (other.getEnableUi() != false) {
+          setEnableUi(other.getEnableUi());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -37379,6 +37417,32 @@ public final class Graphik {
         onChanged();
         return this;
       }
+
+      private boolean enableUi_ ;
+      /**
+       * <code>bool enable_ui = 27;</code>
+       */
+      public boolean getEnableUi() {
+        return enableUi_;
+      }
+      /**
+       * <code>bool enable_ui = 27;</code>
+       */
+      public Builder setEnableUi(boolean value) {
+        
+        enableUi_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool enable_ui = 27;</code>
+       */
+      public Builder clearEnableUi() {
+        
+        enableUi_ = false;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -37427,6 +37491,1435 @@ public final class Graphik {
 
     @java.lang.Override
     public api.Graphik.Flags getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface UIFlagsOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:api.UIFlags)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string oauth_client_id = 1;</code>
+     */
+    java.lang.String getOauthClientId();
+    /**
+     * <code>string oauth_client_id = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getOauthClientIdBytes();
+
+    /**
+     * <code>string oauth_client_secret = 2;</code>
+     */
+    java.lang.String getOauthClientSecret();
+    /**
+     * <code>string oauth_client_secret = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getOauthClientSecretBytes();
+
+    /**
+     * <code>string oauth_authorization_url = 3;</code>
+     */
+    java.lang.String getOauthAuthorizationUrl();
+    /**
+     * <code>string oauth_authorization_url = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getOauthAuthorizationUrlBytes();
+
+    /**
+     * <code>string oauth_token_url = 4;</code>
+     */
+    java.lang.String getOauthTokenUrl();
+    /**
+     * <code>string oauth_token_url = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getOauthTokenUrlBytes();
+
+    /**
+     * <code>string oauth_redirect_url = 5;</code>
+     */
+    java.lang.String getOauthRedirectUrl();
+    /**
+     * <code>string oauth_redirect_url = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getOauthRedirectUrlBytes();
+
+    /**
+     * <code>repeated string oauth_scopes = 6;</code>
+     */
+    java.util.List<java.lang.String>
+        getOauthScopesList();
+    /**
+     * <code>repeated string oauth_scopes = 6;</code>
+     */
+    int getOauthScopesCount();
+    /**
+     * <code>repeated string oauth_scopes = 6;</code>
+     */
+    java.lang.String getOauthScopes(int index);
+    /**
+     * <code>repeated string oauth_scopes = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getOauthScopesBytes(int index);
+
+    /**
+     * <code>string session_secret = 7;</code>
+     */
+    java.lang.String getSessionSecret();
+    /**
+     * <code>string session_secret = 7;</code>
+     */
+    com.google.protobuf.ByteString
+        getSessionSecretBytes();
+  }
+  /**
+   * Protobuf type {@code api.UIFlags}
+   */
+  public  static final class UIFlags extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:api.UIFlags)
+      UIFlagsOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use UIFlags.newBuilder() to construct.
+    private UIFlags(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private UIFlags() {
+      oauthClientId_ = "";
+      oauthClientSecret_ = "";
+      oauthAuthorizationUrl_ = "";
+      oauthTokenUrl_ = "";
+      oauthRedirectUrl_ = "";
+      oauthScopes_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      sessionSecret_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private UIFlags(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              oauthClientId_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              oauthClientSecret_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              oauthAuthorizationUrl_ = s;
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              oauthTokenUrl_ = s;
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              oauthRedirectUrl_ = s;
+              break;
+            }
+            case 50: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                oauthScopes_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              oauthScopes_.add(s);
+              break;
+            }
+            case 58: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              sessionSecret_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          oauthScopes_ = oauthScopes_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return api.Graphik.internal_static_api_UIFlags_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return api.Graphik.internal_static_api_UIFlags_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              api.Graphik.UIFlags.class, api.Graphik.UIFlags.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int OAUTH_CLIENT_ID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object oauthClientId_;
+    /**
+     * <code>string oauth_client_id = 1;</code>
+     */
+    public java.lang.String getOauthClientId() {
+      java.lang.Object ref = oauthClientId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        oauthClientId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string oauth_client_id = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOauthClientIdBytes() {
+      java.lang.Object ref = oauthClientId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        oauthClientId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int OAUTH_CLIENT_SECRET_FIELD_NUMBER = 2;
+    private volatile java.lang.Object oauthClientSecret_;
+    /**
+     * <code>string oauth_client_secret = 2;</code>
+     */
+    public java.lang.String getOauthClientSecret() {
+      java.lang.Object ref = oauthClientSecret_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        oauthClientSecret_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string oauth_client_secret = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOauthClientSecretBytes() {
+      java.lang.Object ref = oauthClientSecret_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        oauthClientSecret_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int OAUTH_AUTHORIZATION_URL_FIELD_NUMBER = 3;
+    private volatile java.lang.Object oauthAuthorizationUrl_;
+    /**
+     * <code>string oauth_authorization_url = 3;</code>
+     */
+    public java.lang.String getOauthAuthorizationUrl() {
+      java.lang.Object ref = oauthAuthorizationUrl_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        oauthAuthorizationUrl_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string oauth_authorization_url = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOauthAuthorizationUrlBytes() {
+      java.lang.Object ref = oauthAuthorizationUrl_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        oauthAuthorizationUrl_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int OAUTH_TOKEN_URL_FIELD_NUMBER = 4;
+    private volatile java.lang.Object oauthTokenUrl_;
+    /**
+     * <code>string oauth_token_url = 4;</code>
+     */
+    public java.lang.String getOauthTokenUrl() {
+      java.lang.Object ref = oauthTokenUrl_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        oauthTokenUrl_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string oauth_token_url = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOauthTokenUrlBytes() {
+      java.lang.Object ref = oauthTokenUrl_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        oauthTokenUrl_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int OAUTH_REDIRECT_URL_FIELD_NUMBER = 5;
+    private volatile java.lang.Object oauthRedirectUrl_;
+    /**
+     * <code>string oauth_redirect_url = 5;</code>
+     */
+    public java.lang.String getOauthRedirectUrl() {
+      java.lang.Object ref = oauthRedirectUrl_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        oauthRedirectUrl_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string oauth_redirect_url = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOauthRedirectUrlBytes() {
+      java.lang.Object ref = oauthRedirectUrl_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        oauthRedirectUrl_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int OAUTH_SCOPES_FIELD_NUMBER = 6;
+    private com.google.protobuf.LazyStringList oauthScopes_;
+    /**
+     * <code>repeated string oauth_scopes = 6;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getOauthScopesList() {
+      return oauthScopes_;
+    }
+    /**
+     * <code>repeated string oauth_scopes = 6;</code>
+     */
+    public int getOauthScopesCount() {
+      return oauthScopes_.size();
+    }
+    /**
+     * <code>repeated string oauth_scopes = 6;</code>
+     */
+    public java.lang.String getOauthScopes(int index) {
+      return oauthScopes_.get(index);
+    }
+    /**
+     * <code>repeated string oauth_scopes = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getOauthScopesBytes(int index) {
+      return oauthScopes_.getByteString(index);
+    }
+
+    public static final int SESSION_SECRET_FIELD_NUMBER = 7;
+    private volatile java.lang.Object sessionSecret_;
+    /**
+     * <code>string session_secret = 7;</code>
+     */
+    public java.lang.String getSessionSecret() {
+      java.lang.Object ref = sessionSecret_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        sessionSecret_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string session_secret = 7;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSessionSecretBytes() {
+      java.lang.Object ref = sessionSecret_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sessionSecret_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getOauthClientIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, oauthClientId_);
+      }
+      if (!getOauthClientSecretBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, oauthClientSecret_);
+      }
+      if (!getOauthAuthorizationUrlBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, oauthAuthorizationUrl_);
+      }
+      if (!getOauthTokenUrlBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, oauthTokenUrl_);
+      }
+      if (!getOauthRedirectUrlBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, oauthRedirectUrl_);
+      }
+      for (int i = 0; i < oauthScopes_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, oauthScopes_.getRaw(i));
+      }
+      if (!getSessionSecretBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 7, sessionSecret_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getOauthClientIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, oauthClientId_);
+      }
+      if (!getOauthClientSecretBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, oauthClientSecret_);
+      }
+      if (!getOauthAuthorizationUrlBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, oauthAuthorizationUrl_);
+      }
+      if (!getOauthTokenUrlBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, oauthTokenUrl_);
+      }
+      if (!getOauthRedirectUrlBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, oauthRedirectUrl_);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < oauthScopes_.size(); i++) {
+          dataSize += computeStringSizeNoTag(oauthScopes_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getOauthScopesList().size();
+      }
+      if (!getSessionSecretBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, sessionSecret_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof api.Graphik.UIFlags)) {
+        return super.equals(obj);
+      }
+      api.Graphik.UIFlags other = (api.Graphik.UIFlags) obj;
+
+      boolean result = true;
+      result = result && getOauthClientId()
+          .equals(other.getOauthClientId());
+      result = result && getOauthClientSecret()
+          .equals(other.getOauthClientSecret());
+      result = result && getOauthAuthorizationUrl()
+          .equals(other.getOauthAuthorizationUrl());
+      result = result && getOauthTokenUrl()
+          .equals(other.getOauthTokenUrl());
+      result = result && getOauthRedirectUrl()
+          .equals(other.getOauthRedirectUrl());
+      result = result && getOauthScopesList()
+          .equals(other.getOauthScopesList());
+      result = result && getSessionSecret()
+          .equals(other.getSessionSecret());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + OAUTH_CLIENT_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getOauthClientId().hashCode();
+      hash = (37 * hash) + OAUTH_CLIENT_SECRET_FIELD_NUMBER;
+      hash = (53 * hash) + getOauthClientSecret().hashCode();
+      hash = (37 * hash) + OAUTH_AUTHORIZATION_URL_FIELD_NUMBER;
+      hash = (53 * hash) + getOauthAuthorizationUrl().hashCode();
+      hash = (37 * hash) + OAUTH_TOKEN_URL_FIELD_NUMBER;
+      hash = (53 * hash) + getOauthTokenUrl().hashCode();
+      hash = (37 * hash) + OAUTH_REDIRECT_URL_FIELD_NUMBER;
+      hash = (53 * hash) + getOauthRedirectUrl().hashCode();
+      if (getOauthScopesCount() > 0) {
+        hash = (37 * hash) + OAUTH_SCOPES_FIELD_NUMBER;
+        hash = (53 * hash) + getOauthScopesList().hashCode();
+      }
+      hash = (37 * hash) + SESSION_SECRET_FIELD_NUMBER;
+      hash = (53 * hash) + getSessionSecret().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static api.Graphik.UIFlags parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.UIFlags parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.UIFlags parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.UIFlags parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.UIFlags parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static api.Graphik.UIFlags parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static api.Graphik.UIFlags parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.UIFlags parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.UIFlags parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static api.Graphik.UIFlags parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static api.Graphik.UIFlags parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static api.Graphik.UIFlags parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(api.Graphik.UIFlags prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code api.UIFlags}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:api.UIFlags)
+        api.Graphik.UIFlagsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return api.Graphik.internal_static_api_UIFlags_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return api.Graphik.internal_static_api_UIFlags_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                api.Graphik.UIFlags.class, api.Graphik.UIFlags.Builder.class);
+      }
+
+      // Construct using api.Graphik.UIFlags.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        oauthClientId_ = "";
+
+        oauthClientSecret_ = "";
+
+        oauthAuthorizationUrl_ = "";
+
+        oauthTokenUrl_ = "";
+
+        oauthRedirectUrl_ = "";
+
+        oauthScopes_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        sessionSecret_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return api.Graphik.internal_static_api_UIFlags_descriptor;
+      }
+
+      @java.lang.Override
+      public api.Graphik.UIFlags getDefaultInstanceForType() {
+        return api.Graphik.UIFlags.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public api.Graphik.UIFlags build() {
+        api.Graphik.UIFlags result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public api.Graphik.UIFlags buildPartial() {
+        api.Graphik.UIFlags result = new api.Graphik.UIFlags(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        result.oauthClientId_ = oauthClientId_;
+        result.oauthClientSecret_ = oauthClientSecret_;
+        result.oauthAuthorizationUrl_ = oauthAuthorizationUrl_;
+        result.oauthTokenUrl_ = oauthTokenUrl_;
+        result.oauthRedirectUrl_ = oauthRedirectUrl_;
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          oauthScopes_ = oauthScopes_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000020);
+        }
+        result.oauthScopes_ = oauthScopes_;
+        result.sessionSecret_ = sessionSecret_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof api.Graphik.UIFlags) {
+          return mergeFrom((api.Graphik.UIFlags)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(api.Graphik.UIFlags other) {
+        if (other == api.Graphik.UIFlags.getDefaultInstance()) return this;
+        if (!other.getOauthClientId().isEmpty()) {
+          oauthClientId_ = other.oauthClientId_;
+          onChanged();
+        }
+        if (!other.getOauthClientSecret().isEmpty()) {
+          oauthClientSecret_ = other.oauthClientSecret_;
+          onChanged();
+        }
+        if (!other.getOauthAuthorizationUrl().isEmpty()) {
+          oauthAuthorizationUrl_ = other.oauthAuthorizationUrl_;
+          onChanged();
+        }
+        if (!other.getOauthTokenUrl().isEmpty()) {
+          oauthTokenUrl_ = other.oauthTokenUrl_;
+          onChanged();
+        }
+        if (!other.getOauthRedirectUrl().isEmpty()) {
+          oauthRedirectUrl_ = other.oauthRedirectUrl_;
+          onChanged();
+        }
+        if (!other.oauthScopes_.isEmpty()) {
+          if (oauthScopes_.isEmpty()) {
+            oauthScopes_ = other.oauthScopes_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+          } else {
+            ensureOauthScopesIsMutable();
+            oauthScopes_.addAll(other.oauthScopes_);
+          }
+          onChanged();
+        }
+        if (!other.getSessionSecret().isEmpty()) {
+          sessionSecret_ = other.sessionSecret_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        api.Graphik.UIFlags parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (api.Graphik.UIFlags) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object oauthClientId_ = "";
+      /**
+       * <code>string oauth_client_id = 1;</code>
+       */
+      public java.lang.String getOauthClientId() {
+        java.lang.Object ref = oauthClientId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          oauthClientId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string oauth_client_id = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOauthClientIdBytes() {
+        java.lang.Object ref = oauthClientId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          oauthClientId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string oauth_client_id = 1;</code>
+       */
+      public Builder setOauthClientId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        oauthClientId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_client_id = 1;</code>
+       */
+      public Builder clearOauthClientId() {
+        
+        oauthClientId_ = getDefaultInstance().getOauthClientId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_client_id = 1;</code>
+       */
+      public Builder setOauthClientIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        oauthClientId_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object oauthClientSecret_ = "";
+      /**
+       * <code>string oauth_client_secret = 2;</code>
+       */
+      public java.lang.String getOauthClientSecret() {
+        java.lang.Object ref = oauthClientSecret_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          oauthClientSecret_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string oauth_client_secret = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOauthClientSecretBytes() {
+        java.lang.Object ref = oauthClientSecret_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          oauthClientSecret_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string oauth_client_secret = 2;</code>
+       */
+      public Builder setOauthClientSecret(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        oauthClientSecret_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_client_secret = 2;</code>
+       */
+      public Builder clearOauthClientSecret() {
+        
+        oauthClientSecret_ = getDefaultInstance().getOauthClientSecret();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_client_secret = 2;</code>
+       */
+      public Builder setOauthClientSecretBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        oauthClientSecret_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object oauthAuthorizationUrl_ = "";
+      /**
+       * <code>string oauth_authorization_url = 3;</code>
+       */
+      public java.lang.String getOauthAuthorizationUrl() {
+        java.lang.Object ref = oauthAuthorizationUrl_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          oauthAuthorizationUrl_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string oauth_authorization_url = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOauthAuthorizationUrlBytes() {
+        java.lang.Object ref = oauthAuthorizationUrl_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          oauthAuthorizationUrl_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string oauth_authorization_url = 3;</code>
+       */
+      public Builder setOauthAuthorizationUrl(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        oauthAuthorizationUrl_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_authorization_url = 3;</code>
+       */
+      public Builder clearOauthAuthorizationUrl() {
+        
+        oauthAuthorizationUrl_ = getDefaultInstance().getOauthAuthorizationUrl();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_authorization_url = 3;</code>
+       */
+      public Builder setOauthAuthorizationUrlBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        oauthAuthorizationUrl_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object oauthTokenUrl_ = "";
+      /**
+       * <code>string oauth_token_url = 4;</code>
+       */
+      public java.lang.String getOauthTokenUrl() {
+        java.lang.Object ref = oauthTokenUrl_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          oauthTokenUrl_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string oauth_token_url = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOauthTokenUrlBytes() {
+        java.lang.Object ref = oauthTokenUrl_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          oauthTokenUrl_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string oauth_token_url = 4;</code>
+       */
+      public Builder setOauthTokenUrl(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        oauthTokenUrl_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_token_url = 4;</code>
+       */
+      public Builder clearOauthTokenUrl() {
+        
+        oauthTokenUrl_ = getDefaultInstance().getOauthTokenUrl();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_token_url = 4;</code>
+       */
+      public Builder setOauthTokenUrlBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        oauthTokenUrl_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object oauthRedirectUrl_ = "";
+      /**
+       * <code>string oauth_redirect_url = 5;</code>
+       */
+      public java.lang.String getOauthRedirectUrl() {
+        java.lang.Object ref = oauthRedirectUrl_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          oauthRedirectUrl_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string oauth_redirect_url = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOauthRedirectUrlBytes() {
+        java.lang.Object ref = oauthRedirectUrl_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          oauthRedirectUrl_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string oauth_redirect_url = 5;</code>
+       */
+      public Builder setOauthRedirectUrl(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        oauthRedirectUrl_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_redirect_url = 5;</code>
+       */
+      public Builder clearOauthRedirectUrl() {
+        
+        oauthRedirectUrl_ = getDefaultInstance().getOauthRedirectUrl();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string oauth_redirect_url = 5;</code>
+       */
+      public Builder setOauthRedirectUrlBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        oauthRedirectUrl_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList oauthScopes_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureOauthScopesIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          oauthScopes_ = new com.google.protobuf.LazyStringArrayList(oauthScopes_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getOauthScopesList() {
+        return oauthScopes_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public int getOauthScopesCount() {
+        return oauthScopes_.size();
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public java.lang.String getOauthScopes(int index) {
+        return oauthScopes_.get(index);
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getOauthScopesBytes(int index) {
+        return oauthScopes_.getByteString(index);
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public Builder setOauthScopes(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureOauthScopesIsMutable();
+        oauthScopes_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public Builder addOauthScopes(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureOauthScopesIsMutable();
+        oauthScopes_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public Builder addAllOauthScopes(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureOauthScopesIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, oauthScopes_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public Builder clearOauthScopes() {
+        oauthScopes_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string oauth_scopes = 6;</code>
+       */
+      public Builder addOauthScopesBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureOauthScopesIsMutable();
+        oauthScopes_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object sessionSecret_ = "";
+      /**
+       * <code>string session_secret = 7;</code>
+       */
+      public java.lang.String getSessionSecret() {
+        java.lang.Object ref = sessionSecret_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          sessionSecret_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string session_secret = 7;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSessionSecretBytes() {
+        java.lang.Object ref = sessionSecret_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sessionSecret_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string session_secret = 7;</code>
+       */
+      public Builder setSessionSecret(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        sessionSecret_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string session_secret = 7;</code>
+       */
+      public Builder clearSessionSecret() {
+        
+        sessionSecret_ = getDefaultInstance().getSessionSecret();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string session_secret = 7;</code>
+       */
+      public Builder setSessionSecretBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        sessionSecret_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:api.UIFlags)
+    }
+
+    // @@protoc_insertion_point(class_scope:api.UIFlags)
+    private static final api.Graphik.UIFlags DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new api.Graphik.UIFlags();
+    }
+
+    public static api.Graphik.UIFlags getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<UIFlags>
+        PARSER = new com.google.protobuf.AbstractParser<UIFlags>() {
+      @java.lang.Override
+      public UIFlags parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new UIFlags(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<UIFlags> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<UIFlags> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public api.Graphik.UIFlags getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -51992,6 +53485,11 @@ public final class Graphik {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_api_Flags_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_api_UIFlags_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_api_UIFlags_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_api_Boolean_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -52174,7 +53672,7 @@ public final class Graphik {
       "n\030\003 \001(\0132\032.google.protobuf.Timestamp\022\'\n\003m" +
       "ax\030\004 \001(\0132\032.google.protobuf.Timestamp\"G\n\005" +
       "Graph\022\027\n\004docs\030\001 \001(\0132\t.api.Docs\022%\n\013connec" +
-      "tions\030\002 \001(\0132\020.api.Connections\"\312\003\n\005Flags\022" +
+      "tions\030\002 \001(\0132\020.api.Connections\"\335\003\n\005Flags\022" +
       "\031\n\021open_id_discovery\030\001 \001(\t\022\024\n\014storage_pa" +
       "th\030\002 \001(\t\022\025\n\rallow_headers\030\005 \003(\t\022\025\n\rallow" +
       "_methods\030\006 \003(\t\022\025\n\rallow_origins\030\007 \003(\t\022\022\n" +
@@ -52186,112 +53684,118 @@ public final class Graphik {
       "cret\030\024 \001(\t\022\r\n\005debug\030\025 \001(\010\022\023\n\013environment" +
       "\030\026 \001(\t\022\026\n\016raft_advertise\030\027 \001(\t\022\025\n\rraft_m" +
       "ax_pool\030\030 \001(\003\022\022\n\nmutual_tls\030\031 \001(\010\022\017\n\007ca_" +
-      "cert\030\032 \001(\t\"\030\n\007Boolean\022\r\n\005value\030\001 \001(\010\"\027\n\006" +
-      "Number\022\r\n\005value\030\001 \001(\001\"\203\001\n\014ExistsFilter\022\037" +
-      "\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022$\n\nexpre" +
-      "ssion\030\002 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022\014\n\004seek\030\003 " +
-      "\001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n\005index\030\005 \001(\t\"R\n\004E" +
-      "dit\022\035\n\003ref\030\001 \001(\0132\010.api.RefB\006\342\337\037\002 \001\022+\n\nat" +
-      "tributes\030\002 \001(\0132\027.google.protobuf.Struct\"" +
-      "V\n\nEditFilter\022\033\n\006filter\030\001 \001(\0132\013.api.Filt" +
-      "er\022+\n\nattributes\030\002 \001(\0132\027.google.protobuf" +
-      ".Struct\"\027\n\004Pong\022\017\n\007message\030\001 \001(\t\"c\n\017Outb" +
-      "oundMessage\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1" +
-      ",225}$\022-\n\004data\030\002 \001(\0132\027.google.protobuf.S" +
-      "tructB\006\342\337\037\002 \001\"\324\001\n\007Message\022!\n\007channel\030\001 \001" +
-      "(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027.goo" +
-      "gle.protobuf.StructB\006\342\337\037\002 \001\022\036\n\004user\030\003 \001(" +
-      "\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\ttimestamp\030\004 \001(\0132\032" +
-      ".google.protobuf.TimestampB\006\342\337\037\002 \001\022 \n\006me" +
-      "thod\030\005 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\"\303\001\n\006Schema\022" +
-      "\030\n\020connection_types\030\001 \003(\t\022\021\n\tdoc_types\030\002" +
-      " \003(\t\022%\n\013authorizers\030\003 \001(\0132\020.api.Authoriz" +
-      "ers\022%\n\013constraints\030\004 \001(\0132\020.api.Constrain" +
-      "ts\022\035\n\007indexes\030\005 \001(\0132\014.api.Indexes\022\037\n\010tri" +
-      "ggers\030\006 \001(\0132\r.api.Triggers\" \n\nExprFilter" +
-      "\022\022\n\nexpression\030\001 \001(\t\"\374\002\n\013RaftCommand\022\026\n\004" +
-      "user\030\001 \001(\0132\010.api.Doc\022\016\n\006method\030\002 \001(\t\022\032\n\010" +
-      "set_docs\030\003 \003(\0132\010.api.Doc\022(\n\017set_connecti" +
-      "ons\030\004 \003(\0132\017.api.Connection\022\032\n\010del_docs\030\005" +
-      " \003(\0132\010.api.Ref\022!\n\017del_connections\030\006 \003(\0132" +
-      "\010.api.Ref\022!\n\013set_indexes\030\007 \001(\0132\014.api.Ind" +
-      "exes\022)\n\017set_authorizers\030\010 \001(\0132\020.api.Auth" +
-      "orizers\022)\n\017set_constraints\030\t \001(\0132\020.api.C" +
-      "onstraints\022\"\n\014send_message\030\n \001(\0132\014.api.M" +
-      "essage\022#\n\014set_triggers\030\013 \001(\0132\r.api.Trigg" +
-      "ers\"%\n\004Peer\022\017\n\007node_id\030\001 \001(\t\022\014\n\004addr\030\002 \001" +
-      "(\t\"\262\001\n\tRaftState\022\016\n\006leader\030\001 \001(\t\022#\n\nmemb" +
-      "ership\030\002 \001(\0162\017.api.Membership\022\030\n\005peers\030\003" +
-      " \003(\0132\t.api.Peer\022(\n\005stats\030\004 \003(\0132\031.api.Raf" +
-      "tState.StatsEntry\032,\n\nStatsEntry\022\013\n\003key\030\001" +
-      " \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001*\035\n\tAlgorithm\022\007\n\003" +
-      "BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggregate\022\t\n\005COUNT\020\000\022\007" +
-      "\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX\020\003\022\007\n\003MIN\020\004\022\010\n\004PR" +
-      "OD\020\005*P\n\nMembership\022\013\n\007UNKNOWN\020\000\022\014\n\010FOLLO" +
-      "WER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n\006LEADER\020\003\022\014\n\010SHUT" +
-      "DOWN\020\0042\250\001\n\013RaftService\022+\n\004Ping\022\026.google." +
-      "protobuf.Empty\032\t.api.Pong\"\000\0222\n\013JoinClust" +
-      "er\022\t.api.Peer\032\026.google.protobuf.Empty\"\000\022" +
-      "8\n\014ClusterState\022\026.google.protobuf.Empty\032" +
-      "\016.api.RaftState\"\0002\217\022\n\017DatabaseService\0222\n" +
-      "\tGetSchema\022\026.google.protobuf.Empty\032\013.api" +
-      ".Schema\"\000\022<\n\016SetAuthorizers\022\020.api.Author" +
-      "izers\032\026.google.protobuf.Empty\"\000\0224\n\nSetIn" +
-      "dexes\022\014.api.Indexes\032\026.google.protobuf.Em" +
-      "pty\"\000\022<\n\016SetConstraints\022\020.api.Constraint" +
-      "s\032\026.google.protobuf.Empty\"\000\0226\n\013SetTrigge" +
-      "rs\022\r.api.Triggers\032\026.google.protobuf.Empt" +
-      "y\"\000\022(\n\002Me\022\026.google.protobuf.Empty\032\010.api." +
-      "Doc\"\000\022,\n\tCreateDoc\022\023.api.DocConstructor\032" +
-      "\010.api.Doc\"\000\022/\n\nCreateDocs\022\024.api.DocConst" +
-      "ructors\032\t.api.Docs\"\000\022\036\n\006PutDoc\022\010.api.Doc" +
-      "\032\010.api.Doc\"\000\022!\n\007PutDocs\022\t.api.Docs\032\t.api" +
-      ".Docs\"\000\022\036\n\006GetDoc\022\010.api.Ref\032\010.api.Doc\"\000\022" +
-      "&\n\nSearchDocs\022\013.api.Filter\032\t.api.Docs\"\000\022" +
-      "2\n\010Traverse\022\023.api.TraverseFilter\032\017.api.T" +
-      "raversals\"\000\0226\n\nTraverseMe\022\025.api.Traverse" +
-      "MeFilter\032\017.api.Traversals\"\000\022 \n\007EditDoc\022\t" +
-      ".api.Edit\032\010.api.Doc\"\000\022(\n\010EditDocs\022\017.api." +
-      "EditFilter\032\t.api.Docs\"\000\022,\n\006DelDoc\022\010.api." +
-      "Ref\032\026.google.protobuf.Empty\"\000\0220\n\007DelDocs" +
-      "\022\013.api.Filter\032\026.google.protobuf.Empty\"\000\022" +
-      ".\n\tExistsDoc\022\021.api.ExistsFilter\032\014.api.Bo" +
-      "olean\"\000\0225\n\020ExistsConnection\022\021.api.Exists" +
-      "Filter\032\014.api.Boolean\"\000\022\"\n\006HasDoc\022\010.api.R" +
-      "ef\032\014.api.Boolean\"\000\022)\n\rHasConnection\022\010.ap" +
-      "i.Ref\032\014.api.Boolean\"\000\022A\n\020CreateConnectio" +
-      "n\022\032.api.ConnectionConstructor\032\017.api.Conn" +
-      "ection\"\000\022D\n\021CreateConnections\022\033.api.Conn" +
-      "ectionConstructors\032\020.api.Connections\"\000\0223" +
-      "\n\rPutConnection\022\017.api.Connection\032\017.api.C" +
-      "onnection\"\000\0226\n\016PutConnections\022\020.api.Conn" +
-      "ections\032\020.api.Connections\"\000\022@\n\020SearchAnd" +
-      "Connect\022\030.api.SearchConnectFilter\032\020.api." +
-      "Connections\"\000\022D\n\022SearchAndConnectMe\022\032.ap" +
-      "i.SearchConnectMeFilter\032\020.api.Connection" +
-      "s\"\000\022,\n\rGetConnection\022\010.api.Ref\032\017.api.Con" +
-      "nection\"\000\0224\n\021SearchConnections\022\013.api.Fil" +
-      "ter\032\020.api.Connections\"\000\022.\n\016EditConnectio" +
-      "n\022\t.api.Edit\032\017.api.Connection\"\000\0226\n\017EditC" +
-      "onnections\022\017.api.EditFilter\032\020.api.Connec" +
-      "tions\"\000\0223\n\rDelConnection\022\010.api.Ref\032\026.goo" +
-      "gle.protobuf.Empty\"\000\0227\n\016DelConnections\022\013" +
-      ".api.Filter\032\026.google.protobuf.Empty\"\000\0229\n" +
-      "\017ConnectionsFrom\022\022.api.ConnectFilter\032\020.a" +
-      "pi.Connections\"\000\0227\n\rConnectionsTo\022\022.api." +
-      "ConnectFilter\032\020.api.Connections\"\000\022.\n\rAgg" +
-      "regateDocs\022\016.api.AggFilter\032\013.api.Number\"" +
-      "\000\0225\n\024AggregateConnections\022\016.api.AggFilte" +
-      "r\032\013.api.Number\"\000\022;\n\tBroadcast\022\024.api.Outb" +
-      "oundMessage\032\026.google.protobuf.Empty\"\000\022-\n" +
-      "\006Stream\022\021.api.StreamFilter\032\014.api.Message" +
-      "\"\0000\001\022:\n\023PushDocConstructors\022\023.api.DocCon" +
-      "structor\032\010.api.Doc\"\000(\0010\001\022O\n\032PushConnecti" +
-      "onConstructors\022\032.api.ConnectionConstruct" +
-      "or\032\017.api.Connection\"\000(\0010\001\0220\n\010SeedDocs\022\010." +
-      "api.Doc\032\026.google.protobuf.Empty\"\000(\001\022>\n\017S" +
-      "eedConnections\022\017.api.Connection\032\026.google" +
-      ".protobuf.Empty\"\000(\001B\007Z\005apipbb\006proto3"
+      "cert\030\032 \001(\t\022\021\n\tenable_ui\030\033 \001(\010\"\303\001\n\007UIFlag" +
+      "s\022\027\n\017oauth_client_id\030\001 \001(\t\022\033\n\023oauth_clie" +
+      "nt_secret\030\002 \001(\t\022\037\n\027oauth_authorization_u" +
+      "rl\030\003 \001(\t\022\027\n\017oauth_token_url\030\004 \001(\t\022\032\n\022oau" +
+      "th_redirect_url\030\005 \001(\t\022\024\n\014oauth_scopes\030\006 " +
+      "\003(\t\022\026\n\016session_secret\030\007 \001(\t\"\030\n\007Boolean\022\r" +
+      "\n\005value\030\001 \001(\010\"\027\n\006Number\022\r\n\005value\030\001 \001(\001\"\203" +
+      "\001\n\014ExistsFilter\022\037\n\005gtype\030\001 \001(\tB\020\342\337\037\014\n\n^." +
+      "{1,225}$\022$\n\nexpression\030\002 \001(\tB\020\342\337\037\014\n\n^.{1" +
+      ",225}$\022\014\n\004seek\030\003 \001(\t\022\017\n\007reverse\030\004 \001(\010\022\r\n" +
+      "\005index\030\005 \001(\t\"R\n\004Edit\022\035\n\003ref\030\001 \001(\0132\010.api." +
+      "RefB\006\342\337\037\002 \001\022+\n\nattributes\030\002 \001(\0132\027.google" +
+      ".protobuf.Struct\"V\n\nEditFilter\022\033\n\006filter" +
+      "\030\001 \001(\0132\013.api.Filter\022+\n\nattributes\030\002 \001(\0132" +
+      "\027.google.protobuf.Struct\"\027\n\004Pong\022\017\n\007mess" +
+      "age\030\001 \001(\t\"c\n\017OutboundMessage\022!\n\007channel\030" +
+      "\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n\004data\030\002 \001(\0132\027." +
+      "google.protobuf.StructB\006\342\337\037\002 \001\"\324\001\n\007Messa" +
+      "ge\022!\n\007channel\030\001 \001(\tB\020\342\337\037\014\n\n^.{1,225}$\022-\n" +
+      "\004data\030\002 \001(\0132\027.google.protobuf.StructB\006\342\337" +
+      "\037\002 \001\022\036\n\004user\030\003 \001(\0132\010.api.RefB\006\342\337\037\002 \001\0225\n\t" +
+      "timestamp\030\004 \001(\0132\032.google.protobuf.Timest" +
+      "ampB\006\342\337\037\002 \001\022 \n\006method\030\005 \001(\tB\020\342\337\037\014\n\n^.{1," +
+      "225}$\"\303\001\n\006Schema\022\030\n\020connection_types\030\001 \003" +
+      "(\t\022\021\n\tdoc_types\030\002 \003(\t\022%\n\013authorizers\030\003 \001" +
+      "(\0132\020.api.Authorizers\022%\n\013constraints\030\004 \001(" +
+      "\0132\020.api.Constraints\022\035\n\007indexes\030\005 \001(\0132\014.a" +
+      "pi.Indexes\022\037\n\010triggers\030\006 \001(\0132\r.api.Trigg" +
+      "ers\" \n\nExprFilter\022\022\n\nexpression\030\001 \001(\t\"\374\002" +
+      "\n\013RaftCommand\022\026\n\004user\030\001 \001(\0132\010.api.Doc\022\016\n" +
+      "\006method\030\002 \001(\t\022\032\n\010set_docs\030\003 \003(\0132\010.api.Do" +
+      "c\022(\n\017set_connections\030\004 \003(\0132\017.api.Connect" +
+      "ion\022\032\n\010del_docs\030\005 \003(\0132\010.api.Ref\022!\n\017del_c" +
+      "onnections\030\006 \003(\0132\010.api.Ref\022!\n\013set_indexe" +
+      "s\030\007 \001(\0132\014.api.Indexes\022)\n\017set_authorizers" +
+      "\030\010 \001(\0132\020.api.Authorizers\022)\n\017set_constrai" +
+      "nts\030\t \001(\0132\020.api.Constraints\022\"\n\014send_mess" +
+      "age\030\n \001(\0132\014.api.Message\022#\n\014set_triggers\030" +
+      "\013 \001(\0132\r.api.Triggers\"%\n\004Peer\022\017\n\007node_id\030" +
+      "\001 \001(\t\022\014\n\004addr\030\002 \001(\t\"\262\001\n\tRaftState\022\016\n\006lea" +
+      "der\030\001 \001(\t\022#\n\nmembership\030\002 \001(\0162\017.api.Memb" +
+      "ership\022\030\n\005peers\030\003 \003(\0132\t.api.Peer\022(\n\005stat" +
+      "s\030\004 \003(\0132\031.api.RaftState.StatsEntry\032,\n\nSt" +
+      "atsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001" +
+      "*\035\n\tAlgorithm\022\007\n\003BFS\020\000\022\007\n\003DFS\020\001*D\n\tAggre" +
+      "gate\022\t\n\005COUNT\020\000\022\007\n\003SUM\020\001\022\007\n\003AVG\020\002\022\007\n\003MAX" +
+      "\020\003\022\007\n\003MIN\020\004\022\010\n\004PROD\020\005*P\n\nMembership\022\013\n\007U" +
+      "NKNOWN\020\000\022\014\n\010FOLLOWER\020\001\022\r\n\tCANDIDATE\020\002\022\n\n" +
+      "\006LEADER\020\003\022\014\n\010SHUTDOWN\020\0042\250\001\n\013RaftService\022" +
+      "+\n\004Ping\022\026.google.protobuf.Empty\032\t.api.Po" +
+      "ng\"\000\0222\n\013JoinCluster\022\t.api.Peer\032\026.google." +
+      "protobuf.Empty\"\000\0228\n\014ClusterState\022\026.googl" +
+      "e.protobuf.Empty\032\016.api.RaftState\"\0002\217\022\n\017D" +
+      "atabaseService\0222\n\tGetSchema\022\026.google.pro" +
+      "tobuf.Empty\032\013.api.Schema\"\000\022<\n\016SetAuthori" +
+      "zers\022\020.api.Authorizers\032\026.google.protobuf" +
+      ".Empty\"\000\0224\n\nSetIndexes\022\014.api.Indexes\032\026.g" +
+      "oogle.protobuf.Empty\"\000\022<\n\016SetConstraints" +
+      "\022\020.api.Constraints\032\026.google.protobuf.Emp" +
+      "ty\"\000\0226\n\013SetTriggers\022\r.api.Triggers\032\026.goo" +
+      "gle.protobuf.Empty\"\000\022(\n\002Me\022\026.google.prot" +
+      "obuf.Empty\032\010.api.Doc\"\000\022,\n\tCreateDoc\022\023.ap" +
+      "i.DocConstructor\032\010.api.Doc\"\000\022/\n\nCreateDo" +
+      "cs\022\024.api.DocConstructors\032\t.api.Docs\"\000\022\036\n" +
+      "\006PutDoc\022\010.api.Doc\032\010.api.Doc\"\000\022!\n\007PutDocs" +
+      "\022\t.api.Docs\032\t.api.Docs\"\000\022\036\n\006GetDoc\022\010.api" +
+      ".Ref\032\010.api.Doc\"\000\022&\n\nSearchDocs\022\013.api.Fil" +
+      "ter\032\t.api.Docs\"\000\0222\n\010Traverse\022\023.api.Trave" +
+      "rseFilter\032\017.api.Traversals\"\000\0226\n\nTraverse" +
+      "Me\022\025.api.TraverseMeFilter\032\017.api.Traversa" +
+      "ls\"\000\022 \n\007EditDoc\022\t.api.Edit\032\010.api.Doc\"\000\022(" +
+      "\n\010EditDocs\022\017.api.EditFilter\032\t.api.Docs\"\000" +
+      "\022,\n\006DelDoc\022\010.api.Ref\032\026.google.protobuf.E" +
+      "mpty\"\000\0220\n\007DelDocs\022\013.api.Filter\032\026.google." +
+      "protobuf.Empty\"\000\022.\n\tExistsDoc\022\021.api.Exis" +
+      "tsFilter\032\014.api.Boolean\"\000\0225\n\020ExistsConnec" +
+      "tion\022\021.api.ExistsFilter\032\014.api.Boolean\"\000\022" +
+      "\"\n\006HasDoc\022\010.api.Ref\032\014.api.Boolean\"\000\022)\n\rH" +
+      "asConnection\022\010.api.Ref\032\014.api.Boolean\"\000\022A" +
+      "\n\020CreateConnection\022\032.api.ConnectionConst" +
+      "ructor\032\017.api.Connection\"\000\022D\n\021CreateConne" +
+      "ctions\022\033.api.ConnectionConstructors\032\020.ap" +
+      "i.Connections\"\000\0223\n\rPutConnection\022\017.api.C" +
+      "onnection\032\017.api.Connection\"\000\0226\n\016PutConne" +
+      "ctions\022\020.api.Connections\032\020.api.Connectio" +
+      "ns\"\000\022@\n\020SearchAndConnect\022\030.api.SearchCon" +
+      "nectFilter\032\020.api.Connections\"\000\022D\n\022Search" +
+      "AndConnectMe\022\032.api.SearchConnectMeFilter" +
+      "\032\020.api.Connections\"\000\022,\n\rGetConnection\022\010." +
+      "api.Ref\032\017.api.Connection\"\000\0224\n\021SearchConn" +
+      "ections\022\013.api.Filter\032\020.api.Connections\"\000" +
+      "\022.\n\016EditConnection\022\t.api.Edit\032\017.api.Conn" +
+      "ection\"\000\0226\n\017EditConnections\022\017.api.EditFi" +
+      "lter\032\020.api.Connections\"\000\0223\n\rDelConnectio" +
+      "n\022\010.api.Ref\032\026.google.protobuf.Empty\"\000\0227\n" +
+      "\016DelConnections\022\013.api.Filter\032\026.google.pr" +
+      "otobuf.Empty\"\000\0229\n\017ConnectionsFrom\022\022.api." +
+      "ConnectFilter\032\020.api.Connections\"\000\0227\n\rCon" +
+      "nectionsTo\022\022.api.ConnectFilter\032\020.api.Con" +
+      "nections\"\000\022.\n\rAggregateDocs\022\016.api.AggFil" +
+      "ter\032\013.api.Number\"\000\0225\n\024AggregateConnectio" +
+      "ns\022\016.api.AggFilter\032\013.api.Number\"\000\022;\n\tBro" +
+      "adcast\022\024.api.OutboundMessage\032\026.google.pr" +
+      "otobuf.Empty\"\000\022-\n\006Stream\022\021.api.StreamFil" +
+      "ter\032\014.api.Message\"\0000\001\022:\n\023PushDocConstruc" +
+      "tors\022\023.api.DocConstructor\032\010.api.Doc\"\000(\0010" +
+      "\001\022O\n\032PushConnectionConstructors\022\032.api.Co" +
+      "nnectionConstructor\032\017.api.Connection\"\000(\001" +
+      "0\001\0220\n\010SeedDocs\022\010.api.Doc\032\026.google.protob" +
+      "uf.Empty\"\000(\001\022>\n\017SeedConnections\022\017.api.Co" +
+      "nnection\032\026.google.protobuf.Empty\"\000(\001B\007Z\005" +
+      "apipbb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -52513,81 +54017,87 @@ public final class Graphik {
     internal_static_api_Flags_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Flags_descriptor,
-        new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "RequireRequestAuthorizers", "RequireResponseAuthorizers", "JoinRaft", "RaftPeerId", "ListenPort", "RaftSecret", "Debug", "Environment", "RaftAdvertise", "RaftMaxPool", "MutualTls", "CaCert", });
-    internal_static_api_Boolean_descriptor =
+        new java.lang.String[] { "OpenIdDiscovery", "StoragePath", "AllowHeaders", "AllowMethods", "AllowOrigins", "RootUsers", "TlsCert", "TlsKey", "RequireRequestAuthorizers", "RequireResponseAuthorizers", "JoinRaft", "RaftPeerId", "ListenPort", "RaftSecret", "Debug", "Environment", "RaftAdvertise", "RaftMaxPool", "MutualTls", "CaCert", "EnableUi", });
+    internal_static_api_UIFlags_descriptor =
       getDescriptor().getMessageTypes().get(33);
+    internal_static_api_UIFlags_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_api_UIFlags_descriptor,
+        new java.lang.String[] { "OauthClientId", "OauthClientSecret", "OauthAuthorizationUrl", "OauthTokenUrl", "OauthRedirectUrl", "OauthScopes", "SessionSecret", });
+    internal_static_api_Boolean_descriptor =
+      getDescriptor().getMessageTypes().get(34);
     internal_static_api_Boolean_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Boolean_descriptor,
         new java.lang.String[] { "Value", });
     internal_static_api_Number_descriptor =
-      getDescriptor().getMessageTypes().get(34);
+      getDescriptor().getMessageTypes().get(35);
     internal_static_api_Number_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Number_descriptor,
         new java.lang.String[] { "Value", });
     internal_static_api_ExistsFilter_descriptor =
-      getDescriptor().getMessageTypes().get(35);
+      getDescriptor().getMessageTypes().get(36);
     internal_static_api_ExistsFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ExistsFilter_descriptor,
         new java.lang.String[] { "Gtype", "Expression", "Seek", "Reverse", "Index", });
     internal_static_api_Edit_descriptor =
-      getDescriptor().getMessageTypes().get(36);
+      getDescriptor().getMessageTypes().get(37);
     internal_static_api_Edit_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Edit_descriptor,
         new java.lang.String[] { "Ref", "Attributes", });
     internal_static_api_EditFilter_descriptor =
-      getDescriptor().getMessageTypes().get(37);
+      getDescriptor().getMessageTypes().get(38);
     internal_static_api_EditFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_EditFilter_descriptor,
         new java.lang.String[] { "Filter", "Attributes", });
     internal_static_api_Pong_descriptor =
-      getDescriptor().getMessageTypes().get(38);
+      getDescriptor().getMessageTypes().get(39);
     internal_static_api_Pong_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Pong_descriptor,
         new java.lang.String[] { "Message", });
     internal_static_api_OutboundMessage_descriptor =
-      getDescriptor().getMessageTypes().get(39);
+      getDescriptor().getMessageTypes().get(40);
     internal_static_api_OutboundMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_OutboundMessage_descriptor,
         new java.lang.String[] { "Channel", "Data", });
     internal_static_api_Message_descriptor =
-      getDescriptor().getMessageTypes().get(40);
+      getDescriptor().getMessageTypes().get(41);
     internal_static_api_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Message_descriptor,
         new java.lang.String[] { "Channel", "Data", "User", "Timestamp", "Method", });
     internal_static_api_Schema_descriptor =
-      getDescriptor().getMessageTypes().get(41);
+      getDescriptor().getMessageTypes().get(42);
     internal_static_api_Schema_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Schema_descriptor,
         new java.lang.String[] { "ConnectionTypes", "DocTypes", "Authorizers", "Constraints", "Indexes", "Triggers", });
     internal_static_api_ExprFilter_descriptor =
-      getDescriptor().getMessageTypes().get(42);
+      getDescriptor().getMessageTypes().get(43);
     internal_static_api_ExprFilter_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_ExprFilter_descriptor,
         new java.lang.String[] { "Expression", });
     internal_static_api_RaftCommand_descriptor =
-      getDescriptor().getMessageTypes().get(43);
+      getDescriptor().getMessageTypes().get(44);
     internal_static_api_RaftCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_RaftCommand_descriptor,
         new java.lang.String[] { "User", "Method", "SetDocs", "SetConnections", "DelDocs", "DelConnections", "SetIndexes", "SetAuthorizers", "SetConstraints", "SendMessage", "SetTriggers", });
     internal_static_api_Peer_descriptor =
-      getDescriptor().getMessageTypes().get(44);
+      getDescriptor().getMessageTypes().get(45);
     internal_static_api_Peer_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_Peer_descriptor,
         new java.lang.String[] { "NodeId", "Addr", });
     internal_static_api_RaftState_descriptor =
-      getDescriptor().getMessageTypes().get(45);
+      getDescriptor().getMessageTypes().get(46);
     internal_static_api_RaftState_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_api_RaftState_descriptor,

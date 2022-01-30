@@ -105,6 +105,10 @@ class Flags extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string ca_cert = 26;</code>
      */
     private $ca_cert = '';
+    /**
+     * Generated from protobuf field <code>bool enable_ui = 27;</code>
+     */
+    private $enable_ui = false;
 
     /**
      * Constructor.
@@ -138,6 +142,7 @@ class Flags extends \Google\Protobuf\Internal\Message
      *     @type int|string $raft_max_pool
      *     @type bool $mutual_tls
      *     @type string $ca_cert
+     *     @type bool $enable_ui
      * }
      */
     public function __construct($data = NULL) {
@@ -605,6 +610,28 @@ class Flags extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->ca_cert = $var;
+
+        return $this;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool enable_ui = 27;</code>
+     * @return bool
+     */
+    public function getEnableUi()
+    {
+        return $this->enable_ui;
+    }
+
+    /**
+     * Generated from protobuf field <code>bool enable_ui = 27;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setEnableUi($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->enable_ui = $var;
 
         return $this;
     }
