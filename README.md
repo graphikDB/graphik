@@ -5,6 +5,10 @@ https://graphikdb.github.io/graphik/
 
 [![GoDoc](https://godoc.org/github.com/graphikDB/graphik?status.svg)](https://godoc.org/github.com/graphikDB/graphik)
 
+Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
+
+Support: support@graphikdb.io
+
 ## Quick Start
 
 Download sample .env & docker-compose file for configuration:
@@ -22,7 +26,7 @@ Start the server:
   docker-compose -f docker-compose.yml up -d
 ```
 
-Gisit localhost:7820/ui and login to get started. 
+Visit localhost:7820/ui and login to get started. 
 See [Sample GraphQL Queries](#sample-graphql-queries) for sample graphQL queries.
 
 
@@ -31,9 +35,7 @@ when you're done, you may shutdown the server:
 docker-compose -f docker-compose.yml down --remove-orphans
 ```
 
-Graphik is a Backend as a Service implemented as an identity-aware, permissioned, persistant document/graph database & pubsub server written in Go.
 
-Support: support@graphikdb.io
 
 - [Problem Statement](#problem-statement)
     + [Traditional relational databases are powerful but come with a number of issues that interfere with agile development methodologies:](#traditional-relational-databases-are-powerful-but-come-with-a-number-of-issues-that-interfere-with-agile-development-methodologies-)
@@ -1113,4 +1115,4 @@ query {
 3) How well does it cluster?
 
 Clustering is achieved via the raft protocol and is primarily used for redundancy purposes. The raft protocol does not scale particularly well 
-for write operations - it may be replaced with a sharded, eventually-consistent clustering mechanism in order to scale past 10+ instances.
+for write operations - it may be replaced in the future with a sharded, eventually-consistent clustering mechanism in order to scale past 10+ instances.
