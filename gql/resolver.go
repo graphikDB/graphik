@@ -29,14 +29,16 @@ func init() {
 
 type Resolver struct {
 	client  apipb.DatabaseServiceClient
+	clusterClient  apipb.RaftServiceClient
 	logger  *logger.Logger
 	session session.SessionManager
 	uiPath  string
 }
 
-func NewResolver(client apipb.DatabaseServiceClient, logger *logger.Logger, session session.SessionManager) *Resolver {
+func NewResolver(client apipb.DatabaseServiceClient, clusterClient apipb.RaftServiceClient, logger *logger.Logger, session session.SessionManager) *Resolver {
 	return &Resolver{
 		client:  client,
+		clusterClient: clusterClient,
 		logger:  logger,
 		session: session,
 		uiPath:  "/ui",

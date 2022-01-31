@@ -343,12 +343,12 @@ func run(ctx context.Context, cfg *apipb.Flags) {
 			lgger.Error("ui: failed to setup session manager")
 			return
 		}
-		resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), lgger, sessManager)
+		resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), apipb.NewRaftServiceClient(conn), lgger, sessManager)
 		mux.Handle("/", resolver.QueryHandler())
 		mux.Handle("/ui", resolver.UIHandler())
 		mux.Handle("/ui/login", resolver.OAuthCallback())
 	} else {
-		resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), lgger, nil)
+		resolver := gql.NewResolver(apipb.NewDatabaseServiceClient(conn), apipb.NewRaftServiceClient(conn), lgger, nil)
 		mux.Handle("/", resolver.QueryHandler())
 	}
 

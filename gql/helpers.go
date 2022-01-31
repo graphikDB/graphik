@@ -505,3 +505,18 @@ func gqlPeers(peers []*apipb.Peer) []*model.Peer {
 	}
 	return mpeers
 }
+
+func gqlRaftState(state *apipb.RaftState) *model.RaftState {
+	stats := map[string]interface{}{}
+	if state.Stats != nil {
+		for k, v := range state.Stats {
+			stats[k] = v
+		}
+	}
+	return &model.RaftState{
+		Leader:     state.Leader,
+		Membership: gqlMembership(state.Membership),
+		Peers:      gqlPeers(state.Peers),
+		Stats:      stats,
+	}
+}

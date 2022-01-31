@@ -5,7 +5,6 @@ package gql
 
 import (
 	"context"
-
 	"github.com/99designs/gqlgen/graphql"
 	generated1 "github.com/graphikDB/graphik/gen/gql/go/generated"
 	"github.com/graphikDB/graphik/gen/gql/go/model"
@@ -651,6 +650,20 @@ func (r *queryResolver) AggregateConnections(ctx context.Context, where model.Ag
 		}
 	}
 	return res.GetValue(), nil
+}
+
+func (r *queryResolver) ClusterState(ctx context.Context, where *emptypb.Empty) (*model.RaftState, error) {
+	res, err := r.clusterClient.ClusterState(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, &gqlerror.Error{
+			Message: err.Error(),
+			Path:    graphql.GetPath(ctx),
+			Extensions: map[string]interface{}{
+				"code": status.Code(err).String(),
+			},
+		}
+	}
+	return gqlRaftState(res), nil
 }
 
 func (r *subscriptionResolver) Stream(ctx context.Context, where model.StreamFilter) (<-chan *model.Message, error) {

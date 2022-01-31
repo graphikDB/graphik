@@ -80,6 +80,7 @@ Support: support@graphikdb.io
   * [Okta](#okta)
   * [Auth0](#auth0)
 - [Glossary](#glossary)
+- [FAQ](#faq)
 
 ## Problem Statement
 
@@ -976,7 +977,7 @@ add this docker-compose.yml to ${pwd}:
     version: '3.7'
     services:
       graphik:
-        image: graphikdb/graphik:v1.4.0
+        image: graphikdb/graphik:v1.4.1
         env_file:
           - .env
         ports:
@@ -1090,7 +1091,24 @@ a list of email addresses that have full access to the database.
 
 2) Does GraphikDb have a built-in admin web server UI like RethinkDB, etc. to server some web pages for monitoring the database and cluster.
 
+The metrics server on port 7821(by default) exposes a `/metrics` endpoint that may be used with Prometheus/Grafana for monitoring 
+database operations & memory allocation.
 
+The ClusterState operation on the database server may be used to monitor the state of the raft cluster.
+ex:
+```
+query {
+  clusterState(where: {}) {
+    membership
+		peers {
+			addr
+			node_id
+		}
+		stats
+  }
+}
+```
+![cluster-state](assets/cluster-state.png)
 
 3) How well does it cluster?
 
